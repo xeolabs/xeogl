@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-01-22
+ * Built on 2016-01-29
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -15531,7 +15531,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 visibility: new XEO.Visibility(scene, {
                     visible: false
                 }),
-                modes: new XEO.Modes({
+                modes: new XEO.Modes(scene, {
 
                     // Does not contribute to the size of any enclosing boundaries
                     // that might be calculated by xeoEngine, eg. like that returned by XEO.Scene#worldBoundary
@@ -25741,8 +25741,6 @@ XEO.PathGeometry = XEO.Geometry.extend({
  An **AmbientLight** defines an ambient light source of fixed intensity and color that affects all attached {{#crossLink "Entity"}}Entities{{/crossLink}}
  equally.
 
- ## Overview
-
  <ul>
  <li>AmbientLights are grouped, along with other light source types, within
  {{#crossLink "Lights"}}Lights{{/crossLink}} components, which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
@@ -25754,7 +25752,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
  <img src="../../../assets/images/AmbientLight.png"></img>
 
- ## Example
+ ### Example
 
  In this example we have
  <ul>
@@ -25768,14 +25766,12 @@ XEO.PathGeometry = XEO.Geometry.extend({
  ```` javascript
  var scene = new XEO.Scene();
 
-
  var material = new XEO.PhongMaterial(scene, {
     ambient: [0.3, 0.3, 0.3],
     diffuse: [1, 1, 1],
     specular: [1.1, 1],
     shininess: 30
  });
-
 
  // Within xeoEngine's lighting calculations, the AmbientLight's
  // ambient color will be multiplied by the Material's ambient color
@@ -25784,16 +25780,13 @@ XEO.PathGeometry = XEO.Geometry.extend({
     color: [0.7, 0.7, 0.7]
  });
 
-
  var lights = new XEO.Lights(scene, {
     lights: [
         ambientLight
     ]
  });
 
-
  var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
-
 
  var entity = new XEO.Entity(scene, {
     lights: lights,
@@ -25802,7 +25795,6 @@ XEO.PathGeometry = XEO.Geometry.extend({
  });
 
  ````
-
  As with all components, we can observe and change properties on AmbientLights like so:
 
  ````Javascript
@@ -27793,7 +27785,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
      ````javascript
      gearboxModel.on("loaded",
-         function() {
+     function() {
              // Model has loaded!
          });
      ````
@@ -27853,7 +27845,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
      });
 
      flight.flyTo(collectionBoundary.worldBoundary,
-         function() {
+     function() {
              // Optional callback to fire on arrival
          });
 
@@ -36747,20 +36739,66 @@ scene.on("tick", function(e) {
 
 })();
 ;/**
-
- A **Billboard** causes associated {{#crossLink "Entity"}}Entities{{/crossLink}} to be always aligned towards the viewpoint.
-
- ## Overview
+ A **Billboard** causes associated {{#crossLink "Entity"}}Entities{{/crossLink}} to be always oriented towards the Camera.
 
  <ul>
- <li>A Billboard will cause {{#crossLink "Scale"}}{{/crossLink}} transformations to have no effect on its {{#crossLink "Entity"}}{{/crossLink}}</li>
+ <li>**Spherical** billboards are free to rotate their {{#crossLink "Entity"}}Entities{{/crossLink}} in any direction and always face the {{#crossLink "Camera"}}{{/crossLink}} perfectly.</li>
+ <li>**Cylindrical** billboards rotate their {{#crossLink "Entity"}}Entities{{/crossLink}} towards the {{#crossLink "Camera"}}{{/crossLink}}, but only around the Y-axis.</li>
+ <li>A Billboard will cause {{#crossLink "Scale"}}{{/crossLink}} transformations to have no effect on its {{#crossLink "Entity"}}Entities{{/crossLink}}</li>
  </ul>
-
+<br>
  <img src="../../../assets/images/Billboard.png"></img>
 
- ## Example
+ ### Example
 
- TODO
+ ```` javascript
+ var geometry = new XEO.Geometry({
+        primitive: "triangles",
+        positions: [3, 3, 0, -3, 3, 0, -3, -3, 0, 3, -3, 0],
+        normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],
+        uv: [1, 1, 0, 1, 0, 0, 1, 0],
+        indices: [2, 1, 0, 3, 2, 0] // Ensure these will be front-faces
+    });
+
+ var material = new XEO.PhongMaterial({
+        emissiveMap: new XEO.Texture({
+            src: "textures/diffuse/teapot.jpg"
+        })
+    });
+
+ var billboard = new XEO.Billboard({
+        spherical: true
+    });
+
+ for (var i = 0; i < 1000; i++) {
+
+        new XEO.Entity({
+            geometry: geometry,
+            material: material,
+            billboard: billboard,
+            transform: new XEO.Translate({
+                xyz: [Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50]
+            })
+        });
+  }
+
+ var scene = XEO.scene;
+
+ // Move the camera back a bit
+
+ scene.camera.view.zoom(120);
+
+ // Orbit the eye position about the look position.
+
+ scene.on("tick",
+     function () {
+
+          var view = scene.camera.view;
+
+          view.rotateEyeY(0.2);
+          view.rotateEyeX(0.1);
+     });
+ ````
 
  @class Billboard
  @module XEO
