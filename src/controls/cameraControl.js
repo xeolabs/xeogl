@@ -116,7 +116,7 @@
                 visibility: new XEO.Visibility(scene, {
                     visible: false
                 }),
-                modes: new XEO.Modes({
+                modes: new XEO.Modes(scene, {
 
                     // Does not contribute to the size of any enclosing boundaries
                     // that might be calculated by xeoEngine, eg. like that returned by XEO.Scene#worldBoundary
