@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="js/libs/csg.js"></script>
+    <script src="../build/xeoengine.min.js"></script>
+
+<body>
+
+<div id="infoDark">
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>
+    Constructive Solid Geometry (CSG) using <a href="http://evanw.github.io/csg.js/" target="_external">csg.js</a>,
+    <br>
+    based on the <a href="https://jsfiddle.net/philmaker/0e3hw1d4/" target="_external">JSFiddle example</a> provided by <a
+        href="https://twitter.com/philmaker1" target="_external">@philmaker1</a>
+</div>
+
+<script>
+
+    // Build CSG shape using csg.js  - http://evanw.github.io/csg.js/
+
+    var shape = CSG.cylinder({
+        radius: 3,
+        slices: 50,
+        start: [-1, 0, 0],
+        end: [1, 0, 0]
+    })
+            .subtract(CSG.cylinder({
+                radius: 2.7,
+                slices: 50,
+                start: [-1, 0, 0],
+                end: [1, 0, 0]
+            }))
+            .subtract(CSG.cylinder({
+                radius: 0.7,
+                slices: 50,
+                start: [0, 0, -3],
+                end: [0, 0, 3]
+            }))
+            .subtract(CSG.cylinder({
+                radius: 0.7,
+                slices: 50,
+                start: [0, -3, 0],
+                end: [0, 3, 0]
+            }))
+            .subtract(CSG.cylinder({
+                radius: 0.7,
+                slices: 50,
+                start: [0, -3, -3],
+                end: [0, 3, 3]
+            }))
+            .subtract(CSG.cylinder({
+                radius: 0.7,
+                slices: 50,
+                start: [0, -3, 3],
+                end: [0, 3, -3]
+            }));
+
+    // Now show the CSG as a XEO.Entity
+
+    var geometry = shapeToGeometry(shape);
+
+    var entity = new XEO.Entity({
+        geometry: geometry,
+        material: new XEO.PhongMaterial({
+            diffuse: [0.3, 0.3, 0.6]
+        })
+    });
+
+    // Orbit the camera
+
+    entity.scene.on('tick', function () {
+        entity.camera.view.rotateEyeY(0.6);
+        entity.camera.view.rotateEyeX(0.3);
+    });
+
+    // Utility function to convert a csg.js shape to a XEO.Geometry
+    function shapeToGeometry(shape) {
+
+        var unique = [];
+        var map = {};
+        var positions = [];
+        var normals = [];
+        var triangles = [];
+
+        shape.toPolygons().map(
+                function (polygon) {
+
+                    var indices = polygon.vertices.map(function (vertex) {
+                        var key = JSON.stringify(vertex);
+                        if (!(key in map)) {
+                            map[key] = unique.length;
+                            unique.push(vertex);
+                        }
+                        return map[key];
+                    });
+
+                    for (var i = 2; i < indices.length; i++) {
+                        triangles.push(indices[0], indices[i - 1], indices[i]);
+                    }
+                });
+
+        unique.forEach(function (v) {
+            positions.push(v.pos.x, v.pos.y, v.pos.z);
+        });
+
+        unique.forEach(function (v) {
+            normals.push(v.normal.x, v.normal.y, v.normal.z);
+        });
+
+        return new XEO.Geometry({
+            primitive: 'triangles',
+            positions: positions,
+            indices: triangles,
+            normals: normals
+        });
+    }
+
+</script>
+</body>
+</html>
