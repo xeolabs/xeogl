@@ -57,14 +57,22 @@
         }
 
         #panel #list .link {
+            margin-left:0px !important;
+            padding-left:0px !important;
             /*color: #2194CE;*/
             color: #3d7749;
             text-decoration: none;
+            font-weight: normal;
+            background: #FFFFFF;
             cursor: pointer;
         }
 
         #panel #list .selected {
-            color: #ff0000;
+            margin-left:-5px !important;
+            padding-left:5px !important;
+            color: #000000;
+            border: 1px solid #676767;
+            background: #FFFF44;
         }
 
         #panel #list .link:hover {
@@ -462,7 +470,7 @@
         div.addEventListener('click', (function () {
             var k = key;
             return function () {
-                catDivs[k].scrollIntoView();
+              //  catDivs[k].scrollIntoView();
             }
         })());
         container.appendChild(div);
@@ -472,6 +480,8 @@
     container.appendChild(document.createElement('br'));
 
     _index = 1;
+
+    var clickedFile = null;
 
     for (var key in files) {
         var section = files[key];
@@ -496,6 +506,7 @@
                 div.className = 'link';
                 div.textContent = name; // expandCamel(name);
                 div.addEventListener('click', function () {
+                    clickedFile = file;
                     window.location.hash = "#" + file;
                 });
                 container.appendChild(div);
@@ -554,6 +565,10 @@
         viewer.focus();
         sourceButton.style.display = '';
         selected = file;
+        if (clickedFile !== file) {
+            scrollIntoView(divs[file]);
+        }
+        clickedFile = null;
         updateSource();
     };
 
@@ -569,6 +584,15 @@
             hash = window.location.hash;
         }
     });
+
+    function scrollIntoView(div) {
+        var top = documentOffsetTop(div) - (window.innerHeight / 6 );
+        document.getElementById("panel").scrollTop = top;
+    }
+
+    function documentOffsetTop(div) {
+        return div.offsetTop + ( div.offsetParent ? documentOffsetTop(div.offsetParent) : 0 );
+    }
 
 </script>
 
