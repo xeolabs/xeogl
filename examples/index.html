@@ -57,8 +57,10 @@
         }
 
         #panel #list .link {
-            margin-left:0px !important;
-            padding-left:0px !important;
+            margin-left: 0 !important;
+            padding-left: 0 !important;
+            padding-top: 1px;
+            padding-bottom: 1px;
             /*color: #2194CE;*/
             color: #3d7749;
             text-decoration: none;
@@ -68,8 +70,10 @@
         }
 
         #panel #list .selected {
-            margin-left:-5px !important;
-            padding-left:5px !important;
+            margin-left: -5px !important;
+            padding-left: 5px !important;
+            padding-top: 0;
+            padding-bottom: 0;
             color: #000000;
             border: 1px solid #676767;
             background: #FFFF44;
@@ -470,7 +474,7 @@
         div.addEventListener('click', (function () {
             var k = key;
             return function () {
-              //  catDivs[k].scrollIntoView();
+                //  catDivs[k].scrollIntoView();
             }
         })());
         container.appendChild(div);
