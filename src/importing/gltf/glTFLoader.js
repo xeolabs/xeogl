@@ -224,7 +224,6 @@
                     src: image.uri
                 });
 
-                //   log("technique", entryID, description);
                 this.resources.setEntry(entryID, texture, description);
 
                 return true;
