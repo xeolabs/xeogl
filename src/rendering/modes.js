@@ -29,7 +29,7 @@
  // Create a Modes with default properties
  var modes = new XEO.Modes(scene, {
     pickable: true,             // Enable picking
-    clipping true,              // Enable effect of XEO.Clip components
+    clippable true,              // Enable effect of XEO.Clip components
     transparent : false,        // Disable transparency
     backfaces : true,           // Render backfaces
     frontface : "ccw"
@@ -72,7 +72,7 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Modes.
  @param [cfg.pickable=true] {Boolean}  Whether to enable picking.
- @param [cfg.clipping=true] {Boolean} Whether to enable clipping by {{#crossLink "Clips"}}{{/crossLink}}.
+ @param [cfg.clippable=true] {Boolean} Whether to enable clippable by {{#crossLink "Clips"}}{{/crossLink}}.
  @param [cfg.transparent=false] {Boolean} Whether to enable the transparency effect created by {{#crossLink "Material"}}Material{{/crossLink}}s when they have
  {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} < 1.0. This mode will set attached {{#crossLink "Entity"}}Entities{{/crossLink}} transparent (ie. to be rendered in a
  transparency pass with blending enabled etc), while
@@ -96,7 +96,7 @@
 
             this._state = new XEO.renderer.Modes({
                 pickable: true,
-                clipping: true,
+                clippable: true,
                 transparent: false,
                 backfaces: false,
                 frontface: true, // Boolean for speed; true == "ccw", false == "cw"
@@ -104,7 +104,7 @@
             });
 
             this.pickable = cfg.pickable;
-            this.clipping = cfg.clipping;
+            this.clippable = cfg.clippable;
             this.transparent = cfg.transparent;
             this.backfaces = cfg.backfaces;
             this.frontface = cfg.frontface;
@@ -147,36 +147,36 @@
             },
 
             /**
-             Whether this Modes enables clipping of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             Whether this Modes enables clippable of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
-             Clipping is done by {{#crossLink "Clips"}}{{/crossLink}} that are also attached to
+             clippable is done by {{#crossLink "Clips"}}{{/crossLink}} that are also attached to
              the {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
-             Fires a {{#crossLink "Modes/clipping:event"}}{{/crossLink}} event on change.
+             Fires a {{#crossLink "Modes/clippable:event"}}{{/crossLink}} event on change.
 
-             @property clipping
+             @property clippable
              @default true
              @type Boolean
              */
-            clipping: {
+            clippable: {
 
                 set: function (value) {
 
-                    this._state.clipping = value !== false;
+                    this._state.clippable = value !== false;
 
                     this._renderer.imageDirty = true;
 
                     /**
-                     Fired whenever this Modes' {{#crossLink "Modes/clipping:property"}}{{/crossLink}} property changes.
+                     Fired whenever this Modes' {{#crossLink "Modes/clippable:property"}}{{/crossLink}} property changes.
 
-                     @event clipping
+                     @event clippable
                      @param value The property's new value
                      */
-                    this.fire("clipping", this._state.clipping);
+                    this.fire("clippable", this._state.clippable);
                 },
 
                 get: function () {
-                    return this._state.clipping;
+                    return this._state.clippable;
                 }
             },
 
@@ -336,7 +336,7 @@
         _getJSON: function () {
             return {
                 pickable: this._state.pickable,
-                clipping: this._state.clipping,
+                clippable: this._state.clippable,
                 transparent: this._state.transparent,
                 backfaces: this._state.backfaces,
                 frontface: this._state.frontface,
