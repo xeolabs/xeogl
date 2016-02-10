@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+        }
+    </style>
+
+    <script src="../build/xeoengine.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>
+    defining a simple <a href="../docs/classes/Geometry.html" target="_docs">Geometry</a> with points
+</div>
+
+<script>
+
+    var geometry = new XEO.Geometry({
+
+        // The primitive type - allowed values are
+        // "points", "lines", "line-loop", "line-strip",
+        // "triangles", "triangle-strip" and "triangle-fan".
+        //
+        // See the OpenGL/WebGL specification docs for
+        // how the coordinate arrays are supposed to be laid out
+        // for them.
+        primitive: "points",
+
+        // The vertices - eight for our cube, each
+        // one spanning three array elements for X,Y and Z
+        positions: createPoints(6000, 10),
+
+        // Indices - these organise the
+        // positions into geometric primitives in accordance
+        // with the "primitive" parameter,
+        // in this case an index for each point.
+        indices: createIndices(6000, 10)
+    });
+
+    // Helper func to create random positions
+    function createPoints(n, size) {
+        var halfSize = size / 2;
+        var p = [];
+        for (var i = 0; i < n; i++) {
+            p.push((Math.random() * size) - halfSize, (Math.random() * size) - halfSize, (Math.random() * size) - halfSize);
+        }
+        return p;
+    }
+
+    // Helper func to create
+    function createIndices(n) {
+        n = n / 3;
+        var p = [];
+        for (var i = 0; i < n; i++) {
+            p.push(i);
+        }
+        return p;
+    }
+
+
+    var material = new XEO.PhongMaterial({
+        emmissive: [0.6, 0.6, 1.0],
+        pointSize: 5
+    });
+
+    var entity = new XEO.Entity({
+        geometry: geometry,
+        material: material
+    });
+
+    entity.scene.on("tick",
+            function () {
+                entity.camera.view.rotateEyeY(0.6);
+                entity.camera.view.rotateEyeX(0.3);
+            });
+
+</script>
+</body>
+</html>
