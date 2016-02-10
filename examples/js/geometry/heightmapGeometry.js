@@ -24,7 +24,7 @@
  @param [cfg.ySize=1] {Number} Dimension on the Y-axis.
  @param [cfg.zSize=0.25] {Number} Dimension (height) on the Z-axis.
  @param [cfg.xSegments=1] {Number} Number of segments on the X-axis (width).
- @param [cfg.ySegments=1] {Number} Number of segments on the Y-axis (depth).
+ @param [cfg.zSegments=1] {Number} Number of segments on the Z-axis (depth).
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
  */
@@ -63,7 +63,7 @@
             this.zSize = cfg.zSize;
 
             this.xSegments = cfg.xSegments;
-            this.ySegments = cfg.ySegments;
+            this.zSegments = cfg.zSegments;
 
             this.lod = cfg.lod;
 
@@ -131,14 +131,14 @@
                 var imageHeight = this._image.height;
 
                 var xSegments = Math.floor(this._lod * this._xSegments);
-                var ySegments = Math.floor(this._lod * this._ySegments);
+                var zSegments = Math.floor(this._lod * this._zSegments);
 
                 if (xSegments < 4) {
                     xSegments = 4;
                 }
 
-                if (ySegments < 4) {
-                    ySegments = 4;
+                if (zSegments < 4) {
+                    zSegments = 4;
                 }
 
                 var width = this._xSize;
@@ -149,7 +149,7 @@
                 var halfHeight = height / 2;
 
                 var gridX = Math.floor(xSegments) || 1;
-                var gridY = Math.floor(ySegments) || 1;
+                var gridY = Math.floor(zSegments) || 1;
 
                 var gridX1 = gridX + 1;
                 var gridY1 = gridY + 1;
@@ -192,8 +192,8 @@
                         }
 
                         positions[offset] = x;
-                        positions[offset + 1] = -y;
-                        positions[offset + 2] = -z;
+                        positions[offset + 1] = -z;
+                        positions[offset + 2] = -y;
 
                         normals[offset + 2] = -1;
 
@@ -608,46 +608,46 @@
             },
 
             /**
-             * The Heightmap's number of segments on the Y-axis.
+             * The Heightmap's number of segments on the Z-axis.
              *
-             * Fires a {{#crossLink "Heightmap/ySegments:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "Heightmap/zSegments:event"}}{{/crossLink}} event on change.
              *
-             * @property ySegments
+             * @property zSegments
              * @default 100
              * @type Number
              */
-            ySegments: {
+            zSegments: {
 
                 set: function (value) {
 
                     value = value || 100;
 
-                    if (this._ySegments === value) {
+                    if (this._zSegments === value) {
                         return;
                     }
 
                     if (value < 0) {
-                        this.warn("negative ySegments not allowed - will invert");
+                        this.warn("negative zSegments not allowed - will invert");
                         value = value * -1;
                     }
 
-                    this._ySegments = value;
+                    this._zSegments = value;
 
                     this._geometryDirty = true;
 
                     this._scheduleUpdate();
 
                     /**
-                     * Fired whenever this Heightmap's {{#crossLink "Heightmap/ySegments:property"}}{{/crossLink}} property changes.
-                     * @event ySegments
+                     * Fired whenever this Heightmap's {{#crossLink "Heightmap/zSegments:property"}}{{/crossLink}} property changes.
+                     * @event zSegments
                      * @type Number
                      * @param value The property's new value
                      */
-                    this.fire("ySegments", this._ySegments);
+                    this.fire("zSegments", this._zSegments);
                 },
 
                 get: function () {
-                    return this._ySegments;
+                    return this._zSegments;
                 }
             }
         },
@@ -661,7 +661,7 @@
                 zSize: this._zSize,
 
                 xSegments: this._xSegments,
-                ySegments: this._ySegments
+                zSegments: this._zSegments
             };
 
             if (this._src) {
