@@ -84,7 +84,7 @@
         this._scene = null;
 
         /**
-         * Existing  {{#crossLink "Scene"}}Scene{{/crossLink}}s , mapped to their IDs
+         * Existing {{#crossLink "Scene"}}Scene{{/crossLink}}s , mapped to their IDs
          * @property scenes
          * @namespace XEO
          * @type {{String:XEO.Scene}}
@@ -371,6 +371,35 @@
          */
         _isNumeric: function (value) {
             return !isNaN(parseFloat(value)) && isFinite(value);
+        },
+
+        /**
+         * Tests if the given value is an ID
+         * @param value
+         * @returns {boolean}
+         * @private
+         */
+        _isID: function (value) {
+            return XEO._isString(value) || XEO._isNumeric(value);
+        },
+
+        /**
+         * Tests if the given components are the same, where the components can be either IDs or instances.
+         * @param c1
+         * @param c2
+         * @returns {boolean}
+         * @private
+         */
+        _isSameComponent: function (c1, c2) {
+
+            if (!c1 || !c2) {
+                return false;
+            }
+
+            var id1 = (XEO.prototype._isNumeric(c1) || XEO.prototype._isString(c1)) ? "" + c1 : c1.id;
+            var id2 = (XEO.prototype._isNumeric(c2) || XEO.prototype._isString(c2)) ? "" + c2 : c2.id;
+
+            return id1 === id2;
         },
 
         /** Returns a shallow copy

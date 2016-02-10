@@ -95,7 +95,7 @@
 
                     var oldCollection = this._children.collection;
 
-                    if (oldCollection && (!value || value.id !== oldCollection.id)) {
+                    if (oldCollection && XEO._isSameComponent(oldCollection, value)) {
 
                         oldCollection.off(this._onAdded);
                         oldCollection.off(this._onRemoved);
@@ -109,7 +109,7 @@
                      * @event collection
                      * @param value The property's new value
                      */
-                    var collection = this._setChild("collection", value);
+                    var collection = this._setChild("collection", value); // Converts value from ID to instance if necessary
 
                     if (collection) {
 
