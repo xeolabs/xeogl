@@ -817,7 +817,7 @@
 
                     var oldTransform = this._children.transform;
 
-                    if (oldTransform && (!value || value.id !== oldTransform.id)) {
+                    if (oldTransform && !XEO._isSameComponent(oldTransform, value)) {
                         oldTransform.off(this._onTransformUpdated);
                         oldTransform.off(this._onTransformDestroyed);
                     }
@@ -859,7 +859,7 @@
                                 });
                             });
 
-                        this._onTransformDestroyed = newTransform.on("destroyed",this._setWorldBoundaryDirty,this);
+                        this._onTransformDestroyed = newTransform.on("destroyed", this._setWorldBoundaryDirty, this);
                     }
                 },
 
@@ -1002,7 +1002,7 @@
 
                         var self = this;
 
-                       // this._setWorldBoundaryDirty();
+                        // this._setWorldBoundaryDirty();
 
                         this._worldBoundary = new XEO.Boundary3D(this.scene, {
 
@@ -1090,7 +1090,7 @@
 
                         var self = this;
 
-                   //     this._setViewBoundaryDirty();
+                        //     this._setViewBoundaryDirty();
 
                         this._viewBoundary = new XEO.Boundary3D(this.scene, {
 
@@ -1161,7 +1161,7 @@
 
                         var self = this;
 
-                     //   this._setCanvasBoundaryDirty();
+                        //   this._setCanvasBoundaryDirty();
 
                         this._canvasBoundary = new XEO.Boundary2D(this.scene, {
 
