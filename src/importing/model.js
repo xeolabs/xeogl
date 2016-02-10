@@ -134,7 +134,7 @@
             // we create from the glTF model; this will be available
             // as a public, immutable #collection property
 
-            this._collection = new XEO.Collection(this.scene);
+            this._collection = this.create(XEO.Collection);
 
             this._src = null;
 
