@@ -272,6 +272,15 @@
              */
             this.entities = {};
 
+            // Map of components created with #getSharedComponent, mapped to their "share IDs"
+            this._sharedComponents = {};
+
+            // Map of components created with #getSharedComponent, mapped to thei component IDs
+            this._sharedComponentIDs = {};
+
+            // Count of references to components created with #getSharedComponent
+            this._sharedCounts = {};
+
             // Contains XEO.Entities that need to be recompiled back into this._renderer
             this._dirtyEntities = {};
 
@@ -409,7 +418,7 @@
                 // User-supplied ID
 
                 if (this.components[c.id]) {
-                    this.error("Component " + XEO._inQuotes(c.id) + " already exists");
+                    this.error("Component " + XEO._inQuotes(c.id) + " already exists in Scene");
                     return;
                 }
             } else {
@@ -1440,61 +1449,129 @@
             this._initDefaults();
 
             this._dirtyEntities = {};
-        }
-
-        ,
+        },
 
         /**
-         * Displays a simple test entity.
+         * Convenience method for creating or reusing a Component within this Scene.
          *
-         * Clears the Scene first.
+         * You would typically use this method to conveniently instantiate components that you'd want to
+         * share (ie. "instance") among your {{#crossLink "Entity"}}Entities{{/crossLink}}.
          *
-         * The test entity is destroyed as soon as anything else is created in this Scene.
+         * The method is given a component type, share ID and constructor attributes, like so:
          *
-         * @method testPattern
+         * ````javascript
+         * var material = myScene.getComponent("XEO.PhongMaterial", "myMaterial", { diffuse: [1,0,0] });
+         * ````
+         *
+         * The first time you call this method for the given ````type```` and ````instanceId````, this method will create the
+         * {{#crossLink "PhongMaterial"}}{{/crossLink}}, passing the given  attributes to the component's constructor.
+         *
+         * If you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same
+         * component instance that it returned the first time, and will ignore the attributes:
+         *
+         * ````javascript
+         * var material2 = myScene.getComponent("XEO.PhongMaterial", "myMaterial", { specular: [1,1,0] });
+         * ````
+         *
+         * Each time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a
+         * reference count for the component instance. You can release the shared component instance with a call to
+         * {{#crossLink "Scene/putSharedComponent:method"}}{{/crossLink}}, and once you have released it as many
+         * times as you got it, the Scene will destroy the component.
+         *
+         * @method _getSharedComponent
+         * @private
+         * @param {String|Function} type Component type, eg "XEO.PhongMaterial", or constructor.
+         * @param {*} [cfg] Attributes for the component instance - only used if this is the first time you are getting
+         * the component, ignored when reusing an existing shared component.
+         * @param {String|Number} instanceId Identifies the shared component instance. Note that this is not used as the ID of the
+         * component - you can specify the component ID in the ````cfg```` parameter.
+         * @returns {*}
          */
-        testPattern: function () {
+        _getSharedComponent: function (type, cfg, instanceId) {
 
-            // Clear the scene
+            var component;
 
-            this.clear();
+            if (instanceId !== undefined) {
 
-            // Create spinning test entity
+                var fullShareId = "__shared." + type + "." + instanceId;
 
-            var rotate = new XEO.Rotate(this, {
-                xyz: [0, .5, .5],
-                angle: 0
-            });
+                component = this._sharedComponents[fullShareId];
 
-            var entity = new XEO.Entity(this, {
-                transform: rotate
-            });
+                if (component) {
 
-            var angle = 0;
+                    // Component already exists;
+                    // ignore constructor attributes, bump share count and return component
 
-            var spin = this.on("tick",
-                function () {
-                    entity.transform.angle = angle;
-                    angle += 0.5;
-                });
+                    this._sharedCounts[fullShareId]++;
+                    return component;
+                }
+            }
 
-            var self = this;
+            // Component does not yet exist
 
-            entity.on("destroyed",
-                function () {
-                    self.off(spin);
-                });
+            var clazz;
 
-            // Destroy spinning test entity as soon as something
-            // is created subsequently in the scene
+            if (XEO._isString(type)) {
+                var type2 = type.substring(3); // Find constructor on the XEO namespace
+                clazz = XEO[type2];
+                if (!clazz) {
+                    this.error("Component type not found: '" + type + "'");
+                    return null;
+                }
+            } else {
+                clazz = type;
+            }
 
-            this.on("componentCreated",
-                function () {
-                    entity.destroy();
-                    rotate.destroy();
-                });
-        }
-        ,
+            if (cfg && cfg.id && this.components[cfg.id]) {
+                this.error("Component " + XEO._inQuotes(cfg.id) + " already exists in Scene");
+                return null;
+            }
+
+            component = new clazz(this, cfg);
+
+            if (instanceId !== undefined) {
+
+                this._sharedComponents[fullShareId] = component;
+                this._sharedComponentIDs[component.id] = fullShareId;
+                this._sharedCounts[fullShareId] = 1;
+
+                component.on("destroyed", function () {
+                    if (this._sharedComponentIDs[component.id] !== undefined) {
+                        this._putSharedComponent(component);
+                    }
+                }, this);
+            }
+
+            return component;
+        },
+
+        /**
+         * Releases a shared component instance that was got earlier
+         * with {{#crossLink "Scene/getSharedComponent:method"}}{{/crossLink}}.
+         *
+         * @param {Component} component The shared component instance.
+         *
+         */
+        _putSharedComponent: function (component) {
+
+            var instanceId = this._sharedComponentIDs[component.id];
+
+            if (instanceId !== undefined) {
+
+                if (--this._sharedCounts[instanceId] > 0) {
+
+                    // Releasing a reference; other references remain
+
+                    return;
+                }
+
+                delete this._sharedComponents[instanceId];
+                delete this._sharedComponentIDs[component.id];
+                delete this._sharedCounts[instanceId];
+            }
+
+            component.destroy();
+        },
 
         /**
          * Compiles and renders this Scene

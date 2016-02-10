@@ -1,7 +1,7 @@
 /**
 
- A **Skybox** is a textured box that does not translate with respect to the 
- {{#crossLink "Lookat"}}viewing transform{{/crossLink}}, to a provide the appearance of a background 
+ A **Skybox** is a textured box that does not translate with respect to the
+ {{#crossLink "Lookat"}}viewing transform{{/crossLink}}, to a provide the appearance of a background
  for associated {{#crossLink "Entities"}}Entities{{/crossLink}}.
 
  ## Overview
@@ -47,7 +47,7 @@
  // Slowly orbit the camera on each frame
 
  skybox.scene.on("tick",
-     function () {
+ function () {
          skybox.scene.camera.view.rotateEyeY(0.2);
      });
 
@@ -79,93 +79,99 @@
 
         _init: function (cfg) {
 
-            this._skybox = new XEO.Entity(this.scene, {
+            var cfg2 = {
 
-                geometry: new XEO.Geometry(this.scene, { // Box-shaped geometry
-                    primitive: "triangles",
-                    positions: [
-                        1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1, // v0-v1-v2-v3 front
-                        1, 1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, // v0-v3-v4-v5 right
-                        1, 1, 1, 1, 1, -1, -1, 1, -1, -1, 1, 1, // v0-v5-v6-v1 top
-                        -1, 1, 1, -1, 1, -1, -1, -1, -1, -1, -1, 1, // v1-v6-v7-v2 left
-                        -1, -1, -1, 1, -1, -1, 1, -1, 1, -1, -1, 1, // v7-v4-v3-v2 bottom
-                        1, -1, -1, -1, -1, -1, -1, 1, -1, 1, 1, -1 // v4-v7-v6-v5 back
-                    ],
-                    uv: [
-                        0.5, 0.6666,
-                        0.25, 0.6666,
-                        0.25, 0.3333,
-                        0.5, 0.3333,
+                geometry: this.create(XEO.Geometry, { // Box-shaped geometry
+                        primitive: "triangles",
+                        positions: [
+                            1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1, // v0-v1-v2-v3 front
+                            1, 1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, // v0-v3-v4-v5 right
+                            1, 1, 1, 1, 1, -1, -1, 1, -1, -1, 1, 1, // v0-v5-v6-v1 top
+                            -1, 1, 1, -1, 1, -1, -1, -1, -1, -1, -1, 1, // v1-v6-v7-v2 left
+                            -1, -1, -1, 1, -1, -1, 1, -1, 1, -1, -1, 1, // v7-v4-v3-v2 bottom
+                            1, -1, -1, -1, -1, -1, -1, 1, -1, 1, 1, -1 // v4-v7-v6-v5 back
+                        ],
+                        uv: [
+                            0.5, 0.6666,
+                            0.25, 0.6666,
+                            0.25, 0.3333,
+                            0.5, 0.3333,
 
-                        0.5, 0.6666,
-                        0.5, 0.3333,
-                        0.75, 0.3333,
-                        0.75, 0.6666,
+                            0.5, 0.6666,
+                            0.5, 0.3333,
+                            0.75, 0.3333,
+                            0.75, 0.6666,
 
-                        0.5, 0.6666,
-                        0.5, 1,
-                        0.25, 1,
-                        0.25, 0.6666,
+                            0.5, 0.6666,
+                            0.5, 1,
+                            0.25, 1,
+                            0.25, 0.6666,
 
-                        0.25, 0.6666,
-                        0.0, 0.6666,
-                        0.0, 0.3333,
-                        0.25, 0.3333,
+                            0.25, 0.6666,
+                            0.0, 0.6666,
+                            0.0, 0.3333,
+                            0.25, 0.3333,
 
-                        0.25, 0,
-                        0.50, 0,
-                        0.50, 0.3333,
-                        0.25, 0.3333,
+                            0.25, 0,
+                            0.50, 0,
+                            0.50, 0.3333,
+                            0.25, 0.3333,
 
-                        0.75, 0.3333,
-                        1.0, 0.3333,
-                        1.0, 0.6666,
-                        0.75, 0.6666
-                    ],
-                    indices: [
-                        0, 1, 2,
-                        0, 2, 3,
-                        4, 5, 6,
-                        4, 6, 7,
-                        8, 9, 10,
-                        8, 10, 11,
-                        12, 13, 14,
-                        12, 14, 15,
+                            0.75, 0.3333,
+                            1.0, 0.3333,
+                            1.0, 0.6666,
+                            0.75, 0.6666
+                        ],
+                        indices: [
+                            0, 1, 2,
+                            0, 2, 3,
+                            4, 5, 6,
+                            4, 6, 7,
+                            8, 9, 10,
+                            8, 10, 11,
+                            12, 13, 14,
+                            12, 14, 15,
 
-                        16, 17, 18,
-                        16, 18, 19,
+                            16, 17, 18,
+                            16, 18, 19,
 
-                        20, 21, 22,
-                        20, 22, 23
-                    ]
-                }),
+                            20, 21, 22,
+                            20, 22, 23
+                        ]
+                    },
+                    "geometryInstance"), // Use same Geometry for all Skyboxes
 
-                transform: new XEO.Scale(this.scene, { // Scale the box
+                transform: this.create(XEO.Scale, { // Scale the box
                     xyz: [2000, 2000, 2000] // Overridden when we initialize the 'size' property, below
                 }),
 
-                material: new XEO.PhongMaterial(this.scene, { // Emissive map of sky, no diffuse, ambient or specular reflection
-                    ambient: [0, 0, 0],
-                    diffuse: [0, 0, 0],
-                    specular: [0, 0, 0],
-                    emissiveMap: new XEO.Texture(this.scene, {
-                        src: cfg.src
-                    })
-                }),
+                material: this.create(XEO.PhongMaterial, { // Emissive map of sky, no diffuse, ambient or specular reflection
+                        ambient: [0, 0, 0],
+                        diffuse: [0, 0, 0],
+                        specular: [0, 0, 0],
+                        emissiveMap: this.create(XEO.Texture, {
+                            src: cfg.src
+                        })
+                    },
+                    "materialInstance"), // Use same PhongMaterial for all Skyboxes
 
-                stationary: new XEO.Stationary(this.scene, { // Lock skybox position with respect to viewpoint
-                    active: true
-                }),
+                stationary: this.create(XEO.Stationary, { // Lock skybox position with respect to viewpoint
+                        active: true
+                    },
+                    "stationaryInstance"), // Use same Stationary for all SkyBoxes
 
-                modes: new XEO.Modes(this.scene, {
-                    backfaces: true, // Show interior faces of our skybox geometry
-                    pickable: false, // Don't want to ba able to pick skybox
+                modes: this.create(XEO.Modes, {
+                        backfaces: true, // Show interior faces of our skybox geometry
+                        pickable: false, // Don't want to ba able to pick skybox
 
-                    // SkyBox does not contribute to the size of any enclosing boundaries
-                    // that might be calculated by xeoEngine, eg. like that returned by XEO.Scene#worldBoundary
-                    collidable: false
-                })
-            });
+                        // SkyBox does not contribute to the size of any enclosing boundaries
+                        // that might be calculated by xeoEngine, eg. like that returned by XEO.Scene#worldBoundary
+                        collidable: false
+                    },
+                    "modesInstance") // Use same Modes for all Skyboxes
+            };
+
+            this._skyboxEntity = this.create(XEO.Entity, cfg2);
 
             this.size = cfg.size; // Sets 'xyz' property on the Entity's Scale transform
         },
@@ -187,7 +193,7 @@
 
                     this._size = value || 1000;
 
-                    this._skybox.transform.xyz = [this._size, this._size, this._size];
+                    this._skyboxEntity.transform.xyz = [this._size, this._size, this._size];
 
                     /**
                      Fired whenever this Skybox's {{#crossLink "Skybox/size:property"}}{{/crossLink}} property changes.
@@ -206,7 +212,7 @@
 
         _getJSON: function () {
             return {
-                src: this._skybox.material.emissiveMap.src,
+                src: this._skyboxEntity.material.emissiveMap.src,
                 size: this._size
             };
         }
