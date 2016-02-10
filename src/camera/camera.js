@@ -114,7 +114,7 @@
              * Fires a {{#crossLink "Camera/project:event"}}{{/crossLink}} event on change.
              *
              * @property project
-             * @type Perspective|XEO.Ortho|XEO.Frustum
+             * @type XEO.Perspective|XEO.Ortho|XEO.Frustum
              */
             project: {
 
