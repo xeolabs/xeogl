@@ -338,13 +338,17 @@
         type: "XEO.Component",
 
         /**
-         An array of strings that indicates the types in this component's inheritance hierarchy.
+         An array of strings that indicates the types within this component's inheritance hierarchy.
 
          For example, if this component is a {{#crossLink "Rotate"}}{{/crossLink}}, which
          extends {{#crossLink "Transform"}}{{/crossLink}}, which in turn extends {{#crossLink "Component"}}{{/crossLink}},
-         then this property will have the value ````["XEO.Component", "XEO.Transform", "XEO.Rotate"]````.
+         then this property will have the value:
 
-         Note that the chain is ordered downwards in the hierarchy, ie. from super-class to sub-class.
+         ````json
+         ["XEO.Component", "XEO.Transform", "XEO.Rotate"]
+         ````
+
+         Note that the chain is ordered downwards in the hierarchy, ie. from super-class down to sub-class.
 
          @property types
          @type {Array of String}
@@ -359,8 +363,27 @@
 
          This method works by walking up the inheritance type chain, which this component provides in
          property {{#crossLink "Component/types:property"}}{{/crossLink}}, returning true as soon as one of the type strings in
-         the chain matches the given type.
+         the chain matches the given type, of false if none match.
 
+         #### Examples:
+
+         ````javascript
+         var myRotate = new XEO.Rotate({ ... });
+
+         myRotate.isType(XEO.Component); // Returns true for all XEO components
+
+         myRotate.isType("XEO.Component"); // Returns true for all XEO components
+
+         myRotate.isType(XEO.Rotate); // Returns true
+
+         myRotate.isType(XEO.Transform); // Returns true
+
+         myRotate.isType("XEO.Transform"); // Returns true
+
+         myRotate.isType(XEO.Entity); // Returns false, because XEO.Rotate does not (even indirectly) extend XEO.Entity
+         ````
+
+         @method isType
          @param  {String|Function} type Component type to compare with, eg "XEO.PhongMaterial", or a XEO component constructor.
          @returns {Boolean} True if this component is of given type or is subclass of the given type.
          */
