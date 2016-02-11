@@ -371,15 +371,10 @@
          var myRotate = new XEO.Rotate({ ... });
 
          myRotate.isType(XEO.Component); // Returns true for all XEO components
-
          myRotate.isType("XEO.Component"); // Returns true for all XEO components
-
          myRotate.isType(XEO.Rotate); // Returns true
-
          myRotate.isType(XEO.Transform); // Returns true
-
          myRotate.isType("XEO.Transform"); // Returns true
-
          myRotate.isType(XEO.Entity); // Returns false, because XEO.Rotate does not (even indirectly) extend XEO.Entity
          ````
 
