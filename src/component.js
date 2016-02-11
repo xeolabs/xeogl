@@ -338,6 +338,60 @@
         type: "XEO.Component",
 
         /**
+         An array of strings that indicates the types in this component's inheritance hierarchy.
+
+         For example, if this component is a {{#crossLink "Rotate"}}{{/crossLink}}, which
+         extends {{#crossLink "Transform"}}{{/crossLink}}, which in turn extends {{#crossLink "Component"}}{{/crossLink}},
+         then this property will have the value ````["XEO.Component", "XEO.Transform", "XEO.Rotate"]````.
+
+         Note that the chain is ordered downwards in the hierarchy, ie. from super-class to sub-class.
+
+         @property types
+         @type {Array of String}
+         @final
+         */
+        types: ["XEO.Component"],
+
+        /**
+         Tests if this component is of the given type, or is a subclass of the given type.
+
+         The type may be given as either a string or a component constructor.
+
+         This method works by walking up the inheritance type chain, which this component provides in
+         property {{#crossLink "Component/types:property"}}{{/crossLink}}, returning true as soon as one of the type strings in
+         the chain matches the given type.
+
+         @param  {String|Function} type Component type to compare with, eg "XEO.PhongMaterial", or a XEO component constructor.
+         @returns {Boolean} True if this component is of given type or is subclass of the given type.
+         */
+        isType: function (type) {
+
+            if (!XEO._isString(type)) {
+
+                // Handle constructor arg
+
+                type = type.type;
+                if (!type) {
+                    return false;
+                }
+            }
+
+            var types = this.types;
+
+            if (!types) {
+                return false;
+            }
+
+            for (var i = types.length - 1; i >= 0; i--) {
+                if (types[i] === type) {
+                    return true;
+                }
+            }
+
+            return false;
+        },
+
+        /**
          * Initializes this component
          * @param cfg
          * @private

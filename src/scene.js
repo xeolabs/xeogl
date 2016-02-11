@@ -446,9 +446,9 @@
 
             c.on("destroyed", this._componentDestroyed, this);
 
-            if (c.type === "XEO.Entity") {
+            if (c.isType("XEO.Entity")) {
 
-                // Component is a XEO.Entity
+                // Component is a XEO.Entity, or a subtype thereof
 
                 c.on("dirty", this._entityDirty, this);
 
@@ -496,9 +496,9 @@
                 }
             }
 
-            if (c.type === "XEO.Entity") {
+            if (c.isType("XEO.Entity")) {
 
-                // Component is a XEO.Entity
+                // Component is a XEO.Entity, or a subtype thereof
 
                 // Update scene statistics,
                 // Unschedule any pending recompilation of
