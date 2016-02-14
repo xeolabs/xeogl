@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-01-29
+ * Built on 2016-02-14
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -98,7 +98,7 @@
         this._scene = null;
 
         /**
-         * Existing  {{#crossLink "Scene"}}Scene{{/crossLink}}s , mapped to their IDs
+         * Existing {{#crossLink "Scene"}}Scene{{/crossLink}}s , mapped to their IDs
          * @property scenes
          * @namespace XEO
          * @type {{String:XEO.Scene}}
@@ -387,6 +387,35 @@
             return !isNaN(parseFloat(value)) && isFinite(value);
         },
 
+        /**
+         * Tests if the given value is an ID
+         * @param value
+         * @returns {boolean}
+         * @private
+         */
+        _isID: function (value) {
+            return XEO._isString(value) || XEO._isNumeric(value);
+        },
+
+        /**
+         * Tests if the given components are the same, where the components can be either IDs or instances.
+         * @param c1
+         * @param c2
+         * @returns {boolean}
+         * @private
+         */
+        _isSameComponent: function (c1, c2) {
+
+            if (!c1 || !c2) {
+                return false;
+            }
+
+            var id1 = (XEO.prototype._isNumeric(c1) || XEO.prototype._isString(c1)) ? "" + c1 : c1.id;
+            var id2 = (XEO.prototype._isNumeric(c2) || XEO.prototype._isString(c2)) ? "" + c2 : c2.id;
+
+            return id1 === id2;
+        },
+
         /** Returns a shallow copy
          */
         _copy: function (o) {
@@ -549,6 +578,13 @@
                         return ret;
                     };
                 })(name, prop[name]) : prop[name];
+        }
+
+        if (prop.type) {
+
+            // Create array of type names to indicate inheritance chain,
+            // to support "isType" queries on components
+            prototype.types = _super.types ? _super.types.concat(prop.type) : [prop.type];
         }
 
         // The dummy class constructor
@@ -9706,6 +9742,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             this._eventCallDepth = 0; // Helps us catch stack overflows from recursive events
 
+            this._sharedComponents = {};
+
             if (this.scene && this.type !== "XEO.Scene") { // HACK: Don't add scene to itself
 
                 // Register this component on its scene
@@ -9736,6 +9774,78 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          @final
          */
         type: "XEO.Component",
+
+        /**
+         An array of strings that indicates the types within this component's inheritance hierarchy.
+
+         For example, if this component is a {{#crossLink "Rotate"}}{{/crossLink}}, which
+         extends {{#crossLink "Transform"}}{{/crossLink}}, which in turn extends {{#crossLink "Component"}}{{/crossLink}},
+         then this property will have the value:
+
+         ````json
+         ["XEO.Component", "XEO.Transform", "XEO.Rotate"]
+         ````
+
+         Note that the chain is ordered downwards in the hierarchy, ie. from super-class down to sub-class.
+
+         @property types
+         @type {Array of String}
+         @final
+         */
+        types: ["XEO.Component"],
+
+        /**
+         Tests if this component is of the given type, or is a subclass of the given type.
+
+         The type may be given as either a string or a component constructor.
+
+         This method works by walking up the inheritance type chain, which this component provides in
+         property {{#crossLink "Component/types:property"}}{{/crossLink}}, returning true as soon as one of the type strings in
+         the chain matches the given type, of false if none match.
+
+         #### Examples:
+
+         ````javascript
+         var myRotate = new XEO.Rotate({ ... });
+
+         myRotate.isType(XEO.Component); // Returns true for all XEO components
+         myRotate.isType("XEO.Component"); // Returns true for all XEO components
+         myRotate.isType(XEO.Rotate); // Returns true
+         myRotate.isType(XEO.Transform); // Returns true
+         myRotate.isType("XEO.Transform"); // Returns true
+         myRotate.isType(XEO.Entity); // Returns false, because XEO.Rotate does not (even indirectly) extend XEO.Entity
+         ````
+
+         @method isType
+         @param  {String|Function} type Component type to compare with, eg "XEO.PhongMaterial", or a XEO component constructor.
+         @returns {Boolean} True if this component is of given type or is subclass of the given type.
+         */
+        isType: function (type) {
+
+            if (!XEO._isString(type)) {
+
+                // Handle constructor arg
+
+                type = type.type;
+                if (!type) {
+                    return false;
+                }
+            }
+
+            var types = this.types;
+
+            if (!types) {
+                return false;
+            }
+
+            for (var i = types.length - 1; i >= 0; i--) {
+                if (types[i] === type) {
+                    return true;
+                }
+            }
+
+            return false;
+        },
 
         /**
          * Initializes this component
@@ -9961,12 +10071,16 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          * When component not given, attaches the scene's default instance for the given name (if any).
          * Publishes the new child component on this component, keyed to the given name.
          *
-         * @param {string} name component name
+         * @param {String} [expectedType] Optional expected type of base type of the child; when supplied, will
+         * cause an exception if the given child is not the same type or a subtype of this.
+         * @param {String} name component name
          * @param {Component} child The component
-         * @param {Boolean} useDefault
+         * @param {Boolean} [useDefault=true]
+         * @param {Function} [onAdded] Optional callback called before event is fired
+         * @param {Function} [onAddedScope] Optional scope for callback
          * @private
          */
-        _setChild: function (name, child, useDefault) {
+        _setChild: function (expectedType, name, child, useDefault, onAdded, onAddedScope) {
 
             if (!child && useDefault !== false) {
 
@@ -10003,9 +10117,34 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 }
             }
 
-            if (child && child.scene.id !== this.scene.id) {
-                this.error("Not in same scene: " + child.type + " " + XEO._inQuotes(child.id));
-                return;
+            if (child) {
+
+                if (child.scene.id !== this.scene.id) {
+                    this.error("Not in same scene: " + child.type + " " + XEO._inQuotes(child.id));
+                    return;
+                }
+
+                if (expectedType) {
+
+                    if (!child.isType(expectedType)) {
+
+                        // Attempt to fall back on default component class for the given name
+
+                        child = this.scene[name];
+
+                        if (!child) {
+
+                            this.error("Expected a " + expectedType + " type or subtype: " + child.type + " " + XEO._inQuotes(child.id));
+
+                            return;
+
+                        } else {
+                            this.error("Expected a " + expectedType + " type or subtype: " + child.type + " "
+                                + XEO._inQuotes(child.id) + " (recovering by adding Scene's default " + expectedType + " instance instead)");
+
+                        }
+                    }
+                }
             }
 
             var oldChild = this._children[name];
@@ -10046,6 +10185,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 delete this._children[name];
             }
 
+            if (onAdded) {
+
+                // Fire optional callback so caller can do stuff
+                // before the change event is fired below
+
+                onAddedScope ? onAdded.call(onAddedScope, child) : onAdded();
+            }
+
             this.fire("dirty", this);
 
             this.fire(name, child);
@@ -10077,7 +10224,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             }
 
             // Set default child
-            this._setChild(name, defaultComponent);
+            this._setChild(null, name, defaultComponent);
         },
 
         /**
@@ -10085,6 +10232,74 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          */
         _childDirty: function () {
             this.fire("dirty", this);
+        },
+
+        /**
+         * Convenience method for creating a Component within this Component's {{#crossLink "Scene"}}{{/crossLink}}.
+         *
+         * You would typically use this method to conveniently instantiate components that you'd want to
+         * share (ie. "instance") among your {{#crossLink "Entity"}}Entities{{/crossLink}}.
+         *
+         * The method is given a component type and configuration, like so:
+         *
+         * ````javascript
+         * var material = myComponent.create(XEO.PhongMaterial, {
+         *      diffuse: [1,0,0],
+         *      specular: [1,1,0]
+         * });
+         * ````
+         *
+         * The first time you call this method for the given ````type```` and ````instanceId````, this method will create the
+         * {{#crossLink "PhongMaterial"}}{{/crossLink}}, passing the given  attributes to the component's constructor.
+         *
+         * If you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same
+         * component instance that it returned the first time, and will ignore the attributes:
+         *
+         * ````javascript
+         * var material2 = component.create(XEO.PhongMaterial, "myMaterial", { specular: [1,1,0] });
+         * ````
+         *
+         * Each time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a
+         * reference count for the component instance. You can release the shared component instance with a call to
+         * {{#crossLink "Scene/putSharedComponent:method"}}{{/crossLink}}, and once you have released it as many
+         * times as you got it, the Scene will destroy the component.
+         *
+         * @method create
+         * @param {String} type Component type - either a string like "XEO.PhongMaterial" or the actual
+         * constructor function, ie. XEO.PhongMaterial.
+         * @param {*} [cfg] Configuration for the component instance - only used if this is the first time you are getting
+         * the component, ignored when reusing an existing instance.
+         * @param {String|Number} [instanceId] Identifies the shared component instance. Note that this is not used as the ID of the
+         * component - you can specify the component ID in the ````cfg```` parameter.
+         * @returns {*}
+         */
+        create: function (type, cfg, instanceId) {
+
+            // Create or reuse the component via this component's scene;
+            // reusing if instanceId given, else getting unique instance otherwise
+
+            var component = this.scene._getSharedComponent(type, cfg, instanceId);
+
+            if (component) {
+
+                // Register component on this component so that we can
+                // automatically destroy it when we destroy this component
+
+                if (!this._sharedComponents[component.id]) {
+                    this._sharedComponents[component.id] = component;
+                }
+            }
+
+            component.on("destroyed", function () {
+
+                // If the component is explicitly destroyed, ie. by calling
+                // its #destroy method, then deregister it so we don't try
+                // to destroy it a second time when we destroy this component
+
+                delete this._sharedComponents[component.id];
+            }, this);
+
+            return component;
         },
 
         /**
@@ -10100,7 +10315,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 XEO.scheduleTask(this._doUpdate, this);
             }
-        },
+        }
+        ,
 
         /**
          * @private
@@ -10124,7 +10340,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 this._updateScheduled = false;
             }
-        },
+        }
+        ,
 
         /**
          * Optional virtual template method, normally implemented
@@ -10150,7 +10367,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          * @protected
          */
         _compile: function () {
-        },
+        }
+        ,
 
         _props: {
 
@@ -10179,7 +10397,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     return this._getJSON ? XEO._apply(this._getJSON(), json) : json;
                 }
-            },
+            }
+            ,
 
             /**
              * String containing the serialized JSON state of this Component.
@@ -10193,7 +10412,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 get: function () {
                     return JSON.stringify(this.json, "\n", 4);
                 }
-            },
+            }
+            ,
 
             /**
              * Experimental: string containing a JavaScript expression that would instantiate this Component.
@@ -10211,7 +10431,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     return "new " + this.type + "(" + str + ");";
                 }
             }
-        },
+        }
+        ,
 
         /**
          * Destroys this component.
@@ -10221,21 +10442,36 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          * Automatically disassociates this component from other components, causing them to fall back on any
          * defaults that this component overrode on them.
          *
+         * TODO: describe effect with respect to #create
+         *
          * @method destroy
          */
         destroy: function () {
 
             // Unsubscribe from child components
 
-            var child;
+            var component;
 
             for (var name in this._children) {
                 if (this._children.hasOwnProperty(name)) {
 
-                    child = this._children[name];
+                    component = this._children[name];
 
-                    child.off(this._childDestroySubs[name]);
-                    child.off(this._childDirtySubs[name]);
+                    component.off(this._childDestroySubs[name]);
+                    component.off(this._childDirtySubs[name]);
+                }
+            }
+
+            // Release components created with #create
+
+            for (var id in this._sharedComponents) {
+                if (this._sharedComponents.hasOwnProperty(id)) {
+
+                    component = this._sharedComponents[id];
+
+                    delete this._sharedComponents[id];
+
+                    this.scene._putSharedComponent(component);
                 }
             }
 
@@ -10251,7 +10487,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              */
 
             this.fire("destroyed", this.destroyed = true);
-        },
+        }
+        ,
 
         /**
          * Protected template method, implemented by sub-classes
@@ -10261,9 +10498,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          */
         _destroy: function () {
         }
-    });
+    })
+    ;
 
-})();
+})
+();
 ;/**
  A **Scene** models a 3D scene as a fully-editable and serializable <a href="http://gameprogrammingpatterns.com/component.html" target="_other">component-entity</a> graph.
 
@@ -10538,6 +10777,15 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              */
             this.entities = {};
 
+            // Map of components created with #getSharedComponent, mapped to their "share IDs"
+            this._sharedComponents = {};
+
+            // Map of components created with #getSharedComponent, mapped to thei component IDs
+            this._sharedComponentIDs = {};
+
+            // Count of references to components created with #getSharedComponent
+            this._sharedCounts = {};
+
             // Contains XEO.Entities that need to be recompiled back into this._renderer
             this._dirtyEntities = {};
 
@@ -10675,7 +10923,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 // User-supplied ID
 
                 if (this.components[c.id]) {
-                    this.error("Component " + XEO._inQuotes(c.id) + " already exists");
+                    this.error("Component " + XEO._inQuotes(c.id) + " already exists in Scene");
                     return;
                 }
             } else {
@@ -10703,9 +10951,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             c.on("destroyed", this._componentDestroyed, this);
 
-            if (c.type === "XEO.Entity") {
+            if (c.isType("XEO.Entity")) {
 
-                // Component is a XEO.Entity
+                // Component is a XEO.Entity, or a subtype thereof
 
                 c.on("dirty", this._entityDirty, this);
 
@@ -10753,9 +11001,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 }
             }
 
-            if (c.type === "XEO.Entity") {
+            if (c.isType("XEO.Entity")) {
 
-                // Component is a XEO.Entity
+                // Component is a XEO.Entity, or a subtype thereof
 
                 // Update scene statistics,
                 // Unschedule any pending recompilation of
@@ -11706,61 +11954,129 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this._initDefaults();
 
             this._dirtyEntities = {};
-        }
-
-        ,
+        },
 
         /**
-         * Displays a simple test entity.
+         * Convenience method for creating or reusing a Component within this Scene.
          *
-         * Clears the Scene first.
+         * You would typically use this method to conveniently instantiate components that you'd want to
+         * share (ie. "instance") among your {{#crossLink "Entity"}}Entities{{/crossLink}}.
          *
-         * The test entity is destroyed as soon as anything else is created in this Scene.
+         * The method is given a component type, share ID and constructor attributes, like so:
          *
-         * @method testPattern
+         * ````javascript
+         * var material = myScene.getComponent("XEO.PhongMaterial", "myMaterial", { diffuse: [1,0,0] });
+         * ````
+         *
+         * The first time you call this method for the given ````type```` and ````instanceId````, this method will create the
+         * {{#crossLink "PhongMaterial"}}{{/crossLink}}, passing the given  attributes to the component's constructor.
+         *
+         * If you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same
+         * component instance that it returned the first time, and will ignore the attributes:
+         *
+         * ````javascript
+         * var material2 = myScene.getComponent("XEO.PhongMaterial", "myMaterial", { specular: [1,1,0] });
+         * ````
+         *
+         * Each time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a
+         * reference count for the component instance. You can release the shared component instance with a call to
+         * {{#crossLink "Scene/putSharedComponent:method"}}{{/crossLink}}, and once you have released it as many
+         * times as you got it, the Scene will destroy the component.
+         *
+         * @method _getSharedComponent
+         * @private
+         * @param {String|Function} type Component type, eg "XEO.PhongMaterial", or constructor.
+         * @param {*} [cfg] Attributes for the component instance - only used if this is the first time you are getting
+         * the component, ignored when reusing an existing shared component.
+         * @param {String|Number} instanceId Identifies the shared component instance. Note that this is not used as the ID of the
+         * component - you can specify the component ID in the ````cfg```` parameter.
+         * @returns {*}
          */
-        testPattern: function () {
+        _getSharedComponent: function (type, cfg, instanceId) {
 
-            // Clear the scene
+            var component;
 
-            this.clear();
+            if (instanceId !== undefined) {
 
-            // Create spinning test entity
+                var fullShareId = "__shared." + type + "." + instanceId;
 
-            var rotate = new XEO.Rotate(this, {
-                xyz: [0, .5, .5],
-                angle: 0
-            });
+                component = this._sharedComponents[fullShareId];
 
-            var entity = new XEO.Entity(this, {
-                transform: rotate
-            });
+                if (component) {
 
-            var angle = 0;
+                    // Component already exists;
+                    // ignore constructor attributes, bump share count and return component
 
-            var spin = this.on("tick",
-                function () {
-                    entity.transform.angle = angle;
-                    angle += 0.5;
-                });
+                    this._sharedCounts[fullShareId]++;
+                    return component;
+                }
+            }
 
-            var self = this;
+            // Component does not yet exist
 
-            entity.on("destroyed",
-                function () {
-                    self.off(spin);
-                });
+            var clazz;
 
-            // Destroy spinning test entity as soon as something
-            // is created subsequently in the scene
+            if (XEO._isString(type)) {
+                var type2 = type.substring(3); // Find constructor on the XEO namespace
+                clazz = XEO[type2];
+                if (!clazz) {
+                    this.error("Component type not found: '" + type + "'");
+                    return null;
+                }
+            } else {
+                clazz = type;
+            }
 
-            this.on("componentCreated",
-                function () {
-                    entity.destroy();
-                    rotate.destroy();
-                });
-        }
-        ,
+            if (cfg && cfg.id && this.components[cfg.id]) {
+                this.error("Component " + XEO._inQuotes(cfg.id) + " already exists in Scene");
+                return null;
+            }
+
+            component = new clazz(this, cfg);
+
+            if (instanceId !== undefined) {
+
+                this._sharedComponents[fullShareId] = component;
+                this._sharedComponentIDs[component.id] = fullShareId;
+                this._sharedCounts[fullShareId] = 1;
+
+                component.on("destroyed", function () {
+                    if (this._sharedComponentIDs[component.id] !== undefined) {
+                        this._putSharedComponent(component);
+                    }
+                }, this);
+            }
+
+            return component;
+        },
+
+        /**
+         * Releases a shared component instance that was got earlier
+         * with {{#crossLink "Scene/getSharedComponent:method"}}{{/crossLink}}.
+         *
+         * @param {Component} component The shared component instance.
+         *
+         */
+        _putSharedComponent: function (component) {
+
+            var instanceId = this._sharedComponentIDs[component.id];
+
+            if (instanceId !== undefined) {
+
+                if (--this._sharedCounts[instanceId] > 0) {
+
+                    // Releasing a reference; other references remain
+
+                    return;
+                }
+
+                delete this._sharedComponents[instanceId];
+                delete this._sharedComponentIDs[component.id];
+                delete this._sharedCounts[instanceId];
+            }
+
+            component.destroy();
+        },
 
         /**
          * Compiles and renders this Scene
@@ -12381,7 +12697,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("camera", value);
+                    this._setChild("XEO.Camera", "camera", value);
 
                     this.stop();
                 },
@@ -12545,7 +12861,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("camera", value);
+                    this._setChild("XEO.Camera", "camera", value);
 
                     this._update();
                 },
@@ -12580,7 +12896,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @event path
                      * @param value The property's new value
                      */
-                    this._setChild("path", value);
+                    this._setChild("XEO.Path", "path", value);
 
                     var newPath = this._children.path;
 
@@ -12653,11 +12969,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  <ul>
 
- <li> A Camera is composed of a viewing transform and a projection transform.</li>
+ <li> A Camera is composed of a viewing transform and a {{#crossLink "Projection"}}{{/crossLink}}.</li>
 
  <li>The viewing transform is usually a {{#crossLink "Lookat"}}Lookat{{/crossLink}}.</li>
 
- <li>The projection transform may be an {{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}}
+ <li>The {{#crossLink "Projection"}}{{/crossLink}} may be an {{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}}
  or {{#crossLink "Perspective"}}Perspective{{/crossLink}}.</li>
 
  <li> By default, each Camera is composed of its parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}} transform,
@@ -12727,7 +13043,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  @param [cfg.view] {String|XEO.Lookat} ID or instance of a view transform within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}} transform,
  which is a {{#crossLink "Lookat"}}Lookat{{/crossLink}}.
- @param [cfg.project] {String|XEO.Perspective|XEO.Ortho|XEO.Frustum} ID or instance of a projection transform
+ @param [cfg.project] {String|XEO.Projection} ID or instance of a projection transform
  within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}. Defaults to the parent
  {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/project:property"}}{{/crossLink}} transform,
  which is a {{#crossLink "Perspective"}}Perspective{{/crossLink}}.
@@ -12760,7 +13076,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * Fires a {{#crossLink "Camera/project:event"}}{{/crossLink}} event on change.
              *
              * @property project
-             * @type Perspective|XEO.Ortho|XEO.Frustum
+             * @type Projection
              */
             project: {
 
@@ -12779,7 +13095,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @event project
                      * @param value The property's new value
                      */
-                    this._setChild("project", value);
+                    this._setChild("XEO.Projection", "project", value);
 
                     var newProject = this._children.project;
 
@@ -12802,7 +13118,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             },
 
             /**
-             * The viewing transform component for this Camera.
+             * The viewing transform for this Camera.
              *
              * When set to a null or undefined value, will default to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s
              * default {{#crossLink "Scene/view:property"}}view{{/crossLink}}, which is
@@ -12831,7 +13147,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @event view
                      * @param value The property's new value
                      */
-                    this._setChild("view", value);
+                    this._setChild("XEO.Lookat", "view", value); // TODO: need marker interface for view transform components
 
                     var newView = this._children.view;
 
@@ -12872,6 +13188,134 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             }
 
             return json;
+        }
+    });
+
+})();
+;/**
+ A **Projection** component defines a projection transformation.
+
+ ## Overview
+
+ <ul>
+ <li>Projection is the base class for (at least) the {{#crossLink "Perspective"}}{{/crossLink}} and {{#crossLink "Ortho"}}{{/crossLink}} types.</li>
+ <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair Projections with {{#crossLink "Lookat"}}Lookat{{/crossLink}} components.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Projection components create within xeoEngine's shaders.</li>
+ </ul>
+
+ <img src="../../../assets/images/Projection.png"></img>
+
+ ## Example
+
+ In this example we have an {{#crossLink "Entity"}}Entity{{/crossLink}} that's attached to a
+ {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} and a
+ Projection:
+
+ ````Javascript
+ var entity = new XEO.Entity({
+
+        camera: new XEO.Camera({
+
+            view: new XEO.Lookat({
+                eye: [0, 0, -4],
+                look: [0, 0, 0],
+                up: [0, 1, 0]
+            }),
+
+            project: new XEO.Projection({
+                matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+            })
+        }),
+
+        geometry: new XEO.BoxGeometry()
+    });
+
+ var scene = entity.scene;
+ var view = entity.camera.view;
+
+ scene.on("tick",
+    function () {
+        view.rotateEyeY(0.5);
+        view.rotateEyeX(0.3);
+ });
+ ````
+
+ @class Projection
+ @module XEO
+ @submodule camera
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Projection within the
+ default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Projection.
+ @param [cfg.matrix=[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]] {Array of Number} One-dimensional, sixteen element array of elements for the Transform, an identity matrix by default.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Projection = XEO.Component.extend({
+
+        type: "XEO.Projection",
+
+        _init: function (cfg) {
+
+            this._state = new XEO.renderer.ProjTransform({
+                matrix: XEO.math.identityMat4(XEO.math.mat4())
+            });
+
+            this.matrix = cfg.matrix;
+        },
+
+        _props: {
+
+            /**
+             * The Projection's matrix.
+             *
+             * Fires a {{#crossLink "Projection/matrix:event"}}{{/crossLink}} event on change.
+             *
+             * @property matrix
+             * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+             * @type {Array of Number}
+             */
+            matrix: {
+
+                set: function (value) {
+
+                    value = value || XEO.math.identityMat4();
+
+                    if (!this._matrix) {
+                        this._matrix = XEO.math.mat4();
+                    }
+
+                    this._matrix.set(value);
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this Projection's {{#crossLink "Projection/matrix:property"}}{{/crossLink}} property changes.
+                     * @event matrix
+                     * @param value The property's new value
+                     */
+                    this.fire("matrix", this._matrix);
+                },
+
+                get: function () {
+                    return this._matrix;
+                }
+            }
+        },
+
+        _compile: function () {
+            this._renderer.modelProjection = this._state;
+        },
+
+        _getJSON: function () {
+            return {
+                matrix: Array.prototype.slice.call(this._matrix)
+            };
         }
     });
 
@@ -13789,7 +14233,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
     "use strict";
 
-    XEO.Ortho = XEO.Component.extend({
+    XEO.Ortho = XEO.Projection.extend({
 
         type: "XEO.Ortho",
 
@@ -14138,13 +14582,13 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  @param [cfg.fovy=60.0] {Number} Field-of-view angle, in degrees, on Y-axis.
  @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
  @param [cfg.far=10000] {Number} Position of the far plane on the View-space Z-axis.
- @extends Component
+ @extends Projection
  */
 (function () {
 
     "use strict";
 
-    XEO.Perspective = XEO.Component.extend({
+    XEO.Perspective = XEO.Projection.extend({
 
         type: "XEO.Perspective",
 
@@ -15775,7 +16219,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("camera", value);
+                    this._setChild("XEO.Camera", "camera", value);
 
                     // Update camera on child components
 
@@ -15985,7 +16429,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("camera", value);
+                    this._setChild("XEO.Camera", "camera", value);
 
                     // Update animation
 
@@ -16280,7 +16724,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("camera", value);
+                    this._setChild("XEO.Camera", "camera", value);
                 },
 
                 get: function () {
@@ -16570,7 +17014,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("camera", value);
+                    this._setChild("XEO.Camera", "camera", value);
                 },
 
                 get: function () {
@@ -16817,7 +17261,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("camera", value);
+                    this._setChild("XEO.Camera", "camera", value);
                 },
 
                 get: function () {
@@ -17060,7 +17504,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("camera", value);
+                    this._setChild("XEO.Camera", "camera", value);
                 },
 
                 get: function () {
@@ -17375,7 +17819,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("camera", value);
+                    this._setChild("XEO.Camera", "camera", value);
                 },
 
                 get: function () {
@@ -17865,7 +18309,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("camera", value);
+                    this._setChild("XEO.Camera", "camera", value);
                 },
 
                 get: function () {
@@ -21482,7 +21926,7 @@ visibility.destroy();
                      * @event boundary
                      * @param value The property's new value
                      */
-                    this._setChild("boundary", value);
+                    this._setChild("XEO.Boundary3D", "boundary", value);
 
                     var boundary = this._children.boundary;
 
@@ -22448,7 +22892,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                  * @event path
                  * @param value The property's new value
                  */
-                this._setChild("path", value);
+                this._setChild("XEO.Path", "path", value);
 
                 var newPath = this._children.path;
 
@@ -24025,7 +24469,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
             types = this.types[component.type];
 
             if (!types) {
-                types = this.types[type] = {};
+                types = this.types[component.type] = {};
             }
 
             types[component.id] = component;
@@ -24168,9 +24612,10 @@ XEO.PathGeometry = XEO.Geometry.extend({
          */
         iterate: function (callback, scope) {
             scope = scope || this;
-            for (var componentId in this.components) {
-                if (this.components.hasOwnProperty(componentId)) {
-                    callback.call(scope, this.components[componentId]);
+            var components = this.components;
+            for (var componentId in components) {
+                if (components.hasOwnProperty(componentId)) {
+                    callback.call(scope, components[componentId]);
                 }
             }
         },
@@ -27432,7 +27877,6 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                     src: image.uri
                 });
 
-                //   log("technique", entryID, description);
                 this.resources.setEntry(entryID, texture, description);
 
                 return true;
@@ -27764,8 +28208,10 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
      <ul><li>A Model begins loading as soon as it's {{#crossLink "Model/src:property"}}{{/crossLink}}
      property is set to the location of a valid glTF file.</li>
      <li>A Model keeps all its loaded components in a {{#crossLink "Collection"}}{{/crossLink}}.</li>
+     <li>Like {{#crossLink "Entity"}}Entities{{/crossLink}}, a Model can be attached to an animated and dynamically-editable
+     modelling {{#crossLink "Transform"}}{{/crossLink}} hierarchy, to rotate, translate or scale it within the World-space coordinate system.</li>
      <li>You can set a Model's {{#crossLink "Model/src:property"}}{{/crossLink}} property to a new file path at any time,
-     which will cause it to load components from the new file, after destroying any components loaded previously.</li>
+     which will cause it to load components from the new file (destroying any components loaded previously).</li>
      </ul>
 
      <img src="../../../assets/images/Model.png"></img>
@@ -27784,8 +28230,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
      fire immediately if the Model happens to be loaded already:
 
      ````javascript
-     gearboxModel.on("loaded",
-     function() {
+     gearboxModel.on("loaded", function() {
              // Model has loaded!
          });
      ````
@@ -27835,6 +28280,77 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
      Now whenever we set the Model to a new file (see example below), the World-space boundary will automatically update accordingly, as will
      our boundary indicator {{#crossLink "Entity"}}{{/crossLink}}.
 
+     ### Transforming the Model
+
+     A Model can be attached to a modelling {{#crossLink "Transform"}}{{/crossLink}} hierarchy to transform it within
+     the World-space coordinate system.
+
+     The hierarchy can be attached on instantiation:
+
+     ````javascript
+     gearboxModel = new XEO.Model({
+        src: "models/gltf/gearbox/gearbox_assy.gltf",
+
+        transform: new XEO.Rotate({
+            id: "spinY",
+            xyz: [0, 1, 0],
+            angle: 0,
+
+            parent: new XEO.Rotate({
+                id: "spinZ",
+                xyz: [0, 0, 1],
+                angle: 0
+            })
+        })
+     });
+     ````
+
+     Alternatively, you can attach the {{#crossLink "Transform"}}{{/crossLink}} hierarchy afterwards:
+
+     ````javascript
+     gearboxModel.transform = new XEO.Rotate({
+            id: "spinY",
+            xyz: [0, 1, 0],
+            angle: 0,
+
+            parent: new XEO.Rotate({
+                id: "spinZ",
+                xyz: [0, 0, 1],
+                angle: 0
+            })
+        });
+     ````
+
+     And of course, the hierarchy may be dynamically-editable, since everything in a xeoEngine scene is editable at
+     runtime. Animating or updating the {{#crossLink "Transform"}}{{/crossLink}} hierarchy will automatically update the
+     boundaries on the {{#crossLink "CollectionBoundary"}}{{/crossLink}} in the previous example.
+
+     You can access the {{#crossLink "Transform"}}Transforms{{/crossLink}} by ID:
+
+     ````javascript
+     var scene = gearboxMode.scene;
+     var spinY = scene.components["spinY"];
+     var spinZ = scene.components["spinZ"];
+
+     gearboxModel.scene.on("tick", function () {
+                spinY.angle += 0.1;
+                spinZ.angle += 0.2;
+            });
+     ````
+
+     or by walking the {{#crossLink "Transform"}}{{/crossLink}} hierarchy:
+
+     ````javascript
+     var scene = gearboxMode.scene;
+     var spinY = gearbox.transform;
+     var spinZ = gearbox.transform.parent;
+
+     gearboxModel.scene.on("tick", function () {
+                spinY.angle += 0.1;
+                spinZ.angle += 0.2;
+            });
+     ````
+
      ### Flying the Camera to look at a Model
 
      To position the Model entirely within view, we can use a {{#crossLink "CameraFlight"}}{{/crossLink}} to fly the {{#crossLink "Camera"}}{{/crossLink}} (in this case the default, implicit one) to look at the World-space extents of our {{#crossLink "CollectionBoundary"}}{{/crossLink}}:
@@ -27844,8 +28360,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
         duration: 1.5
      });
 
-     flight.flyTo(collectionBoundary.worldBoundary,
-     function() {
+     flight.flyTo(collectionBoundary.worldBoundary, function() {
              // Optional callback to fire on arrival
          });
 
@@ -27888,7 +28403,14 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             // we create from the glTF model; this will be available
             // as a public, immutable #collection property
 
-            this._collection = new XEO.Collection(this.scene);
+            this._collection = this.create(XEO.Collection);
+
+            // Dummy transform to make it easy to graft user-supplied
+            // transforms above loaded entities
+
+            this._dummyRootTransform = this.create(XEO.Translate, {
+                meta: "dummy"
+            });
 
             this._src = null;
 
@@ -27903,6 +28425,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             }
 
             this.src = cfg.src;
+            this.transform = cfg.transform;
         },
 
         _props: {
@@ -27941,9 +28464,51 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                     var self = this;
                     var userInfo = null;
                     var options = null;
+                    var rootTransform;
+                    var dummyRootTransform = self._dummyRootTransform;
 
                     glTFLoader.load(userInfo, options,
                         function () {
+
+                            self._collection.iterate(function (component) {
+
+                                if (component.isType("XEO.Entity")) {
+
+                                    // Insert the dummy transform above
+                                    // each entity we just loaded
+
+                                    rootTransform = component.transform;
+
+                                    if (!rootTransform) {
+
+                                        component.transform = dummyRootTransform;
+
+                                    } else {
+
+                                        while (rootTransform.parent) {
+
+                                            if (rootTransform.id === dummyRootTransform.id) {
+
+                                                // Since transform hierarchies created by the glTFLoader may contain
+                                                // transforms that share the same parents, there is potential to find
+                                                // our dummy root transform while walking up an entity's transform
+                                                // path, when that path is joins a path that belongs to an Entity that
+                                                // we processed earlier
+
+                                                return;
+                                            }
+
+                                            rootTransform = rootTransform.parent;
+                                        }
+
+                                        if (rootTransform.id === dummyRootTransform.id) {
+                                            return;
+                                        }
+
+                                        rootTransform.parent = dummyRootTransform;
+                                    }
+                                }
+                            });
 
                             /**
                              Fired whenever this Model has finished loading components from the glTF file
@@ -27984,7 +28549,45 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 get: function () {
                     return this._collection;
                 }
+            },
+
+            /**
+             * The Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} attached to this Model.
+             *
+             * Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Model.
+             *
+             * Internally, the given {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most
+             * {{#crossLink "Transform"}}Transform{{/crossLink}} that the Model attaches to
+             * its {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             *
+             * Fires an {{#crossLink "Model/transform:event"}}{{/crossLink}} event on change.
+             *
+             * @property transform
+             * @type Transform
+             */
+            transform: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this Model's {{#crossLink "Model/transform:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event transform
+                     * @param value The property's new value
+                     */
+                    var useDefault = false;
+
+                    this._setChild("XEO.Transform", "transform", value, useDefault, this._transformUpdated, this);
+                },
+
+                get: function () {
+                    return this._children.transform;
+                }
             }
+        },
+
+        _transformUpdated: function (transform) {
+            this._dummyRootTransform.parent = transform;
         },
 
         _clear: function () {
@@ -28002,9 +28605,16 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
         },
 
         _getJSON: function () {
-            return {
+
+            var json = {
                 src: this._src
             };
+
+            if (this._children.transform) {
+                json.transform = this._children.transform.id;
+            }
+
+            return json;
         },
 
         _destroy: function () {
@@ -28593,7 +29203,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event normalMap
                      @param value Number The property's new value
                      */
-                    this._setComponent("normalMap", texture);
+                    this._setComponent("XEO.Texture", "normalMap", texture);
                 },
 
                 get: function () {
@@ -28622,7 +29232,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event ambientMap
                      @param value Number The property's new value
                      */
-                    this._setComponent("ambientMap", texture);
+                    this._setComponent("XEO.Texture", "ambientMap", texture);
                 },
 
                 get: function () {
@@ -28651,7 +29261,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event diffuseMap
                      @param value Number The property's new value
                      */
-                    this._setComponent("diffuseMap", texture);
+                    this._setComponent("XEO.Texture", "diffuseMap", texture);
                 },
 
                 get: function () {
@@ -28680,7 +29290,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event specularMap
                      @param value Number The property's new value
                      */
-                    this._setComponent("specularMap", texture);
+                    this._setComponent("XEO.Texture", "specularMap", texture);
                 },
 
                 get: function () {
@@ -28709,7 +29319,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event emissiveMap
                      @param value Number The property's new value
                      */
-                    this._setComponent("emissiveMap", texture);
+                    this._setComponent("XEO.Texture", "emissiveMap", texture);
                 },
 
                 get: function () {
@@ -28738,7 +29348,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event opacityMap
                      @param value Number The property's new value
                      */
-                    this._setComponent("opacityMap", texture);
+                    this._setComponent("XEO.Texture", "opacityMap", texture);
                 },
 
                 get: function () {
@@ -28767,7 +29377,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event reflectivityMap
                      @param value Number The property's new value
                      */
-                    this._setComponent("reflectivityMap", texture);
+                    this._setComponent("XEO.Texture", "reflectivityMap", texture);
                 },
 
                 get: function () {
@@ -28782,7 +29392,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
              @property reflection
              @default null
-             @type {CubeMap}
+             @type {Reflect}
              */
             reflection: {
 
@@ -28792,9 +29402,9 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/reflectivityMap:property"}}{{/crossLink}} property changes.
 
                      @event reflection
-                     @param value {CubeMap} The property's new value
+                     @param value {Reflect} The property's new value
                      */
-                    this._setComponent("reflection", cubeMap);
+                    this._setComponent("XEO.Reflect", "reflection", cubeMap);
                 },
 
                 get: function () {
@@ -28823,7 +29433,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event diffuseFresnel
                      @param value Number The property's new value
                      */
-                    this._setComponent("diffuseFresnel", fresnel);
+                    this._setComponent("XEO.Fresnel", "diffuseFresnel", fresnel);
                 },
 
                 get: function () {
@@ -28852,7 +29462,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event specularFresnel
                      @param value Number The property's new value
                      */
-                    this._setComponent("specularFresnel", fresnel);
+                    this._setComponent("XEO.Fresnel", "specularFresnel", fresnel);
                 },
 
                 get: function () {
@@ -28881,7 +29491,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event emissiveFresnel
                      @param value Number The property's new value
                      */
-                    this._setComponent("emissiveFresnel", fresnel);
+                    this._setComponent("XEO.Fresnel", "emissiveFresnel", fresnel);
                 },
 
                 get: function () {
@@ -28910,7 +29520,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event opacityFresnel
                      @param value Number The property's new value
                      */
-                    this._setComponent("opacityFresnel", fresnel);
+                    this._setComponent("XEO.Fresnel", "opacityFresnel", fresnel);
                 },
 
                 get: function () {
@@ -28939,7 +29549,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event reflectivityFresnel
                      @param value Number The property's new value
                      */
-                    this._setComponent("reflectivityFresnel", fresnel);
+                    this._setComponent("XEO.Fresnel", "reflectivityFresnel", fresnel);
                 },
 
                 get: function () {
@@ -28948,8 +29558,8 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             }
         },
 
-        _setComponent: function (name, child) {
-            child = this._setChild(name, child, false);
+        _setComponent: function (expectedType, name, child) {
+            child = this._setChild(expectedType, name, child, false);
             this._state[name] = child ? child._state : null;
             this._hashDirty = true;
         },
@@ -29635,7 +30245,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                         this._onTargetActive = null;
                     }
 
-                    this._target = this._setChild("renderBuf", value);
+                    this._target = this._setChild("XEO.RenderBuf", "renderBuf", value);
 
                     this._imageDirty = false;
                     this._srcDirty = false;
@@ -30923,7 +31533,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("camera", value);
+                    this._setChild("XEO.Camera", "camera", value);
 
                     var newCamera = this._children.camera;
 
@@ -30962,7 +31572,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event clips
                      * @param value The property's new value
                      */
-                    this._setChild("clips", value);
+                    this._setChild("XEO.Clips", "clips", value);
                 },
 
                 get: function () {
@@ -30991,7 +31601,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event colorTarget
                      * @param value The property's new value
                      */
-                    this._setChild("colorTarget", value);
+                    this._setChild("XEO.ColorTarget", "colorTarget", value);
                 },
 
                 get: function () {
@@ -31021,7 +31631,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event colorBuf
                      * @param value The property's new value
                      */
-                    this._setChild("colorBuf", value);
+                    this._setChild("XEO.ColorBuf", "colorBuf", value);
                 },
 
                 get: function () {
@@ -31051,7 +31661,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event depthTarget
                      * @param value The property's new value
                      */
-                    this._setChild("depthTarget", value);
+                    this._setChild("XEO.DepthTarget", "depthTarget", value);
                 },
 
                 get: function () {
@@ -31081,7 +31691,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event depthBuf
                      * @param value The property's new value
                      */
-                    this._setChild("depthBuf", value);
+                    this._setChild("XEO.DepthBuf", "depthBuf", value);
                 },
 
                 get: function () {
@@ -31111,7 +31721,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event visibility
                      * @param value The property's new value
                      */
-                    this._setChild("visibility", value);
+                    this._setChild("XEO.Visibility", "visibility", value);
                 },
 
                 get: function () {
@@ -31141,7 +31751,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event modes
                      * @param value The property's new value
                      */
-                    this._setChild("modes", value);
+                    this._setChild("XEO.Modes", "modes", value);
                 },
 
                 get: function () {
@@ -31191,7 +31801,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event geometry
                      * @param value The property's new value
                      */
-                    this._setChild("geometry", value);
+                    this._setChild("XEO.Geometry", "geometry", value);
 
                     var newGeometry = this._children.geometry;
 
@@ -31234,7 +31844,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event layer
                      * @param value The property's new value
                      */
-                    this._setChild("layer", value);
+                    this._setChild("XEO.Layer", "layer", value);
                 },
 
                 get: function () {
@@ -31264,7 +31874,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event lights
                      * @param value The property's new value
                      */
-                    this._setChild("lights", value);
+                    this._setChild("XEO.Lights", "lights", value);
                 },
 
                 get: function () {
@@ -31294,7 +31904,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event material
                      * @param value The property's new value
                      */
-                    this._setChild("material", value);
+                    this._setChild("XEO.Material", "material", value);
                 },
 
                 get: function () {
@@ -31323,7 +31933,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event morphTargets
                      * @param value The property's new value
                      */
-                    this._setChild("morphTargets", value);
+                    this._setChild("XEO.MorphTargets", "morphTargets", value);
                 },
 
                 get: function () {
@@ -31353,7 +31963,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event reflect
                      * @param value The property's new value
                      */
-                    this._setChild("reflect", value);
+                    this._setChild("XEO.Reflect", "reflect", value);
                 },
 
                 get: function () {
@@ -31382,7 +31992,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event shader
                      * @param value The property's new value
                      */
-                    this._setChild("shader", value);
+                    this._setChild("XEO.Shader", "shader", value);
                 },
 
                 get: function () {
@@ -31412,7 +32022,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event shaderParams
                      * @param value The property's new value
                      */
-                    this._setChild("shaderParams", value);
+                    this._setChild("XEO.ShaderParams", "shaderParams", value);
                 },
 
                 get: function () {
@@ -31442,7 +32052,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event stage
                      * @param value The property's new value
                      */
-                    this._setChild("stage", value);
+                    this._setChild("XEO.Stage", "stage", value);
                 },
 
                 get: function () {
@@ -31478,7 +32088,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                     var oldTransform = this._children.transform;
 
-                    if (oldTransform && (!value || value.id !== oldTransform.id)) {
+                    if (oldTransform && !XEO._isSameComponent(oldTransform, value)) {
                         oldTransform.off(this._onTransformUpdated);
                         oldTransform.off(this._onTransformDestroyed);
                     }
@@ -31490,7 +32100,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event transform
                      * @param value The property's new value
                      */
-                    this._setChild("transform", value);
+                    this._setChild("XEO.Transform", "transform", value);
 
                     // Subscribe to new Transform's events
 
@@ -31520,7 +32130,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                                 });
                             });
 
-                        this._onTransformDestroyed = newTransform.on("destroyed",this._setWorldBoundaryDirty,this);
+                        this._onTransformDestroyed = newTransform.on("destroyed", this._setWorldBoundaryDirty, this);
                     }
                 },
 
@@ -31555,7 +32165,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event billboard
                      * @param value The property's new value
                      */
-                    this._setChild("billboard", value);
+                    this._setChild("XEO.Billboard", "billboard", value);
                 },
 
                 get: function () {
@@ -31590,7 +32200,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event stationary
                      * @param value The property's new value
                      */
-                    this._setChild("stationary", value);
+                    this._setChild("XEO.Stationary", "stationary", value);
                 },
 
                 get: function () {
@@ -31663,7 +32273,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                         var self = this;
 
-                       // this._setWorldBoundaryDirty();
+                        // this._setWorldBoundaryDirty();
 
                         this._worldBoundary = new XEO.Boundary3D(this.scene, {
 
@@ -31751,7 +32361,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                         var self = this;
 
-                   //     this._setViewBoundaryDirty();
+                        //     this._setViewBoundaryDirty();
 
                         this._viewBoundary = new XEO.Boundary3D(this.scene, {
 
@@ -31822,7 +32432,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                         var self = this;
 
-                     //   this._setCanvasBoundaryDirty();
+                        //   this._setCanvasBoundaryDirty();
 
                         this._canvasBoundary = new XEO.Boundary2D(this.scene, {
 
@@ -33137,7 +33747,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  // Create a Modes with default properties
  var modes = new XEO.Modes(scene, {
     pickable: true,             // Enable picking
-    clipping true,              // Enable effect of XEO.Clip components
+    clippable true,              // Enable effect of XEO.Clip components
     transparent : false,        // Disable transparency
     backfaces : true,           // Render backfaces
     frontface : "ccw"
@@ -33180,7 +33790,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Modes.
  @param [cfg.pickable=true] {Boolean}  Whether to enable picking.
- @param [cfg.clipping=true] {Boolean} Whether to enable clipping by {{#crossLink "Clips"}}{{/crossLink}}.
+ @param [cfg.clippable=true] {Boolean} Whether to enable clippable by {{#crossLink "Clips"}}{{/crossLink}}.
  @param [cfg.transparent=false] {Boolean} Whether to enable the transparency effect created by {{#crossLink "Material"}}Material{{/crossLink}}s when they have
  {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} < 1.0. This mode will set attached {{#crossLink "Entity"}}Entities{{/crossLink}} transparent (ie. to be rendered in a
  transparency pass with blending enabled etc), while
@@ -33204,7 +33814,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
             this._state = new XEO.renderer.Modes({
                 pickable: true,
-                clipping: true,
+                clippable: true,
                 transparent: false,
                 backfaces: false,
                 frontface: true, // Boolean for speed; true == "ccw", false == "cw"
@@ -33212,7 +33822,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             });
 
             this.pickable = cfg.pickable;
-            this.clipping = cfg.clipping;
+            this.clippable = cfg.clippable;
             this.transparent = cfg.transparent;
             this.backfaces = cfg.backfaces;
             this.frontface = cfg.frontface;
@@ -33255,36 +33865,36 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             Whether this Modes enables clipping of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             Whether this Modes enables clippable of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
-             Clipping is done by {{#crossLink "Clips"}}{{/crossLink}} that are also attached to
+             clippable is done by {{#crossLink "Clips"}}{{/crossLink}} that are also attached to
              the {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
-             Fires a {{#crossLink "Modes/clipping:event"}}{{/crossLink}} event on change.
+             Fires a {{#crossLink "Modes/clippable:event"}}{{/crossLink}} event on change.
 
-             @property clipping
+             @property clippable
              @default true
              @type Boolean
              */
-            clipping: {
+            clippable: {
 
                 set: function (value) {
 
-                    this._state.clipping = value !== false;
+                    this._state.clippable = value !== false;
 
                     this._renderer.imageDirty = true;
 
                     /**
-                     Fired whenever this Modes' {{#crossLink "Modes/clipping:property"}}{{/crossLink}} property changes.
+                     Fired whenever this Modes' {{#crossLink "Modes/clippable:property"}}{{/crossLink}} property changes.
 
-                     @event clipping
+                     @event clippable
                      @param value The property's new value
                      */
-                    this.fire("clipping", this._state.clipping);
+                    this.fire("clippable", this._state.clippable);
                 },
 
                 get: function () {
-                    return this._state.clipping;
+                    return this._state.clippable;
                 }
             },
 
@@ -33444,7 +34054,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
         _getJSON: function () {
             return {
                 pickable: this._state.pickable,
-                clipping: this._state.clipping,
+                clippable: this._state.clippable,
                 transparent: this._state.transparent,
                 backfaces: this._state.backfaces,
                 frontface: this._state.frontface,
@@ -34554,8 +35164,8 @@ myTask2.setFailed();
  * @submodule skyboxes
  */;/**
 
- A **Skybox** is a textured box that does not translate with respect to the 
- {{#crossLink "Lookat"}}viewing transform{{/crossLink}}, to a provide the appearance of a background 
+ A **Skybox** is a textured box that does not translate with respect to the
+ {{#crossLink "Lookat"}}viewing transform{{/crossLink}}, to a provide the appearance of a background
  for associated {{#crossLink "Entities"}}Entities{{/crossLink}}.
 
  ## Overview
@@ -34601,7 +35211,7 @@ myTask2.setFailed();
  // Slowly orbit the camera on each frame
 
  skybox.scene.on("tick",
-     function () {
+ function () {
          skybox.scene.camera.view.rotateEyeY(0.2);
      });
 
@@ -34633,93 +35243,99 @@ myTask2.setFailed();
 
         _init: function (cfg) {
 
-            this._skybox = new XEO.Entity(this.scene, {
+            var cfg2 = {
 
-                geometry: new XEO.Geometry(this.scene, { // Box-shaped geometry
-                    primitive: "triangles",
-                    positions: [
-                        1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1, // v0-v1-v2-v3 front
-                        1, 1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, // v0-v3-v4-v5 right
-                        1, 1, 1, 1, 1, -1, -1, 1, -1, -1, 1, 1, // v0-v5-v6-v1 top
-                        -1, 1, 1, -1, 1, -1, -1, -1, -1, -1, -1, 1, // v1-v6-v7-v2 left
-                        -1, -1, -1, 1, -1, -1, 1, -1, 1, -1, -1, 1, // v7-v4-v3-v2 bottom
-                        1, -1, -1, -1, -1, -1, -1, 1, -1, 1, 1, -1 // v4-v7-v6-v5 back
-                    ],
-                    uv: [
-                        0.5, 0.6666,
-                        0.25, 0.6666,
-                        0.25, 0.3333,
-                        0.5, 0.3333,
+                geometry: this.create(XEO.Geometry, { // Box-shaped geometry
+                        primitive: "triangles",
+                        positions: [
+                            1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1, // v0-v1-v2-v3 front
+                            1, 1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, // v0-v3-v4-v5 right
+                            1, 1, 1, 1, 1, -1, -1, 1, -1, -1, 1, 1, // v0-v5-v6-v1 top
+                            -1, 1, 1, -1, 1, -1, -1, -1, -1, -1, -1, 1, // v1-v6-v7-v2 left
+                            -1, -1, -1, 1, -1, -1, 1, -1, 1, -1, -1, 1, // v7-v4-v3-v2 bottom
+                            1, -1, -1, -1, -1, -1, -1, 1, -1, 1, 1, -1 // v4-v7-v6-v5 back
+                        ],
+                        uv: [
+                            0.5, 0.6666,
+                            0.25, 0.6666,
+                            0.25, 0.3333,
+                            0.5, 0.3333,
 
-                        0.5, 0.6666,
-                        0.5, 0.3333,
-                        0.75, 0.3333,
-                        0.75, 0.6666,
+                            0.5, 0.6666,
+                            0.5, 0.3333,
+                            0.75, 0.3333,
+                            0.75, 0.6666,
 
-                        0.5, 0.6666,
-                        0.5, 1,
-                        0.25, 1,
-                        0.25, 0.6666,
+                            0.5, 0.6666,
+                            0.5, 1,
+                            0.25, 1,
+                            0.25, 0.6666,
 
-                        0.25, 0.6666,
-                        0.0, 0.6666,
-                        0.0, 0.3333,
-                        0.25, 0.3333,
+                            0.25, 0.6666,
+                            0.0, 0.6666,
+                            0.0, 0.3333,
+                            0.25, 0.3333,
 
-                        0.25, 0,
-                        0.50, 0,
-                        0.50, 0.3333,
-                        0.25, 0.3333,
+                            0.25, 0,
+                            0.50, 0,
+                            0.50, 0.3333,
+                            0.25, 0.3333,
 
-                        0.75, 0.3333,
-                        1.0, 0.3333,
-                        1.0, 0.6666,
-                        0.75, 0.6666
-                    ],
-                    indices: [
-                        0, 1, 2,
-                        0, 2, 3,
-                        4, 5, 6,
-                        4, 6, 7,
-                        8, 9, 10,
-                        8, 10, 11,
-                        12, 13, 14,
-                        12, 14, 15,
+                            0.75, 0.3333,
+                            1.0, 0.3333,
+                            1.0, 0.6666,
+                            0.75, 0.6666
+                        ],
+                        indices: [
+                            0, 1, 2,
+                            0, 2, 3,
+                            4, 5, 6,
+                            4, 6, 7,
+                            8, 9, 10,
+                            8, 10, 11,
+                            12, 13, 14,
+                            12, 14, 15,
 
-                        16, 17, 18,
-                        16, 18, 19,
+                            16, 17, 18,
+                            16, 18, 19,
 
-                        20, 21, 22,
-                        20, 22, 23
-                    ]
-                }),
+                            20, 21, 22,
+                            20, 22, 23
+                        ]
+                    },
+                    "geometryInstance"), // Use same Geometry for all Skyboxes
 
-                transform: new XEO.Scale(this.scene, { // Scale the box
+                transform: this.create(XEO.Scale, { // Scale the box
                     xyz: [2000, 2000, 2000] // Overridden when we initialize the 'size' property, below
                 }),
 
-                material: new XEO.PhongMaterial(this.scene, { // Emissive map of sky, no diffuse, ambient or specular reflection
-                    ambient: [0, 0, 0],
-                    diffuse: [0, 0, 0],
-                    specular: [0, 0, 0],
-                    emissiveMap: new XEO.Texture(this.scene, {
-                        src: cfg.src
-                    })
-                }),
+                material: this.create(XEO.PhongMaterial, { // Emissive map of sky, no diffuse, ambient or specular reflection
+                        ambient: [0, 0, 0],
+                        diffuse: [0, 0, 0],
+                        specular: [0, 0, 0],
+                        emissiveMap: this.create(XEO.Texture, {
+                            src: cfg.src
+                        })
+                    },
+                    "materialInstance"), // Use same PhongMaterial for all Skyboxes
 
-                stationary: new XEO.Stationary(this.scene, { // Lock skybox position with respect to viewpoint
-                    active: true
-                }),
+                stationary: this.create(XEO.Stationary, { // Lock skybox position with respect to viewpoint
+                        active: true
+                    },
+                    "stationaryInstance"), // Use same Stationary for all SkyBoxes
 
-                modes: new XEO.Modes(this.scene, {
-                    backfaces: true, // Show interior faces of our skybox geometry
-                    pickable: false, // Don't want to ba able to pick skybox
+                modes: this.create(XEO.Modes, {
+                        backfaces: true, // Show interior faces of our skybox geometry
+                        pickable: false, // Don't want to ba able to pick skybox
 
-                    // SkyBox does not contribute to the size of any enclosing boundaries
-                    // that might be calculated by xeoEngine, eg. like that returned by XEO.Scene#worldBoundary
-                    collidable: false
-                })
-            });
+                        // SkyBox does not contribute to the size of any enclosing boundaries
+                        // that might be calculated by xeoEngine, eg. like that returned by XEO.Scene#worldBoundary
+                        collidable: false
+                    },
+                    "modesInstance") // Use same Modes for all Skyboxes
+            };
+
+            this._skyboxEntity = this.create(XEO.Entity, cfg2);
 
             this.size = cfg.size; // Sets 'xyz' property on the Entity's Scale transform
         },
@@ -34741,7 +35357,7 @@ myTask2.setFailed();
 
                     this._size = value || 1000;
 
-                    this._skybox.transform.xyz = [this._size, this._size, this._size];
+                    this._skyboxEntity.transform.xyz = [this._size, this._size, this._size];
 
                     /**
                      Fired whenever this Skybox's {{#crossLink "Skybox/size:property"}}{{/crossLink}} property changes.
@@ -34760,7 +35376,7 @@ myTask2.setFailed();
 
         _getJSON: function () {
             return {
-                src: this._skybox.material.emissiveMap.src,
+                src: this._skyboxEntity.material.emissiveMap.src,
                 size: this._size
             };
         }
@@ -35481,7 +36097,7 @@ myTask2.setFailed();
 
                     var oldCollection = this._children.collection;
 
-                    if (oldCollection && (!value || value.id !== oldCollection.id)) {
+                    if (oldCollection && XEO._isSameComponent(oldCollection, value)) {
 
                         oldCollection.off(this._onAdded);
                         oldCollection.off(this._onRemoved);
@@ -35495,7 +36111,7 @@ myTask2.setFailed();
                      * @event collection
                      * @param value The property's new value
                      */
-                    var collection = this._setChild("collection", value);
+                    var collection = this._setChild("XEO.Collection", "collection", value); // Converts value from ID to instance if necessary
 
                     if (collection) {
 
@@ -35716,8 +36332,8 @@ myTask2.setFailed();
  <li>Sub-classes of Transform are: {{#crossLink "Translate"}}{{/crossLink}},
  {{#crossLink "Scale"}}{{/crossLink}}, {{#crossLink "Rotate"}}{{/crossLink}}, and {{#crossLink "Quaternion"}}{{/crossLink}}</li>
  <li>Instances of Transform and its sub-classes may be connected into hierarchies.</li>
- <li>An {{#crossLink "Entity"}}{{/crossLink}} would be connected to a leaf Transform
- within a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.</li>
+ <li>When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf Transform
+ within a Transform hierarchy, it will be transformed by each Transform on the path up to the root, in that order.</li>
  <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>
  </ul>
 
@@ -35892,6 +36508,21 @@ myTask2.setFailed();
 
                 set: function (value) {
 
+                    // Disallow cycle
+
+                    if (value) {
+
+                        var id = this.id;
+
+                        for (var value2 = value; value2; value2 = value2._parent) {
+
+                            if (id === value2.id) {
+                                this.error("Not allowed to attach Transform as parent of itself - ignoring");
+                                return;
+                            }
+                        }
+                    }
+
                     // Unsubscribe from old parent's events
 
                     if (this._parent && (!value || value.id !== this._parent.id)) {
@@ -35914,7 +36545,8 @@ myTask2.setFailed();
                     }
 
                     this._parentUpdated();
-                },
+                }
+                ,
 
                 get: function () {
                     return this._parent;
