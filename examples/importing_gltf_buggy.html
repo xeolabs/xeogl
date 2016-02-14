@@ -7,7 +7,7 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeoengine.js"></script>
 
 <body>
 
@@ -21,7 +21,20 @@
     // Load glTF
 
     var buggy = new XEO.Model({
-        src: "models/gltf/buggy/buggy.gltf"
+
+        // Source glTF file
+        src: "models/gltf/buggy/buggy.gltf",
+
+        // Modelling transformation hierarchy
+        transform: new XEO.Rotate({
+            xyz: [0, 1, 0],
+            angle: 0,
+
+            parent: new XEO.Rotate({
+                xyz: [0, 0, 1],
+                angle: 0
+            })
+        })
     });
 
     // Set initial camera position
@@ -49,11 +62,14 @@
 
     new XEO.CameraControl();
 
-    // Slowly spin camera
+    // Slowly spin the rotations within the Model's
+    // modeling transform hierarchy
+
     buggy.scene.on("tick",
             function () {
-                view.rotateEyeY(0.3);
-                view.rotateEyeX(0.1);
+
+                buggy.transform.angle += 0.1;
+                buggy.transform.parent.angle += 0.1;
             });
 
 </script>
