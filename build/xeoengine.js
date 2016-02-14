@@ -10949,7 +10949,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             types[c.id] = c;
 
 
-            c.on("destroyed", this._componentDestroyed, this);
+            c.on("destroyed", function() { this._componentDestroyed(c); }, this);
 
             if (c.isType("XEO.Entity")) {
 

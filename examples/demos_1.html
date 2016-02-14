@@ -14,7 +14,7 @@
         }
     </style>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeoengine.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
     <script src="js/debug/debug.js"></script>
@@ -22,7 +22,6 @@
 <body>
 
 <script>
-
 
 
     // Override xeoEngine's default lights with some View-space directional lights,
@@ -218,10 +217,13 @@
                 view.rotateEyeY(0.1);
                 view.rotateEyeX(0.05);
 
-                if (wireframeBox.material.opacity > 0) {
-                    wireframeBox.material.opacity -= 0.005;
-                } else {
-                    wireframeBox.destroy();
+                if (wireframeBox) {
+                    if (wireframeBox.material.opacity > 0) {
+                        wireframeBox.material.opacity -= 0.005;
+                    } else {
+                        wireframeBox.destroy();
+                        wireFrameBox = null;
+                    }
                 }
 
                 if (solidBox.material.opacity < 1) {
@@ -230,18 +232,23 @@
                     solidBox.modes.transparent = false;
                 }
 
-                if (wireframeTorus.material.opacity > 0.0) {
-                    wireframeTorus.material.opacity -= 0.005;
-                } else {
-                    //  wireframeTorus.destroy();
+                if (wireframeTorus) {
+                    if (wireframeTorus.material.opacity > 0.0) {
+                        wireframeTorus.material.opacity -= 0.005;
+                    } else {
+                        //  wireframeTorus.destroy();
+                        // wireframeTorus = null
+                    }
                 }
 
-                if (solidTorus.material.opacity < 1.0) {
-                    solidTorus.material.opacity += 0.005;
-                } else {
+                if (solidTorus) {
+                    if (solidTorus.material.opacity < 1.0) {
+                        solidTorus.material.opacity += 0.005;
+                    } else {
 //                    solidTorus.modes.transparent = false;
+                        solidTorus = null;
+                    }
                 }
-
 
             });
 

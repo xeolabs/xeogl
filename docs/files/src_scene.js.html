@@ -626,7 +626,7 @@
             types[c.id] = c;
 
 
-            c.on(&quot;destroyed&quot;, this._componentDestroyed, this);
+            c.on(&quot;destroyed&quot;, function() { this._componentDestroyed(c); }, this);
 
             if (c.isType(&quot;XEO.Entity&quot;)) {
 
