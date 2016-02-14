@@ -63,13 +63,13 @@
  @param [cfg.fovy=60.0] {Number} Field-of-view angle, in degrees, on Y-axis.
  @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
  @param [cfg.far=10000] {Number} Position of the far plane on the View-space Z-axis.
- @extends Component
+ @extends Projection
  */
 (function () {
 
     "use strict";
 
-    XEO.Perspective = XEO.Component.extend({
+    XEO.Perspective = XEO.Projection.extend({
 
         type: "XEO.Perspective",
 

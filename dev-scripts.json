@@ -50,6 +50,7 @@
     "src/animation/cameraFlight.js",
     "src/animation/cameraPath.js",
     "src/camera/camera.js",
+    "src/camera/projection.js",
     "src/camera/frustum.js",
     "src/camera/lookat.js",
     "src/camera/ortho.js",

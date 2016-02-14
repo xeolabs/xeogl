@@ -76,7 +76,7 @@
 
     "use strict";
 
-    XEO.Ortho = XEO.Component.extend({
+    XEO.Ortho = XEO.Projection.extend({
 
         type: "XEO.Ortho",
 
