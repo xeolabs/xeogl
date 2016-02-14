@@ -633,14 +633,16 @@
          * When component not given, attaches the scene's default instance for the given name (if any).
          * Publishes the new child component on this component, keyed to the given name.
          *
-         * @param {string} name component name
+         * @param {String} [expectedType] Optional expected type of base type of the child; when supplied, will
+         * cause an exception if the given child is not the same type or a subtype of this.
+         * @param {String} name component name
          * @param {Component} child The component
          * @param {Boolean} [useDefault=true]
          * @param {Function} [onAdded] Optional callback called before event is fired
          * @param {Function} [onAddedScope] Optional scope for callback
          * @private
          */
-        _setChild: function (name, child, useDefault, onAdded, onAddedScope) {
+        _setChild: function (expectedType, name, child, useDefault, onAdded, onAddedScope) {
 
             if (!child && useDefault !== false) {
 
@@ -677,9 +679,34 @@
                 }
             }
 
-            if (child && child.scene.id !== this.scene.id) {
-                this.error("Not in same scene: " + child.type + " " + XEO._inQuotes(child.id));
-                return;
+            if (child) {
+
+                if (child.scene.id !== this.scene.id) {
+                    this.error("Not in same scene: " + child.type + " " + XEO._inQuotes(child.id));
+                    return;
+                }
+
+                if (expectedType) {
+
+                    if (!child.isType(expectedType)) {
+
+                        // Attempt to fall back on default component class for the given name
+
+                        child = this.scene[name];
+
+                        if (!child) {
+
+                            this.error("Expected a " + expectedType + " type or subtype: " + child.type + " " + XEO._inQuotes(child.id));
+
+                            return;
+
+                        } else {
+                            this.error("Expected a " + expectedType + " type or subtype: " + child.type + " "
+                                + XEO._inQuotes(child.id) + " (recovering by adding Scene's default " + expectedType + " instance instead)");
+
+                        }
+                    }
+                }
             }
 
             var oldChild = this._children[name];
@@ -759,7 +786,7 @@
             }
 
             // Set default child
-            this._setChild(name, defaultComponent);
+            this._setChild(null, name, defaultComponent);
         },
 
         /**

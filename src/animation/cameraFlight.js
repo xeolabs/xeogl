@@ -396,7 +396,7 @@
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("camera", value);
+                    this._setChild("XEO.Camera", "camera", value);
 
                     this.stop();
                 },

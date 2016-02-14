@@ -81,7 +81,7 @@
  @param [cfg.view] {String|XEO.Lookat} ID or instance of a view transform within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}} transform,
  which is a {{#crossLink "Lookat"}}Lookat{{/crossLink}}.
- @param [cfg.project] {String|XEO.Perspective|XEO.Ortho|XEO.Frustum} ID or instance of a projection transform
+ @param [cfg.project] {String|XEO.Projection} ID or instance of a projection transform
  within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}. Defaults to the parent
  {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/project:property"}}{{/crossLink}} transform,
  which is a {{#crossLink "Perspective"}}Perspective{{/crossLink}}.
@@ -114,7 +114,7 @@
              * Fires a {{#crossLink "Camera/project:event"}}{{/crossLink}} event on change.
              *
              * @property project
-             * @type XEO.Perspective|XEO.Ortho|XEO.Frustum
+             * @type Projection
              */
             project: {
 
@@ -133,7 +133,7 @@
                      * @event project
                      * @param value The property's new value
                      */
-                    this._setChild("project", value);
+                    this._setChild("XEO.Projection", "project", value);
 
                     var newProject = this._children.project;
 
@@ -156,7 +156,7 @@
             },
 
             /**
-             * The viewing transform component for this Camera.
+             * The viewing transform for this Camera.
              *
              * When set to a null or undefined value, will default to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s
              * default {{#crossLink "Scene/view:property"}}view{{/crossLink}}, which is
@@ -185,7 +185,7 @@
                      * @event view
                      * @param value The property's new value
                      */
-                    this._setChild("view", value);
+                    this._setChild("XEO.Lookat", "view", value); // TODO: need marker interface for view transform components
 
                     var newView = this._children.view;
 

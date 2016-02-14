@@ -109,7 +109,7 @@
                      * @event collection
                      * @param value The property's new value
                      */
-                    var collection = this._setChild("collection", value); // Converts value from ID to instance if necessary
+                    var collection = this._setChild("XEO.Collection", "collection", value); // Converts value from ID to instance if necessary
 
                     if (collection) {
 

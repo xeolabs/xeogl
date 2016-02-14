@@ -493,7 +493,7 @@
                         this._onTargetActive = null;
                     }
 
-                    this._target = this._setChild("renderBuf", value);
+                    this._target = this._setChild("XEO.RenderBuf", "renderBuf", value);
 
                     this._imageDirty = false;
                     this._srcDirty = false;

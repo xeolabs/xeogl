@@ -120,7 +120,7 @@
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("camera", value);
+                    this._setChild("XEO.Camera", "camera", value);
 
                     this._update();
                 },
@@ -155,7 +155,7 @@
                      * @event path
                      * @param value The property's new value
                      */
-                    this._setChild("path", value);
+                    this._setChild("XEO.Path", "path", value);
 
                     var newPath = this._children.path;
 

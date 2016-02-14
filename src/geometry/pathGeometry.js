@@ -88,7 +88,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                  * @event path
                  * @param value The property's new value
                  */
-                this._setChild("path", value);
+                this._setChild("XEO.Path", "path", value);
 
                 var newPath = this._children.path;
 

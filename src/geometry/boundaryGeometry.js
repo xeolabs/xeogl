@@ -99,7 +99,7 @@
                      * @event boundary
                      * @param value The property's new value
                      */
-                    this._setChild("boundary", value);
+                    this._setChild("XEO.Boundary3D", "boundary", value);
 
                     var boundary = this._children.boundary;
 
