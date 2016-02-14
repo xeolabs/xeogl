@@ -262,7 +262,7 @@
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("camera", value);
+                    this._setChild("XEO.Camera", "camera", value);
 
                     var newCamera = this._children.camera;
 
@@ -301,7 +301,7 @@
                      * @event clips
                      * @param value The property's new value
                      */
-                    this._setChild("clips", value);
+                    this._setChild("XEO.Clips", "clips", value);
                 },
 
                 get: function () {
@@ -330,7 +330,7 @@
                      * @event colorTarget
                      * @param value The property's new value
                      */
-                    this._setChild("colorTarget", value);
+                    this._setChild("XEO.ColorTarget", "colorTarget", value);
                 },
 
                 get: function () {
@@ -360,7 +360,7 @@
                      * @event colorBuf
                      * @param value The property's new value
                      */
-                    this._setChild("colorBuf", value);
+                    this._setChild("XEO.ColorBuf", "colorBuf", value);
                 },
 
                 get: function () {
@@ -390,7 +390,7 @@
                      * @event depthTarget
                      * @param value The property's new value
                      */
-                    this._setChild("depthTarget", value);
+                    this._setChild("XEO.DepthTarget", "depthTarget", value);
                 },
 
                 get: function () {
@@ -420,7 +420,7 @@
                      * @event depthBuf
                      * @param value The property's new value
                      */
-                    this._setChild("depthBuf", value);
+                    this._setChild("XEO.DepthBuf", "depthBuf", value);
                 },
 
                 get: function () {
@@ -450,7 +450,7 @@
                      * @event visibility
                      * @param value The property's new value
                      */
-                    this._setChild("visibility", value);
+                    this._setChild("XEO.Visibility", "visibility", value);
                 },
 
                 get: function () {
@@ -480,7 +480,7 @@
                      * @event modes
                      * @param value The property's new value
                      */
-                    this._setChild("modes", value);
+                    this._setChild("XEO.Modes", "modes", value);
                 },
 
                 get: function () {
@@ -530,7 +530,7 @@
                      * @event geometry
                      * @param value The property's new value
                      */
-                    this._setChild("geometry", value);
+                    this._setChild("XEO.Geometry", "geometry", value);
 
                     var newGeometry = this._children.geometry;
 
@@ -573,7 +573,7 @@
                      * @event layer
                      * @param value The property's new value
                      */
-                    this._setChild("layer", value);
+                    this._setChild("XEO.Layer", "layer", value);
                 },
 
                 get: function () {
@@ -603,7 +603,7 @@
                      * @event lights
                      * @param value The property's new value
                      */
-                    this._setChild("lights", value);
+                    this._setChild("XEO.Lights", "lights", value);
                 },
 
                 get: function () {
@@ -633,7 +633,7 @@
                      * @event material
                      * @param value The property's new value
                      */
-                    this._setChild("material", value);
+                    this._setChild("XEO.Material", "material", value);
                 },
 
                 get: function () {
@@ -662,7 +662,7 @@
                      * @event morphTargets
                      * @param value The property's new value
                      */
-                    this._setChild("morphTargets", value);
+                    this._setChild("XEO.MorphTargets", "morphTargets", value);
                 },
 
                 get: function () {
@@ -692,7 +692,7 @@
                      * @event reflect
                      * @param value The property's new value
                      */
-                    this._setChild("reflect", value);
+                    this._setChild("XEO.Reflect", "reflect", value);
                 },
 
                 get: function () {
@@ -721,7 +721,7 @@
                      * @event shader
                      * @param value The property's new value
                      */
-                    this._setChild("shader", value);
+                    this._setChild("XEO.Shader", "shader", value);
                 },
 
                 get: function () {
@@ -751,7 +751,7 @@
                      * @event shaderParams
                      * @param value The property's new value
                      */
-                    this._setChild("shaderParams", value);
+                    this._setChild("XEO.ShaderParams", "shaderParams", value);
                 },
 
                 get: function () {
@@ -781,7 +781,7 @@
                      * @event stage
                      * @param value The property's new value
                      */
-                    this._setChild("stage", value);
+                    this._setChild("XEO.Stage", "stage", value);
                 },
 
                 get: function () {
@@ -829,7 +829,7 @@
                      * @event transform
                      * @param value The property's new value
                      */
-                    this._setChild("transform", value);
+                    this._setChild("XEO.Transform", "transform", value);
 
                     // Subscribe to new Transform's events
 
@@ -894,7 +894,7 @@
                      * @event billboard
                      * @param value The property's new value
                      */
-                    this._setChild("billboard", value);
+                    this._setChild("XEO.Billboard", "billboard", value);
                 },
 
                 get: function () {
@@ -929,7 +929,7 @@
                      * @event stationary
                      * @param value The property's new value
                      */
-                    this._setChild("stationary", value);
+                    this._setChild("XEO.Stationary", "stationary", value);
                 },
 
                 get: function () {
