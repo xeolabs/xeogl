@@ -7,8 +7,8 @@
  <li>Sub-classes of Transform are: {{#crossLink "Translate"}}{{/crossLink}},
  {{#crossLink "Scale"}}{{/crossLink}}, {{#crossLink "Rotate"}}{{/crossLink}}, and {{#crossLink "Quaternion"}}{{/crossLink}}</li>
  <li>Instances of Transform and its sub-classes may be connected into hierarchies.</li>
- <li>An {{#crossLink "Entity"}}{{/crossLink}} would be connected to a leaf Transform
- within a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.</li>
+ <li>When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf Transform
+ within a Transform hierarchy, it will be transformed by each Transform on the path up to the root, in that order.</li>
  <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>
  </ul>
 
@@ -183,6 +183,21 @@
 
                 set: function (value) {
 
+                    // Disallow cycle
+
+                    if (value) {
+
+                        var id = this.id;
+
+                        for (var value2 = value; value2; value2 = value2._parent) {
+
+                            if (id === value2.id) {
+                                this.error("Not allowed to attach Transform as parent of itself - ignoring");
+                                return;
+                            }
+                        }
+                    }
+
                     // Unsubscribe from old parent's events
 
                     if (this._parent && (!value || value.id !== this._parent.id)) {
@@ -205,7 +220,8 @@
                     }
 
                     this._parentUpdated();
-                },
+                }
+                ,
 
                 get: function () {
                     return this._parent;
