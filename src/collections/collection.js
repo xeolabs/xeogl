@@ -246,7 +246,7 @@
             types = this.types[component.type];
 
             if (!types) {
-                types = this.types[type] = {};
+                types = this.types[component.type] = {};
             }
 
             types[component.id] = component;
@@ -389,9 +389,10 @@
          */
         iterate: function (callback, scope) {
             scope = scope || this;
-            for (var componentId in this.components) {
-                if (this.components.hasOwnProperty(componentId)) {
-                    callback.call(scope, this.components[componentId]);
+            var components = this.components;
+            for (var componentId in components) {
+                if (components.hasOwnProperty(componentId)) {
+                    callback.call(scope, components[componentId]);
                 }
             }
         },
