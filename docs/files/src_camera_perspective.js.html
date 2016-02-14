@@ -94,6 +94,7 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -244,13 +245,13 @@
  @param [cfg.fovy=60.0] {Number} Field-of-view angle, in degrees, on Y-axis.
  @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
  @param [cfg.far=10000] {Number} Position of the far plane on the View-space Z-axis.
- @extends Component
+ @extends Projection
  */
 (function () {
 
     &quot;use strict&quot;;
 
-    XEO.Perspective = XEO.Component.extend({
+    XEO.Perspective = XEO.Projection.extend({
 
         type: &quot;XEO.Perspective&quot;,
 

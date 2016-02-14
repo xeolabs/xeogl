@@ -94,6 +94,7 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -188,8 +189,8 @@
  &lt;li&gt;Sub-classes of Transform are: {{#crossLink &quot;Translate&quot;}}{{/crossLink}},
  {{#crossLink &quot;Scale&quot;}}{{/crossLink}}, {{#crossLink &quot;Rotate&quot;}}{{/crossLink}}, and {{#crossLink &quot;Quaternion&quot;}}{{/crossLink}}&lt;/li&gt;
  &lt;li&gt;Instances of Transform and its sub-classes may be connected into hierarchies.&lt;/li&gt;
- &lt;li&gt;An {{#crossLink &quot;Entity&quot;}}{{/crossLink}} would be connected to a leaf Transform
- within a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.&lt;/li&gt;
+ &lt;li&gt;When an {{#crossLink &quot;Entity&quot;}}{{/crossLink}} or {{#crossLink &quot;Model&quot;}}{{/crossLink}} is connected to a leaf Transform
+ within a Transform hierarchy, it will be transformed by each Transform on the path up to the root, in that order.&lt;/li&gt;
  &lt;li&gt;See &lt;a href=&quot;./Shader.html#inputs&quot;&gt;Shader Inputs&lt;/a&gt; for the variables that Transform create within xeoEngine&#x27;s shaders.&lt;/li&gt;
  &lt;/ul&gt;
 
@@ -364,6 +365,21 @@
 
                 set: function (value) {
 
+                    // Disallow cycle
+
+                    if (value) {
+
+                        var id = this.id;
+
+                        for (var value2 = value; value2; value2 = value2._parent) {
+
+                            if (id === value2.id) {
+                                this.error(&quot;Not allowed to attach Transform as parent of itself - ignoring&quot;);
+                                return;
+                            }
+                        }
+                    }
+
                     // Unsubscribe from old parent&#x27;s events
 
                     if (this._parent &amp;&amp; (!value || value.id !== this._parent.id)) {
@@ -386,7 +402,8 @@
                     }
 
                     this._parentUpdated();
-                },
+                }
+                ,
 
                 get: function () {
                     return this._parent;

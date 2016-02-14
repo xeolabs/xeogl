@@ -94,6 +94,7 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -443,7 +444,7 @@
                      * @event camera
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;camera&quot;, value);
+                    this._setChild(&quot;XEO.Camera&quot;, &quot;camera&quot;, value);
 
                     var newCamera = this._children.camera;
 
@@ -482,7 +483,7 @@
                      * @event clips
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;clips&quot;, value);
+                    this._setChild(&quot;XEO.Clips&quot;, &quot;clips&quot;, value);
                 },
 
                 get: function () {
@@ -511,7 +512,7 @@
                      * @event colorTarget
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;colorTarget&quot;, value);
+                    this._setChild(&quot;XEO.ColorTarget&quot;, &quot;colorTarget&quot;, value);
                 },
 
                 get: function () {
@@ -541,7 +542,7 @@
                      * @event colorBuf
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;colorBuf&quot;, value);
+                    this._setChild(&quot;XEO.ColorBuf&quot;, &quot;colorBuf&quot;, value);
                 },
 
                 get: function () {
@@ -571,7 +572,7 @@
                      * @event depthTarget
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;depthTarget&quot;, value);
+                    this._setChild(&quot;XEO.DepthTarget&quot;, &quot;depthTarget&quot;, value);
                 },
 
                 get: function () {
@@ -601,7 +602,7 @@
                      * @event depthBuf
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;depthBuf&quot;, value);
+                    this._setChild(&quot;XEO.DepthBuf&quot;, &quot;depthBuf&quot;, value);
                 },
 
                 get: function () {
@@ -631,7 +632,7 @@
                      * @event visibility
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;visibility&quot;, value);
+                    this._setChild(&quot;XEO.Visibility&quot;, &quot;visibility&quot;, value);
                 },
 
                 get: function () {
@@ -661,7 +662,7 @@
                      * @event modes
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;modes&quot;, value);
+                    this._setChild(&quot;XEO.Modes&quot;, &quot;modes&quot;, value);
                 },
 
                 get: function () {
@@ -711,7 +712,7 @@
                      * @event geometry
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;geometry&quot;, value);
+                    this._setChild(&quot;XEO.Geometry&quot;, &quot;geometry&quot;, value);
 
                     var newGeometry = this._children.geometry;
 
@@ -754,7 +755,7 @@
                      * @event layer
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;layer&quot;, value);
+                    this._setChild(&quot;XEO.Layer&quot;, &quot;layer&quot;, value);
                 },
 
                 get: function () {
@@ -784,7 +785,7 @@
                      * @event lights
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;lights&quot;, value);
+                    this._setChild(&quot;XEO.Lights&quot;, &quot;lights&quot;, value);
                 },
 
                 get: function () {
@@ -814,7 +815,7 @@
                      * @event material
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;material&quot;, value);
+                    this._setChild(&quot;XEO.Material&quot;, &quot;material&quot;, value);
                 },
 
                 get: function () {
@@ -843,7 +844,7 @@
                      * @event morphTargets
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;morphTargets&quot;, value);
+                    this._setChild(&quot;XEO.MorphTargets&quot;, &quot;morphTargets&quot;, value);
                 },
 
                 get: function () {
@@ -873,7 +874,7 @@
                      * @event reflect
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;reflect&quot;, value);
+                    this._setChild(&quot;XEO.Reflect&quot;, &quot;reflect&quot;, value);
                 },
 
                 get: function () {
@@ -902,7 +903,7 @@
                      * @event shader
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;shader&quot;, value);
+                    this._setChild(&quot;XEO.Shader&quot;, &quot;shader&quot;, value);
                 },
 
                 get: function () {
@@ -932,7 +933,7 @@
                      * @event shaderParams
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;shaderParams&quot;, value);
+                    this._setChild(&quot;XEO.ShaderParams&quot;, &quot;shaderParams&quot;, value);
                 },
 
                 get: function () {
@@ -962,7 +963,7 @@
                      * @event stage
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;stage&quot;, value);
+                    this._setChild(&quot;XEO.Stage&quot;, &quot;stage&quot;, value);
                 },
 
                 get: function () {
@@ -998,7 +999,7 @@
 
                     var oldTransform = this._children.transform;
 
-                    if (oldTransform &amp;&amp; (!value || value.id !== oldTransform.id)) {
+                    if (oldTransform &amp;&amp; !XEO._isSameComponent(oldTransform, value)) {
                         oldTransform.off(this._onTransformUpdated);
                         oldTransform.off(this._onTransformDestroyed);
                     }
@@ -1010,7 +1011,7 @@
                      * @event transform
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;transform&quot;, value);
+                    this._setChild(&quot;XEO.Transform&quot;, &quot;transform&quot;, value);
 
                     // Subscribe to new Transform&#x27;s events
 
@@ -1040,7 +1041,7 @@
                                 });
                             });
 
-                        this._onTransformDestroyed = newTransform.on(&quot;destroyed&quot;,this._setWorldBoundaryDirty,this);
+                        this._onTransformDestroyed = newTransform.on(&quot;destroyed&quot;, this._setWorldBoundaryDirty, this);
                     }
                 },
 
@@ -1075,7 +1076,7 @@
                      * @event billboard
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;billboard&quot;, value);
+                    this._setChild(&quot;XEO.Billboard&quot;, &quot;billboard&quot;, value);
                 },
 
                 get: function () {
@@ -1110,7 +1111,7 @@
                      * @event stationary
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;stationary&quot;, value);
+                    this._setChild(&quot;XEO.Stationary&quot;, &quot;stationary&quot;, value);
                 },
 
                 get: function () {
@@ -1183,7 +1184,7 @@
 
                         var self = this;
 
-                       // this._setWorldBoundaryDirty();
+                        // this._setWorldBoundaryDirty();
 
                         this._worldBoundary = new XEO.Boundary3D(this.scene, {
 
@@ -1271,7 +1272,7 @@
 
                         var self = this;
 
-                   //     this._setViewBoundaryDirty();
+                        //     this._setViewBoundaryDirty();
 
                         this._viewBoundary = new XEO.Boundary3D(this.scene, {
 
@@ -1342,7 +1343,7 @@
 
                         var self = this;
 
-                     //   this._setCanvasBoundaryDirty();
+                        //   this._setCanvasBoundaryDirty();
 
                         this._canvasBoundary = new XEO.Boundary2D(this.scene, {
 

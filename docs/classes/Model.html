@@ -94,6 +94,7 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -197,8 +198,10 @@
 <ul><li>A Model begins loading as soon as it&#39;s <a href="../classes/Model.html#property_src" class="crosslink">src</a>
 property is set to the location of a valid glTF file.</li>
 <li>A Model keeps all its loaded components in a <a href="../classes/Collection.html" class="crosslink">Collection</a>.</li>
+<li>Like <a href="../classes/Entity.html" class="crosslink">Entities</a>, a Model can be attached to an animated and dynamically-editable
+modelling <a href="../classes/Transform.html" class="crosslink">Transform</a> hierarchy, to rotate, translate or scale it within the World-space coordinate system.</li>
 <li>You can set a Model&#39;s <a href="../classes/Model.html#property_src" class="crosslink">src</a> property to a new file path at any time,
-which will cause it to load components from the new file, after destroying any components loaded previously.</li>
+which will cause it to load components from the new file (destroying any components loaded previously).</li>
 </ul>
 
 <p><img src="../../../assets/images/Model.png"></img></p>
@@ -210,8 +213,7 @@ which will cause it to load components from the new file, after destroying any c
 </code></pre>
 <p>We can bind a callback, to get notification when the Model has loaded, which will
 fire immediately if the Model happens to be loaded already:</p>
-<pre class="code prettyprint"><code class="lang-javascript">gearboxModel.on("loaded",
-function() {
+<pre class="code prettyprint"><code class="lang-javascript">gearboxModel.on("loaded", function() {
         // Model has loaded!
     });
 </code></pre>
@@ -250,14 +252,69 @@ new XEO.Entity({
 </code></pre>
 <p>Now whenever we set the Model to a new file (see example below), the World-space boundary will automatically update accordingly, as will
 our boundary indicator <a href="../classes/Entity.html" class="crosslink">Entity</a>.</p>
+<h3 id="transforming-the-model">Transforming the Model</h3>
+<p>A Model can be attached to a modelling <a href="../classes/Transform.html" class="crosslink">Transform</a> hierarchy to transform it within
+the World-space coordinate system.</p>
+<p>The hierarchy can be attached on instantiation:</p>
+<pre class="code prettyprint"><code class="lang-javascript">gearboxModel = new XEO.Model({
+   src: "models/gltf/gearbox/gearbox_assy.gltf",
+
+   transform: new XEO.Rotate({
+       id: "spinY",
+       xyz: [0, 1, 0],
+       angle: 0,
+
+       parent: new XEO.Rotate({
+           id: "spinZ",
+           xyz: [0, 0, 1],
+           angle: 0
+       })
+   })
+});
+</code></pre>
+<p>Alternatively, you can attach the <a href="../classes/Transform.html" class="crosslink">Transform</a> hierarchy afterwards:</p>
+<pre class="code prettyprint"><code class="lang-javascript">gearboxModel.transform = new XEO.Rotate({
+       id: "spinY",
+       xyz: [0, 1, 0],
+       angle: 0,
+
+       parent: new XEO.Rotate({
+           id: "spinZ",
+           xyz: [0, 0, 1],
+           angle: 0
+       })
+   });
+</code></pre>
+<p>And of course, the hierarchy may be dynamically-editable, since everything in a xeoEngine scene is editable at
+runtime. Animating or updating the <a href="../classes/Transform.html" class="crosslink">Transform</a> hierarchy will automatically update the
+boundaries on the <a href="../classes/CollectionBoundary.html" class="crosslink">CollectionBoundary</a> in the previous example.</p>
+<p>You can access the <a href="../classes/Transform.html" class="crosslink">Transforms</a> by ID:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var scene = gearboxMode.scene;
+var spinY = scene.components["spinY"];
+var spinZ = scene.components["spinZ"];
+
+gearboxModel.scene.on("tick", function () {
+           spinY.angle += 0.1;
+           spinZ.angle += 0.2;
+       });
+</code></pre>
+<p>or by walking the <a href="../classes/Transform.html" class="crosslink">Transform</a> hierarchy:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var scene = gearboxMode.scene;
+var spinY = gearbox.transform;
+var spinZ = gearbox.transform.parent;
+
+gearboxModel.scene.on("tick", function () {
+           spinY.angle += 0.1;
+           spinZ.angle += 0.2;
+       });
+</code></pre>
 <h3 id="flying-the-camera-to-look-at-a-model">Flying the Camera to look at a Model</h3>
 <p>To position the Model entirely within view, we can use a <a href="../classes/CameraFlight.html" class="crosslink">CameraFlight</a> to fly the <a href="../classes/Camera.html" class="crosslink">Camera</a> (in this case the default, implicit one) to look at the World-space extents of our <a href="../classes/CollectionBoundary.html" class="crosslink">CollectionBoundary</a>:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var flight = new XEO.CameraFlight({
    duration: 1.5
 });
 
-flight.flyTo(collectionBoundary.worldBoundary,
-function() {
+flight.flyTo(collectionBoundary.worldBoundary, function() {
         // Optional callback to fire on arrival
     });
 </code></pre>
@@ -294,6 +351,10 @@ components it loaded:</p>
 
                     <ul class="index-list methods extends">
                             <li class="index-item method inherited">
+                                <a href="#method_create">create</a>
+
+                            </li>
+                            <li class="index-item method inherited">
                                 <a href="#method_destroy">destroy</a>
 
                             </li>
@@ -303,6 +364,10 @@ components it loaded:</p>
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_fire">fire</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_isType">isType</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -336,6 +401,10 @@ components it loaded:</p>
                                 <a href="#property_collection">collection</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_collection">collection</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_destroyed">destroyed</a>
 
@@ -364,12 +433,28 @@ components it loaded:</p>
                                 <a href="#property_src">src</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_src">src</a>
+
+                            </li>
                             <li class="index-item property inherited inherited">
                                 <a href="#property_string">string</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_transform">transform</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_transform">transform</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_type">type</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_types">types</a>
 
                             </li>
                     </ul>
@@ -389,7 +474,23 @@ components it loaded:</p>
 
                             </li>
                             <li class="index-item event">
+                                <a href="#event_loaded">loaded</a>
+
+                            </li>
+                            <li class="index-item event">
                                 <a href="#event_src">src</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_src">src</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_transform">transform</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_transform">transform</a>
 
                             </li>
                     </ul>
@@ -399,6 +500,122 @@ components it loaded:</p>
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
+<div id="method_create" class="method item inherited">
+    <h3 class="name"><code>create</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>type</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[cfg]</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[instanceId]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_create">Component</a>:
+        <a href="../files/src_component.js.html#l799"><code>src&#x2F;component.js:799</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+<p>You would typically use this method to conveniently instantiate components that you&#39;d want to
+share (ie. "instance") among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+<p>The method is given a component type and configuration, like so:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(XEO.PhongMaterial, {
+     diffuse: [1,0,0],
+     specular: [1,1,0]
+});
+</code></pre>
+<p>The first time you call this method for the given <code>type</code> and <code>instanceId</code>, this method will create the
+<a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, passing the given  attributes to the component&#39;s constructor.</p>
+<p>If you call this method again, specifying the same <code>type</code> and <code>instanceId</code>, the method will return the same
+component instance that it returned the first time, and will ignore the attributes:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, "myMaterial", { specular: [1,1,0] });
+</code></pre>
+<p>Each time you call this method with the same <code>type</code> and <code>instanceId</code>, the Scene will internally increment a
+reference count for the component instance. You can release the shared component instance with a call to
+Scene/putSharedComponent:method, and once you have released it as many
+times as you got it, the Scene will destroy the component.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">type</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>Component type - either a string like &quot;XEO.PhongMaterial&quot; or the actual
+constructor function, ie. XEO.PhongMaterial.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[cfg]</code>
+                        <span class="type"></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Configuration for the component instance - only used if this is the first time you are getting
+the component, ignored when reusing an existing instance.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[instanceId]</code>
+                        <span class="type">String | Number</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Identifies the shared component instance. Note that this is not used as the ID of the
+component - you can specify the component ID in the <code>cfg</code> parameter.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"></span>:
+            </div>
+        </div>
+
+
+</div>
 <div id="method_destroy" class="method item inherited">
     <h3 class="name"><code>destroy</code></h3>
 
@@ -415,7 +632,7 @@ components it loaded:</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l814"><code>src&#x2F;component.js:814</code></a>
+        <a href="../files/src_component.js.html#l999"><code>src&#x2F;component.js:999</code></a>
         </p>
 
 
@@ -427,6 +644,7 @@ components it loaded:</p>
 <p>Fires a <a href="../classes/Component.html#event_destroyed" class="crosslink">destroyed</a> event on this Component.</p>
 <p>Automatically disassociates this component from other components, causing them to fall back on any
 defaults that this component overrode on them.</p>
+<p>TODO: describe effect with respect to #create</p>
 
     </div>
 
@@ -456,7 +674,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_component.js.html#l505"><code>src&#x2F;component.js:505</code></a>
+        <a href="../files/src_component.js.html#l579"><code>src&#x2F;component.js:579</code></a>
         </p>
 
 
@@ -520,7 +738,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_component.js.html#l346"><code>src&#x2F;component.js:346</code></a>
+        <a href="../files/src_component.js.html#l420"><code>src&#x2F;component.js:420</code></a>
         </p>
 
 
@@ -578,6 +796,87 @@ any subsequent notifications on that location as they are made.</p>
 
 
 </div>
+<div id="method_isType" class="method item inherited">
+    <h3 class="name"><code>isType</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>type</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_isType">Component</a>:
+        <a href="../files/src_component.js.html#l359"><code>src&#x2F;component.js:359</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Tests if this component is of the given type, or is a subclass of the given type.</p>
+<p>The type may be given as either a string or a component constructor.</p>
+<p>This method works by walking up the inheritance type chain, which this component provides in
+property <a href="../classes/Component.html#property_types" class="crosslink">types</a>, returning true as soon as one of the type strings in
+the chain matches the given type, of false if none match.</p>
+<h4 id="examples-">Examples:</h4>
+<pre class="code prettyprint"><code class="lang-javascript">var myRotate = new XEO.Rotate({ ... });
+
+myRotate.isType(XEO.Component); // Returns true for all XEO components
+myRotate.isType("XEO.Component"); // Returns true for all XEO components
+myRotate.isType(XEO.Rotate); // Returns true
+myRotate.isType(XEO.Transform); // Returns true
+myRotate.isType("XEO.Transform"); // Returns true
+myRotate.isType(XEO.Entity); // Returns false, because XEO.Rotate does not (even indirectly) extend XEO.Entity
+</code></pre>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">type</code>
+                        <span class="type">String | Function</span>
+
+
+                    <div class="param-description">
+                        <p>Component type to compare with, eg &quot;XEO.PhongMaterial&quot;, or a XEO component constructor.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Boolean</span>:
+                    <p>True if this component is of given type or is subclass of the given type.</p>
+
+            </div>
+        </div>
+
+
+</div>
 <div id="method_log" class="method item inherited">
     <h3 class="name"><code>log</code></h3>
 
@@ -600,7 +899,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_component.js.html#l460"><code>src&#x2F;component.js:460</code></a>
+        <a href="../files/src_component.js.html#l534"><code>src&#x2F;component.js:534</code></a>
         </p>
 
 
@@ -658,7 +957,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_component.js.html#l417"><code>src&#x2F;component.js:417</code></a>
+        <a href="../files/src_component.js.html#l491"><code>src&#x2F;component.js:491</code></a>
         </p>
 
 
@@ -723,7 +1022,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_component.js.html#l387"><code>src&#x2F;component.js:387</code></a>
+        <a href="../files/src_component.js.html#l461"><code>src&#x2F;component.js:461</code></a>
         </p>
 
 
@@ -817,7 +1116,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_component.js.html#l439"><code>src&#x2F;component.js:439</code></a>
+        <a href="../files/src_component.js.html#l513"><code>src&#x2F;component.js:513</code></a>
         </p>
 
 
@@ -897,7 +1196,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_component.js.html#l485"><code>src&#x2F;component.js:485</code></a>
+        <a href="../files/src_component.js.html#l559"><code>src&#x2F;component.js:559</code></a>
         </p>
 
 
@@ -950,7 +1249,37 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_importing_model.js.html#l215"><code>src&#x2F;importing&#x2F;model.js:215</code></a>
+                            <a href="../files/src_importing_model-scratch.js.html#l249"><code>src&#x2F;importing&#x2F;model-scratch.js:249</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>A <a href="../classes/Collection.html" class="crosslink">Collection</a> containing the scene components loaded by this Model.</p>
+                    <p>Whenever <a href="../classes/Model.html#property_src" class="crosslink">src</a> is set to the location of a valid glTF file,
+                    and once the file has been loaded, this <a href="../classes/Collection.html" class="crosslink">Collection</a> will contain whatever
+                    components were loaded from that file.</p>
+                    <p>Note that prior to loading the file, the Model will destroy any components in the <a href="../classes/Collection.html" class="crosslink">Collection</a>.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_collection" class="property item">
+                        <h3 class="name"><code>collection</code></h3>
+                        <span class="type"><a href="../classes/Collection.html" class="crosslink">Collection</a></span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_importing_model.js.html#l336"><code>src&#x2F;importing&#x2F;model.js:336</code></a>
                             </p>
                     
                     
@@ -1056,7 +1385,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l755"><code>src&#x2F;component.js:755</code></a>
+                            <a href="../files/src_component.js.html#l937"><code>src&#x2F;component.js:937</code></a>
                             </p>
                     
                     
@@ -1132,7 +1461,35 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_importing_model.js.html#l156"><code>src&#x2F;importing&#x2F;model.js:156</code></a>
+                            <a href="../files/src_importing_model-scratch.js.html#l156"><code>src&#x2F;importing&#x2F;model-scratch.js:156</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Path to the glTF file.</p>
+                    <p>You can set this to a new file path at any time, which will cause the Model to load components from
+                    the new file (after first destroying any components loaded from a previous file path).</p>
+                    <p>Fires a <a href="../classes/Model.html#event_src" class="crosslink">src</a> event on change.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_src" class="property item">
+                        <h3 class="name"><code>src</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_importing_model.js.html#l235"><code>src&#x2F;importing&#x2F;model.js:235</code></a>
                             </p>
                     
                     
@@ -1164,7 +1521,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l782"><code>src&#x2F;component.js:782</code></a>
+                            <a href="../files/src_component.js.html#l965"><code>src&#x2F;component.js:965</code></a>
                             </p>
                     
                     
@@ -1172,6 +1529,65 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>String containing the serialized JSON state of this Component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_transform" class="property item">
+                        <h3 class="name"><code>transform</code></h3>
+                        <span class="type"><a href="../classes/Transform.html" class="crosslink">Transform</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_importing_model-scratch.js.html#l215"><code>src&#x2F;importing&#x2F;model-scratch.js:215</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Local-to-World-space (modelling) <a href="../classes/Transform.html" class="crosslink">Transform</a> attached to this Model.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Model.</p>
+                    <p>Internally, the given <a href="../classes/Transform.html" class="crosslink">Transform</a> will be inserted above any
+                    <a href="../classes/Transform.html" class="crosslink">Transforms</a> that the Model attaches to its <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+                    <p>Fires an <a href="../classes/Model.html#event_transform" class="crosslink">transform</a> event on change.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_transform" class="property item">
+                        <h3 class="name"><code>transform</code></h3>
+                        <span class="type"><a href="../classes/Transform.html" class="crosslink">Transform</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_importing_model.js.html#l356"><code>src&#x2F;importing&#x2F;model.js:356</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Local-to-World-space (modelling) <a href="../classes/Transform.html" class="crosslink">Transform</a> attached to this Model.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Model.</p>
+                    <p>Internally, the given <a href="../classes/Transform.html" class="crosslink">Transform</a> will be inserted above each top-most
+                    <a href="../classes/Transform.html" class="crosslink">Transform</a> that the Model attaches to
+                    its <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+                    <p>Fires an <a href="../classes/Model.html#event_transform" class="crosslink">transform</a> event on change.</p>
                     
                         </div>
                     
@@ -1190,7 +1606,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_type">Component</a>:
-                            <a href="../files/src_component.js.html#l324"><code>src&#x2F;component.js:324</code></a>
+                            <a href="../files/src_component.js.html#l326"><code>src&#x2F;component.js:326</code></a>
                             </p>
                     
                     
@@ -1201,6 +1617,38 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     <p>This is used when <a href="Scene.html#savingAndLoading">loading Scenes from JSON</a>, and is included in the JSON
                     representation of this Component, so that this class may be instantiated when loading it from the JSON representation.</p>
                     <p>For example: &quot;XEO.AmbientLight&quot;, &quot;XEO.ColorTarget&quot;, &quot;XEO.Lights&quot; etc.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_types" class="property item inherited">
+                        <h3 class="name"><code>types</code></h3>
+                        <span class="type">Array of String</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_types">Component</a>:
+                            <a href="../files/src_component.js.html#l340"><code>src&#x2F;component.js:340</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>An array of strings that indicates the types within this component&#39;s inheritance hierarchy.</p>
+                    <p>For example, if this component is a <a href="../classes/Rotate.html" class="crosslink">Rotate</a>, which
+                    extends <a href="../classes/Transform.html" class="crosslink">Transform</a>, which in turn extends <a href="../classes/Component.html" class="crosslink">Component</a>,
+                    then this property will have the value:</p>
+                    <pre class="code prettyprint"><code class="lang-json">["XEO.Component", "XEO.Transform", "XEO.Rotate"]
+                    </code></pre>
+                    <p>Note that the chain is ordered downwards in the hierarchy, ie. from super-class down to sub-class.</p>
                     
                         </div>
                     
@@ -1224,7 +1672,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l846"><code>src&#x2F;component.js:846</code></a>
+                            <a href="../files/src_component.js.html#l1046"><code>src&#x2F;component.js:1046</code></a>
                             </p>
                     
                     
@@ -1249,7 +1697,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_importing_model.js.html#l194"><code>src&#x2F;importing&#x2F;model.js:194</code></a>
+                            <a href="../files/src_importing_model-scratch.js.html#l194"><code>src&#x2F;importing&#x2F;model-scratch.js:194</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Model has finished loading components from the glTF file
+                    specified by <a href="../classes/Model.html#property_src" class="crosslink">src</a>.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="event_loaded" class="events item">
+                        <h3 class="name"><code>loaded</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_importing_model.js.html#l315"><code>src&#x2F;importing&#x2F;model.js:315</code></a>
                             </p>
                     
                     
@@ -1275,7 +1749,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_importing_model.js.html#l202"><code>src&#x2F;importing&#x2F;model.js:202</code></a>
+                            <a href="../files/src_importing_model-scratch.js.html#l202"><code>src&#x2F;importing&#x2F;model-scratch.js:202</code></a>
                             </p>
                     
                     
@@ -1283,6 +1757,132 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this Model&#39;s <a href="../classes/Model.html#property_src" class="crosslink">src</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_src" class="events item">
+                        <h3 class="name"><code>src</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_importing_model.js.html#l323"><code>src&#x2F;importing&#x2F;model.js:323</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Model&#39;s <a href="../classes/Model.html#property_src" class="crosslink">src</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_transform" class="events item">
+                        <h3 class="name"><code>transform</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_importing_model-scratch.js.html#l232"><code>src&#x2F;importing&#x2F;model-scratch.js:232</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Model&#39;s <a href="../classes/Model.html#property_transform" class="crosslink">transform</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_transform" class="events item">
+                        <h3 class="name"><code>transform</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_importing_model.js.html#l374"><code>src&#x2F;importing&#x2F;model.js:374</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Model&#39;s <a href="../classes/Model.html#property_transform" class="crosslink">transform</a> property changes.</p>
                     
                         </div>
                     

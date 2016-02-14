@@ -280,6 +280,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/camera/projection.js": {
+            "name": "src/camera/projection.js",
+            "modules": {},
+            "classes": {
+                "Projection": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "src/canvas/_module.js": {
             "name": "src/canvas/_module.js",
             "modules": {
@@ -650,6 +659,13 @@
             "modules": {
                 "importing": 1
             },
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/importing/model-scratch.js": {
+            "name": "src/importing/model-scratch.js",
+            "modules": {},
             "classes": {},
             "fors": {},
             "namespaces": {}
@@ -1098,6 +1114,7 @@
                 "Lookat": 1,
                 "Ortho": 1,
                 "Perspective": 1,
+                "Projection": 1,
                 "Canvas": 1,
                 "Clip": 1,
                 "Clips": 1,
@@ -1224,14 +1241,15 @@
                 "Frustum": 1,
                 "Lookat": 1,
                 "Ortho": 1,
-                "Perspective": 1
+                "Perspective": 1,
+                "Projection": 1
             },
             "fors": {},
             "is_submodule": 1,
             "namespaces": {},
             "module": "XEO",
             "namespace": "",
-            "file": "src/camera/perspective.js",
+            "file": "src/camera/projection.js",
             "line": 1,
             "description": "Camera components."
         },
@@ -1969,7 +1987,7 @@
             "namespace": "",
             "file": "src/camera/camera.js",
             "line": 3,
-            "description": "A **Camera** defines a viewpoint on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n## Overview\n\n<ul>\n\n<li> A Camera is composed of a viewing transform and a projection transform.</li>\n\n<li>The viewing transform is usually a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.</li>\n\n<li>The projection transform may be an {{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}}\nor {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.</li>\n\n<li> By default, each Camera is composed of its parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/view:property\"}}{{/crossLink}} transform,\n(which is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}) and default\n{{#crossLink \"Scene/project:property\"}}{{/crossLink}} transform (which is a {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}).\nYou would override those with your own transform components as necessary.</li>\n\n</ul>\n\n<img src=\"../../../assets/images/Camera.png\"></img>\n\n## Example\n\nIn the example below, we have\n\n<ul>\n<li>a {{#crossLink \"Lookat\"}}{{/crossLink}} view transform,</li>\n<li>a {{#crossLink \"Perspective\"}}{{/crossLink}} projection transform,</li>\n<li>a Camera attached to the {{#crossLink \"Lookat\"}}{{/crossLink}} and {{#crossLink \"Perspective\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>an {{#crossLink \"Entity\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar lookat = new XEO.Lookat(scene, {\n       eye: [0, 0, -10],\n       look: [0, 0, 0],\n       up: [0, 1, 0]\n   });\n\nvar perspective = new XEO.Lookat(scene, {\n       fovy: 60,\n       near: 0.1,\n       far: 1000\n   });\n\nvar camera = new XEO.Camera(scene, {\n       view: lookat,\n       project: perspective\n   });\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\nvar entity = new XEO.Entity(scene, {\n       camera: camera,\n       geometry: geometry\n   });\n\nscene.on(\"tick\", function () {\n      camera.view.rotateEyeY(0.5);\n      camera.view.rotateEyeX(0.3);\n   });\n````",
+            "description": "A **Camera** defines a viewpoint on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n## Overview\n\n<ul>\n\n<li> A Camera is composed of a viewing transform and a {{#crossLink \"Projection\"}}{{/crossLink}}.</li>\n\n<li>The viewing transform is usually a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.</li>\n\n<li>The {{#crossLink \"Projection\"}}{{/crossLink}} may be an {{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}}\nor {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.</li>\n\n<li> By default, each Camera is composed of its parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/view:property\"}}{{/crossLink}} transform,\n(which is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}) and default\n{{#crossLink \"Scene/project:property\"}}{{/crossLink}} transform (which is a {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}).\nYou would override those with your own transform components as necessary.</li>\n\n</ul>\n\n<img src=\"../../../assets/images/Camera.png\"></img>\n\n## Example\n\nIn the example below, we have\n\n<ul>\n<li>a {{#crossLink \"Lookat\"}}{{/crossLink}} view transform,</li>\n<li>a {{#crossLink \"Perspective\"}}{{/crossLink}} projection transform,</li>\n<li>a Camera attached to the {{#crossLink \"Lookat\"}}{{/crossLink}} and {{#crossLink \"Perspective\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>an {{#crossLink \"Entity\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar lookat = new XEO.Lookat(scene, {\n       eye: [0, 0, -10],\n       look: [0, 0, 0],\n       up: [0, 1, 0]\n   });\n\nvar perspective = new XEO.Lookat(scene, {\n       fovy: 60,\n       near: 0.1,\n       far: 1000\n   });\n\nvar camera = new XEO.Camera(scene, {\n       view: lookat,\n       project: perspective\n   });\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\nvar entity = new XEO.Entity(scene, {\n       camera: camera,\n       geometry: geometry\n   });\n\nscene.on(\"tick\", function () {\n      camera.view.rotateEyeY(0.5);\n      camera.view.rotateEyeX(0.3);\n   });\n````",
             "submodule": "camera",
             "is_constructor": 1,
             "params": [
@@ -2006,7 +2024,7 @@
                         {
                             "name": "project",
                             "description": "ID or instance of a projection transform\nwithin the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/project:property\"}}{{/crossLink}} transform,\nwhich is a {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.",
-                            "type": "String|XEO.Perspective|XEO.Ortho|XEO.Frustum",
+                            "type": "String|XEO.Projection",
                             "optional": true
                         }
                     ]
@@ -2322,6 +2340,58 @@
                             "type": "Number",
                             "optional": true,
                             "optdefault": "10000"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Projection"
+        },
+        "Projection": {
+            "name": "Projection",
+            "shortname": "Projection",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/camera/projection.js",
+            "line": 1,
+            "description": "A **Projection** component defines a projection transformation.\n\n## Overview\n\n<ul>\n<li>Projection is the base class for (at least) the {{#crossLink \"Perspective\"}}{{/crossLink}} and {{#crossLink \"Ortho\"}}{{/crossLink}} types.</li>\n<li>{{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair Projections with {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} components.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Projection components create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Projection.png\"></img>\n\n## Example\n\nIn this example we have an {{#crossLink \"Entity\"}}Entity{{/crossLink}} that's attached to a\n{{#crossLink \"Camera\"}}Camera{{/crossLink}} that has a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} and a\nProjection:\n\n````Javascript\nvar entity = new XEO.Entity({\n\n       camera: new XEO.Camera({\n\n           view: new XEO.Lookat({\n               eye: [0, 0, -4],\n               look: [0, 0, 0],\n               up: [0, 1, 0]\n           }),\n\n           project: new XEO.Projection({\n               matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]\n           })\n       }),\n\n       geometry: new XEO.BoxGeometry()\n   });\n\nvar scene = entity.scene;\nvar view = entity.camera.view;\n\nscene.on(\"tick\",\n   function () {\n       view.rotateEyeY(0.5);\n       view.rotateEyeX(0.3);\n});\n````",
+            "submodule": "camera",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this Projection within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Projection.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "matrix",
+                            "description": "One-dimensional, sixteen element array of elements for the Transform, an identity matrix by default.",
+                            "type": "Array of Number",
+                            "optional": true,
+                            "optdefault": "[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]"
                         }
                     ]
                 }
@@ -4339,7 +4409,7 @@
             "namespace": "",
             "file": "src/importing/model.js",
             "line": 7,
-            "description": "A **Model** loads content from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file into its parent {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n<ul><li>A Model begins loading as soon as it's {{#crossLink \"Model/src:property\"}}{{/crossLink}}\nproperty is set to the location of a valid glTF file.</li>\n<li>A Model keeps all its loaded components in a {{#crossLink \"Collection\"}}{{/crossLink}}.</li>\n<li>You can set a Model's {{#crossLink \"Model/src:property\"}}{{/crossLink}} property to a new file path at any time,\nwhich will cause it to load components from the new file, after destroying any components loaded previously.</li>\n</ul>\n\n<img src=\"../../../assets/images/Model.png\"></img>\n\n### Loading a glTF file\n\nFirst, create a Model, which immediately loads a glTF model into its {{#crossLink \"Scene\"}}{{/crossLink}} (which in this case is the default {{#crossLink \"Scene\"}}{{/crossLink}}, since we didn't explicitly configure the Model with one):\n\n````javascript\nvar gearboxModel = new XEO.Model({\n   src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n````\n\nWe can bind a callback, to get notification when the Model has loaded, which will\nfire immediately if the Model happens to be loaded already:\n\n````javascript\ngearboxModel.on(\"loaded\",\nfunction() {\n        // Model has loaded!\n    });\n````\n\n### Iterating over loaded components\n\nThe Model's {{#crossLink \"Collection\"}}{{/crossLink}} which now contains all the scene components\nit created while loading the glTF file.\n\nLet's iterate over the {{#crossLink \"Collection\"}}{{/crossLink}} and log the ID of each\n{{#crossLink \"Entity\"}}{{/crossLink}} we that find in there:\n\n````javascript\ngearboxModel.collection.iterate(function(c) {\n    if (c.type === \"XEO.Entity\") {\n        this.log(\"Entity found: \" + c.id);\n    }\n});\n````\n\n### Getting the boundary of a Model\n\nTo visualize the World-space boundary of a Model, we can create a {{#crossLink \"CollectionBoundary\"}}{{/crossLink}},\ngenerate a {{#crossLink \"BoundaryGeometry\"}}{{/crossLink}} from that, then create an {{#crossLink \"Entity\"}}{{/crossLink}}\nto visualize the {{#crossLink \"BoundaryGeometry\"}}{{/crossLink}}:\n\n````javascript\nvar collectionBoundary = new XEO.CollectionBoundary({\n    collection: model.collection\n});\n\nvar boundaryGeometry = new XEO.BoundaryGeometry({\n    boundary: collectionBoundary.worldBoundary\n});\n\n// The Entity will be a red wireframe box indicating the\n// extents of the boundary\n\nnew XEO.Entity({\n    geometry: boundaryGeometry,\n    material: new XEO.PhongMaterial({\n        diffuse: [1,0,0]\n    })\n});\n````\n\nNow whenever we set the Model to a new file (see example below), the World-space boundary will automatically update accordingly, as will\nour boundary indicator {{#crossLink \"Entity\"}}{{/crossLink}}.\n\n### Flying the Camera to look at a Model\n\nTo position the Model entirely within view, we can use a {{#crossLink \"CameraFlight\"}}{{/crossLink}} to fly the {{#crossLink \"Camera\"}}{{/crossLink}} (in this case the default, implicit one) to look at the World-space extents of our {{#crossLink \"CollectionBoundary\"}}{{/crossLink}}:\n\n````javascript\nvar flight = new XEO.CameraFlight({\n   duration: 1.5\n});\n\nflight.flyTo(collectionBoundary.worldBoundary,\nfunction() {\n        // Optional callback to fire on arrival\n    });\n\n````\n\n### Switching to a different glTF file\n\nLet's set the Model to a different file path:\n\n````javascript\ngearboxModel.src = \"models/gltf/buggy/buggy.gltf\"\n````\n\nOnce loaded, the {{#crossLink \"Collection\"}}{{/crossLink}} will then contain an entirely different collection of scene\ncomponents, created from this new glTF file.\n\n### Destroying a Model\n\nFinally, a Model manages the lifecycle of it's components. Therefore, destroying a Model also destroys all the\ncomponents it loaded:\n\n````javascript\ngearboxModel.destroy();\n````",
+            "description": "A **Model** loads content from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file into its parent {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n<ul><li>A Model begins loading as soon as it's {{#crossLink \"Model/src:property\"}}{{/crossLink}}\nproperty is set to the location of a valid glTF file.</li>\n<li>A Model keeps all its loaded components in a {{#crossLink \"Collection\"}}{{/crossLink}}.</li>\n<li>Like {{#crossLink \"Entity\"}}Entities{{/crossLink}}, a Model can be attached to an animated and dynamically-editable\nmodelling {{#crossLink \"Transform\"}}{{/crossLink}} hierarchy, to rotate, translate or scale it within the World-space coordinate system.</li>\n<li>You can set a Model's {{#crossLink \"Model/src:property\"}}{{/crossLink}} property to a new file path at any time,\nwhich will cause it to load components from the new file (destroying any components loaded previously).</li>\n</ul>\n\n<img src=\"../../../assets/images/Model.png\"></img>\n\n### Loading a glTF file\n\nFirst, create a Model, which immediately loads a glTF model into its {{#crossLink \"Scene\"}}{{/crossLink}} (which in this case is the default {{#crossLink \"Scene\"}}{{/crossLink}}, since we didn't explicitly configure the Model with one):\n\n````javascript\nvar gearboxModel = new XEO.Model({\n   src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n````\n\nWe can bind a callback, to get notification when the Model has loaded, which will\nfire immediately if the Model happens to be loaded already:\n\n````javascript\ngearboxModel.on(\"loaded\", function() {\n        // Model has loaded!\n    });\n````\n\n### Iterating over loaded components\n\nThe Model's {{#crossLink \"Collection\"}}{{/crossLink}} which now contains all the scene components\nit created while loading the glTF file.\n\nLet's iterate over the {{#crossLink \"Collection\"}}{{/crossLink}} and log the ID of each\n{{#crossLink \"Entity\"}}{{/crossLink}} we that find in there:\n\n````javascript\ngearboxModel.collection.iterate(function(c) {\n    if (c.type === \"XEO.Entity\") {\n        this.log(\"Entity found: \" + c.id);\n    }\n});\n````\n\n### Getting the boundary of a Model\n\nTo visualize the World-space boundary of a Model, we can create a {{#crossLink \"CollectionBoundary\"}}{{/crossLink}},\ngenerate a {{#crossLink \"BoundaryGeometry\"}}{{/crossLink}} from that, then create an {{#crossLink \"Entity\"}}{{/crossLink}}\nto visualize the {{#crossLink \"BoundaryGeometry\"}}{{/crossLink}}:\n\n````javascript\nvar collectionBoundary = new XEO.CollectionBoundary({\n    collection: model.collection\n});\n\nvar boundaryGeometry = new XEO.BoundaryGeometry({\n    boundary: collectionBoundary.worldBoundary\n});\n\n// The Entity will be a red wireframe box indicating the\n// extents of the boundary\n\nnew XEO.Entity({\n    geometry: boundaryGeometry,\n    material: new XEO.PhongMaterial({\n        diffuse: [1,0,0]\n    })\n});\n````\n\nNow whenever we set the Model to a new file (see example below), the World-space boundary will automatically update accordingly, as will\nour boundary indicator {{#crossLink \"Entity\"}}{{/crossLink}}.\n\n### Transforming the Model\n\nA Model can be attached to a modelling {{#crossLink \"Transform\"}}{{/crossLink}} hierarchy to transform it within\nthe World-space coordinate system.\n\nThe hierarchy can be attached on instantiation:\n\n````javascript\ngearboxModel = new XEO.Model({\n   src: \"models/gltf/gearbox/gearbox_assy.gltf\",\n\n   transform: new XEO.Rotate({\n       id: \"spinY\",\n       xyz: [0, 1, 0],\n       angle: 0,\n\n       parent: new XEO.Rotate({\n           id: \"spinZ\",\n           xyz: [0, 0, 1],\n           angle: 0\n       })\n   })\n});\n````\n\nAlternatively, you can attach the {{#crossLink \"Transform\"}}{{/crossLink}} hierarchy afterwards:\n\n````javascript\ngearboxModel.transform = new XEO.Rotate({\n       id: \"spinY\",\n       xyz: [0, 1, 0],\n       angle: 0,\n\n       parent: new XEO.Rotate({\n           id: \"spinZ\",\n           xyz: [0, 0, 1],\n           angle: 0\n       })\n   });\n````\n\nAnd of course, the hierarchy may be dynamically-editable, since everything in a xeoEngine scene is editable at\nruntime. Animating or updating the {{#crossLink \"Transform\"}}{{/crossLink}} hierarchy will automatically update the\nboundaries on the {{#crossLink \"CollectionBoundary\"}}{{/crossLink}} in the previous example.\n\nYou can access the {{#crossLink \"Transform\"}}Transforms{{/crossLink}} by ID:\n\n````javascript\nvar scene = gearboxMode.scene;\nvar spinY = scene.components[\"spinY\"];\nvar spinZ = scene.components[\"spinZ\"];\n\ngearboxModel.scene.on(\"tick\", function () {\n           spinY.angle += 0.1;\n           spinZ.angle += 0.2;\n       });\n````\n\nor by walking the {{#crossLink \"Transform\"}}{{/crossLink}} hierarchy:\n\n````javascript\nvar scene = gearboxMode.scene;\nvar spinY = gearbox.transform;\nvar spinZ = gearbox.transform.parent;\n\ngearboxModel.scene.on(\"tick\", function () {\n           spinY.angle += 0.1;\n           spinZ.angle += 0.2;\n       });\n````\n\n### Flying the Camera to look at a Model\n\nTo position the Model entirely within view, we can use a {{#crossLink \"CameraFlight\"}}{{/crossLink}} to fly the {{#crossLink \"Camera\"}}{{/crossLink}} (in this case the default, implicit one) to look at the World-space extents of our {{#crossLink \"CollectionBoundary\"}}{{/crossLink}}:\n\n````javascript\nvar flight = new XEO.CameraFlight({\n   duration: 1.5\n});\n\nflight.flyTo(collectionBoundary.worldBoundary, function() {\n        // Optional callback to fire on arrival\n    });\n\n````\n\n### Switching to a different glTF file\n\nLet's set the Model to a different file path:\n\n````javascript\ngearboxModel.src = \"models/gltf/buggy/buggy.gltf\"\n````\n\nOnce loaded, the {{#crossLink \"Collection\"}}{{/crossLink}} will then contain an entirely different collection of scene\ncomponents, created from this new glTF file.\n\n### Destroying a Model\n\nFinally, a Model manages the lifecycle of it's components. Therefore, destroying a Model also destroys all the\ncomponents it loaded:\n\n````javascript\ngearboxModel.destroy();\n````",
             "submodule": "importing",
             "extends": "Component"
         },
@@ -5587,7 +5657,7 @@
             "namespace": "",
             "file": "src/rendering/modes.js",
             "line": 1,
-            "description": "A **Modes** toggles various xeoEngine modes and capabilities for attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n## Overview\n\n<ul>\n\n<li>Though the rendering modes are defined by various different components attached to the {{#crossLink \"Entity\"}}Entities{{/crossLink}},\nModes components provide a single point through which you can toggle them on or off.</li>\n\n<li>A Modes may be shared among multiple {{#crossLink \"Entity\"}}Entities{{/crossLink}} to toggle\nrendering modes for them as a group.</li>\n\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Modes create within xeoEngine's shaders.</li>\n\n</ul>\n\n<img src=\"../../../assets/images/Modes.png\"></img>\n\n## Example\n\nIn this example we have a Modes that toggles rendering modes for\ntwo {{#crossLink \"Entity\"}}Entities{{/crossLink}}. The properties of the Modes are initialised to their\ndefault values.\n\n````javascript\nvar scene = new XEO.Scene();\n\n// Create a Modes with default properties\nvar modes = new XEO.Modes(scene, {\n   pickable: true,             // Enable picking\n   clipping true,              // Enable effect of XEO.Clip components\n   transparent : false,        // Disable transparency\n   backfaces : true,           // Render backfaces\n   frontface : \"ccw\"\n});\n\n// Create two Entities whose rendering modes will be controlled by our Modes\n\nvar entity1 = new XEO.Entity(scene, {\n      modes: modes\n});\n\nvar entity2 = new XEO.Entity(scene, {\n      modes: modes\n});\n\n// Subscribe to change on the Modes' \"backfaces\" property\nvar handle = modes.on(\"backfaces\", function(value) {\n      //...\n});\n\n// Hide backfaces on our Entities by flipping the Modes' \"backfaces\" property,\n// which will also call our handler\nmodes.backfaces = false;\n\n// Unsubscribe from the Modes again\nmodes.off(handle);\n\n// When we destroy our Modes, the Entities will fall back\n// on the Scene's default Modes instance\nmodes.destroy();\n\n````",
+            "description": "A **Modes** toggles various xeoEngine modes and capabilities for attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n## Overview\n\n<ul>\n\n<li>Though the rendering modes are defined by various different components attached to the {{#crossLink \"Entity\"}}Entities{{/crossLink}},\nModes components provide a single point through which you can toggle them on or off.</li>\n\n<li>A Modes may be shared among multiple {{#crossLink \"Entity\"}}Entities{{/crossLink}} to toggle\nrendering modes for them as a group.</li>\n\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Modes create within xeoEngine's shaders.</li>\n\n</ul>\n\n<img src=\"../../../assets/images/Modes.png\"></img>\n\n## Example\n\nIn this example we have a Modes that toggles rendering modes for\ntwo {{#crossLink \"Entity\"}}Entities{{/crossLink}}. The properties of the Modes are initialised to their\ndefault values.\n\n````javascript\nvar scene = new XEO.Scene();\n\n// Create a Modes with default properties\nvar modes = new XEO.Modes(scene, {\n   pickable: true,             // Enable picking\n   clippable true,              // Enable effect of XEO.Clip components\n   transparent : false,        // Disable transparency\n   backfaces : true,           // Render backfaces\n   frontface : \"ccw\"\n});\n\n// Create two Entities whose rendering modes will be controlled by our Modes\n\nvar entity1 = new XEO.Entity(scene, {\n      modes: modes\n});\n\nvar entity2 = new XEO.Entity(scene, {\n      modes: modes\n});\n\n// Subscribe to change on the Modes' \"backfaces\" property\nvar handle = modes.on(\"backfaces\", function(value) {\n      //...\n});\n\n// Hide backfaces on our Entities by flipping the Modes' \"backfaces\" property,\n// which will also call our handler\nmodes.backfaces = false;\n\n// Unsubscribe from the Modes again\nmodes.off(handle);\n\n// When we destroy our Modes, the Entities will fall back\n// on the Scene's default Modes instance\nmodes.destroy();\n\n````",
             "submodule": "rendering",
             "is_constructor": 1,
             "params": [
@@ -5623,8 +5693,8 @@
                             "optdefault": "true"
                         },
                         {
-                            "name": "clipping",
-                            "description": "Whether to enable clipping by {{#crossLink \"Clips\"}}{{/crossLink}}.",
+                            "name": "clippable",
+                            "description": "Whether to enable clippable by {{#crossLink \"Clips\"}}{{/crossLink}}.",
                             "type": "Boolean",
                             "optional": true,
                             "optdefault": "true"
@@ -5880,7 +5950,7 @@
             "namespace": "",
             "file": "src/skyboxes/skybox.js",
             "line": 1,
-            "description": "A **Skybox** is a textured box that does not translate with respect to the \n {{#crossLink \"Lookat\"}}viewing transform{{/crossLink}}, to a provide the appearance of a background \n for associated {{#crossLink \"Entities\"}}Entities{{/crossLink}}.\n## Overview\nTODO\n## Example\n````javascript\n // A bunch of random cube Entities\nfor (var i = 0; i < 20; i++) {\n       new XEO.Entity({\n            transform: new XEO.Translate({\n                xyz: [\n                    Math.random() * 15 - 7,\n                    Math.random() * 15 - 7,\n                    Math.random() * 15 - 7\n                ]\n            }),\n            material: new XEO.PhongMaterial({\n                diffuse: [\n                    Math.random(),\n                    Math.random(),\n                    Math.random()\n                ]\n            })\n        });\n    }\n// A Skybox that wraps our Entities in a cloudy background\nvar skybox = new XEO.Skybox({\n        src: \"textures/skybox/miramarClouds.jpg\",\n        size: 1000 // Default\n    });\n// Move the camera back a bit\nskybox.scene.camera.view.eye = [0, 0, -30];\n// Slowly orbit the camera on each frame\nskybox.scene.on(\"tick\",\n     function () {\n         skybox.scene.camera.view.rotateEyeY(0.2);\n     });\n// Allow user camera control\nnew XEO.CameraControl();\n ````",
+            "description": "A **Skybox** is a textured box that does not translate with respect to the\n {{#crossLink \"Lookat\"}}viewing transform{{/crossLink}}, to a provide the appearance of a background\n for associated {{#crossLink \"Entities\"}}Entities{{/crossLink}}.\n## Overview\nTODO\n## Example\n````javascript\n // A bunch of random cube Entities\nfor (var i = 0; i < 20; i++) {\n       new XEO.Entity({\n            transform: new XEO.Translate({\n                xyz: [\n                    Math.random() * 15 - 7,\n                    Math.random() * 15 - 7,\n                    Math.random() * 15 - 7\n                ]\n            }),\n            material: new XEO.PhongMaterial({\n                diffuse: [\n                    Math.random(),\n                    Math.random(),\n                    Math.random()\n                ]\n            })\n        });\n    }\n// A Skybox that wraps our Entities in a cloudy background\nvar skybox = new XEO.Skybox({\n        src: \"textures/skybox/miramarClouds.jpg\",\n        size: 1000 // Default\n    });\n// Move the camera back a bit\nskybox.scene.camera.view.eye = [0, 0, -30];\n// Slowly orbit the camera on each frame\nskybox.scene.on(\"tick\",\n function () {\n         skybox.scene.camera.view.rotateEyeY(0.2);\n     });\n// Allow user camera control\nnew XEO.CameraControl();\n ````",
             "submodule": "skyboxes",
             "is_constructor": 1,
             "params": [
@@ -6134,7 +6204,7 @@
             "namespace": "",
             "file": "src/transforms/transform.js",
             "line": 1,
-            "description": "A **Transform** defines a modelling matrix to transform attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>Sub-classes of Transform are: {{#crossLink \"Translate\"}}{{/crossLink}},\n{{#crossLink \"Scale\"}}{{/crossLink}}, {{#crossLink \"Rotate\"}}{{/crossLink}}, and {{#crossLink \"Quaternion\"}}{{/crossLink}}</li>\n<li>Instances of Transform and its sub-classes may be connected into hierarchies.</li>\n<li>An {{#crossLink \"Entity\"}}{{/crossLink}} would be connected to a leaf Transform\nwithin a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.</li>\n<li>See <a href=\"./Shader.html#inputs\">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Transform.png\"></img>\n\n## Example\n\nTODO\n\n<img src=\"../../../assets/images/transformHierarchy.png\"></img>\n\n````javascript\n\n// Position of entire table\n\nvar tablePos = new XEO.Translate({\n       xyz: [0, 6, 0]\n   });\n\n// Orientation of entire table\n\nvar tableRotate = new XEO.Rotate({\n       xyz: [1, 1, 1],\n       angle: 0,\n       parent: tablePos\n   });\n\n// Red table leg\n\nvar tableLg1 = new XEO.Entity({\n       transform: new XEO.Scale({\n           xyz: [1, 3, 1],\n           parent: new XEO.Translate({\n               xyz: [-4, -6, -4],\n               parent: tableRotate\n           })\n       }),\n       material: new XEO.PhongMaterial({\n           diffuse: [1, 0.3, 0.3]\n       })\n   });\n\n// Green table leg\n\nvar tableLeg2 = new XEO.Entity({\n       transform: new XEO.Scale({\n           xyz: [1, 3, 1],\n           parent: new XEO.Translate({\n               xyz: [4, -6, -4],\n               parent: tableRotate\n           })\n       }),\n       material: new XEO.PhongMaterial({\n           diffuse: [0.3, 1.0, 0.3]\n       })\n   });\n\n// Blue table leg\n\nvar tableLeg3 = new XEO.Entity({\n       transform: new XEO.Scale({\n           xyz: [1, 3, 1],\n           parent: new XEO.Translate({\n               xyz: [4, -6, 4],\n               parent: tableRotate\n           })\n       }),\n       material: new XEO.PhongMaterial({\n           diffuse: [0.3, 0.3, 1.0]\n       })\n   });\n\n// Yellow table leg\n\nvar tableLeg4 = new XEO.Entity({\n       transform: new XEO.Scale({\n           xyz: [1, 3, 1],\n           parent: new XEO.Translate({\n               xyz: [-4, -6, 4],\n               parent: tableRotate\n           })\n       }),\n       material: new XEO.PhongMaterial({\n           diffuse: [1.0, 1.0, 0.0]\n       })\n   });\n\n// Purple table top\n\nvar tableTop = new XEO.Entity({\n       transform: new XEO.Scale({\n           xyz: [6, 0.5, 6],\n           parent: new XEO.Translate({\n               xyz: [0, -3, 0],\n               parent: tableRotate\n           })\n       }),\n       material: new XEO.PhongMaterial({\n           diffuse: [1.0, 0.3, 1.0]\n       })\n   });\n\n// Zoom camera out a bit\n// Get the Camera from one of the Entities\n\ntableTop.camera.view.zoom(10);\n\n// Spin the entire table\n\nvar angle = 0;\n\nscene.on(\"tick\", function () {\n\n       angle += 0.5;\n\n       tableRotate.angle = angle;\n   });\n````",
+            "description": "A **Transform** defines a modelling matrix to transform attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>Sub-classes of Transform are: {{#crossLink \"Translate\"}}{{/crossLink}},\n{{#crossLink \"Scale\"}}{{/crossLink}}, {{#crossLink \"Rotate\"}}{{/crossLink}}, and {{#crossLink \"Quaternion\"}}{{/crossLink}}</li>\n<li>Instances of Transform and its sub-classes may be connected into hierarchies.</li>\n<li>When an {{#crossLink \"Entity\"}}{{/crossLink}} or {{#crossLink \"Model\"}}{{/crossLink}} is connected to a leaf Transform\nwithin a Transform hierarchy, it will be transformed by each Transform on the path up to the root, in that order.</li>\n<li>See <a href=\"./Shader.html#inputs\">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Transform.png\"></img>\n\n## Example\n\nTODO\n\n<img src=\"../../../assets/images/transformHierarchy.png\"></img>\n\n````javascript\n\n// Position of entire table\n\nvar tablePos = new XEO.Translate({\n       xyz: [0, 6, 0]\n   });\n\n// Orientation of entire table\n\nvar tableRotate = new XEO.Rotate({\n       xyz: [1, 1, 1],\n       angle: 0,\n       parent: tablePos\n   });\n\n// Red table leg\n\nvar tableLg1 = new XEO.Entity({\n       transform: new XEO.Scale({\n           xyz: [1, 3, 1],\n           parent: new XEO.Translate({\n               xyz: [-4, -6, -4],\n               parent: tableRotate\n           })\n       }),\n       material: new XEO.PhongMaterial({\n           diffuse: [1, 0.3, 0.3]\n       })\n   });\n\n// Green table leg\n\nvar tableLeg2 = new XEO.Entity({\n       transform: new XEO.Scale({\n           xyz: [1, 3, 1],\n           parent: new XEO.Translate({\n               xyz: [4, -6, -4],\n               parent: tableRotate\n           })\n       }),\n       material: new XEO.PhongMaterial({\n           diffuse: [0.3, 1.0, 0.3]\n       })\n   });\n\n// Blue table leg\n\nvar tableLeg3 = new XEO.Entity({\n       transform: new XEO.Scale({\n           xyz: [1, 3, 1],\n           parent: new XEO.Translate({\n               xyz: [4, -6, 4],\n               parent: tableRotate\n           })\n       }),\n       material: new XEO.PhongMaterial({\n           diffuse: [0.3, 0.3, 1.0]\n       })\n   });\n\n// Yellow table leg\n\nvar tableLeg4 = new XEO.Entity({\n       transform: new XEO.Scale({\n           xyz: [1, 3, 1],\n           parent: new XEO.Translate({\n               xyz: [-4, -6, 4],\n               parent: tableRotate\n           })\n       }),\n       material: new XEO.PhongMaterial({\n           diffuse: [1.0, 1.0, 0.0]\n       })\n   });\n\n// Purple table top\n\nvar tableTop = new XEO.Entity({\n       transform: new XEO.Scale({\n           xyz: [6, 0.5, 6],\n           parent: new XEO.Translate({\n               xyz: [0, -3, 0],\n               parent: tableRotate\n           })\n       }),\n       material: new XEO.PhongMaterial({\n           diffuse: [1.0, 0.3, 1.0]\n       })\n   });\n\n// Zoom camera out a bit\n// Get the Camera from one of the Entities\n\ntableTop.camera.view.zoom(10);\n\n// Spin the entire table\n\nvar angle = 0;\n\nscene.on(\"tick\", function () {\n\n       angle += 0.5;\n\n       tableRotate.angle = angle;\n   });\n````",
             "submodule": "transforms",
             "is_constructor": 1,
             "params": [
@@ -7954,7 +8024,7 @@
             "description": "The projection transform component for this Camera.\n\nWhen set to a null or undefined value, will default to the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s\ndefault {{#crossLink \"Scene/project:property\"}}project{{/crossLink}}, which is\na {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.\n\nFires a {{#crossLink \"Camera/project:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "project",
-            "type": "Perspective|XEO.Ortho|XEO.Frustum",
+            "type": "Projection",
             "class": "Camera",
             "module": "XEO",
             "submodule": "camera"
@@ -7978,7 +8048,7 @@
         {
             "file": "src/camera/camera.js",
             "line": 158,
-            "description": "The viewing transform component for this Camera.\n\nWhen set to a null or undefined value, will default to the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s\ndefault {{#crossLink \"Scene/view:property\"}}view{{/crossLink}}, which is\na {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.\n\nFires a {{#crossLink \"Camera/view:event\"}}{{/crossLink}} event on change.",
+            "description": "The viewing transform for this Camera.\n\nWhen set to a null or undefined value, will default to the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s\ndefault {{#crossLink \"Scene/view:property\"}}view{{/crossLink}}, which is\na {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.\n\nFires a {{#crossLink \"Camera/view:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "view",
             "type": "Lookat",
@@ -8727,6 +8797,34 @@
             "name": "matrix",
             "type": "{Float64Array}",
             "class": "Perspective",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/camera/projection.js",
+            "line": 80,
+            "description": "The Projection's matrix.\n\nFires a {{#crossLink \"Projection/matrix:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "matrix",
+            "default": "[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]",
+            "type": "{Array of Number}",
+            "class": "Projection",
+            "module": "XEO",
+            "submodule": "camera"
+        },
+        {
+            "file": "src/camera/projection.js",
+            "line": 103,
+            "description": "Fired whenever this Projection's {{#crossLink \"Projection/matrix:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "matrix",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Projection",
             "module": "XEO",
             "submodule": "camera"
         },
@@ -12824,7 +12922,7 @@
             "module": "XEO"
         },
         {
-            "file": "src/importing/model.js",
+            "file": "src/importing/model-scratch.js",
             "line": 156,
             "description": "Path to the glTF file.\n\nYou can set this to a new file path at any time, which will cause the Model to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nFires a {{#crossLink \"Model/src:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
@@ -12835,7 +12933,7 @@
             "submodule": "importing"
         },
         {
-            "file": "src/importing/model.js",
+            "file": "src/importing/model-scratch.js",
             "line": 194,
             "description": "Fired whenever this Model has finished loading components from the glTF file\nspecified by {{#crossLink \"Model/src:property\"}}{{/crossLink}}.",
             "itemtype": "event",
@@ -12845,7 +12943,7 @@
             "submodule": "importing"
         },
         {
-            "file": "src/importing/model.js",
+            "file": "src/importing/model-scratch.js",
             "line": 202,
             "description": "Fired whenever this Model's {{#crossLink \"Model/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
@@ -12861,13 +12959,116 @@
             "submodule": "importing"
         },
         {
-            "file": "src/importing/model.js",
+            "file": "src/importing/model-scratch.js",
             "line": 215,
+            "description": "The Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} attached to this Model.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Model.\n\nInternally, the given {{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above any\n{{#crossLink \"Transform\"}}Transforms{{/crossLink}} that the Model attaches to its {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires an {{#crossLink \"Model/transform:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "transform",
+            "type": "Transform",
+            "class": "Model",
+            "module": "XEO",
+            "submodule": "importing"
+        },
+        {
+            "file": "src/importing/model-scratch.js",
+            "line": 232,
+            "description": "Fired whenever this Model's {{#crossLink \"Model/transform:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "transform",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Model",
+            "module": "XEO",
+            "submodule": "importing"
+        },
+        {
+            "file": "src/importing/model-scratch.js",
+            "line": 249,
             "description": "A {{#crossLink \"Collection\"}}{{/crossLink}} containing the scene components loaded by this Model.\n\nWhenever {{#crossLink \"Model/src:property\"}}{{/crossLink}} is set to the location of a valid glTF file,\nand once the file has been loaded, this {{#crossLink \"Collection\"}}{{/crossLink}} will contain whatever\ncomponents were loaded from that file.\n\nNote that prior to loading the file, the Model will destroy any components in the {{#crossLink \"Collection\"}}{{/crossLink}}.",
             "itemtype": "property",
             "name": "collection",
             "type": "Collection",
             "final": 1,
+            "class": "Model",
+            "module": "XEO",
+            "submodule": "importing"
+        },
+        {
+            "file": "src/importing/model.js",
+            "line": 235,
+            "description": "Path to the glTF file.\n\nYou can set this to a new file path at any time, which will cause the Model to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nFires a {{#crossLink \"Model/src:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "src",
+            "type": "String",
+            "class": "Model",
+            "module": "XEO",
+            "submodule": "importing"
+        },
+        {
+            "file": "src/importing/model.js",
+            "line": 315,
+            "description": "Fired whenever this Model has finished loading components from the glTF file\nspecified by {{#crossLink \"Model/src:property\"}}{{/crossLink}}.",
+            "itemtype": "event",
+            "name": "loaded",
+            "class": "Model",
+            "module": "XEO",
+            "submodule": "importing"
+        },
+        {
+            "file": "src/importing/model.js",
+            "line": 323,
+            "description": "Fired whenever this Model's {{#crossLink \"Model/src:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "src",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Model",
+            "module": "XEO",
+            "submodule": "importing"
+        },
+        {
+            "file": "src/importing/model.js",
+            "line": 336,
+            "description": "A {{#crossLink \"Collection\"}}{{/crossLink}} containing the scene components loaded by this Model.\n\nWhenever {{#crossLink \"Model/src:property\"}}{{/crossLink}} is set to the location of a valid glTF file,\nand once the file has been loaded, this {{#crossLink \"Collection\"}}{{/crossLink}} will contain whatever\ncomponents were loaded from that file.\n\nNote that prior to loading the file, the Model will destroy any components in the {{#crossLink \"Collection\"}}{{/crossLink}}.",
+            "itemtype": "property",
+            "name": "collection",
+            "type": "Collection",
+            "final": 1,
+            "class": "Model",
+            "module": "XEO",
+            "submodule": "importing"
+        },
+        {
+            "file": "src/importing/model.js",
+            "line": 356,
+            "description": "The Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} attached to this Model.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Model.\n\nInternally, the given {{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most\n{{#crossLink \"Transform\"}}Transform{{/crossLink}} that the Model attaches to\nits {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires an {{#crossLink \"Model/transform:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "transform",
+            "type": "Transform",
+            "class": "Model",
+            "module": "XEO",
+            "submodule": "importing"
+        },
+        {
+            "file": "src/importing/model.js",
+            "line": 374,
+            "description": "Fired whenever this Model's {{#crossLink \"Model/transform:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "transform",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
             "class": "Model",
             "module": "XEO",
             "submodule": "importing"
@@ -15576,7 +15777,7 @@
             "itemtype": "property",
             "name": "reflection",
             "default": "null",
-            "type": "{CubeMap}",
+            "type": "{Reflect}",
             "class": "PhongMaterial",
             "module": "XEO",
             "submodule": "materials"
@@ -15591,7 +15792,7 @@
                 {
                     "name": "value",
                     "description": "The property's new value",
-                    "type": "CubeMap"
+                    "type": "Reflect"
                 }
             ],
             "class": "PhongMaterial",
@@ -18725,9 +18926,9 @@
         {
             "file": "src/rendering/modes.js",
             "line": 149,
-            "description": "Whether this Modes enables clipping of attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nClipping is done by {{#crossLink \"Clips\"}}{{/crossLink}} that are also attached to\nthe {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires a {{#crossLink \"Modes/clipping:event\"}}{{/crossLink}} event on change.",
+            "description": "Whether this Modes enables clippable of attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nclippable is done by {{#crossLink \"Clips\"}}{{/crossLink}} that are also attached to\nthe {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires a {{#crossLink \"Modes/clippable:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
-            "name": "clipping",
+            "name": "clippable",
             "default": "true",
             "type": "Boolean",
             "class": "Modes",
@@ -18737,9 +18938,9 @@
         {
             "file": "src/rendering/modes.js",
             "line": 169,
-            "description": "Fired whenever this Modes' {{#crossLink \"Modes/clipping:property\"}}{{/crossLink}} property changes.",
+            "description": "Fired whenever this Modes' {{#crossLink \"Modes/clippable:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
-            "name": "clipping",
+            "name": "clippable",
             "params": [
                 {
                     "name": "value",
@@ -19210,7 +19411,7 @@
         },
         {
             "file": "src/skyboxes/skybox.js",
-            "line": 175,
+            "line": 181,
             "description": "Size of this Skybox, given as the distance from the center at [0,0,0] to each face.\n\nFires an {{#crossLink \"Skybox/size:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "size",
@@ -19222,7 +19423,7 @@
         },
         {
             "file": "src/skyboxes/skybox.js",
-            "line": 192,
+            "line": 198,
             "description": "Fired whenever this Skybox's {{#crossLink \"Skybox/size:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "size",
@@ -19464,7 +19665,7 @@
         },
         {
             "file": "src/transforms/transform.js",
-            "line": 195,
+            "line": 210,
             "description": "Fired whenever this Transform's {{#crossLink \"Transform/parent:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "parent",
@@ -19480,7 +19681,7 @@
         },
         {
             "file": "src/transforms/transform.js",
-            "line": 215,
+            "line": 231,
             "description": "The Transform's local matrix.\n\nFires a {{#crossLink \"Transform/matrix:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "matrix",
@@ -19492,7 +19693,7 @@
         },
         {
             "file": "src/transforms/transform.js",
-            "line": 238,
+            "line": 254,
             "description": "Fired whenever this Transform's {{#crossLink \"Transform/matrix:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "matrix",
@@ -19508,7 +19709,7 @@
         },
         {
             "file": "src/transforms/transform.js",
-            "line": 254,
+            "line": 270,
             "description": "Returns the product of all {{#crossLink \"Transform/matrix:property\"}}{{/crossLink}}'s on Transforms\non the path via {{#crossLink \"Transform/parent:property\"}}{{/crossLink}} up to the root.\n\nThe value of this property will have a fresh value after each\n{{#crossLink \"Transform/updated:property\"}}{{/crossLink}} event, which is fired whenever any Transform\non the path receives an update for its {{#crossLink \"Transform/matrix:property\"}}{{/crossLink}} or\n{{#crossLink \"Transform/matrix:property\"}}{{/crossLink}} property.",
             "itemtype": "property",
             "name": "matrix",
@@ -19520,7 +19721,7 @@
         },
         {
             "file": "src/transforms/transform.js",
-            "line": 284,
+            "line": 300,
             "description": "Fired whenever this Transform's {{#crossLink \"Transform/leafMatrix:property\"}}{{/crossLink}} property changes.\n\nThis event does not carry the updated property value. Instead, subscribers will need to read\nthat property again to get its updated value (which may be lazy-computed then).",
             "itemtype": "event",
             "name": "updated",
@@ -19611,7 +19812,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 324,
+            "line": 326,
             "description": "JavaScript class name for this Component.\n\nThis is used when <a href=\"Scene.html#savingAndLoading\">loading Scenes from JSON</a>, and is included in the JSON\nrepresentation of this Component, so that this class may be instantiated when loading it from the JSON representation.\n\nFor example: \"XEO.AmbientLight\", \"XEO.ColorTarget\", \"XEO.Lights\" etc.",
             "itemtype": "property",
             "name": "type",
@@ -19622,7 +19823,38 @@
         },
         {
             "file": "src/component.js",
-            "line": 338,
+            "line": 340,
+            "description": "An array of strings that indicates the types within this component's inheritance hierarchy.\n\nFor example, if this component is a {{#crossLink \"Rotate\"}}{{/crossLink}}, which\nextends {{#crossLink \"Transform\"}}{{/crossLink}}, which in turn extends {{#crossLink \"Component\"}}{{/crossLink}},\nthen this property will have the value:\n\n````json\n[\"XEO.Component\", \"XEO.Transform\", \"XEO.Rotate\"]\n````\n\nNote that the chain is ordered downwards in the hierarchy, ie. from super-class down to sub-class.",
+            "itemtype": "property",
+            "name": "types",
+            "type": "{Array of String}",
+            "final": 1,
+            "class": "Component",
+            "module": "XEO"
+        },
+        {
+            "file": "src/component.js",
+            "line": 359,
+            "description": "Tests if this component is of the given type, or is a subclass of the given type.\n\nThe type may be given as either a string or a component constructor.\n\nThis method works by walking up the inheritance type chain, which this component provides in\nproperty {{#crossLink \"Component/types:property\"}}{{/crossLink}}, returning true as soon as one of the type strings in\nthe chain matches the given type, of false if none match.\n\n#### Examples:\n\n````javascript\nvar myRotate = new XEO.Rotate({ ... });\n\nmyRotate.isType(XEO.Component); // Returns true for all XEO components\nmyRotate.isType(\"XEO.Component\"); // Returns true for all XEO components\nmyRotate.isType(XEO.Rotate); // Returns true\nmyRotate.isType(XEO.Transform); // Returns true\nmyRotate.isType(\"XEO.Transform\"); // Returns true\nmyRotate.isType(XEO.Entity); // Returns false, because XEO.Rotate does not (even indirectly) extend XEO.Entity\n````",
+            "itemtype": "method",
+            "name": "isType",
+            "params": [
+                {
+                    "name": "type",
+                    "description": "Component type to compare with, eg \"XEO.PhongMaterial\", or a XEO component constructor.",
+                    "type": "String|Function"
+                }
+            ],
+            "return": {
+                "description": "True if this component is of given type or is subclass of the given type.",
+                "type": "Boolean"
+            },
+            "class": "Component",
+            "module": "XEO"
+        },
+        {
+            "file": "src/component.js",
+            "line": 412,
             "description": "Initializes this component",
             "params": [
                 {
@@ -19637,7 +19869,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 346,
+            "line": 420,
             "description": "Fires an event on this component.\n\nNotifies existing subscribers to the event, retains the event to give to\nany subsequent notifications on that location as they are made.",
             "itemtype": "method",
             "name": "fire",
@@ -19665,7 +19897,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 387,
+            "line": 461,
             "description": "Subscribes to an event on this component.\n\nThe callback is be called with this component as scope.",
             "itemtype": "method",
             "name": "on",
@@ -19697,7 +19929,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 417,
+            "line": 491,
             "description": "Cancels an event subscription that was previously made with {{#crossLink \"Component/on:method\"}}{{/crossLink}} or\n{{#crossLink \"Component/once:method\"}}{{/crossLink}}.",
             "itemtype": "method",
             "name": "off",
@@ -19713,7 +19945,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 439,
+            "line": 513,
             "description": "Subscribes to the next occurrence of the given event, then un-subscribes as soon as the event is handled.\n\nThis is equivalent to calling {{#crossLink \"Component/on:method\"}}{{/crossLink}}, and then calling\n{{#crossLink \"Component/off:method\"}}{{/crossLink}} inside the callback function.",
             "itemtype": "method",
             "name": "once",
@@ -19741,7 +19973,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 460,
+            "line": 534,
             "description": "Logs a console debugging message for this component.\n\nThe console message will have this format: *````[LOG] [<component type> <component id>: <message>````*\n\nAlso fires the message as a {{#crossLink \"Scene/log:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "log",
@@ -19757,7 +19989,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 485,
+            "line": 559,
             "description": "Logs a warning for this component to the JavaScript console.\n\nThe console message will have this format: *````[WARN] [<component type> =<component id>: <message>````*\n\nAlso fires the message as a {{#crossLink \"Scene/warn:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "warn",
@@ -19773,7 +20005,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 505,
+            "line": 579,
             "description": "Logs an error for this component to the JavaScript console.\n\nThe console message will have this format: *````[ERROR] [<component type> =<component id>: <message>````*\n\nAlso fires the message as an {{#crossLink \"Scene/error:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "error",
@@ -19789,7 +20021,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 525,
+            "line": 599,
             "description": "Creates a clone of this component.\n\nThe clone will have the same properties as the original, except where\noverridden in the given optional configs.\n\nThe clone will share (by reference) the components of the original, unless overridden.\n\nFor example, if this component is an {{#crossLink \"Entity\"}}{{/crossLink}}, then the clone\nwill be attached to the **same** instances of {{#crossLink \"PhoneMaterial\"}}{{/crossLink}},\n{{#crossLink \"Camera\"}}{{/crossLink}} etc as this component, unless it supplies its own\ninstances for those via the configs.",
             "params": [
                 {
@@ -19808,9 +20040,15 @@
         },
         {
             "file": "src/component.js",
-            "line": 557,
+            "line": 631,
             "description": "Adds a child component to this.\nWhen component not given, attaches the scene's default instance for the given name (if any).\nPublishes the new child component on this component, keyed to the given name.",
             "params": [
+                {
+                    "name": "expectedType",
+                    "description": "Optional expected type of base type of the child; when supplied, will\ncause an exception if the given child is not the same type or a subtype of this.",
+                    "type": "String",
+                    "optional": true
+                },
                 {
                     "name": "name",
                     "description": "component name",
@@ -19824,7 +20062,21 @@
                 {
                     "name": "useDefault",
                     "description": "",
-                    "type": "Boolean"
+                    "type": "Boolean",
+                    "optional": true,
+                    "optdefault": "true"
+                },
+                {
+                    "name": "onAdded",
+                    "description": "Optional callback called before event is fired",
+                    "type": "Function",
+                    "optional": true
+                },
+                {
+                    "name": "onAddedScope",
+                    "description": "Optional scope for callback",
+                    "type": "Function",
+                    "optional": true
                 }
             ],
             "access": "private",
@@ -19834,7 +20086,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 656,
+            "line": 767,
             "access": "private",
             "tagname": "",
             "class": "Component",
@@ -19842,7 +20094,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 681,
+            "line": 792,
             "access": "private",
             "tagname": "",
             "class": "Component",
@@ -19850,7 +20102,39 @@
         },
         {
             "file": "src/component.js",
-            "line": 688,
+            "line": 799,
+            "description": "Convenience method for creating a Component within this Component's {{#crossLink \"Scene\"}}{{/crossLink}}.\n\nYou would typically use this method to conveniently instantiate components that you'd want to\nshare (ie. \"instance\") among your {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe method is given a component type and configuration, like so:\n\n````javascript\nvar material = myComponent.create(XEO.PhongMaterial, {\n     diffuse: [1,0,0],\n     specular: [1,1,0]\n});\n````\n\nThe first time you call this method for the given ````type```` and ````instanceId````, this method will create the\n{{#crossLink \"PhongMaterial\"}}{{/crossLink}}, passing the given  attributes to the component's constructor.\n\nIf you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same\ncomponent instance that it returned the first time, and will ignore the attributes:\n\n````javascript\nvar material2 = component.create(XEO.PhongMaterial, \"myMaterial\", { specular: [1,1,0] });\n````\n\nEach time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a\nreference count for the component instance. You can release the shared component instance with a call to\n{{#crossLink \"Scene/putSharedComponent:method\"}}{{/crossLink}}, and once you have released it as many\ntimes as you got it, the Scene will destroy the component.",
+            "itemtype": "method",
+            "name": "create",
+            "params": [
+                {
+                    "name": "type",
+                    "description": "Component type - either a string like \"XEO.PhongMaterial\" or the actual\nconstructor function, ie. XEO.PhongMaterial.",
+                    "type": "String"
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configuration for the component instance - only used if this is the first time you are getting\nthe component, ignored when reusing an existing instance.",
+                    "type": "*",
+                    "optional": true
+                },
+                {
+                    "name": "instanceId",
+                    "description": "Identifies the shared component instance. Note that this is not used as the ID of the\ncomponent - you can specify the component ID in the ````cfg```` parameter.",
+                    "type": "String|Number",
+                    "optional": true
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "*"
+            },
+            "class": "Component",
+            "module": "XEO"
+        },
+        {
+            "file": "src/component.js",
+            "line": 867,
             "description": "Protected method, called by sub-classes to queue a call to _update().",
             "access": "protected",
             "tagname": "",
@@ -19859,7 +20143,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 703,
+            "line": 883,
             "access": "private",
             "tagname": "",
             "class": "Component",
@@ -19867,7 +20151,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 727,
+            "line": 908,
             "description": "Optional virtual template method, normally implemented\nby sub-classes to generate some data before _update gets\ncallled",
             "access": "protected",
             "tagname": "",
@@ -19876,7 +20160,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 736,
+            "line": 917,
             "description": "Protected virtual template method, optionally implemented\nby sub-classes to perform a scheduled task.",
             "access": "protected",
             "tagname": "",
@@ -19885,7 +20169,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 744,
+            "line": 925,
             "description": "Protected template method, implemented by sub-classes to compile\ntheir state into their Scene's XEO.renderer.Renderer.",
             "access": "protected",
             "tagname": "",
@@ -19894,7 +20178,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 755,
+            "line": 937,
             "description": "JSON object containing the state of this Component.",
             "itemtype": "property",
             "name": "json",
@@ -19905,7 +20189,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 782,
+            "line": 965,
             "description": "String containing the serialized JSON state of this Component.",
             "itemtype": "property",
             "name": "string",
@@ -19916,7 +20200,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 796,
+            "line": 980,
             "description": "Experimental: string containing a JavaScript expression that would instantiate this Component.",
             "itemtype": "property",
             "name": "string",
@@ -19927,8 +20211,8 @@
         },
         {
             "file": "src/component.js",
-            "line": 814,
-            "description": "Destroys this component.\n\nFires a {{#crossLink \"Component/destroyed:event\"}}{{/crossLink}} event on this Component.\n\nAutomatically disassociates this component from other components, causing them to fall back on any\ndefaults that this component overrode on them.",
+            "line": 999,
+            "description": "Destroys this component.\n\nFires a {{#crossLink \"Component/destroyed:event\"}}{{/crossLink}} event on this Component.\n\nAutomatically disassociates this component from other components, causing them to fall back on any\ndefaults that this component overrode on them.\n\nTODO: describe effect with respect to #create",
             "itemtype": "method",
             "name": "destroy",
             "class": "Component",
@@ -19936,7 +20220,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 846,
+            "line": 1046,
             "description": "Fired when this Component is destroyed.",
             "itemtype": "event",
             "name": "destroyed",
@@ -19945,7 +20229,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 854,
+            "line": 1055,
             "description": "Protected template method, implemented by sub-classes\nto clean up just before the component is destroyed.",
             "access": "protected",
             "tagname": "",
@@ -20078,7 +20362,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 278,
+            "line": 287,
             "description": "Configurations for this Scene. Set whatever properties on here\nthat will be useful to the components within the Scene.",
             "final": 1,
             "itemtype": "property",
@@ -20089,7 +20373,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 287,
+            "line": 296,
             "description": "Manages the HTML5 canvas for this Scene.",
             "final": 1,
             "itemtype": "property",
@@ -20100,7 +20384,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 318,
+            "line": 327,
             "description": "Publishes input events that occur on this Scene's canvas.",
             "final": 1,
             "itemtype": "property",
@@ -20111,7 +20395,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 329,
+            "line": 338,
             "description": "Tracks any asynchronous tasks that occur within this Scene.",
             "final": 1,
             "itemtype": "property",
@@ -20122,7 +20406,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 461,
+            "line": 470,
             "description": "Fired whenever a component has been created within this Scene.",
             "itemtype": "event",
             "name": "componentCreated",
@@ -20138,7 +20422,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 505,
+            "line": 514,
             "description": "Fired whenever a component within this Scene has been destroyed.",
             "itemtype": "event",
             "name": "componentDestroyed",
@@ -20154,7 +20438,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 527,
+            "line": 536,
             "description": "The default projection transform provided by this Scene, which is\na {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.\n\nThis {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} has an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to\n\"default.project\", with all other properties set to their default\nvalues.\n\n{{#crossLink \"Camera\"}}Cameras{{/crossLink}} within this Scene\nare attached to this {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}\nby default.",
             "itemtype": "property",
             "name": "project",
@@ -20165,7 +20449,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 555,
+            "line": 564,
             "description": "The default viewing transform provided by this Scene, which is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.\n\nThis {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.view\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Camera\"}}Cameras{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "view",
@@ -20176,7 +20460,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 578,
+            "line": 587,
             "description": "The default {{#crossLink \"Camera\"}}Camera{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Camera\"}}Camera{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.camera\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Camera\"}}Camera{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "camera",
@@ -20187,7 +20471,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 603,
+            "line": 612,
             "description": "The default modelling {{#crossLink \"Transform\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Transform\"}}{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.transform\",\nwith all other properties initialised to their default values (ie. an identity matrix).\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Transform\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "transform",
@@ -20198,7 +20482,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 627,
+            "line": 636,
             "description": "The default {{#crossLink \"Billboard\"}}Billboard{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Billboard\"}}Billboard{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.billboard\"\nand an {{#crossLink \"Billboard/active:property\"}}{{/crossLink}} property set to false, to disable it.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Billboard\"}}Billboard{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "billboard",
@@ -20209,7 +20493,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 651,
+            "line": 660,
             "description": "The default {{#crossLink \"Stationary\"}}Stationary{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Stationary\"}}Stationary{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.stationary\"\nand an {{#crossLink \"Stationary/active:property\"}}{{/crossLink}} property set to false, to disable it.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Stationary\"}}Stationary{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "stationary",
@@ -20220,7 +20504,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 675,
+            "line": 684,
             "description": "The default {{#crossLink \"Clips\"}}Clips{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Clips\"}}Clips{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.clips\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Clips\"}}Clips{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "clips",
@@ -20231,7 +20515,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 698,
+            "line": 707,
             "description": "The default {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.colorBuf\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "colorBuf",
@@ -20242,7 +20526,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 721,
+            "line": 730,
             "description": "The default {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} provided by this Scene.\n\nThe {{#crossLink \"ColorTarget\"}}DepthTarget{{/crossLink}} is\n{{#crossLink \"ColorTarget/active:property\"}}inactive{{/crossLink}} by default and will have an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthTarget\".\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "colorTarget",
@@ -20253,7 +20537,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 745,
+            "line": 754,
             "description": "The default {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthBuf\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "depthBuf",
@@ -20264,7 +20548,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 769,
+            "line": 778,
             "description": "The default {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} provided by this Scene.\n\nThe {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} is\n{{#crossLink \"DepthTarget/active:property\"}}inactive{{/crossLink}} by default and has an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthTarget\".\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "depthTarget",
@@ -20275,7 +20559,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 793,
+            "line": 802,
             "description": "The default {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.visibility\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Visibility\"}}Visibility{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "visibility",
@@ -20286,7 +20570,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 816,
+            "line": 825,
             "description": "The default {{#crossLink \"Modes\"}}Modes{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Modes\"}}Modes{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.modes\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Modes\"}}Modes{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "modes",
@@ -20297,7 +20581,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 838,
+            "line": 847,
             "description": "The default geometry provided by this Scene, which is a {{#crossLink \"BoxGeometry\"}}BoxGeometry{{/crossLink}}.\n\nThis {{#crossLink \"BoxGeometry\"}}BoxGeometry{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.geometry\".\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Geometry\"}}Geometry{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "geometry",
@@ -20308,7 +20592,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 859,
+            "line": 868,
             "description": "The default {{#crossLink \"Layer\"}}Layer{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Layer\"}}Layer{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.layer\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Layer\"}}Layer{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "layer",
@@ -20319,7 +20603,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 882,
+            "line": 891,
             "description": "The default {{#crossLink \"Lights\"}}Lights{{/crossLink}} provided\nby this Scene.\n\nThis {{#crossLink \"Lights\"}}Lights{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to *````\"default.lights\"````*,\nwith all other properties initialised to their default values (ie. the default set of light sources for a {{#crossLink \"Lights\"}}Lights{{/crossLink}}).\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Lights\"}}Lights{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "lights",
@@ -20330,7 +20614,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 937,
+            "line": 946,
             "description": "The {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} provided as the default material by this Scene.\n\nThis {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.material\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "material",
@@ -20341,7 +20625,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 960,
+            "line": 969,
             "description": "The default {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.morphTargets\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -20352,7 +20636,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 982,
+            "line": 991,
             "description": "The default {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} provided by this Scene,\n(which is initially an empty {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} that has no effect).\n\nThis {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.reflect\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Reflect\"}}Reflect{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "reflect",
@@ -20363,7 +20647,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1005,
+            "line": 1014,
             "description": "The default {{#crossLink \"Shader\"}}Shader{{/crossLink}} provided by this Scene\n(which is initially an empty {{#crossLink \"Shader\"}}Shader{{/crossLink}} that has no effect).\n\nThis {{#crossLink \"Shader\"}}Shader{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.shader\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Shader\"}}Shader{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "shader",
@@ -20374,7 +20658,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1028,
+            "line": 1037,
             "description": "The default {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.shaderParams\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ShaderParams\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "shaderParams",
@@ -20385,7 +20669,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1051,
+            "line": 1060,
             "description": "The default {{#crossLink \"Stage\"}}Stage{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Stage\"}}Stage{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.stage\" and\na {{#crossLink \"Stage/priority:property\"}}priority{{/crossLink}} equal to ````0````.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Stage\"}}Stage{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "stage",
@@ -20396,7 +20680,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1075,
+            "line": 1084,
             "description": "The World-space 3D boundary of this Scene.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will be lazy-initialized the first time\nyou reference this property, and will persist on this Scene until you\ncall {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on the {{#crossLink \"Boundary3D\"}}{{/crossLink}}\nagain. The property will then be set to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance\nnext time you reference it.\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary3D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "worldBoundary",
@@ -20407,7 +20691,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1158,
+            "line": 1167,
             "description": "Attempts to pick an {{#crossLink \"Entity\"}}Entity{{/crossLink}} at the given Canvas-space coordinates.\n\nIgnores {{#crossLink \"Entity\"}}Entities{{/crossLink}} that are attached\nto either a {{#crossLink \"Stage\"}}Stage{{/crossLink}} with {{#crossLink \"Stage/pickable:property\"}}pickable{{/crossLink}}\nset *false* or a {{#crossLink \"Modes\"}}Modes{{/crossLink}} with {{#crossLink \"Modes/pickable:property\"}}pickable{{/crossLink}} set *false*.\n\nOn success, will fire a {{#crossLink \"Scene/picked:event\"}}{{/crossLink}} event on this Scene, along with\na separate {{#crossLink \"Entity/picked:event\"}}{{/crossLink}} event on the target {{#crossLink \"Entity\"}}Entity{{/crossLink}}.\n\n````javascript\n\npick({\n     canvasPos: [23, 131],\n     rayPick: true\n     });\n\n````",
             "itemtype": "method",
             "name": "pick",
@@ -20442,7 +20726,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1419,
+            "line": 1428,
             "description": "Resets this Scene to its default state.\n\nReferences to any components in this Scene will become invalid.",
             "itemtype": "method",
             "name": "clear",
@@ -20451,16 +20735,54 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1447,
-            "description": "Displays a simple test entity.\n\nClears the Scene first.\n\nThe test entity is destroyed as soon as anything else is created in this Scene.",
+            "line": 1454,
+            "description": "Convenience method for creating or reusing a Component within this Scene.\n\nYou would typically use this method to conveniently instantiate components that you'd want to\nshare (ie. \"instance\") among your {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe method is given a component type, share ID and constructor attributes, like so:\n\n````javascript\nvar material = myScene.getComponent(\"XEO.PhongMaterial\", \"myMaterial\", { diffuse: [1,0,0] });\n````\n\nThe first time you call this method for the given ````type```` and ````instanceId````, this method will create the\n{{#crossLink \"PhongMaterial\"}}{{/crossLink}}, passing the given  attributes to the component's constructor.\n\nIf you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same\ncomponent instance that it returned the first time, and will ignore the attributes:\n\n````javascript\nvar material2 = myScene.getComponent(\"XEO.PhongMaterial\", \"myMaterial\", { specular: [1,1,0] });\n````\n\nEach time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a\nreference count for the component instance. You can release the shared component instance with a call to\n{{#crossLink \"Scene/putSharedComponent:method\"}}{{/crossLink}}, and once you have released it as many\ntimes as you got it, the Scene will destroy the component.",
             "itemtype": "method",
-            "name": "testPattern",
+            "name": "_getSharedComponent",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "type",
+                    "description": "Component type, eg \"XEO.PhongMaterial\", or constructor.",
+                    "type": "String|Function"
+                },
+                {
+                    "name": "cfg",
+                    "description": "Attributes for the component instance - only used if this is the first time you are getting\nthe component, ignored when reusing an existing shared component.",
+                    "type": "*",
+                    "optional": true
+                },
+                {
+                    "name": "instanceId",
+                    "description": "Identifies the shared component instance. Note that this is not used as the ID of the\ncomponent - you can specify the component ID in the ````cfg```` parameter.",
+                    "type": "String|Number"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "*"
+            },
             "class": "Scene",
             "module": "XEO"
         },
         {
             "file": "src/scene.js",
-            "line": 1499,
+            "line": 1548,
+            "description": "Releases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
+            "params": [
+                {
+                    "name": "component",
+                    "description": "The shared component instance.",
+                    "type": "Component"
+                }
+            ],
+            "class": "Scene",
+            "module": "XEO"
+        },
+        {
+            "file": "src/scene.js",
+            "line": 1576,
             "description": "Compiles and renders this Scene",
             "access": "private",
             "tagname": "",
@@ -20493,7 +20815,7 @@
         {
             "file": "src/xeo.js",
             "line": 86,
-            "description": "Existing  {{#crossLink \"Scene\"}}Scene{{/crossLink}}s , mapped to their IDs",
+            "description": "Existing {{#crossLink \"Scene\"}}Scene{{/crossLink}}s , mapped to their IDs",
             "itemtype": "property",
             "name": "scenes",
             "type": "{{String:XEO.Scene}}",
@@ -20619,20 +20941,64 @@
         {
             "file": "src/xeo.js",
             "line": 376,
+            "description": "Tests if the given value is an ID",
+            "params": [
+                {
+                    "name": "value",
+                    "description": ""
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "access": "private",
+            "tagname": "",
             "class": "XEO",
             "module": "XEO",
             "namespace": "XEO"
         },
         {
             "file": "src/xeo.js",
-            "line": 382,
+            "line": 386,
+            "description": "Tests if the given components are the same, where the components can be either IDs or instances.",
+            "params": [
+                {
+                    "name": "c1",
+                    "description": ""
+                },
+                {
+                    "name": "c2",
+                    "description": ""
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "access": "private",
+            "tagname": "",
             "class": "XEO",
             "module": "XEO",
             "namespace": "XEO"
         },
         {
             "file": "src/xeo.js",
-            "line": 393,
+            "line": 405,
+            "class": "XEO",
+            "module": "XEO",
+            "namespace": "XEO"
+        },
+        {
+            "file": "src/xeo.js",
+            "line": 411,
+            "class": "XEO",
+            "module": "XEO",
+            "namespace": "XEO"
+        },
+        {
+            "file": "src/xeo.js",
+            "line": 422,
             "description": "Add non-null/defined properties of o to o2",
             "access": "private",
             "tagname": "",
@@ -20642,7 +21008,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 408,
+            "line": 437,
             "description": "Add properties of o to o2 where undefined or null on o2",
             "access": "private",
             "tagname": "",
@@ -20652,7 +21018,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 423,
+            "line": 452,
             "description": "Returns true if the given map is empty.",
             "params": [
                 {
@@ -20672,7 +21038,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 438,
+            "line": 467,
             "description": "Returns the given ID as a string, in quotes if the ID was a string to begin with.\n\nThis is useful for logging IDs.",
             "params": [
                 {
@@ -20847,11 +21213,23 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/component.js:525"
+            "line": " src/component.js:359"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1158"
+            "line": " src/component.js:599"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/component.js:799"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/scene.js:1167"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/scene.js:1454"
         },
         {
             "message": "unknown tag: demo",
@@ -20867,11 +21245,19 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:423"
+            "line": " src/xeo.js:376"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:438"
+            "line": " src/xeo.js:386"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/xeo.js:452"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/xeo.js:467"
         },
         {
             "message": "Missing item type\nA chunk of WebGL state changes to render a XEO.renderer.State.",
@@ -21467,51 +21853,55 @@
         },
         {
             "message": "Missing item type\nInitializes this component",
-            "line": " src/component.js:338"
+            "line": " src/component.js:412"
         },
         {
             "message": "Missing item type\nCreates a clone of this component.\n\nThe clone will have the same properties as the original, except where\noverridden in the given optional configs.\n\nThe clone will share (by reference) the components of the original, unless overridden.\n\nFor example, if this component is an {{#crossLink \"Entity\"}}{{/crossLink}}, then the clone\nwill be attached to the **same** instances of {{#crossLink \"PhoneMaterial\"}}{{/crossLink}},\n{{#crossLink \"Camera\"}}{{/crossLink}} etc as this component, unless it supplies its own\ninstances for those via the configs.",
-            "line": " src/component.js:525"
+            "line": " src/component.js:599"
         },
         {
             "message": "Missing item type\nAdds a child component to this.\nWhen component not given, attaches the scene's default instance for the given name (if any).\nPublishes the new child component on this component, keyed to the given name.",
-            "line": " src/component.js:557"
+            "line": " src/component.js:631"
         },
         {
             "message": "Missing item type",
-            "line": " src/component.js:656"
+            "line": " src/component.js:767"
         },
         {
             "message": "Missing item type",
-            "line": " src/component.js:681"
+            "line": " src/component.js:792"
         },
         {
             "message": "Missing item type\nProtected method, called by sub-classes to queue a call to _update().",
-            "line": " src/component.js:688"
+            "line": " src/component.js:867"
         },
         {
             "message": "Missing item type",
-            "line": " src/component.js:703"
+            "line": " src/component.js:883"
         },
         {
             "message": "Missing item type\nOptional virtual template method, normally implemented\nby sub-classes to generate some data before _update gets\ncallled",
-            "line": " src/component.js:727"
+            "line": " src/component.js:908"
         },
         {
             "message": "Missing item type\nProtected virtual template method, optionally implemented\nby sub-classes to perform a scheduled task.",
-            "line": " src/component.js:736"
+            "line": " src/component.js:917"
         },
         {
             "message": "Missing item type\nProtected template method, implemented by sub-classes to compile\ntheir state into their Scene's XEO.renderer.Renderer.",
-            "line": " src/component.js:744"
+            "line": " src/component.js:925"
         },
         {
             "message": "Missing item type\nProtected template method, implemented by sub-classes\nto clean up just before the component is destroyed.",
-            "line": " src/component.js:854"
+            "line": " src/component.js:1055"
+        },
+        {
+            "message": "Missing item type\nReleases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
+            "line": " src/scene.js:1548"
         },
         {
             "message": "Missing item type\nCompiles and renders this Scene",
-            "line": " src/scene.js:1499"
+            "line": " src/scene.js:1576"
         },
         {
             "message": "Missing item type\nTests if the given object is an array",
@@ -21526,28 +21916,36 @@
             "line": " src/xeo.js:366"
         },
         {
-            "message": "Missing item type",
+            "message": "Missing item type\nTests if the given value is an ID",
             "line": " src/xeo.js:376"
         },
         {
+            "message": "Missing item type\nTests if the given components are the same, where the components can be either IDs or instances.",
+            "line": " src/xeo.js:386"
+        },
+        {
             "message": "Missing item type",
-            "line": " src/xeo.js:382"
+            "line": " src/xeo.js:405"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/xeo.js:411"
         },
         {
             "message": "Missing item type\nAdd non-null/defined properties of o to o2",
-            "line": " src/xeo.js:393"
+            "line": " src/xeo.js:422"
         },
         {
             "message": "Missing item type\nAdd properties of o to o2 where undefined or null on o2",
-            "line": " src/xeo.js:408"
+            "line": " src/xeo.js:437"
         },
         {
             "message": "Missing item type\nReturns true if the given map is empty.",
-            "line": " src/xeo.js:423"
+            "line": " src/xeo.js:452"
         },
         {
             "message": "Missing item type\nReturns the given ID as a string, in quotes if the ID was a string to begin with.\n\nThis is useful for logging IDs.",
-            "line": " src/xeo.js:438"
+            "line": " src/xeo.js:467"
         }
     ]
 }

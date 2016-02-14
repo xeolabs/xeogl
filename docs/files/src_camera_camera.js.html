@@ -94,6 +94,7 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -188,11 +189,11 @@
 
  &lt;ul&gt;
 
- &lt;li&gt; A Camera is composed of a viewing transform and a projection transform.&lt;/li&gt;
+ &lt;li&gt; A Camera is composed of a viewing transform and a {{#crossLink &quot;Projection&quot;}}{{/crossLink}}.&lt;/li&gt;
 
  &lt;li&gt;The viewing transform is usually a {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}}.&lt;/li&gt;
 
- &lt;li&gt;The projection transform may be an {{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}}
+ &lt;li&gt;The {{#crossLink &quot;Projection&quot;}}{{/crossLink}} may be an {{#crossLink &quot;Ortho&quot;}}Ortho{{/crossLink}}, {{#crossLink &quot;Frustum&quot;}}Frustum{{/crossLink}}
  or {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}}.&lt;/li&gt;
 
  &lt;li&gt; By default, each Camera is composed of its parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/view:property&quot;}}{{/crossLink}} transform,
@@ -262,7 +263,7 @@
  @param [cfg.view] {String|XEO.Lookat} ID or instance of a view transform within the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}. Defaults to the
  parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/view:property&quot;}}{{/crossLink}} transform,
  which is a {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}}.
- @param [cfg.project] {String|XEO.Perspective|XEO.Ortho|XEO.Frustum} ID or instance of a projection transform
+ @param [cfg.project] {String|XEO.Projection} ID or instance of a projection transform
  within the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}. Defaults to the parent
  {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/project:property&quot;}}{{/crossLink}} transform,
  which is a {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}}.
@@ -295,7 +296,7 @@
              * Fires a {{#crossLink &quot;Camera/project:event&quot;}}{{/crossLink}} event on change.
              *
              * @property project
-             * @type Perspective|XEO.Ortho|XEO.Frustum
+             * @type Projection
              */
             project: {
 
@@ -314,7 +315,7 @@
                      * @event project
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;project&quot;, value);
+                    this._setChild(&quot;XEO.Projection&quot;, &quot;project&quot;, value);
 
                     var newProject = this._children.project;
 
@@ -337,7 +338,7 @@
             },
 
             /**
-             * The viewing transform component for this Camera.
+             * The viewing transform for this Camera.
              *
              * When set to a null or undefined value, will default to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s
              * default {{#crossLink &quot;Scene/view:property&quot;}}view{{/crossLink}}, which is
@@ -366,7 +367,7 @@
                      * @event view
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;view&quot;, value);
+                    this._setChild(&quot;XEO.Lookat&quot;, &quot;view&quot;, value); // TODO: need marker interface for view transform components
 
                     var newView = this._children.view;
 

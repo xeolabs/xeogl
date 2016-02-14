@@ -94,6 +94,7 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -485,6 +486,8 @@
 
             this._eventCallDepth = 0; // Helps us catch stack overflows from recursive events
 
+            this._sharedComponents = {};
+
             if (this.scene &amp;&amp; this.type !== &quot;XEO.Scene&quot;) { // HACK: Don&#x27;t add scene to itself
 
                 // Register this component on its scene
@@ -515,6 +518,78 @@
          @final
          */
         type: &quot;XEO.Component&quot;,
+
+        /**
+         An array of strings that indicates the types within this component&#x27;s inheritance hierarchy.
+
+         For example, if this component is a {{#crossLink &quot;Rotate&quot;}}{{/crossLink}}, which
+         extends {{#crossLink &quot;Transform&quot;}}{{/crossLink}}, which in turn extends {{#crossLink &quot;Component&quot;}}{{/crossLink}},
+         then this property will have the value:
+
+         &#x60;&#x60;&#x60;&#x60;json
+         [&quot;XEO.Component&quot;, &quot;XEO.Transform&quot;, &quot;XEO.Rotate&quot;]
+         &#x60;&#x60;&#x60;&#x60;
+
+         Note that the chain is ordered downwards in the hierarchy, ie. from super-class down to sub-class.
+
+         @property types
+         @type {Array of String}
+         @final
+         */
+        types: [&quot;XEO.Component&quot;],
+
+        /**
+         Tests if this component is of the given type, or is a subclass of the given type.
+
+         The type may be given as either a string or a component constructor.
+
+         This method works by walking up the inheritance type chain, which this component provides in
+         property {{#crossLink &quot;Component/types:property&quot;}}{{/crossLink}}, returning true as soon as one of the type strings in
+         the chain matches the given type, of false if none match.
+
+         #### Examples:
+
+         &#x60;&#x60;&#x60;&#x60;javascript
+         var myRotate = new XEO.Rotate({ ... });
+
+         myRotate.isType(XEO.Component); // Returns true for all XEO components
+         myRotate.isType(&quot;XEO.Component&quot;); // Returns true for all XEO components
+         myRotate.isType(XEO.Rotate); // Returns true
+         myRotate.isType(XEO.Transform); // Returns true
+         myRotate.isType(&quot;XEO.Transform&quot;); // Returns true
+         myRotate.isType(XEO.Entity); // Returns false, because XEO.Rotate does not (even indirectly) extend XEO.Entity
+         &#x60;&#x60;&#x60;&#x60;
+
+         @method isType
+         @param  {String|Function} type Component type to compare with, eg &quot;XEO.PhongMaterial&quot;, or a XEO component constructor.
+         @returns {Boolean} True if this component is of given type or is subclass of the given type.
+         */
+        isType: function (type) {
+
+            if (!XEO._isString(type)) {
+
+                // Handle constructor arg
+
+                type = type.type;
+                if (!type) {
+                    return false;
+                }
+            }
+
+            var types = this.types;
+
+            if (!types) {
+                return false;
+            }
+
+            for (var i = types.length - 1; i &gt;= 0; i--) {
+                if (types[i] === type) {
+                    return true;
+                }
+            }
+
+            return false;
+        },
 
         /**
          * Initializes this component
@@ -740,12 +815,16 @@
          * When component not given, attaches the scene&#x27;s default instance for the given name (if any).
          * Publishes the new child component on this component, keyed to the given name.
          *
-         * @param {string} name component name
+         * @param {String} [expectedType] Optional expected type of base type of the child; when supplied, will
+         * cause an exception if the given child is not the same type or a subtype of this.
+         * @param {String} name component name
          * @param {Component} child The component
-         * @param {Boolean} useDefault
+         * @param {Boolean} [useDefault=true]
+         * @param {Function} [onAdded] Optional callback called before event is fired
+         * @param {Function} [onAddedScope] Optional scope for callback
          * @private
          */
-        _setChild: function (name, child, useDefault) {
+        _setChild: function (expectedType, name, child, useDefault, onAdded, onAddedScope) {
 
             if (!child &amp;&amp; useDefault !== false) {
 
@@ -782,9 +861,34 @@
                 }
             }
 
-            if (child &amp;&amp; child.scene.id !== this.scene.id) {
-                this.error(&quot;Not in same scene: &quot; + child.type + &quot; &quot; + XEO._inQuotes(child.id));
-                return;
+            if (child) {
+
+                if (child.scene.id !== this.scene.id) {
+                    this.error(&quot;Not in same scene: &quot; + child.type + &quot; &quot; + XEO._inQuotes(child.id));
+                    return;
+                }
+
+                if (expectedType) {
+
+                    if (!child.isType(expectedType)) {
+
+                        // Attempt to fall back on default component class for the given name
+
+                        child = this.scene[name];
+
+                        if (!child) {
+
+                            this.error(&quot;Expected a &quot; + expectedType + &quot; type or subtype: &quot; + child.type + &quot; &quot; + XEO._inQuotes(child.id));
+
+                            return;
+
+                        } else {
+                            this.error(&quot;Expected a &quot; + expectedType + &quot; type or subtype: &quot; + child.type + &quot; &quot;
+                                + XEO._inQuotes(child.id) + &quot; (recovering by adding Scene&#x27;s default &quot; + expectedType + &quot; instance instead)&quot;);
+
+                        }
+                    }
+                }
             }
 
             var oldChild = this._children[name];
@@ -825,6 +929,14 @@
                 delete this._children[name];
             }
 
+            if (onAdded) {
+
+                // Fire optional callback so caller can do stuff
+                // before the change event is fired below
+
+                onAddedScope ? onAdded.call(onAddedScope, child) : onAdded();
+            }
+
             this.fire(&quot;dirty&quot;, this);
 
             this.fire(name, child);
@@ -856,7 +968,7 @@
             }
 
             // Set default child
-            this._setChild(name, defaultComponent);
+            this._setChild(null, name, defaultComponent);
         },
 
         /**
@@ -864,6 +976,74 @@
          */
         _childDirty: function () {
             this.fire(&quot;dirty&quot;, this);
+        },
+
+        /**
+         * Convenience method for creating a Component within this Component&#x27;s {{#crossLink &quot;Scene&quot;}}{{/crossLink}}.
+         *
+         * You would typically use this method to conveniently instantiate components that you&#x27;d want to
+         * share (ie. &quot;instance&quot;) among your {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
+         *
+         * The method is given a component type and configuration, like so:
+         *
+         * &#x60;&#x60;&#x60;&#x60;javascript
+         * var material = myComponent.create(XEO.PhongMaterial, {
+         *      diffuse: [1,0,0],
+         *      specular: [1,1,0]
+         * });
+         * &#x60;&#x60;&#x60;&#x60;
+         *
+         * The first time you call this method for the given &#x60;&#x60;&#x60;&#x60;type&#x60;&#x60;&#x60;&#x60; and &#x60;&#x60;&#x60;&#x60;instanceId&#x60;&#x60;&#x60;&#x60;, this method will create the
+         * {{#crossLink &quot;PhongMaterial&quot;}}{{/crossLink}}, passing the given  attributes to the component&#x27;s constructor.
+         *
+         * If you call this method again, specifying the same &#x60;&#x60;&#x60;&#x60;type&#x60;&#x60;&#x60;&#x60; and &#x60;&#x60;&#x60;&#x60;instanceId&#x60;&#x60;&#x60;&#x60;, the method will return the same
+         * component instance that it returned the first time, and will ignore the attributes:
+         *
+         * &#x60;&#x60;&#x60;&#x60;javascript
+         * var material2 = component.create(XEO.PhongMaterial, &quot;myMaterial&quot;, { specular: [1,1,0] });
+         * &#x60;&#x60;&#x60;&#x60;
+         *
+         * Each time you call this method with the same &#x60;&#x60;&#x60;&#x60;type&#x60;&#x60;&#x60;&#x60; and &#x60;&#x60;&#x60;&#x60;instanceId&#x60;&#x60;&#x60;&#x60;, the Scene will internally increment a
+         * reference count for the component instance. You can release the shared component instance with a call to
+         * {{#crossLink &quot;Scene/putSharedComponent:method&quot;}}{{/crossLink}}, and once you have released it as many
+         * times as you got it, the Scene will destroy the component.
+         *
+         * @method create
+         * @param {String} type Component type - either a string like &quot;XEO.PhongMaterial&quot; or the actual
+         * constructor function, ie. XEO.PhongMaterial.
+         * @param {*} [cfg] Configuration for the component instance - only used if this is the first time you are getting
+         * the component, ignored when reusing an existing instance.
+         * @param {String|Number} [instanceId] Identifies the shared component instance. Note that this is not used as the ID of the
+         * component - you can specify the component ID in the &#x60;&#x60;&#x60;&#x60;cfg&#x60;&#x60;&#x60;&#x60; parameter.
+         * @returns {*}
+         */
+        create: function (type, cfg, instanceId) {
+
+            // Create or reuse the component via this component&#x27;s scene;
+            // reusing if instanceId given, else getting unique instance otherwise
+
+            var component = this.scene._getSharedComponent(type, cfg, instanceId);
+
+            if (component) {
+
+                // Register component on this component so that we can
+                // automatically destroy it when we destroy this component
+
+                if (!this._sharedComponents[component.id]) {
+                    this._sharedComponents[component.id] = component;
+                }
+            }
+
+            component.on(&quot;destroyed&quot;, function () {
+
+                // If the component is explicitly destroyed, ie. by calling
+                // its #destroy method, then deregister it so we don&#x27;t try
+                // to destroy it a second time when we destroy this component
+
+                delete this._sharedComponents[component.id];
+            }, this);
+
+            return component;
         },
 
         /**
@@ -879,7 +1059,8 @@
 
                 XEO.scheduleTask(this._doUpdate, this);
             }
-        },
+        }
+        ,
 
         /**
          * @private
@@ -903,7 +1084,8 @@
 
                 this._updateScheduled = false;
             }
-        },
+        }
+        ,
 
         /**
          * Optional virtual template method, normally implemented
@@ -929,7 +1111,8 @@
          * @protected
          */
         _compile: function () {
-        },
+        }
+        ,
 
         _props: {
 
@@ -958,7 +1141,8 @@
 
                     return this._getJSON ? XEO._apply(this._getJSON(), json) : json;
                 }
-            },
+            }
+            ,
 
             /**
              * String containing the serialized JSON state of this Component.
@@ -972,7 +1156,8 @@
                 get: function () {
                     return JSON.stringify(this.json, &quot;\n&quot;, 4);
                 }
-            },
+            }
+            ,
 
             /**
              * Experimental: string containing a JavaScript expression that would instantiate this Component.
@@ -990,7 +1175,8 @@
                     return &quot;new &quot; + this.type + &quot;(&quot; + str + &quot;);&quot;;
                 }
             }
-        },
+        }
+        ,
 
         /**
          * Destroys this component.
@@ -1000,21 +1186,36 @@
          * Automatically disassociates this component from other components, causing them to fall back on any
          * defaults that this component overrode on them.
          *
+         * TODO: describe effect with respect to #create
+         *
          * @method destroy
          */
         destroy: function () {
 
             // Unsubscribe from child components
 
-            var child;
+            var component;
 
             for (var name in this._children) {
                 if (this._children.hasOwnProperty(name)) {
 
-                    child = this._children[name];
+                    component = this._children[name];
 
-                    child.off(this._childDestroySubs[name]);
-                    child.off(this._childDirtySubs[name]);
+                    component.off(this._childDestroySubs[name]);
+                    component.off(this._childDirtySubs[name]);
+                }
+            }
+
+            // Release components created with #create
+
+            for (var id in this._sharedComponents) {
+                if (this._sharedComponents.hasOwnProperty(id)) {
+
+                    component = this._sharedComponents[id];
+
+                    delete this._sharedComponents[id];
+
+                    this.scene._putSharedComponent(component);
                 }
             }
 
@@ -1030,7 +1231,8 @@
              */
 
             this.fire(&quot;destroyed&quot;, this.destroyed = true);
-        },
+        }
+        ,
 
         /**
          * Protected template method, implemented by sub-classes
@@ -1040,9 +1242,11 @@
          */
         _destroy: function () {
         }
-    });
+    })
+    ;
 
-})();
+})
+();
 
     </pre>
 </div>

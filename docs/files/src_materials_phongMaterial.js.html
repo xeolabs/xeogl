@@ -94,6 +94,7 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -721,7 +722,7 @@
                      @event normalMap
                      @param value Number The property&#x27;s new value
                      */
-                    this._setComponent(&quot;normalMap&quot;, texture);
+                    this._setComponent(&quot;XEO.Texture&quot;, &quot;normalMap&quot;, texture);
                 },
 
                 get: function () {
@@ -750,7 +751,7 @@
                      @event ambientMap
                      @param value Number The property&#x27;s new value
                      */
-                    this._setComponent(&quot;ambientMap&quot;, texture);
+                    this._setComponent(&quot;XEO.Texture&quot;, &quot;ambientMap&quot;, texture);
                 },
 
                 get: function () {
@@ -779,7 +780,7 @@
                      @event diffuseMap
                      @param value Number The property&#x27;s new value
                      */
-                    this._setComponent(&quot;diffuseMap&quot;, texture);
+                    this._setComponent(&quot;XEO.Texture&quot;, &quot;diffuseMap&quot;, texture);
                 },
 
                 get: function () {
@@ -808,7 +809,7 @@
                      @event specularMap
                      @param value Number The property&#x27;s new value
                      */
-                    this._setComponent(&quot;specularMap&quot;, texture);
+                    this._setComponent(&quot;XEO.Texture&quot;, &quot;specularMap&quot;, texture);
                 },
 
                 get: function () {
@@ -837,7 +838,7 @@
                      @event emissiveMap
                      @param value Number The property&#x27;s new value
                      */
-                    this._setComponent(&quot;emissiveMap&quot;, texture);
+                    this._setComponent(&quot;XEO.Texture&quot;, &quot;emissiveMap&quot;, texture);
                 },
 
                 get: function () {
@@ -866,7 +867,7 @@
                      @event opacityMap
                      @param value Number The property&#x27;s new value
                      */
-                    this._setComponent(&quot;opacityMap&quot;, texture);
+                    this._setComponent(&quot;XEO.Texture&quot;, &quot;opacityMap&quot;, texture);
                 },
 
                 get: function () {
@@ -895,7 +896,7 @@
                      @event reflectivityMap
                      @param value Number The property&#x27;s new value
                      */
-                    this._setComponent(&quot;reflectivityMap&quot;, texture);
+                    this._setComponent(&quot;XEO.Texture&quot;, &quot;reflectivityMap&quot;, texture);
                 },
 
                 get: function () {
@@ -910,7 +911,7 @@
 
              @property reflection
              @default null
-             @type {CubeMap}
+             @type {Reflect}
              */
             reflection: {
 
@@ -920,9 +921,9 @@
                      Fired whenever this PhongMaterial&#x27;s {{#crossLink &quot;PhongMaterial/reflectivityMap:property&quot;}}{{/crossLink}} property changes.
 
                      @event reflection
-                     @param value {CubeMap} The property&#x27;s new value
+                     @param value {Reflect} The property&#x27;s new value
                      */
-                    this._setComponent(&quot;reflection&quot;, cubeMap);
+                    this._setComponent(&quot;XEO.Reflect&quot;, &quot;reflection&quot;, cubeMap);
                 },
 
                 get: function () {
@@ -951,7 +952,7 @@
                      @event diffuseFresnel
                      @param value Number The property&#x27;s new value
                      */
-                    this._setComponent(&quot;diffuseFresnel&quot;, fresnel);
+                    this._setComponent(&quot;XEO.Fresnel&quot;, &quot;diffuseFresnel&quot;, fresnel);
                 },
 
                 get: function () {
@@ -980,7 +981,7 @@
                      @event specularFresnel
                      @param value Number The property&#x27;s new value
                      */
-                    this._setComponent(&quot;specularFresnel&quot;, fresnel);
+                    this._setComponent(&quot;XEO.Fresnel&quot;, &quot;specularFresnel&quot;, fresnel);
                 },
 
                 get: function () {
@@ -1009,7 +1010,7 @@
                      @event emissiveFresnel
                      @param value Number The property&#x27;s new value
                      */
-                    this._setComponent(&quot;emissiveFresnel&quot;, fresnel);
+                    this._setComponent(&quot;XEO.Fresnel&quot;, &quot;emissiveFresnel&quot;, fresnel);
                 },
 
                 get: function () {
@@ -1038,7 +1039,7 @@
                      @event opacityFresnel
                      @param value Number The property&#x27;s new value
                      */
-                    this._setComponent(&quot;opacityFresnel&quot;, fresnel);
+                    this._setComponent(&quot;XEO.Fresnel&quot;, &quot;opacityFresnel&quot;, fresnel);
                 },
 
                 get: function () {
@@ -1067,7 +1068,7 @@
                      @event reflectivityFresnel
                      @param value Number The property&#x27;s new value
                      */
-                    this._setComponent(&quot;reflectivityFresnel&quot;, fresnel);
+                    this._setComponent(&quot;XEO.Fresnel&quot;, &quot;reflectivityFresnel&quot;, fresnel);
                 },
 
                 get: function () {
@@ -1076,8 +1077,8 @@
             }
         },
 
-        _setComponent: function (name, child) {
-            child = this._setChild(name, child, false);
+        _setComponent: function (expectedType, name, child) {
+            child = this._setChild(expectedType, name, child, false);
             this._state[name] = child ? child._state : null;
             this._hashDirty = true;
         },

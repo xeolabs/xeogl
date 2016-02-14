@@ -55,6 +55,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "PhongMaterial",
         "PlaneGeometry",
         "PointLight",
+        "Projection",
         "QuadraticBezierCurve",
         "Quaternion",
         "Reflect",
