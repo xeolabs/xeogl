@@ -192,8 +192,9 @@
      &lt;ul&gt;&lt;li&gt;A Model begins loading as soon as it&#x27;s {{#crossLink &quot;Model/src:property&quot;}}{{/crossLink}}
      property is set to the location of a valid glTF file.&lt;/li&gt;
      &lt;li&gt;A Model keeps all its loaded components in a {{#crossLink &quot;Collection&quot;}}{{/crossLink}}.&lt;/li&gt;
-     &lt;li&gt;Like {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}, a Model can be attached to an animated and dynamically-editable
-     modelling {{#crossLink &quot;Transform&quot;}}{{/crossLink}} hierarchy, to rotate, translate or scale it within the World-space coordinate system.&lt;/li&gt;
+     &lt;li&gt;A Model can be attached to an animated and dynamically-editable
+     modelling {{#crossLink &quot;Transform&quot;}}{{/crossLink}} hierarchy, to rotate, translate and scale it within the World-space coordinate system, in the
+     same way that an {{#crossLink &quot;Entity&quot;}}{{/crossLink}} can.&lt;/li&gt;
      &lt;li&gt;You can set a Model&#x27;s {{#crossLink &quot;Model/src:property&quot;}}{{/crossLink}} property to a new file path at any time,
      which will cause it to load components from the new file (destroying any components loaded previously).&lt;/li&gt;
      &lt;/ul&gt;
@@ -264,6 +265,21 @@
      Now whenever we set the Model to a new file (see example below), the World-space boundary will automatically update accordingly, as will
      our boundary indicator {{#crossLink &quot;Entity&quot;}}{{/crossLink}}.
 
+     ### Flying the Camera to look at a Model
+
+     To position the Model entirely within view, we can use a {{#crossLink &quot;CameraFlight&quot;}}{{/crossLink}} to fly the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} (in this case the default, implicit one) to look at the World-space extents of our {{#crossLink &quot;CollectionBoundary&quot;}}{{/crossLink}}:
+
+     &#x60;&#x60;&#x60;&#x60;javascript
+     var flight = new XEO.CameraFlight({
+        duration: 1.5
+     });
+
+     flight.flyTo(collectionBoundary.worldBoundary, function() {
+             // Optional callback to fire on arrival
+         });
+
+     &#x60;&#x60;&#x60;&#x60;
+
      ### Transforming the Model
 
      A Model can be attached to a modelling {{#crossLink &quot;Transform&quot;}}{{/crossLink}} hierarchy to transform it within
@@ -307,7 +323,7 @@
 
      And of course, the hierarchy may be dynamically-editable, since everything in a xeoEngine scene is editable at
      runtime. Animating or updating the {{#crossLink &quot;Transform&quot;}}{{/crossLink}} hierarchy will automatically update the
-     boundaries on the {{#crossLink &quot;CollectionBoundary&quot;}}{{/crossLink}} in the previous example.
+     boundaries on the {{#crossLink &quot;CollectionBoundary&quot;}}{{/crossLink}} shown in previous examples.
 
      You can access the {{#crossLink &quot;Transform&quot;}}Transforms{{/crossLink}} by ID:
 
@@ -333,21 +349,6 @@
                 spinY.angle += 0.1;
                 spinZ.angle += 0.2;
             });
-     &#x60;&#x60;&#x60;&#x60;
-
-     ### Flying the Camera to look at a Model
-
-     To position the Model entirely within view, we can use a {{#crossLink &quot;CameraFlight&quot;}}{{/crossLink}} to fly the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} (in this case the default, implicit one) to look at the World-space extents of our {{#crossLink &quot;CollectionBoundary&quot;}}{{/crossLink}}:
-
-     &#x60;&#x60;&#x60;&#x60;javascript
-     var flight = new XEO.CameraFlight({
-        duration: 1.5
-     });
-
-     flight.flyTo(collectionBoundary.worldBoundary, function() {
-             // Optional callback to fire on arrival
-         });
-
      &#x60;&#x60;&#x60;&#x60;
 
      ### Switching to a different glTF file
