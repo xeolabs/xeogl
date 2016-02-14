@@ -10,8 +10,10 @@
      <ul><li>A Model begins loading as soon as it's {{#crossLink "Model/src:property"}}{{/crossLink}}
      property is set to the location of a valid glTF file.</li>
      <li>A Model keeps all its loaded components in a {{#crossLink "Collection"}}{{/crossLink}}.</li>
+     <li>Like {{#crossLink "Entity"}}Entities{{/crossLink}}, a Model can be attached to an animated and dynamically-editable
+     modelling {{#crossLink "Transform"}}{{/crossLink}} hierarchy, to rotate, translate or scale it within the World-space coordinate system.</li>
      <li>You can set a Model's {{#crossLink "Model/src:property"}}{{/crossLink}} property to a new file path at any time,
-     which will cause it to load components from the new file, after destroying any components loaded previously.</li>
+     which will cause it to load components from the new file (destroying any components loaded previously).</li>
      </ul>
 
      <img src="../../../assets/images/Model.png"></img>
@@ -30,8 +32,7 @@
      fire immediately if the Model happens to be loaded already:
 
      ````javascript
-     gearboxModel.on("loaded",
-     function() {
+     gearboxModel.on("loaded", function() {
              // Model has loaded!
          });
      ````
@@ -81,6 +82,77 @@
      Now whenever we set the Model to a new file (see example below), the World-space boundary will automatically update accordingly, as will
      our boundary indicator {{#crossLink "Entity"}}{{/crossLink}}.
 
+     ### Transforming the Model
+
+     A Model can be attached to a modelling {{#crossLink "Transform"}}{{/crossLink}} hierarchy to transform it within
+     the World-space coordinate system.
+
+     The hierarchy can be attached on instantiation:
+
+     ````javascript
+     gearboxModel = new XEO.Model({
+        src: "models/gltf/gearbox/gearbox_assy.gltf",
+
+        transform: new XEO.Rotate({
+            id: "spinY",
+            xyz: [0, 1, 0],
+            angle: 0,
+
+            parent: new XEO.Rotate({
+                id: "spinZ",
+                xyz: [0, 0, 1],
+                angle: 0
+            })
+        })
+     });
+     ````
+
+     Alternatively, you can attach the {{#crossLink "Transform"}}{{/crossLink}} hierarchy afterwards:
+
+     ````javascript
+     gearboxModel.transform = new XEO.Rotate({
+            id: "spinY",
+            xyz: [0, 1, 0],
+            angle: 0,
+
+            parent: new XEO.Rotate({
+                id: "spinZ",
+                xyz: [0, 0, 1],
+                angle: 0
+            })
+        });
+     ````
+
+     And of course, the hierarchy may be dynamically-editable, since everything in a xeoEngine scene is editable at
+     runtime. Animating or updating the {{#crossLink "Transform"}}{{/crossLink}} hierarchy will automatically update the
+     boundaries on the {{#crossLink "CollectionBoundary"}}{{/crossLink}} in the previous example.
+
+     You can access the {{#crossLink "Transform"}}Transforms{{/crossLink}} by ID:
+
+     ````javascript
+     var scene = gearboxMode.scene;
+     var spinY = scene.components["spinY"];
+     var spinZ = scene.components["spinZ"];
+
+     gearboxModel.scene.on("tick", function () {
+                spinY.angle += 0.1;
+                spinZ.angle += 0.2;
+            });
+     ````
+
+     or by walking the {{#crossLink "Transform"}}{{/crossLink}} hierarchy:
+
+     ````javascript
+     var scene = gearboxMode.scene;
+     var spinY = gearbox.transform;
+     var spinZ = gearbox.transform.parent;
+
+     gearboxModel.scene.on("tick", function () {
+                spinY.angle += 0.1;
+                spinZ.angle += 0.2;
+            });
+     ````
+
      ### Flying the Camera to look at a Model
 
      To position the Model entirely within view, we can use a {{#crossLink "CameraFlight"}}{{/crossLink}} to fly the {{#crossLink "Camera"}}{{/crossLink}} (in this case the default, implicit one) to look at the World-space extents of our {{#crossLink "CollectionBoundary"}}{{/crossLink}}:
@@ -90,8 +162,7 @@
         duration: 1.5
      });
 
-     flight.flyTo(collectionBoundary.worldBoundary,
-     function() {
+     flight.flyTo(collectionBoundary.worldBoundary, function() {
              // Optional callback to fire on arrival
          });
 
@@ -136,6 +207,13 @@
 
             this._collection = this.create(XEO.Collection);
 
+            // Dummy transform to make it easy to graft user-supplied
+            // transforms above loaded entities
+
+            this._dummyRootTransform = this.create(XEO.Translate, {
+                meta: "dummy"
+            });
+
             this._src = null;
 
             if (!cfg.src) {
@@ -149,6 +227,7 @@
             }
 
             this.src = cfg.src;
+            this.transform = cfg.transform;
         },
 
         _props: {
@@ -187,9 +266,51 @@
                     var self = this;
                     var userInfo = null;
                     var options = null;
+                    var rootTransform;
+                    var dummyRootTransform = self._dummyRootTransform;
 
                     glTFLoader.load(userInfo, options,
                         function () {
+
+                            self._collection.iterate(function (component) {
+
+                                if (component.isType("XEO.Entity")) {
+
+                                    // Insert the dummy transform above
+                                    // each entity we just loaded
+
+                                    rootTransform = component.transform;
+
+                                    if (!rootTransform) {
+
+                                        component.transform = dummyRootTransform;
+
+                                    } else {
+
+                                        while (rootTransform.parent) {
+
+                                            if (rootTransform.id === dummyRootTransform.id) {
+
+                                                // Since transform hierarchies created by the glTFLoader may contain
+                                                // transforms that share the same parents, there is potential to find
+                                                // our dummy root transform while walking up an entity's transform
+                                                // path, when that path is joins a path that belongs to an Entity that
+                                                // we processed earlier
+
+                                                return;
+                                            }
+
+                                            rootTransform = rootTransform.parent;
+                                        }
+
+                                        if (rootTransform.id === dummyRootTransform.id) {
+                                            return;
+                                        }
+
+                                        rootTransform.parent = dummyRootTransform;
+                                    }
+                                }
+                            });
 
                             /**
                              Fired whenever this Model has finished loading components from the glTF file
@@ -230,7 +351,45 @@
                 get: function () {
                     return this._collection;
                 }
+            },
+
+            /**
+             * The Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} attached to this Model.
+             *
+             * Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Model.
+             *
+             * Internally, the given {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most
+             * {{#crossLink "Transform"}}Transform{{/crossLink}} that the Model attaches to
+             * its {{#crossLink "Entity"}}Entities{{/crossLink}}.
+             *
+             * Fires an {{#crossLink "Model/transform:event"}}{{/crossLink}} event on change.
+             *
+             * @property transform
+             * @type Transform
+             */
+            transform: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this Model's {{#crossLink "Model/transform:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event transform
+                     * @param value The property's new value
+                     */
+                    var useDefault = false;
+
+                    this._setChild("XEO.Transform", "transform", value, useDefault, this._transformUpdated, this);
+                },
+
+                get: function () {
+                    return this._children.transform;
+                }
             }
+        },
+
+        _transformUpdated: function (transform) {
+            this._dummyRootTransform.parent = transform;
         },
 
         _clear: function () {
@@ -248,9 +407,16 @@
         },
 
         _getJSON: function () {
-            return {
+
+            var json = {
                 src: this._src
             };
+
+            if (this._children.transform) {
+                json.transform = this._children.transform.id;
+            }
+
+            return json;
         },
 
         _destroy: function () {
