@@ -174,7 +174,11 @@
 
             if (!camera) {
                 if (callback) {
-                    scope ? callback.call(scope) : callback();
+                    if (scope) {
+                        callback.call(scope);
+                    } else {
+                        callback();
+                    }
                 }
                 return;
             }
