@@ -141,7 +141,6 @@
             var numFPSSamples = 30;
             var totalFPS = 0;
             var updateTime;
-            var lastUpdateTime = 0;
             var id;
             var scene;
 
@@ -176,8 +175,6 @@
             function update() {
 
                 updateTime = Date.now();
-
-                lastUpdateTime = updateTime;
 
                 // Process as many enqueued tasks as we can
                 // within the per-frame task budget
@@ -1205,7 +1202,6 @@
 
         var lights = state.lights;
         var light;
-        var intensity;
 
         for (var i = 0, len = lights.length; i < len; i++) {
 
@@ -1362,7 +1358,10 @@
         this._lastDrawChunkId = this._lastDrawChunkId || [];
         this._lastPickObjectChunkId = this._lastPickObjectChunkId || [];
 
-        for (var i = 0; i < 20; i++) {
+        var i;
+        var len;
+
+        for (i = 0; i < 20; i++) {
             this._lastDrawChunkId[i] = null;
             this._lastPickObjectChunkId[i] = null;
         }
@@ -1391,7 +1390,7 @@
         this._objectDrawListLen = 0;
         this._objectPickListLen = 0;
 
-        for (var i = 0, len = this._objectListLen; i < len; i++) {
+        for (i = 0, len = this._objectListLen; i < len; i++) {
 
             object = this._objectList[i];
 
@@ -1475,7 +1474,7 @@
         var pickable;
         var renderTargetBound = false;
 
-        for (var i = 0, len = targetListList.length; i < len; i++) {
+        for (i = 0, len = targetListList.length; i < len; i++) {
 
             targetChunk = targetList[i];
             list = targetListList[i];
@@ -1507,7 +1506,7 @@
 
         // Append chunks for objects not in render targets
 
-        for (var i = 0, len = this._objectDrawListLen; i < len; i++) {
+        for (i = 0, len = this._objectDrawListLen; i < len; i++) {
 
             object = this._objectDrawList[i];
 
@@ -1540,8 +1539,9 @@
      */
     XEO.renderer.Renderer.prototype._appendObjectToDrawChunkLists = function (object, pickable) {
 
+        pickable = pickable && object.modes.pickable;
+
         var chunks = object.chunks;
-        var pickable = pickable && object.modes.pickable;
         var chunk;
 
         for (var i = 0, len = chunks.length; i < len; i++) {
@@ -2930,6 +2930,7 @@
 
             var i;
             var len;
+            var light;
 
             begin();
 
@@ -2964,7 +2965,7 @@
                 // Lights
                 for (i = 0, len = states.lights.lights.length; i < len; i++) {
 
-                    var light = states.lights.lights[i];
+                    light = states.lights.lights[i];
 
                     if (light.type === "ambient") {
                         continue;
@@ -3093,7 +3094,7 @@
 
                 // Lights
 
-                for (var i = 0; i < states.lights.lights.length; i++) {
+                for (i = 0, len = states.lights.lights.length; i < len; i++) {
 
                     light = states.lights.lights[i];
 
@@ -3210,6 +3211,11 @@
                 return fragment;
             }
 
+            var i;
+            var len;
+
+            var light;
+
             begin();
 
             add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
@@ -3314,9 +3320,7 @@
 
                 // Light sources
 
-                var light;
-
-                for (var i = 0; i < states.lights.lights.length; i++) {
+                for (i = 0, len = states.lights.lights.length; i < len; i++) {
 
                     light = states.lights.lights[i];
 
@@ -3546,9 +3550,7 @@
                 add("   float lightDist;");
                 add("   float attenuation;");
 
-                var light;
-
-                for (var i = 0, len = states.lights.lights.length; i < len; i++) {
+                for (i = 0, len = states.lights.lights.length; i < len; i++) {
 
                     light = states.lights.lights[i];
 
@@ -3774,9 +3776,9 @@
 
         this.type = type;
 
-        this.itemType = data.constructor == Uint8Array ? gl.UNSIGNED_BYTE :
-            data.constructor == Uint16Array ? gl.UNSIGNED_SHORT :
-                data.constructor == Uint32Array ? gl.UNSIGNED_INT :
+        this.itemType = data.constructor === Uint8Array ? gl.UNSIGNED_BYTE :
+            data.constructor === Uint16Array ? gl.UNSIGNED_SHORT :
+                data.constructor === Uint32Array ? gl.UNSIGNED_INT :
                     gl.FLOAT;
 
         this.usage = usage;
@@ -4030,7 +4032,11 @@
         this.compiled = true;
 
 
-        var a, i, u, u_name, location, shader;
+        var a;
+        var i;
+        var u;
+        var uName;
+        var location;
 
         // Program
 
@@ -4074,7 +4080,6 @@
         // Discover uniforms and samplers
 
         var numUniforms = gl.getProgramParameter(this.handle, gl.ACTIVE_UNIFORMS);
-        var valueIndex = 0;
 
         for (i = 0; i < numUniforms; ++i) {
 
@@ -4082,21 +4087,21 @@
 
             if (u) {
 
-                u_name = u.name;
+                uName = u.name;
 
-                if (u_name[u_name.length - 1] === "\u0000") {
-                    u_name = u_name.substr(0, u_name.length - 1);
+                if (uName[uName.length - 1] === "\u0000") {
+                    uName = uName.substr(0, uName.length - 1);
                 }
 
-                location = gl.getUniformLocation(this.handle, u_name);
+                location = gl.getUniformLocation(this.handle, uName);
 
                 if ((u.type === gl.SAMPLER_2D) || (u.type === gl.SAMPLER_CUBE) || (u.type === 35682)) {
 
-                    this.samplers[u_name] = new XEO.renderer.webgl.Sampler(gl, location);
+                    this.samplers[uName] = new XEO.renderer.webgl.Sampler(gl, location);
 
                 } else {
 
-                    this.uniforms[u_name] = new XEO.renderer.webgl.Uniform(stats.frame, gl, u.type, location);
+                    this.uniforms[uName] = new XEO.renderer.webgl.Uniform(stats.frame, gl, u.type, location);
                 }
             }
         }
@@ -4160,14 +4165,14 @@
         return this.attributes[name];
     };
 
-    XEO.renderer.webgl.Program.prototype.bindFloatArrayBuffer = function (name, buffer) {
-
-        if (!this.allocated) {
-            return;
-        }
-
-        return this.attributes[name];
-    };
+    //XEO.renderer.webgl.Program.prototype.bindFloatArrayBuffer = function (name, buffer) {
+    //
+    //    if (!this.allocated) {
+    //        return;
+    //    }
+    //
+    //    return this.attributes[name];
+    //};
 
     XEO.renderer.webgl.Program.prototype.bindTexture = function (name, texture, unit) {
 
@@ -5141,12 +5146,15 @@
 
         build: function () {
 
+            var i;
+            var len;
+
             this._uClipModeDraw = this._uClipModeDraw || [];
             this._uClipPlaneDraw = this._uClipPlaneDraw || [];
 
             var draw = this.program.draw;
 
-            for (var i = 0, len = this.state.clips.length; i < len; i++) {
+            for (i = 0, len = this.state.clips.length; i < len; i++) {
                 this._uClipModeDraw[i] = draw.getUniform("xeo_uClipMode" + i);
                 this._uClipPlaneDraw[i] = draw.getUniform("xeo_uClipPlane" + i)
             }
@@ -5156,7 +5164,7 @@
 
             var pick = this.program.pick;
 
-            for (var i = 0, len = this.state.clips.length; i < len; i++) {
+            for (i = 0, len = this.state.clips.length; i < len; i++) {
                 this._uClipModePick[i] = pick.getUniform("xeo_uClipMode" + i);
                 this._uClipPlanePick[i] = pick.getUniform("xeo_uClipPlane" + i)
             }
@@ -5576,8 +5584,6 @@
             var lights = this.state.lights;
             var light;
 
-            var gl = this.program.gl;
-
             for (var i = 0, len = lights.length; i < len; i++) {
 
                 light = lights[i];
@@ -5796,168 +5802,6 @@
 
     XEO.renderer.ChunkFactory.createChunkType({
 
-        type: "pbrMaterial",
-
-        build: function () {
-
-            var state = this.state;
-
-            var draw = this.program.draw;
-
-            this._uMetallic = draw.getUniform("xeo_uMetallic");
-
-            this._uMaterialColor = draw.getUniform("xeo_uMaterialColor");
-            
-            if (state.colorMap) {
-                this._uMaterialColorMap = draw.getUniform("xeo_uMaterialColorMap");
-                this._uMaterialColorMapMatrix = draw.getUniform("xeo_uMaterialColorMapMatrix");
-            }
-            
-            this._uMaterialEmissive = draw.getUniform("xeo_uEmissive");
-
-            if (state.emissiveMap) {
-                this._uEmissiveMap = draw.getUniform("xeo_uMaterialEmissiveMap");
-                this._uMaterialEmissiveMapMatrix = draw.getUniform("xeo_uMaterialEmissiveMapMatrix");
-            }
-
-            this._uOpacity = draw.getUniform("xeo_uOpacity");
-
-            if (state.opacityMap) {
-                this._uMaterialOpacityMap = draw.getUniform("xeo_uMaterialOpacityMap");
-                this._uMaterialOpacityMapMatrix = draw.getUniform("xeo_uMaterialOpacityMapMatrix");
-            }
-
-            this._uMaterialRoughness = draw.getUniform("xeo_uMaterialRoughness");
-
-            if (state.roughnessMap) {
-                this._uMaterialRoughnessMap = draw.getUniform("xeo_uMaterialRoughnessMap");
-                this._uMaterialRoughnessMapMatrix = draw.getUniform("xeo_uMaterialRoughnessMapMatrix");
-            }
-
-            if (state.normalMap) {
-                this._uMaterialNormalMap = draw.getUniform("xeo_uMaterialNormalMap");
-                this._uMaterialNormalMapMatrix = draw.getUniform("xeo_uMaterialNormalMapMatrix");
-            }
-
-            this._uMaterialSpecular = draw.getUniform("xeo_uSpecular");
-            
-            if (state.specularMap) {
-                this._uMaterialSpecularMap = draw.getUniform("xeo_uMaterialSpecularMap");
-                this._uMaterialSpecularMapMatrix = draw.getUniform("xeo_uMaterialSpecularMapMatrix");
-            }
-        },
-
-        draw: function (frameCtx) {
-
-       //     frameCtx.textureUnit = 0;
-            
-            var draw = this.program.draw;
-            var state = this.state;
-
-            if (this._uMetallic) {
-                this._uMetallic.setValue(state.metallic);
-            }
-
-            // Base color
-
-            if (this._uMaterialColor) {
-                this._uMaterialColor.setValue(state.color);
-            }
-
-            if ( this._uMaterialColorMap) {
-
-                draw.bindTexture(this._uMaterialColorMap, state.colorMap.texture, frameCtx.textureUnit++);
-
-                if (this._uMaterialColorMapMatrix) {
-                    this._uMaterialColorMapMatrix.setValue(state.colorMap.matrix);
-                }
-            }
-
-            // Emissive color
-
-            if (this._uMaterialEmissive) {
-                this._uMaterialEmissive.setValue(state.emissive);
-            }
-
-            if (this._uEmissiveMap) {
-
-                draw.bindTexture(this._uEmissiveMap, state.emissiveMap.texture, frameCtx.textureUnit++);
-
-                if (this._uMaterialEmissiveMapMatrix) {
-                    this._uMaterialEmissiveMapMatrix.setValue(state.emissiveMap.matrix);
-                }
-            }
-
-            // Opacity 
-
-            if (this._uOpacity) {
-                this._uOpacity.setValue(state.opacity);
-            }
-            
-            if (this._uMaterialOpacityMap) {
-
-                draw.bindTexture(this._uMaterialOpacityMap, state.opacityMap.texture, frameCtx.textureUnit++);
-
-                if (this._uMaterialOpacityMapMatrix) {
-                    this._uMaterialOpacityMapMatrix.setValue(state.opacityMap.matrix);
-                }
-            }
-            
-            // Roughness
-
-            if (this._uMaterialRoughness) {
-                this._uMaterialRoughness.setValue(state.roughness);
-            }
-
-            if (this._uMaterialRoughnessMap) {
-
-                draw.bindTexture(this._uMaterialRoughnessMap, state.roughnessMap.texture, frameCtx.textureUnit++);
-
-                if (this._uMaterialRoughnessMapMatrix) {
-                    this._uMaterialRoughnessMapMatrix.setValue(state.roughnessMap.matrix);
-                }
-            }
-
-            // Normal map
-
-            if (this._uMaterialNormalMap) {
-
-                draw.bindTexture(this._uMaterialNormalMap, state.normalMap.texture, frameCtx.textureUnit++);
-
-                if (this._uMaterialNormalMapMatrix) {
-                    this._uMaterialNormalMapMatrix.setValue(state.normalMap.matrix);
-                }
-            }
-
-            // Specular 
-
-            if (this._uMaterialSpecular) {
-                this._uMaterialSpecular.setValue(state.specular);
-            }
-
-            if (this._uMaterialSpecularMap) {
-
-                draw.bindTexture(this._uMaterialSpecularMap, state.specularMap.texture, frameCtx.textureUnit++);
-
-                if (this._uMaterialSpecularMapMatrix) {
-                    this._uMaterialSpecularMapMatrix.setValue(state.specularMap.matrix);
-                }
-            }
-            
-
-            //if (frameCtx.textureUnit > 10) { // TODO: Find how many textures allowed
-            //    frameCtx.textureUnit = 0;
-            //}
-        }
-    });
-
-})();
-;(function () {
-
-    "use strict";
-
-    XEO.renderer.ChunkFactory.createChunkType({
-
         type: "phongMaterial",
 
         build: function () {
@@ -6067,7 +5911,7 @@
                 this._uShininess.setValue(state.shininess);
             }
 
-            if (frameCtx.lineWidth != state.lineWidth) {
+            if (frameCtx.lineWidth !== state.lineWidth) {
                 gl.lineWidth(state.lineWidth);
                 frameCtx.lineWidth = state.lineWidth;
             }
@@ -12061,9 +11905,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             var component;
 
+            var fullShareId;
+
             if (instanceId !== undefined) {
 
-                var fullShareId = "__shared." + type + "." + instanceId;
+                fullShareId = "__shared." + type + "." + instanceId;
 
                 component = this._sharedComponents[fullShareId];
 
@@ -12568,6 +12414,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             var eye;
             var look;
             var up;
+            var componentId;
 
             if (params.worldBoundary) {
 
@@ -12581,7 +12428,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 // Argument is a Boundary3D
 
-            } else if (params.min != undefined && params.max != undefined) {
+            } else if (params.min !== undefined && params.max !== undefined) {
 
                 // Argument is an AABB
 
@@ -12603,7 +12450,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 if (XEO._isNumeric(component) || XEO._isString(component)) {
 
-                    var componentId = component;
+                    componentId = component;
 
                     component = this.scene.components[componentId];
 
@@ -14942,8 +14789,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
     "use strict";
 
-    var canvases = {};
-
     XEO.Canvas = XEO.Component.extend({
 
         type: "XEO.Canvas",
@@ -15675,6 +15520,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     var clip;
                     var i;
                     var len;
+                    var id;
 
                     // Unsubscribe from events on old clips
                     for (i = 0, len = this._clips.length; i < len; i++) {
@@ -15727,7 +15573,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                             // ID given for clip - find the clip component
 
-                            var id = clip;
+                            id = clip;
 
                             clip = this.components[id];
 
@@ -16041,8 +15887,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
         _init: function (cfg) {
 
-            var self = this;
-
             var scene = this.scene;
 
             // Shows a bounding box around each Entity we fly to
@@ -16157,7 +16001,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this.mousePickEntity.on("pick", this._entityPicked, this);
 
             this.mousePickEntity.on("nopick",
-                function (e) {
+                function () {
                     //alert("Nothing picked");
                 });
 
@@ -16198,9 +16042,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             if (pos) {
 
-                var diff = XEO.math.subVec3(view.eye, view.look, []);
-
-                var input = this.scene.input;
+                //var diff = XEO.math.subVec3(view.eye, view.look, []);
+                //
+                //var input = this.scene.input;
 
               //  if (input.keyDown[input.KEY_SHIFT] && e.entity) {
 
@@ -18862,10 +18706,10 @@ visibility.destroy();
  The Curve is subclassed by the following component types:
 
  <ul>
-    <li>{{#crossLink "SplineCurve"}}{{/crossLink}}</li>
-    <li>{{#crossLink "CubicBezierCurve"}}{{/crossLink}}</li>
-    <li>{{#crossLink "QuadraticBezierCurve"}}{{/crossLink}}</li>
-    <li>{{#crossLink "Path"}}{{/crossLink}}</li>
+ <li>{{#crossLink "SplineCurve"}}{{/crossLink}}</li>
+ <li>{{#crossLink "CubicBezierCurve"}}{{/crossLink}}</li>
+ <li>{{#crossLink "QuadraticBezierCurve"}}{{/crossLink}}</li>
+ <li>{{#crossLink "Path"}}{{/crossLink}}</li>
  </u>
 
  @class Curve
@@ -18945,7 +18789,7 @@ visibility.destroy();
 
                 get: function () {
 
-                  return this.getTangent(this._t);
+                    return this.getTangent(this._t);
                 }
             },
 
@@ -18969,12 +18813,16 @@ visibility.destroy();
          * @param {Number} t Position to get tangent at.
          * @returns {{Array of Number}} Normalized tangent vector
          */
-        getTangent: function(t) {
+        getTangent: function (t) {
 
             var delta = 0.0001;
 
-            var t1 = this._t - delta;
-            var t2 = this._t + delta;
+            if (t === undefined) {
+                t = this._t;
+            }
+
+            var t1 = t - delta;
+            var t2 = t + delta;
 
             if (t1 < 0) {
                 t1 = 0;
@@ -19046,7 +18894,7 @@ visibility.destroy();
             }
 
             if (this.cacheArcLengths
-                && ( this.cacheArcLengths.length == divisions + 1 )
+                && ( this.cacheArcLengths.length === divisions + 1 )
                 && !this.needsUpdate) {
 
                 return this.cacheArcLengths;
@@ -19135,7 +18983,7 @@ visibility.destroy();
 
             //console.log('b' , i, low, high, Date.now()- time);
 
-            if (arcLengths[i] == targetArcLength) {
+            if (arcLengths[i] === targetArcLength) {
 
                 var t = i / ( il - 1 );
                 return t;
@@ -19155,7 +19003,7 @@ visibility.destroy();
 
             // add that fractional amount to t
 
-            var t = ( i + segmentFraction ) / ( il - 1 );
+            t = ( i + segmentFraction ) / ( il - 1 );
 
             return t;
         }
@@ -19628,7 +19476,7 @@ visibility.destroy();
             var intPoint = Math.floor(point);
             var weight = point - intPoint;
 
-            var point0 = points[intPoint == 0 ? intPoint : intPoint - 1];
+            var point0 = points[intPoint === 0 ? intPoint : intPoint - 1];
             var point1 = points[intPoint];
             var point2 = points[intPoint > points.length - 2 ? points.length - 1 : intPoint + 1];
             var point3 = points[intPoint > points.length - 3 ? points.length - 1 : intPoint + 2];
@@ -20195,9 +20043,9 @@ visibility.destroy();
                         var type = curve.type;
 
                         if (type !== "XEO.SplineCurve" &&
-                            type != "XEO.Path" &&
-                            type != "XEO.CubicBezierCurve" &&
-                            type != "XEO.QuadraticBezierCurve") {
+                            type !== "XEO.Path" &&
+                            type !== "XEO.CubicBezierCurve" &&
+                            type !== "XEO.QuadraticBezierCurve") {
 
                             this.error("Component " + XEO._inQuotes(curve.id)
                                 + " is not a XEO.SplineCurve, XEO.Path or XEO.QuadraticBezierCurve");
@@ -21336,7 +21184,7 @@ visibility.destroy();
                 set: function (value) {
 
                     // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._colorsData != !value);
+                    var dirty = (!this._colorsData !== !value);
 
                     this._colorsData = value;
                     this._colorsDirty = true;
@@ -23269,7 +23117,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
             var heightLength = height / heightSegments;
             var radialAngle = (2.0 * Math.PI / radialSegments);
             var radialLength = 1.0 / radialSegments;
-            var nextRadius = this._radiusBottom;
+            //var nextRadius = this._radiusBottom;
             var radiusChange = (radiusTop - radiusBottom) / heightSegments;
 
             var positions = [];
@@ -23818,13 +23666,21 @@ XEO.PathGeometry = XEO.Geometry.extend({
             var offset = 0;
             var offset2 = 0;
 
-            for (var iy = 0; iy < planeY1; iy++) {
+            var iy;
+            var ix;
+            var x;
+            var a;
+            var b;
+            var c;
+            var d;
+
+            for (iy = 0; iy < planeY1; iy++) {
 
                 var y = iy * segmentHeight - halfHeight;
 
-                for (var ix = 0; ix < planeX1; ix++) {
+                for (ix = 0; ix < planeX1; ix++) {
 
-                    var x = ix * segmentWidth - halfWidth;
+                    x = ix * segmentWidth - halfWidth;
 
                     positions[offset] = x;
                     positions[offset + 1] = -y;
@@ -23843,14 +23699,14 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
             var indices = new ( ( positions.length / 3 ) > 65535 ? Uint32Array : Uint16Array )(planeX * planeY * 6);
 
-            for (var iy = 0; iy < planeY; iy++) {
+            for (iy = 0; iy < planeY; iy++) {
 
-                for (var ix = 0; ix < planeX; ix++) {
+                for (ix = 0; ix < planeX; ix++) {
 
-                    var a = ix + planeX1 * iy;
-                    var b = ix + planeX1 * ( iy + 1 );
-                    var c = ( ix + 1 ) + planeX1 * ( iy + 1 );
-                    var d = ( ix + 1 ) + planeX1 * iy;
+                    a = ix + planeX1 * iy;
+                    b = ix + planeX1 * ( iy + 1 );
+                    c = ( ix + 1 ) + planeX1 * ( iy + 1 );
+                    d = ( ix + 1 ) + planeX1 * iy;
 
                     indices[offset] = d;
                     indices[offset + 1] = b;
@@ -26309,7 +26165,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                         var type = light.type;
 
-                        if (type !== "XEO.AmbientLight" && type != "XEO.DirLight" && type != "XEO.PointLight") {
+                        if (type !== "XEO.AmbientLight" && type != "XEO.DirLight" && type !== "XEO.PointLight") {
                             this.error("Component " + XEO._inQuotes(light.id) + " is not an XEO.AmbientLight, XEO.DirLight or XEO.PointLight ");
                             continue;
                         }
@@ -27417,7 +27273,7 @@ var global = window;
                     if (!keys) {
                         categoryState.keys = keys = Object.keys(this.rootDescription[category]);
                         if (keys) {
-                            if (keys.length == 0) {
+                            if (keys.length === 0) {
                                 this._stepToNextDescription();
                                 continue;
                             }
@@ -27465,8 +27321,8 @@ var global = window;
                     var jsonfile = new XMLHttpRequest();
                     jsonfile.open("GET", jsonPath, true);
                     jsonfile.onreadystatechange = function() {
-                        if (jsonfile.readyState == 4) {
-                            if (jsonfile.status == 200) {
+                        if (jsonfile.readyState === 4) {
+                            if (jsonfile.status === 200) {
                                 self.json = JSON.parse(jsonfile.responseText);
                                 if (callback) {
                                     callback(self.json);
@@ -27702,8 +27558,6 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 return;
             }
 
-            var self = this;
-
             if (!type) {
                 delegate.handleError(XEO.GLTFLoaderUtils.INVALID_TYPE, null);
                 return;
@@ -27720,9 +27574,8 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
             //if this is not specified, 1 "big blob" scenes fails to load.
             xhr.setRequestHeader("If-Modified-Since", "Sat, 01 Jan 1970 00:00:00 GMT");
-            xhr.onload = function (e) {
-                if ((xhr.status == 200) || (xhr.status == 206)) {
-
+            xhr.onload = function () {
+                if ((xhr.status === 200) || (xhr.status === 206)) {
                     delegate.streamAvailable(path, xhr.response);
 
                 } else {
@@ -28008,13 +27861,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
         //FIXME: Float32 is assumed here, but should be checked.
 
-        if (semantic == "POSITION") {
+        if (semantic === "POSITION") {
             geometry.positions = new Float32Array(glResource, 0, attribute.count * componentsPerElementForGLType(attribute.type));
 
-        } else if (semantic == "NORMAL") {
+        } else if (semantic === "NORMAL") {
             geometry.normals = new Float32Array(glResource, 0, attribute.count * componentsPerElementForGLType(attribute.type));
 
-        } else if ((semantic == "TEXCOORD_0") || (semantic == "TEXCOORD" )) {
+        } else if ((semantic === "TEXCOORD_0") || (semantic === "TEXCOORD" )) {
             geometry.uv = new Float32Array(glResource, 0, attribute.count * componentsPerElementForGLType(attribute.type));
         }
 
@@ -28218,9 +28071,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                         var allAttributes = Object.keys(primitiveDescription.attributes);
 
                         // count them first, async issues otherwise
-                        allAttributes.forEach(function (semantic) {
-                            geometry.totalAttributes++;
-                        }, this);
+                        geometry.totalAttributes += allAttributes.length;
 
                         var indices = this.resources.getEntry(primitiveDescription.indices);
                         var bufferEntry = this.resources.getEntry(indices.description.bufferView);
@@ -28887,7 +28738,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
         type: "XEO.Material",
 
-        _init: function (cfg) {
+        _init: function () {
 
         }
     });
@@ -30126,8 +29977,6 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             this._imageDirty = false;
             this._targetDirty = false;
             this._propsDirty = false;
-
-            var self = this;
 
             // Handle WebGL context restore
 
@@ -34717,7 +34566,7 @@ myTask2.setFailed();
 
         serializable: false,
 
-        _init: function (cfg) {
+        _init: function () {
 
             this._idMap = new XEO.utils.Map();
 
