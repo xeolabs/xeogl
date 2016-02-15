@@ -345,7 +345,7 @@
 
             var componentId = component.id;
 
-            if (component.scene != this.scene) {
+            if (component.scene !== this.scene) {
                 this.warn("Attempted to remove component that's not in same XEO.Scene: '" + componentId + "'");
                 return;
             }
