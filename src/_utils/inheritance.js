@@ -83,7 +83,7 @@
 
             // Create array of type names to indicate inheritance chain,
             // to support "isType" queries on components
-            prototype.types = _super.types ? _super.types.concat(prop.type) : [prop.type];
+            prototype.superTypes = _super.superTypes ? _super.superTypes.concat(_super.type) : [];
         }
 
         // The dummy class constructor
