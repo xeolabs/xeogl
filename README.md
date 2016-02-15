@@ -1,8 +1,8 @@
 # xeoEngine
 
-xeo [zee-oh] - "Innovative ideas that have yet to be discovered" - [*Urban Dictionary*](http://www.urbandictionary.com/define.php?term=Xeo)
-
 [http://xeoengine.org](http://xeoengine.org)
+
+[![Codacy Badge](https://api.codacy.com/project/badge/grade/a834272d6bf448f7a77947d7b784f261)](https://www.codacy.com/app/lindsay-kay/xeoengine)
 
 ## About
 
