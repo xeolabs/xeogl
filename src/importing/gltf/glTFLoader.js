@@ -446,6 +446,9 @@
                     return;
                 }
 
+                var i;
+                var len;
+
                 if (node.matrix) {
                     var matrix = node.matrix;
                     transform = new XEO.Transform(this.collection.scene, {
@@ -507,7 +510,7 @@
 
                         mesh = mesh.object;
 
-                        for (var i = 0, len = mesh.length; i < len; i++) {
+                        for (i = 0, len = mesh.length; i < len; i++) {
 
                             material = mesh[i].material;
                             geometry = mesh[i].geometry;
@@ -532,7 +535,7 @@
                     var children = node.children;
                     var childNode;
 
-                    for (var i = 0, len = children.length; i < len; i++) {
+                    for (i = 0, len = children.length; i < len; i++) {
                         childNode = children[i];
                         this._parseNode(childNode, transform);
                     }

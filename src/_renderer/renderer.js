@@ -1071,6 +1071,8 @@
     XEO.renderer.Renderer.prototype._doDrawList = function (params) {
 
         var gl = this._canvas.gl;
+        var i;
+        var len;
 
         var ambient = this._ambient;
         var ambientColor;
@@ -1135,7 +1137,7 @@
 
             // Pick an object
 
-            for (var i = 0, len = this._pickObjectChunkListLen; i < len; i++) {
+            for (i = 0, len = this._pickObjectChunkListLen; i < len; i++) {
                 this._pickObjectChunkList[i].pickObject(frameCtx);
             }
 
@@ -1148,7 +1150,7 @@
                 var chunks = params.object.chunks;
                 var chunk;
 
-                for (var i = 0, len = chunks.length; i < len; i++) {
+                for (i = 0, len = chunks.length; i < len; i++) {
                     chunk = chunks[i];
                     if (chunk.pickPrimitive) {
                         chunk.pickPrimitive(frameCtx);
@@ -1162,7 +1164,7 @@
 
             var startTime = (new Date()).getTime();
 
-            for (var i = 0, len = this._drawChunkListLen; i < len; i++) {
+            for (i = 0, len = this._drawChunkListLen; i < len; i++) {
                 this._drawChunkList[i].draw(frameCtx);
             }
 

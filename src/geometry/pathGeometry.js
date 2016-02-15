@@ -33,12 +33,15 @@ XEO.PathGeometry = XEO.Geometry.extend({
             return;
         }
 
+        var i;
+        var len;
+
         var points = path.getPoints(this._divisions);
 
         var positions = [];
         var point;
 
-        for (var i = 0, len = points.length; i < len; i++) {
+        for (i = 0, len = points.length; i < len; i++) {
 
             point = points[i];
 
@@ -49,7 +52,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
         var indices = [];
 
-        for (var i = 0, len = points.length - 1; i < len; i++) {
+        for (i = 0, len = points.length - 1; i < len; i++) {
             indices.push(i);
             indices.push(i + 1);
         }

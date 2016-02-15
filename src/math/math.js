@@ -167,7 +167,9 @@
                     } else if (i === 14) {
                         uuid[i] = '4';
                     } else {
-                        if (rnd <= 0x02) rnd = 0x2000000 + ( Math.random() * 0x1000000 ) | 0;
+                        if (rnd <= 0x02) {
+                            rnd = 0x2000000 + ( Math.random() * 0x1000000 ) | 0;
+                        }
                         r = rnd & 0xf;
                         rnd = rnd >> 4;
                         uuid[i] = chars[( i === 19 ) ? ( r & 0x3 ) | 0x8 : r];
@@ -2261,7 +2263,7 @@
             aabb2.min[0] = Math.floor(xmin * canvasWidth);
             aabb2.min[1] = canvasHeight - Math.floor(ymax * canvasHeight);
             aabb2.max[0] = Math.floor(xmax * canvasWidth);
-            aabb2.max[1] = canvasHeight -Math.floor(ymin * canvasHeight);
+            aabb2.max[1] = canvasHeight - Math.floor(ymin * canvasHeight);
 
             return aabb;
         },
@@ -2277,6 +2279,8 @@
          */
         buildNormals: function (positions, indices) {
 
+            var i;
+            var len;
             var nvecs = new Array(positions.length / 3);
             var j0;
             var j1;
@@ -2285,7 +2289,7 @@
             var v2;
             var v3;
 
-            for (var i = 0, len = indices.length; i < len; i += 3) {
+            for (i = 0, len = indices.length; i < len; i += 3) {
                 j0 = indices[i + 0];
                 j1 = indices[i + 1];
                 j2 = indices[i + 2];
@@ -2299,9 +2303,15 @@
 
                 var n = XEO.math.normalizeVec3(XEO.math.cross3Vec3(v2, v3, [0, 0, 0]), [0, 0, 0]);
 
-                if (!nvecs[j0]) nvecs[j0] = [];
-                if (!nvecs[j1]) nvecs[j1] = [];
-                if (!nvecs[j2]) nvecs[j2] = [];
+                if (!nvecs[j0]) {
+                    nvecs[j0] = [];
+                }
+                if (!nvecs[j1]) {
+                    nvecs[j1] = [];
+                }
+                if (!nvecs[j2]) {
+                    nvecs[j2] = [];
+                }
 
                 nvecs[j0].push(n);
                 nvecs[j1].push(n);
@@ -2311,7 +2321,7 @@
             var normals = new Array(positions.length);
 
             // now go through and average out everything
-            for (var i = 0, len = nvecs.length; i < len; i++) {
+            for (i = 0, len = nvecs.length; i < len; i++) {
                 var count = nvecs[i].length;
                 var x = 0;
                 var y = 0;

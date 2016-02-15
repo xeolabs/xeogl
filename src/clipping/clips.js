@@ -164,9 +164,11 @@
                     value = value || [];
 
                     var clip;
+                    var i;
+                    var len;
 
                     // Unsubscribe from events on old clips
-                    for (var i = 0, len = this._clips.length; i < len; i++) {
+                    for (i = 0, len = this._clips.length; i < len; i++) {
 
                         clip = this._clips[i];
 
@@ -208,7 +210,7 @@
                         }
                     }
 
-                    for (var i = 0, len = value.length; i < len; i++) {
+                    for (i = 0, len = value.length; i < len; i++) {
 
                         clip = value[i];
 

@@ -180,6 +180,9 @@
                 return vertex;
             }
 
+            var i;
+            var len;
+
             begin();
 
             add("// Modeling matrix");
@@ -211,7 +214,7 @@
                 }
 
                 // Lights
-                for (var i = 0; i < states.lights.lights.length; i++) {
+                for (i = 0, len = states.lights.lights.length; i < len; i++) {
 
                     var light = states.lights.lights[i];
 

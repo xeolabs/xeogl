@@ -302,8 +302,9 @@ var global = window;
                 var self = this;
                 function JSONReady(json) {
                     self.rootDescription = json;
-                    if (callback)
+                    if (callback) {
                         callback(this);
+                    }
                 }
 
                 this._loadJSONIfNeeded(JSONReady);

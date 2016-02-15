@@ -203,13 +203,15 @@
             var look;
             var up;
 
-            if (worldBoundary = params.worldBoundary) {
+            if (params.worldBoundary) {
 
                 // Argument is a Component subtype with a worldBoundary
 
-                aabb = worldBoundary.aabb;
+                aabb = params.worldBoundary.aabb;
 
-            } else if (aabb = params.aabb) {
+            } else if (params.aabb) {
+
+                aabb = params.aabb;
 
                 // Argument is a Boundary3D
 

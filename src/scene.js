@@ -358,7 +358,7 @@
 
                 var componentJSON;
                 var type;
-                var constructor;
+                var constr;
 
                 for (var i = 0, len = componentJSONs.length; i < len; i++) {
 
@@ -367,10 +367,10 @@
 
                     if (type) {
 
-                        constructor = window[type];
+                        constr = window[type];
 
-                        if (constructor) {
-                            new constructor(this, componentJSON);
+                        if (constr) {
+                            new constr(this, componentJSON);
                         }
                     }
                 }
