@@ -186,7 +186,7 @@
             add("uniform mat4 xeo_uModelMatrix;          // Modeling matrix");
             add("uniform mat4 xeo_uViewMatrix;           // Viewing matrix");
             add("uniform mat4 xeo_uProjMatrix;           // Projection matrix");
-            add("uniform vec3 xeo_uEye;                  // World-space eye position");
+            //add("uniform vec3 xeo_uEye;                  // World-space eye position");
 
             add("attribute vec3 xeo_aPosition;           // Local-space vertex position");
 
@@ -421,7 +421,8 @@
                     }
                 }
 
-                add("   xeo_vViewEyeVec = ((viewMatrix * vec4(xeo_uEye, 0.0)).xyz  - viewPosition.xyz);");
+                //add("   xeo_vViewEyeVec = ((viewMatrix * vec4(xeo_uEye, 0.0)).xyz  - viewPosition.xyz);");
+                add("   xeo_vViewEyeVec = - viewPosition.xyz;");
 
                 if (normalMapping) {
                     add("   xeo_vViewEyeVec *= TBM;");
