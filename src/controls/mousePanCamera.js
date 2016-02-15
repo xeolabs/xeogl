@@ -175,7 +175,7 @@
                                     return;
                                 }
 
-                                if (xDelta != 0 || yDelta != 0) {
+                                if (xDelta !== 0 || yDelta !== 0) {
 
                                     camera.view.pan([xDelta, yDelta, 0]);
 

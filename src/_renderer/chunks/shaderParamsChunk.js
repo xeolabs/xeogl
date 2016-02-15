@@ -6,7 +6,7 @@
 
         type: "shaderParams",
 
-        draw: function (frameCtx) {
+        draw: function () {
 
             var params = this.state.params;
 

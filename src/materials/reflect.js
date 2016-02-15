@@ -151,7 +151,7 @@
 
         _update: function () {
 
-            var gl = this.scene.canvas.gl;
+         //   var gl = this.scene.canvas.gl;
 
             var state = this._state;
 

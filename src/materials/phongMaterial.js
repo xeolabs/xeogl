@@ -1003,26 +1003,26 @@
                 emissive: this._state.emissive
             };
 
-            if (this._state.opacity != 1.0) {
+            if (this._state.opacity !== 1.0) {
                 json.opacity = this._state.opacity;
             }
 
-            if (this._state.shininess != 80.0) {
+            if (this._state.shininess !== 80.0) {
                 json.shininess = this._state.shininess;
             }
 
-            if (this._state.reflectivity != 1.0) {
+            if (this._state.reflectivity !== 1.0) {
                 json.reflectivity = this._state.reflectivity;
             }
 
 
             // Lines and points
             
-            if (this._state.lineWidth != 1.0) {
+            if (this._state.lineWidth !== 1.0) {
                 json.lineWidth = this._state.lineWidth;
             }
 
-            if (this._state.pointSize != 1.0) {
+            if (this._state.pointSize !== 1.0) {
                 json.pointSize = this._state.pointSize;
             }
 

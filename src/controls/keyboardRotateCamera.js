@@ -246,11 +246,11 @@
                                             yaw = 0;
                                         }
 
-                                        if (yaw != 0) {
+                                        if (yaw !== 0) {
                                             camera.view.rotateEyeY(yaw);
                                         }
 
-                                        if (pitch != 0) {
+                                        if (pitch !== 0) {
                                             camera.view.rotateEyeX(pitch);
                                         }
                                     }

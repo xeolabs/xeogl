@@ -241,7 +241,7 @@
             // Fly camera to each picked entity
             // Don't change distance between look and eye
 
-            var view = this.cameraFlight.camera.view;
+          //  var view = this.cameraFlight.camera.view;
 
             var pos;
 

@@ -7,8 +7,6 @@
     var tempMat1 = new Float32Array(16);
     var tempMat2 = new Float32Array(16);
     var tempVec3 = new Float32Array(3);
-
-    var tempVec3a = new Float32Array(3);
     var tempVec3b = new Float32Array(3);
     var tempVec3c = new Float32Array(3);
     var tempVec3d = new Float32Array(3);
@@ -16,16 +14,6 @@
     var tempVec3f = new Float32Array(3);
 
     var tempVec4 = new Float32Array(4);
-
-    var tempAABB2 = {
-        min: new Float32Array(2),
-        max: new Float32Array(2)
-    };
-
-    var tempAABB2b = {
-        min: new Float32Array(2),
-        max: new Float32Array(2)
-    };
 
     /*
      * Optimizations made based on glMatrix by Brandon Jones
@@ -2152,7 +2140,11 @@
             var xmax = -10000000;
             var ymax = -10000000;
 
-            var x, y, z, w, f;
+            var x;
+            var y;
+            var z;
+            var w;
+            var f;
 
             for (var i = 0, len = points.length; i < len; i++) {
 
@@ -2763,8 +2755,6 @@
 
             var norm_u_norm_v = Math.sqrt(math.dotVec3(u, u) * math.dotVec3(v, v));
             var real_part = norm_u_norm_v + math.dotVec3(u, v);
-
-            var w;
 
             if (real_part < 0.00000001 * norm_u_norm_v) {
 

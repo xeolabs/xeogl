@@ -551,7 +551,7 @@
 
                     if (oldGeometry) {
 
-                        if (!value || (value.id !== undefined ? value.id : value) != oldGeometry.id) {
+                        if (!value || (value.id !== undefined ? value.id : value) !== oldGeometry.id) {
                             oldGeometry.off(this._onGeometryPositions);
                             oldGeometry.off(this._onGeometryDestroyed);
                         }

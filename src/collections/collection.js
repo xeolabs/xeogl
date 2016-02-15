@@ -223,7 +223,7 @@
                 return;
             }
 
-            if (component.scene != this.scene) {
+            if (component.scene !== this.scene) {
 
                 // Component in wrong Scene
 

@@ -216,7 +216,7 @@
                                     return;
                                 }
                                 
-                                if (xDelta != 0) {
+                                if (xDelta !== 0) {
 
                                     angle = -xDelta * this._sensitivity;
 
@@ -229,7 +229,7 @@
                                     xDelta = 0;
                                 }
 
-                                if (yDelta != 0) {
+                                if (yDelta !== 0) {
 
                                     angle = yDelta * this._sensitivity;
 

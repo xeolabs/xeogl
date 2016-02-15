@@ -237,7 +237,9 @@
 
             var arcLengths = this._getLengths();
 
-            var i = 0, il = arcLengths.length;
+            var i = 0;
+            var il = arcLengths.length;
+            var t;
 
             var targetArcLength; // The targeted u distance value to get
 
@@ -285,7 +287,8 @@
 
             if (arcLengths[i] === targetArcLength) {
 
-                var t = i / ( il - 1 );
+                t = i / ( il - 1 );
+
                 return t;
 
             }

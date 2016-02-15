@@ -864,19 +864,19 @@
                 json.rotate = this._rotate;
             }
 
-            if (this._state.minFilter != "linearMipmapLinear") {
+            if (this._state.minFilter !== "linearMipmapLinear") {
                 json.minFilter = this._state.minFilter;
             }
 
-            if (this._state.magFilter != "linear") {
+            if (this._state.magFilter !== "linear") {
                 json.magFilter = this._state.magFilter;
             }
 
-            if (this._state.wrapS != "repeat") {
+            if (this._state.wrapS !== "repeat") {
                 json.wrapS = this._state.wrapS;
             }
 
-            if (this._state.wrapT != "repeat") {
+            if (this._state.wrapT !== "repeat") {
                 json.wrapT = this._state.wrapT;
             }
 
