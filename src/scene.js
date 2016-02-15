@@ -384,29 +384,30 @@
 
         _initDefaults: function () {
 
-            // Create this Scene's default components, which every
-            // Entity created in this Scene will inherit by default
+            // Call this Scene's property accessors to lazy-init their properties
 
-            this.view;
-            this.project;
-            this.camera;
-            this.clips;
-            this.colorTarget;
-            this.colorBuf;
-            this.depthTarget;
-            this.depthBuf;
-            this.visibility;
-            this.modes;
-            this.geometry;
-            this.layer;
-            this.lights;
-            this.material;
-            this.morphTargets;
-            this.reflect;
-            this.shader;
-            this.shaderParams;
-            this.stage;
-            this.transform;
+            var dummy; // Keeps Codacy happy
+
+            dummy = this.view;
+            dummy = this.project;
+            dummy = this.camera;
+            dummy = this.clips;
+            dummy = this.colorTarget;
+            dummy = this.colorBuf;
+            dummy = this.depthTarget;
+            dummy = this.depthBuf;
+            dummy = this.visibility;
+            dummy = this.modes;
+            dummy = this.geometry;
+            dummy = this.layer;
+            dummy = this.lights;
+            dummy = this.material;
+            dummy = this.morphTargets;
+            dummy = this.reflect;
+            dummy = this.shader;
+            dummy = this.shaderParams;
+            dummy = this.stage;
+            dummy = this.transform;
         },
 
         // Called by each component that is created with this Scene as parent.
