@@ -6,10 +6,10 @@
  The Curve is subclassed by the following component types:
 
  <ul>
-    <li>{{#crossLink "SplineCurve"}}{{/crossLink}}</li>
-    <li>{{#crossLink "CubicBezierCurve"}}{{/crossLink}}</li>
-    <li>{{#crossLink "QuadraticBezierCurve"}}{{/crossLink}}</li>
-    <li>{{#crossLink "Path"}}{{/crossLink}}</li>
+ <li>{{#crossLink "SplineCurve"}}{{/crossLink}}</li>
+ <li>{{#crossLink "CubicBezierCurve"}}{{/crossLink}}</li>
+ <li>{{#crossLink "QuadraticBezierCurve"}}{{/crossLink}}</li>
+ <li>{{#crossLink "Path"}}{{/crossLink}}</li>
  </u>
 
  @class Curve
@@ -89,7 +89,7 @@
 
                 get: function () {
 
-                  return this.getTangent(this._t);
+                    return this.getTangent(this._t);
                 }
             },
 
@@ -113,7 +113,7 @@
          * @param {Number} t Position to get tangent at.
          * @returns {{Array of Number}} Normalized tangent vector
          */
-        getTangent: function(t) {
+        getTangent: function (t) {
 
             var delta = 0.0001;
 
@@ -299,7 +299,7 @@
 
             // add that fractional amount to t
 
-            var t = ( i + segmentFraction ) / ( il - 1 );
+            t = ( i + segmentFraction ) / ( il - 1 );
 
             return t;
         }

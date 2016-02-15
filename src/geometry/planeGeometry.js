@@ -92,13 +92,21 @@
             var offset = 0;
             var offset2 = 0;
 
-            for (var iy = 0; iy < planeY1; iy++) {
+            var iy;
+            var ix;
+            var x;
+            var a;
+            var b;
+            var c;
+            var d;
+
+            for (iy = 0; iy < planeY1; iy++) {
 
                 var y = iy * segmentHeight - halfHeight;
 
-                for (var ix = 0; ix < planeX1; ix++) {
+                for (ix = 0; ix < planeX1; ix++) {
 
-                    var x = ix * segmentWidth - halfWidth;
+                    x = ix * segmentWidth - halfWidth;
 
                     positions[offset] = x;
                     positions[offset + 1] = -y;
@@ -117,14 +125,14 @@
 
             var indices = new ( ( positions.length / 3 ) > 65535 ? Uint32Array : Uint16Array )(planeX * planeY * 6);
 
-            for (var iy = 0; iy < planeY; iy++) {
+            for (iy = 0; iy < planeY; iy++) {
 
-                for (var ix = 0; ix < planeX; ix++) {
+                for (ix = 0; ix < planeX; ix++) {
 
-                    var a = ix + planeX1 * iy;
-                    var b = ix + planeX1 * ( iy + 1 );
-                    var c = ( ix + 1 ) + planeX1 * ( iy + 1 );
-                    var d = ( ix + 1 ) + planeX1 * iy;
+                    a = ix + planeX1 * iy;
+                    b = ix + planeX1 * ( iy + 1 );
+                    c = ( ix + 1 ) + planeX1 * ( iy + 1 );
+                    d = ( ix + 1 ) + planeX1 * iy;
 
                     indices[offset] = d;
                     indices[offset + 1] = b;

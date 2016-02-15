@@ -345,7 +345,7 @@
 
                 // Lights
 
-                for (var i = 0; i < states.lights.lights.length; i++) {
+                for (i = 0, len = states.lights.lights.length; i < len; i++) {
 
                     light = states.lights.lights[i];
 
@@ -568,7 +568,7 @@
 
                 var light;
 
-                for (var i = 0; i < states.lights.lights.length; i++) {
+                for (i = 0, len = states.lights.lights.length; i < len; i++) {
 
                     light = states.lights.lights[i];
 
@@ -798,9 +798,7 @@
                 add("   float lightDist;");
                 add("   float attenuation;");
 
-                var light;
-
-                for (var i = 0, len = states.lights.lights.length; i < len; i++) {
+                for (i = 0, len = states.lights.lights.length; i < len; i++) {
 
                     light = states.lights.lights[i];
 
