@@ -479,11 +479,11 @@ var entity2 = new XEO.Entity(scene, {
 
                             </li>
                             <li class="index-item property inherited">
-                                <a href="#property_type">type</a>
+                                <a href="#property_superTypes">superTypes</a>
 
                             </li>
                             <li class="index-item property inherited">
-                                <a href="#property_types">types</a>
+                                <a href="#property_type">type</a>
 
                             </li>
                     </ul>
@@ -544,7 +544,7 @@ var entity2 = new XEO.Entity(scene, {
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_create">Component</a>:
-        <a href="../files/src_component.js.html#l799"><code>src&#x2F;component.js:799</code></a>
+        <a href="../files/src_component.js.html#l789"><code>src&#x2F;component.js:789</code></a>
         </p>
 
 
@@ -645,7 +645,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l999"><code>src&#x2F;component.js:999</code></a>
+        <a href="../files/src_component.js.html#l989"><code>src&#x2F;component.js:989</code></a>
         </p>
 
 
@@ -687,7 +687,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_component.js.html#l579"><code>src&#x2F;component.js:579</code></a>
+        <a href="../files/src_component.js.html#l583"><code>src&#x2F;component.js:583</code></a>
         </p>
 
 
@@ -751,7 +751,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_component.js.html#l420"><code>src&#x2F;component.js:420</code></a>
+        <a href="../files/src_component.js.html#l424"><code>src&#x2F;component.js:424</code></a>
         </p>
 
 
@@ -845,7 +845,7 @@ any subsequent notifications on that location as they are made.</p>
         <p>Tests if this component is of the given type, or is a subclass of the given type.</p>
 <p>The type may be given as either a string or a component constructor.</p>
 <p>This method works by walking up the inheritance type chain, which this component provides in
-property <a href="../classes/Component.html#property_types" class="crosslink">types</a>, returning true as soon as one of the type strings in
+property <a href="../classes/Component.html#property_superTypes" class="crosslink">superTypes</a>, returning true as soon as one of the type strings in
 the chain matches the given type, of false if none match.</p>
 <h4 id="examples-">Examples:</h4>
 <pre class="code prettyprint"><code class="lang-javascript">var myRotate = new XEO.Rotate({ ... });
@@ -912,7 +912,7 @@ myRotate.isType(XEO.Entity); // Returns false, because XEO.Rotate does not (even
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_component.js.html#l534"><code>src&#x2F;component.js:534</code></a>
+        <a href="../files/src_component.js.html#l538"><code>src&#x2F;component.js:538</code></a>
         </p>
 
 
@@ -970,7 +970,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_component.js.html#l491"><code>src&#x2F;component.js:491</code></a>
+        <a href="../files/src_component.js.html#l495"><code>src&#x2F;component.js:495</code></a>
         </p>
 
 
@@ -1035,7 +1035,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_component.js.html#l461"><code>src&#x2F;component.js:461</code></a>
+        <a href="../files/src_component.js.html#l465"><code>src&#x2F;component.js:465</code></a>
         </p>
 
 
@@ -1129,7 +1129,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_component.js.html#l513"><code>src&#x2F;component.js:513</code></a>
+        <a href="../files/src_component.js.html#l517"><code>src&#x2F;component.js:517</code></a>
         </p>
 
 
@@ -1209,7 +1209,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_component.js.html#l559"><code>src&#x2F;component.js:559</code></a>
+        <a href="../files/src_component.js.html#l563"><code>src&#x2F;component.js:563</code></a>
         </p>
 
 
@@ -1367,7 +1367,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l937"><code>src&#x2F;component.js:937</code></a>
+                            <a href="../files/src_component.js.html#l927"><code>src&#x2F;component.js:927</code></a>
                             </p>
                     
                     
@@ -1474,7 +1474,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l965"><code>src&#x2F;component.js:965</code></a>
+                            <a href="../files/src_component.js.html#l955"><code>src&#x2F;component.js:955</code></a>
                             </p>
                     
                     
@@ -1482,6 +1482,38 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>String containing the serialized JSON state of this Component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_superTypes" class="property item inherited">
+                        <h3 class="name"><code>superTypes</code></h3>
+                        <span class="type">Array of String</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_superTypes">Component</a>:
+                            <a href="../files/src_component.js.html#l340"><code>src&#x2F;component.js:340</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>An array of strings that indicates the chain of super-types within this component&#39;s inheritance hierarchy.</p>
+                    <p>For example, if this component is a <a href="../classes/Rotate.html" class="crosslink">Rotate</a>, which
+                    extends <a href="../classes/Transform.html" class="crosslink">Transform</a>, which in turn extends <a href="../classes/Component.html" class="crosslink">Component</a>,
+                    then this property will have the value:</p>
+                    <pre class="code prettyprint"><code class="lang-json">["XEO.Component", "XEO.Transform", "XEO.Rotate"]
+                    </code></pre>
+                    <p>Note that the chain is ordered downwards in the hierarchy, ie. from super-class down to sub-class.</p>
                     
                         </div>
                     
@@ -1511,38 +1543,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     <p>This is used when <a href="Scene.html#savingAndLoading">loading Scenes from JSON</a>, and is included in the JSON
                     representation of this Component, so that this class may be instantiated when loading it from the JSON representation.</p>
                     <p>For example: &quot;XEO.AmbientLight&quot;, &quot;XEO.ColorTarget&quot;, &quot;XEO.Lights&quot; etc.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_types" class="property item inherited">
-                        <h3 class="name"><code>types</code></h3>
-                        <span class="type">Array of String</span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Component.html#property_types">Component</a>:
-                            <a href="../files/src_component.js.html#l340"><code>src&#x2F;component.js:340</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>An array of strings that indicates the types within this component&#39;s inheritance hierarchy.</p>
-                    <p>For example, if this component is a <a href="../classes/Rotate.html" class="crosslink">Rotate</a>, which
-                    extends <a href="../classes/Transform.html" class="crosslink">Transform</a>, which in turn extends <a href="../classes/Component.html" class="crosslink">Component</a>,
-                    then this property will have the value:</p>
-                    <pre class="code prettyprint"><code class="lang-json">["XEO.Component", "XEO.Transform", "XEO.Rotate"]
-                    </code></pre>
-                    <p>Note that the chain is ordered downwards in the hierarchy, ie. from super-class down to sub-class.</p>
                     
                         </div>
                     
@@ -1608,7 +1608,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1046"><code>src&#x2F;component.js:1046</code></a>
+                            <a href="../files/src_component.js.html#l1036"><code>src&#x2F;component.js:1036</code></a>
                             </p>
                     
                     

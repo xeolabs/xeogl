@@ -520,7 +520,7 @@
         type: &quot;XEO.Component&quot;,
 
         /**
-         An array of strings that indicates the types within this component&#x27;s inheritance hierarchy.
+         An array of strings that indicates the chain of super-types within this component&#x27;s inheritance hierarchy.
 
          For example, if this component is a {{#crossLink &quot;Rotate&quot;}}{{/crossLink}}, which
          extends {{#crossLink &quot;Transform&quot;}}{{/crossLink}}, which in turn extends {{#crossLink &quot;Component&quot;}}{{/crossLink}},
@@ -532,11 +532,11 @@
 
          Note that the chain is ordered downwards in the hierarchy, ie. from super-class down to sub-class.
 
-         @property types
+         @property superTypes
          @type {Array of String}
          @final
          */
-        types: [&quot;XEO.Component&quot;],
+        superTypes: [&quot;XEO.Component&quot;],
 
         /**
          Tests if this component is of the given type, or is a subclass of the given type.
@@ -544,7 +544,7 @@
          The type may be given as either a string or a component constructor.
 
          This method works by walking up the inheritance type chain, which this component provides in
-         property {{#crossLink &quot;Component/types:property&quot;}}{{/crossLink}}, returning true as soon as one of the type strings in
+         property {{#crossLink &quot;Component/superTypes:property&quot;}}{{/crossLink}}, returning true as soon as one of the type strings in
          the chain matches the given type, of false if none match.
 
          #### Examples:
@@ -576,14 +576,18 @@
                 }
             }
 
-            var types = this.types;
+            if (this.type === type) {
+                return true;
+            }
 
-            if (!types) {
+            var superTypes = this.superTypes;
+
+            if (!superTypes) {
                 return false;
             }
 
-            for (var i = types.length - 1; i &gt;= 0; i--) {
-                if (types[i] === type) {
+            for (var i = superTypes.length - 1; i &gt;= 0; i--) {
+                if (superTypes[i] === type) {
                     return true;
                 }
             }
@@ -871,22 +875,8 @@
                 if (expectedType) {
 
                     if (!child.isType(expectedType)) {
-
-                        // Attempt to fall back on default component class for the given name
-
-                        child = this.scene[name];
-
-                        if (!child) {
-
-                            this.error(&quot;Expected a &quot; + expectedType + &quot; type or subtype: &quot; + child.type + &quot; &quot; + XEO._inQuotes(child.id));
-
-                            return;
-
-                        } else {
-                            this.error(&quot;Expected a &quot; + expectedType + &quot; type or subtype: &quot; + child.type + &quot; &quot;
-                                + XEO._inQuotes(child.id) + &quot; (recovering by adding Scene&#x27;s default &quot; + expectedType + &quot; instance instead)&quot;);
-
-                        }
+                        this.error(&quot;Expected a &quot; + expectedType + &quot; type or subtype: &quot; + child.type + &quot; &quot; + XEO._inQuotes(child.id));
+                        return;
                     }
                 }
             }

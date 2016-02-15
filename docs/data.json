@@ -1964,7 +1964,7 @@
                             "optional": true
                         },
                         {
-                            "name": "emissiveMap",
+                            "name": "collection",
                             "description": "A {{#crossLink \"Collection\"}}Collection{{/crossLink}} to fit the {{#crossLink \"CollectionBoundary/worldBoundary:property\"}}{{/crossLink}} to. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this CollectionBoundary.",
                             "type": "Collection",
                             "optional": true,
@@ -1987,7 +1987,7 @@
             "namespace": "",
             "file": "src/camera/camera.js",
             "line": 3,
-            "description": "A **Camera** defines a viewpoint on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n## Overview\n\n<ul>\n\n<li> A Camera is composed of a viewing transform and a {{#crossLink \"Projection\"}}{{/crossLink}}.</li>\n\n<li>The viewing transform is usually a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.</li>\n\n<li>The {{#crossLink \"Projection\"}}{{/crossLink}} may be an {{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}}\nor {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.</li>\n\n<li> By default, each Camera is composed of its parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/view:property\"}}{{/crossLink}} transform,\n(which is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}) and default\n{{#crossLink \"Scene/project:property\"}}{{/crossLink}} transform (which is a {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}).\nYou would override those with your own transform components as necessary.</li>\n\n</ul>\n\n<img src=\"../../../assets/images/Camera.png\"></img>\n\n## Example\n\nIn the example below, we have\n\n<ul>\n<li>a {{#crossLink \"Lookat\"}}{{/crossLink}} view transform,</li>\n<li>a {{#crossLink \"Perspective\"}}{{/crossLink}} projection transform,</li>\n<li>a Camera attached to the {{#crossLink \"Lookat\"}}{{/crossLink}} and {{#crossLink \"Perspective\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>an {{#crossLink \"Entity\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar lookat = new XEO.Lookat(scene, {\n       eye: [0, 0, -10],\n       look: [0, 0, 0],\n       up: [0, 1, 0]\n   });\n\nvar perspective = new XEO.Lookat(scene, {\n       fovy: 60,\n       near: 0.1,\n       far: 1000\n   });\n\nvar camera = new XEO.Camera(scene, {\n       view: lookat,\n       project: perspective\n   });\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\nvar entity = new XEO.Entity(scene, {\n       camera: camera,\n       geometry: geometry\n   });\n\nscene.on(\"tick\", function () {\n      camera.view.rotateEyeY(0.5);\n      camera.view.rotateEyeX(0.3);\n   });\n````",
+            "description": "A **Camera** defines a viewpoint on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li> A Camera is composed of a viewing transform and a {{#crossLink \"Projection\"}}{{/crossLink}}.</li>\n<li>The viewing transform is usually a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}. Having the viewing transform as a\nseparate component from the Camera allows us to switch the Camera between multiple, existing viewpoints by simply re-attaching it to\ndifferent viewing transform components (ie. {{#crossLink \"Lookat\"}}Lookats{{/crossLink}}).</li>\n<li>The {{#crossLink \"Projection\"}}{{/crossLink}} may be an {{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}}\nor {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}. Likewise, having the projection transform as a\nseparate component from the Camera allows us to switch the Camera between multiple, existing projections by simply re-attaching it to\ndifferent projection components.</li>\n<li> By default, each Camera is composed of its parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/view:property\"}}{{/crossLink}} transform,\n(which is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}) and default\n{{#crossLink \"Scene/project:property\"}}{{/crossLink}} transform (which is a {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}).\nYou would override those with your own transform components as necessary.</li>\n\n</ul>\n\n<img src=\"../../../assets/images/Camera.png\"></img>\n\n## Example\n\nIn the example below, we have\n\n<ul>\n<li>a {{#crossLink \"Lookat\"}}{{/crossLink}} view transform,</li>\n<li>a {{#crossLink \"Perspective\"}}{{/crossLink}} projection transform,</li>\n<li>a Camera attached to the {{#crossLink \"Lookat\"}}{{/crossLink}} and {{#crossLink \"Perspective\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>an {{#crossLink \"Entity\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar lookat = new XEO.Lookat(scene, {\n       eye: [0, 0, -10],\n       look: [0, 0, 0],\n       up: [0, 1, 0]\n   });\n\nvar perspective = new XEO.Lookat(scene, {\n       fovy: 60,\n       near: 0.1,\n       far: 1000\n   });\n\nvar camera = new XEO.Camera(scene, {\n       view: lookat,\n       project: perspective\n   });\n\nvar geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box\n\nvar entity = new XEO.Entity(scene, {\n       camera: camera,\n       geometry: geometry\n   });\n\nscene.on(\"tick\", function () {\n      camera.view.rotateEyeY(0.5);\n      camera.view.rotateEyeX(0.3);\n   });\n````",
             "submodule": "camera",
             "is_constructor": 1,
             "params": [
@@ -19824,9 +19824,9 @@
         {
             "file": "src/component.js",
             "line": 340,
-            "description": "An array of strings that indicates the types within this component's inheritance hierarchy.\n\nFor example, if this component is a {{#crossLink \"Rotate\"}}{{/crossLink}}, which\nextends {{#crossLink \"Transform\"}}{{/crossLink}}, which in turn extends {{#crossLink \"Component\"}}{{/crossLink}},\nthen this property will have the value:\n\n````json\n[\"XEO.Component\", \"XEO.Transform\", \"XEO.Rotate\"]\n````\n\nNote that the chain is ordered downwards in the hierarchy, ie. from super-class down to sub-class.",
+            "description": "An array of strings that indicates the chain of super-types within this component's inheritance hierarchy.\n\nFor example, if this component is a {{#crossLink \"Rotate\"}}{{/crossLink}}, which\nextends {{#crossLink \"Transform\"}}{{/crossLink}}, which in turn extends {{#crossLink \"Component\"}}{{/crossLink}},\nthen this property will have the value:\n\n````json\n[\"XEO.Component\", \"XEO.Transform\", \"XEO.Rotate\"]\n````\n\nNote that the chain is ordered downwards in the hierarchy, ie. from super-class down to sub-class.",
             "itemtype": "property",
-            "name": "types",
+            "name": "superTypes",
             "type": "{Array of String}",
             "final": 1,
             "class": "Component",
@@ -19835,7 +19835,7 @@
         {
             "file": "src/component.js",
             "line": 359,
-            "description": "Tests if this component is of the given type, or is a subclass of the given type.\n\nThe type may be given as either a string or a component constructor.\n\nThis method works by walking up the inheritance type chain, which this component provides in\nproperty {{#crossLink \"Component/types:property\"}}{{/crossLink}}, returning true as soon as one of the type strings in\nthe chain matches the given type, of false if none match.\n\n#### Examples:\n\n````javascript\nvar myRotate = new XEO.Rotate({ ... });\n\nmyRotate.isType(XEO.Component); // Returns true for all XEO components\nmyRotate.isType(\"XEO.Component\"); // Returns true for all XEO components\nmyRotate.isType(XEO.Rotate); // Returns true\nmyRotate.isType(XEO.Transform); // Returns true\nmyRotate.isType(\"XEO.Transform\"); // Returns true\nmyRotate.isType(XEO.Entity); // Returns false, because XEO.Rotate does not (even indirectly) extend XEO.Entity\n````",
+            "description": "Tests if this component is of the given type, or is a subclass of the given type.\n\nThe type may be given as either a string or a component constructor.\n\nThis method works by walking up the inheritance type chain, which this component provides in\nproperty {{#crossLink \"Component/superTypes:property\"}}{{/crossLink}}, returning true as soon as one of the type strings in\nthe chain matches the given type, of false if none match.\n\n#### Examples:\n\n````javascript\nvar myRotate = new XEO.Rotate({ ... });\n\nmyRotate.isType(XEO.Component); // Returns true for all XEO components\nmyRotate.isType(\"XEO.Component\"); // Returns true for all XEO components\nmyRotate.isType(XEO.Rotate); // Returns true\nmyRotate.isType(XEO.Transform); // Returns true\nmyRotate.isType(\"XEO.Transform\"); // Returns true\nmyRotate.isType(XEO.Entity); // Returns false, because XEO.Rotate does not (even indirectly) extend XEO.Entity\n````",
             "itemtype": "method",
             "name": "isType",
             "params": [
@@ -19854,7 +19854,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 412,
+            "line": 416,
             "description": "Initializes this component",
             "params": [
                 {
@@ -19869,7 +19869,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 420,
+            "line": 424,
             "description": "Fires an event on this component.\n\nNotifies existing subscribers to the event, retains the event to give to\nany subsequent notifications on that location as they are made.",
             "itemtype": "method",
             "name": "fire",
@@ -19897,7 +19897,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 461,
+            "line": 465,
             "description": "Subscribes to an event on this component.\n\nThe callback is be called with this component as scope.",
             "itemtype": "method",
             "name": "on",
@@ -19929,7 +19929,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 491,
+            "line": 495,
             "description": "Cancels an event subscription that was previously made with {{#crossLink \"Component/on:method\"}}{{/crossLink}} or\n{{#crossLink \"Component/once:method\"}}{{/crossLink}}.",
             "itemtype": "method",
             "name": "off",
@@ -19945,7 +19945,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 513,
+            "line": 517,
             "description": "Subscribes to the next occurrence of the given event, then un-subscribes as soon as the event is handled.\n\nThis is equivalent to calling {{#crossLink \"Component/on:method\"}}{{/crossLink}}, and then calling\n{{#crossLink \"Component/off:method\"}}{{/crossLink}} inside the callback function.",
             "itemtype": "method",
             "name": "once",
@@ -19973,7 +19973,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 534,
+            "line": 538,
             "description": "Logs a console debugging message for this component.\n\nThe console message will have this format: *````[LOG] [<component type> <component id>: <message>````*\n\nAlso fires the message as a {{#crossLink \"Scene/log:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "log",
@@ -19989,7 +19989,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 559,
+            "line": 563,
             "description": "Logs a warning for this component to the JavaScript console.\n\nThe console message will have this format: *````[WARN] [<component type> =<component id>: <message>````*\n\nAlso fires the message as a {{#crossLink \"Scene/warn:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "warn",
@@ -20005,7 +20005,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 579,
+            "line": 583,
             "description": "Logs an error for this component to the JavaScript console.\n\nThe console message will have this format: *````[ERROR] [<component type> =<component id>: <message>````*\n\nAlso fires the message as an {{#crossLink \"Scene/error:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "error",
@@ -20021,7 +20021,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 599,
+            "line": 603,
             "description": "Creates a clone of this component.\n\nThe clone will have the same properties as the original, except where\noverridden in the given optional configs.\n\nThe clone will share (by reference) the components of the original, unless overridden.\n\nFor example, if this component is an {{#crossLink \"Entity\"}}{{/crossLink}}, then the clone\nwill be attached to the **same** instances of {{#crossLink \"PhoneMaterial\"}}{{/crossLink}},\n{{#crossLink \"Camera\"}}{{/crossLink}} etc as this component, unless it supplies its own\ninstances for those via the configs.",
             "params": [
                 {
@@ -20040,7 +20040,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 631,
+            "line": 635,
             "description": "Adds a child component to this.\nWhen component not given, attaches the scene's default instance for the given name (if any).\nPublishes the new child component on this component, keyed to the given name.",
             "params": [
                 {
@@ -20086,7 +20086,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 767,
+            "line": 757,
             "access": "private",
             "tagname": "",
             "class": "Component",
@@ -20094,7 +20094,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 792,
+            "line": 782,
             "access": "private",
             "tagname": "",
             "class": "Component",
@@ -20102,7 +20102,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 799,
+            "line": 789,
             "description": "Convenience method for creating a Component within this Component's {{#crossLink \"Scene\"}}{{/crossLink}}.\n\nYou would typically use this method to conveniently instantiate components that you'd want to\nshare (ie. \"instance\") among your {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe method is given a component type and configuration, like so:\n\n````javascript\nvar material = myComponent.create(XEO.PhongMaterial, {\n     diffuse: [1,0,0],\n     specular: [1,1,0]\n});\n````\n\nThe first time you call this method for the given ````type```` and ````instanceId````, this method will create the\n{{#crossLink \"PhongMaterial\"}}{{/crossLink}}, passing the given  attributes to the component's constructor.\n\nIf you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same\ncomponent instance that it returned the first time, and will ignore the attributes:\n\n````javascript\nvar material2 = component.create(XEO.PhongMaterial, \"myMaterial\", { specular: [1,1,0] });\n````\n\nEach time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a\nreference count for the component instance. You can release the shared component instance with a call to\n{{#crossLink \"Scene/putSharedComponent:method\"}}{{/crossLink}}, and once you have released it as many\ntimes as you got it, the Scene will destroy the component.",
             "itemtype": "method",
             "name": "create",
@@ -20134,7 +20134,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 867,
+            "line": 857,
             "description": "Protected method, called by sub-classes to queue a call to _update().",
             "access": "protected",
             "tagname": "",
@@ -20143,7 +20143,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 883,
+            "line": 873,
             "access": "private",
             "tagname": "",
             "class": "Component",
@@ -20151,7 +20151,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 908,
+            "line": 898,
             "description": "Optional virtual template method, normally implemented\nby sub-classes to generate some data before _update gets\ncallled",
             "access": "protected",
             "tagname": "",
@@ -20160,7 +20160,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 917,
+            "line": 907,
             "description": "Protected virtual template method, optionally implemented\nby sub-classes to perform a scheduled task.",
             "access": "protected",
             "tagname": "",
@@ -20169,7 +20169,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 925,
+            "line": 915,
             "description": "Protected template method, implemented by sub-classes to compile\ntheir state into their Scene's XEO.renderer.Renderer.",
             "access": "protected",
             "tagname": "",
@@ -20178,7 +20178,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 937,
+            "line": 927,
             "description": "JSON object containing the state of this Component.",
             "itemtype": "property",
             "name": "json",
@@ -20189,7 +20189,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 965,
+            "line": 955,
             "description": "String containing the serialized JSON state of this Component.",
             "itemtype": "property",
             "name": "string",
@@ -20200,7 +20200,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 980,
+            "line": 970,
             "description": "Experimental: string containing a JavaScript expression that would instantiate this Component.",
             "itemtype": "property",
             "name": "string",
@@ -20211,7 +20211,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 999,
+            "line": 989,
             "description": "Destroys this component.\n\nFires a {{#crossLink \"Component/destroyed:event\"}}{{/crossLink}} event on this Component.\n\nAutomatically disassociates this component from other components, causing them to fall back on any\ndefaults that this component overrode on them.\n\nTODO: describe effect with respect to #create",
             "itemtype": "method",
             "name": "destroy",
@@ -20220,7 +20220,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1046,
+            "line": 1036,
             "description": "Fired when this Component is destroyed.",
             "itemtype": "event",
             "name": "destroyed",
@@ -20229,7 +20229,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1055,
+            "line": 1045,
             "description": "Protected template method, implemented by sub-classes\nto clean up just before the component is destroyed.",
             "access": "protected",
             "tagname": "",
@@ -21217,11 +21217,11 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/component.js:599"
+            "line": " src/component.js:603"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/component.js:799"
+            "line": " src/component.js:789"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -21853,47 +21853,47 @@
         },
         {
             "message": "Missing item type\nInitializes this component",
-            "line": " src/component.js:412"
+            "line": " src/component.js:416"
         },
         {
             "message": "Missing item type\nCreates a clone of this component.\n\nThe clone will have the same properties as the original, except where\noverridden in the given optional configs.\n\nThe clone will share (by reference) the components of the original, unless overridden.\n\nFor example, if this component is an {{#crossLink \"Entity\"}}{{/crossLink}}, then the clone\nwill be attached to the **same** instances of {{#crossLink \"PhoneMaterial\"}}{{/crossLink}},\n{{#crossLink \"Camera\"}}{{/crossLink}} etc as this component, unless it supplies its own\ninstances for those via the configs.",
-            "line": " src/component.js:599"
+            "line": " src/component.js:603"
         },
         {
             "message": "Missing item type\nAdds a child component to this.\nWhen component not given, attaches the scene's default instance for the given name (if any).\nPublishes the new child component on this component, keyed to the given name.",
-            "line": " src/component.js:631"
+            "line": " src/component.js:635"
         },
         {
             "message": "Missing item type",
-            "line": " src/component.js:767"
+            "line": " src/component.js:757"
         },
         {
             "message": "Missing item type",
-            "line": " src/component.js:792"
+            "line": " src/component.js:782"
         },
         {
             "message": "Missing item type\nProtected method, called by sub-classes to queue a call to _update().",
-            "line": " src/component.js:867"
+            "line": " src/component.js:857"
         },
         {
             "message": "Missing item type",
-            "line": " src/component.js:883"
+            "line": " src/component.js:873"
         },
         {
             "message": "Missing item type\nOptional virtual template method, normally implemented\nby sub-classes to generate some data before _update gets\ncallled",
-            "line": " src/component.js:908"
+            "line": " src/component.js:898"
         },
         {
             "message": "Missing item type\nProtected virtual template method, optionally implemented\nby sub-classes to perform a scheduled task.",
-            "line": " src/component.js:917"
+            "line": " src/component.js:907"
         },
         {
             "message": "Missing item type\nProtected template method, implemented by sub-classes to compile\ntheir state into their Scene's XEO.renderer.Renderer.",
-            "line": " src/component.js:925"
+            "line": " src/component.js:915"
         },
         {
             "message": "Missing item type\nProtected template method, implemented by sub-classes\nto clean up just before the component is destroyed.",
-            "line": " src/component.js:1055"
+            "line": " src/component.js:1045"
         },
         {
             "message": "Missing item type\nReleases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
