@@ -11,7 +11,7 @@ comprehensive [object-component-based](http://gameprogrammingpatterns.com/compon
 
 This engine is based on lessons learned from the development and application of [SceneJS](http://scenejs.org).
 
-It's currently at **alpha** status, so stuff will change.
+It's currently at **beta** status, so stuff will change.
 
 ## Resources 
 
