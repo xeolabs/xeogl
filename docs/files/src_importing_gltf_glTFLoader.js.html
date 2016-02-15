@@ -60,6 +60,7 @@
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+                                <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
@@ -628,6 +629,9 @@
                     return;
                 }
 
+                var i;
+                var len;
+
                 if (node.matrix) {
                     var matrix = node.matrix;
                     transform = new XEO.Transform(this.collection.scene, {
@@ -689,7 +693,7 @@
 
                         mesh = mesh.object;
 
-                        for (var i = 0, len = mesh.length; i &lt; len; i++) {
+                        for (i = 0, len = mesh.length; i &lt; len; i++) {
 
                             material = mesh[i].material;
                             geometry = mesh[i].geometry;
@@ -714,7 +718,7 @@
                     var children = node.children;
                     var childNode;
 
-                    for (var i = 0, len = children.length; i &lt; len; i++) {
+                    for (i = 0, len = children.length; i &lt; len; i++) {
                         childNode = children[i];
                         this._parseNode(childNode, transform);
                     }

@@ -60,6 +60,7 @@
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+                                <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
@@ -540,7 +541,7 @@
 
                 var componentJSON;
                 var type;
-                var constructor;
+                var constr;
 
                 for (var i = 0, len = componentJSONs.length; i &lt; len; i++) {
 
@@ -549,10 +550,10 @@
 
                     if (type) {
 
-                        constructor = window[type];
+                        constr = window[type];
 
-                        if (constructor) {
-                            new constructor(this, componentJSON);
+                        if (constr) {
+                            new constr(this, componentJSON);
                         }
                     }
                 }
@@ -566,29 +567,31 @@
 
         _initDefaults: function () {
 
-            // Create this Scene&#x27;s default components, which every
-            // Entity created in this Scene will inherit by default
+            // Call this Scene&#x27;s property accessors to lazy-init their properties
 
-            this.view;
-            this.project;
-            this.camera;
-            this.clips;
-            this.colorTarget;
-            this.colorBuf;
-            this.depthTarget;
-            this.depthBuf;
-            this.visibility;
-            this.modes;
-            this.geometry;
-            this.layer;
-            this.lights;
-            this.material;
-            this.morphTargets;
-            this.reflect;
-            this.shader;
-            this.shaderParams;
-            this.stage;
-            this.transform;
+            var dummy; // Keeps Codacy happy
+
+            dummy = this.view;
+            dummy = this.project;
+            dummy = this.camera;
+            dummy = this.clips;
+            dummy = this.colorTarget;
+            dummy = this.colorBuf;
+            dummy = this.depthTarget;
+            dummy = this.depthBuf;
+            dummy = this.visibility;
+            dummy = this.cull;
+            dummy = this.modes;
+            dummy = this.geometry;
+            dummy = this.layer;
+            dummy = this.lights;
+            dummy = this.material;
+            dummy = this.morphTargets;
+            dummy = this.reflect;
+            dummy = this.shader;
+            dummy = this.shaderParams;
+            dummy = this.stage;
+            dummy = this.transform;
         },
 
         // Called by each component that is created with this Scene as parent.
@@ -1000,6 +1003,29 @@
                             id: &quot;default.visibility&quot;,
                             isDefault: true,
                             visible: true
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink &quot;Cull&quot;}}{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink &quot;Cull&quot;}}cull{{/crossLink}} has an {{#crossLink &quot;Component/id:property&quot;}}id{{/crossLink}} equal to &quot;default.cull&quot;,
+             * with all other properties initialised to their default values.
+             *
+             * {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink &quot;Cull&quot;}}{{/crossLink}} by default.
+             * @property cull
+             * @final
+             * @type cull
+             */
+            cull: {
+                get: function () {
+                    return this.components[&quot;default.cull&quot;] ||
+                        new XEO.Cull(this, {
+                            id: &quot;default.cull&quot;,
+                            isDefault: true,
+                            culled: false
                         });
                 }
             },

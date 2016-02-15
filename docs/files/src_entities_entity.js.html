@@ -60,6 +60,7 @@
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+                                <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
@@ -331,6 +332,8 @@
  parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, depth {{#crossLink &quot;Scene/depthBuf:property&quot;}}depthBuf{{/crossLink}}.
  @param [cfg.visibility] {String|Visibility} ID or instance of a {{#crossLink &quot;Visibility&quot;}}Visibility{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/visibility:property&quot;}}visibility{{/crossLink}}.
+ @param [cfg.cull] {String|Cull} ID or instance of a {{#crossLink &quot;Cull&quot;}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. Defaults to the
+ parent {{#crossLink &quot;Scene&quot;}}{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/cull:property&quot;}}cull{{/crossLink}}.
  @param [cfg.modes] {String|Modes} ID or instance of a {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/modes:property&quot;}}modes{{/crossLink}}.
  @param [cfg.geometry] {String|Geometry} ID or instance of a {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. Defaults to the
@@ -381,6 +384,7 @@
             this.depthTarget = cfg.depthTarget;
             this.depthBuf = cfg.depthBuf;
             this.visibility = cfg.visibility;
+            this.cull = cfg.cull;
             this.modes = cfg.modes;
             this.geometry = cfg.geometry;
             this.layer = cfg.layer;
@@ -637,6 +641,36 @@
 
                 get: function () {
                     return this._children.visibility;
+                }
+            },
+
+            /**
+             * The {{#crossLink &quot;Cull&quot;}}{{/crossLink}} attached to this Entity.
+             *
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. Defaults to the parent
+             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/cull:property&quot;}}cull{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires an {{#crossLink &quot;Entity/cull:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property cull
+             * @type Cull
+             */
+            cull: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this Entity&#x27;s  {{#crossLink &quot;Entity/cull:property&quot;}}{{/crossLink}} property changes.
+                     *
+                     * @event cull
+                     * @param value The property&#x27;s new value
+                     */
+                    this._setChild(&quot;XEO.Cull&quot;, &quot;cull&quot;, value);
+                },
+
+                get: function () {
+                    return this._children.cull;
                 }
             },
 
@@ -1481,6 +1515,7 @@
             children.depthTarget._compile();
             children.depthBuf._compile();
             children.visibility._compile();
+            children.cull._compile();
             children.modes._compile();
             children.geometry._compile();
             children.layer._compile();
@@ -1523,6 +1558,7 @@
                 depthTarget: children.depthTarget.id,
                 depthBuf: children.depthBuf.id,
                 visibility: children.visibility.id,
+                cull: children.cull.id,
                 modes: children.modes.id,
                 geometry: children.geometry.id,
                 layer: children.layer.id,

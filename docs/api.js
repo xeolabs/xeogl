@@ -21,6 +21,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Component",
         "Configs",
         "CubicBezierCurve",
+        "Cull",
         "Curve",
         "CylinderGeometry",
         "DepthBuf",

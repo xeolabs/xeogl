@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/math/_module.js - xeoengine</title>
+    <title>src/culling/cull.js - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -177,16 +177,150 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: src/math/_module.js</h1>
+<h1 class="file-heading">File: src/culling/cull.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- * Math utilities.
- *
- * @module XEO
- * @submodule math
+ A **Cull** toggles the culling of attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
+
+ ## Overview
+
+ &lt;ul&gt;
+ &lt;li&gt;Cull components are intended for **visibility culling systems** to control the visibility of {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.&lt;/li&gt;
+ &lt;li&gt;{{#crossLink &quot;Visibility&quot;}}{{/crossLink}} components are intended for users to control the visibility of {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} via UIs.&lt;/li&gt;
+ &lt;li&gt;Each {{#crossLink &quot;Entity&quot;}}{{/crossLink}} is visible when its {{#crossLink &quot;Visibility&quot;}}Visibility&#x27;s{{/crossLink}} {{#crossLink &quot;Visibility/visible:property&quot;}}visible{{/crossLink}} property is true and {{#crossLink &quot;Cull&quot;}}Cull&#x27;s{{/crossLink}} {{#crossLink &quot;Cull/culled:property&quot;}}visible{{/crossLink}} is false.
+ &lt;li&gt;A Cull may be shared among multiple {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} to toggle
+ their culling status as a group.&lt;/li&gt;
+ &lt;/ul&gt;
+
+ &lt;img src=&quot;../../../assets/images/Cull.png&quot;&gt;&lt;/img&gt;
+
+ ## Example
+
+ This example creates a Cull that toggles the culling of
+ two {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ var scene = new XEO.Scene();
+
+ // Create a Cull component
+ var cull = new XEO.Cull(scene, {
+    culled: false
+});
+
+ // Create two Entities whose culling will be controlled by our Cull
+
+ var entity1 = new XEO.Entity(scene, {
+    cull: cull
+});
+
+ var entity2 = new XEO.Entity(scene, {
+    cull: cull
+});
+
+ // Subscribe to change on the Cull&#x27;s &quot;culled&quot; property
+ var handle = cull.on(&quot;culled&quot;, function(value) {
+    //...
+});
+
+ // Hide our Entities by flipping the Cull&#x27;s &quot;culled&quot; property,
+ // which will also call our handler
+ cull.culled = true;
+
+ // Unsubscribe from the Cull again
+ cull.off(handle);
+
+ // When we destroy our Cull, the Entities will fall back
+ // on the Scene&#x27;s default Cull instance
+ cull.destroy();
+ &#x60;&#x60;&#x60;&#x60;
+ @class Cull
+ @module XEO
+ @submodule culling
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Cull in the default
+ {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Cull.
+ @param [cfg.culled=false] {Boolean} Flag which controls culling of the attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}
+ @extends Component
  */
+(function () {
+
+    &quot;use strict&quot;;
+
+    XEO.Cull = XEO.Component.extend({
+
+        type: &quot;XEO.Cull&quot;,
+
+        _init: function (cfg) {
+
+            this._state = new XEO.renderer.Cull({
+                culled: true
+            });
+
+            this.culled = cfg.culled;
+        },
+
+        _props: {
+
+            /**
+             Indicates whether this Cull culls its attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} or not.
+
+             Fires a {{#crossLink &quot;Cull/culled:event&quot;}}{{/crossLink}} event on change.
+
+             @property culled
+             @default false
+             @type Boolean
+             */
+            culled: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (value === this._state.culled) {
+                        return;
+                    }
+
+                    this._state.culled = value;
+
+                    this._renderer.drawListDirty = true;
+
+                    /**
+                     Fired whenever this Cull&#x27;s {{#crossLink &quot;Cull/culled:property&quot;}}{{/crossLink}} property changes.
+
+                     @event culled
+                     @param value {Boolean} The property&#x27;s new value
+                     */
+                    this.fire(&quot;culled&quot;, this._state.culled);
+                },
+
+                get: function () {
+                    return this._state.culled;
+                }
+            }
+        },
+
+        _compile: function () {
+            this._renderer.cull = this._state;
+        },
+
+        _getJSON: function () {
+            return {
+                culled: this.culled
+            };
+        },
+
+        _destroy: function () {
+            this._state.destroy();
+        }
+    });
+
+})();
+
     </pre>
 </div>
                     </div>

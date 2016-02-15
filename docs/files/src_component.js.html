@@ -60,6 +60,7 @@
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+                                <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
@@ -527,16 +528,16 @@
          then this property will have the value:
 
          &#x60;&#x60;&#x60;&#x60;json
-         [&quot;XEO.Component&quot;, &quot;XEO.Transform&quot;, &quot;XEO.Rotate&quot;]
+         [&quot;XEO.Component&quot;, &quot;XEO.Transform&quot;]
          &#x60;&#x60;&#x60;&#x60;
 
-         Note that the chain is ordered downwards in the hierarchy, ie. from super-class down to sub-class.
+         Note that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.
 
          @property superTypes
          @type {Array of String}
          @final
          */
-        superTypes: [&quot;XEO.Component&quot;],
+        superTypes: [],
 
         /**
          Tests if this component is of the given type, or is a subclass of the given type.
@@ -924,7 +925,11 @@
                 // Fire optional callback so caller can do stuff
                 // before the change event is fired below
 
-                onAddedScope ? onAdded.call(onAddedScope, child) : onAdded();
+                if (onAddedScope) {
+                    onAdded.call(onAddedScope, child);
+                } else {
+                    onAdded(child);
+                }
             }
 
             this.fire(&quot;dirty&quot;, this);

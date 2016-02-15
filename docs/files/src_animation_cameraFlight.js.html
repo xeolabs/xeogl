@@ -60,6 +60,7 @@
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+                                <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
@@ -385,13 +386,15 @@
             var look;
             var up;
 
-            if (worldBoundary = params.worldBoundary) {
+            if (params.worldBoundary) {
 
                 // Argument is a Component subtype with a worldBoundary
 
-                aabb = worldBoundary.aabb;
+                aabb = params.worldBoundary.aabb;
 
-            } else if (aabb = params.aabb) {
+            } else if (params.aabb) {
+
+                aabb = params.aabb;
 
                 // Argument is a Boundary3D
 
@@ -424,7 +427,11 @@
                     if (!component) {
                         this.error(&quot;Component not found: &quot; + XEO._inQuotes(componentId));
                         if (callback) {
-                            scope ? callback.call(scope) : callback();
+                            if (scope) {
+                                callback.call(scope);
+                            } else {
+                                callback();
+                            }
                         }
                         return;
                     }
@@ -435,7 +442,11 @@
                 if (!worldBoundary) {
                     this.error(&quot;Can&#x27;t fly to component &quot; + XEO._inQuotes(componentId) + &quot; - does not have a worldBoundary&quot;);
                     if (callback) {
-                        scope ? callback.call(scope) : callback();
+                        if (scope) {
+                            callback.call(scope);
+                        } else {
+                            callback();
+                        }
                     }
                     return;
                 }
@@ -558,8 +569,14 @@
             var callback = this._callback;
 
             if (callback) {
+
                 this._callback = null;
-                this._callbackScope ? callback.call(this._callbackScope) : callback();
+
+                if (this._callbackScope) {
+                    callback.call(this._callbackScope);
+                } else {
+                    callback();
+                }
             }
 
             this.fire(&quot;stopped&quot;, true, true);

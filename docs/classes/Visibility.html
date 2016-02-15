@@ -60,6 +60,7 @@
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+                                <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
@@ -197,6 +198,9 @@
     <p>A <strong>Visibility</strong> toggles the visibility of attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
 <h2 id="overview">Overview</h2>
 <ul>
+<li>Visibility components are intended for users to control the visibility of <a href="../classes/Entity.html" class="crosslink">Entities</a> via UIs.</li>
+<li><a href="../classes/Cull.html" class="crosslink">Cull</a> components are intended for <strong>visibility culling systems</strong> to control the visibility of <a href="../classes/Entity.html" class="crosslink">Entities</a>.</li>
+<li>Each <a href="../classes/Entity.html" class="crosslink">Entity</a> is visible when its <a href="../classes/Visibility.html" class="crosslink">Visibility&#39;s</a> <a href="../classes/Visibility.html#property_visible" class="crosslink">visible</a> property is true and <a href="../classes/Cull.html" class="crosslink">Cull&#39;s</a> <a href="../classes/Cull.html#property_culled" class="crosslink">visible</a> is false.</li>
 <li>A Visibility may be shared among multiple <a href="../classes/Entity.html" class="crosslink">Entities</a> to toggle
 their visibility as a group.</li>
 </ul>
@@ -509,7 +513,7 @@ visibility.destroy();
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_create">Component</a>:
-        <a href="../files/src_component.js.html#l789"><code>src&#x2F;component.js:789</code></a>
+        <a href="../files/src_component.js.html#l793"><code>src&#x2F;component.js:793</code></a>
         </p>
 
 
@@ -610,7 +614,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l989"><code>src&#x2F;component.js:989</code></a>
+        <a href="../files/src_component.js.html#l993"><code>src&#x2F;component.js:993</code></a>
         </p>
 
 
@@ -1303,7 +1307,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l927"><code>src&#x2F;component.js:927</code></a>
+                            <a href="../files/src_component.js.html#l931"><code>src&#x2F;component.js:931</code></a>
                             </p>
                     
                     
@@ -1383,7 +1387,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l955"><code>src&#x2F;component.js:955</code></a>
+                            <a href="../files/src_component.js.html#l959"><code>src&#x2F;component.js:959</code></a>
                             </p>
                     
                     
@@ -1420,9 +1424,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     <p>For example, if this component is a <a href="../classes/Rotate.html" class="crosslink">Rotate</a>, which
                     extends <a href="../classes/Transform.html" class="crosslink">Transform</a>, which in turn extends <a href="../classes/Component.html" class="crosslink">Component</a>,
                     then this property will have the value:</p>
-                    <pre class="code prettyprint"><code class="lang-json">["XEO.Component", "XEO.Transform", "XEO.Rotate"]
+                    <pre class="code prettyprint"><code class="lang-json">["XEO.Component", "XEO.Transform"]
                     </code></pre>
-                    <p>Note that the chain is ordered downwards in the hierarchy, ie. from super-class down to sub-class.</p>
+                    <p>Note that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.</p>
                     
                         </div>
                     
@@ -1469,7 +1473,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_culling_visibility.js.html#l83"><code>src&#x2F;culling&#x2F;visibility.js:83</code></a>
+                            <a href="../files/src_culling_visibility.js.html#l86"><code>src&#x2F;culling&#x2F;visibility.js:86</code></a>
                             </p>
                     
                     
@@ -1502,7 +1506,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1036"><code>src&#x2F;component.js:1036</code></a>
+                            <a href="../files/src_component.js.html#l1040"><code>src&#x2F;component.js:1040</code></a>
                             </p>
                     
                     
@@ -1527,7 +1531,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_culling_visibility.js.html#l100"><code>src&#x2F;culling&#x2F;visibility.js:100</code></a>
+                            <a href="../files/src_culling_visibility.js.html#l103"><code>src&#x2F;culling&#x2F;visibility.js:103</code></a>
                             </p>
                     
                     

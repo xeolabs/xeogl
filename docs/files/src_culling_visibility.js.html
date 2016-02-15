@@ -60,6 +60,7 @@
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+                                <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
@@ -186,6 +187,9 @@
  ## Overview
 
  &lt;ul&gt;
+ &lt;li&gt;Visibility components are intended for users to control the visibility of {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} via UIs.&lt;/li&gt;
+ &lt;li&gt;{{#crossLink &quot;Cull&quot;}}{{/crossLink}} components are intended for **visibility culling systems** to control the visibility of {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.&lt;/li&gt;
+ &lt;li&gt;Each {{#crossLink &quot;Entity&quot;}}{{/crossLink}} is visible when its {{#crossLink &quot;Visibility&quot;}}Visibility&#x27;s{{/crossLink}} {{#crossLink &quot;Visibility/visible:property&quot;}}visible{{/crossLink}} property is true and {{#crossLink &quot;Cull&quot;}}Cull&#x27;s{{/crossLink}} {{#crossLink &quot;Cull/culled:property&quot;}}visible{{/crossLink}} is false.&lt;/li&gt;
  &lt;li&gt;A Visibility may be shared among multiple {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} to toggle
  their visibility as a group.&lt;/li&gt;
  &lt;/ul&gt;

@@ -60,6 +60,7 @@
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+                                <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
@@ -215,12 +216,15 @@ XEO.PathGeometry = XEO.Geometry.extend({
             return;
         }
 
+        var i;
+        var len;
+
         var points = path.getPoints(this._divisions);
 
         var positions = [];
         var point;
 
-        for (var i = 0, len = points.length; i &lt; len; i++) {
+        for (i = 0, len = points.length; i &lt; len; i++) {
 
             point = points[i];
 
@@ -231,7 +235,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
         var indices = [];
 
-        for (var i = 0, len = points.length - 1; i &lt; len; i++) {
+        for (i = 0, len = points.length - 1; i &lt; len; i++) {
             indices.push(i);
             indices.push(i + 1);
         }

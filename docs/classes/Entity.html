@@ -60,6 +60,7 @@
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+                                <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
@@ -461,6 +462,18 @@ var center = canvasBoundary.center;
         
                                     </li>
                                     <li class="param">
+                                            <code class="param-name optional">[cull]</code>
+                                            <span class="type">String | <a href="../classes/Cull.html" class="crosslink">Cull</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>ID or instance of a <a href="../classes/Cull.html" class="crosslink">Cull</a> to attach to this Entity. Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the
+        parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance, <a href="../classes/Scene.html#property_cull" class="crosslink">cull</a>.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
                                             <code class="param-name optional">[modes]</code>
                                             <span class="type">String | <a href="../classes/Modes.html" class="crosslink">Modes</a></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
@@ -691,6 +704,10 @@ var center = canvasBoundary.center;
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_cull">cull</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_depthBuf">depthBuf</a>
 
                             </li>
@@ -835,6 +852,10 @@ var center = canvasBoundary.center;
 
                             </li>
                             <li class="index-item event">
+                                <a href="#event_cull">cull</a>
+
+                            </li>
+                            <li class="index-item event">
                                 <a href="#event_depthBuf">depthBuf</a>
 
                             </li>
@@ -940,7 +961,7 @@ var center = canvasBoundary.center;
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_create">Component</a>:
-        <a href="../files/src_component.js.html#l789"><code>src&#x2F;component.js:789</code></a>
+        <a href="../files/src_component.js.html#l793"><code>src&#x2F;component.js:793</code></a>
         </p>
 
 
@@ -1041,7 +1062,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l989"><code>src&#x2F;component.js:989</code></a>
+        <a href="../files/src_component.js.html#l993"><code>src&#x2F;component.js:993</code></a>
         </p>
 
 
@@ -1657,7 +1678,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l871"><code>src&#x2F;entities&#x2F;entity.js:871</code></a>
+                            <a href="../files/src_entities_entity.js.html#l904"><code>src&#x2F;entities&#x2F;entity.js:904</code></a>
                             </p>
                     
                     
@@ -1688,7 +1709,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l230"><code>src&#x2F;entities&#x2F;entity.js:230</code></a>
+                            <a href="../files/src_entities_entity.js.html#l233"><code>src&#x2F;entities&#x2F;entity.js:233</code></a>
                             </p>
                     
                     
@@ -1718,7 +1739,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l1128"><code>src&#x2F;entities&#x2F;entity.js:1128</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1161"><code>src&#x2F;entities&#x2F;entity.js:1161</code></a>
                             </p>
                     
                     
@@ -1760,7 +1781,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l283"><code>src&#x2F;entities&#x2F;entity.js:283</code></a>
+                            <a href="../files/src_entities_entity.js.html#l286"><code>src&#x2F;entities&#x2F;entity.js:286</code></a>
                             </p>
                     
                     
@@ -1789,7 +1810,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l341"><code>src&#x2F;entities&#x2F;entity.js:341</code></a>
+                            <a href="../files/src_entities_entity.js.html#l344"><code>src&#x2F;entities&#x2F;entity.js:344</code></a>
                             </p>
                     
                     
@@ -1818,7 +1839,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l312"><code>src&#x2F;entities&#x2F;entity.js:312</code></a>
+                            <a href="../files/src_entities_entity.js.html#l315"><code>src&#x2F;entities&#x2F;entity.js:315</code></a>
                             </p>
                     
                     
@@ -1836,6 +1857,35 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_cull" class="property item">
+                        <h3 class="name"><code>cull</code></h3>
+                        <span class="type"><a href="../classes/Cull.html" class="crosslink">Cull</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_entities_entity.js.html#l464"><code>src&#x2F;entities&#x2F;entity.js:464</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The <a href="../classes/Cull.html" class="crosslink">Cull</a> attached to this Entity.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Entity. Defaults to the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_cull" class="crosslink">cull</a> when set to
+                    a null or undefined value.</p>
+                    <p>Fires an <a href="../classes/Entity.html#event_cull" class="crosslink">cull</a> event on change.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_depthBuf" class="property item">
                         <h3 class="name"><code>depthBuf</code></h3>
                         <span class="type"><a href="../classes/DepthBuf.html" class="crosslink">DepthBuf</a></span>
@@ -1847,7 +1897,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l401"><code>src&#x2F;entities&#x2F;entity.js:401</code></a>
+                            <a href="../files/src_entities_entity.js.html#l404"><code>src&#x2F;entities&#x2F;entity.js:404</code></a>
                             </p>
                     
                     
@@ -1876,7 +1926,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l371"><code>src&#x2F;entities&#x2F;entity.js:371</code></a>
+                            <a href="../files/src_entities_entity.js.html#l374"><code>src&#x2F;entities&#x2F;entity.js:374</code></a>
                             </p>
                     
                     
@@ -1930,7 +1980,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l491"><code>src&#x2F;entities&#x2F;entity.js:491</code></a>
+                            <a href="../files/src_entities_entity.js.html#l524"><code>src&#x2F;entities&#x2F;entity.js:524</code></a>
                             </p>
                     
                     
@@ -1963,7 +2013,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l1199"><code>src&#x2F;entities&#x2F;entity.js:1199</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1232"><code>src&#x2F;entities&#x2F;entity.js:1232</code></a>
                             </p>
                     
                     
@@ -1992,7 +2042,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l1236"><code>src&#x2F;entities&#x2F;entity.js:1236</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1269"><code>src&#x2F;entities&#x2F;entity.js:1269</code></a>
                             </p>
                     
                     
@@ -2072,7 +2122,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l927"><code>src&#x2F;component.js:927</code></a>
+                            <a href="../files/src_component.js.html#l931"><code>src&#x2F;component.js:931</code></a>
                             </p>
                     
                     
@@ -2097,7 +2147,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l554"><code>src&#x2F;entities&#x2F;entity.js:554</code></a>
+                            <a href="../files/src_entities_entity.js.html#l587"><code>src&#x2F;entities&#x2F;entity.js:587</code></a>
                             </p>
                     
                     
@@ -2126,7 +2176,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l584"><code>src&#x2F;entities&#x2F;entity.js:584</code></a>
+                            <a href="../files/src_entities_entity.js.html#l617"><code>src&#x2F;entities&#x2F;entity.js:617</code></a>
                             </p>
                     
                     
@@ -2156,7 +2206,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l940"><code>src&#x2F;entities&#x2F;entity.js:940</code></a>
+                            <a href="../files/src_entities_entity.js.html#l973"><code>src&#x2F;entities&#x2F;entity.js:973</code></a>
                             </p>
                     
                     
@@ -2191,7 +2241,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l614"><code>src&#x2F;entities&#x2F;entity.js:614</code></a>
+                            <a href="../files/src_entities_entity.js.html#l647"><code>src&#x2F;entities&#x2F;entity.js:647</code></a>
                             </p>
                     
                     
@@ -2245,7 +2295,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l461"><code>src&#x2F;entities&#x2F;entity.js:461</code></a>
+                            <a href="../files/src_entities_entity.js.html#l494"><code>src&#x2F;entities&#x2F;entity.js:494</code></a>
                             </p>
                     
                     
@@ -2274,7 +2324,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l644"><code>src&#x2F;entities&#x2F;entity.js:644</code></a>
+                            <a href="../files/src_entities_entity.js.html#l677"><code>src&#x2F;entities&#x2F;entity.js:677</code></a>
                             </p>
                     
                     
@@ -2303,7 +2353,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l673"><code>src&#x2F;entities&#x2F;entity.js:673</code></a>
+                            <a href="../files/src_entities_entity.js.html#l706"><code>src&#x2F;entities&#x2F;entity.js:706</code></a>
                             </p>
                     
                     
@@ -2358,7 +2408,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l703"><code>src&#x2F;entities&#x2F;entity.js:703</code></a>
+                            <a href="../files/src_entities_entity.js.html#l736"><code>src&#x2F;entities&#x2F;entity.js:736</code></a>
                             </p>
                     
                     
@@ -2387,7 +2437,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l732"><code>src&#x2F;entities&#x2F;entity.js:732</code></a>
+                            <a href="../files/src_entities_entity.js.html#l765"><code>src&#x2F;entities&#x2F;entity.js:765</code></a>
                             </p>
                     
                     
@@ -2416,7 +2466,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l762"><code>src&#x2F;entities&#x2F;entity.js:762</code></a>
+                            <a href="../files/src_entities_entity.js.html#l795"><code>src&#x2F;entities&#x2F;entity.js:795</code></a>
                             </p>
                     
                     
@@ -2445,7 +2495,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l905"><code>src&#x2F;entities&#x2F;entity.js:905</code></a>
+                            <a href="../files/src_entities_entity.js.html#l938"><code>src&#x2F;entities&#x2F;entity.js:938</code></a>
                             </p>
                     
                     
@@ -2481,7 +2531,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l955"><code>src&#x2F;component.js:955</code></a>
+                            <a href="../files/src_component.js.html#l959"><code>src&#x2F;component.js:959</code></a>
                             </p>
                     
                     
@@ -2518,9 +2568,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     <p>For example, if this component is a <a href="../classes/Rotate.html" class="crosslink">Rotate</a>, which
                     extends <a href="../classes/Transform.html" class="crosslink">Transform</a>, which in turn extends <a href="../classes/Component.html" class="crosslink">Component</a>,
                     then this property will have the value:</p>
-                    <pre class="code prettyprint"><code class="lang-json">["XEO.Component", "XEO.Transform", "XEO.Rotate"]
+                    <pre class="code prettyprint"><code class="lang-json">["XEO.Component", "XEO.Transform"]
                     </code></pre>
-                    <p>Note that the chain is ordered downwards in the hierarchy, ie. from super-class down to sub-class.</p>
+                    <p>Note that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.</p>
                     
                         </div>
                     
@@ -2538,7 +2588,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l792"><code>src&#x2F;entities&#x2F;entity.js:792</code></a>
+                            <a href="../files/src_entities_entity.js.html#l825"><code>src&#x2F;entities&#x2F;entity.js:825</code></a>
                             </p>
                     
                     
@@ -2600,7 +2650,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l1058"><code>src&#x2F;entities&#x2F;entity.js:1058</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1091"><code>src&#x2F;entities&#x2F;entity.js:1091</code></a>
                             </p>
                     
                     
@@ -2641,7 +2691,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l431"><code>src&#x2F;entities&#x2F;entity.js:431</code></a>
+                            <a href="../files/src_entities_entity.js.html#l434"><code>src&#x2F;entities&#x2F;entity.js:434</code></a>
                             </p>
                     
                     
@@ -2671,7 +2721,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l967"><code>src&#x2F;entities&#x2F;entity.js:967</code></a>
+                            <a href="../files/src_entities_entity.js.html#l1000"><code>src&#x2F;entities&#x2F;entity.js:1000</code></a>
                             </p>
                     
                     
@@ -2720,7 +2770,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l890"><code>src&#x2F;entities&#x2F;entity.js:890</code></a>
+                            <a href="../files/src_entities_entity.js.html#l923"><code>src&#x2F;entities&#x2F;entity.js:923</code></a>
                             </p>
                     
                     
@@ -2763,7 +2813,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l259"><code>src&#x2F;entities&#x2F;entity.js:259</code></a>
+                            <a href="../files/src_entities_entity.js.html#l262"><code>src&#x2F;entities&#x2F;entity.js:262</code></a>
                             </p>
                     
                     
@@ -2805,7 +2855,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l299"><code>src&#x2F;entities&#x2F;entity.js:299</code></a>
+                            <a href="../files/src_entities_entity.js.html#l302"><code>src&#x2F;entities&#x2F;entity.js:302</code></a>
                             </p>
                     
                     
@@ -2847,7 +2897,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l357"><code>src&#x2F;entities&#x2F;entity.js:357</code></a>
+                            <a href="../files/src_entities_entity.js.html#l360"><code>src&#x2F;entities&#x2F;entity.js:360</code></a>
                             </p>
                     
                     
@@ -2889,7 +2939,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l328"><code>src&#x2F;entities&#x2F;entity.js:328</code></a>
+                            <a href="../files/src_entities_entity.js.html#l331"><code>src&#x2F;entities&#x2F;entity.js:331</code></a>
                             </p>
                     
                     
@@ -2897,6 +2947,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this Entity&#39;s  <a href="../classes/Entity.html#property_colorTarget" class="crosslink">colorTarget</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_cull" class="events item">
+                        <h3 class="name"><code>cull</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_entities_entity.js.html#l480"><code>src&#x2F;entities&#x2F;entity.js:480</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Entity&#39;s  <a href="../classes/Entity.html#property_cull" class="crosslink">cull</a> property changes.</p>
                     
                         </div>
                     
@@ -2931,7 +3023,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l417"><code>src&#x2F;entities&#x2F;entity.js:417</code></a>
+                            <a href="../files/src_entities_entity.js.html#l420"><code>src&#x2F;entities&#x2F;entity.js:420</code></a>
                             </p>
                     
                     
@@ -2973,7 +3065,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l387"><code>src&#x2F;entities&#x2F;entity.js:387</code></a>
+                            <a href="../files/src_entities_entity.js.html#l390"><code>src&#x2F;entities&#x2F;entity.js:390</code></a>
                             </p>
                     
                     
@@ -3015,7 +3107,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1036"><code>src&#x2F;component.js:1036</code></a>
+                            <a href="../files/src_component.js.html#l1040"><code>src&#x2F;component.js:1040</code></a>
                             </p>
                     
                     
@@ -3040,7 +3132,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l527"><code>src&#x2F;entities&#x2F;entity.js:527</code></a>
+                            <a href="../files/src_entities_entity.js.html#l560"><code>src&#x2F;entities&#x2F;entity.js:560</code></a>
                             </p>
                     
                     
@@ -3082,7 +3174,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l570"><code>src&#x2F;entities&#x2F;entity.js:570</code></a>
+                            <a href="../files/src_entities_entity.js.html#l603"><code>src&#x2F;entities&#x2F;entity.js:603</code></a>
                             </p>
                     
                     
@@ -3124,7 +3216,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l600"><code>src&#x2F;entities&#x2F;entity.js:600</code></a>
+                            <a href="../files/src_entities_entity.js.html#l633"><code>src&#x2F;entities&#x2F;entity.js:633</code></a>
                             </p>
                     
                     
@@ -3166,7 +3258,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l630"><code>src&#x2F;entities&#x2F;entity.js:630</code></a>
+                            <a href="../files/src_entities_entity.js.html#l663"><code>src&#x2F;entities&#x2F;entity.js:663</code></a>
                             </p>
                     
                     
@@ -3208,7 +3300,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l477"><code>src&#x2F;entities&#x2F;entity.js:477</code></a>
+                            <a href="../files/src_entities_entity.js.html#l510"><code>src&#x2F;entities&#x2F;entity.js:510</code></a>
                             </p>
                     
                     
@@ -3250,7 +3342,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l660"><code>src&#x2F;entities&#x2F;entity.js:660</code></a>
+                            <a href="../files/src_entities_entity.js.html#l693"><code>src&#x2F;entities&#x2F;entity.js:693</code></a>
                             </p>
                     
                     
@@ -3292,7 +3384,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l177"><code>src&#x2F;entities&#x2F;entity.js:177</code></a>
+                            <a href="../files/src_entities_entity.js.html#l179"><code>src&#x2F;entities&#x2F;entity.js:179</code></a>
                             </p>
                     
                     
@@ -3357,7 +3449,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l689"><code>src&#x2F;entities&#x2F;entity.js:689</code></a>
+                            <a href="../files/src_entities_entity.js.html#l722"><code>src&#x2F;entities&#x2F;entity.js:722</code></a>
                             </p>
                     
                     
@@ -3399,7 +3491,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l719"><code>src&#x2F;entities&#x2F;entity.js:719</code></a>
+                            <a href="../files/src_entities_entity.js.html#l752"><code>src&#x2F;entities&#x2F;entity.js:752</code></a>
                             </p>
                     
                     
@@ -3441,7 +3533,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l748"><code>src&#x2F;entities&#x2F;entity.js:748</code></a>
+                            <a href="../files/src_entities_entity.js.html#l781"><code>src&#x2F;entities&#x2F;entity.js:781</code></a>
                             </p>
                     
                     
@@ -3483,7 +3575,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l778"><code>src&#x2F;entities&#x2F;entity.js:778</code></a>
+                            <a href="../files/src_entities_entity.js.html#l811"><code>src&#x2F;entities&#x2F;entity.js:811</code></a>
                             </p>
                     
                     
@@ -3525,7 +3617,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l925"><code>src&#x2F;entities&#x2F;entity.js:925</code></a>
+                            <a href="../files/src_entities_entity.js.html#l958"><code>src&#x2F;entities&#x2F;entity.js:958</code></a>
                             </p>
                     
                     
@@ -3568,7 +3660,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l825"><code>src&#x2F;entities&#x2F;entity.js:825</code></a>
+                            <a href="../files/src_entities_entity.js.html#l858"><code>src&#x2F;entities&#x2F;entity.js:858</code></a>
                             </p>
                     
                     
@@ -3611,7 +3703,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_entities_entity.js.html#l447"><code>src&#x2F;entities&#x2F;entity.js:447</code></a>
+                            <a href="../files/src_entities_entity.js.html#l450"><code>src&#x2F;entities&#x2F;entity.js:450</code></a>
                             </p>
                     
                     

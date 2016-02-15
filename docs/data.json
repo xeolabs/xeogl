@@ -469,6 +469,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/culling/cull.js": {
+            "name": "src/culling/cull.js",
+            "modules": {},
+            "classes": {
+                "Cull": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "src/culling/visibility.js": {
             "name": "src/culling/visibility.js",
             "modules": {},
@@ -1129,6 +1138,7 @@
                 "MousePickEntity": 1,
                 "MouseRotateCamera": 1,
                 "MouseZoomCamera": 1,
+                "Cull": 1,
                 "Visibility": 1,
                 "CubicBezierCurve": 1,
                 "Curve": 1,
@@ -1341,6 +1351,7 @@
             "name": "culling",
             "submodules": {},
             "classes": {
+                "Cull": 1,
                 "Visibility": 1
             },
             "fors": {},
@@ -3207,6 +3218,58 @@
             ],
             "extends": "Component"
         },
+        "Cull": {
+            "name": "Cull",
+            "shortname": "Cull",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/culling/cull.js",
+            "line": 1,
+            "description": "A **Cull** toggles the culling of attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>Cull components are intended for **visibility culling systems** to control the visibility of {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>{{#crossLink \"Visibility\"}}{{/crossLink}} components are intended for users to control the visibility of {{#crossLink \"Entity\"}}Entities{{/crossLink}} via UIs.</li>\n<li>Each {{#crossLink \"Entity\"}}{{/crossLink}} is visible when its {{#crossLink \"Visibility\"}}Visibility's{{/crossLink}} {{#crossLink \"Visibility/visible:property\"}}visible{{/crossLink}} property is true and {{#crossLink \"Cull\"}}Cull's{{/crossLink}} {{#crossLink \"Cull/culled:property\"}}visible{{/crossLink}} is false.\n<li>A Cull may be shared among multiple {{#crossLink \"Entity\"}}Entities{{/crossLink}} to toggle\ntheir culling status as a group.</li>\n</ul>\n\n<img src=\"../../../assets/images/Cull.png\"></img>\n\n## Example\n\nThis example creates a Cull that toggles the culling of\ntwo {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n````javascript\nvar scene = new XEO.Scene();\n\n// Create a Cull component\nvar cull = new XEO.Cull(scene, {\n   culled: false\n});\n\n// Create two Entities whose culling will be controlled by our Cull\n\nvar entity1 = new XEO.Entity(scene, {\n   cull: cull\n});\n\nvar entity2 = new XEO.Entity(scene, {\n   cull: cull\n});\n\n// Subscribe to change on the Cull's \"culled\" property\nvar handle = cull.on(\"culled\", function(value) {\n   //...\n});\n\n// Hide our Entities by flipping the Cull's \"culled\" property,\n// which will also call our handler\ncull.culled = true;\n\n// Unsubscribe from the Cull again\ncull.off(handle);\n\n// When we destroy our Cull, the Entities will fall back\n// on the Scene's default Cull instance\ncull.destroy();\n````",
+            "submodule": "culling",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Cull in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Cull.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "culled",
+                            "description": "Flag which controls culling of the attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component"
+        },
         "Visibility": {
             "name": "Visibility",
             "shortname": "Visibility",
@@ -3219,7 +3282,7 @@
             "namespace": "",
             "file": "src/culling/visibility.js",
             "line": 1,
-            "description": "A **Visibility** toggles the visibility of attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>A Visibility may be shared among multiple {{#crossLink \"Entity\"}}Entities{{/crossLink}} to toggle\ntheir visibility as a group.</li>\n</ul>\n\n<img src=\"../../../assets/images/Visibility.png\"></img>\n\n## Example\n\nThis example creates a Visibility that toggles the visibility of\ntwo {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n````javascript\nvar scene = new XEO.Scene();\n\n// Create a Visibility\nvar visibility = new XEO.Visibility(scene, {\n   visible: true\n});\n\n// Create two Entities whose visibility will be controlled by our Visibility\n\nvar entity1 = new XEO.Entity(scene, {\n   visibility: visibility\n});\n\nvar entity2 = new XEO.Entity(scene, {\n   visibility: visibility\n});\n\n// Subscribe to change on the Visibility's \"visible\" property\nvar handle = visibility.on(\"visible\", function(value) {\n   //...\n});\n\n// Hide our Entities by flipping the Visibility's \"visible\" property,\n// which will also call our handler\nvisibility.visible = false;\n\n// Unsubscribe from the Visibility again\nvisibility.off(handle);\n\n// When we destroy our Visibility, the Entities will fall back\n// on the Scene's default Visibility instance\nvisibility.destroy();\n````",
+            "description": "A **Visibility** toggles the visibility of attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n## Overview\n\n<ul>\n<li>Visibility components are intended for users to control the visibility of {{#crossLink \"Entity\"}}Entities{{/crossLink}} via UIs.</li>\n<li>{{#crossLink \"Cull\"}}{{/crossLink}} components are intended for **visibility culling systems** to control the visibility of {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>Each {{#crossLink \"Entity\"}}{{/crossLink}} is visible when its {{#crossLink \"Visibility\"}}Visibility's{{/crossLink}} {{#crossLink \"Visibility/visible:property\"}}visible{{/crossLink}} property is true and {{#crossLink \"Cull\"}}Cull's{{/crossLink}} {{#crossLink \"Cull/culled:property\"}}visible{{/crossLink}} is false.</li>\n<li>A Visibility may be shared among multiple {{#crossLink \"Entity\"}}Entities{{/crossLink}} to toggle\ntheir visibility as a group.</li>\n</ul>\n\n<img src=\"../../../assets/images/Visibility.png\"></img>\n\n## Example\n\nThis example creates a Visibility that toggles the visibility of\ntwo {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n````javascript\nvar scene = new XEO.Scene();\n\n// Create a Visibility\nvar visibility = new XEO.Visibility(scene, {\n   visible: true\n});\n\n// Create two Entities whose visibility will be controlled by our Visibility\n\nvar entity1 = new XEO.Entity(scene, {\n   visibility: visibility\n});\n\nvar entity2 = new XEO.Entity(scene, {\n   visibility: visibility\n});\n\n// Subscribe to change on the Visibility's \"visible\" property\nvar handle = visibility.on(\"visible\", function(value) {\n   //...\n});\n\n// Hide our Entities by flipping the Visibility's \"visible\" property,\n// which will also call our handler\nvisibility.visible = false;\n\n// Unsubscribe from the Visibility again\nvisibility.off(handle);\n\n// When we destroy our Visibility, the Entities will fall back\n// on the Scene's default Visibility instance\nvisibility.destroy();\n````",
             "submodule": "culling",
             "is_constructor": 1,
             "params": [
@@ -3643,6 +3706,12 @@
                             "name": "visibility",
                             "description": "ID or instance of a {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/visibility:property\"}}visibility{{/crossLink}}.",
                             "type": "String|Visibility",
+                            "optional": true
+                        },
+                        {
+                            "name": "cull",
+                            "description": "ID or instance of a {{#crossLink \"Cull\"}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the\nparent {{#crossLink \"Scene\"}}{{/crossLink}}'s default instance, {{#crossLink \"Scene/cull:property\"}}cull{{/crossLink}}.",
+                            "type": "String|Cull",
                             "optional": true
                         },
                         {
@@ -7203,6 +7272,15 @@
         {
             "file": "src/_renderer/renderer.js",
             "line": 143,
+            "description": "Culling render state.",
+            "itemtype": "property",
+            "name": "cull",
+            "type": "{renderer.Cull}",
+            "class": "CameraFlight"
+        },
+        {
+            "file": "src/_renderer/renderer.js",
+            "line": 150,
             "description": "Modes render state.",
             "itemtype": "property",
             "name": "modes",
@@ -7211,7 +7289,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 150,
+            "line": 157,
             "description": "Render state for an effects layer.",
             "itemtype": "property",
             "name": "layer",
@@ -7220,7 +7298,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 157,
+            "line": 164,
             "description": "Render state for an effects pipeline stage.",
             "itemtype": "property",
             "name": "stage",
@@ -7229,7 +7307,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 164,
+            "line": 171,
             "description": "Depth buffer render state.",
             "itemtype": "property",
             "name": "depthBuf",
@@ -7238,7 +7316,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 171,
+            "line": 178,
             "description": "Color buffer render state.",
             "itemtype": "property",
             "name": "colorBuf",
@@ -7247,7 +7325,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 178,
+            "line": 185,
             "description": "Lights render state.",
             "itemtype": "property",
             "name": "lights",
@@ -7256,7 +7334,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 185,
+            "line": 192,
             "description": "Material render state.",
             "itemtype": "property",
             "name": "material",
@@ -7265,7 +7343,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 192,
+            "line": 199,
             "description": "Environmental reflection render state.",
             "itemtype": "property",
             "name": "reflection",
@@ -7274,7 +7352,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 199,
+            "line": 206,
             "description": "Modelling transform render state.",
             "itemtype": "property",
             "name": "modelTransform",
@@ -7283,7 +7361,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 206,
+            "line": 213,
             "description": "View transform render state.",
             "itemtype": "property",
             "name": "viewTransform",
@@ -7292,7 +7370,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 213,
+            "line": 220,
             "description": "Projection transform render state.",
             "itemtype": "property",
             "name": "projTransform",
@@ -7301,7 +7379,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 220,
+            "line": 227,
             "description": "Billboard render state.",
             "itemtype": "property",
             "name": "billboard",
@@ -7310,7 +7388,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 227,
+            "line": 234,
             "description": "Stationary render state.",
             "itemtype": "property",
             "name": "stationary",
@@ -7319,7 +7397,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 234,
+            "line": 241,
             "description": "Color target render state.",
             "itemtype": "property",
             "name": "colorTarget",
@@ -7328,7 +7406,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 241,
+            "line": 248,
             "description": "Depth target render state.",
             "itemtype": "property",
             "name": "depthTarget",
@@ -7337,7 +7415,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 248,
+            "line": 255,
             "description": "Cross-section planes render state.",
             "itemtype": "property",
             "name": "clips",
@@ -7346,7 +7424,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 255,
+            "line": 262,
             "description": "Morph targets render state.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -7355,7 +7433,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 262,
+            "line": 269,
             "description": "Custom shader render state.",
             "itemtype": "property",
             "name": "shader",
@@ -7364,7 +7442,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 269,
+            "line": 276,
             "description": "Render state providing custom shader params.",
             "itemtype": "property",
             "name": "shaderParams",
@@ -7373,7 +7451,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 276,
+            "line": 283,
             "description": "Geometry render state.",
             "itemtype": "property",
             "name": "geometry",
@@ -7382,48 +7460,48 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 286,
+            "line": 293,
             "description": "Flags the object list as needing to be rebuilt from renderer objects\non the next call to {@link #render} or {@link #pick}. Setting this\nwill cause the rendering pipeline to be executed from stage #2\n(see class comment), causing object list rebuild, state order\ndetermination, state sort, draw list construction and image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 296,
+            "line": 303,
             "description": "Flags the object list as needing state orders to be (re)computed on the\nnext call to {@link #render} or {@link #pick}. Setting this will cause\nthe rendering pipeline to be executed from stage #3 (see class comment),\ncausing state order determination, state sort, draw list construction\nand image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 306,
+            "line": 313,
             "description": "Flags the object list as needing to be state-sorted on the next call\nto {@link #render} or {@link #pick}.Setting this will cause the\nrendering pipeline to be executed from stage #4 (see class comment),\ncausing state sort, draw list construction and image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 315,
+            "line": 322,
             "description": "Flags the draw list as needing to be rebuilt from the object list on\nthe next call to {@link #render} or {@link #pick}.  Setting this will\ncause the rendering pipeline to be executed from stage #5\n(see class comment), causing draw list construction and image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 324,
+            "line": 331,
             "description": "Flags the image as needing to be redrawn from the draw list on the\nnext call to {@link #render} or {@link #pick}. Setting this will\ncause the rendering pipeline to be executed from stage #6\n(see class comment), causing the image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 334,
+            "line": 341,
             "description": "Reallocates WebGL resources for objects within this renderer.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 358,
+            "line": 365,
             "description": "Internally creates (or updates) a {@link XEO.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link XEO.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
             "params": [
                 {
@@ -7436,12 +7514,12 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 481,
+            "line": 489,
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 540,
+            "line": 548,
             "description": "Removes an object from this Renderer",
             "params": [
                 {
@@ -7454,43 +7532,43 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 577,
+            "line": 585,
             "description": "Renders a new frame, if neccessary.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 616,
+            "line": 624,
             "description": "Builds the object list from the object map",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 628,
+            "line": 636,
             "description": "Generates object state sort keys",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 649,
+            "line": 657,
             "description": "State-sorts the object list",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 659,
+            "line": 667,
             "description": "Logs the object list",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 672,
+            "line": 680,
             "description": "Builds the draw list, which is the list of draw state-chunks to apply to WebGL\nto render the visible objects in the object list for the next frame.\nPreserves the state sort order of the object list among the draw chunks.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 848,
+            "line": 862,
             "description": "Appends an object to the draw and pick lists.",
             "params": [
                 {
@@ -7508,7 +7586,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 910,
+            "line": 924,
             "description": "Logs the contents of the draw list to the console.",
             "access": "private",
             "tagname": "",
@@ -7516,7 +7594,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 940,
+            "line": 954,
             "description": "Logs the contents of the pick list to the console.",
             "access": "private",
             "tagname": "",
@@ -7524,7 +7602,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 969,
+            "line": 983,
             "description": "Attempts to pick an object at the given canvas coordinates.",
             "params": [
                 {
@@ -7541,7 +7619,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1062,
+            "line": 1076,
             "params": [
                 {
                     "name": "params",
@@ -7577,7 +7655,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1194,
+            "line": 1210,
             "description": "Destroys this Renderer.",
             "class": "CameraFlight"
         },
@@ -7697,7 +7775,7 @@
         },
         {
             "file": "src/animation/cameraFlight.js",
-            "line": 392,
+            "line": 408,
             "description": "Fired whenever this CameraFlight's {{#crossLink \"CameraFlight/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
@@ -9064,7 +9142,7 @@
         },
         {
             "file": "src/clipping/clips.js",
-            "line": 243,
+            "line": 245,
             "description": "Fired whenever this Clips' {{#crossLink \"Clips/clips:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "clips",
@@ -10276,8 +10354,37 @@
             "submodule": "controls"
         },
         {
+            "file": "src/culling/cull.js",
+            "line": 86,
+            "description": "Indicates whether this Cull culls its attached {{#crossLink \"Entity\"}}Entities{{/crossLink}} or not.\n\nFires a {{#crossLink \"Cull/culled:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "culled",
+            "default": "false",
+            "type": "Boolean",
+            "class": "Cull",
+            "module": "XEO",
+            "submodule": "culling"
+        },
+        {
+            "file": "src/culling/cull.js",
+            "line": 109,
+            "description": "Fired whenever this Cull's {{#crossLink \"Cull/culled:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "culled",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Boolean"
+                }
+            ],
+            "class": "Cull",
+            "module": "XEO",
+            "submodule": "culling"
+        },
+        {
             "file": "src/culling/visibility.js",
-            "line": 83,
+            "line": 86,
             "description": "Indicates whether this Visibility makes attached {{#crossLink \"Entity\"}}Entities{{/crossLink}} visible or not.\n\nFires a {{#crossLink \"Visibility/visible:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "visible",
@@ -10289,7 +10396,7 @@
         },
         {
             "file": "src/culling/visibility.js",
-            "line": 100,
+            "line": 103,
             "description": "Fired whenever this Visibility's {{#crossLink \"Visibility/visible:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "visible",
@@ -10972,7 +11079,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 177,
+            "line": 179,
             "description": "Fired when this Entity is *picked* via a call to the {{#crossLink \"Canvas/pick:method\"}}{{/crossLink}} method\non the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas {{/crossLink}}.",
             "itemtype": "event",
             "name": "picked",
@@ -10999,7 +11106,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 230,
+            "line": 233,
             "description": "The {{#crossLink \"Camera\"}}Camera{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/camera:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "camera",
@@ -11010,7 +11117,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 259,
+            "line": 262,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/camera:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "camera",
@@ -11026,7 +11133,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 283,
+            "line": 286,
             "description": "The {{#crossLink \"Clips\"}}Clips{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/clips:property\"}}clips{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/clips:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "clips",
@@ -11037,7 +11144,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 299,
+            "line": 302,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/clips:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "clips",
@@ -11053,7 +11160,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 312,
+            "line": 315,
             "description": "The {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/colorTarget:property\"}}colorTarget{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/colorTarget:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "colorTarget",
@@ -11064,7 +11171,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 328,
+            "line": 331,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/colorTarget:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "colorTarget",
@@ -11080,7 +11187,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 341,
+            "line": 344,
             "description": "The {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/colorBuf:property\"}}colorBuf{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/colorBuf:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "colorBuf",
@@ -11091,7 +11198,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 357,
+            "line": 360,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/colorBuf:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "colorBuf",
@@ -11107,7 +11214,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 371,
+            "line": 374,
             "description": "The {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/depthTarget:property\"}}depthTarget{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/depthTarget:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "depthTarget",
@@ -11118,7 +11225,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 387,
+            "line": 390,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/depthTarget:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "depthTarget",
@@ -11134,7 +11241,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 401,
+            "line": 404,
             "description": "The {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/depthBuf:property\"}}depthBuf{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/depthBuf:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "depthBuf",
@@ -11145,7 +11252,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 417,
+            "line": 420,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/depthBuf:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "depthBuf",
@@ -11161,7 +11268,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 431,
+            "line": 434,
             "description": "The {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/visibility:property\"}}visibility{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/visibility:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "visibility",
@@ -11172,7 +11279,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 447,
+            "line": 450,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/visibility:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "visibility",
@@ -11188,7 +11295,34 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 461,
+            "line": 464,
+            "description": "The {{#crossLink \"Cull\"}}{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/cull:property\"}}cull{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/cull:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "cull",
+            "type": "Cull",
+            "class": "Entity",
+            "module": "XEO",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/entity.js",
+            "line": 480,
+            "description": "Fired whenever this Entity's  {{#crossLink \"Entity/cull:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "cull",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Entity",
+            "module": "XEO",
+            "submodule": "entities"
+        },
+        {
+            "file": "src/entities/entity.js",
+            "line": 494,
             "description": "The {{#crossLink \"Modes\"}}Modes{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/modes:property\"}}modes{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/modes:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "modes",
@@ -11199,7 +11333,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 477,
+            "line": 510,
             "description": "Fired whenever this Entity's {{#crossLink \"Entity/modes:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "modes",
@@ -11215,7 +11349,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 491,
+            "line": 524,
             "description": "The {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/geometry:property\"}}camera{{/crossLink}}\n(a simple box) when set to a null or undefined value.\n\nFires an {{#crossLink \"Entity/geometry:event\"}}{{/crossLink}} event on change.\n\nUpdates {{#crossLink \"Entity/boundary\"}}{{/crossLink}},\n{{#crossLink \"Entity/worldObb\"}}{{/crossLink}} and\n{{#crossLink \"Entity/center\"}}{{/crossLink}}",
             "itemtype": "property",
             "name": "geometry",
@@ -11226,7 +11360,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 527,
+            "line": 560,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/geometry:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "geometry",
@@ -11242,7 +11376,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 554,
+            "line": 587,
             "description": "The {{#crossLink \"Layer\"}}Layer{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/layer:property\"}}layer{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/layer:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "layer",
@@ -11253,7 +11387,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 570,
+            "line": 603,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/layer:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "layer",
@@ -11269,7 +11403,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 584,
+            "line": 617,
             "description": "The {{#crossLink \"Lights\"}}Lights{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/lights:property\"}}lights{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/lights:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "lights",
@@ -11280,7 +11414,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 600,
+            "line": 633,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/lights:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "lights",
@@ -11296,7 +11430,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 614,
+            "line": 647,
             "description": "The {{#crossLink \"Material\"}}Material{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/material:property\"}}material{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/material:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "material",
@@ -11307,7 +11441,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 630,
+            "line": 663,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/material:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "material",
@@ -11323,7 +11457,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 644,
+            "line": 677,
             "description": "The {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/morphTargets:property\"}}morphTargets{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/morphTargets:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -11334,7 +11468,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 660,
+            "line": 693,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/morphTargets:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "morphTargets",
@@ -11350,7 +11484,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 673,
+            "line": 706,
             "description": "The {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/reflect:property\"}}reflect{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/reflect:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "reflect",
@@ -11361,7 +11495,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 689,
+            "line": 722,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/reflect:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "reflect",
@@ -11377,7 +11511,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 703,
+            "line": 736,
             "description": "The {{#crossLink \"Shader\"}}Shader{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/shader:property\"}}shader{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/shader:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "shader",
@@ -11388,7 +11522,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 719,
+            "line": 752,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/shader:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "shader",
@@ -11404,7 +11538,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 732,
+            "line": 765,
             "description": "The {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/shaderParams:property\"}}shaderParams{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/shaderParams:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "shaderParams",
@@ -11415,7 +11549,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 748,
+            "line": 781,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/shaderParams:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "shaderParams",
@@ -11431,7 +11565,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 762,
+            "line": 795,
             "description": "The {{#crossLink \"Stage\"}}Stage{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/stage:property\"}}stage{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/stage:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stage",
@@ -11442,7 +11576,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 778,
+            "line": 811,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/stage:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "stage",
@@ -11458,7 +11592,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 792,
+            "line": 825,
             "description": "The Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/transform:property\"}}transform{{/crossLink}}\n(an identity matrix) when set to a null or undefined value.\n\nFires an {{#crossLink \"Entity/transform:event\"}}{{/crossLink}} event on change.\n\nUpdates {{#crossLink \"Entity/boundary\"}}{{/crossLink}},\n{{#crossLink \"Entity/worldObb\"}}{{/crossLink}} and\n{{#crossLink \"Entity/center\"}}{{/crossLink}}",
             "itemtype": "property",
             "name": "transform",
@@ -11469,7 +11603,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 825,
+            "line": 858,
             "description": "Fired whenever this Entity's {{#crossLink \"Entity/transform:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "transform",
@@ -11485,7 +11619,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 871,
+            "line": 904,
             "description": "The {{#crossLink \"Billboard\"}}{{/crossLink}} attached to this Entity.\n\nWhen {{#crossLink \"Billboard/property:active\"}}{{/crossLink}}, the {{#crossLink \"Billboard\"}}{{/crossLink}}\nwill keep this Entity oriented towards the viewpoint.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/billboard:property\"}}billboard{{/crossLink}}\n(an identity matrix) when set to a null or undefined value.\n\nFires an {{#crossLink \"Entity/billboard:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "billboard",
@@ -11496,7 +11630,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 890,
+            "line": 923,
             "description": "Fired whenever this Entity's {{#crossLink \"Entity/billboard:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "billboard",
@@ -11512,7 +11646,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 905,
+            "line": 938,
             "description": "The {{#crossLink \"Stationary\"}}{{/crossLink}} attached to this Entity.\n\nWhen {{#crossLink \"Stationary/property:active\"}}{{/crossLink}}, the {{#crossLink \"Stationary\"}}{{/crossLink}}\nwill prevent the translation component of the viewing transform from being applied to this Entity, yet\nstill allowing it to rotate.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/stationary:property\"}}stationary{{/crossLink}},\nwhich is disabled by default.\n\nFires an {{#crossLink \"Entity/stationary:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stationary",
@@ -11523,7 +11657,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 925,
+            "line": 958,
             "description": "Fired whenever this Entity's {{#crossLink \"Entity/stationary:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "stationary",
@@ -11539,7 +11673,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 940,
+            "line": 973,
             "description": "Local-space 3D boundary of this Entity.\n\nThis is a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry\"}}{{/crossLink}} that is attached to this Entity.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will fire an {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}}\nevent whenever this Entity's {{#crossLink \"Entity/geometry:property\"}}{{/crossLink}} is linked to\na new {{#crossLink \"Geometry\"}}{{/crossLink}}, or whenever the {{#crossLink \"Geometry\"}}{{/crossLink}}'s\n{{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} are updated.\n\nThe a {{#crossLink \"Boundary3D\"}}{{/crossLink}} is lazy-instantiated the first time that this\nproperty is referenced. If {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} is then called on it,\nthen this property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime it's referenced.",
             "itemtype": "property",
             "name": "localBoundary",
@@ -11551,7 +11685,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 967,
+            "line": 1000,
             "description": "World-space 3D boundary of this Entity.\n\nThis is a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses the {{#crossLink \"Geometry\"}}{{/crossLink}}\nthat is attached to this Entity after transformation by this Entity's modelling\n{{#crossLink \"Entity/transform:property\"}}{{/crossLink}}.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will fire an {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}}\nevent whenever this Entity's {{#crossLink \"Entity/geometry:property\"}}{{/crossLink}} is linked to\na new {{#crossLink \"Geometry\"}}{{/crossLink}}, or whenever the {{#crossLink \"Geometry\"}}{{/crossLink}}'s\n{{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} are updated.\n\nThe a {{#crossLink \"Boundary3D\"}}{{/crossLink}} is lazy-instantiated the first time that this\nproperty is referenced. If {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} is then called on it,\nthen this property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime it's referenced.\n\n<h4>Example</h4>\n\n[here](http://xeoengine.org/examples/#boundaries_Entity_worldBoundary)\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary3D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "worldBoundary",
@@ -11563,7 +11697,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1058,
+            "line": 1091,
             "description": "View-space 3D boundary of this Entity.\n\nThis is a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses the {{#crossLink \"Geometry\"}}{{/crossLink}}\nthat is attached to this Entity after transformation by this Entity's modelling\n{{#crossLink \"Entity/transform:property\"}}{{/crossLink}} and {{#crossLink \"Camera\"}}{{/crossLink}}\n{{#crossLink \"Camera/view:property\"}}view transform{{/crossLink}}.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will fire an {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}}\nevent whenever there are any changes to the {{#crossLink \"Geometry\"}}{{/crossLink}},\n{{#crossLink \"Entity/transform:property\"}}{{/crossLink}} or {{#crossLink \"Camera\"}}{{/crossLink}} that\nwould affect its extents.\n\nThe a {{#crossLink \"Boundary3D\"}}{{/crossLink}} is lazy-instantiated the first time that this\nproperty is referenced. If {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} is then called on it,\nthen this property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime it's referenced.\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary3D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "viewBoundary",
@@ -11575,7 +11709,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1128,
+            "line": 1161,
             "description": "Canvas-space 2D boundary.\n\nThis is a {{#crossLink \"Boundary2D\"}}{{/crossLink}} that encloses this Entity's\n{{#crossLink \"Entity/geometry:property\"}}{{/crossLink}} after transformation by this Entity's modelling\n{{#crossLink \"Entity/transform:property\"}}{{/crossLink}} and {{#crossLink \"Camera\"}}{{/crossLink}}\n{{#crossLink \"Camera/view:property\"}}view{{/crossLink}} and\n{{#crossLink \"Camera/project:property\"}}projection{{/crossLink}} transforms.\n\nThe {{#crossLink \"Boundary2D\"}}{{/crossLink}} will fire an {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}}\nevent whenever there are any changes to the {{#crossLink \"Geometry\"}}{{/crossLink}},\n{{#crossLink \"Entity/transform:property\"}}{{/crossLink}} or {{#crossLink \"Camera\"}}{{/crossLink}} that\nwould affect its extents.\n\nThe a {{#crossLink \"Boundary2D\"}}{{/crossLink}} is lazy-instantiated the first time that this\nproperty is referenced. If {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} is then called on it,\nthen this property will be assigned to a fresh {{#crossLink \"Boundary2D\"}}{{/crossLink}} instance next\ntime it's referenced.\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary2D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "canvasBoundary",
@@ -11587,7 +11721,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1199,
+            "line": 1232,
             "description": "JSON object containing the (GLSL) source code of the shaders for this Entity.\n\nThis is sometimes useful to have as a reference\nwhen constructing your own custom {{#crossLink \"Shader\"}}{{/crossLink}} components.\n\nWill return null if xeoEngine has not yet rendered this Entity.",
             "itemtype": "property",
             "name": "glsl",
@@ -11599,7 +11733,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1236,
+            "line": 1269,
             "description": "The (GLSL) source code of the shaders for this Entity, as a string.\n\nThis is sometimes useful to have as a reference\nwhen constructing your own custom {{#crossLink \"Shader\"}}{{/crossLink}} components.\n\nWill return null if xeoEngine has not yet rendered this Entity.",
             "itemtype": "property",
             "name": "glslString",
@@ -12408,7 +12542,7 @@
         },
         {
             "file": "src/geometry/pathGeometry.js",
-            "line": 66,
+            "line": 69,
             "description": "The Path for this PathGeometry.\n\nFires a {{#crossLink \"PathGeometry/path:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "path",
@@ -12418,7 +12552,7 @@
         },
         {
             "file": "src/geometry/pathGeometry.js",
-            "line": 86,
+            "line": 89,
             "description": "Fired whenever this CameraPaths's {{#crossLink \"CameraPath/path:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "path",
@@ -12433,7 +12567,7 @@
         },
         {
             "file": "src/geometry/pathGeometry.js",
-            "line": 113,
+            "line": 116,
             "description": "The number of segments in this PathGeometry.\n\nFires a {{#crossLink \"PathGeometry/divisions:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "divisions",
@@ -13225,7 +13359,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 349,
+            "line": 348,
             "description": "Fired whenever the mouse wheel is moved over the parent\n{{#crossLink \"Viewer\"}}Viewer{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas{{/crossLink}}.",
             "itemtype": "event",
             "name": "mousewheel",
@@ -13242,7 +13376,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 382,
+            "line": 381,
             "description": "Fired whenever the mouse is clicked over the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas{{/crossLink}}.",
             "itemtype": "event",
             "name": "mouseclicked",
@@ -13259,7 +13393,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 417,
+            "line": 416,
             "description": "Enable or disable all input handlers",
             "params": [
                 {
@@ -13273,7 +13407,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 430,
+            "line": 429,
             "description": "Code for the BACKSPACE key.",
             "itemtype": "property",
             "name": "KEY_BACKSPACE",
@@ -13285,7 +13419,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 438,
+            "line": 437,
             "description": "Code for the TAB key.",
             "itemtype": "property",
             "name": "KEY_TAB",
@@ -13297,7 +13431,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 446,
+            "line": 445,
             "description": "Code for the ENTER key.",
             "itemtype": "property",
             "name": "KEY_ENTER",
@@ -13309,7 +13443,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 454,
+            "line": 453,
             "description": "Code for the SHIFT key.",
             "itemtype": "property",
             "name": "KEY_SHIFT",
@@ -13321,7 +13455,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 462,
+            "line": 461,
             "description": "Code for the CTRL key.",
             "itemtype": "property",
             "name": "KEY_CTRL",
@@ -13333,7 +13467,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 470,
+            "line": 469,
             "description": "Code for the ALT key.",
             "itemtype": "property",
             "name": "KEY_ALT",
@@ -13345,7 +13479,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 478,
+            "line": 477,
             "description": "Code for the PAUSE_BREAK key.",
             "itemtype": "property",
             "name": "KEY_PAUSE_BREAK",
@@ -13357,7 +13491,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 486,
+            "line": 485,
             "description": "Code for the CAPS_LOCK key.",
             "itemtype": "property",
             "name": "KEY_CAPS_LOCK",
@@ -13369,7 +13503,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 494,
+            "line": 493,
             "description": "Code for the ESCAPE key.",
             "itemtype": "property",
             "name": "KEY_ESCAPE",
@@ -13381,7 +13515,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 502,
+            "line": 501,
             "description": "Code for the PAGE_UP key.",
             "itemtype": "property",
             "name": "KEY_PAGE_UP",
@@ -13393,7 +13527,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 510,
+            "line": 509,
             "description": "Code for the PAGE_DOWN key.",
             "itemtype": "property",
             "name": "KEY_PAGE_DOWN",
@@ -13405,7 +13539,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 518,
+            "line": 517,
             "description": "Code for the END key.",
             "itemtype": "property",
             "name": "KEY_END",
@@ -13417,7 +13551,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 526,
+            "line": 525,
             "description": "Code for the HOME key.",
             "itemtype": "property",
             "name": "KEY_HOME",
@@ -13429,7 +13563,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 534,
+            "line": 533,
             "description": "Code for the LEFT_ARROW key.",
             "itemtype": "property",
             "name": "KEY_LEFT_ARROW",
@@ -13441,7 +13575,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 542,
+            "line": 541,
             "description": "Code for the UP_ARROW key.",
             "itemtype": "property",
             "name": "KEY_UP_ARROW",
@@ -13453,7 +13587,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 550,
+            "line": 549,
             "description": "Code for the RIGHT_ARROW key.",
             "itemtype": "property",
             "name": "KEY_RIGHT_ARROW",
@@ -13465,7 +13599,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 558,
+            "line": 557,
             "description": "Code for the DOWN_ARROW key.",
             "itemtype": "property",
             "name": "KEY_DOWN_ARROW",
@@ -13477,7 +13611,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 566,
+            "line": 565,
             "description": "Code for the INSERT key.",
             "itemtype": "property",
             "name": "KEY_INSERT",
@@ -13489,7 +13623,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 574,
+            "line": 573,
             "description": "Code for the DELETE key.",
             "itemtype": "property",
             "name": "KEY_DELETE",
@@ -13501,7 +13635,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 582,
+            "line": 581,
             "description": "Code for the 0 key.",
             "itemtype": "property",
             "name": "KEY_NUM_0",
@@ -13513,7 +13647,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 590,
+            "line": 589,
             "description": "Code for the 1 key.",
             "itemtype": "property",
             "name": "KEY_NUM_1",
@@ -13525,7 +13659,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 598,
+            "line": 597,
             "description": "Code for the 2 key.",
             "itemtype": "property",
             "name": "KEY_NUM_2",
@@ -13537,7 +13671,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 606,
+            "line": 605,
             "description": "Code for the 3 key.",
             "itemtype": "property",
             "name": "KEY_NUM_3",
@@ -13549,7 +13683,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 614,
+            "line": 613,
             "description": "Code for the 4 key.",
             "itemtype": "property",
             "name": "KEY_NUM_4",
@@ -13561,7 +13695,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 622,
+            "line": 621,
             "description": "Code for the 5 key.",
             "itemtype": "property",
             "name": "KEY_NUM_5",
@@ -13573,7 +13707,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 630,
+            "line": 629,
             "description": "Code for the 6 key.",
             "itemtype": "property",
             "name": "KEY_NUM_6",
@@ -13585,7 +13719,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 638,
+            "line": 637,
             "description": "Code for the 7 key.",
             "itemtype": "property",
             "name": "KEY_NUM_7",
@@ -13597,7 +13731,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 646,
+            "line": 645,
             "description": "Code for the 8 key.",
             "itemtype": "property",
             "name": "KEY_NUM_8",
@@ -13609,7 +13743,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 654,
+            "line": 653,
             "description": "Code for the 9 key.",
             "itemtype": "property",
             "name": "KEY_NUM_9",
@@ -13621,7 +13755,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 662,
+            "line": 661,
             "description": "Code for the A key.",
             "itemtype": "property",
             "name": "KEY_A",
@@ -13633,7 +13767,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 670,
+            "line": 669,
             "description": "Code for the B key.",
             "itemtype": "property",
             "name": "KEY_B",
@@ -13645,7 +13779,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 678,
+            "line": 677,
             "description": "Code for the C key.",
             "itemtype": "property",
             "name": "KEY_C",
@@ -13657,7 +13791,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 686,
+            "line": 685,
             "description": "Code for the D key.",
             "itemtype": "property",
             "name": "KEY_D",
@@ -13669,7 +13803,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 694,
+            "line": 693,
             "description": "Code for the E key.",
             "itemtype": "property",
             "name": "KEY_E",
@@ -13681,7 +13815,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 702,
+            "line": 701,
             "description": "Code for the F key.",
             "itemtype": "property",
             "name": "KEY_F",
@@ -13693,7 +13827,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 710,
+            "line": 709,
             "description": "Code for the G key.",
             "itemtype": "property",
             "name": "KEY_G",
@@ -13705,7 +13839,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 718,
+            "line": 717,
             "description": "Code for the H key.",
             "itemtype": "property",
             "name": "KEY_H",
@@ -13717,7 +13851,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 726,
+            "line": 725,
             "description": "Code for the I key.",
             "itemtype": "property",
             "name": "KEY_I",
@@ -13729,7 +13863,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 734,
+            "line": 733,
             "description": "Code for the J key.",
             "itemtype": "property",
             "name": "KEY_J",
@@ -13741,7 +13875,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 742,
+            "line": 741,
             "description": "Code for the K key.",
             "itemtype": "property",
             "name": "KEY_K",
@@ -13753,7 +13887,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 750,
+            "line": 749,
             "description": "Code for the L key.",
             "itemtype": "property",
             "name": "KEY_L",
@@ -13765,7 +13899,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 758,
+            "line": 757,
             "description": "Code for the M key.",
             "itemtype": "property",
             "name": "KEY_M",
@@ -13777,7 +13911,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 766,
+            "line": 765,
             "description": "Code for the N key.",
             "itemtype": "property",
             "name": "KEY_N",
@@ -13789,7 +13923,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 774,
+            "line": 773,
             "description": "Code for the O key.",
             "itemtype": "property",
             "name": "KEY_O",
@@ -13801,7 +13935,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 782,
+            "line": 781,
             "description": "Code for the P key.",
             "itemtype": "property",
             "name": "KEY_P",
@@ -13813,7 +13947,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 790,
+            "line": 789,
             "description": "Code for the Q key.",
             "itemtype": "property",
             "name": "KEY_Q",
@@ -13825,7 +13959,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 798,
+            "line": 797,
             "description": "Code for the R key.",
             "itemtype": "property",
             "name": "KEY_R",
@@ -13837,7 +13971,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 806,
+            "line": 805,
             "description": "Code for the S key.",
             "itemtype": "property",
             "name": "KEY_S",
@@ -13849,7 +13983,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 814,
+            "line": 813,
             "description": "Code for the T key.",
             "itemtype": "property",
             "name": "KEY_T",
@@ -13861,7 +13995,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 822,
+            "line": 821,
             "description": "Code for the U key.",
             "itemtype": "property",
             "name": "KEY_U",
@@ -13873,7 +14007,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 830,
+            "line": 829,
             "description": "Code for the V key.",
             "itemtype": "property",
             "name": "KEY_V",
@@ -13885,7 +14019,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 838,
+            "line": 837,
             "description": "Code for the W key.",
             "itemtype": "property",
             "name": "KEY_W",
@@ -13897,7 +14031,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 846,
+            "line": 845,
             "description": "Code for the X key.",
             "itemtype": "property",
             "name": "KEY_X",
@@ -13909,7 +14043,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 854,
+            "line": 853,
             "description": "Code for the Y key.",
             "itemtype": "property",
             "name": "KEY_Y",
@@ -13921,7 +14055,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 862,
+            "line": 861,
             "description": "Code for the Z key.",
             "itemtype": "property",
             "name": "KEY_Z",
@@ -13933,7 +14067,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 870,
+            "line": 869,
             "description": "Code for the LEFT_WINDOW key.",
             "itemtype": "property",
             "name": "KEY_LEFT_WINDOW",
@@ -13945,7 +14079,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 878,
+            "line": 877,
             "description": "Code for the RIGHT_WINDOW key.",
             "itemtype": "property",
             "name": "KEY_RIGHT_WINDOW",
@@ -13957,7 +14091,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 886,
+            "line": 885,
             "description": "Code for the SELECT key.",
             "itemtype": "property",
             "name": "KEY_SELECT",
@@ -13969,7 +14103,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 894,
+            "line": 893,
             "description": "Code for the number pad 0 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_0",
@@ -13981,7 +14115,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 902,
+            "line": 901,
             "description": "Code for the number pad 1 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_1",
@@ -13993,7 +14127,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 910,
+            "line": 909,
             "description": "Code for the number pad 2 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD 2",
@@ -14005,7 +14139,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 918,
+            "line": 917,
             "description": "Code for the number pad 3 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_3",
@@ -14017,7 +14151,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 926,
+            "line": 925,
             "description": "Code for the number pad 4 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_4",
@@ -14029,7 +14163,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 934,
+            "line": 933,
             "description": "Code for the number pad 5 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_5",
@@ -14041,7 +14175,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 942,
+            "line": 941,
             "description": "Code for the number pad 6 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_6",
@@ -14053,7 +14187,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 950,
+            "line": 949,
             "description": "Code for the number pad 7 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_7",
@@ -14065,7 +14199,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 958,
+            "line": 957,
             "description": "Code for the number pad 8 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_8",
@@ -14077,7 +14211,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 966,
+            "line": 965,
             "description": "Code for the number pad 9 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_9",
@@ -14089,7 +14223,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 974,
+            "line": 973,
             "description": "Code for the MULTIPLY key.",
             "itemtype": "property",
             "name": "KEY_MULTIPLY",
@@ -14101,7 +14235,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 982,
+            "line": 981,
             "description": "Code for the ADD key.",
             "itemtype": "property",
             "name": "KEY_ADD",
@@ -14113,7 +14247,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 990,
+            "line": 989,
             "description": "Code for the SUBTRACT key.",
             "itemtype": "property",
             "name": "KEY_SUBTRACT",
@@ -14125,7 +14259,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 998,
+            "line": 997,
             "description": "Code for the DECIMAL POINT key.",
             "itemtype": "property",
             "name": "KEY_DECIMAL_POINT",
@@ -14137,7 +14271,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1006,
+            "line": 1005,
             "description": "Code for the DIVIDE key.",
             "itemtype": "property",
             "name": "KEY_DIVIDE",
@@ -14149,7 +14283,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1014,
+            "line": 1013,
             "description": "Code for the F1 key.",
             "itemtype": "property",
             "name": "KEY_F1",
@@ -14161,7 +14295,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1022,
+            "line": 1021,
             "description": "Code for the F2 key.",
             "itemtype": "property",
             "name": "KEY_F2",
@@ -14173,7 +14307,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1030,
+            "line": 1029,
             "description": "Code for the F3 key.",
             "itemtype": "property",
             "name": "KEY_F3",
@@ -14185,7 +14319,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1038,
+            "line": 1037,
             "description": "Code for the F4 key.",
             "itemtype": "property",
             "name": "KEY_F4",
@@ -14197,7 +14331,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1046,
+            "line": 1045,
             "description": "Code for the F5 key.",
             "itemtype": "property",
             "name": "KEY_F5",
@@ -14209,7 +14343,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1054,
+            "line": 1053,
             "description": "Code for the F6 key.",
             "itemtype": "property",
             "name": "KEY_F6",
@@ -14221,7 +14355,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1062,
+            "line": 1061,
             "description": "Code for the F7 key.",
             "itemtype": "property",
             "name": "KEY_F7",
@@ -14233,7 +14367,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1070,
+            "line": 1069,
             "description": "Code for the F8 key.",
             "itemtype": "property",
             "name": "KEY_F8",
@@ -14245,7 +14379,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1078,
+            "line": 1077,
             "description": "Code for the F9 key.",
             "itemtype": "property",
             "name": "KEY_F9",
@@ -14257,7 +14391,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1086,
+            "line": 1085,
             "description": "Code for the F10 key.",
             "itemtype": "property",
             "name": "KEY_F10",
@@ -14269,7 +14403,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1094,
+            "line": 1093,
             "description": "Code for the F11 key.",
             "itemtype": "property",
             "name": "KEY_F11",
@@ -14281,7 +14415,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1102,
+            "line": 1101,
             "description": "Code for the F12 key.",
             "itemtype": "property",
             "name": "KEY_F12",
@@ -14293,7 +14427,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1110,
+            "line": 1109,
             "description": "Code for the NUM_LOCK key.",
             "itemtype": "property",
             "name": "KEY_NUM_LOCK",
@@ -14305,7 +14439,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1118,
+            "line": 1117,
             "description": "Code for the SCROLL_LOCK key.",
             "itemtype": "property",
             "name": "KEY_SCROLL_LOCK",
@@ -14317,7 +14451,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1126,
+            "line": 1125,
             "description": "Code for the SEMI_COLON key.",
             "itemtype": "property",
             "name": "KEY_SEMI_COLON",
@@ -14329,7 +14463,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1134,
+            "line": 1133,
             "description": "Code for the EQUAL_SIGN key.",
             "itemtype": "property",
             "name": "KEY_EQUAL_SIGN",
@@ -14341,7 +14475,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1142,
+            "line": 1141,
             "description": "Code for the COMMA key.",
             "itemtype": "property",
             "name": "KEY_COMMA",
@@ -14353,7 +14487,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1150,
+            "line": 1149,
             "description": "Code for the DASH key.",
             "itemtype": "property",
             "name": "KEY_DASH",
@@ -14365,7 +14499,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1158,
+            "line": 1157,
             "description": "Code for the PERIOD key.",
             "itemtype": "property",
             "name": "KEY_PERIOD",
@@ -14377,7 +14511,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1166,
+            "line": 1165,
             "description": "Code for the FORWARD_SLASH key.",
             "itemtype": "property",
             "name": "KEY_FORWARD_SLASH",
@@ -14389,7 +14523,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1174,
+            "line": 1173,
             "description": "Code for the GRAVE_ACCENT key.",
             "itemtype": "property",
             "name": "KEY_GRAVE_ACCENT",
@@ -14401,7 +14535,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1182,
+            "line": 1181,
             "description": "Code for the OPEN_BRACKET key.",
             "itemtype": "property",
             "name": "KEY_OPEN_BRACKET",
@@ -14413,7 +14547,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1190,
+            "line": 1189,
             "description": "Code for the BACK_SLASH key.",
             "itemtype": "property",
             "name": "KEY_BACK_SLASH",
@@ -14425,7 +14559,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1198,
+            "line": 1197,
             "description": "Code for the CLOSE_BRACKET key.",
             "itemtype": "property",
             "name": "KEY_CLOSE_BRACKET",
@@ -14437,7 +14571,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1206,
+            "line": 1205,
             "description": "Code for the SINGLE_QUOTE key.",
             "itemtype": "property",
             "name": "KEY_SINGLE_QUOTE",
@@ -14449,7 +14583,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1214,
+            "line": 1213,
             "description": "Code for the SPACE key.",
             "itemtype": "property",
             "name": "KEY_SPACE",
@@ -16467,7 +16601,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 180,
+            "line": 182,
             "description": "Floating-point modulus",
             "itemtype": "method",
             "name": "fmod",
@@ -16495,7 +16629,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 199,
+            "line": 201,
             "description": "Negates a four-element vector.",
             "itemtype": "method",
             "name": "negateVec4",
@@ -16524,7 +16658,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 218,
+            "line": 220,
             "description": "Adds one four-element vector to another.",
             "itemtype": "method",
             "name": "addVec4",
@@ -16558,7 +16692,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 238,
+            "line": 240,
             "description": "Adds a scalar value to each element of a four-element vector.",
             "itemtype": "method",
             "name": "addVec4Scalar",
@@ -16592,7 +16726,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 258,
+            "line": 260,
             "description": "Adds one three-element vector to another.",
             "itemtype": "method",
             "name": "addVec3",
@@ -16626,7 +16760,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 277,
+            "line": 279,
             "description": "Adds a scalar value to each element of a three-element vector.",
             "itemtype": "method",
             "name": "addVec4Scalar",
@@ -16660,7 +16794,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 296,
+            "line": 298,
             "description": "Subtracts one four-element vector from another.",
             "itemtype": "method",
             "name": "subVec4",
@@ -16694,7 +16828,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 316,
+            "line": 318,
             "description": "Subtracts one three-element vector from another.",
             "itemtype": "method",
             "name": "subVec3",
@@ -16728,7 +16862,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 335,
+            "line": 337,
             "description": "Subtracts one two-element vector from another.",
             "itemtype": "method",
             "name": "subVec2",
@@ -16762,7 +16896,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 353,
+            "line": 355,
             "description": "Subtracts a scalar value from each element of a four-element vector.",
             "itemtype": "method",
             "name": "subVec4Scalar",
@@ -16796,7 +16930,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 373,
+            "line": 375,
             "description": "Sets each element of a 4-element vector to a scalar value minus the value of that element.",
             "itemtype": "method",
             "name": "subScalarVec4",
@@ -16830,7 +16964,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 393,
+            "line": 395,
             "description": "Multiplies one three-element vector by another.",
             "itemtype": "method",
             "name": "mulVec3",
@@ -16864,7 +16998,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 413,
+            "line": 415,
             "description": "Multiplies each element of a four-element vector by a scalar.",
             "itemtype": "method",
             "name": "mulVec34calar",
@@ -16898,7 +17032,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 433,
+            "line": 435,
             "description": "Multiplies each element of a three-element vector by a scalar.",
             "itemtype": "method",
             "name": "mulVec3Scalar",
@@ -16932,7 +17066,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 452,
+            "line": 454,
             "description": "Multiplies each element of a two-element vector by a scalar.",
             "itemtype": "method",
             "name": "mulVec2Scalar",
@@ -16966,7 +17100,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 470,
+            "line": 472,
             "description": "Divides one three-element vector by another.",
             "itemtype": "method",
             "name": "divVec3",
@@ -17000,7 +17134,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 489,
+            "line": 491,
             "description": "Divides one four-element vector by another.",
             "itemtype": "method",
             "name": "divVec4",
@@ -17034,7 +17168,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 509,
+            "line": 511,
             "description": "Divides a scalar by a three-element vector, returning a new vector.",
             "itemtype": "method",
             "name": "divScalarVec3",
@@ -17063,7 +17197,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 528,
+            "line": 530,
             "description": "Divides a three-element vector by a scalar.",
             "itemtype": "method",
             "name": "divVec3Scalar",
@@ -17092,7 +17226,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 547,
+            "line": 549,
             "description": "Divides a four-element vector by a scalar.",
             "itemtype": "method",
             "name": "divVec4Scalar",
@@ -17121,7 +17255,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 568,
+            "line": 570,
             "description": "Divides a scalar by a four-element vector, returning a new vector.",
             "itemtype": "method",
             "name": "divScalarVec4",
@@ -17150,7 +17284,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 588,
+            "line": 590,
             "description": "Returns the dot product of two four-element vectors.",
             "itemtype": "method",
             "name": "dotVec4",
@@ -17177,7 +17311,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 600,
+            "line": 602,
             "description": "Returns the cross product of two four-element vectors.",
             "itemtype": "method",
             "name": "cross3Vec4",
@@ -17204,7 +17338,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 618,
+            "line": 620,
             "description": "Returns the cross product of two three-element vectors.",
             "itemtype": "method",
             "name": "cross3Vec3",
@@ -17231,7 +17365,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 643,
+            "line": 645,
             "description": "Returns the length of a four-element vector.",
             "itemtype": "method",
             "name": "lenVec4",
@@ -17253,7 +17387,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 654,
+            "line": 656,
             "description": "Returns the dot product of two three-element vectors.",
             "itemtype": "method",
             "name": "dotVec4",
@@ -17280,7 +17414,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 666,
+            "line": 668,
             "description": "Returns the dot product of two two-element vectors.",
             "itemtype": "method",
             "name": "dotVec4",
@@ -17307,7 +17441,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 688,
+            "line": 690,
             "description": "Returns the length of a three-element vector.",
             "itemtype": "method",
             "name": "lenVec3",
@@ -17329,7 +17463,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 699,
+            "line": 701,
             "description": "Returns the length of a two-element vector.",
             "itemtype": "method",
             "name": "lenVec2",
@@ -17351,7 +17485,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 710,
+            "line": 712,
             "itemtype": "method",
             "name": "rcpVec3",
             "static": 1,
@@ -17375,7 +17509,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 722,
+            "line": 724,
             "description": "Normalizes a four-element vector",
             "itemtype": "method",
             "name": "normalizeVec4",
@@ -17400,7 +17534,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 736,
+            "line": 738,
             "description": "Normalizes a three-element vector",
             "itemtype": "method",
             "name": "normalizeVec4",
@@ -17412,7 +17546,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 746,
+            "line": 748,
             "description": "Normalizes a two-element vector",
             "itemtype": "method",
             "name": "normalizeVec2",
@@ -17424,7 +17558,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 756,
+            "line": 758,
             "description": "Duplicates a 4x4 identity matrix.",
             "itemtype": "method",
             "name": "dupMat4",
@@ -17436,7 +17570,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 765,
+            "line": 767,
             "description": "Extracts a 3x3 matrix from a 4x4 matrix.",
             "itemtype": "method",
             "name": "mat4To3",
@@ -17448,7 +17582,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 778,
+            "line": 780,
             "description": "Returns a 4x4 matrix with each element set to the given scalar value.",
             "itemtype": "method",
             "name": "m4s",
@@ -17460,7 +17594,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 792,
+            "line": 794,
             "description": "Returns a 4x4 matrix with each element set to zero.",
             "itemtype": "method",
             "name": "setMat4ToZeroes",
@@ -17472,7 +17606,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 801,
+            "line": 803,
             "description": "Returns a 4x4 matrix with each element set to 1.0.",
             "itemtype": "method",
             "name": "setMat4ToOnes",
@@ -17484,7 +17618,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 810,
+            "line": 812,
             "description": "Returns a 4x4 matrix with each element set to 1.0.",
             "itemtype": "method",
             "name": "setMat4ToOnes",
@@ -17496,7 +17630,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 824,
+            "line": 826,
             "description": "Returns a 4x4 matrix with diagonal elements set to the given vector.",
             "itemtype": "method",
             "name": "diagonalMat4c",
@@ -17508,7 +17642,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 833,
+            "line": 835,
             "description": "Returns a 4x4 matrix with diagonal elements set to the given scalar.",
             "itemtype": "method",
             "name": "diagonalMat4s",
@@ -17520,7 +17654,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 842,
+            "line": 844,
             "description": "Returns a 4x4 identity matrix.",
             "itemtype": "method",
             "name": "identityMat4",
@@ -17532,7 +17666,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 874,
+            "line": 876,
             "description": "Tests if the given 4x4 matrix is the identity matrix.",
             "itemtype": "method",
             "name": "isIdentityMat4",
@@ -17544,7 +17678,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 889,
+            "line": 891,
             "description": "Negates the given 4x4 matrix.",
             "itemtype": "method",
             "name": "negateMat4",
@@ -17556,7 +17690,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 917,
+            "line": 919,
             "description": "Adds the given 4x4 matrices together.",
             "itemtype": "method",
             "name": "addMat4",
@@ -17568,7 +17702,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 945,
+            "line": 947,
             "description": "Adds the given scalar to each element of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "addMat4Scalar",
@@ -17580,7 +17714,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 973,
+            "line": 975,
             "description": "Adds the given scalar to each element of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "addScalarMat4",
@@ -17592,7 +17726,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 982,
+            "line": 984,
             "description": "Subtracts the second 4x4 matrix from the first.",
             "itemtype": "method",
             "name": "subMat4",
@@ -17604,7 +17738,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1010,
+            "line": 1012,
             "description": "Subtracts the given scalar from each element of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "subMat4Scalar",
@@ -17616,7 +17750,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1038,
+            "line": 1040,
             "description": "Subtracts the given scalar from each element of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "subScalarMat4",
@@ -17628,7 +17762,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1066,
+            "line": 1068,
             "description": "Multiplies the two given 4x4 matrix by each other.",
             "itemtype": "method",
             "name": "mulMat4",
@@ -17640,7 +17774,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1107,
+            "line": 1109,
             "description": "Multiplies each element of the given 4x4 matrix by the given scalar.",
             "itemtype": "method",
             "name": "mulMat4Scalar",
@@ -17652,7 +17786,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1135,
+            "line": 1137,
             "description": "Multiplies the given 4x4 matrix by the given four-element vector.",
             "itemtype": "method",
             "name": "mulMat4v4",
@@ -17664,7 +17798,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1150,
+            "line": 1152,
             "description": "Transposes the given 4x4 matrix.",
             "itemtype": "method",
             "name": "transposeMat4",
@@ -17676,7 +17810,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1196,
+            "line": 1198,
             "description": "Returns the determinant of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "determinantMat4",
@@ -17688,7 +17822,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1215,
+            "line": 1217,
             "description": "Returns the inverse of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "inverseMat4",
@@ -17700,7 +17834,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1265,
+            "line": 1267,
             "description": "Returns the trace of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "traceMat4",
@@ -17712,7 +17846,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1274,
+            "line": 1276,
             "description": "Returns 4x4 translation matrix.",
             "itemtype": "method",
             "name": "translationMat4",
@@ -17724,7 +17858,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1287,
+            "line": 1289,
             "description": "Returns 4x4 translation matrix.",
             "itemtype": "method",
             "name": "translationMat4c",
@@ -17736,7 +17870,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1296,
+            "line": 1298,
             "description": "Returns 4x4 translation matrix.",
             "itemtype": "method",
             "name": "translationMat4s",
@@ -17748,7 +17882,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1305,
+            "line": 1307,
             "description": "Returns 4x4 rotation matrix.",
             "itemtype": "method",
             "name": "rotationMat4v",
@@ -17760,7 +17894,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1357,
+            "line": 1359,
             "description": "Returns 4x4 rotation matrix.",
             "itemtype": "method",
             "name": "rotationMat4c",
@@ -17772,7 +17906,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1366,
+            "line": 1368,
             "description": "Returns 4x4 scale matrix.",
             "itemtype": "method",
             "name": "scalingMat4v",
@@ -17784,7 +17918,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1379,
+            "line": 1381,
             "description": "Returns 4x4 scale matrix.",
             "itemtype": "method",
             "name": "scalingMat4c",
@@ -17796,7 +17930,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1388,
+            "line": 1390,
             "description": "Returns 4x4 scale matrix.",
             "itemtype": "method",
             "name": "scalingMat4s",
@@ -17808,7 +17942,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1397,
+            "line": 1399,
             "description": "Returns a 4x4 'lookat' viewing transform matrix.",
             "itemtype": "method",
             "name": "lookAtMat4v",
@@ -17841,7 +17975,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1492,
+            "line": 1494,
             "description": "Returns a 4x4 'lookat' viewing transform matrix.",
             "itemtype": "method",
             "name": "lookAtMat4c",
@@ -17853,7 +17987,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1501,
+            "line": 1503,
             "description": "Returns a 4x4 orthographic projection matrix.",
             "itemtype": "method",
             "name": "orthoMat4c",
@@ -17865,7 +17999,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1537,
+            "line": 1539,
             "description": "Returns a 4x4 perspective projection matrix.",
             "itemtype": "method",
             "name": "frustumMat4v",
@@ -17877,7 +18011,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1581,
+            "line": 1583,
             "description": "Returns a 4x4 perspective projection matrix.",
             "itemtype": "method",
             "name": "frustumMat4v",
@@ -17889,7 +18023,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1612,
+            "line": 1614,
             "description": "Returns a 4x4 perspective projection matrix.",
             "itemtype": "method",
             "name": "perspectiveMatrix4v",
@@ -17901,7 +18035,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1633,
+            "line": 1635,
             "description": "Transforms a three-element position by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformPoint3",
@@ -17913,7 +18047,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1650,
+            "line": 1652,
             "description": "Transforms a homogeneous coordinate by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformPoint3",
@@ -17925,7 +18059,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1667,
+            "line": 1669,
             "description": "Transforms an array of three-element positions by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformPoints3",
@@ -17937,7 +18071,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1708,
+            "line": 1710,
             "description": "Transforms a three-element vector by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformVec3",
@@ -17949,7 +18083,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1722,
+            "line": 1724,
             "description": "Transforms a four-element vector by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformVec4",
@@ -17961,7 +18095,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1737,
+            "line": 1739,
             "description": "Transforms a four-element vector by a 4x4 projection matrix.",
             "itemtype": "method",
             "name": "projectVec4",
@@ -17973,7 +18107,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1747,
+            "line": 1749,
             "description": "Linearly interpolates between two 3D vectors.",
             "itemtype": "method",
             "name": "lerpVec3",
@@ -17985,7 +18119,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1761,
+            "line": 1763,
             "description": "Gets the diagonal size of a boundary given as minima and maxima.",
             "itemtype": "method",
             "name": "getAABBDiag",
@@ -17997,7 +18131,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1771,
+            "line": 1773,
             "description": "Gets the center of a boundary given as minima and maxima.",
             "itemtype": "method",
             "name": "getAABBCenter",
@@ -18009,7 +18143,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1786,
+            "line": 1788,
             "description": "Gets the center of a 2D boundary given as minima and maxima.",
             "itemtype": "method",
             "name": "getAABB2Center",
@@ -18021,7 +18155,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1800,
+            "line": 1802,
             "description": "Collapses a 3D axis-aligned boundary, ready to expand to fit 2D points.\nCreates new AABB if none supplied.",
             "itemtype": "method",
             "name": "collapseAABB3",
@@ -18045,7 +18179,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1823,
+            "line": 1825,
             "description": "Converts an axis-aligned 3D boundary into an oriented boundary consisting of\nan array of eight 3D positions, one for each corner of the boundary.",
             "itemtype": "method",
             "name": "AABB3ToOBB3",
@@ -18074,7 +18208,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1912,
+            "line": 1914,
             "description": "Finds the minimum axis-aligned 3D boundary enclosing the 3D points given in a flattened,  1-dimensional array.",
             "itemtype": "method",
             "name": "positions3ToAABB3",
@@ -18103,7 +18237,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1975,
+            "line": 1977,
             "description": "Finds the minimum axis-aligned 3D boundary enclosing the given 3D points.",
             "itemtype": "method",
             "name": "points3ToAABB3",
@@ -18132,7 +18266,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2038,
+            "line": 2040,
             "description": "Expands the first axis-aligned 3D boundary to enclose the second, if required.",
             "itemtype": "method",
             "name": "expandAABB3",
@@ -18160,7 +18294,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2076,
+            "line": 2078,
             "description": "Expands an axis-aligned 3D boundary to enclose the given point, if needed.",
             "itemtype": "method",
             "name": "expandAABB3Point3",
@@ -18188,7 +18322,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2114,
+            "line": 2116,
             "description": "Collapses a 2D axis-aligned boundary, ready to expand to fit 2D points.\nCreates new AABB if none supplied.",
             "itemtype": "method",
             "name": "collapseAABB2",
@@ -18212,7 +18346,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2135,
+            "line": 2137,
             "description": "Finds the minimum 2D projected axis-aligned boundary enclosing the given 3D points.",
             "itemtype": "method",
             "name": "points3ToAABB2",
@@ -18241,7 +18375,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2192,
+            "line": 2194,
             "description": "Expands the first axis-aligned 2D boundary to enclose the second, if required.",
             "itemtype": "method",
             "name": "expandAABB3",
@@ -18269,7 +18403,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2222,
+            "line": 2224,
             "description": "Expands an axis-aligned 2D boundary to enclose the given point, if required.",
             "itemtype": "method",
             "name": "expandAABB2Point2",
@@ -18297,7 +18431,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2269,
+            "line": 2271,
             "description": "Builds normal vectors from positions and indices.",
             "itemtype": "method",
             "name": "buildTangents",
@@ -18325,7 +18459,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2333,
+            "line": 2343,
             "description": "Builds vertex tangent vectors from positions, UVs and indices",
             "itemtype": "method",
             "name": "buildTangents",
@@ -18358,7 +18492,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2409,
+            "line": 2419,
             "description": "Flattens a two-dimensional array into a one-dimensional array.",
             "itemtype": "method",
             "name": "flatten",
@@ -18380,7 +18514,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2437,
+            "line": 2447,
             "description": "Builds vertex and index arrays needed by color-indexed triangle picking.",
             "itemtype": "method",
             "name": "getPickPrimitives",
@@ -18420,7 +18554,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2540,
+            "line": 2550,
             "description": "Finds the intersection of a 3D ray with a 3D triangle.",
             "itemtype": "method",
             "name": "rayTriangleIntersect",
@@ -18469,7 +18603,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2588,
+            "line": 2598,
             "description": "Finds the intersection of a 3D ray with a plane defined by 3 points.",
             "itemtype": "method",
             "name": "rayPlaneIntersect",
@@ -18518,7 +18652,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2626,
+            "line": 2636,
             "description": "Gets barycentric coordinates from cartesian coordinates within a triangle.",
             "itemtype": "method",
             "name": "cartesianToBaryCentric",
@@ -18562,7 +18696,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2693,
+            "line": 2703,
             "description": "Returns true if the given barycentric coordinates are within their triangle.",
             "itemtype": "method",
             "name": "barycentricInsideTriangle",
@@ -18585,7 +18719,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2710,
+            "line": 2720,
             "description": "Gets cartesian coordinates from barycentric coordinates within a triangle.",
             "itemtype": "method",
             "name": "barycentricToCartesian",
@@ -19824,7 +19958,7 @@
         {
             "file": "src/component.js",
             "line": 340,
-            "description": "An array of strings that indicates the chain of super-types within this component's inheritance hierarchy.\n\nFor example, if this component is a {{#crossLink \"Rotate\"}}{{/crossLink}}, which\nextends {{#crossLink \"Transform\"}}{{/crossLink}}, which in turn extends {{#crossLink \"Component\"}}{{/crossLink}},\nthen this property will have the value:\n\n````json\n[\"XEO.Component\", \"XEO.Transform\", \"XEO.Rotate\"]\n````\n\nNote that the chain is ordered downwards in the hierarchy, ie. from super-class down to sub-class.",
+            "description": "An array of strings that indicates the chain of super-types within this component's inheritance hierarchy.\n\nFor example, if this component is a {{#crossLink \"Rotate\"}}{{/crossLink}}, which\nextends {{#crossLink \"Transform\"}}{{/crossLink}}, which in turn extends {{#crossLink \"Component\"}}{{/crossLink}},\nthen this property will have the value:\n\n````json\n[\"XEO.Component\", \"XEO.Transform\"]\n````\n\nNote that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.",
             "itemtype": "property",
             "name": "superTypes",
             "type": "{Array of String}",
@@ -20086,7 +20220,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 757,
+            "line": 761,
             "access": "private",
             "tagname": "",
             "class": "Component",
@@ -20094,7 +20228,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 782,
+            "line": 786,
             "access": "private",
             "tagname": "",
             "class": "Component",
@@ -20102,7 +20236,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 789,
+            "line": 793,
             "description": "Convenience method for creating a Component within this Component's {{#crossLink \"Scene\"}}{{/crossLink}}.\n\nYou would typically use this method to conveniently instantiate components that you'd want to\nshare (ie. \"instance\") among your {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe method is given a component type and configuration, like so:\n\n````javascript\nvar material = myComponent.create(XEO.PhongMaterial, {\n     diffuse: [1,0,0],\n     specular: [1,1,0]\n});\n````\n\nThe first time you call this method for the given ````type```` and ````instanceId````, this method will create the\n{{#crossLink \"PhongMaterial\"}}{{/crossLink}}, passing the given  attributes to the component's constructor.\n\nIf you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same\ncomponent instance that it returned the first time, and will ignore the attributes:\n\n````javascript\nvar material2 = component.create(XEO.PhongMaterial, \"myMaterial\", { specular: [1,1,0] });\n````\n\nEach time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a\nreference count for the component instance. You can release the shared component instance with a call to\n{{#crossLink \"Scene/putSharedComponent:method\"}}{{/crossLink}}, and once you have released it as many\ntimes as you got it, the Scene will destroy the component.",
             "itemtype": "method",
             "name": "create",
@@ -20134,7 +20268,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 857,
+            "line": 861,
             "description": "Protected method, called by sub-classes to queue a call to _update().",
             "access": "protected",
             "tagname": "",
@@ -20143,7 +20277,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 873,
+            "line": 877,
             "access": "private",
             "tagname": "",
             "class": "Component",
@@ -20151,7 +20285,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 898,
+            "line": 902,
             "description": "Optional virtual template method, normally implemented\nby sub-classes to generate some data before _update gets\ncallled",
             "access": "protected",
             "tagname": "",
@@ -20160,7 +20294,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 907,
+            "line": 911,
             "description": "Protected virtual template method, optionally implemented\nby sub-classes to perform a scheduled task.",
             "access": "protected",
             "tagname": "",
@@ -20169,7 +20303,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 915,
+            "line": 919,
             "description": "Protected template method, implemented by sub-classes to compile\ntheir state into their Scene's XEO.renderer.Renderer.",
             "access": "protected",
             "tagname": "",
@@ -20178,7 +20312,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 927,
+            "line": 931,
             "description": "JSON object containing the state of this Component.",
             "itemtype": "property",
             "name": "json",
@@ -20189,7 +20323,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 955,
+            "line": 959,
             "description": "String containing the serialized JSON state of this Component.",
             "itemtype": "property",
             "name": "string",
@@ -20200,7 +20334,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 970,
+            "line": 974,
             "description": "Experimental: string containing a JavaScript expression that would instantiate this Component.",
             "itemtype": "property",
             "name": "string",
@@ -20211,7 +20345,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 989,
+            "line": 993,
             "description": "Destroys this component.\n\nFires a {{#crossLink \"Component/destroyed:event\"}}{{/crossLink}} event on this Component.\n\nAutomatically disassociates this component from other components, causing them to fall back on any\ndefaults that this component overrode on them.\n\nTODO: describe effect with respect to #create",
             "itemtype": "method",
             "name": "destroy",
@@ -20220,7 +20354,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1036,
+            "line": 1040,
             "description": "Fired when this Component is destroyed.",
             "itemtype": "event",
             "name": "destroyed",
@@ -20229,7 +20363,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1045,
+            "line": 1049,
             "description": "Protected template method, implemented by sub-classes\nto clean up just before the component is destroyed.",
             "access": "protected",
             "tagname": "",
@@ -20406,7 +20540,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 470,
+            "line": 472,
             "description": "Fired whenever a component has been created within this Scene.",
             "itemtype": "event",
             "name": "componentCreated",
@@ -20422,7 +20556,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 514,
+            "line": 516,
             "description": "Fired whenever a component within this Scene has been destroyed.",
             "itemtype": "event",
             "name": "componentDestroyed",
@@ -20438,7 +20572,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 536,
+            "line": 538,
             "description": "The default projection transform provided by this Scene, which is\na {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.\n\nThis {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} has an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to\n\"default.project\", with all other properties set to their default\nvalues.\n\n{{#crossLink \"Camera\"}}Cameras{{/crossLink}} within this Scene\nare attached to this {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}\nby default.",
             "itemtype": "property",
             "name": "project",
@@ -20449,7 +20583,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 564,
+            "line": 566,
             "description": "The default viewing transform provided by this Scene, which is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.\n\nThis {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.view\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Camera\"}}Cameras{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "view",
@@ -20460,7 +20594,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 587,
+            "line": 589,
             "description": "The default {{#crossLink \"Camera\"}}Camera{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Camera\"}}Camera{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.camera\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Camera\"}}Camera{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "camera",
@@ -20471,7 +20605,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 612,
+            "line": 614,
             "description": "The default modelling {{#crossLink \"Transform\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Transform\"}}{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.transform\",\nwith all other properties initialised to their default values (ie. an identity matrix).\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Transform\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "transform",
@@ -20482,7 +20616,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 636,
+            "line": 638,
             "description": "The default {{#crossLink \"Billboard\"}}Billboard{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Billboard\"}}Billboard{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.billboard\"\nand an {{#crossLink \"Billboard/active:property\"}}{{/crossLink}} property set to false, to disable it.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Billboard\"}}Billboard{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "billboard",
@@ -20493,7 +20627,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 660,
+            "line": 662,
             "description": "The default {{#crossLink \"Stationary\"}}Stationary{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Stationary\"}}Stationary{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.stationary\"\nand an {{#crossLink \"Stationary/active:property\"}}{{/crossLink}} property set to false, to disable it.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Stationary\"}}Stationary{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "stationary",
@@ -20504,7 +20638,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 684,
+            "line": 686,
             "description": "The default {{#crossLink \"Clips\"}}Clips{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Clips\"}}Clips{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.clips\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Clips\"}}Clips{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "clips",
@@ -20515,7 +20649,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 707,
+            "line": 709,
             "description": "The default {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.colorBuf\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "colorBuf",
@@ -20526,7 +20660,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 730,
+            "line": 732,
             "description": "The default {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} provided by this Scene.\n\nThe {{#crossLink \"ColorTarget\"}}DepthTarget{{/crossLink}} is\n{{#crossLink \"ColorTarget/active:property\"}}inactive{{/crossLink}} by default and will have an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthTarget\".\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "colorTarget",
@@ -20537,7 +20671,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 754,
+            "line": 756,
             "description": "The default {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthBuf\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "depthBuf",
@@ -20548,7 +20682,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 778,
+            "line": 780,
             "description": "The default {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} provided by this Scene.\n\nThe {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} is\n{{#crossLink \"DepthTarget/active:property\"}}inactive{{/crossLink}} by default and has an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthTarget\".\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "depthTarget",
@@ -20559,7 +20693,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 802,
+            "line": 804,
             "description": "The default {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.visibility\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Visibility\"}}Visibility{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "visibility",
@@ -20570,7 +20704,18 @@
         },
         {
             "file": "src/scene.js",
-            "line": 825,
+            "line": 827,
+            "description": "The default {{#crossLink \"Cull\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Cull\"}}cull{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.cull\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Cull\"}}{{/crossLink}} by default.",
+            "itemtype": "property",
+            "name": "cull",
+            "final": 1,
+            "type": "cull",
+            "class": "Scene",
+            "module": "XEO"
+        },
+        {
+            "file": "src/scene.js",
+            "line": 850,
             "description": "The default {{#crossLink \"Modes\"}}Modes{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Modes\"}}Modes{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.modes\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Modes\"}}Modes{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "modes",
@@ -20581,7 +20726,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 847,
+            "line": 872,
             "description": "The default geometry provided by this Scene, which is a {{#crossLink \"BoxGeometry\"}}BoxGeometry{{/crossLink}}.\n\nThis {{#crossLink \"BoxGeometry\"}}BoxGeometry{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.geometry\".\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Geometry\"}}Geometry{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "geometry",
@@ -20592,7 +20737,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 868,
+            "line": 893,
             "description": "The default {{#crossLink \"Layer\"}}Layer{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Layer\"}}Layer{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.layer\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Layer\"}}Layer{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "layer",
@@ -20603,7 +20748,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 891,
+            "line": 916,
             "description": "The default {{#crossLink \"Lights\"}}Lights{{/crossLink}} provided\nby this Scene.\n\nThis {{#crossLink \"Lights\"}}Lights{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to *````\"default.lights\"````*,\nwith all other properties initialised to their default values (ie. the default set of light sources for a {{#crossLink \"Lights\"}}Lights{{/crossLink}}).\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Lights\"}}Lights{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "lights",
@@ -20614,7 +20759,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 946,
+            "line": 971,
             "description": "The {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} provided as the default material by this Scene.\n\nThis {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.material\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "material",
@@ -20625,7 +20770,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 969,
+            "line": 994,
             "description": "The default {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.morphTargets\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -20636,7 +20781,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 991,
+            "line": 1016,
             "description": "The default {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} provided by this Scene,\n(which is initially an empty {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} that has no effect).\n\nThis {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.reflect\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Reflect\"}}Reflect{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "reflect",
@@ -20647,7 +20792,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1014,
+            "line": 1039,
             "description": "The default {{#crossLink \"Shader\"}}Shader{{/crossLink}} provided by this Scene\n(which is initially an empty {{#crossLink \"Shader\"}}Shader{{/crossLink}} that has no effect).\n\nThis {{#crossLink \"Shader\"}}Shader{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.shader\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Shader\"}}Shader{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "shader",
@@ -20658,7 +20803,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1037,
+            "line": 1062,
             "description": "The default {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.shaderParams\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ShaderParams\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "shaderParams",
@@ -20669,7 +20814,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1060,
+            "line": 1085,
             "description": "The default {{#crossLink \"Stage\"}}Stage{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Stage\"}}Stage{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.stage\" and\na {{#crossLink \"Stage/priority:property\"}}priority{{/crossLink}} equal to ````0````.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Stage\"}}Stage{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "stage",
@@ -20680,7 +20825,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1084,
+            "line": 1109,
             "description": "The World-space 3D boundary of this Scene.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will be lazy-initialized the first time\nyou reference this property, and will persist on this Scene until you\ncall {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on the {{#crossLink \"Boundary3D\"}}{{/crossLink}}\nagain. The property will then be set to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance\nnext time you reference it.\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary3D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "worldBoundary",
@@ -20691,7 +20836,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1167,
+            "line": 1192,
             "description": "Attempts to pick an {{#crossLink \"Entity\"}}Entity{{/crossLink}} at the given Canvas-space coordinates.\n\nIgnores {{#crossLink \"Entity\"}}Entities{{/crossLink}} that are attached\nto either a {{#crossLink \"Stage\"}}Stage{{/crossLink}} with {{#crossLink \"Stage/pickable:property\"}}pickable{{/crossLink}}\nset *false* or a {{#crossLink \"Modes\"}}Modes{{/crossLink}} with {{#crossLink \"Modes/pickable:property\"}}pickable{{/crossLink}} set *false*.\n\nOn success, will fire a {{#crossLink \"Scene/picked:event\"}}{{/crossLink}} event on this Scene, along with\na separate {{#crossLink \"Entity/picked:event\"}}{{/crossLink}} event on the target {{#crossLink \"Entity\"}}Entity{{/crossLink}}.\n\n````javascript\n\npick({\n     canvasPos: [23, 131],\n     rayPick: true\n     });\n\n````",
             "itemtype": "method",
             "name": "pick",
@@ -20726,7 +20871,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1428,
+            "line": 1453,
             "description": "Resets this Scene to its default state.\n\nReferences to any components in this Scene will become invalid.",
             "itemtype": "method",
             "name": "clear",
@@ -20735,7 +20880,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1454,
+            "line": 1479,
             "description": "Convenience method for creating or reusing a Component within this Scene.\n\nYou would typically use this method to conveniently instantiate components that you'd want to\nshare (ie. \"instance\") among your {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe method is given a component type, share ID and constructor attributes, like so:\n\n````javascript\nvar material = myScene.getComponent(\"XEO.PhongMaterial\", \"myMaterial\", { diffuse: [1,0,0] });\n````\n\nThe first time you call this method for the given ````type```` and ````instanceId````, this method will create the\n{{#crossLink \"PhongMaterial\"}}{{/crossLink}}, passing the given  attributes to the component's constructor.\n\nIf you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same\ncomponent instance that it returned the first time, and will ignore the attributes:\n\n````javascript\nvar material2 = myScene.getComponent(\"XEO.PhongMaterial\", \"myMaterial\", { specular: [1,1,0] });\n````\n\nEach time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a\nreference count for the component instance. You can release the shared component instance with a call to\n{{#crossLink \"Scene/putSharedComponent:method\"}}{{/crossLink}}, and once you have released it as many\ntimes as you got it, the Scene will destroy the component.",
             "itemtype": "method",
             "name": "_getSharedComponent",
@@ -20768,7 +20913,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1548,
+            "line": 1573,
             "description": "Releases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -20782,7 +20927,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1576,
+            "line": 1601,
             "description": "Compiles and renders this Scene",
             "access": "private",
             "tagname": "",
@@ -21061,7 +21206,7 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/_renderer/renderer.js:969"
+            "line": " src/_renderer/renderer.js:983"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -21117,95 +21262,95 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:180"
+            "line": " src/math/math.js:182"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1800"
+            "line": " src/math/math.js:1802"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1823"
+            "line": " src/math/math.js:1825"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1912"
+            "line": " src/math/math.js:1914"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1975"
+            "line": " src/math/math.js:1977"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2038"
+            "line": " src/math/math.js:2040"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2076"
+            "line": " src/math/math.js:2078"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2114"
+            "line": " src/math/math.js:2116"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2135"
+            "line": " src/math/math.js:2137"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2192"
+            "line": " src/math/math.js:2194"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2222"
+            "line": " src/math/math.js:2224"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2269"
+            "line": " src/math/math.js:2271"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2333"
+            "line": " src/math/math.js:2343"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2409"
+            "line": " src/math/math.js:2419"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2437"
+            "line": " src/math/math.js:2447"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2540"
+            "line": " src/math/math.js:2550"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2588"
+            "line": " src/math/math.js:2598"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2626"
+            "line": " src/math/math.js:2636"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2626"
+            "line": " src/math/math.js:2636"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2693"
+            "line": " src/math/math.js:2703"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2693"
+            "line": " src/math/math.js:2703"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2710"
+            "line": " src/math/math.js:2720"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2710"
+            "line": " src/math/math.js:2720"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -21221,15 +21366,15 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/component.js:789"
+            "line": " src/component.js:793"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1167"
+            "line": " src/scene.js:1192"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1454"
+            "line": " src/scene.js:1479"
         },
         {
             "message": "unknown tag: demo",
@@ -21621,87 +21766,87 @@
         },
         {
             "message": "Missing item type\nFlags the object list as needing to be rebuilt from renderer objects\non the next call to {@link #render} or {@link #pick}. Setting this\nwill cause the rendering pipeline to be executed from stage #2\n(see class comment), causing object list rebuild, state order\ndetermination, state sort, draw list construction and image render.",
-            "line": " src/_renderer/renderer.js:286"
+            "line": " src/_renderer/renderer.js:293"
         },
         {
             "message": "Missing item type\nFlags the object list as needing state orders to be (re)computed on the\nnext call to {@link #render} or {@link #pick}. Setting this will cause\nthe rendering pipeline to be executed from stage #3 (see class comment),\ncausing state order determination, state sort, draw list construction\nand image render.",
-            "line": " src/_renderer/renderer.js:296"
+            "line": " src/_renderer/renderer.js:303"
         },
         {
             "message": "Missing item type\nFlags the object list as needing to be state-sorted on the next call\nto {@link #render} or {@link #pick}.Setting this will cause the\nrendering pipeline to be executed from stage #4 (see class comment),\ncausing state sort, draw list construction and image render.",
-            "line": " src/_renderer/renderer.js:306"
+            "line": " src/_renderer/renderer.js:313"
         },
         {
             "message": "Missing item type\nFlags the draw list as needing to be rebuilt from the object list on\nthe next call to {@link #render} or {@link #pick}.  Setting this will\ncause the rendering pipeline to be executed from stage #5\n(see class comment), causing draw list construction and image render.",
-            "line": " src/_renderer/renderer.js:315"
+            "line": " src/_renderer/renderer.js:322"
         },
         {
             "message": "Missing item type\nFlags the image as needing to be redrawn from the draw list on the\nnext call to {@link #render} or {@link #pick}. Setting this will\ncause the rendering pipeline to be executed from stage #6\n(see class comment), causing the image render.",
-            "line": " src/_renderer/renderer.js:324"
+            "line": " src/_renderer/renderer.js:331"
         },
         {
             "message": "Missing item type\nReallocates WebGL resources for objects within this renderer.",
-            "line": " src/_renderer/renderer.js:334"
+            "line": " src/_renderer/renderer.js:341"
         },
         {
             "message": "Missing item type\nInternally creates (or updates) a {@link XEO.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link XEO.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
-            "line": " src/_renderer/renderer.js:358"
+            "line": " src/_renderer/renderer.js:365"
         },
         {
             "message": "Missing item type",
-            "line": " src/_renderer/renderer.js:481"
+            "line": " src/_renderer/renderer.js:489"
         },
         {
             "message": "Missing item type\nRemoves an object from this Renderer",
-            "line": " src/_renderer/renderer.js:540"
+            "line": " src/_renderer/renderer.js:548"
         },
         {
             "message": "Missing item type\nRenders a new frame, if neccessary.",
-            "line": " src/_renderer/renderer.js:577"
+            "line": " src/_renderer/renderer.js:585"
         },
         {
             "message": "Missing item type\nBuilds the object list from the object map",
-            "line": " src/_renderer/renderer.js:616"
+            "line": " src/_renderer/renderer.js:624"
         },
         {
             "message": "Missing item type\nGenerates object state sort keys",
-            "line": " src/_renderer/renderer.js:628"
+            "line": " src/_renderer/renderer.js:636"
         },
         {
             "message": "Missing item type\nState-sorts the object list",
-            "line": " src/_renderer/renderer.js:649"
+            "line": " src/_renderer/renderer.js:657"
         },
         {
             "message": "Missing item type\nLogs the object list",
-            "line": " src/_renderer/renderer.js:659"
+            "line": " src/_renderer/renderer.js:667"
         },
         {
             "message": "Missing item type\nBuilds the draw list, which is the list of draw state-chunks to apply to WebGL\nto render the visible objects in the object list for the next frame.\nPreserves the state sort order of the object list among the draw chunks.",
-            "line": " src/_renderer/renderer.js:672"
+            "line": " src/_renderer/renderer.js:680"
         },
         {
             "message": "Missing item type\nAppends an object to the draw and pick lists.",
-            "line": " src/_renderer/renderer.js:848"
+            "line": " src/_renderer/renderer.js:862"
         },
         {
             "message": "Missing item type\nLogs the contents of the draw list to the console.",
-            "line": " src/_renderer/renderer.js:910"
+            "line": " src/_renderer/renderer.js:924"
         },
         {
             "message": "Missing item type\nLogs the contents of the pick list to the console.",
-            "line": " src/_renderer/renderer.js:940"
+            "line": " src/_renderer/renderer.js:954"
         },
         {
             "message": "Missing item type\nAttempts to pick an object at the given canvas coordinates.",
-            "line": " src/_renderer/renderer.js:969"
+            "line": " src/_renderer/renderer.js:983"
         },
         {
             "message": "Missing item type",
-            "line": " src/_renderer/renderer.js:1062"
+            "line": " src/_renderer/renderer.js:1076"
         },
         {
             "message": "Missing item type\nDestroys this Renderer.",
-            "line": " src/_renderer/renderer.js:1194"
+            "line": " src/_renderer/renderer.js:1210"
         },
         {
             "message": "Missing item type\nRenderer states",
@@ -21845,7 +21990,7 @@
         },
         {
             "message": "Missing item type\nEnable or disable all input handlers",
-            "line": " src/input/input.js:417"
+            "line": " src/input/input.js:416"
         },
         {
             "message": "Missing item type\nLookup GL depth function enums",
@@ -21865,43 +22010,43 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/component.js:757"
+            "line": " src/component.js:761"
         },
         {
             "message": "Missing item type",
-            "line": " src/component.js:782"
+            "line": " src/component.js:786"
         },
         {
             "message": "Missing item type\nProtected method, called by sub-classes to queue a call to _update().",
-            "line": " src/component.js:857"
+            "line": " src/component.js:861"
         },
         {
             "message": "Missing item type",
-            "line": " src/component.js:873"
+            "line": " src/component.js:877"
         },
         {
             "message": "Missing item type\nOptional virtual template method, normally implemented\nby sub-classes to generate some data before _update gets\ncallled",
-            "line": " src/component.js:898"
+            "line": " src/component.js:902"
         },
         {
             "message": "Missing item type\nProtected virtual template method, optionally implemented\nby sub-classes to perform a scheduled task.",
-            "line": " src/component.js:907"
+            "line": " src/component.js:911"
         },
         {
             "message": "Missing item type\nProtected template method, implemented by sub-classes to compile\ntheir state into their Scene's XEO.renderer.Renderer.",
-            "line": " src/component.js:915"
+            "line": " src/component.js:919"
         },
         {
             "message": "Missing item type\nProtected template method, implemented by sub-classes\nto clean up just before the component is destroyed.",
-            "line": " src/component.js:1045"
+            "line": " src/component.js:1049"
         },
         {
             "message": "Missing item type\nReleases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
-            "line": " src/scene.js:1548"
+            "line": " src/scene.js:1573"
         },
         {
             "message": "Missing item type\nCompiles and renders this Scene",
-            "line": " src/scene.js:1576"
+            "line": " src/scene.js:1601"
         },
         {
             "message": "Missing item type\nTests if the given object is an array",

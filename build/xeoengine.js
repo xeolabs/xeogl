@@ -814,6 +814,13 @@
         this.visibility = null;
 
         /**
+         Culling render state.
+         @property cull
+         @type {renderer.Cull}
+         */
+        this.cull = null;
+
+        /**
          Modes render state.
          @property modes
          @type {renderer.Modes}
@@ -1056,6 +1063,7 @@
         object.reflect = this.reflect;
         object.geometry = this.geometry;
         object.visibility = this.visibility;
+        object.cull = this.cull;
         object.modes = this.modes;
         object.billboard = this.billboard;
         object.stationary = this.stationary;
@@ -1387,7 +1395,13 @@
 
             object = this._objectList[i];
 
-            // Cull invisible objects
+            // Skip culled objects
+
+            if (object.cull.culled === true) {
+                continue;
+            }
+
+            // Skip invisible objects
 
             if (object.visibility.visible === false) {
                 continue;
@@ -1744,6 +1758,8 @@
     XEO.renderer.Renderer.prototype._doDrawList = function (params) {
 
         var gl = this._canvas.gl;
+        var i;
+        var len;
 
         var ambient = this._ambient;
         var ambientColor;
@@ -1808,7 +1824,7 @@
 
             // Pick an object
 
-            for (var i = 0, len = this._pickObjectChunkListLen; i < len; i++) {
+            for (i = 0, len = this._pickObjectChunkListLen; i < len; i++) {
                 this._pickObjectChunkList[i].pickObject(frameCtx);
             }
 
@@ -1821,7 +1837,7 @@
                 var chunks = params.object.chunks;
                 var chunk;
 
-                for (var i = 0, len = chunks.length; i < len; i++) {
+                for (i = 0, len = chunks.length; i < len; i++) {
                     chunk = chunks[i];
                     if (chunk.pickPrimitive) {
                         chunk.pickPrimitive(frameCtx);
@@ -1835,7 +1851,7 @@
 
             var startTime = (new Date()).getTime();
 
-            for (var i = 0, len = this._drawChunkListLen; i < len; i++) {
+            for (i = 0, len = this._drawChunkListLen; i < len; i++) {
                 this._drawChunkList[i].draw(frameCtx);
             }
 
@@ -1928,6 +1944,22 @@
      @extends renderer.State
      */
     XEO.renderer.Visibility = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+    /**
+
+     Culling state.
+
+     renderer.Cull
+     @module XEO
+
+     @constructor
+     @param cfg {*} Configs
+     @param cfg.culled {Boolean} Flag which controls cull state of the associated render objects.
+     @extends renderer.State
+     */
+    XEO.renderer.Cull = XEO.renderer.State.extend({
         _ids: new XEO.utils.Map({})
     });
 
@@ -2896,6 +2928,9 @@
                 return vertex;
             }
 
+            var i;
+            var len;
+
             begin();
 
             add("// Modeling matrix");
@@ -2927,7 +2962,7 @@
                 }
 
                 // Lights
-                for (var i = 0; i < states.lights.lights.length; i++) {
+                for (i = 0, len = states.lights.lights.length; i < len; i++) {
 
                     var light = states.lights.lights[i];
 
@@ -6430,7 +6465,6 @@
         type: "viewTransform",
 
         build: function () {
-          //  this._uViewEyeDraw = this.program.draw.getUniform("xeo_uEye");
             this._uViewMatrixDraw = this.program.draw.getUniform("xeo_uViewMatrix");
             this._uViewNormalMatrixDraw = this.program.draw.getUniform("xeo_uViewNormalMatrix");
             this._uViewMatrixPickObject = this.program.pickObject.getUniform("xeo_uViewMatrix");
@@ -6438,9 +6472,6 @@
         },
 
         draw: function () {
-            //if (this._uViewEyeDraw) {
-            //    this._uViewEyeDraw.setValue(this.state.eye);
-            //}
             if (this._uViewMatrixDraw) {
                 this._uViewMatrixDraw.setValue(this.state.matrix);
             }
@@ -6636,7 +6667,9 @@
                     } else if (i === 14) {
                         uuid[i] = '4';
                     } else {
-                        if (rnd <= 0x02) rnd = 0x2000000 + ( Math.random() * 0x1000000 ) | 0;
+                        if (rnd <= 0x02) {
+                            rnd = 0x2000000 + ( Math.random() * 0x1000000 ) | 0;
+                        }
                         r = rnd & 0xf;
                         rnd = rnd >> 4;
                         uuid[i] = chars[( i === 19 ) ? ( r & 0x3 ) | 0x8 : r];
@@ -8730,7 +8763,7 @@
             aabb2.min[0] = Math.floor(xmin * canvasWidth);
             aabb2.min[1] = canvasHeight - Math.floor(ymax * canvasHeight);
             aabb2.max[0] = Math.floor(xmax * canvasWidth);
-            aabb2.max[1] = canvasHeight -Math.floor(ymin * canvasHeight);
+            aabb2.max[1] = canvasHeight - Math.floor(ymin * canvasHeight);
 
             return aabb;
         },
@@ -8746,6 +8779,8 @@
          */
         buildNormals: function (positions, indices) {
 
+            var i;
+            var len;
             var nvecs = new Array(positions.length / 3);
             var j0;
             var j1;
@@ -8754,7 +8789,7 @@
             var v2;
             var v3;
 
-            for (var i = 0, len = indices.length; i < len; i += 3) {
+            for (i = 0, len = indices.length; i < len; i += 3) {
                 j0 = indices[i + 0];
                 j1 = indices[i + 1];
                 j2 = indices[i + 2];
@@ -8768,9 +8803,15 @@
 
                 var n = XEO.math.normalizeVec3(XEO.math.cross3Vec3(v2, v3, [0, 0, 0]), [0, 0, 0]);
 
-                if (!nvecs[j0]) nvecs[j0] = [];
-                if (!nvecs[j1]) nvecs[j1] = [];
-                if (!nvecs[j2]) nvecs[j2] = [];
+                if (!nvecs[j0]) {
+                    nvecs[j0] = [];
+                }
+                if (!nvecs[j1]) {
+                    nvecs[j1] = [];
+                }
+                if (!nvecs[j2]) {
+                    nvecs[j2] = [];
+                }
 
                 nvecs[j0].push(n);
                 nvecs[j1].push(n);
@@ -8780,7 +8821,7 @@
             var normals = new Array(positions.length);
 
             // now go through and average out everything
-            for (var i = 0, len = nvecs.length; i < len; i++) {
+            for (i = 0, len = nvecs.length; i < len; i++) {
                 var count = nvecs[i].length;
                 var x = 0;
                 var y = 0;
@@ -9788,16 +9829,16 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          then this property will have the value:
 
          ````json
-         ["XEO.Component", "XEO.Transform", "XEO.Rotate"]
+         ["XEO.Component", "XEO.Transform"]
          ````
 
-         Note that the chain is ordered downwards in the hierarchy, ie. from super-class down to sub-class.
+         Note that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.
 
          @property superTypes
          @type {Array of String}
          @final
          */
-        superTypes: ["XEO.Component"],
+        superTypes: [],
 
         /**
          Tests if this component is of the given type, or is a subclass of the given type.
@@ -10185,7 +10226,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 // Fire optional callback so caller can do stuff
                 // before the change event is fired below
 
-                onAddedScope ? onAdded.call(onAddedScope, child) : onAdded();
+                if (onAddedScope) {
+                    onAdded.call(onAddedScope, child);
+                } else {
+                    onAdded(child);
+                }
             }
 
             this.fire("dirty", this);
@@ -10858,7 +10903,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 var componentJSON;
                 var type;
-                var constructor;
+                var constr;
 
                 for (var i = 0, len = componentJSONs.length; i < len; i++) {
 
@@ -10867,10 +10912,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     if (type) {
 
-                        constructor = window[type];
+                        constr = window[type];
 
-                        if (constructor) {
-                            new constructor(this, componentJSON);
+                        if (constr) {
+                            new constr(this, componentJSON);
                         }
                     }
                 }
@@ -10884,29 +10929,31 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
         _initDefaults: function () {
 
-            // Create this Scene's default components, which every
-            // Entity created in this Scene will inherit by default
+            // Call this Scene's property accessors to lazy-init their properties
 
-            this.view;
-            this.project;
-            this.camera;
-            this.clips;
-            this.colorTarget;
-            this.colorBuf;
-            this.depthTarget;
-            this.depthBuf;
-            this.visibility;
-            this.modes;
-            this.geometry;
-            this.layer;
-            this.lights;
-            this.material;
-            this.morphTargets;
-            this.reflect;
-            this.shader;
-            this.shaderParams;
-            this.stage;
-            this.transform;
+            var dummy; // Keeps Codacy happy
+
+            dummy = this.view;
+            dummy = this.project;
+            dummy = this.camera;
+            dummy = this.clips;
+            dummy = this.colorTarget;
+            dummy = this.colorBuf;
+            dummy = this.depthTarget;
+            dummy = this.depthBuf;
+            dummy = this.visibility;
+            dummy = this.cull;
+            dummy = this.modes;
+            dummy = this.geometry;
+            dummy = this.layer;
+            dummy = this.lights;
+            dummy = this.material;
+            dummy = this.morphTargets;
+            dummy = this.reflect;
+            dummy = this.shader;
+            dummy = this.shaderParams;
+            dummy = this.stage;
+            dummy = this.transform;
         },
 
         // Called by each component that is created with this Scene as parent.
@@ -11318,6 +11365,29 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                             id: "default.visibility",
                             isDefault: true,
                             visible: true
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink "Cull"}}{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink "Cull"}}cull{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.cull",
+             * with all other properties initialised to their default values.
+             *
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Cull"}}{{/crossLink}} by default.
+             * @property cull
+             * @final
+             * @type cull
+             */
+            cull: {
+                get: function () {
+                    return this.components["default.cull"] ||
+                        new XEO.Cull(this, {
+                            id: "default.cull",
+                            isDefault: true,
+                            culled: false
                         });
                 }
             },
@@ -12499,13 +12569,15 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             var look;
             var up;
 
-            if (worldBoundary = params.worldBoundary) {
+            if (params.worldBoundary) {
 
                 // Argument is a Component subtype with a worldBoundary
 
-                aabb = worldBoundary.aabb;
+                aabb = params.worldBoundary.aabb;
 
-            } else if (aabb = params.aabb) {
+            } else if (params.aabb) {
+
+                aabb = params.aabb;
 
                 // Argument is a Boundary3D
 
@@ -12538,7 +12610,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     if (!component) {
                         this.error("Component not found: " + XEO._inQuotes(componentId));
                         if (callback) {
-                            scope ? callback.call(scope) : callback();
+                            if (scope) {
+                                callback.call(scope);
+                            } else {
+                                callback();
+                            }
                         }
                         return;
                     }
@@ -12549,7 +12625,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 if (!worldBoundary) {
                     this.error("Can't fly to component " + XEO._inQuotes(componentId) + " - does not have a worldBoundary");
                     if (callback) {
-                        scope ? callback.call(scope) : callback();
+                        if (scope) {
+                            callback.call(scope);
+                        } else {
+                            callback();
+                        }
                     }
                     return;
                 }
@@ -12672,8 +12752,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             var callback = this._callback;
 
             if (callback) {
+
                 this._callback = null;
-                this._callbackScope ? callback.call(this._callbackScope) : callback();
+
+                if (this._callbackScope) {
+                    callback.call(this._callbackScope);
+                } else {
+                    callback();
+                }
             }
 
             this.fire("stopped", true, true);
@@ -15587,9 +15673,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     value = value || [];
 
                     var clip;
+                    var i;
+                    var len;
 
                     // Unsubscribe from events on old clips
-                    for (var i = 0, len = this._clips.length; i < len; i++) {
+                    for (i = 0, len = this._clips.length; i < len; i++) {
 
                         clip = this._clips[i];
 
@@ -15631,7 +15719,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         }
                     }
 
-                    for (var i = 0, len = value.length; i < len; i++) {
+                    for (i = 0, len = value.length; i < len; i++) {
 
                         clip = value[i];
 
@@ -18490,11 +18578,153 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  * @module XEO
  * @submodule culling
  */;/**
+ A **Cull** toggles the culling of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+ ## Overview
+
+ <ul>
+ <li>Cull components are intended for **visibility culling systems** to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
+ <li>{{#crossLink "Visibility"}}{{/crossLink}} components are intended for users to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}} via UIs.</li>
+ <li>Each {{#crossLink "Entity"}}{{/crossLink}} is visible when its {{#crossLink "Visibility"}}Visibility's{{/crossLink}} {{#crossLink "Visibility/visible:property"}}visible{{/crossLink}} property is true and {{#crossLink "Cull"}}Cull's{{/crossLink}} {{#crossLink "Cull/culled:property"}}visible{{/crossLink}} is false.
+ <li>A Cull may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
+ their culling status as a group.</li>
+ </ul>
+
+ <img src="../../../assets/images/Cull.png"></img>
+
+ ## Example
+
+ This example creates a Cull that toggles the culling of
+ two {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+ ````javascript
+ var scene = new XEO.Scene();
+
+ // Create a Cull component
+ var cull = new XEO.Cull(scene, {
+    culled: false
+});
+
+ // Create two Entities whose culling will be controlled by our Cull
+
+ var entity1 = new XEO.Entity(scene, {
+    cull: cull
+});
+
+ var entity2 = new XEO.Entity(scene, {
+    cull: cull
+});
+
+ // Subscribe to change on the Cull's "culled" property
+ var handle = cull.on("culled", function(value) {
+    //...
+});
+
+ // Hide our Entities by flipping the Cull's "culled" property,
+ // which will also call our handler
+ cull.culled = true;
+
+ // Unsubscribe from the Cull again
+ cull.off(handle);
+
+ // When we destroy our Cull, the Entities will fall back
+ // on the Scene's default Cull instance
+ cull.destroy();
+ ````
+ @class Cull
+ @module XEO
+ @submodule culling
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Cull in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Cull.
+ @param [cfg.culled=false] {Boolean} Flag which controls culling of the attached {{#crossLink "Entity"}}Entities{{/crossLink}}
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Cull = XEO.Component.extend({
+
+        type: "XEO.Cull",
+
+        _init: function (cfg) {
+
+            this._state = new XEO.renderer.Cull({
+                culled: true
+            });
+
+            this.culled = cfg.culled;
+        },
+
+        _props: {
+
+            /**
+             Indicates whether this Cull culls its attached {{#crossLink "Entity"}}Entities{{/crossLink}} or not.
+
+             Fires a {{#crossLink "Cull/culled:event"}}{{/crossLink}} event on change.
+
+             @property culled
+             @default false
+             @type Boolean
+             */
+            culled: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (value === this._state.culled) {
+                        return;
+                    }
+
+                    this._state.culled = value;
+
+                    this._renderer.drawListDirty = true;
+
+                    /**
+                     Fired whenever this Cull's {{#crossLink "Cull/culled:property"}}{{/crossLink}} property changes.
+
+                     @event culled
+                     @param value {Boolean} The property's new value
+                     */
+                    this.fire("culled", this._state.culled);
+                },
+
+                get: function () {
+                    return this._state.culled;
+                }
+            }
+        },
+
+        _compile: function () {
+            this._renderer.cull = this._state;
+        },
+
+        _getJSON: function () {
+            return {
+                culled: this.culled
+            };
+        },
+
+        _destroy: function () {
+            this._state.destroy();
+        }
+    });
+
+})();
+;/**
  A **Visibility** toggles the visibility of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Overview
 
  <ul>
+ <li>Visibility components are intended for users to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}} via UIs.</li>
+ <li>{{#crossLink "Cull"}}{{/crossLink}} components are intended for **visibility culling systems** to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
+ <li>Each {{#crossLink "Entity"}}{{/crossLink}} is visible when its {{#crossLink "Visibility"}}Visibility's{{/crossLink}} {{#crossLink "Visibility/visible:property"}}visible{{/crossLink}} property is true and {{#crossLink "Cull"}}Cull's{{/crossLink}} {{#crossLink "Cull/culled:property"}}visible{{/crossLink}} is false.</li>
  <li>A Visibility may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
  their visibility as a group.</li>
  </ul>
@@ -22832,12 +23062,15 @@ XEO.PathGeometry = XEO.Geometry.extend({
             return;
         }
 
+        var i;
+        var len;
+
         var points = path.getPoints(this._divisions);
 
         var positions = [];
         var point;
 
-        for (var i = 0, len = points.length; i < len; i++) {
+        for (i = 0, len = points.length; i < len; i++) {
 
             point = points[i];
 
@@ -22848,7 +23081,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
         var indices = [];
 
-        for (var i = 0, len = points.length - 1; i < len; i++) {
+        for (i = 0, len = points.length - 1; i < len; i++) {
             indices.push(i);
             indices.push(i + 1);
         }
@@ -24986,7 +25219,6 @@ XEO.PathGeometry = XEO.Geometry.extend({
                         return;
                     }
 
-                    var e = window.event || e; // old IE support
                     var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
 
                     /**
@@ -27257,8 +27489,9 @@ var global = window;
                 var self = this;
                 function JSONReady(json) {
                     self.rootDescription = json;
-                    if (callback)
+                    if (callback) {
                         callback(this);
+                    }
                 }
 
                 this._loadJSONIfNeeded(JSONReady);
@@ -28094,6 +28327,9 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                     return;
                 }
 
+                var i;
+                var len;
+
                 if (node.matrix) {
                     var matrix = node.matrix;
                     transform = new XEO.Transform(this.collection.scene, {
@@ -28155,7 +28391,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                         mesh = mesh.object;
 
-                        for (var i = 0, len = mesh.length; i < len; i++) {
+                        for (i = 0, len = mesh.length; i < len; i++) {
 
                             material = mesh[i].material;
                             geometry = mesh[i].geometry;
@@ -28180,7 +28416,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                     var children = node.children;
                     var childNode;
 
-                    for (var i = 0, len = children.length; i < len; i++) {
+                    for (i = 0, len = children.length; i < len; i++) {
                         childNode = children[i];
                         this._parseNode(childNode, transform);
                     }
@@ -31416,6 +31652,8 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, depth {{#crossLink "Scene/depthBuf:property"}}depthBuf{{/crossLink}}.
  @param [cfg.visibility] {String|Visibility} ID or instance of a {{#crossLink "Visibility"}}Visibility{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/visibility:property"}}visibility{{/crossLink}}.
+ @param [cfg.cull] {String|Cull} ID or instance of a {{#crossLink "Cull"}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
+ parent {{#crossLink "Scene"}}{{/crossLink}}'s default instance, {{#crossLink "Scene/cull:property"}}cull{{/crossLink}}.
  @param [cfg.modes] {String|Modes} ID or instance of a {{#crossLink "Modes"}}Modes{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/modes:property"}}modes{{/crossLink}}.
  @param [cfg.geometry] {String|Geometry} ID or instance of a {{#crossLink "Geometry"}}Geometry{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
@@ -31466,6 +31704,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             this.depthTarget = cfg.depthTarget;
             this.depthBuf = cfg.depthBuf;
             this.visibility = cfg.visibility;
+            this.cull = cfg.cull;
             this.modes = cfg.modes;
             this.geometry = cfg.geometry;
             this.layer = cfg.layer;
@@ -31722,6 +31961,36 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                 get: function () {
                     return this._children.visibility;
+                }
+            },
+
+            /**
+             * The {{#crossLink "Cull"}}{{/crossLink}} attached to this Entity.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/cull:property"}}cull{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires an {{#crossLink "Entity/cull:event"}}{{/crossLink}} event on change.
+             *
+             * @property cull
+             * @type Cull
+             */
+            cull: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this Entity's  {{#crossLink "Entity/cull:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event cull
+                     * @param value The property's new value
+                     */
+                    this._setChild("XEO.Cull", "cull", value);
+                },
+
+                get: function () {
+                    return this._children.cull;
                 }
             },
 
@@ -32566,6 +32835,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             children.depthTarget._compile();
             children.depthBuf._compile();
             children.visibility._compile();
+            children.cull._compile();
             children.modes._compile();
             children.geometry._compile();
             children.layer._compile();
@@ -32608,6 +32878,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 depthTarget: children.depthTarget.id,
                 depthBuf: children.depthBuf.id,
                 visibility: children.visibility.id,
+                cull: children.cull.id,
                 modes: children.modes.id,
                 geometry: children.geometry.id,
                 layer: children.layer.id,

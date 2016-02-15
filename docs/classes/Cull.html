@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>MousePanCamera - xeoengine</title>
+    <title>Cull - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -177,7 +177,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>MousePanCamera</h1>
+<h1>Cull</h1>
 <div class="box meta">
 
         <div class="extends">
@@ -185,50 +185,70 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_controls_mousePanCamera.js.html#l1"><code>src&#x2F;controls&#x2F;mousePanCamera.js:1</code></a>
+            Defined in: <a href="../files/src_culling_cull.js.html#l1"><code>src&#x2F;culling&#x2F;cull.js:1</code></a>
         </div>
 
-            Module: <a href="../modules/controls.html">controls</a><br>
+            Module: <a href="../modules/culling.html">culling</a><br>
             Parent Module: <a href="../modules/XEO.html">XEO</a>
 
 </div>
 
 
 <div class="box intro">
-    <p>A <strong>MousePanCamera</strong> pans a <a href="../classes/Camera.html" class="crosslink">Camera</a> using the mouse.</p>
+    <p>A <strong>Cull</strong> toggles the culling of attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
 <h2 id="overview">Overview</h2>
 <ul>
-<li>A MousePanCamera updates the <a href="../classes/Lookat.html" class="crosslink">Lookat</a> attached to the target <a href="../classes/Camera.html" class="crosslink">Camera</a>.
-<li>Panning is done by dragging the mouse with both the left and right buttons down.</li>
-<li>Panning up and down involves translating the positions of the <a href="../classes/Lookat.html" class="crosslink">Lookat&#39;s</a>
-<a href="../classes/Lookat.html#property_eye" class="crosslink">eye</a> and <a href="../classes/Lookat.html#property_look" class="crosslink">look</a> back and forth
-along the <a href="../classes/Lookat.html" class="crosslink">Lookat&#39;s</a> <a href="../classes/Lookat.html#property_up" class="crosslink">up</a> vector.</li>
-<li>Panning forwards and backwards involves translating
-<a href="../classes/Lookat.html#property_eye" class="crosslink">eye</a> and <a href="../classes/Lookat.html#property_look" class="crosslink">look</a> back and forth along the
-<a href="../classes/Lookat.html#property_eye" class="crosslink">eye</a>-&gt;<a href="../classes/Lookat.html#property_look" class="crosslink">look</a> vector.</li>
-<li>Panning left and right involves translating the <a href="../classes/Lookat.html#property_eye" class="crosslink">eye</a> and
-<a href="../classes/Lookat.html#property_look" class="crosslink">look</a> along the the vector perpendicular to the <a href="../classes/Lookat.html#property_up" class="crosslink">up</a>
-and <a href="../classes/Lookat.html#property_eye" class="crosslink">eye</a>-&gt;<a href="../classes/Lookat.html#property_look" class="crosslink">look</a> vectors.</li>
+<li>Cull components are intended for <strong>visibility culling systems</strong> to control the visibility of <a href="../classes/Entity.html" class="crosslink">Entities</a>.</li>
+<li><a href="../classes/Visibility.html" class="crosslink">Visibility</a> components are intended for users to control the visibility of <a href="../classes/Entity.html" class="crosslink">Entities</a> via UIs.</li>
+<li>Each <a href="../classes/Entity.html" class="crosslink">Entity</a> is visible when its <a href="../classes/Visibility.html" class="crosslink">Visibility&#39;s</a> <a href="../classes/Visibility.html#property_visible" class="crosslink">visible</a> property is true and <a href="../classes/Cull.html" class="crosslink">Cull&#39;s</a> <a href="../classes/Cull.html#property_culled" class="crosslink">visible</a> is false.
+<li>A Cull may be shared among multiple <a href="../classes/Entity.html" class="crosslink">Entities</a> to toggle
+their culling status as a group.</li>
 </ul>
 
+<p><img src="../../../assets/images/Cull.png"></img></p>
 <h2 id="example">Example</h2>
-<pre class="code prettyprint"><code class="lang-Javascript">var scene = new XEO.Scene();
+<p>This example creates a Cull that toggles the culling of
+two <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+<pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
 
-var camera = new XEO.Camera(scene);
+// Create a Cull component
+var cull = new XEO.Cull(scene, {
+   culled: false
+});
 
-var control = new XEO.MousePanCamera(scene, {
-       camera: camera
-   });
+// Create two Entities whose culling will be controlled by our Cull
 
-var entity = new XEO.Entity(scene);
+var entity1 = new XEO.Entity(scene, {
+   cull: cull
+});
+
+var entity2 = new XEO.Entity(scene, {
+   cull: cull
+});
+
+// Subscribe to change on the Cull&#39;s "culled" property
+var handle = cull.on("culled", function(value) {
+   //...
+});
+
+// Hide our Entities by flipping the Cull&#39;s "culled" property,
+// which will also call our handler
+cull.culled = true;
+
+// Unsubscribe from the Cull again
+cull.off(handle);
+
+// When we destroy our Cull, the Entities will fall back
+// on the Scene&#39;s default Cull instance
+cull.destroy();
 </code></pre>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_MousePanCamera" class="method item">
-            <h3 class="name"><code>MousePanCamera</code></h3>
+        <div id="method_Cull" class="method item">
+            <h3 class="name"><code>Cull</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
@@ -252,7 +272,7 @@ var entity = new XEO.Entity(scene);
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_controls_mousePanCamera.js.html#l1"><code>src&#x2F;controls&#x2F;mousePanCamera.js:1</code></a>
+                <a href="../files/src_culling_cull.js.html#l1"><code>src&#x2F;culling&#x2F;cull.js:1</code></a>
                 </p>
         
         
@@ -274,7 +294,8 @@ var entity = new XEO.Entity(scene);
         
         
                             <div class="param-description">
-                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this Cull in the default
+        <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
         
                             </div>
         
@@ -308,42 +329,18 @@ var entity = new XEO.Entity(scene);
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional map of user-defined metadata to attach to this MousePanCamera.</p>
+                                            <p>Optional map of user-defined metadata to attach to this Cull.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[camera]</code>
-                                            <span class="type">String | <a href="../classes/Camera.html" class="crosslink">Camera</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/Camera.html" class="crosslink">Camera</a> to control.
-        Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this MousePanCamera. Defaults to the
-        parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance, <a href="../classes/Scene.html#property_camera" class="crosslink">camera</a>.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[sensitivity=0.5]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Pan sensitivity factor.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[active=true]</code>
+                                            <code class="param-name optional">[culled=false]</code>
                                             <span class="type">Boolean</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Whether or not this MousePanCamera is active.</p>
+                                            <p>Flag which controls culling of the attached <a href="../classes/Entity.html" class="crosslink">Entities</a></p>
         
                                         </div>
         
@@ -423,11 +420,7 @@ var entity = new XEO.Entity(scene);
 
                     <ul class="index-list properties extends">
                             <li class="index-item property">
-                                <a href="#property_active">active</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_camera">camera</a>
+                                <a href="#property_culled">culled</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -454,10 +447,6 @@ var entity = new XEO.Entity(scene);
                                 <a href="#property_scene">scene</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_sensitivity">sensitivity</a>
-
-                            </li>
                             <li class="index-item property inherited inherited">
                                 <a href="#property_string">string</a>
 
@@ -479,19 +468,11 @@ var entity = new XEO.Entity(scene);
 
                     <ul class="index-list events extends">
                             <li class="index-item event">
-                                <a href="#event_active">active</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_camera">camera</a>
+                                <a href="#event_culled">culled</a>
 
                             </li>
                             <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_sensitivity">sensitivity</a>
 
                             </li>
                     </ul>
@@ -1238,8 +1219,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_active" class="property item">
-                        <h3 class="name"><code>active</code></h3>
+                    <div id="property_culled" class="property item">
+                        <h3 class="name"><code>culled</code></h3>
                         <span class="type">Boolean</span>
                     
                     
@@ -1249,47 +1230,19 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_mousePanCamera.js.html#l141"><code>src&#x2F;controls&#x2F;mousePanCamera.js:141</code></a>
+                            <a href="../files/src_culling_cull.js.html#l86"><code>src&#x2F;culling&#x2F;cull.js:86</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Flag which indicates whether this MousePanCamera is active or not.</p>
-                    <p>Fires an <a href="../classes/MousePanCamera.html#event_active" class="crosslink">active</a> event on change.</p>
+                            <p>Indicates whether this Cull culls its attached <a href="../classes/Entity.html" class="crosslink">Entities</a> or not.</p>
+                    <p>Fires a <a href="../classes/Cull.html#event_culled" class="crosslink">culled</a> event on change.</p>
                     
                         </div>
                     
-                    
-                    
-                    </div>
-                    <div id="property_camera" class="property item">
-                        <h3 class="name"><code>camera</code></h3>
-                        <span class="type"><a href="../classes/Camera.html" class="crosslink">Camera</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_controls_mousePanCamera.js.html#l82"><code>src&#x2F;controls&#x2F;mousePanCamera.js:82</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The <a href="../classes/Camera.html" class="crosslink">Camera</a> attached to this MousePanCamera.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this MousePanCamera. Defaults to the parent
-                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_camera" class="crosslink">camera</a> when set to
-                    a null or undefined value.</p>
-                    <p>Fires a <a href="../classes/MousePanCamera.html#event_camera" class="crosslink">camera</a> event on change.</p>
-                    
-                        </div>
-                    
+                            <p><strong>Default:</strong> false</p>
                     
                     
                     </div>
@@ -1446,33 +1399,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_sensitivity" class="property item">
-                        <h3 class="name"><code>sensitivity</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_controls_mousePanCamera.js.html#l112"><code>src&#x2F;controls&#x2F;mousePanCamera.js:112</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The sensitivity of this MousePanCamera.</p>
-                    <p>Fires a <a href="../classes/MousePanCamera.html#event_sensitivity" class="crosslink">sensitivity</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 0.5</p>
-                    
-                    
-                    </div>
                     <div id="property_string" class="property item inherited">
                         <h3 class="name"><code>string</code></h3>
                         <span class="type">String</span>
@@ -1534,7 +1460,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_type" class="property item">
+                    <div id="property_type" class="property item inherited">
                         <h3 class="name"><code>type</code></h3>
                         <span class="type">String</span>
                     
@@ -1544,12 +1470,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Component.html#property_type">
-                                    Component
-                                </a>
-                                but overwritten in
-                            <a href="../files/src_controls_mousePanCamera.js.html#l55"><code>src&#x2F;controls&#x2F;mousePanCamera.js:55</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_type">Component</a>:
+                            <a href="../files/src_component.js.html#l326"><code>src&#x2F;component.js:326</code></a>
                             </p>
                     
                     
@@ -1557,6 +1480,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>JavaScript class name for this Component.</p>
+                    <p>This is used when <a href="Scene.html#savingAndLoading">loading Scenes from JSON</a>, and is included in the JSON
+                    representation of this Component, so that this class may be instantiated when loading it from the JSON representation.</p>
+                    <p>For example: &quot;XEO.AmbientLight&quot;, &quot;XEO.ColorTarget&quot;, &quot;XEO.Lights&quot; etc.</p>
                     
                         </div>
                     
@@ -1569,8 +1495,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
-                    <div id="event_active" class="events item">
-                        <h3 class="name"><code>active</code></h3>
+                    <div id="event_culled" class="events item">
+                        <h3 class="name"><code>culled</code></h3>
                         <span class="type"></span>
                     
                     
@@ -1580,14 +1506,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_mousePanCamera.js.html#l227"><code>src&#x2F;controls&#x2F;mousePanCamera.js:227</code></a>
+                            <a href="../files/src_culling_cull.js.html#l109"><code>src&#x2F;culling&#x2F;cull.js:109</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this MousePanCamera&#39;s <a href="../classes/MousePanCamera.html#property_active" class="crosslink">active</a> property changes.</p>
+                            <p>Fired whenever this Cull&#39;s <a href="../classes/Cull.html#property_culled" class="crosslink">culled</a> property changes.</p>
                     
                         </div>
                     
@@ -1597,49 +1523,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                 <ul class="params-list">
                                     <li class="param">
                                             <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_camera" class="events item">
-                        <h3 class="name"><code>camera</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_controls_mousePanCamera.js.html#l98"><code>src&#x2F;controls&#x2F;mousePanCamera.js:98</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this MousePanCamera&#39;s <a href="../classes/MousePanCamera.html#property_camera" class="crosslink">camera</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
+                                            <span class="type">Boolean</span>
                     
                     
                                         <div class="param-description">
@@ -1675,48 +1559,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
-                    
-                    
-                    </div>
-                    <div id="event_sensitivity" class="events item">
-                        <h3 class="name"><code>sensitivity</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_controls_mousePanCamera.js.html#l127"><code>src&#x2F;controls&#x2F;mousePanCamera.js:127</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this MousePanCamera&#39;s  <a href="../classes/MousePanCamera.html#property_sensitivity" class="crosslink">sensitivity</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
                     
                     
                     </div>

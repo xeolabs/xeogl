@@ -60,6 +60,7 @@
                                 <li><a href="../classes/Component.html">Component</a></li>
                                 <li><a href="../classes/Configs.html">Configs</a></li>
                                 <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+                                <li><a href="../classes/Cull.html">Cull</a></li>
                                 <li><a href="../classes/Curve.html">Curve</a></li>
                                 <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
                                 <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
@@ -237,6 +238,22 @@
      @extends renderer.State
      */
     XEO.renderer.Visibility = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+    /**
+
+     Culling state.
+
+     renderer.Cull
+     @module XEO
+
+     @constructor
+     @param cfg {*} Configs
+     @param cfg.culled {Boolean} Flag which controls cull state of the associated render objects.
+     @extends renderer.State
+     */
+    XEO.renderer.Cull = XEO.renderer.State.extend({
         _ids: new XEO.utils.Map({})
     });
 
