@@ -141,6 +141,13 @@
         this.visibility = null;
 
         /**
+         Culling render state.
+         @property cull
+         @type {renderer.Cull}
+         */
+        this.cull = null;
+
+        /**
          Modes render state.
          @property modes
          @type {renderer.Modes}
@@ -383,6 +390,7 @@
         object.reflect = this.reflect;
         object.geometry = this.geometry;
         object.visibility = this.visibility;
+        object.cull = this.cull;
         object.modes = this.modes;
         object.billboard = this.billboard;
         object.stationary = this.stationary;
@@ -714,7 +722,13 @@
 
             object = this._objectList[i];
 
-            // Cull invisible objects
+            // Skip culled objects
+
+            if (object.cull.culled === true) {
+                continue;
+            }
+
+            // Skip invisible objects
 
             if (object.visibility.visible === false) {
                 continue;

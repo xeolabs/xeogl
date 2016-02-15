@@ -397,6 +397,7 @@
             dummy = this.depthTarget;
             dummy = this.depthBuf;
             dummy = this.visibility;
+            dummy = this.cull;
             dummy = this.modes;
             dummy = this.geometry;
             dummy = this.layer;
@@ -819,6 +820,29 @@
                             id: "default.visibility",
                             isDefault: true,
                             visible: true
+                        });
+                }
+            },
+
+            /**
+             * The default {{#crossLink "Cull"}}{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink "Cull"}}cull{{/crossLink}} has an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.cull",
+             * with all other properties initialised to their default values.
+             *
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Cull"}}{{/crossLink}} by default.
+             * @property cull
+             * @final
+             * @type cull
+             */
+            cull: {
+                get: function () {
+                    return this.components["default.cull"] ||
+                        new XEO.Cull(this, {
+                            id: "default.cull",
+                            isDefault: true,
+                            culled: false
                         });
                 }
             },

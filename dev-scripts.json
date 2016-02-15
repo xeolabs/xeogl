@@ -72,6 +72,7 @@
     "src/controls/mousePickObject.js",
     "src/controls/mouseZoomCamera.js",
     "src/culling/_module.js",
+    "src/culling/cull.js",
     "src/culling/visibility.js",
     "src/curves/_module.js",
     "src/curves/curve.js",

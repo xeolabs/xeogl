@@ -4,6 +4,9 @@
  ## Overview
 
  <ul>
+ <li>Visibility components are intended for users to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}} via UIs.</li>
+ <li>{{#crossLink "Cull"}}{{/crossLink}} components are intended for **visibility culling systems** to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
+ <li>Each {{#crossLink "Entity"}}{{/crossLink}} is visible when its {{#crossLink "Visibility"}}Visibility's{{/crossLink}} {{#crossLink "Visibility/visible:property"}}visible{{/crossLink}} property is true and {{#crossLink "Cull"}}Cull's{{/crossLink}} {{#crossLink "Cull/culled:property"}}visible{{/crossLink}} is false.</li>
  <li>A Visibility may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
  their visibility as a group.</li>
  </ul>

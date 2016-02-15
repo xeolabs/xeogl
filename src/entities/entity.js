@@ -149,6 +149,8 @@
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, depth {{#crossLink "Scene/depthBuf:property"}}depthBuf{{/crossLink}}.
  @param [cfg.visibility] {String|Visibility} ID or instance of a {{#crossLink "Visibility"}}Visibility{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/visibility:property"}}visibility{{/crossLink}}.
+ @param [cfg.cull] {String|Cull} ID or instance of a {{#crossLink "Cull"}}{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
+ parent {{#crossLink "Scene"}}{{/crossLink}}'s default instance, {{#crossLink "Scene/cull:property"}}cull{{/crossLink}}.
  @param [cfg.modes] {String|Modes} ID or instance of a {{#crossLink "Modes"}}Modes{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/modes:property"}}modes{{/crossLink}}.
  @param [cfg.geometry] {String|Geometry} ID or instance of a {{#crossLink "Geometry"}}Geometry{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
@@ -199,6 +201,7 @@
             this.depthTarget = cfg.depthTarget;
             this.depthBuf = cfg.depthBuf;
             this.visibility = cfg.visibility;
+            this.cull = cfg.cull;
             this.modes = cfg.modes;
             this.geometry = cfg.geometry;
             this.layer = cfg.layer;
@@ -455,6 +458,36 @@
 
                 get: function () {
                     return this._children.visibility;
+                }
+            },
+
+            /**
+             * The {{#crossLink "Cull"}}{{/crossLink}} attached to this Entity.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/cull:property"}}cull{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires an {{#crossLink "Entity/cull:event"}}{{/crossLink}} event on change.
+             *
+             * @property cull
+             * @type Cull
+             */
+            cull: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this Entity's  {{#crossLink "Entity/cull:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event cull
+                     * @param value The property's new value
+                     */
+                    this._setChild("XEO.Cull", "cull", value);
+                },
+
+                get: function () {
+                    return this._children.cull;
                 }
             },
 
@@ -1299,6 +1332,7 @@
             children.depthTarget._compile();
             children.depthBuf._compile();
             children.visibility._compile();
+            children.cull._compile();
             children.modes._compile();
             children.geometry._compile();
             children.layer._compile();
@@ -1341,6 +1375,7 @@
                 depthTarget: children.depthTarget.id,
                 depthBuf: children.depthBuf.id,
                 visibility: children.visibility.id,
+                cull: children.cull.id,
                 modes: children.modes.id,
                 geometry: children.geometry.id,
                 layer: children.layer.id,

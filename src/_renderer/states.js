@@ -60,6 +60,22 @@
 
     /**
 
+     Culling state.
+
+     renderer.Cull
+     @module XEO
+
+     @constructor
+     @param cfg {*} Configs
+     @param cfg.culled {Boolean} Flag which controls cull state of the associated render objects.
+     @extends renderer.State
+     */
+    XEO.renderer.Cull = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+    /**
+
      Modes state.
 
      renderer.Mode
