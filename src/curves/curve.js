@@ -117,8 +117,12 @@
 
             var delta = 0.0001;
 
-            var t1 = this._t - delta;
-            var t2 = this._t + delta;
+            if (t === undefined) {
+                t = this._t;
+            }
+
+            var t1 = t - delta;
+            var t2 = t + delta;
 
             if (t1 < 0) {
                 t1 = 0;
@@ -190,7 +194,7 @@
             }
 
             if (this.cacheArcLengths
-                && ( this.cacheArcLengths.length == divisions + 1 )
+                && ( this.cacheArcLengths.length === divisions + 1 )
                 && !this.needsUpdate) {
 
                 return this.cacheArcLengths;
@@ -279,7 +283,7 @@
 
             //console.log('b' , i, low, high, Date.now()- time);
 
-            if (arcLengths[i] == targetArcLength) {
+            if (arcLengths[i] === targetArcLength) {
 
                 var t = i / ( il - 1 );
                 return t;

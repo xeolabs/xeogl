@@ -1516,9 +1516,11 @@
 
             var component;
 
+            var fullShareId;
+
             if (instanceId !== undefined) {
 
-                var fullShareId = "__shared." + type + "." + instanceId;
+                fullShareId = "__shared." + type + "." + instanceId;
 
                 component = this._sharedComponents[fullShareId];
 

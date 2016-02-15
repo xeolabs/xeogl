@@ -143,8 +143,6 @@
             this._targetDirty = false;
             this._propsDirty = false;
 
-            var self = this;
-
             // Handle WebGL context restore
 
             this._webglContextRestored = this.scene.canvas.on("webglContextRestored", this._webglContextRestored, this);

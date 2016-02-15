@@ -88,8 +88,6 @@
 
     "use strict";
 
-    var canvases = {};
-
     XEO.Canvas = XEO.Component.extend({
 
         type: "XEO.Canvas",

@@ -24,9 +24,9 @@
 
         this.type = type;
 
-        this.itemType = data.constructor == Uint8Array ? gl.UNSIGNED_BYTE :
-            data.constructor == Uint16Array ? gl.UNSIGNED_SHORT :
-                data.constructor == Uint32Array ? gl.UNSIGNED_INT :
+        this.itemType = data.constructor === Uint8Array ? gl.UNSIGNED_BYTE :
+            data.constructor === Uint16Array ? gl.UNSIGNED_SHORT :
+                data.constructor === Uint32Array ? gl.UNSIGNED_INT :
                     gl.FLOAT;
 
         this.usage = usage;

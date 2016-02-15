@@ -127,7 +127,6 @@
             var numFPSSamples = 30;
             var totalFPS = 0;
             var updateTime;
-            var lastUpdateTime = 0;
             var id;
             var scene;
 
@@ -162,8 +161,6 @@
             function update() {
 
                 updateTime = Date.now();
-
-                lastUpdateTime = updateTime;
 
                 // Process as many enqueued tasks as we can
                 // within the per-frame task budget

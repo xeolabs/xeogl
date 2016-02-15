@@ -25,7 +25,7 @@
 
         type: "XEO.Material",
 
-        _init: function (cfg) {
+        _init: function () {
 
         }
     });

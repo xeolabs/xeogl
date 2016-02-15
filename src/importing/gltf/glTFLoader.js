@@ -127,13 +127,13 @@
 
         //FIXME: Float32 is assumed here, but should be checked.
 
-        if (semantic == "POSITION") {
+        if (semantic === "POSITION") {
             geometry.positions = new Float32Array(glResource, 0, attribute.count * componentsPerElementForGLType(attribute.type));
 
-        } else if (semantic == "NORMAL") {
+        } else if (semantic === "NORMAL") {
             geometry.normals = new Float32Array(glResource, 0, attribute.count * componentsPerElementForGLType(attribute.type));
 
-        } else if ((semantic == "TEXCOORD_0") || (semantic == "TEXCOORD" )) {
+        } else if ((semantic === "TEXCOORD_0") || (semantic === "TEXCOORD" )) {
             geometry.uv = new Float32Array(glResource, 0, attribute.count * componentsPerElementForGLType(attribute.type));
         }
 
@@ -337,9 +337,7 @@
                         var allAttributes = Object.keys(primitiveDescription.attributes);
 
                         // count them first, async issues otherwise
-                        allAttributes.forEach(function (semantic) {
-                            geometry.totalAttributes++;
-                        }, this);
+                        geometry.totalAttributes += allAttributes.length;
 
                         var indices = this.resources.getEntry(primitiveDescription.indices);
                         var bufferEntry = this.resources.getEntry(indices.description.bufferView);

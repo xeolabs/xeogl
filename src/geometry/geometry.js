@@ -962,7 +962,7 @@
                 set: function (value) {
 
                     // Only recompile when adding or removing this property, not when modifying
-                    var dirty = (!this._colorsData != !value);
+                    var dirty = (!this._colorsData !== !value);
 
                     this._colorsData = value;
                     this._colorsDirty = true;

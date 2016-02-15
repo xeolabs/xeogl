@@ -99,8 +99,6 @@
 
         _init: function (cfg) {
 
-            var self = this;
-
             var scene = this.scene;
 
             // Shows a bounding box around each Entity we fly to
@@ -215,7 +213,7 @@
             this.mousePickEntity.on("pick", this._entityPicked, this);
 
             this.mousePickEntity.on("nopick",
-                function (e) {
+                function () {
                     //alert("Nothing picked");
                 });
 
@@ -256,9 +254,9 @@
 
             if (pos) {
 
-                var diff = XEO.math.subVec3(view.eye, view.look, []);
-
-                var input = this.scene.input;
+                //var diff = XEO.math.subVec3(view.eye, view.look, []);
+                //
+                //var input = this.scene.input;
 
               //  if (input.keyDown[input.KEY_SHIFT] && e.entity) {
 

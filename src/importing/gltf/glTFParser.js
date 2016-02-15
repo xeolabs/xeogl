@@ -230,7 +230,7 @@ var global = window;
                     if (!keys) {
                         categoryState.keys = keys = Object.keys(this.rootDescription[category]);
                         if (keys) {
-                            if (keys.length == 0) {
+                            if (keys.length === 0) {
                                 this._stepToNextDescription();
                                 continue;
                             }
@@ -278,8 +278,8 @@ var global = window;
                     var jsonfile = new XMLHttpRequest();
                     jsonfile.open("GET", jsonPath, true);
                     jsonfile.onreadystatechange = function() {
-                        if (jsonfile.readyState == 4) {
-                            if (jsonfile.status == 200) {
+                        if (jsonfile.readyState === 4) {
+                            if (jsonfile.status === 200) {
                                 self.json = JSON.parse(jsonfile.responseText);
                                 if (callback) {
                                     callback(self.json);

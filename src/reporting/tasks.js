@@ -87,7 +87,7 @@ myTask2.setFailed();
 
         serializable: false,
 
-        _init: function (cfg) {
+        _init: function () {
 
             this._idMap = new XEO.utils.Map();
 

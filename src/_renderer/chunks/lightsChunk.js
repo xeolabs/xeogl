@@ -54,8 +54,6 @@
             var lights = this.state.lights;
             var light;
 
-            var gl = this.program.gl;
-
             for (var i = 0, len = lights.length; i < len; i++) {
 
                 light = lights[i];

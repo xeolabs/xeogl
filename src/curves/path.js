@@ -211,9 +211,9 @@
                         var type = curve.type;
 
                         if (type !== "XEO.SplineCurve" &&
-                            type != "XEO.Path" &&
-                            type != "XEO.CubicBezierCurve" &&
-                            type != "XEO.QuadraticBezierCurve") {
+                            type !== "XEO.Path" &&
+                            type !== "XEO.CubicBezierCurve" &&
+                            type !== "XEO.QuadraticBezierCurve") {
 
                             this.error("Component " + XEO._inQuotes(curve.id)
                                 + " is not a XEO.SplineCurve, XEO.Path or XEO.QuadraticBezierCurve");

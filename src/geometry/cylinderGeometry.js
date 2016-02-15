@@ -76,7 +76,7 @@
             var heightLength = height / heightSegments;
             var radialAngle = (2.0 * Math.PI / radialSegments);
             var radialLength = 1.0 / radialSegments;
-            var nextRadius = this._radiusBottom;
+            //var nextRadius = this._radiusBottom;
             var radiusChange = (radiusTop - radiusBottom) / heightSegments;
 
             var positions = [];

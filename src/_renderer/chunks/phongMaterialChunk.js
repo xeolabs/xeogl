@@ -113,7 +113,7 @@
                 this._uShininess.setValue(state.shininess);
             }
 
-            if (frameCtx.lineWidth != state.lineWidth) {
+            if (frameCtx.lineWidth !== state.lineWidth) {
                 gl.lineWidth(state.lineWidth);
                 frameCtx.lineWidth = state.lineWidth;
             }

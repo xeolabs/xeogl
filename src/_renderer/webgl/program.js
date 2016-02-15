@@ -99,7 +99,11 @@
         this.compiled = true;
 
 
-        var a, i, u, u_name, location, shader;
+        var a;
+        var i;
+        var u;
+        var uName;
+        var location;
 
         // Program
 
@@ -143,7 +147,6 @@
         // Discover uniforms and samplers
 
         var numUniforms = gl.getProgramParameter(this.handle, gl.ACTIVE_UNIFORMS);
-        var valueIndex = 0;
 
         for (i = 0; i < numUniforms; ++i) {
 
@@ -151,21 +154,21 @@
 
             if (u) {
 
-                u_name = u.name;
+                uName = u.name;
 
-                if (u_name[u_name.length - 1] === "\u0000") {
-                    u_name = u_name.substr(0, u_name.length - 1);
+                if (uName[uName.length - 1] === "\u0000") {
+                    uName = uName.substr(0, uName.length - 1);
                 }
 
-                location = gl.getUniformLocation(this.handle, u_name);
+                location = gl.getUniformLocation(this.handle, uName);
 
                 if ((u.type === gl.SAMPLER_2D) || (u.type === gl.SAMPLER_CUBE) || (u.type === 35682)) {
 
-                    this.samplers[u_name] = new XEO.renderer.webgl.Sampler(gl, location);
+                    this.samplers[uName] = new XEO.renderer.webgl.Sampler(gl, location);
 
                 } else {
 
-                    this.uniforms[u_name] = new XEO.renderer.webgl.Uniform(stats.frame, gl, u.type, location);
+                    this.uniforms[uName] = new XEO.renderer.webgl.Uniform(stats.frame, gl, u.type, location);
                 }
             }
         }
@@ -229,14 +232,14 @@
         return this.attributes[name];
     };
 
-    XEO.renderer.webgl.Program.prototype.bindFloatArrayBuffer = function (name, buffer) {
-
-        if (!this.allocated) {
-            return;
-        }
-
-        return this.attributes[name];
-    };
+    //XEO.renderer.webgl.Program.prototype.bindFloatArrayBuffer = function (name, buffer) {
+    //
+    //    if (!this.allocated) {
+    //        return;
+    //    }
+    //
+    //    return this.attributes[name];
+    //};
 
     XEO.renderer.webgl.Program.prototype.bindTexture = function (name, texture, unit) {
 

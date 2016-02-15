@@ -182,6 +182,7 @@
 
             var i;
             var len;
+            var light;
 
             begin();
 
@@ -216,7 +217,7 @@
                 // Lights
                 for (i = 0, len = states.lights.lights.length; i < len; i++) {
 
-                    var light = states.lights.lights[i];
+                    light = states.lights.lights[i];
 
                     if (light.type === "ambient") {
                         continue;
@@ -462,6 +463,11 @@
                 return fragment;
             }
 
+            var i;
+            var len;
+
+            var light;
+
             begin();
 
             add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
@@ -565,8 +571,6 @@
                 add("varying vec3 xeo_vViewNormal;");
 
                 // Light sources
-
-                var light;
 
                 for (i = 0, len = states.lights.lights.length; i < len; i++) {
 

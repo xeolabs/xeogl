@@ -532,7 +532,6 @@
 
         var lights = state.lights;
         var light;
-        var intensity;
 
         for (var i = 0, len = lights.length; i < len; i++) {
 
@@ -689,7 +688,10 @@
         this._lastDrawChunkId = this._lastDrawChunkId || [];
         this._lastPickObjectChunkId = this._lastPickObjectChunkId || [];
 
-        for (var i = 0; i < 20; i++) {
+        var i;
+        var len;
+
+        for (i = 0; i < 20; i++) {
             this._lastDrawChunkId[i] = null;
             this._lastPickObjectChunkId[i] = null;
         }

@@ -166,6 +166,7 @@
                     var clip;
                     var i;
                     var len;
+                    var id;
 
                     // Unsubscribe from events on old clips
                     for (i = 0, len = this._clips.length; i < len; i++) {
@@ -218,7 +219,7 @@
 
                             // ID given for clip - find the clip component
 
-                            var id = clip;
+                            id = clip;
 
                             clip = this.components[id];
 
