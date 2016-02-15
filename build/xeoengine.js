@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-02-14
+ * Built on 2016-02-15
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -584,7 +584,7 @@
 
             // Create array of type names to indicate inheritance chain,
             // to support "isType" queries on components
-            prototype.types = _super.types ? _super.types.concat(prop.type) : [prop.type];
+            prototype.superTypes = _super.superTypes ? _super.superTypes.concat(_super.type) : [];
         }
 
         // The dummy class constructor
@@ -2902,7 +2902,7 @@
             add("uniform mat4 xeo_uModelMatrix;          // Modeling matrix");
             add("uniform mat4 xeo_uViewMatrix;           // Viewing matrix");
             add("uniform mat4 xeo_uProjMatrix;           // Projection matrix");
-            add("uniform vec3 xeo_uEye;                  // World-space eye position");
+            //add("uniform vec3 xeo_uEye;                  // World-space eye position");
 
             add("attribute vec3 xeo_aPosition;           // Local-space vertex position");
 
@@ -3137,7 +3137,8 @@
                     }
                 }
 
-                add("   xeo_vViewEyeVec = ((viewMatrix * vec4(xeo_uEye, 0.0)).xyz  - viewPosition.xyz);");
+                //add("   xeo_vViewEyeVec = ((viewMatrix * vec4(xeo_uEye, 0.0)).xyz  - viewPosition.xyz);");
+                add("   xeo_vViewEyeVec = - viewPosition.xyz;");
 
                 if (normalMapping) {
                     add("   xeo_vViewEyeVec *= TBM;");
@@ -6429,6 +6430,7 @@
         type: "viewTransform",
 
         build: function () {
+          //  this._uViewEyeDraw = this.program.draw.getUniform("xeo_uEye");
             this._uViewMatrixDraw = this.program.draw.getUniform("xeo_uViewMatrix");
             this._uViewNormalMatrixDraw = this.program.draw.getUniform("xeo_uViewNormalMatrix");
             this._uViewMatrixPickObject = this.program.pickObject.getUniform("xeo_uViewMatrix");
@@ -6436,6 +6438,9 @@
         },
 
         draw: function () {
+            //if (this._uViewEyeDraw) {
+            //    this._uViewEyeDraw.setValue(this.state.eye);
+            //}
             if (this._uViewMatrixDraw) {
                 this._uViewMatrixDraw.setValue(this.state.matrix);
             }
@@ -9776,7 +9781,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         type: "XEO.Component",
 
         /**
-         An array of strings that indicates the types within this component's inheritance hierarchy.
+         An array of strings that indicates the chain of super-types within this component's inheritance hierarchy.
 
          For example, if this component is a {{#crossLink "Rotate"}}{{/crossLink}}, which
          extends {{#crossLink "Transform"}}{{/crossLink}}, which in turn extends {{#crossLink "Component"}}{{/crossLink}},
@@ -9788,11 +9793,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
          Note that the chain is ordered downwards in the hierarchy, ie. from super-class down to sub-class.
 
-         @property types
+         @property superTypes
          @type {Array of String}
          @final
          */
-        types: ["XEO.Component"],
+        superTypes: ["XEO.Component"],
 
         /**
          Tests if this component is of the given type, or is a subclass of the given type.
@@ -9800,7 +9805,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          The type may be given as either a string or a component constructor.
 
          This method works by walking up the inheritance type chain, which this component provides in
-         property {{#crossLink "Component/types:property"}}{{/crossLink}}, returning true as soon as one of the type strings in
+         property {{#crossLink "Component/superTypes:property"}}{{/crossLink}}, returning true as soon as one of the type strings in
          the chain matches the given type, of false if none match.
 
          #### Examples:
@@ -9832,14 +9837,18 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 }
             }
 
-            var types = this.types;
+            if (this.type === type) {
+                return true;
+            }
 
-            if (!types) {
+            var superTypes = this.superTypes;
+
+            if (!superTypes) {
                 return false;
             }
 
-            for (var i = types.length - 1; i >= 0; i--) {
-                if (types[i] === type) {
+            for (var i = superTypes.length - 1; i >= 0; i--) {
+                if (superTypes[i] === type) {
                     return true;
                 }
             }
@@ -10127,22 +10136,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 if (expectedType) {
 
                     if (!child.isType(expectedType)) {
-
-                        // Attempt to fall back on default component class for the given name
-
-                        child = this.scene[name];
-
-                        if (!child) {
-
-                            this.error("Expected a " + expectedType + " type or subtype: " + child.type + " " + XEO._inQuotes(child.id));
-
-                            return;
-
-                        } else {
-                            this.error("Expected a " + expectedType + " type or subtype: " + child.type + " "
-                                + XEO._inQuotes(child.id) + " (recovering by adding Scene's default " + expectedType + " instance instead)");
-
-                        }
+                        this.error("Expected a " + expectedType + " type or subtype: " + child.type + " " + XEO._inQuotes(child.id));
+                        return;
                     }
                 }
             }
@@ -12968,14 +12963,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  ## Overview
 
  <ul>
-
  <li> A Camera is composed of a viewing transform and a {{#crossLink "Projection"}}{{/crossLink}}.</li>
-
- <li>The viewing transform is usually a {{#crossLink "Lookat"}}Lookat{{/crossLink}}.</li>
-
+ <li>The viewing transform is usually a {{#crossLink "Lookat"}}Lookat{{/crossLink}}. Having the viewing transform as a
+ separate component from the Camera allows us to switch the Camera between multiple, existing viewpoints by simply re-attaching it to
+ different viewing transform components (ie. {{#crossLink "Lookat"}}Lookats{{/crossLink}}).</li>
  <li>The {{#crossLink "Projection"}}{{/crossLink}} may be an {{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}}
- or {{#crossLink "Perspective"}}Perspective{{/crossLink}}.</li>
-
+ or {{#crossLink "Perspective"}}Perspective{{/crossLink}}. Likewise, having the projection transform as a
+ separate component from the Camera allows us to switch the Camera between multiple, existing projections by simply re-attaching it to
+ different projection components.</li>
  <li> By default, each Camera is composed of its parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}} transform,
  (which is a {{#crossLink "Lookat"}}Lookat{{/crossLink}}) and default
  {{#crossLink "Scene/project:property"}}{{/crossLink}} transform (which is a {{#crossLink "Perspective"}}Perspective{{/crossLink}}).
@@ -13397,7 +13392,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
     "use strict";
 
-    XEO.Frustum = XEO.Component.extend({
+    XEO.Frustum = XEO.Projection.extend({
 
         type: "XEO.Frustum",
 
@@ -36056,7 +36051,7 @@ myTask2.setFailed();
  @param [cfg] {*} CollectionBoundary configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CollectionBoundary.
- @param [cfg.emissiveMap=null] {Collection} A {{#crossLink "Collection"}}Collection{{/crossLink}} to fit the {{#crossLink "CollectionBoundary/worldBoundary:property"}}{{/crossLink}} to. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this CollectionBoundary.
+ @param [cfg.collection=null] {Collection} A {{#crossLink "Collection"}}Collection{{/crossLink}} to fit the {{#crossLink "CollectionBoundary/worldBoundary:property"}}{{/crossLink}} to. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this CollectionBoundary.
  @extends Component
  */
 (function () {
