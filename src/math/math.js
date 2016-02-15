@@ -2142,7 +2142,6 @@
 
             var x;
             var y;
-            var z;
             var w;
             var f;
 
@@ -2150,7 +2149,6 @@
 
                 x = points[i][0];
                 y = points[i][1];
-                z = points[i][2];
                 w = points[i][3] || 1.0;
 
                 f = 1.0 / w;
