@@ -6,14 +6,14 @@
  ## Overview
 
  <ul>
-
  <li> A Camera is composed of a viewing transform and a {{#crossLink "Projection"}}{{/crossLink}}.</li>
-
- <li>The viewing transform is usually a {{#crossLink "Lookat"}}Lookat{{/crossLink}}.</li>
-
+ <li>The viewing transform is usually a {{#crossLink "Lookat"}}Lookat{{/crossLink}}. Having the viewing transform as a
+ separate component from the Camera allows us to switch the Camera between multiple, existing viewpoints by simply re-attaching it to
+ different viewing transform components (ie. {{#crossLink "Lookat"}}Lookats{{/crossLink}}).</li>
  <li>The {{#crossLink "Projection"}}{{/crossLink}} may be an {{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}}
- or {{#crossLink "Perspective"}}Perspective{{/crossLink}}.</li>
-
+ or {{#crossLink "Perspective"}}Perspective{{/crossLink}}. Likewise, having the projection transform as a
+ separate component from the Camera allows us to switch the Camera between multiple, existing projections by simply re-attaching it to
+ different projection components.</li>
  <li> By default, each Camera is composed of its parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}} transform,
  (which is a {{#crossLink "Lookat"}}Lookat{{/crossLink}}) and default
  {{#crossLink "Scene/project:property"}}{{/crossLink}} transform (which is a {{#crossLink "Perspective"}}Perspective{{/crossLink}}).
