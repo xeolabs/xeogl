@@ -742,7 +742,11 @@
                 // Fire optional callback so caller can do stuff
                 // before the change event is fired below
 
-                onAddedScope ? onAdded.call(onAddedScope, child) : onAdded(child);
+                if (onAddedScope) {
+                    onAdded.call(onAddedScope, child);
+                } else {
+                    onAdded(child);
+                }
             }
 
             this.fire("dirty", this);
