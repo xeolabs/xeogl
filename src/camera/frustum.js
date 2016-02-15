@@ -75,7 +75,7 @@
 
     "use strict";
 
-    XEO.Frustum = XEO.Component.extend({
+    XEO.Frustum = XEO.Projection.extend({
 
         type: "XEO.Frustum",
 
