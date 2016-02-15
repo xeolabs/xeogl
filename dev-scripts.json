@@ -32,7 +32,6 @@
     "src/_renderer/chunks/lightsChunk.js",
     "src/_renderer/chunks/modelTransformChunk.js",
     "src/_renderer/chunks/modesChunk.js",
-    "src/_renderer/chunks/pbrMaterialChunk.js",
     "src/_renderer/chunks/phongMaterialChunk.js",
     "src/_renderer/chunks/programChunk.js",
     "src/_renderer/chunks/projTransformChunk.js",
