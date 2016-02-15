@@ -6282,7 +6282,7 @@
 
         type: "shaderParams",
 
-        draw: function (frameCtx) {
+        draw: function () {
 
             var params = this.state.params;
 
@@ -6351,8 +6351,6 @@
     var tempMat1 = new Float32Array(16);
     var tempMat2 = new Float32Array(16);
     var tempVec3 = new Float32Array(3);
-
-    var tempVec3a = new Float32Array(3);
     var tempVec3b = new Float32Array(3);
     var tempVec3c = new Float32Array(3);
     var tempVec3d = new Float32Array(3);
@@ -6360,16 +6358,6 @@
     var tempVec3f = new Float32Array(3);
 
     var tempVec4 = new Float32Array(4);
-
-    var tempAABB2 = {
-        min: new Float32Array(2),
-        max: new Float32Array(2)
-    };
-
-    var tempAABB2b = {
-        min: new Float32Array(2),
-        max: new Float32Array(2)
-    };
 
     /*
      * Optimizations made based on glMatrix by Brandon Jones
@@ -8496,7 +8484,11 @@
             var xmax = -10000000;
             var ymax = -10000000;
 
-            var x, y, z, w, f;
+            var x;
+            var y;
+            var z;
+            var w;
+            var f;
 
             for (var i = 0, len = points.length; i < len; i++) {
 
@@ -9107,8 +9099,6 @@
 
             var norm_u_norm_v = Math.sqrt(math.dotVec3(u, u) * math.dotVec3(v, v));
             var real_part = norm_u_norm_v + math.dotVec3(u, v);
-
-            var w;
 
             if (real_part < 0.00000001 * norm_u_norm_v) {
 
@@ -11999,7 +11989,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             var countCompiledEntities = 0;
 
-            var time1 = Date.now();
+            //var time1 = Date.now();
             var entity;
 
             for (var id in this._dirtyEntities) {
@@ -12045,7 +12035,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             var components = [];
             var component;
-            var priorities = [];
 
             for (var id in this.components) {
                 if (this.components.hasOwnProperty(id)) {
@@ -12386,7 +12375,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             if (!camera) {
                 if (callback) {
-                    scope ? callback.call(scope) : callback();
+                    if (scope) {
+                        callback.call(scope);
+                    } else {
+                        callback();
+                    }
                 }
                 return;
             }
@@ -16029,7 +16022,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             // Fly camera to each picked entity
             // Don't change distance between look and eye
 
-            var view = this.cameraFlight.camera.view;
+          //  var view = this.cameraFlight.camera.view;
 
             var pos;
 
@@ -16792,11 +16785,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                                             yaw = 0;
                                         }
 
-                                        if (yaw != 0) {
+                                        if (yaw !== 0) {
                                             camera.view.rotateEyeY(yaw);
                                         }
 
-                                        if (pitch != 0) {
+                                        if (pitch !== 0) {
                                             camera.view.rotateEyeX(pitch);
                                         }
                                     }
@@ -17540,7 +17533,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                                     return;
                                 }
                                 
-                                if (xDelta != 0) {
+                                if (xDelta !== 0) {
 
                                     angle = -xDelta * this._sensitivity;
 
@@ -17553,7 +17546,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                                     xDelta = 0;
                                 }
 
-                                if (yDelta != 0) {
+                                if (yDelta !== 0) {
 
                                     angle = yDelta * this._sensitivity;
 
@@ -17820,7 +17813,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                                     return;
                                 }
 
-                                if (xDelta != 0 || yDelta != 0) {
+                                if (xDelta !== 0 || yDelta !== 0) {
 
                                     camera.view.pan([xDelta, yDelta, 0]);
 
@@ -18937,7 +18930,9 @@ visibility.destroy();
 
             var arcLengths = this._getLengths();
 
-            var i = 0, il = arcLengths.length;
+            var i = 0;
+            var il = arcLengths.length;
+            var t;
 
             var targetArcLength; // The targeted u distance value to get
 
@@ -18985,7 +18980,8 @@ visibility.destroy();
 
             if (arcLengths[i] === targetArcLength) {
 
-                var t = i / ( il - 1 );
+                t = i / ( il - 1 );
+
                 return t;
 
             }
@@ -24530,7 +24526,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                 return;
             }
 
-            if (component.scene != this.scene) {
+            if (component.scene !== this.scene) {
 
                 // Component in wrong Scene
 
@@ -26165,7 +26161,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
                         var type = light.type;
 
-                        if (type !== "XEO.AmbientLight" && type != "XEO.DirLight" && type !== "XEO.PointLight") {
+                        if (type !== "XEO.AmbientLight" && type !== "XEO.DirLight" && type !== "XEO.PointLight") {
                             this.error("Component " + XEO._inQuotes(light.id) + " is not an XEO.AmbientLight, XEO.DirLight or XEO.PointLight ");
                             continue;
                         }
@@ -29749,26 +29745,26 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 emissive: this._state.emissive
             };
 
-            if (this._state.opacity != 1.0) {
+            if (this._state.opacity !== 1.0) {
                 json.opacity = this._state.opacity;
             }
 
-            if (this._state.shininess != 80.0) {
+            if (this._state.shininess !== 80.0) {
                 json.shininess = this._state.shininess;
             }
 
-            if (this._state.reflectivity != 1.0) {
+            if (this._state.reflectivity !== 1.0) {
                 json.reflectivity = this._state.reflectivity;
             }
 
 
             // Lines and points
             
-            if (this._state.lineWidth != 1.0) {
+            if (this._state.lineWidth !== 1.0) {
                 json.lineWidth = this._state.lineWidth;
             }
 
-            if (this._state.pointSize != 1.0) {
+            if (this._state.pointSize !== 1.0) {
                 json.pointSize = this._state.pointSize;
             }
 
@@ -30699,19 +30695,19 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 json.rotate = this._rotate;
             }
 
-            if (this._state.minFilter != "linearMipmapLinear") {
+            if (this._state.minFilter !== "linearMipmapLinear") {
                 json.minFilter = this._state.minFilter;
             }
 
-            if (this._state.magFilter != "linear") {
+            if (this._state.magFilter !== "linear") {
                 json.magFilter = this._state.magFilter;
             }
 
-            if (this._state.wrapS != "repeat") {
+            if (this._state.wrapS !== "repeat") {
                 json.wrapS = this._state.wrapS;
             }
 
-            if (this._state.wrapT != "repeat") {
+            if (this._state.wrapT !== "repeat") {
                 json.wrapT = this._state.wrapT;
             }
 
@@ -31185,7 +31181,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
         _update: function () {
 
-            var gl = this.scene.canvas.gl;
+         //   var gl = this.scene.canvas.gl;
 
             var state = this._state;
 
@@ -31903,7 +31899,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                     if (oldGeometry) {
 
-                        if (!value || (value.id !== undefined ? value.id : value) != oldGeometry.id) {
+                        if (!value || (value.id !== undefined ? value.id : value) !== oldGeometry.id) {
                             oldGeometry.off(this._onGeometryPositions);
                             oldGeometry.off(this._onGeometryDestroyed);
                         }

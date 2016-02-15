@@ -672,13 +672,6 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/importing/model-scratch.js": {
-            "name": "src/importing/model-scratch.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
         "src/importing/model.js": {
             "name": "src/importing/model.js",
             "modules": {},
@@ -774,15 +767,6 @@
             "modules": {},
             "classes": {
                 "Material": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/materials/pbrMaterial.js": {
-            "name": "src/materials/pbrMaterial.js",
-            "modules": {},
-            "classes": {
-                "PBRMaterial": 1
             },
             "fors": {},
             "namespaces": {}
@@ -1161,7 +1145,6 @@
                 "PointLight": 1,
                 "Fresnel": 1,
                 "Material": 1,
-                "PBRMaterial": 1,
                 "PhongMaterial": 1,
                 "Reflect": 1,
                 "Texture": 1,
@@ -1475,7 +1458,6 @@
             "classes": {
                 "Fresnel": 1,
                 "Material": 1,
-                "PBRMaterial": 1,
                 "PhongMaterial": 1,
                 "Reflect": 1,
                 "Texture": 1
@@ -1503,7 +1485,7 @@
             "module": "XEO",
             "namespace": "",
             "file": "src/math/math.js",
-            "line": 58,
+            "line": 46,
             "description": "Math utilities.",
             "static": 1
         },
@@ -3409,7 +3391,7 @@
             "namespace": "",
             "file": "src/curves/curve.js",
             "line": 1,
-            "description": "A **Curve** is the abstract base class for various other curve classes.\n\n## Overview\n\nThe Curve is subclassed by the following component types:\n\n<ul>\n   <li>{{#crossLink \"SplineCurve\"}}{{/crossLink}}</li>\n   <li>{{#crossLink \"CubicBezierCurve\"}}{{/crossLink}}</li>\n   <li>{{#crossLink \"QuadraticBezierCurve\"}}{{/crossLink}}</li>\n   <li>{{#crossLink \"Path\"}}{{/crossLink}}</li>\n</u>",
+            "description": "A **Curve** is the abstract base class for various other curve classes.\n\n## Overview\n\nThe Curve is subclassed by the following component types:\n\n<ul>\n<li>{{#crossLink \"SplineCurve\"}}{{/crossLink}}</li>\n<li>{{#crossLink \"CubicBezierCurve\"}}{{/crossLink}}</li>\n<li>{{#crossLink \"QuadraticBezierCurve\"}}{{/crossLink}}</li>\n<li>{{#crossLink \"Path\"}}{{/crossLink}}</li>\n</u>",
             "submodule": "curves",
             "is_constructor": 1,
             "params": [
@@ -4865,136 +4847,6 @@
             "is_constructor": 1,
             "extends": "Component"
         },
-        "PBRMaterial": {
-            "name": "PBRMaterial",
-            "shortname": "PBRMaterial",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/materials/pbrMaterial.js",
-            "line": 1,
-            "description": "A **PBRMaterial** is a {{#crossLink \"Material\"}}{{/crossLink}} that defines the appearance of\nattached {{#crossLink \"Entity\"}}Entities{{/crossLink}} using a physically-based rendering model.\n\n## Overview\n\n<ul>\n<li>Physically Based Rendering (PBR) is a method of shading and rendering that provides a more accurate representation\nof how light interacts with surfaces. It can be referred to as Physically Based Rendering (PBR) or Physically Based Shading (PBS).\nDepending on what aspect of the pipeline is being discussed, PBS is usually specific to shading concepts and PBR specific\nto rendering and lighting. However, both terms describe on a whole, the process of representing assets from a physically\naccurate standpoint. - *Wes McDermott, Allegorithmic PBR Guide, Vol. 2*</li>\n<li>The xeoEngine PBRMaterial is based on the once used in [Unreal Engine](https://docs.unrealengine.com/latest/INT/Engine/Rendering/Materials/PhysicallyBased/index.html)</li>\n</ul>\n\n<img src=\"../../../assets/images/PBRMaterial.png\"></img>\n\n### Material attributes\n\n* **{{#crossLink \"PBRMaterial/metallic:property\"}}{{/crossLink}}** - degree of metallicity in range ````[0..1]````, where ````0```` is fully dialectric (non-metal) and ````1```` is fully metallic.\n* **{{#crossLink \"PBRMaterial/color:property\"}}{{/crossLink}}** - base color.\n* **{{#crossLink \"PBRMaterial/colorMap:property\"}}{{/crossLink}}** - color map {{#crossLink \"Texture\"}}{{/crossLink}} to replace {{#crossLink \"PBRMaterial/color:property\"}}{{/crossLink}}.\n* **{{#crossLink \"PBRMaterial/emissive:property\"}}{{/crossLink}}** - emissive color.\n* **{{#crossLink \"PBRMaterial/emissiveMap:property\"}}{{/crossLink}}** - emissive map {{#crossLink \"Texture\"}}{{/crossLink}} to replace {{#crossLink \"PBRMaterial/emissive:property\"}}{{/crossLink}}.\n* **{{#crossLink \"PBRMaterial/opacity:property\"}}{{/crossLink}}** - opacity in range ````[0..1]````.\n* **{{#crossLink \"PBRMaterial/opacityMap:property\"}}{{/crossLink}}** - opacity map {{#crossLink \"Texture\"}}{{/crossLink}} to replace {{#crossLink \"PBRMaterial/opacity:property\"}}{{/crossLink}}.\n* **{{#crossLink \"PBRMaterial/roughness:property\"}}{{/crossLink}}** - surface roughness in range ````[0..1]````, where ````0```` is 100% smooth and ````1```` is 100% rough.\n* **{{#crossLink \"PBRMaterial/roughnessMap:property\"}}{{/crossLink}}** - roughness map {{#crossLink \"Texture\"}}{{/crossLink}} to replace {{#crossLink \"PBRMaterial/roughness:property\"}}{{/crossLink}}.\n* **{{#crossLink \"PBRMaterial/normalMap:property\"}}{{/crossLink}}** - normal map {{#crossLink \"Texture\"}}{{/crossLink}}.\n* **{{#crossLink \"PBRMaterial/specular:property\"}}{{/crossLink}}** - specular reflection color.\n* **{{#crossLink \"PBRMaterial/specularMap:property\"}}{{/crossLink}}** - specular map {{#crossLink \"Texture\"}}{{/crossLink}} to replace {{#crossLink \"PBRMaterial/specular:property\"}}{{/crossLink}}.\n\n\n## Example 1: Non-metallic material\n\nIn this example we have\n\n<ul>\n<li>a dialectric (non-metallic) PBRMaterial,</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that is the default box shape, and\n<li>an {{#crossLink \"Entity\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar material1 = new XEO.PBRMaterial(scene, {\n   metallic: 0.0, // Default\n   color: [1.0, 0.8, 0.0],\n   specular: [1.0, 1.0, 1.0]\n});\n\nvar geometry = new XEO.Geometry(scene);  // Default box\n\nvar entity = new XEO.Entity(scene, {\n   material: material1,\n   geometry: geometry\n});\n````\n\n## Example 2: Metallic material\n\n```` javascript\nvar material2 = new XEO.PBRMaterial(scene, {\n   metallic: 1.0,\n   color: [1.0, 0.8, 0.0],\n   roughness: 0.3\n});\n````\n\n## Example 3: Metallic material with color map\n\n```` javascript\nvar colorMap = new XEO.Texture(scene, {\n   src: \"colorMap.jpg\"\n});\n\nvar material3 = new XEO.PBRMaterial(scene, {\n   metallic: 1.0,\n   colorMap: colorMap,\n   roughness: 0.3\n});\n````",
-            "submodule": "materials",
-            "is_constructor": 1,
-            "extends": "Material",
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this PBRMaterial within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "The PBRMaterial configuration",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, generated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Metadata to attach to this PBRMaterial.",
-                            "type": "String:Object",
-                            "optional": true,
-                            "optdefault": "null"
-                        },
-                        {
-                            "name": "metallic",
-                            "description": "Scalar in range 0-1 that controls how metallic the PBRMaterial is.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "0.0"
-                        },
-                        {
-                            "name": "color",
-                            "description": "Base color.",
-                            "type": "Array of Number",
-                            "optional": true,
-                            "optdefault": "[ 1.0, 1.0, 1.0 ]"
-                        },
-                        {
-                            "name": "colorMap",
-                            "description": "A color map {{#crossLink \"Texture\"}}Texture{{/crossLink}}, which will override the effect of the color property. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this PBRMaterial.",
-                            "type": "Texture",
-                            "optional": true,
-                            "optdefault": "null"
-                        },
-                        {
-                            "name": "emissive",
-                            "description": "Emissive color.",
-                            "type": "Array of Number",
-                            "optional": true,
-                            "optdefault": "[ 1.0, 1.0, 1.0 ]"
-                        },
-                        {
-                            "name": "emissiveMap",
-                            "description": "An emissive map {{#crossLink \"Texture\"}}Texture{{/crossLink}}, which will override the effect of the emissive property. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this PBRMaterial.",
-                            "type": "Texture",
-                            "optional": true,
-                            "optdefault": "null"
-                        },
-                        {
-                            "name": "opacity",
-                            "description": "Scalar in range 0-1 that controls opacity, where 0 is completely transparent and 1 is completely opaque. Only applies while {{#crossLink \"Modes\"}}Modes{{/crossLink}} {{#crossLink \"Modes/transparent:property\"}}transparent{{/crossLink}} equals ````true````.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "1"
-                        },
-                        {
-                            "name": "opacityMap",
-                            "description": "An opacity map {{#crossLink \"Texture\"}}Texture{{/crossLink}}, which will override the effect of the opacity property. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this PBRMaterial.",
-                            "type": "Texture",
-                            "optional": true,
-                            "optdefault": "null"
-                        },
-                        {
-                            "name": "roughness",
-                            "description": "Scalar in range 0-1 that controls roughness, where 0 is 100% glossiness and 1 is 100% roughness.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "0.0"
-                        },
-                        {
-                            "name": "roughnessMap",
-                            "description": "A roughness map {{#crossLink \"Texture\"}}Texture{{/crossLink}}, which will override the effect of the roughness property. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this PBRMaterial.",
-                            "type": "Texture",
-                            "optional": true,
-                            "optdefault": "null"
-                        },
-                        {
-                            "name": "normalMap",
-                            "description": "A normal map {{#crossLink \"Texture\"}}Texture{{/crossLink}}. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this PBRMaterial.",
-                            "type": "Texture",
-                            "optional": true,
-                            "optdefault": "null"
-                        },
-                        {
-                            "name": "specular",
-                            "description": "Specular color.",
-                            "type": "Array of Number",
-                            "optional": true,
-                            "optdefault": "[ 1.0, 1.0, 1.0 ]"
-                        },
-                        {
-                            "name": "specularMap",
-                            "description": "A specular map {{#crossLink \"Texture\"}}Texture{{/crossLink}}, which will override the effect of the specular property. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this PBRMaterial.",
-                            "type": "Texture",
-                            "optional": true,
-                            "optdefault": "null"
-                        }
-                    ]
-                }
-            ]
-        },
         "PhongMaterial": {
             "name": "PhongMaterial",
             "shortname": "PhongMaterial",
@@ -5423,7 +5275,7 @@
             "submodule": "math",
             "namespace": "XEO.math",
             "file": "src/math/math.js",
-            "line": 58,
+            "line": 46,
             "description": "This utility object provides math functions that are used within xeoEngine. These functions are also part xeoEngine's\npublic API and are therefore available for you to use within your application code."
         },
         "ColorBuf": {
@@ -7519,7 +7371,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 548,
+            "line": 547,
             "description": "Removes an object from this Renderer",
             "params": [
                 {
@@ -7532,43 +7384,43 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 585,
+            "line": 584,
             "description": "Renders a new frame, if neccessary.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 624,
+            "line": 623,
             "description": "Builds the object list from the object map",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 636,
+            "line": 635,
             "description": "Generates object state sort keys",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 657,
+            "line": 656,
             "description": "State-sorts the object list",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 667,
+            "line": 666,
             "description": "Logs the object list",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 680,
+            "line": 679,
             "description": "Builds the draw list, which is the list of draw state-chunks to apply to WebGL\nto render the visible objects in the object list for the next frame.\nPreserves the state sort order of the object list among the draw chunks.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 862,
+            "line": 864,
             "description": "Appends an object to the draw and pick lists.",
             "params": [
                 {
@@ -7586,7 +7438,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 924,
+            "line": 927,
             "description": "Logs the contents of the draw list to the console.",
             "access": "private",
             "tagname": "",
@@ -7594,7 +7446,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 954,
+            "line": 957,
             "description": "Logs the contents of the pick list to the console.",
             "access": "private",
             "tagname": "",
@@ -7602,7 +7454,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 983,
+            "line": 986,
             "description": "Attempts to pick an object at the given canvas coordinates.",
             "params": [
                 {
@@ -7619,7 +7471,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1076,
+            "line": 1079,
             "params": [
                 {
                     "name": "params",
@@ -7655,7 +7507,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1210,
+            "line": 1213,
             "description": "Destroys this Renderer.",
             "class": "CameraFlight"
         },
@@ -7775,7 +7627,7 @@
         },
         {
             "file": "src/animation/cameraFlight.js",
-            "line": 408,
+            "line": 413,
             "description": "Fired whenever this CameraFlight's {{#crossLink \"CameraFlight/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
@@ -8908,7 +8760,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 110,
+            "line": 108,
             "description": "The HTML canvas. When the {{#crossLink \"Viewer\"}}{{/crossLink}} was configured with the ID of an existing canvas within the DOM,\nthen this property will be that element, otherwise it will be a full-page canvas that this Canvas has\ncreated by default, with a z-index of -10000.",
             "itemtype": "property",
             "name": "canvas",
@@ -8920,7 +8772,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 121,
+            "line": 119,
             "description": "A transparent HTML DIV overlaid over the {{#crossLink \"Canvas/canvas:property\"}}{{/crossLink}}, with a z-index\nof 100000.\n\nThe parent {{#crossLink \"Scene\"}}{{/crossLink}}'s {{#crossLink \"Input\"}}{{/crossLink}} will relay mouse\nevents from this DIV, instead of from the {{#crossLink \"Canvas/canvas:property\"}}{{/crossLink}}.\n\nWhen you need to have various HTML elements floating around over\nthe {{#crossLink \"Canvas/canvas:property\"}}{{/crossLink}}, then if you give those a z-index that lies between\nthat of the {{#crossLink \"Canvas/canvas:property\"}}{{/crossLink}} and this DIV, your elements will not\ninterfere with those events.",
             "itemtype": "property",
             "name": "canvas",
@@ -8932,7 +8784,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 139,
+            "line": 137,
             "description": "The WebGL rendering context.",
             "itemtype": "property",
             "name": "gl",
@@ -8944,7 +8796,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 148,
+            "line": 146,
             "description": "Attributes for the WebGL context",
             "type": "{{}|*}",
             "class": "Canvas",
@@ -8953,7 +8805,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 216,
+            "line": 214,
             "description": "Fired wheneber the WebGL context has been lost",
             "itemtype": "event",
             "name": "webglContextLost",
@@ -8963,7 +8815,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 229,
+            "line": 227,
             "description": "Fired whenever the WebGL context has been restored again after having previously being lost",
             "itemtype": "event",
             "name": "webglContextRestored",
@@ -8979,7 +8831,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 256,
+            "line": 254,
             "description": "Fired whenever the canvas has resized",
             "itemtype": "event",
             "name": "resized",
@@ -9006,7 +8858,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 294,
+            "line": 292,
             "description": "Creates a canvas in the DOM",
             "access": "private",
             "tagname": "",
@@ -9016,7 +8868,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 323,
+            "line": 321,
             "description": "Creates an invisible DIV over the canvas",
             "access": "private",
             "tagname": "",
@@ -9026,7 +8878,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 353,
+            "line": 351,
             "description": "Initialises the WebGL context",
             "class": "Canvas",
             "module": "XEO",
@@ -9034,7 +8886,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 375,
+            "line": 373,
             "description": "Fired whenever the canvas failed to get a WebGL context, which probably means that WebGL\nis either unsupported or has been disabled.",
             "itemtype": "event",
             "name": "webglContextFailed",
@@ -9142,7 +8994,7 @@
         },
         {
             "file": "src/clipping/clips.js",
-            "line": 245,
+            "line": 246,
             "description": "Fired whenever this Clips' {{#crossLink \"Clips/clips:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "clips",
@@ -9369,7 +9221,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 127,
+            "line": 125,
             "description": "The {{#crossLink \"KeyboardAxisCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "keyboardAxis",
@@ -9381,7 +9233,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 138,
+            "line": 136,
             "description": "The {{#crossLink \"KeyboardRotateCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "keyboardOrbit",
@@ -9393,7 +9245,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 149,
+            "line": 147,
             "description": "The {{#crossLink \"MouseRotateCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "mouseRotate",
@@ -9405,7 +9257,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 160,
+            "line": 158,
             "description": "The {{#crossLink \"KeyboardPanCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "keyboardPan",
@@ -9417,7 +9269,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 171,
+            "line": 169,
             "description": "The {{#crossLink \"MousePanCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "mousePan",
@@ -9429,7 +9281,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 182,
+            "line": 180,
             "description": "The {{#crossLink \"KeyboardZoomCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "keyboardZoom",
@@ -9441,7 +9293,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 193,
+            "line": 191,
             "description": "The {{#crossLink \"MouseZoomCamera\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "mouseZoom",
@@ -9453,7 +9305,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 204,
+            "line": 202,
             "description": "The {{#crossLink \"MousePickEntity\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "mousePickEntity",
@@ -9465,7 +9317,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 222,
+            "line": 220,
             "description": "The {{#crossLink \"CameraFlight\"}}{{/crossLink}} within this CameraControl.",
             "itemtype": "property",
             "name": "cameraFlight",
@@ -9477,7 +9329,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 303,
+            "line": 301,
             "description": "Flag which indicates whether this CameraControl is in \"first person\" mode.\n\nIn \"first person\" mode (disabled by default) the look position rotates about the eye position. Otherwise,\nthe eye rotates about the look.\n\nFires a {{#crossLink \"KeyboardRotateCamera/firstPerson:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "firstPerson",
@@ -9489,7 +9341,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 326,
+            "line": 324,
             "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/firstPerson:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "firstPerson",
@@ -9505,7 +9357,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 342,
+            "line": 340,
             "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} being controlled by this CameraControl.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this CameraControl. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.",
             "itemtype": "property",
             "name": "camera",
@@ -9516,7 +9368,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 356,
+            "line": 354,
             "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
@@ -9532,7 +9384,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 387,
+            "line": 385,
             "description": "Flag which indicates whether this CameraControl is active or not.\n\nFires an {{#crossLink \"CameraControl/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
@@ -9543,7 +9395,7 @@
         },
         {
             "file": "src/controls/cameraControl.js",
-            "line": 417,
+            "line": 415,
             "description": "Fired whenever this CameraControl's {{#crossLink \"CameraControl/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
@@ -10678,7 +10530,7 @@
         },
         {
             "file": "src/curves/curve.js",
-            "line": 148,
+            "line": 152,
             "description": "Samples points on this Curve, at the given number of equally-spaced divisions.",
             "itemtype": "method",
             "name": "getPoints",
@@ -12588,7 +12440,7 @@
         },
         {
             "file": "src/geometry/planeGeometry.js",
-            "line": 150,
+            "line": 158,
             "description": "The PlaneGeometry's level-of-detail factor.\n\nFires a {{#crossLink \"PlaneGeometry/lod:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "lod",
@@ -12600,7 +12452,7 @@
         },
         {
             "file": "src/geometry/planeGeometry.js",
-            "line": 178,
+            "line": 186,
             "description": "Fired whenever this PlaneGeometry's {{#crossLink \"PlaneGeometry/lod:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "lod",
@@ -12617,7 +12469,7 @@
         },
         {
             "file": "src/geometry/planeGeometry.js",
-            "line": 192,
+            "line": 200,
             "description": "The PlaneGeometry's dimension on the X-axis.\n\nFires a {{#crossLink \"PlaneGeometry/xSize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "xSize",
@@ -12629,7 +12481,7 @@
         },
         {
             "file": "src/geometry/planeGeometry.js",
-            "line": 220,
+            "line": 228,
             "description": "Fired whenever this PlaneGeometry's {{#crossLink \"PlaneGeometry/xSize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "xSize",
@@ -12646,7 +12498,7 @@
         },
         {
             "file": "src/geometry/planeGeometry.js",
-            "line": 234,
+            "line": 242,
             "description": "The PlaneGeometry's dimension on the Y-axis.\n\nFires a {{#crossLink \"PlaneGeometry/ySize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "ySize",
@@ -12658,7 +12510,7 @@
         },
         {
             "file": "src/geometry/planeGeometry.js",
-            "line": 262,
+            "line": 270,
             "description": "Fired whenever this PlaneGeometry's {{#crossLink \"PlaneGeometry/ySize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "ySize",
@@ -12675,7 +12527,7 @@
         },
         {
             "file": "src/geometry/planeGeometry.js",
-            "line": 276,
+            "line": 284,
             "description": "The PlaneGeometry's number of segments on the X-axis.\n\nFires a {{#crossLink \"PlaneGeometry/xSegments:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "xSegments",
@@ -12687,7 +12539,7 @@
         },
         {
             "file": "src/geometry/planeGeometry.js",
-            "line": 304,
+            "line": 312,
             "description": "Fired whenever this PlaneGeometry's {{#crossLink \"PlaneGeometry/xSegments:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "xSegments",
@@ -12704,7 +12556,7 @@
         },
         {
             "file": "src/geometry/planeGeometry.js",
-            "line": 318,
+            "line": 326,
             "description": "The PlaneGeometry's number of segments on the Y-axis.\n\nFires a {{#crossLink \"PlaneGeometry/ySegments:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "ySegments",
@@ -12716,7 +12568,7 @@
         },
         {
             "file": "src/geometry/planeGeometry.js",
-            "line": 346,
+            "line": 354,
             "description": "Fired whenever this PlaneGeometry's {{#crossLink \"PlaneGeometry/ySegments:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "ySegments",
@@ -13054,82 +12906,6 @@
             "description": "Private xeoEngine glTF loading utilities.\n\nAdapted from the THREE loader by Tony Parisi (http://www.tonyparisi.com)\nhttps://github.com/KhronosGroup/glTF/blob/master/loaders/threejs/glTFLoaderUtils.js",
             "class": "Model",
             "module": "XEO"
-        },
-        {
-            "file": "src/importing/model-scratch.js",
-            "line": 156,
-            "description": "Path to the glTF file.\n\nYou can set this to a new file path at any time, which will cause the Model to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nFires a {{#crossLink \"Model/src:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "src",
-            "type": "String",
-            "class": "Model",
-            "module": "XEO",
-            "submodule": "importing"
-        },
-        {
-            "file": "src/importing/model-scratch.js",
-            "line": 194,
-            "description": "Fired whenever this Model has finished loading components from the glTF file\nspecified by {{#crossLink \"Model/src:property\"}}{{/crossLink}}.",
-            "itemtype": "event",
-            "name": "loaded",
-            "class": "Model",
-            "module": "XEO",
-            "submodule": "importing"
-        },
-        {
-            "file": "src/importing/model-scratch.js",
-            "line": 202,
-            "description": "Fired whenever this Model's {{#crossLink \"Model/src:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "src",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Model",
-            "module": "XEO",
-            "submodule": "importing"
-        },
-        {
-            "file": "src/importing/model-scratch.js",
-            "line": 215,
-            "description": "The Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} attached to this Model.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Model.\n\nInternally, the given {{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above any\n{{#crossLink \"Transform\"}}Transforms{{/crossLink}} that the Model attaches to its {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires an {{#crossLink \"Model/transform:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "transform",
-            "type": "Transform",
-            "class": "Model",
-            "module": "XEO",
-            "submodule": "importing"
-        },
-        {
-            "file": "src/importing/model-scratch.js",
-            "line": 232,
-            "description": "Fired whenever this Model's {{#crossLink \"Model/transform:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "transform",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Model",
-            "module": "XEO",
-            "submodule": "importing"
-        },
-        {
-            "file": "src/importing/model-scratch.js",
-            "line": 249,
-            "description": "A {{#crossLink \"Collection\"}}{{/crossLink}} containing the scene components loaded by this Model.\n\nWhenever {{#crossLink \"Model/src:property\"}}{{/crossLink}} is set to the location of a valid glTF file,\nand once the file has been loaded, this {{#crossLink \"Collection\"}}{{/crossLink}} will contain whatever\ncomponents were loaded from that file.\n\nNote that prior to loading the file, the Model will destroy any components in the {{#crossLink \"Collection\"}}{{/crossLink}}.",
-            "itemtype": "property",
-            "name": "collection",
-            "type": "Collection",
-            "final": 1,
-            "class": "Model",
-            "module": "XEO",
-            "submodule": "importing"
         },
         {
             "file": "src/importing/model.js",
@@ -15110,346 +14886,6 @@
             "submodule": "materials"
         },
         {
-            "file": "src/materials/pbrMaterial.js",
-            "line": 182,
-            "description": "Controls how metallic this material is.\n\nNonmetals have a value of ````0````, while metals have a value of ````1````. For pure surfaces, such as\npure metal, pure stone, pure plastic, etc. this value will be 0 or 1, not anything in between. When\ncreating hybrid surfaces like corroded, dusty, or rusty metals, you may find that you need some value\nbetween 0 and 1.\n\nFires a {{#crossLink \"PBRMaterial/metallic:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "metallic",
-            "default": "0.0",
-            "type": "Number",
-            "class": "PBRMaterial",
-            "module": "XEO",
-            "submodule": "materials"
-        },
-        {
-            "file": "src/materials/pbrMaterial.js",
-            "line": 204,
-            "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/metallic:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "metallic",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "Number The property's new value"
-                }
-            ],
-            "class": "PBRMaterial",
-            "module": "XEO",
-            "submodule": "materials"
-        },
-        {
-            "file": "src/materials/pbrMaterial.js",
-            "line": 218,
-            "description": "Base color of this material.\n\nThis property may be overridden by {{#crossLink \"PBRMaterial/colorMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PBRMaterial/color:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "color",
-            "default": "[1.0, 1.0, 1.0]",
-            "type": "Array(Number)",
-            "class": "PBRMaterial",
-            "module": "XEO",
-            "submodule": "materials"
-        },
-        {
-            "file": "src/materials/pbrMaterial.js",
-            "line": 237,
-            "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/color:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "color",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value",
-                    "type": "Array(Number)"
-                }
-            ],
-            "class": "PBRMaterial",
-            "module": "XEO",
-            "submodule": "materials"
-        },
-        {
-            "file": "src/materials/pbrMaterial.js",
-            "line": 251,
-            "description": "Color {{#crossLink \"Texture\"}}{{/crossLink}}, to apply instead of {{#crossLink \"PBRMaterial/color:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PBRMaterial/colorMap:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "colorMap",
-            "default": "null",
-            "type": "{Texture}",
-            "class": "PBRMaterial",
-            "module": "XEO",
-            "submodule": "materials"
-        },
-        {
-            "file": "src/materials/pbrMaterial.js",
-            "line": 264,
-            "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/color:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "colorMap",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "Number The property's new value"
-                }
-            ],
-            "class": "PBRMaterial",
-            "module": "XEO",
-            "submodule": "materials"
-        },
-        {
-            "file": "src/materials/pbrMaterial.js",
-            "line": 278,
-            "description": "Emissive color of this material.\n\nThis property may be overridden by {{#crossLink \"PBRMaterial/emissiveMap:property\"}}{{/crossLink}}.\n\nFires an {{#crossLink \"PBRMaterial/emissive:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "emissive",
-            "default": "[1.0, 1.0, 1.0]",
-            "type": "Array(Number)",
-            "class": "PBRMaterial",
-            "module": "XEO",
-            "submodule": "materials"
-        },
-        {
-            "file": "src/materials/pbrMaterial.js",
-            "line": 297,
-            "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/emissive:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "emissive",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value",
-                    "type": "Array(Number)"
-                }
-            ],
-            "class": "PBRMaterial",
-            "module": "XEO",
-            "submodule": "materials"
-        },
-        {
-            "file": "src/materials/pbrMaterial.js",
-            "line": 311,
-            "description": "Emissive {{#crossLink \"Texture\"}}{{/crossLink}}, to apply instead of {{#crossLink \"PBRMaterial/emissive:property\"}}{{/crossLink}}.\n\nFires an {{#crossLink \"PBRMaterial/emissiveMap:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "emissiveMap",
-            "default": "null",
-            "type": "{Texture}",
-            "class": "PBRMaterial",
-            "module": "XEO",
-            "submodule": "materials"
-        },
-        {
-            "file": "src/materials/pbrMaterial.js",
-            "line": 324,
-            "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/emissiveMap:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "emissiveMap",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "Number The property's new value"
-                }
-            ],
-            "class": "PBRMaterial",
-            "module": "XEO",
-            "submodule": "materials"
-        },
-        {
-            "file": "src/materials/pbrMaterial.js",
-            "line": 338,
-            "description": "Opacity of this material.\n\nOpacity is a value in the range [0..1], in which 0 is fully transparent and 1.0 is fully opaque.\n\nThis property may be overidden by {{#crossLink \"PBRMaterial/opacityMap:property\"}}{{/crossLink}}.\n\nAttached {{#crossLink \"Entity\"}}Entities{{/crossLink}} will appear transparent only if they are also attached\nto {{#crossLink \"Modes\"}}Modes{{/crossLink}} that have {{#crossLink \"Modes/transparent:property\"}}transparent{{/crossLink}}\nset to **true**.\n\nFires an {{#crossLink \"PBRMaterial/opacity:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "opacity",
-            "default": "1.0",
-            "type": "Number",
-            "class": "PBRMaterial",
-            "module": "XEO",
-            "submodule": "materials"
-        },
-        {
-            "file": "src/materials/pbrMaterial.js",
-            "line": 363,
-            "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/opacity:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "opacity",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value",
-                    "type": "Number"
-                }
-            ],
-            "class": "PBRMaterial",
-            "module": "XEO",
-            "submodule": "materials"
-        },
-        {
-            "file": "src/materials/pbrMaterial.js",
-            "line": 377,
-            "description": "Opacity {{#crossLink \"Texture\"}}{{/crossLink}}, to apply instead of {{#crossLink \"PBRMaterial/opacity:property\"}}{{/crossLink}}.\n\nFires an {{#crossLink \"PBRMaterial/opacityMap:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "opacityMap",
-            "default": "null",
-            "type": "{Texture}",
-            "class": "PBRMaterial",
-            "module": "XEO",
-            "submodule": "materials"
-        },
-        {
-            "file": "src/materials/pbrMaterial.js",
-            "line": 390,
-            "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/opacityMap:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "opacityMap",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "Number The property's new value"
-                }
-            ],
-            "class": "PBRMaterial",
-            "module": "XEO",
-            "submodule": "materials"
-        },
-        {
-            "file": "src/materials/pbrMaterial.js",
-            "line": 404,
-            "description": "A factor in range [0..1] that indicates the surface roughness of this PBRMaterial.\n\nA value of ````0```` is a mirrow reflection, while ````1```` is completely matte.\n\nThis property may be overidden by {{#crossLink \"PBRMaterial/roughnessMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PBRMaterial/roughness:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "roughness",
-            "default": "0.0",
-            "type": "Number",
-            "class": "PBRMaterial",
-            "module": "XEO",
-            "submodule": "materials"
-        },
-        {
-            "file": "src/materials/pbrMaterial.js",
-            "line": 425,
-            "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/roughness:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "roughness",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "Number The property's new value"
-                }
-            ],
-            "class": "PBRMaterial",
-            "module": "XEO",
-            "submodule": "materials"
-        },
-        {
-            "file": "src/materials/pbrMaterial.js",
-            "line": 439,
-            "description": "Roughness {{#crossLink \"Texture\"}}{{/crossLink}}, to apply instead of {{#crossLink \"PBRMaterial/roughness:property\"}}{{/crossLink}}.\n\nFires an {{#crossLink \"PBRMaterial/roughnessMap:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "roughnessMap",
-            "default": "null",
-            "type": "{Texture}",
-            "class": "PBRMaterial",
-            "module": "XEO",
-            "submodule": "materials"
-        },
-        {
-            "file": "src/materials/pbrMaterial.js",
-            "line": 452,
-            "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/roughnessMap:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "roughnessMap",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "Number The property's new value"
-                }
-            ],
-            "class": "PBRMaterial",
-            "module": "XEO",
-            "submodule": "materials"
-        },
-        {
-            "file": "src/materials/pbrMaterial.js",
-            "line": 466,
-            "description": "A normal map {{#crossLink \"Texture\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PBRMaterial/normalMap:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "normalMap",
-            "default": "null",
-            "type": "{Texture}",
-            "class": "PBRMaterial",
-            "module": "XEO",
-            "submodule": "materials"
-        },
-        {
-            "file": "src/materials/pbrMaterial.js",
-            "line": 479,
-            "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/normal:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "normalMap",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "Number The property's new value"
-                }
-            ],
-            "class": "PBRMaterial",
-            "module": "XEO",
-            "submodule": "materials"
-        },
-        {
-            "file": "src/materials/pbrMaterial.js",
-            "line": 493,
-            "description": "Specular color of this material.\n\nThis property may be overridden by {{#crossLink \"PBRMaterial/specularMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PBRMaterial/specular:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "specular",
-            "default": "[0.3, 0.3, 0.3]",
-            "type": "Array(Number)",
-            "class": "PBRMaterial",
-            "module": "XEO",
-            "submodule": "materials"
-        },
-        {
-            "file": "src/materials/pbrMaterial.js",
-            "line": 512,
-            "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/specular:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "specular",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value",
-                    "type": "Array(Number)"
-                }
-            ],
-            "class": "PBRMaterial",
-            "module": "XEO",
-            "submodule": "materials"
-        },
-        {
-            "file": "src/materials/pbrMaterial.js",
-            "line": 527,
-            "description": "Specular {{#crossLink \"Texture\"}}{{/crossLink}}, to apply instead of {{#crossLink \"PBRMaterial/specular:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PBRMaterial/specularMap:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "specularMap",
-            "default": "null",
-            "type": "{Texture}",
-            "class": "PBRMaterial",
-            "module": "XEO",
-            "submodule": "materials"
-        },
-        {
-            "file": "src/materials/pbrMaterial.js",
-            "line": 540,
-            "description": "Fired whenever this PBRMaterial's {{#crossLink \"PBRMaterial/specularMap:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "specularMap",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "Number The property's new value"
-                }
-            ],
-            "class": "PBRMaterial",
-            "module": "XEO",
-            "submodule": "materials"
-        },
-        {
             "file": "src/materials/phongMaterial.js",
             "line": 221,
             "description": "The PhongMaterial's ambient color.\n\nFires a {{#crossLink \"PhongMaterial/ambient:event\"}}{{/crossLink}} event on change.",
@@ -16138,7 +15574,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 347,
+            "line": 345,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/image:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "image",
@@ -16155,7 +15591,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 354,
+            "line": 352,
             "description": "Fired whenever this Texture has loaded the\nimage file that its {{#crossLink \"Texture/src:property\"}}{{/crossLink}} property currently points to.",
             "itemtype": "event",
             "name": "loaded",
@@ -16172,7 +15608,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 385,
+            "line": 383,
             "description": "Indicates an HTML DOM Image object to source this Texture from.\n\nAlternatively, you could indicate the source via either of properties\n{{#crossLink \"Texture/src:property\"}}{{/crossLink}} or {{#crossLink \"Texture/target:property\"}}{{/crossLink}}.\n\nFires an {{#crossLink \"Texture/image:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Texture/src:property\"}}{{/crossLink}} and\n{{#crossLink \"Texture/target:property\"}}{{/crossLink}} properties to null.",
             "itemtype": "property",
             "name": "image",
@@ -16184,7 +15620,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 413,
+            "line": 411,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/image:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "image",
@@ -16201,7 +15637,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 426,
+            "line": 424,
             "description": "Indicates a path to an image file to source this Texture from.\n\nAlternatively, you could indicate the source via either of properties\n{{#crossLink \"Texture/image:property\"}}{{/crossLink}} or {{#crossLink \"Texture/target:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"Texture/src:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Texture/image:property\"}}{{/crossLink}} and\n{{#crossLink \"Texture/target:property\"}}{{/crossLink}} properties to null.",
             "itemtype": "property",
             "name": "src",
@@ -16213,7 +15649,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 454,
+            "line": 452,
             "description": "Fired whenever this Texture's {{#crossLink \"Texture/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -16230,7 +15666,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 468,
+            "line": 466,
             "description": "Instance or ID of a {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} or\n{{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} to source this Texture from.\n\nAlternatively, you could indicate the source via either of properties\n{{#crossLink \"Texture/src:property\"}}{{/crossLink}} or {{#crossLink \"Texture/image:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"Texture/target:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Texture/src:property\"}}{{/crossLink}} and\n{{#crossLink \"Texture/image:property\"}}{{/crossLink}} properties to null.",
             "itemtype": "property",
             "name": "target",
@@ -16242,7 +15678,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 504,
+            "line": 502,
             "description": "Fired whenever this Texture's   {{#crossLink \"Texture/target:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "target",
@@ -16259,7 +15695,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 518,
+            "line": 516,
             "description": "2D translation vector that will be added to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/translate:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "translate",
@@ -16271,7 +15707,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 538,
+            "line": 536,
             "description": "Fired whenever this Texture's   {{#crossLink \"Texture/translate:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "translate",
@@ -16288,7 +15724,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 551,
+            "line": 549,
             "description": "2D scaling vector that will be applied to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/scale:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "scale",
@@ -16300,7 +15736,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 571,
+            "line": 569,
             "description": "Fired whenever this Texture's   {{#crossLink \"Texture/scale:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "scale",
@@ -16317,7 +15753,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 584,
+            "line": 582,
             "description": "Rotation, in degrees, that will be applied to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/rotate:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "rotate",
@@ -16329,7 +15765,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 608,
+            "line": 606,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/rotate:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "rotate",
@@ -16346,7 +15782,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 621,
+            "line": 619,
             "description": "How this Texture is sampled when a texel covers less than one pixel.\n\nOptions are:\n\n<ul>\n    <li>**\"nearest\"** - Uses the value of the texture element that is nearest\n    (in Manhattan distance) to the center of the pixel being textured.</li>\n\n    <li>**\"linear\"** - Uses the weighted average of the four texture elements that are\n    closest to the center of the pixel being textured.</li>\n\n    <li>**\"nearestMipmapNearest\"** - Chooses the mipmap that most closely matches the\n    size of the pixel being textured and uses the \"nearest\" criterion (the texture\n    element nearest to the center of the pixel) to produce a texture value.</li>\n\n    <li>**\"linearMipmapNearest\"** - Chooses the mipmap that most closely matches the size of\n    the pixel being textured and uses the \"linear\" criterion (a weighted average of the\n    four texture elements that are closest to the center of the pixel) to produce a\n    texture value.</li>\n\n    <li>**\"nearestMipmapLinear\"** - Chooses the two mipmaps that most closely\n    match the size of the pixel being textured and uses the \"nearest\" criterion\n    (the texture element nearest to the center of the pixel) to produce a texture\n    value from each mipmap. The final texture value is a weighted average of those two\n    values.</li>\n\n    <li>**\"linearMipmapLinear\"** - **(default)** - Chooses the two mipmaps that most closely match the size\n    of the pixel being textured and uses the \"linear\" criterion (a weighted average\n    of the four texture elements that are closest to the center of the pixel) to\n    produce a texture value from each mipmap. The final texture value is a weighted\n    average of those two values.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/minFilter:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "minFilter",
@@ -16358,7 +15794,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 685,
+            "line": 683,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/minFilter:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "minFilter",
@@ -16375,7 +15811,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 698,
+            "line": 696,
             "description": "How this Texture is sampled when a texel covers more than one pixel.\n\nOptions are:\n\n<ul>\n    <li>**\"nearest\"** - Uses the value of the texture element that is nearest\n    (in Manhattan distance) to the center of the pixel being textured.</li>\n    <li>**\"linear\"** - **(default)** - Uses the weighted average of the four texture elements that are\n    closest to the center of the pixel being textured.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/magFilter:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "magFilter",
@@ -16387,7 +15823,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 735,
+            "line": 733,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/magFilter:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "magFilter",
@@ -16404,7 +15840,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 748,
+            "line": 746,
             "description": "Wrap parameter for this Texture's *S* coordinate.\n\nOptions are:\n\n<ul>\n    <li>**\"clampToEdge\"** -  causes *S* coordinates to be clamped to the size of the texture.</li>\n    <li>**\"mirroredRepeat\"** - causes the *S* coordinate to be set to the fractional part of the texture coordinate\n    if the integer part of *S* is even; if the integer part of *S* is odd, then the *S* texture coordinate is\n    set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *S*.</li>\n    <li>**\"repeat\"** - **(default)** - causes the integer part of the *S* coordinate to be ignored; xeoEngine uses only the\n    fractional part, thereby creating a repeating pattern.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/wrapS:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "wrapS",
@@ -16416,7 +15852,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 787,
+            "line": 785,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/wrapS:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "wrapS",
@@ -16433,7 +15869,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 800,
+            "line": 798,
             "description": "Wrap parameter for this Texture's *T* coordinate.\n\nOptions are:\n\n<ul>\n    <li>**\"clampToEdge\"** -  Causes *T* coordinates to be clamped to the size of the texture.</li>\n    <li>**\"mirroredRepeat\"** - Causes the *T* coordinate to be set to the fractional part of the texture coordinate\n    if the integer part of *T* is even; if the integer part of *T* is odd, then the *T* texture coordinate is\n    set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *T*.</li>\n    <li>**\"repeat\"** - **(default)** - Causes the integer part of the *T* coordinate to be ignored; xeoEngine uses only the\n    fractional part, thereby creating a repeating pattern.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/wrapT:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "wrapT",
@@ -16445,7 +15881,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 839,
+            "line": 837,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/wrapT:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "wrapT",
@@ -16462,7 +15898,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 68,
+            "line": 56,
             "description": "The number of radiians in a degree (0.0174532925).",
             "itemtype": "property",
             "name": "DEGTORAD",
@@ -16474,7 +15910,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 76,
+            "line": 64,
             "description": "Returns a new, uninitialized two-element vector.",
             "itemtype": "method",
             "name": "vec2",
@@ -16490,7 +15926,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 86,
+            "line": 74,
             "description": "Returns a new, uninitialized three-element vector.",
             "itemtype": "method",
             "name": "vec3",
@@ -16506,7 +15942,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 96,
+            "line": 84,
             "description": "Returns a new, uninitialized four-element vector.",
             "itemtype": "method",
             "name": "vec4",
@@ -16522,7 +15958,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 106,
+            "line": 94,
             "description": "Returns a new, uninitialized 3x3 matrix.",
             "itemtype": "method",
             "name": "mat3",
@@ -16538,7 +15974,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 116,
+            "line": 104,
             "description": "Returns a new, uninitialized 4x4 matrix.",
             "itemtype": "method",
             "name": "mat4",
@@ -16554,7 +15990,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 126,
+            "line": 114,
             "description": "Returns a new, uninitialized 3D axis-aligned bounding box.",
             "itemtype": "method",
             "name": "AABB3",
@@ -16570,7 +16006,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 139,
+            "line": 127,
             "description": "Returns a new, uninitialized 2D axis-aligned bounding box.",
             "itemtype": "method",
             "name": "AABB2",
@@ -16586,7 +16022,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 152,
+            "line": 140,
             "description": "Returns a new UUID.",
             "itemtype": "method",
             "name": "createUUID",
@@ -16601,7 +16037,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 182,
+            "line": 170,
             "description": "Floating-point modulus",
             "itemtype": "method",
             "name": "fmod",
@@ -16629,7 +16065,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 201,
+            "line": 189,
             "description": "Negates a four-element vector.",
             "itemtype": "method",
             "name": "negateVec4",
@@ -16658,7 +16094,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 220,
+            "line": 208,
             "description": "Adds one four-element vector to another.",
             "itemtype": "method",
             "name": "addVec4",
@@ -16692,7 +16128,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 240,
+            "line": 228,
             "description": "Adds a scalar value to each element of a four-element vector.",
             "itemtype": "method",
             "name": "addVec4Scalar",
@@ -16726,7 +16162,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 260,
+            "line": 248,
             "description": "Adds one three-element vector to another.",
             "itemtype": "method",
             "name": "addVec3",
@@ -16760,7 +16196,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 279,
+            "line": 267,
             "description": "Adds a scalar value to each element of a three-element vector.",
             "itemtype": "method",
             "name": "addVec4Scalar",
@@ -16794,7 +16230,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 298,
+            "line": 286,
             "description": "Subtracts one four-element vector from another.",
             "itemtype": "method",
             "name": "subVec4",
@@ -16828,7 +16264,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 318,
+            "line": 306,
             "description": "Subtracts one three-element vector from another.",
             "itemtype": "method",
             "name": "subVec3",
@@ -16862,7 +16298,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 337,
+            "line": 325,
             "description": "Subtracts one two-element vector from another.",
             "itemtype": "method",
             "name": "subVec2",
@@ -16896,7 +16332,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 355,
+            "line": 343,
             "description": "Subtracts a scalar value from each element of a four-element vector.",
             "itemtype": "method",
             "name": "subVec4Scalar",
@@ -16930,7 +16366,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 375,
+            "line": 363,
             "description": "Sets each element of a 4-element vector to a scalar value minus the value of that element.",
             "itemtype": "method",
             "name": "subScalarVec4",
@@ -16964,7 +16400,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 395,
+            "line": 383,
             "description": "Multiplies one three-element vector by another.",
             "itemtype": "method",
             "name": "mulVec3",
@@ -16998,7 +16434,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 415,
+            "line": 403,
             "description": "Multiplies each element of a four-element vector by a scalar.",
             "itemtype": "method",
             "name": "mulVec34calar",
@@ -17032,7 +16468,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 435,
+            "line": 423,
             "description": "Multiplies each element of a three-element vector by a scalar.",
             "itemtype": "method",
             "name": "mulVec3Scalar",
@@ -17066,7 +16502,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 454,
+            "line": 442,
             "description": "Multiplies each element of a two-element vector by a scalar.",
             "itemtype": "method",
             "name": "mulVec2Scalar",
@@ -17100,7 +16536,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 472,
+            "line": 460,
             "description": "Divides one three-element vector by another.",
             "itemtype": "method",
             "name": "divVec3",
@@ -17134,7 +16570,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 491,
+            "line": 479,
             "description": "Divides one four-element vector by another.",
             "itemtype": "method",
             "name": "divVec4",
@@ -17168,7 +16604,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 511,
+            "line": 499,
             "description": "Divides a scalar by a three-element vector, returning a new vector.",
             "itemtype": "method",
             "name": "divScalarVec3",
@@ -17197,7 +16633,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 530,
+            "line": 518,
             "description": "Divides a three-element vector by a scalar.",
             "itemtype": "method",
             "name": "divVec3Scalar",
@@ -17226,7 +16662,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 549,
+            "line": 537,
             "description": "Divides a four-element vector by a scalar.",
             "itemtype": "method",
             "name": "divVec4Scalar",
@@ -17255,7 +16691,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 570,
+            "line": 558,
             "description": "Divides a scalar by a four-element vector, returning a new vector.",
             "itemtype": "method",
             "name": "divScalarVec4",
@@ -17284,7 +16720,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 590,
+            "line": 578,
             "description": "Returns the dot product of two four-element vectors.",
             "itemtype": "method",
             "name": "dotVec4",
@@ -17311,7 +16747,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 602,
+            "line": 590,
             "description": "Returns the cross product of two four-element vectors.",
             "itemtype": "method",
             "name": "cross3Vec4",
@@ -17338,7 +16774,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 620,
+            "line": 608,
             "description": "Returns the cross product of two three-element vectors.",
             "itemtype": "method",
             "name": "cross3Vec3",
@@ -17365,7 +16801,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 645,
+            "line": 633,
             "description": "Returns the length of a four-element vector.",
             "itemtype": "method",
             "name": "lenVec4",
@@ -17387,7 +16823,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 656,
+            "line": 644,
             "description": "Returns the dot product of two three-element vectors.",
             "itemtype": "method",
             "name": "dotVec4",
@@ -17414,7 +16850,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 668,
+            "line": 656,
             "description": "Returns the dot product of two two-element vectors.",
             "itemtype": "method",
             "name": "dotVec4",
@@ -17441,7 +16877,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 690,
+            "line": 678,
             "description": "Returns the length of a three-element vector.",
             "itemtype": "method",
             "name": "lenVec3",
@@ -17463,7 +16899,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 701,
+            "line": 689,
             "description": "Returns the length of a two-element vector.",
             "itemtype": "method",
             "name": "lenVec2",
@@ -17485,7 +16921,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 712,
+            "line": 700,
             "itemtype": "method",
             "name": "rcpVec3",
             "static": 1,
@@ -17509,7 +16945,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 724,
+            "line": 712,
             "description": "Normalizes a four-element vector",
             "itemtype": "method",
             "name": "normalizeVec4",
@@ -17534,7 +16970,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 738,
+            "line": 726,
             "description": "Normalizes a three-element vector",
             "itemtype": "method",
             "name": "normalizeVec4",
@@ -17546,7 +16982,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 748,
+            "line": 736,
             "description": "Normalizes a two-element vector",
             "itemtype": "method",
             "name": "normalizeVec2",
@@ -17558,7 +16994,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 758,
+            "line": 746,
             "description": "Duplicates a 4x4 identity matrix.",
             "itemtype": "method",
             "name": "dupMat4",
@@ -17570,7 +17006,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 767,
+            "line": 755,
             "description": "Extracts a 3x3 matrix from a 4x4 matrix.",
             "itemtype": "method",
             "name": "mat4To3",
@@ -17582,7 +17018,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 780,
+            "line": 768,
             "description": "Returns a 4x4 matrix with each element set to the given scalar value.",
             "itemtype": "method",
             "name": "m4s",
@@ -17594,7 +17030,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 794,
+            "line": 782,
             "description": "Returns a 4x4 matrix with each element set to zero.",
             "itemtype": "method",
             "name": "setMat4ToZeroes",
@@ -17606,7 +17042,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 803,
+            "line": 791,
             "description": "Returns a 4x4 matrix with each element set to 1.0.",
             "itemtype": "method",
             "name": "setMat4ToOnes",
@@ -17618,7 +17054,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 812,
+            "line": 800,
             "description": "Returns a 4x4 matrix with each element set to 1.0.",
             "itemtype": "method",
             "name": "setMat4ToOnes",
@@ -17630,7 +17066,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 826,
+            "line": 814,
             "description": "Returns a 4x4 matrix with diagonal elements set to the given vector.",
             "itemtype": "method",
             "name": "diagonalMat4c",
@@ -17642,7 +17078,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 835,
+            "line": 823,
             "description": "Returns a 4x4 matrix with diagonal elements set to the given scalar.",
             "itemtype": "method",
             "name": "diagonalMat4s",
@@ -17654,7 +17090,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 844,
+            "line": 832,
             "description": "Returns a 4x4 identity matrix.",
             "itemtype": "method",
             "name": "identityMat4",
@@ -17666,7 +17102,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 876,
+            "line": 864,
             "description": "Tests if the given 4x4 matrix is the identity matrix.",
             "itemtype": "method",
             "name": "isIdentityMat4",
@@ -17678,7 +17114,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 891,
+            "line": 879,
             "description": "Negates the given 4x4 matrix.",
             "itemtype": "method",
             "name": "negateMat4",
@@ -17690,7 +17126,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 919,
+            "line": 907,
             "description": "Adds the given 4x4 matrices together.",
             "itemtype": "method",
             "name": "addMat4",
@@ -17702,7 +17138,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 947,
+            "line": 935,
             "description": "Adds the given scalar to each element of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "addMat4Scalar",
@@ -17714,7 +17150,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 975,
+            "line": 963,
             "description": "Adds the given scalar to each element of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "addScalarMat4",
@@ -17726,7 +17162,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 984,
+            "line": 972,
             "description": "Subtracts the second 4x4 matrix from the first.",
             "itemtype": "method",
             "name": "subMat4",
@@ -17738,7 +17174,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1012,
+            "line": 1000,
             "description": "Subtracts the given scalar from each element of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "subMat4Scalar",
@@ -17750,7 +17186,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1040,
+            "line": 1028,
             "description": "Subtracts the given scalar from each element of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "subScalarMat4",
@@ -17762,7 +17198,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1068,
+            "line": 1056,
             "description": "Multiplies the two given 4x4 matrix by each other.",
             "itemtype": "method",
             "name": "mulMat4",
@@ -17774,7 +17210,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1109,
+            "line": 1097,
             "description": "Multiplies each element of the given 4x4 matrix by the given scalar.",
             "itemtype": "method",
             "name": "mulMat4Scalar",
@@ -17786,7 +17222,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1137,
+            "line": 1125,
             "description": "Multiplies the given 4x4 matrix by the given four-element vector.",
             "itemtype": "method",
             "name": "mulMat4v4",
@@ -17798,7 +17234,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1152,
+            "line": 1140,
             "description": "Transposes the given 4x4 matrix.",
             "itemtype": "method",
             "name": "transposeMat4",
@@ -17810,7 +17246,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1198,
+            "line": 1186,
             "description": "Returns the determinant of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "determinantMat4",
@@ -17822,7 +17258,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1217,
+            "line": 1205,
             "description": "Returns the inverse of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "inverseMat4",
@@ -17834,7 +17270,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1267,
+            "line": 1255,
             "description": "Returns the trace of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "traceMat4",
@@ -17846,7 +17282,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1276,
+            "line": 1264,
             "description": "Returns 4x4 translation matrix.",
             "itemtype": "method",
             "name": "translationMat4",
@@ -17858,7 +17294,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1289,
+            "line": 1277,
             "description": "Returns 4x4 translation matrix.",
             "itemtype": "method",
             "name": "translationMat4c",
@@ -17870,7 +17306,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1298,
+            "line": 1286,
             "description": "Returns 4x4 translation matrix.",
             "itemtype": "method",
             "name": "translationMat4s",
@@ -17882,7 +17318,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1307,
+            "line": 1295,
             "description": "Returns 4x4 rotation matrix.",
             "itemtype": "method",
             "name": "rotationMat4v",
@@ -17894,7 +17330,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1359,
+            "line": 1347,
             "description": "Returns 4x4 rotation matrix.",
             "itemtype": "method",
             "name": "rotationMat4c",
@@ -17906,7 +17342,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1368,
+            "line": 1356,
             "description": "Returns 4x4 scale matrix.",
             "itemtype": "method",
             "name": "scalingMat4v",
@@ -17918,7 +17354,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1381,
+            "line": 1369,
             "description": "Returns 4x4 scale matrix.",
             "itemtype": "method",
             "name": "scalingMat4c",
@@ -17930,7 +17366,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1390,
+            "line": 1378,
             "description": "Returns 4x4 scale matrix.",
             "itemtype": "method",
             "name": "scalingMat4s",
@@ -17942,7 +17378,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1399,
+            "line": 1387,
             "description": "Returns a 4x4 'lookat' viewing transform matrix.",
             "itemtype": "method",
             "name": "lookAtMat4v",
@@ -17975,7 +17411,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1494,
+            "line": 1482,
             "description": "Returns a 4x4 'lookat' viewing transform matrix.",
             "itemtype": "method",
             "name": "lookAtMat4c",
@@ -17987,7 +17423,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1503,
+            "line": 1491,
             "description": "Returns a 4x4 orthographic projection matrix.",
             "itemtype": "method",
             "name": "orthoMat4c",
@@ -17999,7 +17435,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1539,
+            "line": 1527,
             "description": "Returns a 4x4 perspective projection matrix.",
             "itemtype": "method",
             "name": "frustumMat4v",
@@ -18011,7 +17447,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1583,
+            "line": 1571,
             "description": "Returns a 4x4 perspective projection matrix.",
             "itemtype": "method",
             "name": "frustumMat4v",
@@ -18023,7 +17459,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1614,
+            "line": 1602,
             "description": "Returns a 4x4 perspective projection matrix.",
             "itemtype": "method",
             "name": "perspectiveMatrix4v",
@@ -18035,7 +17471,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1635,
+            "line": 1623,
             "description": "Transforms a three-element position by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformPoint3",
@@ -18047,7 +17483,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1652,
+            "line": 1640,
             "description": "Transforms a homogeneous coordinate by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformPoint3",
@@ -18059,7 +17495,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1669,
+            "line": 1657,
             "description": "Transforms an array of three-element positions by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformPoints3",
@@ -18071,7 +17507,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1710,
+            "line": 1698,
             "description": "Transforms a three-element vector by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformVec3",
@@ -18083,7 +17519,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1724,
+            "line": 1712,
             "description": "Transforms a four-element vector by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformVec4",
@@ -18095,7 +17531,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1739,
+            "line": 1727,
             "description": "Transforms a four-element vector by a 4x4 projection matrix.",
             "itemtype": "method",
             "name": "projectVec4",
@@ -18107,7 +17543,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1749,
+            "line": 1737,
             "description": "Linearly interpolates between two 3D vectors.",
             "itemtype": "method",
             "name": "lerpVec3",
@@ -18119,7 +17555,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1763,
+            "line": 1751,
             "description": "Gets the diagonal size of a boundary given as minima and maxima.",
             "itemtype": "method",
             "name": "getAABBDiag",
@@ -18131,7 +17567,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1773,
+            "line": 1761,
             "description": "Gets the center of a boundary given as minima and maxima.",
             "itemtype": "method",
             "name": "getAABBCenter",
@@ -18143,7 +17579,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1788,
+            "line": 1776,
             "description": "Gets the center of a 2D boundary given as minima and maxima.",
             "itemtype": "method",
             "name": "getAABB2Center",
@@ -18155,7 +17591,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1802,
+            "line": 1790,
             "description": "Collapses a 3D axis-aligned boundary, ready to expand to fit 2D points.\nCreates new AABB if none supplied.",
             "itemtype": "method",
             "name": "collapseAABB3",
@@ -18179,7 +17615,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1825,
+            "line": 1813,
             "description": "Converts an axis-aligned 3D boundary into an oriented boundary consisting of\nan array of eight 3D positions, one for each corner of the boundary.",
             "itemtype": "method",
             "name": "AABB3ToOBB3",
@@ -18208,7 +17644,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1914,
+            "line": 1902,
             "description": "Finds the minimum axis-aligned 3D boundary enclosing the 3D points given in a flattened,  1-dimensional array.",
             "itemtype": "method",
             "name": "positions3ToAABB3",
@@ -18237,7 +17673,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1977,
+            "line": 1965,
             "description": "Finds the minimum axis-aligned 3D boundary enclosing the given 3D points.",
             "itemtype": "method",
             "name": "points3ToAABB3",
@@ -18266,7 +17702,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2040,
+            "line": 2028,
             "description": "Expands the first axis-aligned 3D boundary to enclose the second, if required.",
             "itemtype": "method",
             "name": "expandAABB3",
@@ -18294,7 +17730,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2078,
+            "line": 2066,
             "description": "Expands an axis-aligned 3D boundary to enclose the given point, if needed.",
             "itemtype": "method",
             "name": "expandAABB3Point3",
@@ -18322,7 +17758,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2116,
+            "line": 2104,
             "description": "Collapses a 2D axis-aligned boundary, ready to expand to fit 2D points.\nCreates new AABB if none supplied.",
             "itemtype": "method",
             "name": "collapseAABB2",
@@ -18346,7 +17782,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2137,
+            "line": 2125,
             "description": "Finds the minimum 2D projected axis-aligned boundary enclosing the given 3D points.",
             "itemtype": "method",
             "name": "points3ToAABB2",
@@ -18375,7 +17811,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2194,
+            "line": 2186,
             "description": "Expands the first axis-aligned 2D boundary to enclose the second, if required.",
             "itemtype": "method",
             "name": "expandAABB3",
@@ -18403,7 +17839,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2224,
+            "line": 2216,
             "description": "Expands an axis-aligned 2D boundary to enclose the given point, if required.",
             "itemtype": "method",
             "name": "expandAABB2Point2",
@@ -18431,7 +17867,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2271,
+            "line": 2263,
             "description": "Builds normal vectors from positions and indices.",
             "itemtype": "method",
             "name": "buildTangents",
@@ -18459,7 +17895,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2343,
+            "line": 2335,
             "description": "Builds vertex tangent vectors from positions, UVs and indices",
             "itemtype": "method",
             "name": "buildTangents",
@@ -18492,7 +17928,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2419,
+            "line": 2411,
             "description": "Flattens a two-dimensional array into a one-dimensional array.",
             "itemtype": "method",
             "name": "flatten",
@@ -18514,7 +17950,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2447,
+            "line": 2439,
             "description": "Builds vertex and index arrays needed by color-indexed triangle picking.",
             "itemtype": "method",
             "name": "getPickPrimitives",
@@ -18554,7 +17990,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2550,
+            "line": 2542,
             "description": "Finds the intersection of a 3D ray with a 3D triangle.",
             "itemtype": "method",
             "name": "rayTriangleIntersect",
@@ -18603,7 +18039,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2598,
+            "line": 2590,
             "description": "Finds the intersection of a 3D ray with a plane defined by 3 points.",
             "itemtype": "method",
             "name": "rayPlaneIntersect",
@@ -18652,7 +18088,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2636,
+            "line": 2628,
             "description": "Gets barycentric coordinates from cartesian coordinates within a triangle.",
             "itemtype": "method",
             "name": "cartesianToBaryCentric",
@@ -18696,7 +18132,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2703,
+            "line": 2695,
             "description": "Returns true if the given barycentric coordinates are within their triangle.",
             "itemtype": "method",
             "name": "barycentricInsideTriangle",
@@ -18719,7 +18155,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2720,
+            "line": 2712,
             "description": "Gets cartesian coordinates from barycentric coordinates within a triangle.",
             "itemtype": "method",
             "name": "barycentricToCartesian",
@@ -20913,7 +20349,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1573,
+            "line": 1575,
             "description": "Releases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -20927,7 +20363,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1601,
+            "line": 1603,
             "description": "Compiles and renders this Scene",
             "access": "private",
             "tagname": "",
@@ -20970,7 +20406,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 213,
+            "line": 210,
             "description": "The default {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\nComponents created without an explicit parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} will be created within this\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} by default.\n\nxeoEngine creates the default {{#crossLink \"Scene\"}}Scene{{/crossLink}} as soon as you either\nreference this property for the first time, or create your first {{#crossLink \"Entity\"}}Entity{{/crossLink}} without\na specified {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "property",
             "name": "scene",
@@ -20982,7 +20418,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 238,
+            "line": 235,
             "description": "Registers a scene on xeoEngine.\nThis is called within the XEO.Scene constructor.",
             "itemtype": "method",
             "name": "_addScene",
@@ -21001,7 +20437,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 281,
+            "line": 278,
             "description": "Schedule a task for xeoEngine to run at the next frame.\n\nInternally, this pushes the task to a FIFO queue. Within each frame interval, xeoEngine processes the queue\nfor a certain period of time, popping tasks and running them. After each frame interval, tasks that did not\nget a chance to run during the task are left in the queue to be run next time.",
             "itemtype": "method",
             "name": "schedule",
@@ -21024,7 +20460,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 318,
+            "line": 315,
             "description": "Destroys all user-created {{#crossLink \"Scene\"}}Scenes{{/crossLink}} and\nclears the default {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "clear",
@@ -21035,7 +20471,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 347,
+            "line": 344,
             "description": "Tests if the given object is an array",
             "access": "private",
             "tagname": "",
@@ -21045,7 +20481,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 355,
+            "line": 352,
             "description": "Tests if the given value is a string",
             "params": [
                 {
@@ -21065,7 +20501,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 366,
+            "line": 363,
             "description": "Tests if the given value is a number",
             "params": [
                 {
@@ -21085,7 +20521,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 376,
+            "line": 373,
             "description": "Tests if the given value is an ID",
             "params": [
                 {
@@ -21105,7 +20541,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 386,
+            "line": 383,
             "description": "Tests if the given components are the same, where the components can be either IDs or instances.",
             "params": [
                 {
@@ -21129,21 +20565,21 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 405,
+            "line": 402,
             "class": "XEO",
             "module": "XEO",
             "namespace": "XEO"
         },
         {
             "file": "src/xeo.js",
-            "line": 411,
+            "line": 408,
             "class": "XEO",
             "module": "XEO",
             "namespace": "XEO"
         },
         {
             "file": "src/xeo.js",
-            "line": 422,
+            "line": 419,
             "description": "Add non-null/defined properties of o to o2",
             "access": "private",
             "tagname": "",
@@ -21153,7 +20589,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 437,
+            "line": 434,
             "description": "Add properties of o to o2 where undefined or null on o2",
             "access": "private",
             "tagname": "",
@@ -21163,7 +20599,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 452,
+            "line": 449,
             "description": "Returns true if the given map is empty.",
             "params": [
                 {
@@ -21183,7 +20619,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 467,
+            "line": 464,
             "description": "Returns the given ID as a string, in quotes if the ID was a string to begin with.\n\nThis is useful for logging IDs.",
             "params": [
                 {
@@ -21206,7 +20642,7 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/_renderer/renderer.js:983"
+            "line": " src/_renderer/renderer.js:986"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -21218,7 +20654,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/curves/curve.js:148"
+            "line": " src/curves/curve.js:152"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -21234,123 +20670,123 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:76"
+            "line": " src/math/math.js:64"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:86"
+            "line": " src/math/math.js:74"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:96"
+            "line": " src/math/math.js:84"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:106"
+            "line": " src/math/math.js:94"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:116"
+            "line": " src/math/math.js:104"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:126"
+            "line": " src/math/math.js:114"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:139"
+            "line": " src/math/math.js:127"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:182"
+            "line": " src/math/math.js:170"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1802"
+            "line": " src/math/math.js:1790"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1825"
+            "line": " src/math/math.js:1813"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1914"
+            "line": " src/math/math.js:1902"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1977"
+            "line": " src/math/math.js:1965"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2040"
+            "line": " src/math/math.js:2028"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2078"
+            "line": " src/math/math.js:2066"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2116"
+            "line": " src/math/math.js:2104"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2137"
+            "line": " src/math/math.js:2125"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2194"
+            "line": " src/math/math.js:2186"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2224"
+            "line": " src/math/math.js:2216"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2271"
+            "line": " src/math/math.js:2263"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2343"
+            "line": " src/math/math.js:2335"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2419"
+            "line": " src/math/math.js:2411"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2447"
+            "line": " src/math/math.js:2439"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2550"
+            "line": " src/math/math.js:2542"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2598"
+            "line": " src/math/math.js:2590"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2636"
+            "line": " src/math/math.js:2628"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2636"
+            "line": " src/math/math.js:2628"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2703"
+            "line": " src/math/math.js:2695"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2703"
+            "line": " src/math/math.js:2695"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2720"
+            "line": " src/math/math.js:2712"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2720"
+            "line": " src/math/math.js:2712"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -21378,31 +20814,31 @@
         },
         {
             "message": "unknown tag: demo",
-            "line": " src/xeo.js:318"
+            "line": " src/xeo.js:315"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:355"
+            "line": " src/xeo.js:352"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:366"
+            "line": " src/xeo.js:363"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:376"
+            "line": " src/xeo.js:373"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:386"
+            "line": " src/xeo.js:383"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:452"
+            "line": " src/xeo.js:449"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:467"
+            "line": " src/xeo.js:464"
         },
         {
             "message": "Missing item type\nA chunk of WebGL state changes to render a XEO.renderer.State.",
@@ -21798,55 +21234,55 @@
         },
         {
             "message": "Missing item type\nRemoves an object from this Renderer",
-            "line": " src/_renderer/renderer.js:548"
+            "line": " src/_renderer/renderer.js:547"
         },
         {
             "message": "Missing item type\nRenders a new frame, if neccessary.",
-            "line": " src/_renderer/renderer.js:585"
+            "line": " src/_renderer/renderer.js:584"
         },
         {
             "message": "Missing item type\nBuilds the object list from the object map",
-            "line": " src/_renderer/renderer.js:624"
+            "line": " src/_renderer/renderer.js:623"
         },
         {
             "message": "Missing item type\nGenerates object state sort keys",
-            "line": " src/_renderer/renderer.js:636"
+            "line": " src/_renderer/renderer.js:635"
         },
         {
             "message": "Missing item type\nState-sorts the object list",
-            "line": " src/_renderer/renderer.js:657"
+            "line": " src/_renderer/renderer.js:656"
         },
         {
             "message": "Missing item type\nLogs the object list",
-            "line": " src/_renderer/renderer.js:667"
+            "line": " src/_renderer/renderer.js:666"
         },
         {
             "message": "Missing item type\nBuilds the draw list, which is the list of draw state-chunks to apply to WebGL\nto render the visible objects in the object list for the next frame.\nPreserves the state sort order of the object list among the draw chunks.",
-            "line": " src/_renderer/renderer.js:680"
+            "line": " src/_renderer/renderer.js:679"
         },
         {
             "message": "Missing item type\nAppends an object to the draw and pick lists.",
-            "line": " src/_renderer/renderer.js:862"
+            "line": " src/_renderer/renderer.js:864"
         },
         {
             "message": "Missing item type\nLogs the contents of the draw list to the console.",
-            "line": " src/_renderer/renderer.js:924"
+            "line": " src/_renderer/renderer.js:927"
         },
         {
             "message": "Missing item type\nLogs the contents of the pick list to the console.",
-            "line": " src/_renderer/renderer.js:954"
+            "line": " src/_renderer/renderer.js:957"
         },
         {
             "message": "Missing item type\nAttempts to pick an object at the given canvas coordinates.",
-            "line": " src/_renderer/renderer.js:983"
+            "line": " src/_renderer/renderer.js:986"
         },
         {
             "message": "Missing item type",
-            "line": " src/_renderer/renderer.js:1076"
+            "line": " src/_renderer/renderer.js:1079"
         },
         {
             "message": "Missing item type\nDestroys this Renderer.",
-            "line": " src/_renderer/renderer.js:1210"
+            "line": " src/_renderer/renderer.js:1213"
         },
         {
             "message": "Missing item type\nRenderer states",
@@ -21894,19 +21330,19 @@
         },
         {
             "message": "Missing item type\nAttributes for the WebGL context",
-            "line": " src/canvas/canvas.js:148"
+            "line": " src/canvas/canvas.js:146"
         },
         {
             "message": "Missing item type\nCreates a canvas in the DOM",
-            "line": " src/canvas/canvas.js:294"
+            "line": " src/canvas/canvas.js:292"
         },
         {
             "message": "Missing item type\nCreates an invisible DIV over the canvas",
-            "line": " src/canvas/canvas.js:323"
+            "line": " src/canvas/canvas.js:321"
         },
         {
             "message": "Missing item type\nInitialises the WebGL context",
-            "line": " src/canvas/canvas.js:353"
+            "line": " src/canvas/canvas.js:351"
         },
         {
             "message": "Missing item type\nReturns point on this CubicBezierCurve at the given position.",
@@ -22042,55 +21478,55 @@
         },
         {
             "message": "Missing item type\nReleases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
-            "line": " src/scene.js:1573"
+            "line": " src/scene.js:1575"
         },
         {
             "message": "Missing item type\nCompiles and renders this Scene",
-            "line": " src/scene.js:1601"
+            "line": " src/scene.js:1603"
         },
         {
             "message": "Missing item type\nTests if the given object is an array",
-            "line": " src/xeo.js:347"
+            "line": " src/xeo.js:344"
         },
         {
             "message": "Missing item type\nTests if the given value is a string",
-            "line": " src/xeo.js:355"
+            "line": " src/xeo.js:352"
         },
         {
             "message": "Missing item type\nTests if the given value is a number",
-            "line": " src/xeo.js:366"
+            "line": " src/xeo.js:363"
         },
         {
             "message": "Missing item type\nTests if the given value is an ID",
-            "line": " src/xeo.js:376"
+            "line": " src/xeo.js:373"
         },
         {
             "message": "Missing item type\nTests if the given components are the same, where the components can be either IDs or instances.",
-            "line": " src/xeo.js:386"
+            "line": " src/xeo.js:383"
         },
         {
             "message": "Missing item type",
-            "line": " src/xeo.js:405"
+            "line": " src/xeo.js:402"
         },
         {
             "message": "Missing item type",
-            "line": " src/xeo.js:411"
+            "line": " src/xeo.js:408"
         },
         {
             "message": "Missing item type\nAdd non-null/defined properties of o to o2",
-            "line": " src/xeo.js:422"
+            "line": " src/xeo.js:419"
         },
         {
             "message": "Missing item type\nAdd properties of o to o2 where undefined or null on o2",
-            "line": " src/xeo.js:437"
+            "line": " src/xeo.js:434"
         },
         {
             "message": "Missing item type\nReturns true if the given map is empty.",
-            "line": " src/xeo.js:452"
+            "line": " src/xeo.js:449"
         },
         {
             "message": "Missing item type\nReturns the given ID as a string, in quotes if the ID was a string to begin with.\n\nThis is useful for logging IDs.",
-            "line": " src/xeo.js:467"
+            "line": " src/xeo.js:464"
         }
     ]
 }

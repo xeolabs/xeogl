@@ -90,7 +90,6 @@
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
-                                <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
@@ -325,8 +324,6 @@
             this._imageDirty = false;
             this._targetDirty = false;
             this._propsDirty = false;
-
-            var self = this;
 
             // Handle WebGL context restore
 
@@ -1049,19 +1046,19 @@
                 json.rotate = this._rotate;
             }
 
-            if (this._state.minFilter != &quot;linearMipmapLinear&quot;) {
+            if (this._state.minFilter !== &quot;linearMipmapLinear&quot;) {
                 json.minFilter = this._state.minFilter;
             }
 
-            if (this._state.magFilter != &quot;linear&quot;) {
+            if (this._state.magFilter !== &quot;linear&quot;) {
                 json.magFilter = this._state.magFilter;
             }
 
-            if (this._state.wrapS != &quot;repeat&quot;) {
+            if (this._state.wrapS !== &quot;repeat&quot;) {
                 json.wrapS = this._state.wrapS;
             }
 
-            if (this._state.wrapT != &quot;repeat&quot;) {
+            if (this._state.wrapT !== &quot;repeat&quot;) {
                 json.wrapT = this._state.wrapT;
             }
 

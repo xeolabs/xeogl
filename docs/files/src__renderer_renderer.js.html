@@ -90,7 +90,6 @@
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
-                                <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
@@ -715,7 +714,6 @@
 
         var lights = state.lights;
         var light;
-        var intensity;
 
         for (var i = 0, len = lights.length; i &lt; len; i++) {
 
@@ -872,7 +870,10 @@
         this._lastDrawChunkId = this._lastDrawChunkId || [];
         this._lastPickObjectChunkId = this._lastPickObjectChunkId || [];
 
-        for (var i = 0; i &lt; 20; i++) {
+        var i;
+        var len;
+
+        for (i = 0; i &lt; 20; i++) {
             this._lastDrawChunkId[i] = null;
             this._lastPickObjectChunkId[i] = null;
         }
@@ -901,7 +902,7 @@
         this._objectDrawListLen = 0;
         this._objectPickListLen = 0;
 
-        for (var i = 0, len = this._objectListLen; i &lt; len; i++) {
+        for (i = 0, len = this._objectListLen; i &lt; len; i++) {
 
             object = this._objectList[i];
 
@@ -985,7 +986,7 @@
         var pickable;
         var renderTargetBound = false;
 
-        for (var i = 0, len = targetListList.length; i &lt; len; i++) {
+        for (i = 0, len = targetListList.length; i &lt; len; i++) {
 
             targetChunk = targetList[i];
             list = targetListList[i];
@@ -1017,7 +1018,7 @@
 
         // Append chunks for objects not in render targets
 
-        for (var i = 0, len = this._objectDrawListLen; i &lt; len; i++) {
+        for (i = 0, len = this._objectDrawListLen; i &lt; len; i++) {
 
             object = this._objectDrawList[i];
 
@@ -1050,8 +1051,9 @@
      */
     XEO.renderer.Renderer.prototype._appendObjectToDrawChunkLists = function (object, pickable) {
 
+        pickable = pickable &amp;&amp; object.modes.pickable;
+
         var chunks = object.chunks;
-        var pickable = pickable &amp;&amp; object.modes.pickable;
         var chunk;
 
         for (var i = 0, len = chunks.length; i &lt; len; i++) {

@@ -90,7 +90,6 @@
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
-                                <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
@@ -310,13 +309,13 @@
 
         //FIXME: Float32 is assumed here, but should be checked.
 
-        if (semantic == &quot;POSITION&quot;) {
+        if (semantic === &quot;POSITION&quot;) {
             geometry.positions = new Float32Array(glResource, 0, attribute.count * componentsPerElementForGLType(attribute.type));
 
-        } else if (semantic == &quot;NORMAL&quot;) {
+        } else if (semantic === &quot;NORMAL&quot;) {
             geometry.normals = new Float32Array(glResource, 0, attribute.count * componentsPerElementForGLType(attribute.type));
 
-        } else if ((semantic == &quot;TEXCOORD_0&quot;) || (semantic == &quot;TEXCOORD&quot; )) {
+        } else if ((semantic === &quot;TEXCOORD_0&quot;) || (semantic === &quot;TEXCOORD&quot; )) {
             geometry.uv = new Float32Array(glResource, 0, attribute.count * componentsPerElementForGLType(attribute.type));
         }
 
@@ -520,9 +519,7 @@
                         var allAttributes = Object.keys(primitiveDescription.attributes);
 
                         // count them first, async issues otherwise
-                        allAttributes.forEach(function (semantic) {
-                            geometry.totalAttributes++;
-                        }, this);
+                        geometry.totalAttributes += allAttributes.length;
 
                         var indices = this.resources.getEntry(primitiveDescription.indices);
                         var bufferEntry = this.resources.getEntry(indices.description.bufferView);

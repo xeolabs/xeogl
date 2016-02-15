@@ -90,7 +90,6 @@
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
-                                <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
@@ -310,7 +309,6 @@
             var numFPSSamples = 30;
             var totalFPS = 0;
             var updateTime;
-            var lastUpdateTime = 0;
             var id;
             var scene;
 
@@ -345,8 +343,6 @@
             function update() {
 
                 updateTime = Date.now();
-
-                lastUpdateTime = updateTime;
 
                 // Process as many enqueued tasks as we can
                 // within the per-frame task budget

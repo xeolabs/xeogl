@@ -90,7 +90,6 @@
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
-                                <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
@@ -282,8 +281,6 @@
 
         _init: function (cfg) {
 
-            var self = this;
-
             var scene = this.scene;
 
             // Shows a bounding box around each Entity we fly to
@@ -398,7 +395,7 @@
             this.mousePickEntity.on(&quot;pick&quot;, this._entityPicked, this);
 
             this.mousePickEntity.on(&quot;nopick&quot;,
-                function (e) {
+                function () {
                     //alert(&quot;Nothing picked&quot;);
                 });
 
@@ -426,7 +423,7 @@
             // Fly camera to each picked entity
             // Don&#x27;t change distance between look and eye
 
-            var view = this.cameraFlight.camera.view;
+          //  var view = this.cameraFlight.camera.view;
 
             var pos;
 
@@ -439,9 +436,9 @@
 
             if (pos) {
 
-                var diff = XEO.math.subVec3(view.eye, view.look, []);
-
-                var input = this.scene.input;
+                //var diff = XEO.math.subVec3(view.eye, view.look, []);
+                //
+                //var input = this.scene.input;
 
               //  if (input.keyDown[input.KEY_SHIFT] &amp;&amp; e.entity) {
 

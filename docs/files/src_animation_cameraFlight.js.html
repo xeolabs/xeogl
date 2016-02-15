@@ -90,7 +90,6 @@
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
-                                <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
@@ -357,7 +356,11 @@
 
             if (!camera) {
                 if (callback) {
-                    scope ? callback.call(scope) : callback();
+                    if (scope) {
+                        callback.call(scope);
+                    } else {
+                        callback();
+                    }
                 }
                 return;
             }
@@ -385,6 +388,7 @@
             var eye;
             var look;
             var up;
+            var componentId;
 
             if (params.worldBoundary) {
 
@@ -398,7 +402,7 @@
 
                 // Argument is a Boundary3D
 
-            } else if (params.min != undefined &amp;&amp; params.max != undefined) {
+            } else if (params.min !== undefined &amp;&amp; params.max !== undefined) {
 
                 // Argument is an AABB
 
@@ -420,7 +424,7 @@
 
                 if (XEO._isNumeric(component) || XEO._isString(component)) {
 
-                    var componentId = component;
+                    componentId = component;
 
                     component = this.scene.components[componentId];
 

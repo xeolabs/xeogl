@@ -90,7 +90,6 @@
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
-                                <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
@@ -383,7 +382,7 @@
 
                         var type = light.type;
 
-                        if (type !== &quot;XEO.AmbientLight&quot; &amp;&amp; type != &quot;XEO.DirLight&quot; &amp;&amp; type != &quot;XEO.PointLight&quot;) {
+                        if (type !== &quot;XEO.AmbientLight&quot; &amp;&amp; type !== &quot;XEO.DirLight&quot; &amp;&amp; type !== &quot;XEO.PointLight&quot;) {
                             this.error(&quot;Component &quot; + XEO._inQuotes(light.id) + &quot; is not an XEO.AmbientLight, XEO.DirLight or XEO.PointLight &quot;);
                             continue;
                         }

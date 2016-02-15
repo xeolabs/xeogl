@@ -90,7 +90,6 @@
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
-                                <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
@@ -365,6 +364,7 @@
 
             var i;
             var len;
+            var light;
 
             begin();
 
@@ -399,7 +399,7 @@
                 // Lights
                 for (i = 0, len = states.lights.lights.length; i &lt; len; i++) {
 
-                    var light = states.lights.lights[i];
+                    light = states.lights.lights[i];
 
                     if (light.type === &quot;ambient&quot;) {
                         continue;
@@ -528,7 +528,7 @@
 
                 // Lights
 
-                for (var i = 0; i &lt; states.lights.lights.length; i++) {
+                for (i = 0, len = states.lights.lights.length; i &lt; len; i++) {
 
                     light = states.lights.lights[i];
 
@@ -645,6 +645,11 @@
                 return fragment;
             }
 
+            var i;
+            var len;
+
+            var light;
+
             begin();
 
             add(&quot;precision &quot; + getFSFloatPrecision(states._canvas.gl) + &quot; float;&quot;);
@@ -749,9 +754,7 @@
 
                 // Light sources
 
-                var light;
-
-                for (var i = 0; i &lt; states.lights.lights.length; i++) {
+                for (i = 0, len = states.lights.lights.length; i &lt; len; i++) {
 
                     light = states.lights.lights[i];
 
@@ -981,9 +984,7 @@
                 add(&quot;   float lightDist;&quot;);
                 add(&quot;   float attenuation;&quot;);
 
-                var light;
-
-                for (var i = 0, len = states.lights.lights.length; i &lt; len; i++) {
+                for (i = 0, len = states.lights.lights.length; i &lt; len; i++) {
 
                     light = states.lights.lights[i];
 

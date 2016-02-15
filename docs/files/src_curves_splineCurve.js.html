@@ -90,7 +90,6 @@
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
-                                <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
@@ -381,7 +380,7 @@
             var intPoint = Math.floor(point);
             var weight = point - intPoint;
 
-            var point0 = points[intPoint == 0 ? intPoint : intPoint - 1];
+            var point0 = points[intPoint === 0 ? intPoint : intPoint - 1];
             var point1 = points[intPoint];
             var point2 = points[intPoint &gt; points.length - 2 ? points.length - 1 : intPoint + 1];
             var point3 = points[intPoint &gt; points.length - 3 ? points.length - 1 : intPoint + 2];

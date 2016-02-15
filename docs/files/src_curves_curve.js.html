@@ -90,7 +90,6 @@
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
-                                <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
@@ -189,10 +188,10 @@
  The Curve is subclassed by the following component types:
 
  &lt;ul&gt;
-    &lt;li&gt;{{#crossLink &quot;SplineCurve&quot;}}{{/crossLink}}&lt;/li&gt;
-    &lt;li&gt;{{#crossLink &quot;CubicBezierCurve&quot;}}{{/crossLink}}&lt;/li&gt;
-    &lt;li&gt;{{#crossLink &quot;QuadraticBezierCurve&quot;}}{{/crossLink}}&lt;/li&gt;
-    &lt;li&gt;{{#crossLink &quot;Path&quot;}}{{/crossLink}}&lt;/li&gt;
+ &lt;li&gt;{{#crossLink &quot;SplineCurve&quot;}}{{/crossLink}}&lt;/li&gt;
+ &lt;li&gt;{{#crossLink &quot;CubicBezierCurve&quot;}}{{/crossLink}}&lt;/li&gt;
+ &lt;li&gt;{{#crossLink &quot;QuadraticBezierCurve&quot;}}{{/crossLink}}&lt;/li&gt;
+ &lt;li&gt;{{#crossLink &quot;Path&quot;}}{{/crossLink}}&lt;/li&gt;
  &lt;/u&gt;
 
  @class Curve
@@ -272,7 +271,7 @@
 
                 get: function () {
 
-                  return this.getTangent(this._t);
+                    return this.getTangent(this._t);
                 }
             },
 
@@ -296,12 +295,16 @@
          * @param {Number} t Position to get tangent at.
          * @returns {{Array of Number}} Normalized tangent vector
          */
-        getTangent: function(t) {
+        getTangent: function (t) {
 
             var delta = 0.0001;
 
-            var t1 = this._t - delta;
-            var t2 = this._t + delta;
+            if (t === undefined) {
+                t = this._t;
+            }
+
+            var t1 = t - delta;
+            var t2 = t + delta;
 
             if (t1 &lt; 0) {
                 t1 = 0;
@@ -373,7 +376,7 @@
             }
 
             if (this.cacheArcLengths
-                &amp;&amp; ( this.cacheArcLengths.length == divisions + 1 )
+                &amp;&amp; ( this.cacheArcLengths.length === divisions + 1 )
                 &amp;&amp; !this.needsUpdate) {
 
                 return this.cacheArcLengths;
@@ -416,7 +419,9 @@
 
             var arcLengths = this._getLengths();
 
-            var i = 0, il = arcLengths.length;
+            var i = 0;
+            var il = arcLengths.length;
+            var t;
 
             var targetArcLength; // The targeted u distance value to get
 
@@ -462,9 +467,10 @@
 
             //console.log(&#x27;b&#x27; , i, low, high, Date.now()- time);
 
-            if (arcLengths[i] == targetArcLength) {
+            if (arcLengths[i] === targetArcLength) {
 
-                var t = i / ( il - 1 );
+                t = i / ( il - 1 );
+
                 return t;
 
             }
@@ -482,7 +488,7 @@
 
             // add that fractional amount to t
 
-            var t = ( i + segmentFraction ) / ( il - 1 );
+            t = ( i + segmentFraction ) / ( il - 1 );
 
             return t;
         }

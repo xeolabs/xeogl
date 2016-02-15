@@ -90,7 +90,6 @@
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
-                                <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
@@ -349,6 +348,7 @@
                     var clip;
                     var i;
                     var len;
+                    var id;
 
                     // Unsubscribe from events on old clips
                     for (i = 0, len = this._clips.length; i &lt; len; i++) {
@@ -401,7 +401,7 @@
 
                             // ID given for clip - find the clip component
 
-                            var id = clip;
+                            id = clip;
 
                             clip = this.components[id];
 

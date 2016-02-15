@@ -90,7 +90,6 @@
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
-                                <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
@@ -194,12 +193,15 @@
 
         build: function () {
 
+            var i;
+            var len;
+
             this._uClipModeDraw = this._uClipModeDraw || [];
             this._uClipPlaneDraw = this._uClipPlaneDraw || [];
 
             var draw = this.program.draw;
 
-            for (var i = 0, len = this.state.clips.length; i &lt; len; i++) {
+            for (i = 0, len = this.state.clips.length; i &lt; len; i++) {
                 this._uClipModeDraw[i] = draw.getUniform(&quot;xeo_uClipMode&quot; + i);
                 this._uClipPlaneDraw[i] = draw.getUniform(&quot;xeo_uClipPlane&quot; + i)
             }
@@ -209,7 +211,7 @@
 
             var pick = this.program.pick;
 
-            for (var i = 0, len = this.state.clips.length; i &lt; len; i++) {
+            for (i = 0, len = this.state.clips.length; i &lt; len; i++) {
                 this._uClipModePick[i] = pick.getUniform(&quot;xeo_uClipMode&quot; + i);
                 this._uClipPlanePick[i] = pick.getUniform(&quot;xeo_uClipPlane&quot; + i)
             }

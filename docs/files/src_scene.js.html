@@ -90,7 +90,6 @@
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
-                                <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
@@ -1699,9 +1698,11 @@
 
             var component;
 
+            var fullShareId;
+
             if (instanceId !== undefined) {
 
-                var fullShareId = &quot;__shared.&quot; + type + &quot;.&quot; + instanceId;
+                fullShareId = &quot;__shared.&quot; + type + &quot;.&quot; + instanceId;
 
                 component = this._sharedComponents[fullShareId];
 
@@ -1791,7 +1792,7 @@
 
             var countCompiledEntities = 0;
 
-            var time1 = Date.now();
+            //var time1 = Date.now();
             var entity;
 
             for (var id in this._dirtyEntities) {
@@ -1837,7 +1838,6 @@
 
             var components = [];
             var component;
-            var priorities = [];
 
             for (var id in this.components) {
                 if (this.components.hasOwnProperty(id)) {

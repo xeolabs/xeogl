@@ -49,7 +49,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "MouseRotateCamera",
         "MouseZoomCamera",
         "Ortho",
-        "PBRMaterial",
         "Path",
         "PathGeometry",
         "Perspective",

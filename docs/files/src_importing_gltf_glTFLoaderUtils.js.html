@@ -90,7 +90,6 @@
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
-                                <li><a href="../classes/PBRMaterial.html">PBRMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
@@ -300,8 +299,6 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 return;
             }
 
-            var self = this;
-
             if (!type) {
                 delegate.handleError(XEO.GLTFLoaderUtils.INVALID_TYPE, null);
                 return;
@@ -318,9 +315,8 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
             //if this is not specified, 1 &quot;big blob&quot; scenes fails to load.
             xhr.setRequestHeader(&quot;If-Modified-Since&quot;, &quot;Sat, 01 Jan 1970 00:00:00 GMT&quot;);
-            xhr.onload = function (e) {
-                if ((xhr.status == 200) || (xhr.status == 206)) {
-
+            xhr.onload = function () {
+                if ((xhr.status === 200) || (xhr.status === 206)) {
                     delegate.streamAvailable(path, xhr.response);
 
                 } else {
