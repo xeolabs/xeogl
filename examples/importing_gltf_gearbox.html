@@ -19,38 +19,21 @@
 <script>
 
     // Load glTF
-
     var gearbox = new XEO.Model({
         src: "models/gltf/gearbox/gearbox_assy.gltf"
     });
 
     // Set initial camera position
-
     var view = gearbox.scene.camera.view;
 
-    view.eye = [
-        184.21467781066895,
-        10.54405164718628,
-        -7.033053398132324
-    ];
-
-    view.look = [
-        159.20425415039062,
-        17.020320892333984,
-        3.210801124572754
-    ];
-
-    view.up = [
-        -0.1590631604194641,
-        0.9774724245071411,
-        0.13872624933719635
-    ];
+    view.eye = [184.21, 10.54, -7.03];
+    view.look = [159.20, 17.02, 3.21];
+    view.up = [-0.15, 0.97, 0.13];
 
     // Allow user camera control
-
     new XEO.CameraControl();
 
-    // Slowly spin camera
+    // Slowly orbit camera about model
     gearbox.scene.on("tick",
             function () {
                 view.rotateEyeY(0.3);
