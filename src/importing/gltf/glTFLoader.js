@@ -179,7 +179,7 @@
         _makeID: {
             value: function (entryID) {
                 // https://github.com/KhronosGroup/glTF/blob/master/specification/README.md#ids-and-names
-                return this._path + "#" + entryID;
+                return this._idPrefix + "#" + entryID;
             }
         },
 
@@ -221,8 +221,11 @@
                 var image = this._json.images[description.source];
 
                 var texture = new XEO.Texture(this.collection.scene, {
+                    id: this._makeID(entryID),
                     src: image.uri
                 });
+
+                this.collection.add(texture);
 
                 this.resources.setEntry(entryID, texture, description);
 
@@ -323,8 +326,10 @@
                     if (primitiveDescription.mode === WebGLRenderingContext.TRIANGLES) {
 
                         var geometry = new XEO.Geometry(this.collection.scene, {
-                            id: this._makeID(entryID + "-geo" + i)
+                            id: this._makeID(entryID)
                         });
+
+                        this.collection.add(geometry);
 
                         var materialEntry = this.resources.getEntry(primitiveDescription.material);
                         var material = materialEntry.object;
@@ -450,7 +455,7 @@
                 if (node.matrix) {
                     var matrix = node.matrix;
                     transform = new XEO.Transform(this.collection.scene, {
-                        //id: this._makeID(nodeId + ".transform"),
+                        id: this._makeID(nodeId + ".transform"),
                         matrix: matrix,
                         parent: transform
                     });
@@ -460,7 +465,7 @@
                 if (node.translation) {
                     var translation = node.translation;
                     transform = new XEO.Translate(this.collection.scene, {
-                        //id: this._makeID(nodeId + ".translation"),
+                        id: this._makeID(nodeId + ".translation"),
                         xyz: [translation[0], translation[1], translation[2]],
                         parent: transform
                     });
@@ -469,8 +474,8 @@
 
                 if (node.rotation) {
                     var rotation = node.rotation;
-                    transform = new XEO.Translate(this.collection.scene, {
-                        //id: this._makeID(nodeId + ".rotation"),
+                    transform = new XEO.Rotate(this.collection.scene, {
+                        id: this._makeID(nodeId + ".rotation"),
                         xyz: [rotation[0], rotation[1], rotation[2]],
                         angle: rotation[3],
                         parent: transform
@@ -481,7 +486,7 @@
                 if (node.scale) {
                     var scale = node.scale;
                     transform = new XEO.Scale(this.collection.scene, {
-                        //id: this._makeID(nodeId + ".scale"),
+                        id: this._makeID(nodeId + ".scale"),
                         xyz: [scale[0], scale[1], scale[2]],
                         parent: transform
                     });
@@ -489,6 +494,34 @@
                 }
 
                 if (node.meshes) {
+
+                    // One XEO.Visibility per mesh group
+
+                    var visibility = new XEO.Visibility({
+                        id: this._makeID(nodeId + ".visibility")
+                    });
+
+                    this.collection.add(visibility);
+
+                    // One XEO.Cull per mesh group
+
+                    var cull = new XEO.Cull({
+                        id: this._makeID(nodeId + ".cull")
+                    });
+
+                    this.collection.add(cull);
+
+                    // One XEO.Modes per mesh group
+
+                    var modes = new XEO.Modes({
+                        id: this._makeID(nodeId + ".modes")
+                    });
+
+                    this.collection.add(cull);
+
+
+                    // One XEO.Entity per mesh, each sharing the same
+                    // XEO.Visibility, XEO.Cull and XEO.Nodes
 
                     var meshes = node.meshes;
                     var imeshes;
@@ -514,13 +547,16 @@
                             geometry = mesh[i].geometry;
 
                             entity = new XEO.Entity(this.collection.scene, {
-                                //id: this._makeID(nodeId + ".entity" + i),
+                                id: this._makeID(nodeId + ".entity." + i),
                                 meta: {
                                     name: node.name
                                 },
                                 material: material,
                                 geometry: geometry,
-                                transform: transform
+                                transform: transform,
+                                visibility: visibility,
+                                cull: cull,
+                                modes: modes
                             });
 
                             this.collection.add(entity);

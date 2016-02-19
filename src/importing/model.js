@@ -262,7 +262,7 @@
                     this._src = value;
 
                     glTFLoader.setCollection(this._collection);
-                    glTFLoader.initWithPath(this._src);
+                    glTFLoader.initWithPath(this.id, this._src);
 
                     var self = this;
                     var userInfo = null;

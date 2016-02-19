@@ -356,7 +356,8 @@ var global = window;
         },
 
         initWithPath: {
-            value: function(path) {
+            value: function(idPrefix, path) {
+                this._idPrefix = idPrefix;
                 this._path = path;
                 this._json = null;
                 return this;
