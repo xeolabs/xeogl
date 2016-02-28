@@ -14540,7 +14540,7 @@
         {
             "file": "src/lighting/lights.js",
             "line": 121,
-            "description": "The light sources in this Lights.\n\nFires a {{#crossLink \"Lights/lights:event\"}}{{/crossLink}} event on change.",
+            "description": "The light sources in this Lights.\n\nThat that, when removing or inserting light sources, you must reassign this property to the modified array,\nso that this Lights able to detect that lights sources were actually added or removed. For example:\n\n````javascript\nvar lights = myLights.lights;\n\nlights.push(new XEO.PointLight({...}));\n\nmyLights.lights = lights; // This way, the XEO.Lights component is able to detect that the new light was added.\n````\n\nWe'll be able to relax this once JavaScript gets the (proper) ability to observe array updates.\n\nFires a {{#crossLink \"Lights/lights:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "lights",
             "default": "[]",
@@ -17811,7 +17811,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2186,
+            "line": 2184,
             "description": "Expands the first axis-aligned 2D boundary to enclose the second, if required.",
             "itemtype": "method",
             "name": "expandAABB3",
@@ -17839,7 +17839,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2216,
+            "line": 2214,
             "description": "Expands an axis-aligned 2D boundary to enclose the given point, if required.",
             "itemtype": "method",
             "name": "expandAABB2Point2",
@@ -17867,7 +17867,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2263,
+            "line": 2261,
             "description": "Builds normal vectors from positions and indices.",
             "itemtype": "method",
             "name": "buildTangents",
@@ -17895,7 +17895,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2335,
+            "line": 2333,
             "description": "Builds vertex tangent vectors from positions, UVs and indices",
             "itemtype": "method",
             "name": "buildTangents",
@@ -17928,7 +17928,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2411,
+            "line": 2409,
             "description": "Flattens a two-dimensional array into a one-dimensional array.",
             "itemtype": "method",
             "name": "flatten",
@@ -17950,7 +17950,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2439,
+            "line": 2437,
             "description": "Builds vertex and index arrays needed by color-indexed triangle picking.",
             "itemtype": "method",
             "name": "getPickPrimitives",
@@ -17990,7 +17990,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2542,
+            "line": 2540,
             "description": "Finds the intersection of a 3D ray with a 3D triangle.",
             "itemtype": "method",
             "name": "rayTriangleIntersect",
@@ -18039,7 +18039,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2590,
+            "line": 2588,
             "description": "Finds the intersection of a 3D ray with a plane defined by 3 points.",
             "itemtype": "method",
             "name": "rayPlaneIntersect",
@@ -18088,7 +18088,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2628,
+            "line": 2626,
             "description": "Gets barycentric coordinates from cartesian coordinates within a triangle.",
             "itemtype": "method",
             "name": "cartesianToBaryCentric",
@@ -18132,7 +18132,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2695,
+            "line": 2693,
             "description": "Returns true if the given barycentric coordinates are within their triangle.",
             "itemtype": "method",
             "name": "barycentricInsideTriangle",
@@ -18155,7 +18155,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2712,
+            "line": 2710,
             "description": "Gets cartesian coordinates from barycentric coordinates within a triangle.",
             "itemtype": "method",
             "name": "barycentricToCartesian",
@@ -20734,59 +20734,59 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2186"
+            "line": " src/math/math.js:2184"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2216"
+            "line": " src/math/math.js:2214"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2263"
+            "line": " src/math/math.js:2261"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2335"
+            "line": " src/math/math.js:2333"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2411"
+            "line": " src/math/math.js:2409"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2439"
+            "line": " src/math/math.js:2437"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2542"
+            "line": " src/math/math.js:2540"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2590"
+            "line": " src/math/math.js:2588"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2628"
+            "line": " src/math/math.js:2626"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2628"
+            "line": " src/math/math.js:2626"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2695"
+            "line": " src/math/math.js:2693"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2695"
+            "line": " src/math/math.js:2693"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2712"
+            "line": " src/math/math.js:2710"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2712"
+            "line": " src/math/math.js:2710"
         },
         {
             "message": "replacing incorrect tag: returns with return",

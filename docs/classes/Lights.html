@@ -1352,6 +1352,15 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>The light sources in this Lights.</p>
+                    <p>That that, when removing or inserting light sources, you must reassign this property to the modified array,
+                    so that this Lights able to detect that lights sources were actually added or removed. For example:</p>
+                    <pre class="code prettyprint"><code class="lang-javascript">var lights = myLights.lights;
+                    
+                    lights.push(new XEO.PointLight({...}));
+                    
+                    myLights.lights = lights; // This way, the XEO.Lights component is able to detect that the new light was added.
+                    </code></pre>
+                    <p>We&#39;ll be able to relax this once JavaScript gets the (proper) ability to observe array updates.</p>
                     <p>Fires a Lights/lights:event event on change.</p>
                     
                         </div>

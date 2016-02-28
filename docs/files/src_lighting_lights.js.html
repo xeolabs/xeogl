@@ -303,6 +303,19 @@
             /**
              The light sources in this Lights.
 
+             That that, when removing or inserting light sources, you must reassign this property to the modified array,
+             so that this Lights able to detect that lights sources were actually added or removed. For example:
+
+             &#x60;&#x60;&#x60;&#x60;javascript
+             var lights = myLights.lights;
+
+             lights.push(new XEO.PointLight({...}));
+
+             myLights.lights = lights; // This way, the XEO.Lights component is able to detect that the new light was added.
+             &#x60;&#x60;&#x60;&#x60;
+
+             We&#x27;ll be able to relax this once JavaScript gets the (proper) ability to observe array updates.
+
              Fires a {{#crossLink &quot;Lights/lights:event&quot;}}{{/crossLink}} event on change.
 
              @property lights
@@ -340,7 +353,7 @@
                         self.fire(&quot;dirty&quot;, true);
                     }
 
-                    function lightDestroyed() {
+                    function lightDestroyed() { // TODO: Cache this callback
 
                         var id = this.id; // Light ID
 

@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-02-15
+ * Built on 2016-02-25
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -8486,7 +8486,6 @@
 
             var x;
             var y;
-            var z;
             var w;
             var f;
 
@@ -8494,7 +8493,6 @@
 
                 x = points[i][0];
                 y = points[i][1];
-                z = points[i][2];
                 w = points[i][3] || 1.0;
 
                 f = 1.0 / w;
@@ -24648,7 +24646,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
             var componentId = component.id;
 
-            if (component.scene != this.scene) {
+            if (component.scene !== this.scene) {
                 this.warn("Attempted to remove component that's not in same XEO.Scene: '" + componentId + "'");
                 return;
             }
@@ -26082,6 +26080,19 @@ XEO.PathGeometry = XEO.Geometry.extend({
             /**
              The light sources in this Lights.
 
+             That that, when removing or inserting light sources, you must reassign this property to the modified array,
+             so that this Lights able to detect that lights sources were actually added or removed. For example:
+
+             ````javascript
+             var lights = myLights.lights;
+
+             lights.push(new XEO.PointLight({...}));
+
+             myLights.lights = lights; // This way, the XEO.Lights component is able to detect that the new light was added.
+             ````
+
+             We'll be able to relax this once JavaScript gets the (proper) ability to observe array updates.
+
              Fires a {{#crossLink "Lights/lights:event"}}{{/crossLink}} event on change.
 
              @property lights
@@ -26119,7 +26130,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                         self.fire("dirty", true);
                     }
 
-                    function lightDestroyed() {
+                    function lightDestroyed() { // TODO: Cache this callback
 
                         var id = this.id; // Light ID
 
@@ -27395,7 +27406,8 @@ var global = window;
         },
 
         initWithPath: {
-            value: function(path) {
+            value: function(idPrefix, path) {
+                this._idPrefix = idPrefix;
                 this._path = path;
                 this._json = null;
                 return this;
@@ -27909,7 +27921,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
         _makeID: {
             value: function (entryID) {
                 // https://github.com/KhronosGroup/glTF/blob/master/specification/README.md#ids-and-names
-                return this._path + "#" + entryID;
+                return this._idPrefix + "#" + entryID;
             }
         },
 
@@ -27951,8 +27963,11 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 var image = this._json.images[description.source];
 
                 var texture = new XEO.Texture(this.collection.scene, {
+                    id: this._makeID(entryID),
                     src: image.uri
                 });
+
+                this.collection.add(texture);
 
                 this.resources.setEntry(entryID, texture, description);
 
@@ -28053,8 +28068,10 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                     if (primitiveDescription.mode === WebGLRenderingContext.TRIANGLES) {
 
                         var geometry = new XEO.Geometry(this.collection.scene, {
-                            id: this._makeID(entryID + "-geo" + i)
+                            id: this._makeID(entryID + ".mesh_" + i)
                         });
+
+                        this.collection.add(geometry);
 
                         var materialEntry = this.resources.getEntry(primitiveDescription.material);
                         var material = materialEntry.object;
@@ -28180,7 +28197,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 if (node.matrix) {
                     var matrix = node.matrix;
                     transform = new XEO.Transform(this.collection.scene, {
-                        //id: this._makeID(nodeId + ".transform"),
+                        id: this._makeID(nodeId + ".transform"),
                         matrix: matrix,
                         parent: transform
                     });
@@ -28190,7 +28207,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 if (node.translation) {
                     var translation = node.translation;
                     transform = new XEO.Translate(this.collection.scene, {
-                        //id: this._makeID(nodeId + ".translation"),
+                        id: this._makeID(nodeId + ".translation"),
                         xyz: [translation[0], translation[1], translation[2]],
                         parent: transform
                     });
@@ -28199,8 +28216,8 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                 if (node.rotation) {
                     var rotation = node.rotation;
-                    transform = new XEO.Translate(this.collection.scene, {
-                        //id: this._makeID(nodeId + ".rotation"),
+                    transform = new XEO.Rotate(this.collection.scene, {
+                        id: this._makeID(nodeId + ".rotation"),
                         xyz: [rotation[0], rotation[1], rotation[2]],
                         angle: rotation[3],
                         parent: transform
@@ -28211,7 +28228,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 if (node.scale) {
                     var scale = node.scale;
                     transform = new XEO.Scale(this.collection.scene, {
-                        //id: this._makeID(nodeId + ".scale"),
+                        id: this._makeID(nodeId + ".scale"),
                         xyz: [scale[0], scale[1], scale[2]],
                         parent: transform
                     });
@@ -28219,6 +28236,33 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 }
 
                 if (node.meshes) {
+
+                    // One XEO.Visibility per mesh group
+
+                    var visibility = new XEO.Visibility({
+                        id: this._makeID(nodeId + ".visibility")
+                    });
+
+                    this.collection.add(visibility);
+
+                    // One XEO.Cull per mesh group
+
+                    var cull = new XEO.Cull({
+                        id: this._makeID(nodeId + ".cull")
+                    });
+
+                    this.collection.add(cull);
+
+                    // One XEO.Modes per mesh group
+
+                    var modes = new XEO.Modes({
+                        id: this._makeID(nodeId + ".modes")
+                    });
+
+                    this.collection.add(cull);
+
+                    // One XEO.Entity per mesh, each sharing the same
+                    // XEO.Visibility, XEO.Cull and XEO.Nodes
 
                     var meshes = node.meshes;
                     var imeshes;
@@ -28244,13 +28288,16 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                             geometry = mesh[i].geometry;
 
                             entity = new XEO.Entity(this.collection.scene, {
-                                //id: this._makeID(nodeId + ".entity" + i),
+                                id: this._makeID(nodeId + ".entity_" + i),
                                 meta: {
                                     name: node.name
                                 },
                                 material: material,
                                 geometry: geometry,
-                                transform: transform
+                                transform: transform,
+                                visibility: visibility,
+                                cull: cull,
+                                modes: modes
                             });
 
                             this.collection.add(entity);
@@ -28538,7 +28585,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                     this._src = value;
 
                     glTFLoader.setCollection(this._collection);
-                    glTFLoader.initWithPath(this._src);
+                    glTFLoader.initWithPath(this.id, this._src);
 
                     var self = this;
                     var userInfo = null;
