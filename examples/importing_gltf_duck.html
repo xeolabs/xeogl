@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeoengine.js"></script>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>importing glTF with textures using a <a
+        href="../docs/classes/Model.html" target="_docs">XEO.Model</a> component
+</div>
+
+<script>
+
+    // Load glTF
+
+    var duck = new XEO.Model({
+
+        // Source glTF file
+        src: "models/gltf/duck/duck.gltf",
+
+        // Modelling transformation hierarchy
+        transform: new XEO.Rotate({
+            xyz: [0, 1, 0],
+            angle: 0,
+
+            parent: new XEO.Rotate({
+                xyz: [0, 0, 1],
+                angle: 0
+            })
+        })
+    });
+
+    camera = duck.scene.camera;
+    view = camera.view;
+
+    view.eye = [
+        2.17400848865509033,
+        1.5272876262664795,
+        2.3057830333709717
+    ];
+
+    view.look = [
+        0.13440698385238647,
+        1.0694968223571777,
+        -0.03701499104499817
+    ];
+
+    view.up = [
+        -0.008461094461381435,
+        0.8746197819709778,
+        0.4847356677055359
+    ];
+
+
+    new XEO.CameraControl();
+
+
+</script>
+</body>
+</html>
