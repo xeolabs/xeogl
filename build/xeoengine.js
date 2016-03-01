@@ -27964,7 +27964,8 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                 var texture = new XEO.Texture(this.collection.scene, {
                     id: this._makeID(entryID),
-                    src: image.uri
+                    src: image.uri,
+                    flipY: true
                 });
 
                 this.collection.add(texture);
