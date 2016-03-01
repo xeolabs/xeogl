@@ -508,7 +508,7 @@
                     if (primitiveDescription.mode === WebGLRenderingContext.TRIANGLES) {
 
                         var geometry = new XEO.Geometry(this.collection.scene, {
-                            id: this._makeID(entryID + &quot;.mesh_&quot; + i)
+                            id: this._makeID(entryID)
                         });
 
                         this.collection.add(geometry);
@@ -701,6 +701,7 @@
 
                     this.collection.add(cull);
 
+
                     // One XEO.Entity per mesh, each sharing the same
                     // XEO.Visibility, XEO.Cull and XEO.Nodes
 
@@ -728,7 +729,7 @@
                             geometry = mesh[i].geometry;
 
                             entity = new XEO.Entity(this.collection.scene, {
-                                id: this._makeID(nodeId + &quot;.entity_&quot; + i),
+                                id: this._makeID(nodeId + &quot;.entity.&quot; + i),
                                 meta: {
                                     name: node.name
                                 },

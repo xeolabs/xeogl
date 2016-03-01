@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-02-25
+ * Built on 2016-03-01
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -4561,28 +4561,28 @@
         this.allocated = true;
     };
 
-    XEO.renderer.webgl.Texture2D.prototype.setImage = function (image) {
+    XEO.renderer.webgl.Texture2D.prototype.setImage = function (image, props) {
 
         var gl = this.gl;
 
         gl.bindTexture(this.target, this.texture);
 
-        //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, props.flipY);
 
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 
         gl.bindTexture(this.target, null);
     };
 
-    XEO.renderer.webgl.Texture2D.prototype.setProps = function (cfg) {
+    XEO.renderer.webgl.Texture2D.prototype.setProps = function (props) {
 
         var gl = this.gl;
 
         gl.bindTexture(this.target, this.texture);
 
-        if (cfg.minFilter) {
+        if (props.minFilter) {
 
-            var minFilter = this._getGLEnum(cfg.minFilter);
+            var minFilter = this._getGLEnum(props.minFilter);
 
             if (minFilter) {
 
@@ -4598,22 +4598,22 @@
             }
         }
 
-        if (cfg.magFilter) {
-            var magFilter = this._getGLEnum(cfg.magFilter);
+        if (props.magFilter) {
+            var magFilter = this._getGLEnum(props.magFilter);
             if (magFilter) {
                 gl.texParameteri(this.target, gl.TEXTURE_MAG_FILTER, magFilter);
             }
         }
 
-        if (cfg.wrapS) {
-            var wrapS = this._getGLEnum(cfg.wrapS);
+        if (props.wrapS) {
+            var wrapS = this._getGLEnum(props.wrapS);
             if (wrapS) {
                 gl.texParameteri(this.target, gl.TEXTURE_WRAP_S, wrapS);
             }
         }
 
-        if (cfg.wrapT) {
-            var wrapT = this._getGLEnum(cfg.wrapT);
+        if (props.wrapT) {
+            var wrapT = this._getGLEnum(props.wrapT);
             if (wrapT) {
                 gl.texParameteri(this.target, gl.TEXTURE_WRAP_T, wrapT);
             }
@@ -28068,7 +28068,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                     if (primitiveDescription.mode === WebGLRenderingContext.TRIANGLES) {
 
                         var geometry = new XEO.Geometry(this.collection.scene, {
-                            id: this._makeID(entryID + ".mesh_" + i)
+                            id: this._makeID(entryID)
                         });
 
                         this.collection.add(geometry);
@@ -28261,6 +28261,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                     this.collection.add(cull);
 
+
                     // One XEO.Entity per mesh, each sharing the same
                     // XEO.Visibility, XEO.Cull and XEO.Nodes
 
@@ -28288,7 +28289,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                             geometry = mesh[i].geometry;
 
                             entity = new XEO.Entity(this.collection.scene, {
-                                id: this._makeID(nodeId + ".entity_" + i),
+                                id: this._makeID(nodeId + ".entity." + i),
                                 meta: {
                                     name: node.name
                                 },
@@ -29971,6 +29972,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  @param [cfg.magFilter="linear"] {String} How the texture is sampled when a texel covers more than one pixel. See the {{#crossLink "Texture/magFilter:property"}}{{/crossLink}} property for more info.
  @param [cfg.wrapS="repeat"] {String} Wrap parameter for texture coordinate *S*. See the {{#crossLink "Texture/wrapS:property"}}{{/crossLink}} property for more info.
  @param [cfg.wrapT="repeat"] {String} Wrap parameter for texture coordinate *S*. See the {{#crossLink "Texture/wrapT:property"}}{{/crossLink}} property for more info.
+ @param [cfg.flipY=false] {Boolean} Flips this Texture's source data along its vertical axis when true.
  @param [cfg.translate=[0,0]] {Array of Number} 2D translation vector that will be added to texture's *S* and *T* coordinates.
  @param [cfg.scale=[1,1]] {Array of Number} 2D scaling vector that will be applied to texture's *S* and *T* coordinates.
  @param [cfg.rotate=0] {Number} Rotation, in degrees, that will be applied to texture's *S* and *T* coordinates.
@@ -29998,7 +30000,8 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 minFilter: null,
                 magFilter: null,
                 wrapS: null,
-                wrapT: null
+                wrapT: null,
+                flipY: null
             });
 
             // Data source
@@ -30037,6 +30040,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             this.magFilter = cfg.magFilter;
             this.wrapS = cfg.wrapS;
             this.wrapT = cfg.wrapT;
+            this.flipY = cfg.flipY;
 
             // Data source
 
@@ -30112,7 +30116,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                         state.texture = new XEO.renderer.webgl.Texture2D(gl);
                     }
 
-                    state.texture.setImage(this._image);
+                    state.texture.setImage(this._image, state);
 
                     this._imageDirty = false;
                     this._propsDirty = true; // May now need to regenerate mipmaps etc
@@ -30722,6 +30726,43 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                 get: function () {
                     return this._state.wrapT;
+                }
+            },
+
+            /**
+             * Flips this Texture's source data along its vertical axis when true.
+             *
+             * Fires a {{#crossLink "Texture/flipY:event"}}{{/crossLink}} event on change.
+             *
+             * @property flipY
+             * @default false
+             * @type Boolean
+             */
+            flipY: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._state.flipY === value) {
+                        return;
+                    }
+
+                    this._state.flipY = value;
+                    this._imageDirty = true; // flipY is used when loading image data, not when post-applying props
+
+                    this._scheduleUpdate();
+
+                    /**
+                     * Fired whenever this Texture's  {{#crossLink "Texture/flipY:property"}}{{/crossLink}} property changes.
+                     * @event flipY
+                     * @param value {String} The property's new value
+                     */
+                    this.fire("flipY", this._state.flipY);
+                },
+
+                get: function () {
+                    return this._state.flipY;
                 }
             }
         },
