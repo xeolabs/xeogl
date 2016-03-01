@@ -13,28 +13,28 @@
         this.allocated = true;
     };
 
-    XEO.renderer.webgl.Texture2D.prototype.setImage = function (image) {
+    XEO.renderer.webgl.Texture2D.prototype.setImage = function (image, props) {
 
         var gl = this.gl;
 
         gl.bindTexture(this.target, this.texture);
 
-        //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, props.flipY);
 
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 
         gl.bindTexture(this.target, null);
     };
 
-    XEO.renderer.webgl.Texture2D.prototype.setProps = function (cfg) {
+    XEO.renderer.webgl.Texture2D.prototype.setProps = function (props) {
 
         var gl = this.gl;
 
         gl.bindTexture(this.target, this.texture);
 
-        if (cfg.minFilter) {
+        if (props.minFilter) {
 
-            var minFilter = this._getGLEnum(cfg.minFilter);
+            var minFilter = this._getGLEnum(props.minFilter);
 
             if (minFilter) {
 
@@ -50,22 +50,22 @@
             }
         }
 
-        if (cfg.magFilter) {
-            var magFilter = this._getGLEnum(cfg.magFilter);
+        if (props.magFilter) {
+            var magFilter = this._getGLEnum(props.magFilter);
             if (magFilter) {
                 gl.texParameteri(this.target, gl.TEXTURE_MAG_FILTER, magFilter);
             }
         }
 
-        if (cfg.wrapS) {
-            var wrapS = this._getGLEnum(cfg.wrapS);
+        if (props.wrapS) {
+            var wrapS = this._getGLEnum(props.wrapS);
             if (wrapS) {
                 gl.texParameteri(this.target, gl.TEXTURE_WRAP_S, wrapS);
             }
         }
 
-        if (cfg.wrapT) {
-            var wrapT = this._getGLEnum(cfg.wrapT);
+        if (props.wrapT) {
+            var wrapT = this._getGLEnum(props.wrapT);
             if (wrapT) {
                 gl.texParameteri(this.target, gl.TEXTURE_WRAP_T, wrapT);
             }

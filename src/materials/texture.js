@@ -93,6 +93,7 @@
  @param [cfg.magFilter="linear"] {String} How the texture is sampled when a texel covers more than one pixel. See the {{#crossLink "Texture/magFilter:property"}}{{/crossLink}} property for more info.
  @param [cfg.wrapS="repeat"] {String} Wrap parameter for texture coordinate *S*. See the {{#crossLink "Texture/wrapS:property"}}{{/crossLink}} property for more info.
  @param [cfg.wrapT="repeat"] {String} Wrap parameter for texture coordinate *S*. See the {{#crossLink "Texture/wrapT:property"}}{{/crossLink}} property for more info.
+ @param [cfg.flipY=false] {Boolean} Flips this Texture's source data along its vertical axis when true.
  @param [cfg.translate=[0,0]] {Array of Number} 2D translation vector that will be added to texture's *S* and *T* coordinates.
  @param [cfg.scale=[1,1]] {Array of Number} 2D scaling vector that will be applied to texture's *S* and *T* coordinates.
  @param [cfg.rotate=0] {Number} Rotation, in degrees, that will be applied to texture's *S* and *T* coordinates.
@@ -120,7 +121,8 @@
                 minFilter: null,
                 magFilter: null,
                 wrapS: null,
-                wrapT: null
+                wrapT: null,
+                flipY: null
             });
 
             // Data source
@@ -159,6 +161,7 @@
             this.magFilter = cfg.magFilter;
             this.wrapS = cfg.wrapS;
             this.wrapT = cfg.wrapT;
+            this.flipY = cfg.flipY;
 
             // Data source
 
@@ -234,7 +237,7 @@
                         state.texture = new XEO.renderer.webgl.Texture2D(gl);
                     }
 
-                    state.texture.setImage(this._image);
+                    state.texture.setImage(this._image, state);
 
                     this._imageDirty = false;
                     this._propsDirty = true; // May now need to regenerate mipmaps etc
@@ -844,6 +847,43 @@
 
                 get: function () {
                     return this._state.wrapT;
+                }
+            },
+
+            /**
+             * Flips this Texture's source data along its vertical axis when true.
+             *
+             * Fires a {{#crossLink "Texture/flipY:event"}}{{/crossLink}} event on change.
+             *
+             * @property flipY
+             * @default false
+             * @type Boolean
+             */
+            flipY: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (this._state.flipY === value) {
+                        return;
+                    }
+
+                    this._state.flipY = value;
+                    this._imageDirty = true; // flipY is used when loading image data, not when post-applying props
+
+                    this._scheduleUpdate();
+
+                    /**
+                     * Fired whenever this Texture's  {{#crossLink "Texture/flipY:property"}}{{/crossLink}} property changes.
+                     * @event flipY
+                     * @param value {String} The property's new value
+                     */
+                    this.fire("flipY", this._state.flipY);
+                },
+
+                get: function () {
+                    return this._state.flipY;
                 }
             }
         },

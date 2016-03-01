@@ -36,6 +36,8 @@
         arc: Math.PI * 2.0
     });
 
+    // Diffuse map with all defaults
+
     var diffuseMap = new XEO.Texture({
         src: "textures/diffuse/uvGrid2.jpg",
         minFilter: "linearMipmapLinear",
@@ -44,7 +46,8 @@
         wrapT: "repeat",
         translate: [0, 0, 0],
         scale: [1, 1, 1],
-        rotate: 0
+        rotate: 0,
+        flipY: false // Default
     });
 
     var material = new XEO.PhongMaterial({
