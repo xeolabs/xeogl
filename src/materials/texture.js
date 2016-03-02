@@ -920,6 +920,10 @@
                 json.wrapT = this._state.wrapT;
             }
 
+            if (this._state.flipY !== false) {
+                json.flipY = this._state.flipY;
+            }
+
             if (this._src) {
                 json.src = this._src;
 
