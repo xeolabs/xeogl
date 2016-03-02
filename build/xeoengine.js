@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-03-01
+ * Built on 2016-03-02
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -30798,6 +30798,10 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
             if (this._state.wrapT !== "repeat") {
                 json.wrapT = this._state.wrapT;
+            }
+
+            if (this._state.flipY !== false) {
+                json.flipY = this._state.flipY;
             }
 
             if (this._src) {
