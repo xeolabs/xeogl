@@ -531,6 +531,8 @@
                     var material;
                     var geometry;
                     var entity;
+                    var collection = this.collection;
+                    var scene = this.collection.scene;
 
                     for (imeshes = 0; imeshes < lenMeshes; imeshes++) {
 
@@ -547,7 +549,7 @@
                             material = mesh[i].material;
                             geometry = mesh[i].geometry;
 
-                            entity = new XEO.Entity(this.collection.scene, {
+                            entity = new XEO.Entity(scene, {
                                 id: this._makeID(nodeId + ".entity." + i),
                                 meta: {
                                     name: node.name
@@ -557,10 +559,15 @@
                                 transform: transform,
                                 visibility: visibility,
                                 cull: cull,
-                                modes: modes
+                                modes: modes,
+
+                                // Indicates that this Entity is freshly loaded -  increments the XEO.Spinner#processes
+                                // count on the Scene Canvas, which will decrement again as soon as Entity is compiled
+                                // into the render graph, causing the Spinner to show until this Entity is visible
+                                loading: true
                             });
 
-                            this.collection.add(entity);
+                            collection.add(entity);
                         }
                     }
                 }
