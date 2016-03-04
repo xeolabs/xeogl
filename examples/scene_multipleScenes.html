@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeoengine.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
@@ -47,6 +47,8 @@
                 this.camera.view.rotateEyeX(0.3);
             });
 
+    new XEO.CameraControl(scene1);
+
     //-----------------------------
     // Scene 2
     //-----------------------------
@@ -72,6 +74,8 @@
                 this.camera.view.rotateEyeX(-0.3);
             });
 
+    new XEO.CameraControl(scene2);
+
     //-----------------------------
     // Scene 3
     //-----------------------------
@@ -80,22 +84,22 @@
         canvas: "myCanvas3"
     });
 
-    new XEO.Entity(scene3, {
-        geometry: new XEO.TorusGeometry(scene3),
-        material: new XEO.PhongMaterial(scene3, {
-            diffuseMap: new XEO.Texture(scene3, {
-                src: "textures/diffuse/UVCheckerMap11-1024.png"
-            })
-        })
-    });
+    // Set initial camera position
+    scene3.camera.view.eye = [184.21, 10.54, -7.03];
+    scene3.camera.view.look = [159.20, 17.02, 3.21];
+    scene3.camera.view.up = [-0.15, 0.97, 0.13];
 
-    scene3.camera.view.eye = [0, 0, -5];
+    var gearbox = new XEO.Model(scene3, {
+        src: "models/gltf/gearbox/gearbox_assy.gltf"
+    });
 
     scene3.on("tick",
             function () {
                 this.camera.view.rotateEyeY(-0.5);
                 this.camera.view.rotateEyeX(0.3);
             });
+
+    new XEO.CameraControl(scene3);
 
 
 </script>
