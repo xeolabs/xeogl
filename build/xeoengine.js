@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-03-02
+ * Built on 2016-03-04
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -14891,6 +14891,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this.canvas.height = this.canvas.clientHeight;
 
             this._createOverlay();
+            this._resizeOverlay();
 
             // Get WebGL context
 
@@ -14956,7 +14957,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                             aspect: newHeight / newWidth
                         });
 
-                        // TODO: count pixels
+                        self._spinner._adjustPosition();
+                        self._resizeOverlay();
 
                         var countPixels = 0;
                         var scene;
@@ -14979,10 +14981,17 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this.canvas.oncontextmenu = function (e) {
                 e.preventDefault();
             };
+
+            /**
+             *
+             */
+            this._spinner = new XEO.Spinner(this.scene, {
+                canvas: this.canvas
+            });
         },
 
         /**
-         * Creates a canvas in the DOM
+         * Creates a default canvas in the DOM.
          * @private
          */
         _createCanvas: function () {
@@ -15011,7 +15020,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         },
 
         /**
-         * Creates an invisible DIV over the canvas
+         * Creates an invisible DIV over the canvas, for purpose of catching
+         * input events without interfering with app-lever UI bits floating underneath.
          * @private
          */
         _createOverlay: function () {
@@ -15021,8 +15031,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             var div = document.createElement('div');
 
             var style = div.style;
-            style.height = this.canvas.height + "px";
-            style.width = "100%";
+            //style.height = this.canvas.height + "px";
+            //style.width = "100%";
             style.padding = "0";
             style.margin = "0";
             style.background = "black";
@@ -15033,15 +15043,37 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             style.opacity = 0;
             style["z-index"] = "100000";
 
-            div.innerHTML += '<div id="' + overlayId + '" style="width: 100%; height: 100%; float: left; margin: 0; padding: 0; opacity: 0;"></overlay>';
+            //div.innerHTML += '<div id="' + overlayId + '" style="width: 100%; height: 100%; float: left; margin: 0; padding: 0; opacity: 0;"></overlay>';
 
             body.appendChild(div);
 
-            this.overlay = document.getElementById(overlayId);
+            //this.overlay = document.getElementById(overlayId);
+            this.overlay = div;
         },
+
+        /** (Re)sizes the overlay DIV to the canvas size
+         * @private
+         */
+        _resizeOverlay: function () {
+
+            if (!this.canvas || !this.overlay) {
+                return;
+            }
+
+            var canvas = this.canvas;
+            var overlay = this.overlay;
+            var overlayStyle = overlay.style;
+
+            overlayStyle["left"] = canvas.offsetLeft + "px";
+            overlayStyle["top"] = canvas.offsetTop + "px";
+            overlayStyle["width"] = canvas.clientWidth + "px";
+            overlayStyle["height"] = canvas.clientHeight + "px";
+        },
+
 
         /**
          * Initialises the WebGL context
+         * @private
          */
         _initWebGL: function () {
 
@@ -15071,11 +15103,298 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             }
         },
 
+        _props: {
+
+            /**
+             The busy {{#crossLink "Spinner"}}{{/crossLink}} for this Canvas.
+
+             @property spinner
+             @type Spinner
+             @final
+             */
+            spinner: {
+
+                get: function () {
+                    return this._spinner;
+                }
+            }
+        },
+
         _destroy: function () {
             this.scene.off(this._tick);
         }
     });
 
+})();
+;/**
+ A loading indicator belonging to a {{#crossLink "Canvas"}}{{/crossLink}}.
+
+ TODO: Usage description
+
+ @class Spinner
+ @module XEO
+ @submodule canvas
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    // Ensures lazy-injected CSS only injected once  
+    var spinnerCSSInjected = false;
+
+    XEO.Spinner = XEO.Component.extend({
+
+        type: "XEO.Spinner",
+
+        serializable: false,
+
+        _init: function (cfg) {
+
+            this._canvas = cfg.canvas;
+
+            this._injectSpinnerCSS();
+
+            // Create spinner elements
+
+            var body = document.getElementsByTagName("body")[0];
+            var div = document.createElement('div');
+            var style = div.style;
+
+            style["z-index"] = "9000";
+            style.position = "absolute";
+
+            div.innerHTML = '<div class="sk-fading-circle">\
+                <div class="sk-circle1 sk-circle"></div>\
+                <div class="sk-circle2 sk-circle"></div>\
+                <div class="sk-circle3 sk-circle"></div>\
+                <div class="sk-circle4 sk-circle"></div>\
+                <div class="sk-circle5 sk-circle"></div>\
+                <div class="sk-circle6 sk-circle"></div>\
+                <div class="sk-circle7 sk-circle"></div>\
+                <div class="sk-circle8 sk-circle"></div>\
+                <div class="sk-circle9 sk-circle"></div>\
+                <div class="sk-circle10 sk-circle"></div>\
+                <div class="sk-circle11 sk-circle"></div>\
+                <div class="sk-circle12 sk-circle"></div>\
+                </div>';
+
+            body.appendChild(div);
+            this._element = div;
+
+            this._adjustPosition();
+
+            this.processes = 0;
+        },
+
+        _props: {
+
+            /**
+             The number of processes this Spinner represents.
+
+             The Spinner is visible while this property is greater than zero.
+
+             Increment this property whenever you commence some process during which you want
+             the Spinner to be visible, then decrement it again when the process is complete.
+
+             Clamps to zero if you attempt to set to to a negative value.
+
+             Fires a {{#crossLink "Spinner/processes:event"}}{{/crossLink}} event on change.
+
+             @property processes
+             @default 0
+             @type Number
+             */
+            processes: {
+
+                set: function (value) {
+
+                    value = value || 0;
+
+                    if (this._processes === value) {
+                        return;
+                    }
+
+                    if (value < 0) {
+                        return;
+                    }
+
+                    this._processes = value;
+
+                    this._element.style["visibility"] = (this._processes > 0) ? "visible" : "hidden";
+
+                    /**
+                     Fired whenever this Spinner's {{#crossLink "Spinner/visible:property"}}{{/crossLink}} property changes.
+
+                     @event processes
+                     @param value The property's new value
+                     */
+                    this.fire("processes", this._processes);
+                },
+
+                get: function () {
+                    return this._processes;
+                }
+            }
+        },
+
+        // (Re)positions spinner DIV over the center of the canvas
+        _adjustPosition: function () {
+
+            if (!this._canvas || !this._element) {
+                return;
+            }
+
+            var canvas = this._canvas;
+            var spinner = this._element;
+            var spinnerStyle = spinner.style;
+
+            spinnerStyle["left"] = (canvas.offsetLeft + (canvas.clientWidth * 0.5) - (spinner.clientWidth * 0.5)) + "px";
+            spinnerStyle["top"] = (canvas.offsetTop + (canvas.clientHeight * 0.5) - (spinner.clientHeight * 0.5)) + "px";
+        },
+
+        _injectSpinnerCSS: function () {
+            if (spinnerCSSInjected) {
+                return;
+            }
+            var node = document.createElement('style');
+            node.innerHTML = this._spinnerCSS;
+            document.body.appendChild(node);
+            spinnerCSSInjected = true;
+        },
+
+        _spinnerCSS: ".sk-fading-circle {\
+        margin: 100px auto;\
+        width: 100px;\
+        height:100px;\
+        position: relative;\
+        }\
+        .sk-fading-circle .sk-circle {\
+        width: 120%;\
+        height: 120%;\
+        position: absolute;\
+        left: 0;\
+        top: 0;\
+        }\
+        .sk-fading-circle .sk-circle:before {\
+        content: '';\
+        display: block;\
+        margin: 0 auto;\
+        width: 15%;\
+        height: 15%;\
+        background-color: #ff8800;\
+        border-radius: 100%;\
+        -webkit-animation: sk-circleFadeDelay 1.2s infinite ease-in-out both;\
+        animation: sk-circleFadeDelay 1.2s infinite ease-in-out both;\
+        }\
+        .sk-fading-circle .sk-circle2 {\
+        -webkit-transform: rotate(30deg);\
+        -ms-transform: rotate(30deg);\
+        transform: rotate(30deg);\
+    }\
+    .sk-fading-circle .sk-circle3 {\
+        -webkit-transform: rotate(60deg);\
+        -ms-transform: rotate(60deg);\
+        transform: rotate(60deg);\
+    }\
+    .sk-fading-circle .sk-circle4 {\
+        -webkit-transform: rotate(90deg);\
+        -ms-transform: rotate(90deg);\
+        transform: rotate(90deg);\
+    }\
+    .sk-fading-circle .sk-circle5 {\
+        -webkit-transform: rotate(120deg);\
+        -ms-transform: rotate(120deg);\
+        transform: rotate(120deg);\
+    }\
+    .sk-fading-circle .sk-circle6 {\
+        -webkit-transform: rotate(150deg);\
+        -ms-transform: rotate(150deg);\
+        transform: rotate(150deg);\
+    }\
+    .sk-fading-circle .sk-circle7 {\
+        -webkit-transform: rotate(180deg);\
+        -ms-transform: rotate(180deg);\
+        transform: rotate(180deg);\
+    }\
+    .sk-fading-circle .sk-circle8 {\
+        -webkit-transform: rotate(210deg);\
+        -ms-transform: rotate(210deg);\
+        transform: rotate(210deg);\
+    }\
+    .sk-fading-circle .sk-circle9 {\
+        -webkit-transform: rotate(240deg);\
+        -ms-transform: rotate(240deg);\
+        transform: rotate(240deg);\
+    }\
+    .sk-fading-circle .sk-circle10 {\
+        -webkit-transform: rotate(270deg);\
+        -ms-transform: rotate(270deg);\
+        transform: rotate(270deg);\
+    }\
+    .sk-fading-circle .sk-circle11 {\
+        -webkit-transform: rotate(300deg);\
+        -ms-transform: rotate(300deg);\
+        transform: rotate(300deg);\
+    }\
+    .sk-fading-circle .sk-circle12 {\
+        -webkit-transform: rotate(330deg);\
+        -ms-transform: rotate(330deg);\
+        transform: rotate(330deg);\
+    }\
+    .sk-fading-circle .sk-circle2:before {\
+        -webkit-animation-delay: -1.1s;\
+        animation-delay: -1.1s;\
+    }\
+    .sk-fading-circle .sk-circle3:before {\
+        -webkit-animation-delay: -1s;\
+        animation-delay: -1s;\
+    }\
+    .sk-fading-circle .sk-circle4:before {\
+        -webkit-animation-delay: -0.9s;\
+        animation-delay: -0.9s;\
+    }\
+    .sk-fading-circle .sk-circle5:before {\
+        -webkit-animation-delay: -0.8s;\
+        animation-delay: -0.8s;\
+    }\
+    .sk-fading-circle .sk-circle6:before {\
+        -webkit-animation-delay: -0.7s;\
+        animation-delay: -0.7s;\
+    }\
+    .sk-fading-circle .sk-circle7:before {\
+        -webkit-animation-delay: -0.6s;\
+        animation-delay: -0.6s;\
+    }\
+    .sk-fading-circle .sk-circle8:before {\
+        -webkit-animation-delay: -0.5s;\
+        animation-delay: -0.5s;\
+    }\
+    .sk-fading-circle .sk-circle9:before {\
+        -webkit-animation-delay: -0.4s;\
+        animation-delay: -0.4s;\
+    }\
+    .sk-fading-circle .sk-circle10:before {\
+        -webkit-animation-delay: -0.3s;\
+        animation-delay: -0.3s;\
+    }\
+    .sk-fading-circle .sk-circle11:before {\
+        -webkit-animation-delay: -0.2s;\
+        animation-delay: -0.2s;\
+    }\
+    .sk-fading-circle .sk-circle12:before {\
+        -webkit-animation-delay: -0.1s;\
+        animation-delay: -0.1s;\
+    }\
+    @-webkit-keyframes sk-circleFadeDelay {\
+        0%, 39%, 100% { opacity: 0; }\
+        40% { opacity: 1; }\
+    }\
+    @keyframes sk-circleFadeDelay {\
+        0%, 39%, 100% { opacity: 0; }\
+        40% { opacity: 1; }\
+    }"
+    });
 })();
 ;/**
  * Components for cross-section views of Entities.
@@ -28240,7 +28559,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                     // One XEO.Visibility per mesh group
 
-                    var visibility = new XEO.Visibility({
+                    var visibility = new XEO.Visibility(this.collection.scene, {
                         id: this._makeID(nodeId + ".visibility")
                     });
 
@@ -28248,7 +28567,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                     // One XEO.Cull per mesh group
 
-                    var cull = new XEO.Cull({
+                    var cull = new XEO.Cull(this.collection.scene, {
                         id: this._makeID(nodeId + ".cull")
                     });
 
@@ -28256,7 +28575,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                     // One XEO.Modes per mesh group
 
-                    var modes = new XEO.Modes({
+                    var modes = new XEO.Modes(this.collection.scene, {
                         id: this._makeID(nodeId + ".modes")
                     });
 
@@ -28595,6 +28914,12 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                     var rootTransform;
                     var dummyRootTransform = self._dummyRootTransform;
 
+                    // Increment processes represented by loading spinner
+                    // Spinner appears as soon as count is non-zero
+
+                    var spinner = self.scene.canvas.spinner;
+                    spinner.processes++;
+
                     glTFLoader.load(userInfo, options,
                         function () {
 
@@ -28637,6 +28962,10 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                                     }
                                 }
                             });
+
+                            // Decrement processes represented by loading spinner
+                            // Spinner disappears if the count is now zero
+                            spinner.processes--;
 
                             /**
                              Fired whenever this Model has finished loading components from the glTF file
