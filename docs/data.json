@@ -3788,6 +3788,12 @@
                             "description": "ID or instance of a modelling transform to attach to this Entity. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance,\n{{#crossLink \"Scene/transform:property\"}}transform{{/crossLink}} (which is an identity matrix which performs no transformation).",
                             "type": "String|Transform",
                             "optional": true
+                        },
+                        {
+                            "name": "loading",
+                            "description": "Flag which indicates that this Entity is freshly loaded. This will increment the\n{{#crossLink \"Spinner/processes:property\"}}Spinner processes{{/crossLink}} count, and then when this Entity is first\nrendered, will decrement the count again.",
+                            "type": "Boolean",
+                            "optional": true
                         }
                     ]
                 }
@@ -11023,7 +11029,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 179,
+            "line": 182,
             "description": "Fired when this Entity is *picked* via a call to the {{#crossLink \"Canvas/pick:method\"}}{{/crossLink}} method\non the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas {{/crossLink}}.",
             "itemtype": "event",
             "name": "picked",
@@ -11050,7 +11056,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 233,
+            "line": 242,
             "description": "The {{#crossLink \"Camera\"}}Camera{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/camera:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "camera",
@@ -11061,7 +11067,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 262,
+            "line": 271,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/camera:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "camera",
@@ -11077,7 +11083,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 286,
+            "line": 295,
             "description": "The {{#crossLink \"Clips\"}}Clips{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/clips:property\"}}clips{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/clips:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "clips",
@@ -11088,7 +11094,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 302,
+            "line": 311,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/clips:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "clips",
@@ -11104,7 +11110,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 315,
+            "line": 324,
             "description": "The {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/colorTarget:property\"}}colorTarget{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/colorTarget:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "colorTarget",
@@ -11115,7 +11121,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 331,
+            "line": 340,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/colorTarget:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "colorTarget",
@@ -11131,7 +11137,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 344,
+            "line": 353,
             "description": "The {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/colorBuf:property\"}}colorBuf{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/colorBuf:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "colorBuf",
@@ -11142,7 +11148,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 360,
+            "line": 369,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/colorBuf:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "colorBuf",
@@ -11158,7 +11164,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 374,
+            "line": 383,
             "description": "The {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/depthTarget:property\"}}depthTarget{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/depthTarget:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "depthTarget",
@@ -11169,7 +11175,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 390,
+            "line": 399,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/depthTarget:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "depthTarget",
@@ -11185,7 +11191,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 404,
+            "line": 413,
             "description": "The {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/depthBuf:property\"}}depthBuf{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/depthBuf:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "depthBuf",
@@ -11196,7 +11202,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 420,
+            "line": 429,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/depthBuf:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "depthBuf",
@@ -11212,7 +11218,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 434,
+            "line": 443,
             "description": "The {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/visibility:property\"}}visibility{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/visibility:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "visibility",
@@ -11223,7 +11229,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 450,
+            "line": 459,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/visibility:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "visibility",
@@ -11239,7 +11245,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 464,
+            "line": 473,
             "description": "The {{#crossLink \"Cull\"}}{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/cull:property\"}}cull{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/cull:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "cull",
@@ -11250,7 +11256,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 480,
+            "line": 489,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/cull:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "cull",
@@ -11266,7 +11272,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 494,
+            "line": 503,
             "description": "The {{#crossLink \"Modes\"}}Modes{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/modes:property\"}}modes{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/modes:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "modes",
@@ -11277,7 +11283,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 510,
+            "line": 519,
             "description": "Fired whenever this Entity's {{#crossLink \"Entity/modes:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "modes",
@@ -11293,7 +11299,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 524,
+            "line": 533,
             "description": "The {{#crossLink \"Geometry\"}}Geometry{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/geometry:property\"}}camera{{/crossLink}}\n(a simple box) when set to a null or undefined value.\n\nFires an {{#crossLink \"Entity/geometry:event\"}}{{/crossLink}} event on change.\n\nUpdates {{#crossLink \"Entity/boundary\"}}{{/crossLink}},\n{{#crossLink \"Entity/worldObb\"}}{{/crossLink}} and\n{{#crossLink \"Entity/center\"}}{{/crossLink}}",
             "itemtype": "property",
             "name": "geometry",
@@ -11304,7 +11310,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 560,
+            "line": 569,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/geometry:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "geometry",
@@ -11320,7 +11326,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 587,
+            "line": 596,
             "description": "The {{#crossLink \"Layer\"}}Layer{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/layer:property\"}}layer{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/layer:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "layer",
@@ -11331,7 +11337,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 603,
+            "line": 612,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/layer:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "layer",
@@ -11347,7 +11353,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 617,
+            "line": 626,
             "description": "The {{#crossLink \"Lights\"}}Lights{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/lights:property\"}}lights{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/lights:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "lights",
@@ -11358,7 +11364,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 633,
+            "line": 642,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/lights:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "lights",
@@ -11374,7 +11380,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 647,
+            "line": 656,
             "description": "The {{#crossLink \"Material\"}}Material{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/material:property\"}}material{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/material:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "material",
@@ -11385,7 +11391,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 663,
+            "line": 672,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/material:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "material",
@@ -11401,7 +11407,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 677,
+            "line": 686,
             "description": "The {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/morphTargets:property\"}}morphTargets{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/morphTargets:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -11412,7 +11418,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 693,
+            "line": 702,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/morphTargets:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "morphTargets",
@@ -11428,7 +11434,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 706,
+            "line": 715,
             "description": "The {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/reflect:property\"}}reflect{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/reflect:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "reflect",
@@ -11439,7 +11445,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 722,
+            "line": 731,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/reflect:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "reflect",
@@ -11455,7 +11461,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 736,
+            "line": 745,
             "description": "The {{#crossLink \"Shader\"}}Shader{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/shader:property\"}}shader{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/shader:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "shader",
@@ -11466,7 +11472,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 752,
+            "line": 761,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/shader:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "shader",
@@ -11482,7 +11488,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 765,
+            "line": 774,
             "description": "The {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/shaderParams:property\"}}shaderParams{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/shaderParams:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "shaderParams",
@@ -11493,7 +11499,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 781,
+            "line": 790,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/shaderParams:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "shaderParams",
@@ -11509,7 +11515,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 795,
+            "line": 804,
             "description": "The {{#crossLink \"Stage\"}}Stage{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/stage:property\"}}stage{{/crossLink}} when set to\na null or undefined value.\n\nFires an {{#crossLink \"Entity/stage:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stage",
@@ -11520,7 +11526,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 811,
+            "line": 820,
             "description": "Fired whenever this Entity's  {{#crossLink \"Entity/stage:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "stage",
@@ -11536,7 +11542,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 825,
+            "line": 834,
             "description": "The Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} attached to this Entity.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/transform:property\"}}transform{{/crossLink}}\n(an identity matrix) when set to a null or undefined value.\n\nFires an {{#crossLink \"Entity/transform:event\"}}{{/crossLink}} event on change.\n\nUpdates {{#crossLink \"Entity/boundary\"}}{{/crossLink}},\n{{#crossLink \"Entity/worldObb\"}}{{/crossLink}} and\n{{#crossLink \"Entity/center\"}}{{/crossLink}}",
             "itemtype": "property",
             "name": "transform",
@@ -11547,7 +11553,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 858,
+            "line": 867,
             "description": "Fired whenever this Entity's {{#crossLink \"Entity/transform:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "transform",
@@ -11563,7 +11569,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 904,
+            "line": 913,
             "description": "The {{#crossLink \"Billboard\"}}{{/crossLink}} attached to this Entity.\n\nWhen {{#crossLink \"Billboard/property:active\"}}{{/crossLink}}, the {{#crossLink \"Billboard\"}}{{/crossLink}}\nwill keep this Entity oriented towards the viewpoint.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/billboard:property\"}}billboard{{/crossLink}}\n(an identity matrix) when set to a null or undefined value.\n\nFires an {{#crossLink \"Entity/billboard:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "billboard",
@@ -11574,7 +11580,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 923,
+            "line": 932,
             "description": "Fired whenever this Entity's {{#crossLink \"Entity/billboard:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "billboard",
@@ -11590,7 +11596,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 938,
+            "line": 947,
             "description": "The {{#crossLink \"Stationary\"}}{{/crossLink}} attached to this Entity.\n\nWhen {{#crossLink \"Stationary/property:active\"}}{{/crossLink}}, the {{#crossLink \"Stationary\"}}{{/crossLink}}\nwill prevent the translation component of the viewing transform from being applied to this Entity, yet\nstill allowing it to rotate.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Entity. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/stationary:property\"}}stationary{{/crossLink}},\nwhich is disabled by default.\n\nFires an {{#crossLink \"Entity/stationary:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stationary",
@@ -11601,7 +11607,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 958,
+            "line": 967,
             "description": "Fired whenever this Entity's {{#crossLink \"Entity/stationary:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "stationary",
@@ -11617,7 +11623,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 973,
+            "line": 982,
             "description": "Local-space 3D boundary of this Entity.\n\nThis is a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry\"}}{{/crossLink}} that is attached to this Entity.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will fire an {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}}\nevent whenever this Entity's {{#crossLink \"Entity/geometry:property\"}}{{/crossLink}} is linked to\na new {{#crossLink \"Geometry\"}}{{/crossLink}}, or whenever the {{#crossLink \"Geometry\"}}{{/crossLink}}'s\n{{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} are updated.\n\nThe a {{#crossLink \"Boundary3D\"}}{{/crossLink}} is lazy-instantiated the first time that this\nproperty is referenced. If {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} is then called on it,\nthen this property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime it's referenced.",
             "itemtype": "property",
             "name": "localBoundary",
@@ -11629,7 +11635,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1000,
+            "line": 1009,
             "description": "World-space 3D boundary of this Entity.\n\nThis is a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses the {{#crossLink \"Geometry\"}}{{/crossLink}}\nthat is attached to this Entity after transformation by this Entity's modelling\n{{#crossLink \"Entity/transform:property\"}}{{/crossLink}}.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will fire an {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}}\nevent whenever this Entity's {{#crossLink \"Entity/geometry:property\"}}{{/crossLink}} is linked to\na new {{#crossLink \"Geometry\"}}{{/crossLink}}, or whenever the {{#crossLink \"Geometry\"}}{{/crossLink}}'s\n{{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} are updated.\n\nThe a {{#crossLink \"Boundary3D\"}}{{/crossLink}} is lazy-instantiated the first time that this\nproperty is referenced. If {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} is then called on it,\nthen this property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime it's referenced.\n\n<h4>Example</h4>\n\n[here](http://xeoengine.org/examples/#boundaries_Entity_worldBoundary)\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary3D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "worldBoundary",
@@ -11641,7 +11647,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1091,
+            "line": 1100,
             "description": "View-space 3D boundary of this Entity.\n\nThis is a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses the {{#crossLink \"Geometry\"}}{{/crossLink}}\nthat is attached to this Entity after transformation by this Entity's modelling\n{{#crossLink \"Entity/transform:property\"}}{{/crossLink}} and {{#crossLink \"Camera\"}}{{/crossLink}}\n{{#crossLink \"Camera/view:property\"}}view transform{{/crossLink}}.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will fire an {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}}\nevent whenever there are any changes to the {{#crossLink \"Geometry\"}}{{/crossLink}},\n{{#crossLink \"Entity/transform:property\"}}{{/crossLink}} or {{#crossLink \"Camera\"}}{{/crossLink}} that\nwould affect its extents.\n\nThe a {{#crossLink \"Boundary3D\"}}{{/crossLink}} is lazy-instantiated the first time that this\nproperty is referenced. If {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} is then called on it,\nthen this property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime it's referenced.\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary3D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "viewBoundary",
@@ -11653,7 +11659,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1161,
+            "line": 1170,
             "description": "Canvas-space 2D boundary.\n\nThis is a {{#crossLink \"Boundary2D\"}}{{/crossLink}} that encloses this Entity's\n{{#crossLink \"Entity/geometry:property\"}}{{/crossLink}} after transformation by this Entity's modelling\n{{#crossLink \"Entity/transform:property\"}}{{/crossLink}} and {{#crossLink \"Camera\"}}{{/crossLink}}\n{{#crossLink \"Camera/view:property\"}}view{{/crossLink}} and\n{{#crossLink \"Camera/project:property\"}}projection{{/crossLink}} transforms.\n\nThe {{#crossLink \"Boundary2D\"}}{{/crossLink}} will fire an {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}}\nevent whenever there are any changes to the {{#crossLink \"Geometry\"}}{{/crossLink}},\n{{#crossLink \"Entity/transform:property\"}}{{/crossLink}} or {{#crossLink \"Camera\"}}{{/crossLink}} that\nwould affect its extents.\n\nThe a {{#crossLink \"Boundary2D\"}}{{/crossLink}} is lazy-instantiated the first time that this\nproperty is referenced. If {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} is then called on it,\nthen this property will be assigned to a fresh {{#crossLink \"Boundary2D\"}}{{/crossLink}} instance next\ntime it's referenced.\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary2D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "canvasBoundary",
@@ -11665,7 +11671,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1232,
+            "line": 1241,
             "description": "JSON object containing the (GLSL) source code of the shaders for this Entity.\n\nThis is sometimes useful to have as a reference\nwhen constructing your own custom {{#crossLink \"Shader\"}}{{/crossLink}} components.\n\nWill return null if xeoEngine has not yet rendered this Entity.",
             "itemtype": "property",
             "name": "glsl",
@@ -11677,7 +11683,7 @@
         },
         {
             "file": "src/entities/entity.js",
-            "line": 1269,
+            "line": 1278,
             "description": "The (GLSL) source code of the shaders for this Entity, as a string.\n\nThis is sometimes useful to have as a reference\nwhen constructing your own custom {{#crossLink \"Shader\"}}{{/crossLink}} components.\n\nWill return null if xeoEngine has not yet rendered this Entity.",
             "itemtype": "property",
             "name": "glslString",

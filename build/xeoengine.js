@@ -28622,6 +28622,8 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                     var material;
                     var geometry;
                     var entity;
+                    var collection = this.collection;
+                    var scene = this.collection.scene;
 
                     for (imeshes = 0; imeshes < lenMeshes; imeshes++) {
 
@@ -28638,7 +28640,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                             material = mesh[i].material;
                             geometry = mesh[i].geometry;
 
-                            entity = new XEO.Entity(this.collection.scene, {
+                            entity = new XEO.Entity(scene, {
                                 id: this._makeID(nodeId + ".entity." + i),
                                 meta: {
                                     name: node.name
@@ -28648,10 +28650,15 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                                 transform: transform,
                                 visibility: visibility,
                                 cull: cull,
-                                modes: modes
+                                modes: modes,
+
+                                // Indicates that this Entity is freshly loaded -  increments the XEO.Spinner#processes
+                                // count on the Scene Canvas, which will decrement again as soon as Entity is compiled
+                                // into the render graph, causing the Spinner to show until this Entity is visible
+                                loading: true
                             });
 
-                            this.collection.add(entity);
+                            collection.add(entity);
                         }
                     }
                 }
@@ -31973,6 +31980,9 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}.
  @param [cfg.transform] {String|Transform} ID or instance of a modelling transform to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/transform:property"}}transform{{/crossLink}} (which is an identity matrix which performs no transformation).
+ @param [cfg.loading] {Boolean} Flag which indicates that this Entity is freshly loaded. This will increment the
+ {{#crossLink "Spinner/processes:property"}}Spinner processes{{/crossLink}} count, and then when this Entity is first
+ rendered, will decrement the count again.
  @extends Component
  */
 
@@ -31993,6 +32003,12 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
         type: "XEO.Entity",
 
         _init: function (cfg) {
+
+            this._loading = cfg.loading;
+
+            if (this._loading === true) {
+                this.scene.canvas.spinner.processes++;
+            }
 
             this.camera = cfg.camera;
             this.clips = cfg.clips;
@@ -33153,6 +33169,17 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             var objectId = this.id;
 
             var result = this._renderer.buildObject(objectId);
+
+            if (this._loading) {
+
+                // This Entity was flagged as freshly loaded, which incremented the XEO.Spinner#processes
+                // count on the Scene Canvas, causing a spinner to appear. Unflag and decrement the
+                // count now that we have compiled it into the render graph. Spinner will disappear
+                // when the count has returned to zero.
+
+                this.scene.canvas.spinner.processes--;
+                this._loading = false;
+            }
 
             if (result && result.error) {
 
