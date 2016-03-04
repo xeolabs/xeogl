@@ -31,7 +31,7 @@
  // Decrement the count; count now zero,
  // so spinner becomes invisible
  spinner.process--;
-
+````
 
  @class Spinner
  @module XEO
