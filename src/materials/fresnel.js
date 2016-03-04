@@ -134,7 +134,7 @@
                     this._renderer.imageDirty = true;
 
                     /**
-                     Fired whenever this Fresnel's {{#crossLink "leftColorLight/edgeColor:property"}}{{/crossLink}} property changes.
+                     Fired whenever this Fresnel's {{#crossLink "Fresnel/edgeColor:property"}}{{/crossLink}} property changes.
 
                      @event edgeColor
                      @param value The property's new value
@@ -165,7 +165,7 @@
                     this._renderer.imageDirty = true;
 
                     /**
-                     Fired whenever this Fresnel's {{#crossLink "rightColorLight/centerColor:property"}}{{/crossLink}} property changes.
+                     Fired whenever this Fresnel's {{#crossLink "Fresnel/centerColor:property"}}{{/crossLink}} property changes.
 
                      @event centerColor
                      @param value The property's new value
