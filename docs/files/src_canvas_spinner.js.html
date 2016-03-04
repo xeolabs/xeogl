@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src/canvas/spinner.js - xeoengine</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+
+                <h1 style="color:white;"><a href="../../">xeoEngine</a> / <a href="../../docs">API Docs</a></h1>
+
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.1.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
+                                <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
+                                <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
+                                <li><a href="../classes/Camera.html">Camera</a></li>
+                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
+                                <li><a href="../classes/CameraPath.html">CameraPath</a></li>
+                                <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/Collection.html">Collection</a></li>
+                                <li><a href="../classes/CollectionBoundary.html">CollectionBoundary</a></li>
+                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
+                                <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
+                                <li><a href="../classes/Component.html">Component</a></li>
+                                <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+                                <li><a href="../classes/Cull.html">Cull</a></li>
+                                <li><a href="../classes/Curve.html">Curve</a></li>
+                                <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
+                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
+                                <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
+                                <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Entity.html">Entity</a></li>
+                                <li><a href="../classes/Fresnel.html">Fresnel</a></li>
+                                <li><a href="../classes/Frustum.html">Frustum</a></li>
+                                <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
+                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
+                                <li><a href="../classes/KeyboardRotateCamera.html">KeyboardRotateCamera</a></li>
+                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
+                                <li><a href="../classes/LatheGeometry.html">LatheGeometry</a></li>
+                                <li><a href="../classes/Layer.html">Layer</a></li>
+                                <li><a href="../classes/Lights.html">Lights</a></li>
+                                <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/Model.html">Model</a></li>
+                                <li><a href="../classes/Modes.html">Modes</a></li>
+                                <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
+                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
+                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
+                                <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
+                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
+                                <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Path.html">Path</a></li>
+                                <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
+                                <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
+                                <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Projection.html">Projection</a></li>
+                                <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
+                                <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
+                                <li><a href="../classes/Skybox.html">Skybox</a></li>
+                                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
+                                <li><a href="../classes/Spinner.html">Spinner</a></li>
+                                <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/Stage.html">Stage</a></li>
+                                <li><a href="../classes/Stationary.html">Stationary</a></li>
+                                <li><a href="../classes/Task.html">Task</a></li>
+                                <li><a href="../classes/Tasks.html">Tasks</a></li>
+                                <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/Visibility.html">Visibility</a></li>
+                                <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/animation.html">animation</a></li>
+                                <li><a href="../modules/boundaries.html">boundaries</a></li>
+                                <li><a href="../modules/camera.html">camera</a></li>
+                                <li><a href="../modules/canvas.html">canvas</a></li>
+                                <li><a href="../modules/clipping.html">clipping</a></li>
+                                <li><a href="../modules/collections.html">collections</a></li>
+                                <li><a href="../modules/configs.html">configs</a></li>
+                                <li><a href="../modules/controls.html">controls</a></li>
+                                <li><a href="../modules/culling.html">culling</a></li>
+                                <li><a href="../modules/curves.html">curves</a></li>
+                                <li><a href="../modules/entities.html">entities</a></li>
+                                <li><a href="../modules/geometry.html">geometry</a></li>
+                                <li><a href="../modules/importing.html">importing</a></li>
+                                <li><a href="../modules/input.html">input</a></li>
+                                <li><a href="../modules/lighting.html">lighting</a></li>
+                                <li><a href="../modules/materials.html">materials</a></li>
+                                <li><a href="../modules/math.html">math</a></li>
+                                <li><a href="../modules/rendering.html">rendering</a></li>
+                                <li><a href="../modules/reporting.html">reporting</a></li>
+                                <li><a href="../modules/shaders.html">shaders</a></li>
+                                <li><a href="../modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="../modules/transforms.html">transforms</a></li>
+                                <li><a href="../modules/XEO.html">XEO</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <!--<div id="api-options">-->
+                    <!--Show:-->
+                    <!--<label for="api-show-inherited">-->
+                        <!--<input type="checkbox" id="api-show-inherited" checked>-->
+                        <!--Inherited-->
+                    <!--</label>-->
+            
+                    <!--<label for="api-show-protected">-->
+                        <!--<input type="checkbox" id="api-show-protected">-->
+                        <!--Protected-->
+                    <!--</label>-->
+            
+                    <!--<label for="api-show-private">-->
+                        <!--<input type="checkbox" id="api-show-private">-->
+                        <!--Private-->
+                    <!--</label>-->
+                    <!--<label for="api-show-deprecated">-->
+                        <!--<input type="checkbox" id="api-show-deprecated">-->
+                        <!--Deprecated-->
+                    <!--</label>-->
+            
+                <!--</div>-->
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: src/canvas/spinner.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ A Spinner is a loading indicator that displays the center of its {{#crossLink &quot;Canvas&quot;}}{{/crossLink}} while things are loading or otherwise busy.
+
+ Spinners are normally shown by {{#crossLink &quot;Model&quot;}}Models{{/crossLink}} while they are loading, however they may also
+ be shown by application code that wants to indicate business.
+
+ A Spinner component has a {{#crossLink &quot;Spinner/process:property&quot;}}{{/crossLink}} count that indicates how many
+ currently-active processes it represents. As a process starts, a process would increment the count, then as it
+ completes (or fails), would decrement it again.
+
+ A Spinner is only visible while the count is greater than zero.
+
+ ## Example
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ var spinner = myScene.canvas.spinner;
+
+ // Increment count of busy processes represented by the spinner;
+ // assuming the count was zero, this now shows the spinner
+ spinner.processes++;
+
+ // Increment the count again, by some other process;
+ // spinner already visible, now requires two decrements
+ // before it becomes invisible again
+ spinner.processes++;
+
+ // Decrement the count; count still greater
+ // than zero, so spinner remains visible
+ spinner.process--;
+
+ // Decrement the count; count now zero,
+ // so spinner becomes invisible
+ spinner.process--;
+
+
+ @class Spinner
+ @module XEO
+ @submodule canvas
+ @extends Component
+ */
+(function () {
+
+    &quot;use strict&quot;;
+
+    // Ensures lazy-injected CSS only injected once  
+    var spinnerCSSInjected = false;
+
+    XEO.Spinner = XEO.Component.extend({
+
+        type: &quot;XEO.Spinner&quot;,
+
+        serializable: false,
+
+        _init: function (cfg) {
+
+            this._canvas = cfg.canvas;
+
+            this._injectSpinnerCSS();
+
+            // Create spinner elements
+
+            var body = document.getElementsByTagName(&quot;body&quot;)[0];
+            var div = document.createElement(&#x27;div&#x27;);
+            var style = div.style;
+
+            style[&quot;z-index&quot;] = &quot;9000&quot;;
+            style.position = &quot;absolute&quot;;
+
+            div.innerHTML = &#x27;&lt;div class=&quot;sk-fading-circle&quot;&gt;\
+                &lt;div class=&quot;sk-circle1 sk-circle&quot;&gt;&lt;/div&gt;\
+                &lt;div class=&quot;sk-circle2 sk-circle&quot;&gt;&lt;/div&gt;\
+                &lt;div class=&quot;sk-circle3 sk-circle&quot;&gt;&lt;/div&gt;\
+                &lt;div class=&quot;sk-circle4 sk-circle&quot;&gt;&lt;/div&gt;\
+                &lt;div class=&quot;sk-circle5 sk-circle&quot;&gt;&lt;/div&gt;\
+                &lt;div class=&quot;sk-circle6 sk-circle&quot;&gt;&lt;/div&gt;\
+                &lt;div class=&quot;sk-circle7 sk-circle&quot;&gt;&lt;/div&gt;\
+                &lt;div class=&quot;sk-circle8 sk-circle&quot;&gt;&lt;/div&gt;\
+                &lt;div class=&quot;sk-circle9 sk-circle&quot;&gt;&lt;/div&gt;\
+                &lt;div class=&quot;sk-circle10 sk-circle&quot;&gt;&lt;/div&gt;\
+                &lt;div class=&quot;sk-circle11 sk-circle&quot;&gt;&lt;/div&gt;\
+                &lt;div class=&quot;sk-circle12 sk-circle&quot;&gt;&lt;/div&gt;\
+                &lt;/div&gt;&#x27;;
+
+            body.appendChild(div);
+            this._element = div;
+
+            this._adjustPosition();
+
+            this.processes = 0;
+        },
+
+        _props: {
+
+            /**
+             The number of processes this Spinner represents.
+
+             The Spinner is visible while this property is greater than zero.
+
+             Increment this property whenever you commence some process during which you want
+             the Spinner to be visible, then decrement it again when the process is complete.
+
+             Clamps to zero if you attempt to set to to a negative value.
+
+             Fires a {{#crossLink &quot;Spinner/processes:event&quot;}}{{/crossLink}} event on change.
+
+             @property processes
+             @default 0
+             @type Number
+             */
+            processes: {
+
+                set: function (value) {
+
+                    value = value || 0;
+
+                    if (this._processes === value) {
+                        return;
+                    }
+
+                    if (value &lt; 0) {
+                        return;
+                    }
+
+                    this._processes = value;
+
+                    this._element.style[&quot;visibility&quot;] = (this._processes &gt; 0) ? &quot;visible&quot; : &quot;hidden&quot;;
+
+                    /**
+                     Fired whenever this Spinner&#x27;s {{#crossLink &quot;Spinner/visible:property&quot;}}{{/crossLink}} property changes.
+
+                     @event processes
+                     @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;processes&quot;, this._processes);
+                },
+
+                get: function () {
+                    return this._processes;
+                }
+            }
+        },
+
+        // (Re)positions spinner DIV over the center of the canvas
+        _adjustPosition: function () {
+
+            if (!this._canvas || !this._element) {
+                return;
+            }
+
+            var canvas = this._canvas;
+            var spinner = this._element;
+            var spinnerStyle = spinner.style;
+
+            spinnerStyle[&quot;left&quot;] = (canvas.offsetLeft + (canvas.clientWidth * 0.5) - (spinner.clientWidth * 0.5)) + &quot;px&quot;;
+            spinnerStyle[&quot;top&quot;] = (canvas.offsetTop + (canvas.clientHeight * 0.5) - (spinner.clientHeight * 0.5)) + &quot;px&quot;;
+        },
+
+        _injectSpinnerCSS: function () {
+            if (spinnerCSSInjected) {
+                return;
+            }
+            var node = document.createElement(&#x27;style&#x27;);
+            node.innerHTML = this._spinnerCSS;
+            document.body.appendChild(node);
+            spinnerCSSInjected = true;
+        },
+
+        _spinnerCSS: &quot;.sk-fading-circle {\
+        margin: 100px auto;\
+        width: 100px;\
+        height:100px;\
+        position: relative;\
+        }\
+        .sk-fading-circle .sk-circle {\
+        width: 120%;\
+        height: 120%;\
+        position: absolute;\
+        left: 0;\
+        top: 0;\
+        }\
+        .sk-fading-circle .sk-circle:before {\
+        content: &#x27;&#x27;;\
+        display: block;\
+        margin: 0 auto;\
+        width: 15%;\
+        height: 15%;\
+        background-color: #ff8800;\
+        border-radius: 100%;\
+        -webkit-animation: sk-circleFadeDelay 1.2s infinite ease-in-out both;\
+        animation: sk-circleFadeDelay 1.2s infinite ease-in-out both;\
+        }\
+        .sk-fading-circle .sk-circle2 {\
+        -webkit-transform: rotate(30deg);\
+        -ms-transform: rotate(30deg);\
+        transform: rotate(30deg);\
+    }\
+    .sk-fading-circle .sk-circle3 {\
+        -webkit-transform: rotate(60deg);\
+        -ms-transform: rotate(60deg);\
+        transform: rotate(60deg);\
+    }\
+    .sk-fading-circle .sk-circle4 {\
+        -webkit-transform: rotate(90deg);\
+        -ms-transform: rotate(90deg);\
+        transform: rotate(90deg);\
+    }\
+    .sk-fading-circle .sk-circle5 {\
+        -webkit-transform: rotate(120deg);\
+        -ms-transform: rotate(120deg);\
+        transform: rotate(120deg);\
+    }\
+    .sk-fading-circle .sk-circle6 {\
+        -webkit-transform: rotate(150deg);\
+        -ms-transform: rotate(150deg);\
+        transform: rotate(150deg);\
+    }\
+    .sk-fading-circle .sk-circle7 {\
+        -webkit-transform: rotate(180deg);\
+        -ms-transform: rotate(180deg);\
+        transform: rotate(180deg);\
+    }\
+    .sk-fading-circle .sk-circle8 {\
+        -webkit-transform: rotate(210deg);\
+        -ms-transform: rotate(210deg);\
+        transform: rotate(210deg);\
+    }\
+    .sk-fading-circle .sk-circle9 {\
+        -webkit-transform: rotate(240deg);\
+        -ms-transform: rotate(240deg);\
+        transform: rotate(240deg);\
+    }\
+    .sk-fading-circle .sk-circle10 {\
+        -webkit-transform: rotate(270deg);\
+        -ms-transform: rotate(270deg);\
+        transform: rotate(270deg);\
+    }\
+    .sk-fading-circle .sk-circle11 {\
+        -webkit-transform: rotate(300deg);\
+        -ms-transform: rotate(300deg);\
+        transform: rotate(300deg);\
+    }\
+    .sk-fading-circle .sk-circle12 {\
+        -webkit-transform: rotate(330deg);\
+        -ms-transform: rotate(330deg);\
+        transform: rotate(330deg);\
+    }\
+    .sk-fading-circle .sk-circle2:before {\
+        -webkit-animation-delay: -1.1s;\
+        animation-delay: -1.1s;\
+    }\
+    .sk-fading-circle .sk-circle3:before {\
+        -webkit-animation-delay: -1s;\
+        animation-delay: -1s;\
+    }\
+    .sk-fading-circle .sk-circle4:before {\
+        -webkit-animation-delay: -0.9s;\
+        animation-delay: -0.9s;\
+    }\
+    .sk-fading-circle .sk-circle5:before {\
+        -webkit-animation-delay: -0.8s;\
+        animation-delay: -0.8s;\
+    }\
+    .sk-fading-circle .sk-circle6:before {\
+        -webkit-animation-delay: -0.7s;\
+        animation-delay: -0.7s;\
+    }\
+    .sk-fading-circle .sk-circle7:before {\
+        -webkit-animation-delay: -0.6s;\
+        animation-delay: -0.6s;\
+    }\
+    .sk-fading-circle .sk-circle8:before {\
+        -webkit-animation-delay: -0.5s;\
+        animation-delay: -0.5s;\
+    }\
+    .sk-fading-circle .sk-circle9:before {\
+        -webkit-animation-delay: -0.4s;\
+        animation-delay: -0.4s;\
+    }\
+    .sk-fading-circle .sk-circle10:before {\
+        -webkit-animation-delay: -0.3s;\
+        animation-delay: -0.3s;\
+    }\
+    .sk-fading-circle .sk-circle11:before {\
+        -webkit-animation-delay: -0.2s;\
+        animation-delay: -0.2s;\
+    }\
+    .sk-fading-circle .sk-circle12:before {\
+        -webkit-animation-delay: -0.1s;\
+        animation-delay: -0.1s;\
+    }\
+    @-webkit-keyframes sk-circleFadeDelay {\
+        0%, 39%, 100% { opacity: 0; }\
+        40% { opacity: 1; }\
+    }\
+    @keyframes sk-circleFadeDelay {\
+        0%, 39%, 100% { opacity: 0; }\
+        40% { opacity: 1; }\
+    }&quot;
+    });
+})();
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>
