@@ -105,6 +105,7 @@
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
+                                <li><a href="../classes/Spinner.html">Spinner</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
@@ -680,7 +681,7 @@
 
                     // One XEO.Visibility per mesh group
 
-                    var visibility = new XEO.Visibility({
+                    var visibility = new XEO.Visibility(this.collection.scene, {
                         id: this._makeID(nodeId + &quot;.visibility&quot;)
                     });
 
@@ -688,7 +689,7 @@
 
                     // One XEO.Cull per mesh group
 
-                    var cull = new XEO.Cull({
+                    var cull = new XEO.Cull(this.collection.scene, {
                         id: this._makeID(nodeId + &quot;.cull&quot;)
                     });
 
@@ -696,7 +697,7 @@
 
                     // One XEO.Modes per mesh group
 
-                    var modes = new XEO.Modes({
+                    var modes = new XEO.Modes(this.collection.scene, {
                         id: this._makeID(nodeId + &quot;.modes&quot;)
                     });
 

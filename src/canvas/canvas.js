@@ -199,6 +199,7 @@
             this.canvas.height = this.canvas.clientHeight;
 
             this._createOverlay();
+            this._resizeOverlay();
 
             // Get WebGL context
 
@@ -264,7 +265,8 @@
                             aspect: newHeight / newWidth
                         });
 
-                        // TODO: count pixels
+                        self._spinner._adjustPosition();
+                        self._resizeOverlay();
 
                         var countPixels = 0;
                         var scene;
@@ -287,10 +289,17 @@
             this.canvas.oncontextmenu = function (e) {
                 e.preventDefault();
             };
+
+            /**
+             *
+             */
+            this._spinner = new XEO.Spinner(this.scene, {
+                canvas: this.canvas
+            });
         },
 
         /**
-         * Creates a canvas in the DOM
+         * Creates a default canvas in the DOM.
          * @private
          */
         _createCanvas: function () {
@@ -319,7 +328,8 @@
         },
 
         /**
-         * Creates an invisible DIV over the canvas
+         * Creates an invisible DIV over the canvas, for purpose of catching
+         * input events without interfering with app-lever UI bits floating underneath.
          * @private
          */
         _createOverlay: function () {
@@ -329,8 +339,8 @@
             var div = document.createElement('div');
 
             var style = div.style;
-            style.height = this.canvas.height + "px";
-            style.width = "100%";
+            //style.height = this.canvas.height + "px";
+            //style.width = "100%";
             style.padding = "0";
             style.margin = "0";
             style.background = "black";
@@ -341,15 +351,37 @@
             style.opacity = 0;
             style["z-index"] = "100000";
 
-            div.innerHTML += '<div id="' + overlayId + '" style="width: 100%; height: 100%; float: left; margin: 0; padding: 0; opacity: 0;"></overlay>';
+            //div.innerHTML += '<div id="' + overlayId + '" style="width: 100%; height: 100%; float: left; margin: 0; padding: 0; opacity: 0;"></overlay>';
 
             body.appendChild(div);
 
-            this.overlay = document.getElementById(overlayId);
+            //this.overlay = document.getElementById(overlayId);
+            this.overlay = div;
         },
+
+        /** (Re)sizes the overlay DIV to the canvas size
+         * @private
+         */
+        _resizeOverlay: function () {
+
+            if (!this.canvas || !this.overlay) {
+                return;
+            }
+
+            var canvas = this.canvas;
+            var overlay = this.overlay;
+            var overlayStyle = overlay.style;
+
+            overlayStyle["left"] = canvas.offsetLeft + "px";
+            overlayStyle["top"] = canvas.offsetTop + "px";
+            overlayStyle["width"] = canvas.clientWidth + "px";
+            overlayStyle["height"] = canvas.clientHeight + "px";
+        },
+
 
         /**
          * Initialises the WebGL context
+         * @private
          */
         _initWebGL: function () {
 
@@ -376,6 +408,23 @@
                  * @event webglContextFailed
                  */
                 this.fire("webglContextFailed", true, true);
+            }
+        },
+
+        _props: {
+
+            /**
+             The busy {{#crossLink "Spinner"}}{{/crossLink}} for this Canvas.
+
+             @property spinner
+             @type Spinner
+             @final
+             */
+            spinner: {
+
+                get: function () {
+                    return this._spinner;
+                }
             }
         },
 

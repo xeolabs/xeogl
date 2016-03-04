@@ -105,6 +105,7 @@
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
+                                <li><a href="../classes/Spinner.html">Spinner</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
@@ -381,6 +382,7 @@
             this.canvas.height = this.canvas.clientHeight;
 
             this._createOverlay();
+            this._resizeOverlay();
 
             // Get WebGL context
 
@@ -446,7 +448,8 @@
                             aspect: newHeight / newWidth
                         });
 
-                        // TODO: count pixels
+                        self._spinner._adjustPosition();
+                        self._resizeOverlay();
 
                         var countPixels = 0;
                         var scene;
@@ -469,10 +472,17 @@
             this.canvas.oncontextmenu = function (e) {
                 e.preventDefault();
             };
+
+            /**
+             *
+             */
+            this._spinner = new XEO.Spinner(this.scene, {
+                canvas: this.canvas
+            });
         },
 
         /**
-         * Creates a canvas in the DOM
+         * Creates a default canvas in the DOM.
          * @private
          */
         _createCanvas: function () {
@@ -501,7 +511,8 @@
         },
 
         /**
-         * Creates an invisible DIV over the canvas
+         * Creates an invisible DIV over the canvas, for purpose of catching
+         * input events without interfering with app-lever UI bits floating underneath.
          * @private
          */
         _createOverlay: function () {
@@ -511,8 +522,8 @@
             var div = document.createElement(&#x27;div&#x27;);
 
             var style = div.style;
-            style.height = this.canvas.height + &quot;px&quot;;
-            style.width = &quot;100%&quot;;
+            //style.height = this.canvas.height + &quot;px&quot;;
+            //style.width = &quot;100%&quot;;
             style.padding = &quot;0&quot;;
             style.margin = &quot;0&quot;;
             style.background = &quot;black&quot;;
@@ -523,15 +534,37 @@
             style.opacity = 0;
             style[&quot;z-index&quot;] = &quot;100000&quot;;
 
-            div.innerHTML += &#x27;&lt;div id=&quot;&#x27; + overlayId + &#x27;&quot; style=&quot;width: 100%; height: 100%; float: left; margin: 0; padding: 0; opacity: 0;&quot;&gt;&lt;/overlay&gt;&#x27;;
+            //div.innerHTML += &#x27;&lt;div id=&quot;&#x27; + overlayId + &#x27;&quot; style=&quot;width: 100%; height: 100%; float: left; margin: 0; padding: 0; opacity: 0;&quot;&gt;&lt;/overlay&gt;&#x27;;
 
             body.appendChild(div);
 
-            this.overlay = document.getElementById(overlayId);
+            //this.overlay = document.getElementById(overlayId);
+            this.overlay = div;
         },
+
+        /** (Re)sizes the overlay DIV to the canvas size
+         * @private
+         */
+        _resizeOverlay: function () {
+
+            if (!this.canvas || !this.overlay) {
+                return;
+            }
+
+            var canvas = this.canvas;
+            var overlay = this.overlay;
+            var overlayStyle = overlay.style;
+
+            overlayStyle[&quot;left&quot;] = canvas.offsetLeft + &quot;px&quot;;
+            overlayStyle[&quot;top&quot;] = canvas.offsetTop + &quot;px&quot;;
+            overlayStyle[&quot;width&quot;] = canvas.clientWidth + &quot;px&quot;;
+            overlayStyle[&quot;height&quot;] = canvas.clientHeight + &quot;px&quot;;
+        },
+
 
         /**
          * Initialises the WebGL context
+         * @private
          */
         _initWebGL: function () {
 
@@ -558,6 +591,23 @@
                  * @event webglContextFailed
                  */
                 this.fire(&quot;webglContextFailed&quot;, true, true);
+            }
+        },
+
+        _props: {
+
+            /**
+             The busy {{#crossLink &quot;Spinner&quot;}}{{/crossLink}} for this Canvas.
+
+             @property spinner
+             @type Spinner
+             @final
+             */
+            spinner: {
+
+                get: function () {
+                    return this._spinner;
+                }
             }
         },
 

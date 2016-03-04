@@ -66,6 +66,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "ShaderParams",
         "Skybox",
         "SphereGeometry",
+        "Spinner",
         "SplineCurve",
         "Stage",
         "Stationary",

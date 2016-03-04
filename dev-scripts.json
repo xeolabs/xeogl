@@ -55,6 +55,7 @@
     "src/camera/ortho.js",
     "src/camera/perspective.js",
     "src/canvas/canvas.js",
+    "src/canvas/spinner.js",
     "src/clipping/_module.js",
     "src/clipping/clip.js",
     "src/clipping/clips.js",

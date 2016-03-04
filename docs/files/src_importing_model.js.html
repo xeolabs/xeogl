@@ -105,6 +105,7 @@
                                 <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
+                                <li><a href="../classes/Spinner.html">Spinner</a></li>
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
@@ -452,6 +453,12 @@
                     var rootTransform;
                     var dummyRootTransform = self._dummyRootTransform;
 
+                    // Increment processes represented by loading spinner
+                    // Spinner appears as soon as count is non-zero
+
+                    var spinner = self.scene.canvas.spinner;
+                    spinner.processes++;
+
                     glTFLoader.load(userInfo, options,
                         function () {
 
@@ -494,6 +501,10 @@
                                     }
                                 }
                             });
+
+                            // Decrement processes represented by loading spinner
+                            // Spinner disappears if the count is now zero
+                            spinner.processes--;
 
                             /**
                              Fired whenever this Model has finished loading components from the glTF file

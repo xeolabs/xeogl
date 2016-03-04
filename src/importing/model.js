@@ -270,6 +270,12 @@
                     var rootTransform;
                     var dummyRootTransform = self._dummyRootTransform;
 
+                    // Increment processes represented by loading spinner
+                    // Spinner appears as soon as count is non-zero
+
+                    var spinner = self.scene.canvas.spinner;
+                    spinner.processes++;
+
                     glTFLoader.load(userInfo, options,
                         function () {
 
@@ -312,6 +318,10 @@
                                     }
                                 }
                             });
+
+                            // Decrement processes represented by loading spinner
+                            // Spinner disappears if the count is now zero
+                            spinner.processes--;
 
                             /**
                              Fired whenever this Model has finished loading components from the glTF file
