@@ -14852,7 +14852,7 @@
         {
             "file": "src/materials/fresnel.js",
             "line": 136,
-            "description": "Fired whenever this Fresnel's {{#crossLink \"leftColorLight/edgeColor:property\"}}{{/crossLink}} property changes.",
+            "description": "Fired whenever this Fresnel's {{#crossLink \"Fresnel/edgeColor:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "edgeColor",
             "params": [
@@ -14880,7 +14880,7 @@
         {
             "file": "src/materials/fresnel.js",
             "line": 167,
-            "description": "Fired whenever this Fresnel's {{#crossLink \"rightColorLight/centerColor:property\"}}{{/crossLink}} property changes.",
+            "description": "Fired whenever this Fresnel's {{#crossLink \"Fresnel/centerColor:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "centerColor",
             "params": [
