@@ -498,7 +498,7 @@
 
                     // One XEO.Visibility per mesh group
 
-                    var visibility = new XEO.Visibility({
+                    var visibility = new XEO.Visibility(this.collection.scene, {
                         id: this._makeID(nodeId + ".visibility")
                     });
 
@@ -506,7 +506,7 @@
 
                     // One XEO.Cull per mesh group
 
-                    var cull = new XEO.Cull({
+                    var cull = new XEO.Cull(this.collection.scene, {
                         id: this._makeID(nodeId + ".cull")
                     });
 
@@ -514,7 +514,7 @@
 
                     // One XEO.Modes per mesh group
 
-                    var modes = new XEO.Modes({
+                    var modes = new XEO.Modes(this.collection.scene, {
                         id: this._makeID(nodeId + ".modes")
                     });
 
