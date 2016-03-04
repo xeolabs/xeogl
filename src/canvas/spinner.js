@@ -1,7 +1,37 @@
 /**
- A loading indicator belonging to a {{#crossLink "Canvas"}}{{/crossLink}}.
+ A Spinner is a loading indicator that displays the center of its {{#crossLink "Canvas"}}{{/crossLink}} while things are loading or otherwise busy.
 
- TODO: Usage description
+ Spinners are normally shown by {{#crossLink "Model"}}Models{{/crossLink}} while they are loading, however they may also
+ be shown by application code that wants to indicate business.
+
+ A Spinner component has a {{#crossLink "Spinner/process:property"}}{{/crossLink}} count that indicates how many
+ currently-active processes it represents. As a process starts, a process would increment the count, then as it
+ completes (or fails), would decrement it again.
+
+ A Spinner is only visible while the count is greater than zero.
+
+ ## Example
+
+ ````javascript
+ var spinner = myScene.canvas.spinner;
+
+ // Increment count of busy processes represented by the spinner;
+ // assuming the count was zero, this now shows the spinner
+ spinner.processes++;
+
+ // Increment the count again, by some other process;
+ // spinner already visible, now requires two decrements
+ // before it becomes invisible again
+ spinner.processes++;
+
+ // Decrement the count; count still greater
+ // than zero, so spinner remains visible
+ spinner.process--;
+
+ // Decrement the count; count now zero,
+ // so spinner becomes invisible
+ spinner.process--;
+
 
  @class Spinner
  @module XEO
