@@ -15159,7 +15159,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  // Decrement the count; count now zero,
  // so spinner becomes invisible
  spinner.process--;
-
+````
 
  @class Spinner
  @module XEO

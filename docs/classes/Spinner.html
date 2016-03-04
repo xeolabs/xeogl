@@ -203,21 +203,25 @@ currently-active processes it represents. As a process starts, a process would i
 completes (or fails), would decrement it again.</p>
 <p>A Spinner is only visible while the count is greater than zero.</p>
 <h2 id="example">Example</h2>
-<p><code>&#x60;</code>`javascript
-var spinner = myScene.canvas.spinner;</p>
-<p>// Increment count of busy processes represented by the spinner;
+<pre class="code prettyprint"><code class="lang-javascript">var spinner = myScene.canvas.spinner;
+
+// Increment count of busy processes represented by the spinner;
 // assuming the count was zero, this now shows the spinner
-spinner.processes++;</p>
-<p>// Increment the count again, by some other process;
+spinner.processes++;
+
+// Increment the count again, by some other process;
 // spinner already visible, now requires two decrements
 // before it becomes invisible again
-spinner.processes++;</p>
-<p>// Decrement the count; count still greater
+spinner.processes++;
+
+// Decrement the count; count still greater
 // than zero, so spinner remains visible
-spinner.process--;</p>
-<p>// Decrement the count; count now zero,
+spinner.process--;
+
+// Decrement the count; count now zero,
 // so spinner becomes invisible
-spinner.process--;</p>
+spinner.process--;
+</code></pre>
 
 </div>
 
