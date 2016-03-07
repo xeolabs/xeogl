@@ -1,6 +1,6 @@
-// === SceneJS ===
-// JavaScript Scene graph library for WebGL
-// Copyright (c) 2010 Lindsay Kay
+// === xeoEngine ===
+// An open source engine for WebGL-based 3D visualization
+// Copyright (c) 2016 Lindsay Kay, http://xeolabs.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the "Software"),
