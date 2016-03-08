@@ -104,28 +104,25 @@
         gearbox.on("loaded",
                 function () {
 
-                    // When the Model has loaded, iterate over all the Entities in the Scene:
+                    // When the Model has loaded, iterate over all the Entities in the Model:
                     //
                     // 1. Ensure that they each have their own Material and Modes components, so that
                     // we can set them transparent individually. This is quick-and-dirty, where we
                     // may be creating excess Materials and Modes, while needlessly keeping unused ones.
                     //
+                    // 2. Add the Material and Modes to the Model's Collection so that they get
+                    // destroyed whenever the Model is destroyed or reloaded.
+                    //
                     // 2. Add an item to the JSON data we'll build our explorer from.
 
                     var data = [];
-                    var sceneEntities = scene.types["XEO.Entity"];
+                    var entities = gearbox.collection.types["XEO.Entity"];
                     var entity;
 
-                    for (var objectId in sceneEntities) {
-                        if (sceneEntities.hasOwnProperty(objectId)) {
-
-                            if (objectId === "myOOBB") {
-
-                                // Don't list our OOBB boundary indicator in the explorer
-                                continue;
-                            }
-
-                            entity = sceneEntities[objectId];
+                    for (var entityId in entities) {
+                        if (entities.hasOwnProperty(entityId)) {
+                            
+                            entity = entities[entityId];
 
                             // Ensure the Entity has its own unique Material and Modes
 
@@ -134,6 +131,12 @@
 
                             entity.modes = entity.modes.clone();
                             entity.modes.transparent = true;
+
+                            // Add the Material and Modes to the Model's Collection
+                            // so that they get destroyed automatically
+
+                            gearbox.collection.add(entity.material);
+                            gearbox.collection.add(entity.modes);
 
                             // To each Entity it loads, a Model will attach metadata
                             // containing a human-readable name - use that to list a 
@@ -163,9 +166,9 @@
                             function (e, data) {
                                 if (data.selected.length) {
 
-                                    var objectID = data.instance.get_node(data.selected[0]).id;
+                                    var entityId = data.instance.get_node(data.selected[0]).id;
 
-                                    nextObject = scene.components[objectID];
+                                    nextObject = scene.components[entityId];
 
                                     if (lastObject) {
                                         lastObject.modes.transparent = true;
