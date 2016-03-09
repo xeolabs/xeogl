@@ -132,10 +132,10 @@
             primitive: "triangles",
             src: "textures/height/everest.png",
             xSize: 10,
-            ySize: 10,
-            zSize: 3,
+            ySize: 3,
+            zSize: 10,
             xSegments: 80,
-            ySegments: 80
+            zSegments: 80
         }),
         transform: new XEO.Translate({
             xyz: [0, 0, 0]
@@ -166,7 +166,7 @@
     var view = scene.camera.view;
 
     view.zoom(4);
-    view.rotateEyeX(-30);
+    view.rotateEyeX(40);
     view.rotateEyeY(-10);
 
 

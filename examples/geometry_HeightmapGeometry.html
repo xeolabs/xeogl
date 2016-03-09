@@ -42,10 +42,10 @@
         primitive: "triangles",
         src: "textures/height/mountain.png",
         xSize: 10,
-        ySize: 10,
-        zSize: 5,
+        ySize: 5,
+        zSize: 10,
         xSegments: 70,
-        ySegments: 70,
+        zSegments: 70,
         lod: 1.0, // Default
         autoNormals: true // Default
     });
@@ -60,6 +60,9 @@
             diffuseMap: diffuseMap,
             lineWidth: 3,
             pointSize: 5
+        }),
+        modes: new XEO.Modes({
+            backfaces: true
         })
     });
 
@@ -68,7 +71,7 @@
     var view = entity.scene.camera.view;
 
     view.zoom(2);
-    view.rotateEyeX(-60);
+    view.rotateEyeX(30);
     view.rotateEyeY(-20);
 
     // Let user move camera
@@ -87,7 +90,7 @@
         this["ySize"] = heightmap.ySize;
         this["zSize"] = heightmap.zSize;
         this["xSegments"] = heightmap.xSegments;
-        this["ySegments"] = heightmap.ySegments;
+        this["zSegments"] = heightmap.zSegments;
         this["autoNormals"] = heightmap.autoNormals;
         this["lod"] = heightmap.lod;
 
@@ -107,7 +110,7 @@
             heightmap.ySize = self["ySize"];
             heightmap.zSize = self["zSize"];
             heightmap.xSegments = self["xSegments"];
-            heightmap.ySegments = self["ySegments"];
+            heightmap.zSegments = self["zSegments"];
             heightmap.lod = self["lod"];
             heightmap.autoNormals = self["autoNormals"];
 
@@ -134,7 +137,7 @@
     folder.add(menu, 'ySize', 0.1, 10.0);
     folder.add(menu, 'zSize', 0.1, 10.0);
     folder.add(menu, 'xSegments', 1, 70);
-    folder.add(menu, 'ySegments', 1, 70);
+    folder.add(menu, 'zSegments', 1, 70);
     folder.add(menu, 'lod', 0.1, 1.0);
     folder.add(menu, 'autoNormals');
 

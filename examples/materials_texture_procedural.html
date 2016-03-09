@@ -20,8 +20,8 @@
 <script>
 
     window._image = new Image();
-    window._image.src="textures/diffuse/uvGrid2.jpg";
-    window._image.onload=function() {
+    window._image.src = "textures/diffuse/uvGrid2.jpg";
+    window._image.onload = function () {
         window._image = XEO.renderer.webgl.ensureImageSizePowerOfTwo(window._image)
 
         var textureGenerator = new XEO.Entity({
@@ -42,7 +42,7 @@
 
             geometry: new XEO.PlaneGeometry({
                 xSize: 2,
-                ySize: 2
+                zSize: 2
             }),
 
             shader: new XEO.Shader({
@@ -75,6 +75,11 @@
 
             modes: new XEO.Modes({
                 backfaces: true
+            }),
+
+            transform: new XEO.Rotate({
+                xyz: [1, 0, 0],
+                angle: 90
             })
         });
 

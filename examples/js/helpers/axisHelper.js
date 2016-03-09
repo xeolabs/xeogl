@@ -93,7 +93,7 @@
             this._push(new XEO.Entity(this.scene, {
                 geometry: this._push(new XEO.PlaneGeometry(this.scene, {
                     xSize: 100,
-                    ySize: 100
+                    zSize: 100
                 })),
                 material: this._push(new XEO.PhongMaterial(this.scene, {
                     diffuse: [1, 1, 0]

@@ -39,9 +39,9 @@
     var plane = new XEO.PlaneGeometry({
         primitive: "triangles",
         xSize: 2,
-        ySize: 2,
+        zSize: 2,
         xSegments: 10,
-        ySegments: 10,
+        zSegments: 10,
         lod: 1.0 // Default
     });
 
@@ -85,9 +85,9 @@
 
         this["primitive"] = plane.primitive;
         this["xSize"] = plane.xSize;
-        this["ySize"] = plane.ySize;
+        this["zSize"] = plane.zSize;
         this["xSegments"] = plane.xSegments;
-        this["ySegments"] = plane.ySegments;
+        this["zSegments"] = plane.zSegments;
         this["lod"] = plane.lod;
 
         var self = this;
@@ -100,9 +100,9 @@
 
             plane.primitive = self["primitive"];
             plane.xSize = self["xSize"];
-            plane.ySize = self["ySize"];
+            plane.zSize = self["zSize"];
             plane.xSegments = self["xSegments"];
-            plane.ySegments = self["ySegments"];
+            plane.zSegments = self["zSegments"];
             plane.lod = self["lod"];
 
             requestAnimationFrame(update);
@@ -120,9 +120,9 @@
     var folder = gui.addFolder('plane');
     folder.add(menu, 'primitive', ["triangles", "lines", "points"]);
     folder.add(menu, 'xSize', 0.1, 10.0);
-    folder.add(menu, 'ySize', 0.1, 10.0);
+    folder.add(menu, 'zSize', 0.1, 10.0);
     folder.add(menu, 'xSegments', 1, 50);
-    folder.add(menu, 'ySegments', 1, 50);
+    folder.add(menu, 'zSegments', 1, 50);
     folder.add(menu, 'lod', 0.1, 1.0);
 
     folder.open();

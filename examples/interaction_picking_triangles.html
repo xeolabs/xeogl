@@ -53,10 +53,10 @@
             primitive: "triangles",
             src: "textures/height/mountain.png",
             xSize: 10,
-            ySize: 10,
-            zSize: 5,
+            ySize: 5,
+            zSize: 10,
             xSegments: 10,
-            ySegments: 10,
+            zSegments: 10,
             lod: 1.0, // Default
             autoNormals: true // Default
         }),
@@ -68,6 +68,9 @@
             diffuse: [0.3, 0.3, 1],
             lineWidth: 3,
             pointSize: 5
+        }),
+        modes: new XEO.Modes({
+            backfaces: true
         })
 
     });
@@ -77,7 +80,7 @@
     var view = terrainObject.scene.camera.view;
 
     view.zoom(2);
-    view.rotateEyeX(-60);
+    view.rotateEyeX(60);
     view.rotateEyeY(-20);
 
 

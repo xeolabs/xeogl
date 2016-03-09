@@ -511,7 +511,7 @@
                      * @type Number
                      * @param value The property's new value
                      */
-                    this.fire("ySize", this._ySize);
+                    this.fire("zSize", this._ySize);
                 },
 
                 get: function () {

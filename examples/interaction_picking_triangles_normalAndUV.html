@@ -88,15 +88,19 @@
             primitive: "triangles",
             src: "textures/height/everest.png",
             xSize: 10,
-            ySize: 10,
-            zSize: 3,
+            ySize: 3,
+            zSize: 10,
             xSegments: 60,
-            ySegments: 60
+            zSegments: 60
         }),
         transform: new XEO.Translate({
             xyz: [0, 0, 0]
         }),
-        material: material
+        material: material,
+
+        modes: new XEO.Modes({
+            backfaces: true
+        })
     });
 
     // Torus
@@ -164,7 +168,7 @@
     var view = scene.camera.view;
 
     view.zoom(15);
-    view.rotateEyeX(-30);
+    view.rotateEyeX(30);
     view.rotateEyeY(50);
 
 

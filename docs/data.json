@@ -4293,8 +4293,8 @@
                             "optdefault": "1"
                         },
                         {
-                            "name": "ySize",
-                            "description": "Dimension on the Y-axis.",
+                            "name": "zSize",
+                            "description": "Dimension on the Z-axis.",
                             "type": "Number",
                             "optional": true,
                             "optdefault": "1"
@@ -4307,8 +4307,8 @@
                             "optdefault": "1"
                         },
                         {
-                            "name": "ySegments",
-                            "description": "Number of segments on the Y-axis.",
+                            "name": "zSegments",
+                            "description": "Number of segments on the Z-axis.",
                             "type": "Number",
                             "optional": true,
                             "optdefault": "1"
@@ -12720,9 +12720,9 @@
         {
             "file": "src/geometry/planeGeometry.js",
             "line": 242,
-            "description": "The PlaneGeometry's dimension on the Y-axis.\n\nFires a {{#crossLink \"PlaneGeometry/ySize:event\"}}{{/crossLink}} event on change.",
+            "description": "The PlaneGeometry's dimension on the Y-axis.\n\nFires a {{#crossLink \"PlaneGeometry/zSize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
-            "name": "ySize",
+            "name": "zSize",
             "default": "1.0",
             "type": "Number",
             "class": "PlaneGeometry",
@@ -12732,9 +12732,9 @@
         {
             "file": "src/geometry/planeGeometry.js",
             "line": 270,
-            "description": "Fired whenever this PlaneGeometry's {{#crossLink \"PlaneGeometry/ySize:property\"}}{{/crossLink}} property changes.",
+            "description": "Fired whenever this PlaneGeometry's {{#crossLink \"PlaneGeometry/zSize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
-            "name": "ySize",
+            "name": "zSize",
             "type": "Number",
             "params": [
                 {
@@ -12778,9 +12778,9 @@
         {
             "file": "src/geometry/planeGeometry.js",
             "line": 326,
-            "description": "The PlaneGeometry's number of segments on the Y-axis.\n\nFires a {{#crossLink \"PlaneGeometry/ySegments:event\"}}{{/crossLink}} event on change.",
+            "description": "The PlaneGeometry's number of segments on the Y-axis.\n\nFires a {{#crossLink \"PlaneGeometry/zSegments:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
-            "name": "ySegments",
+            "name": "zSegments",
             "default": "1",
             "type": "Number",
             "class": "PlaneGeometry",
@@ -12790,9 +12790,9 @@
         {
             "file": "src/geometry/planeGeometry.js",
             "line": 354,
-            "description": "Fired whenever this PlaneGeometry's {{#crossLink \"PlaneGeometry/ySegments:property\"}}{{/crossLink}} property changes.",
+            "description": "Fired whenever this PlaneGeometry's {{#crossLink \"PlaneGeometry/zSegments:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
-            "name": "ySegments",
+            "name": "zSegments",
             "type": "Number",
             "params": [
                 {
