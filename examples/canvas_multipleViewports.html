@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>partitioning the canvas into four <a
+        href="../docs/classes/Viewport.html"
+        target="_docs">Viewports</a>
+</div>
+
+<script>
+
+    var entity1 = new XEO.Entity({
+        geometry: new XEO.SphereGeometry(),
+        material: new XEO.PhongMaterial({
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            })
+        }),
+
+        viewport: new XEO.Viewport({
+            boundary: [0, 0, 500, 400],
+            autoBoundary: false
+        })
+    });
+
+
+    var entity2 = new XEO.Entity({
+        geometry: new XEO.TorusGeometry(),
+        material: new XEO.PhongMaterial({
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            })
+        }),
+
+        viewport: new XEO.Viewport({
+            boundary: [510, 0, 500, 400],
+            autoBoundary: false
+        })
+    });
+
+    var entity3 = new XEO.Entity({
+        geometry: new XEO.TorusGeometry(),
+        material: new XEO.PhongMaterial({
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            })
+        }),
+
+        viewport: new XEO.Viewport({
+            boundary: [0, 500, 510, 400],
+            autoBoundary: false
+        })
+    });
+
+    var entity4 = new XEO.Entity({
+        geometry: new XEO.BoxGeometry(),
+        material: new XEO.PhongMaterial({
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            })
+        }),
+
+        viewport: new XEO.Viewport({
+            boundary: [200, 500, 510, 400],
+            autoBoundary: false
+        })
+    });
+
+    var scene = XEO.scene;
+
+    scene.camera.view.eye = [0,0,1.5];
+
+    scene.on("tick",
+            function () {
+                this.camera.view.rotateEyeY(-0.5);
+                this.camera.view.rotateEyeX(0.3);
+            });
+
+    scene.canvas.on("size",
+            function (e) {
+
+                var width = e.width / 2;
+                var height = e.height / 2;
+
+                entity1.viewport.boundary = [0, 0, width, height];
+                entity2.viewport.boundary = [width, 0, width, height];
+
+                entity3.viewport.boundary = [0, height, width, height];
+                entity4.viewport.boundary = [width, height, width, height];
+            });
+
+</script>
+</body>
+</html>

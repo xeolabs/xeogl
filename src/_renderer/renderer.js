@@ -287,6 +287,13 @@
          */
         this.geometry = null;
 
+        /**
+         Viewport render state.
+         @property viewport
+         @type {renderer.Viewport}
+         */
+        this.viewport = null;
+
 
         //----------------- Renderer dirty flags -------------------------------
 
@@ -394,6 +401,7 @@
         object.modes = this.modes;
         object.billboard = this.billboard;
         object.stationary = this.stationary;
+        object.viewport = this.viewport;
 
         // Build hash of the object's state configuration. This is used
         // to hash the object's shader so that it may be reused by other
@@ -467,8 +475,9 @@
         this._setChunk(object, 9, "lights", this.lights);
         this._setChunk(object, 10, this.material.type, this.material); // Supports different material systems
         this._setChunk(object, 11, "clips", this.clips);
-        this._setChunk(object, 12, "geometry", this.geometry);
-        this._setChunk(object, 13, "draw", this.geometry, true); // Must be last
+        this._setChunk(object, 12, "viewport", this.viewport);
+        this._setChunk(object, 13, "geometry", this.geometry);
+        this._setChunk(object, 14, "draw", this.geometry, true); // Must be last
 
         if (!this.objects[objectId]) {
 

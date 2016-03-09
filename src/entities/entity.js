@@ -224,6 +224,7 @@
             this.transform = cfg.transform;
             this.billboard = cfg.billboard;
             this.stationary = cfg.stationary;
+            this.viewport = cfg.viewport;
 
             // Cached boundary for each coordinate space
             // The Entity's Geometry component caches the Local-space boundary
@@ -945,6 +946,37 @@
             },
 
             /**
+             * The {{#crossLink "Viewport"}}{{/crossLink}} attached to this Entity.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/viewport:property"}}viewport{{/crossLink}}
+             * when set to a null or undefined value.
+             *
+             * Fires an {{#crossLink "Entity/viewport:event"}}{{/crossLink}} event on change.
+             *
+             * @property viewport
+             * @type Viewport
+             */
+            viewport: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this Entity's {{#crossLink "Entity/viewport:property"}}{{/crossLink}}
+                     * property changes.
+                     *
+                     * @event viewport
+                     * @param value The property's new value
+                     */
+                    this._setChild("XEO.Viewport", "viewport", value);
+                },
+
+                get: function () {
+                    return this._children.viewport;
+                }
+            },
+
+            /**
              * The {{#crossLink "Stationary"}}{{/crossLink}} attached to this Entity.
              *
              * When {{#crossLink "Stationary/property:active"}}{{/crossLink}}, the {{#crossLink "Stationary"}}{{/crossLink}}
@@ -1355,6 +1387,7 @@
             children.transform._compile();
             children.billboard._compile();
             children.stationary._compile();
+            children.viewport._compile();
 
             // (Re)build this Entity in the renderer; for each Entity in teh scene graph,
             // there is an "object" in the renderer, that has the same ID as the entity
@@ -1407,7 +1440,8 @@
                 stage: children.stage.id,
                 transform: children.transform.id,
                 billboard: children.billboard.id,
-                stationary: children.stationary.id
+                stationary: children.stationary.id,
+                viewport: children.viewport.id
             };
         },
 

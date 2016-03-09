@@ -120,7 +120,7 @@
 
                     this._left = (value !== undefined && value !== null) ? value : -1.0;
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Ortho's  {{#crossLink "Ortho/left:property"}}{{/crossLink}} property changes.

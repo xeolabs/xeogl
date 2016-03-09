@@ -308,7 +308,7 @@
                     eye[1] = value[1];
                     eye[2] = value[2];
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Lookat's  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} property changes.
@@ -345,7 +345,7 @@
                     look[1] = value[1];
                     look[2] = value[2];
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0);; // Ensure matrix built on next "tick";
 
                     /**
                      * Fired whenever this Lookat's  {{#crossLink "Lookat/look:property"}}{{/crossLink}} property changes.
@@ -380,7 +380,7 @@
                     up[1] = value[1];
                     up[2] = value[2];
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Lookat's  {{#crossLink "Lookat/up:property"}}{{/crossLink}} property changes.

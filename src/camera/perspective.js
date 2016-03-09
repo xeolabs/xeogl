@@ -129,7 +129,7 @@
 
                     this._renderer.imageDirty = true;
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Perspective's {{#crossLink "Perspective/fovy:property"}}{{/crossLink}} property changes.
@@ -162,7 +162,7 @@
 
                     this._renderer.imageDirty = true;
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Perspective's   {{#crossLink "Perspective/near:property"}}{{/crossLink}} property changes.
@@ -194,7 +194,7 @@
 
                     this._renderer.imageDirty = true;
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Perspective's  {{#crossLink "Perspective/far:property"}}{{/crossLink}} property changes.

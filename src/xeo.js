@@ -116,6 +116,11 @@
                 deltaTime: null
             };
 
+            var renderEvent = {
+                sceneId: null,
+                pass: null
+            };
+
             // Hoisted vars
 
             var taskBudget = 8; // How long we're allowed to spend on tasks in each frame
@@ -191,9 +196,32 @@
             }
 
             function render() {
+
+                var scene;
+                var passes;
+                var i;
+                var clear;
+
                 for (id in self.scenes) {
                     if (self.scenes.hasOwnProperty(id)) {
-                        self.scenes[id]._compile(); // Render, maybe rebuild draw list first
+
+                        scene = self.scenes[id];
+                        passes = scene.passes;
+
+                        renderEvent.sceneId = id;
+
+                        for (i = 0; i < passes; i++) {
+
+                            renderEvent.pass = i;
+
+                            scene.fire("rendering", renderEvent, true);
+
+                            clear = (i === 0);
+
+                            scene._compile(clear); // Render, maybe rebuild draw list first
+
+                            scene.fire("rendered", renderEvent, true);
+                        }
                     }
                 }
             }
@@ -289,6 +317,14 @@
         scheduleTask: function (callback, scope) {
             this._taskQueue.push(callback);
             this._taskQueue.push(scope);
+        },
+
+        deferTask: function (callback, scope) {
+            if (scope) {
+                callback.call(scope);
+            } else {
+                callback();
+            }
         },
 
         // Pops and propcesses tasks in the queue, until the

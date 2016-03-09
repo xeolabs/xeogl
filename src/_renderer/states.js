@@ -421,6 +421,21 @@
         _ids: new XEO.utils.Map({})
     });
 
+    /**
+
+     Viewport state.
+
+     renderer.Viewport
+     @module XEO
+
+     @constructor
+     @param cfg {*} Configs
+     @param cfg.boundary {Array of Number} Canvas-space viewport extents.
+     @extends renderer.State
+     */
+    XEO.renderer.Viewport = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
 })();
 
 

@@ -119,7 +119,7 @@
 
                     this._left = (value !== undefined && value !== null) ? value : -1.0;
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Frustum's {{#crossLink "Frustum/left:property"}}{{/crossLink}} property changes.
@@ -150,7 +150,7 @@
 
                     this._right = (value !== undefined && value !== null) ? value : 1.0;
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Frustum's {{#crossLink "Frustum/right:property"}}{{/crossLink}} property changes.
@@ -181,7 +181,7 @@
 
                     this._top = (value !== undefined && value !== null) ? value : 1.0;
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Frustum's   {{#crossLink "Frustum/top:property"}}{{/crossLink}} property changes.
@@ -212,7 +212,7 @@
 
                     this._bottom = (value !== undefined && value !== null) ? value : -1.0;
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Frustum's   {{#crossLink "Frustum/bottom:property"}}{{/crossLink}} property changes.
@@ -243,7 +243,7 @@
 
                     this._near = (value !== undefined && value !== null) ? value : 0.1;
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Frustum's {{#crossLink "Frustum/near:property"}}{{/crossLink}} property changes.
@@ -274,7 +274,7 @@
 
                     this._far = (value !== undefined && value !== null) ? value : 10000.0;
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Frustum's  {{#crossLink "Frustum/far:property"}}{{/crossLink}} property changes.

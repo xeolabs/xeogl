@@ -861,18 +861,22 @@
         /**
          * Protected method, called by sub-classes to queue a call to _update().
          * @protected
+         * @param {Number} [priority=1]
          */
-        _scheduleUpdate: function () {
+        _scheduleUpdate: function (priority) {
 
             if (!this._updateScheduled) {
 
                 this._updateScheduled = true;
                 this._buildScheduled = true;
 
-                XEO.scheduleTask(this._doUpdate, this);
+                if (priority === 0) {
+                    XEO.deferTask(this._doUpdate, this);
+                } else {
+                    XEO.scheduleTask(this._doUpdate, this);
+                }
             }
-        }
-        ,
+        },
 
         /**
          * @private

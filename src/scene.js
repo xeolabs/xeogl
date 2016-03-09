@@ -187,6 +187,7 @@
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Scene.
  @param [cfg.canvasId] {String} ID of existing HTML5 canvas in the DOM - creates a full-page canvas automatically if this is omitted
  @param [cfg.components] {Array(Object)} JSON array containing parameters for {{#crossLink "Component"}}Component{{/crossLink}} subtypes to immediately create within the Scene.
+ @param [cfg.passes=1] The number of times this Scene renders per frame.
  @extends Component
  */
 (function () {
@@ -380,6 +381,8 @@
             // These may have already been created in the JSON above.
 
             this._initDefaults();
+
+            this.passes = cfg.passes;
         },
 
         _initDefaults: function () {
@@ -409,6 +412,7 @@
             dummy = this.shaderParams;
             dummy = this.stage;
             dummy = this.transform;
+            dummy = this.viewport;
         },
 
         // Called by each component that is created with this Scene as parent.
@@ -535,6 +539,50 @@
 
         _props: {
 
+            /**
+             * The number of times this Scene renders per frame.
+             *
+             * @property passes
+             * @default 1
+             * @type Number
+             */
+            passes: {
+
+                set: function (value) {
+
+                    if (value === undefined || value === null) {
+                        value = 1;
+
+                    } else if (!XEO._isNumeric(value) || value <= 0) {
+
+                        this.error("Unsupported value for 'passes': '" + value +
+                            "' - should be an integer greater than zero.");
+
+                        value = 1;
+                    }
+
+                    if (value === this._passes) {
+                        return;
+                    }
+
+                    this._passes = value;
+
+                    this._renderer.drawListDirty = true;
+
+                    /**
+                     Fired whenever this Scene's {{#crossLink "Scene/passes:property"}}{{/crossLink}} property changes.
+
+                     @event passes
+                     @param value {Boolean} The property's new value
+                     */
+                    this.fire("passes", this._passes);
+                },
+
+                get: function () {
+                    return this._passes;
+                }
+            },
+            
             /**
              * The default projection transform provided by this Scene, which is
              * a {{#crossLink "Perspective"}}Perspective{{/crossLink}}.
@@ -1107,6 +1155,31 @@
             },
 
             /**
+             * The default {{#crossLink "Viewport"}}{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink "Viewport"}}{{/crossLink}} has
+             * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.viewport" and
+             * {{#crossLink "Viewport/autoBoundary:property"}}{{/crossLink}} set ````true````.
+             *
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Viewport"}}{{/crossLink}} by default.
+             *
+             * @property viewport
+             * @final
+             * @type Viewport
+             */
+            viewport: {
+                get: function () {
+                    return this.components["default.viewport"] ||
+                        new XEO.Viewport(this, {
+                            id: "default.viewport",
+                            autoBoundary: true,
+                            isDefault: true
+                        });
+                }
+            },
+
+            /**
              * The World-space 3D boundary of this Scene.
              *
              * The {{#crossLink "Boundary3D"}}{{/crossLink}} will be lazy-initialized the first time
@@ -1604,7 +1677,7 @@
          * Compiles and renders this Scene
          * @private
          */
-        _compile: function () {
+        _compile: function (clear) {
 
             // Compile dirty entities into this._renderer
 
@@ -1643,7 +1716,7 @@
             // Only renders if there was a state update
 
             this._renderer.render({
-                clear: true // Clear buffers
+                clear: clear !== false // Clear buffers?
             });
         },
 
