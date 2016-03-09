@@ -146,59 +146,62 @@
                 var depth = this._zSize;
 
                 var halfWidth = width / 2;
-                var halfHeight = height / 2;
+                var halfDepth = depth / 2;
 
                 var gridX = Math.floor(xSegments) || 1;
-                var gridY = Math.floor(zSegments) || 1;
+                var gridZ = Math.floor(zSegments) || 1;
 
                 var gridX1 = gridX + 1;
-                var gridY1 = gridY + 1;
+                var gridZ1 = gridZ + 1;
 
                 var segmentWidth = width / gridX;
-                var segmentHeight = height / gridY;
+                var segmentDepth = depth / gridZ;
 
-                var positions = new Float32Array(gridX1 * gridY1 * 3);
-                var normals = new Float32Array(gridX1 * gridY1 * 3);
-                var uvs = new Float32Array(gridX1 * gridY1 * 2);
+                var positions = new Float32Array(gridX1 * gridZ1 * 3);
+                var normals = new Float32Array(gridX1 * gridZ1 * 3);
+                var uvs = new Float32Array(gridX1 * gridZ1 * 2);
 
                 var offset = 0;
                 var offset2 = 0;
 
                 var imgX;
-                var imgY;
+                var imgZ;
 
                 var x;
                 var y;
                 var z;
 
-                for (var iy = 0; iy < gridY1; iy++) {
+                var ix;
+                var iz;
 
-                    y = iy * segmentHeight - halfHeight;
+                for (iz = 0; iz < gridZ1; iz++) {
 
-                    for (var ix = 0; ix < gridX1; ix++) {
+                    z = iz * segmentDepth - halfDepth;
+
+                    for (ix = 0; ix < gridX1; ix++) {
 
                         x = ix * segmentWidth - halfWidth;
 
                         var x2 = ix * segmentWidth;
-                        var y2 = iy * segmentHeight;
+                        var z2 = iz * segmentDepth;
 
                         imgX = Math.round((x2 / width) * (imageWidth - 1));
-                        imgY = Math.round((y2 / height) * (imageHeight - 1));
+                        imgZ = Math.round((z2 / depth) * (imageHeight - 1));
 
-                        z = (this._imageData[(imageWidth * imgY + imgX) * 4]) / 255 * depth;
+                        y = (this._imageData[(imageWidth * imgZ + imgX) * 4]) / 255 * height;
 
-                        if (z == undefined || isNaN(z)) {
-                            z = 0;
+                        if (y == undefined || isNaN(y)) {
+                            y = 0;
                         }
 
                         positions[offset] = x;
-                        positions[offset + 1] = -z;
-                        positions[offset + 2] = -y;
+                        positions[offset + 1] = y;
+                        positions[offset + 2] = -z;
 
-                        normals[offset + 2] = -1;
+                        normals[offset + 1] = -1;
 
                         uvs[offset2] = (gridX - ix) / gridX;
-                        uvs[offset2 + 1] = 1 - ( iy / gridY );
+                        uvs[offset2 + 1] = 1 - ( iz / gridZ );
 
                         offset += 3;
                         offset2 += 2;
@@ -208,16 +211,16 @@
 
                 offset = 0;
 
-                var indices = new ( ( positions.length / 3 ) > 65535 ? Uint32Array : Uint16Array )(gridX * gridY * 6);
+                var indices = new ( ( positions.length / 3 ) > 65535 ? Uint32Array : Uint16Array )(gridX * gridZ * 6);
 
-                for (var iy = 0; iy < gridY; iy++) {
+                for (iz = 0; iz < gridZ; iz++) {
 
-                    for (var ix = 0; ix < gridX; ix++) {
+                    for (ix = 0; ix < gridX; ix++) {
 
-                        var a = ix + gridX1 * iy;
-                        var b = ix + gridX1 * ( iy + 1 );
-                        var c = ( ix + 1 ) + gridX1 * ( iy + 1 );
-                        var d = ( ix + 1 ) + gridX1 * iy;
+                        var a = ix + gridX1 * iz;
+                        var b = ix + gridX1 * ( iz + 1 );
+                        var c = ( ix + 1 ) + gridX1 * ( iz + 1 );
+                        var d = ( ix + 1 ) + gridX1 * iz;
 
                         indices[offset] = d;
                         indices[offset + 1] = b;
