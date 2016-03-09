@@ -24105,9 +24105,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this PlaneGeometry.
  @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
  @param [cfg.xSize=1] {Number} Dimension on the X-axis.
- @param [cfg.ySize=1] {Number} Dimension on the Y-axis.
+ @param [cfg.zSize=1] {Number} Dimension on the Z-axis.
  @param [cfg.xSegments=1] {Number} Number of segments on the X-axis.
- @param [cfg.ySegments=1] {Number} Number of segments on the Y-axis.
+ @param [cfg.zSegments=1] {Number} Number of segments on the Z-axis.
 
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
@@ -24125,10 +24125,10 @@ XEO.PathGeometry = XEO.Geometry.extend({
             this._super(cfg);
 
             this.xSize = cfg.xSize;
-            this.ySize = cfg.ySize;
+            this.zSize = cfg.zSize;
 
             this.xSegments = cfg.xSegments;
-            this.ySegments = cfg.ySegments;
+            this.zSegments = cfg.zSegments;
 
             this.lod = cfg.lod;
 
@@ -24146,39 +24146,39 @@ XEO.PathGeometry = XEO.Geometry.extend({
             // Geometry needs rebuild
 
             var width = this._xSize;
-            var height = this._ySize;
+            var height = this._zSize;
 
             var xSegments = Math.floor(this._lod * this._xSegments);
-            var ySegments = Math.floor(this._lod * this._ySegments);
+            var zSegments = Math.floor(this._lod * this._zSegments);
 
-            if (ySegments < 1) {
-                ySegments = 1;
+            if (zSegments < 1) {
+                zSegments = 1;
             }
 
-            if (ySegments < 1) {
-                ySegments = 1;
+            if (zSegments < 1) {
+                zSegments = 1;
             }
 
             var halfWidth = width / 2;
             var halfHeight = height / 2;
 
             var planeX = Math.floor(xSegments) || 1;
-            var planeY = Math.floor(ySegments) || 1;
+            var planeZ = Math.floor(zSegments) || 1;
 
             var planeX1 = planeX + 1;
-            var planeY1 = planeY + 1;
+            var planeZ1 = planeZ + 1;
 
             var segmentWidth = width / planeX;
-            var segmentHeight = height / planeY;
+            var segmentHeight = height / planeZ;
 
-            var positions = new Float32Array(planeX1 * planeY1 * 3);
-            var normals = new Float32Array(planeX1 * planeY1 * 3);
-            var uvs = new Float32Array(planeX1 * planeY1 * 2);
+            var positions = new Float32Array(planeX1 * planeZ1 * 3);
+            var normals = new Float32Array(planeX1 * planeZ1 * 3);
+            var uvs = new Float32Array(planeX1 * planeZ1 * 2);
 
             var offset = 0;
             var offset2 = 0;
 
-            var iy;
+            var iz;
             var ix;
             var x;
             var a;
@@ -24186,21 +24186,21 @@ XEO.PathGeometry = XEO.Geometry.extend({
             var c;
             var d;
 
-            for (iy = 0; iy < planeY1; iy++) {
+            for (iz = 0; iz < planeZ1; iz++) {
 
-                var y = iy * segmentHeight - halfHeight;
+                var z = iz * segmentHeight - halfHeight;
 
                 for (ix = 0; ix < planeX1; ix++) {
 
                     x = ix * segmentWidth - halfWidth;
 
                     positions[offset] = x;
-                    positions[offset + 1] = -y;
+                    positions[offset + 2] = -z;
 
                     normals[offset + 2] = -1;
 
                     uvs[offset2] = (planeX - ix) / planeX;
-                    uvs[offset2 + 1] = ( (planeY - iy) / planeY );
+                    uvs[offset2 + 1] = ( (planeZ - iz) / planeZ );
 
                     offset += 3;
                     offset2 += 2;
@@ -24209,16 +24209,16 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
             offset = 0;
 
-            var indices = new ( ( positions.length / 3 ) > 65535 ? Uint32Array : Uint16Array )(planeX * planeY * 6);
+            var indices = new ( ( positions.length / 3 ) > 65535 ? Uint32Arraz : Uint16Array )(planeX * planeZ * 6);
 
-            for (iy = 0; iy < planeY; iy++) {
+            for (iz = 0; iz < planeZ; iz++) {
 
                 for (ix = 0; ix < planeX; ix++) {
 
-                    a = ix + planeX1 * iy;
-                    b = ix + planeX1 * ( iy + 1 );
-                    c = ( ix + 1 ) + planeX1 * ( iy + 1 );
-                    d = ( ix + 1 ) + planeX1 * iy;
+                    a = ix + planeX1 * iz;
+                    b = ix + planeX1 * ( iz + 1 );
+                    c = ( ix + 1 ) + planeX1 * ( iz + 1 );
+                    d = ( ix + 1 ) + planeX1 * iz;
 
                     indices[offset] = d;
                     indices[offset + 1] = b;
@@ -24328,42 +24328,42 @@ XEO.PathGeometry = XEO.Geometry.extend({
             /**
              * The PlaneGeometry's dimension on the Y-axis.
              *
-             * Fires a {{#crossLink "PlaneGeometry/ySize:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "PlaneGeometry/zSize:event"}}{{/crossLink}} event on change.
              *
-             * @property ySize
+             * @property zSize
              * @default 1.0
              * @type Number
              */
-            ySize: {
+            zSize: {
 
                 set: function (value) {
 
                     value = value || 1.0;
 
-                    if (this._ySize === value) {
+                    if (this._zSize === value) {
                         return;
                     }
 
                     if (value < 0) {
-                        this.warn("negative ySize not allowed - will invert");
+                        this.warn("negative zSize not allowed - will invert");
                         value = value * -1;
                     }
 
-                    this._ySize = value;
+                    this._zSize = value;
 
                     this._scheduleUpdate();
 
                     /**
-                     * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/ySize:property"}}{{/crossLink}} property changes.
-                     * @event ySize
+                     * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/zSize:property"}}{{/crossLink}} property changes.
+                     * @event zSize
                      * @type Number
                      * @param value The property's new value
                      */
-                    this.fire("ySize", this._ySize);
+                    this.fire("zSize", this._zSize);
                 },
 
                 get: function () {
-                    return this._ySize;
+                    return this._zSize;
                 }
             },
 
@@ -24412,42 +24412,42 @@ XEO.PathGeometry = XEO.Geometry.extend({
             /**
              * The PlaneGeometry's number of segments on the Y-axis.
              *
-             * Fires a {{#crossLink "PlaneGeometry/ySegments:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "PlaneGeometry/zSegments:event"}}{{/crossLink}} event on change.
              *
-             * @property ySegments
+             * @property zSegments
              * @default 1
              * @type Number
              */
-            ySegments: {
+            zSegments: {
 
                 set: function (value) {
 
                     value = value || 1;
 
-                    if (this._ySegments === value) {
+                    if (this._zSegments === value) {
                         return;
                     }
 
                     if (value < 0) {
-                        this.warn("negative ySegments not allowed - will invert");
+                        this.warn("negative zSegments not allowed - will invert");
                         value = value * -1;
                     }
 
-                    this._ySegments = value;
+                    this._zSegments = value;
 
                     this._scheduleUpdate();
 
                     /**
-                     * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/ySegments:property"}}{{/crossLink}} property changes.
-                     * @event ySegments
+                     * Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/zSegments:property"}}{{/crossLink}} property changes.
+                     * @event zSegments
                      * @type Number
                      * @param value The property's new value
                      */
-                    this.fire("ySegments", this._ySegments);
+                    this.fire("zSegments", this._zSegments);
                 },
 
                 get: function () {
-                    return this._ySegments;
+                    return this._zSegments;
                 }
             }
         },
@@ -24455,9 +24455,9 @@ XEO.PathGeometry = XEO.Geometry.extend({
         _getJSON: function () {
             return {
                 xSize: this._xSize,
-                ySize: this._ySize,
+                zSize: this._zSize,
                 xSegments: this._xSegments,
-                ySegments: this._ySegments
+                zSegments: this._zSegments
             };
         }
     });
