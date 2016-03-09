@@ -115,6 +115,7 @@
                                 <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
@@ -604,6 +605,21 @@
         _ids: new XEO.utils.Map({})
     });
 
+    /**
+
+     Viewport state.
+
+     renderer.Viewport
+     @module XEO
+
+     @constructor
+     @param cfg {*} Configs
+     @param cfg.boundary {Array of Number} Canvas-space viewport extents.
+     @extends renderer.State
+     */
+    XEO.renderer.Viewport = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
 })();
 
 

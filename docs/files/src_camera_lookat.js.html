@@ -115,6 +115,7 @@
                                 <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
@@ -491,7 +492,7 @@
                     eye[1] = value[1];
                     eye[2] = value[2];
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next &quot;tick&quot;
 
                     /**
                      * Fired whenever this Lookat&#x27;s  {{#crossLink &quot;Lookat/eye:property&quot;}}{{/crossLink}} property changes.
@@ -528,7 +529,7 @@
                     look[1] = value[1];
                     look[2] = value[2];
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0);; // Ensure matrix built on next &quot;tick&quot;;
 
                     /**
                      * Fired whenever this Lookat&#x27;s  {{#crossLink &quot;Lookat/look:property&quot;}}{{/crossLink}} property changes.
@@ -563,7 +564,7 @@
                     up[1] = value[1];
                     up[2] = value[2];
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next &quot;tick&quot;
 
                     /**
                      * Fired whenever this Lookat&#x27;s  {{#crossLink &quot;Lookat/up:property&quot;}}{{/crossLink}} property changes.

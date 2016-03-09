@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-03-07
+ * Built on 2016-03-09
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -130,6 +130,11 @@
                 deltaTime: null
             };
 
+            var renderEvent = {
+                sceneId: null,
+                pass: null
+            };
+
             // Hoisted vars
 
             var taskBudget = 8; // How long we're allowed to spend on tasks in each frame
@@ -205,9 +210,32 @@
             }
 
             function render() {
+
+                var scene;
+                var passes;
+                var i;
+                var clear;
+
                 for (id in self.scenes) {
                     if (self.scenes.hasOwnProperty(id)) {
-                        self.scenes[id]._compile(); // Render, maybe rebuild draw list first
+
+                        scene = self.scenes[id];
+                        passes = scene.passes;
+
+                        renderEvent.sceneId = id;
+
+                        for (i = 0; i < passes; i++) {
+
+                            renderEvent.pass = i;
+
+                            scene.fire("rendering", renderEvent, true);
+
+                            clear = (i === 0);
+
+                            scene._compile(clear); // Render, maybe rebuild draw list first
+
+                            scene.fire("rendered", renderEvent, true);
+                        }
                     }
                 }
             }
@@ -303,6 +331,14 @@
         scheduleTask: function (callback, scope) {
             this._taskQueue.push(callback);
             this._taskQueue.push(scope);
+        },
+
+        deferTask: function (callback, scope) {
+            if (scope) {
+                callback.call(scope);
+            } else {
+                callback();
+            }
         },
 
         // Pops and propcesses tasks in the queue, until the
@@ -957,6 +993,13 @@
          */
         this.geometry = null;
 
+        /**
+         Viewport render state.
+         @property viewport
+         @type {renderer.Viewport}
+         */
+        this.viewport = null;
+
 
         //----------------- Renderer dirty flags -------------------------------
 
@@ -1064,6 +1107,7 @@
         object.modes = this.modes;
         object.billboard = this.billboard;
         object.stationary = this.stationary;
+        object.viewport = this.viewport;
 
         // Build hash of the object's state configuration. This is used
         // to hash the object's shader so that it may be reused by other
@@ -1137,8 +1181,9 @@
         this._setChunk(object, 9, "lights", this.lights);
         this._setChunk(object, 10, this.material.type, this.material); // Supports different material systems
         this._setChunk(object, 11, "clips", this.clips);
-        this._setChunk(object, 12, "geometry", this.geometry);
-        this._setChunk(object, 13, "draw", this.geometry, true); // Must be last
+        this._setChunk(object, 12, "viewport", this.viewport);
+        this._setChunk(object, 13, "geometry", this.geometry);
+        this._setChunk(object, 14, "draw", this.geometry, true); // Must be last
 
         if (!this.objects[objectId]) {
 
@@ -2310,6 +2355,21 @@
         _ids: new XEO.utils.Map({})
     });
 
+    /**
+
+     Viewport state.
+
+     renderer.Viewport
+     @module XEO
+
+     @constructor
+     @param cfg {*} Configs
+     @param cfg.boundary {Array of Number} Canvas-space viewport extents.
+     @extends renderer.State
+     */
+    XEO.renderer.Viewport = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
 })();
 
 
@@ -6337,7 +6397,29 @@
         }
     });
 
-})();;/**
+})();;(function () {
+
+    "use strict";
+
+    /**
+     *
+     */
+    XEO.renderer.ChunkFactory.createChunkType({
+
+        type: "viewport",
+
+        // Avoid re-application of this chunk after a program switch.
+
+        programGlobal: true,
+
+        draw: function () {
+            var boundary = this.state.boundary;
+            this.program.gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
+        }
+    });
+
+})();
+;/**
  * Math utilities.
  *
  * @module XEO
@@ -10177,18 +10259,22 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         /**
          * Protected method, called by sub-classes to queue a call to _update().
          * @protected
+         * @param {Number} [priority=1]
          */
-        _scheduleUpdate: function () {
+        _scheduleUpdate: function (priority) {
 
             if (!this._updateScheduled) {
 
                 this._updateScheduled = true;
                 this._buildScheduled = true;
 
-                XEO.scheduleTask(this._doUpdate, this);
+                if (priority === 0) {
+                    XEO.deferTask(this._doUpdate, this);
+                } else {
+                    XEO.scheduleTask(this._doUpdate, this);
+                }
             }
-        }
-        ,
+        },
 
         /**
          * @private
@@ -10564,6 +10650,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Scene.
  @param [cfg.canvasId] {String} ID of existing HTML5 canvas in the DOM - creates a full-page canvas automatically if this is omitted
  @param [cfg.components] {Array(Object)} JSON array containing parameters for {{#crossLink "Component"}}Component{{/crossLink}} subtypes to immediately create within the Scene.
+ @param [cfg.passes=1] The number of times this Scene renders per frame.
  @extends Component
  */
 (function () {
@@ -10757,6 +10844,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             // These may have already been created in the JSON above.
 
             this._initDefaults();
+
+            this.passes = cfg.passes;
         },
 
         _initDefaults: function () {
@@ -10786,6 +10875,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             dummy = this.shaderParams;
             dummy = this.stage;
             dummy = this.transform;
+            dummy = this.viewport;
         },
 
         // Called by each component that is created with this Scene as parent.
@@ -10912,6 +11002,50 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
         _props: {
 
+            /**
+             * The number of times this Scene renders per frame.
+             *
+             * @property passes
+             * @default 1
+             * @type Number
+             */
+            passes: {
+
+                set: function (value) {
+
+                    if (value === undefined || value === null) {
+                        value = 1;
+
+                    } else if (!XEO._isNumeric(value) || value <= 0) {
+
+                        this.error("Unsupported value for 'passes': '" + value +
+                            "' - should be an integer greater than zero.");
+
+                        value = 1;
+                    }
+
+                    if (value === this._passes) {
+                        return;
+                    }
+
+                    this._passes = value;
+
+                    this._renderer.drawListDirty = true;
+
+                    /**
+                     Fired whenever this Scene's {{#crossLink "Scene/passes:property"}}{{/crossLink}} property changes.
+
+                     @event passes
+                     @param value {Boolean} The property's new value
+                     */
+                    this.fire("passes", this._passes);
+                },
+
+                get: function () {
+                    return this._passes;
+                }
+            },
+            
             /**
              * The default projection transform provided by this Scene, which is
              * a {{#crossLink "Perspective"}}Perspective{{/crossLink}}.
@@ -11484,6 +11618,31 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             },
 
             /**
+             * The default {{#crossLink "Viewport"}}{{/crossLink}} provided by this Scene.
+             *
+             * This {{#crossLink "Viewport"}}{{/crossLink}} has
+             * an {{#crossLink "Component/id:property"}}id{{/crossLink}} equal to "default.viewport" and
+             * {{#crossLink "Viewport/autoBoundary:property"}}{{/crossLink}} set ````true````.
+             *
+             * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
+             * {{#crossLink "Viewport"}}{{/crossLink}} by default.
+             *
+             * @property viewport
+             * @final
+             * @type Viewport
+             */
+            viewport: {
+                get: function () {
+                    return this.components["default.viewport"] ||
+                        new XEO.Viewport(this, {
+                            id: "default.viewport",
+                            autoBoundary: true,
+                            isDefault: true
+                        });
+                }
+            },
+
+            /**
              * The World-space 3D boundary of this Scene.
              *
              * The {{#crossLink "Boundary3D"}}{{/crossLink}} will be lazy-initialized the first time
@@ -11981,7 +12140,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          * Compiles and renders this Scene
          * @private
          */
-        _compile: function () {
+        _compile: function (clear) {
 
             // Compile dirty entities into this._renderer
 
@@ -12020,7 +12179,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             // Only renders if there was a state update
 
             this._renderer.render({
-                clear: true // Clear buffers
+                clear: clear !== false // Clear buffers?
             });
         },
 
@@ -13360,7 +13519,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._left = (value !== undefined && value !== null) ? value : -1.0;
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Frustum's {{#crossLink "Frustum/left:property"}}{{/crossLink}} property changes.
@@ -13391,7 +13550,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._right = (value !== undefined && value !== null) ? value : 1.0;
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Frustum's {{#crossLink "Frustum/right:property"}}{{/crossLink}} property changes.
@@ -13422,7 +13581,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._top = (value !== undefined && value !== null) ? value : 1.0;
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Frustum's   {{#crossLink "Frustum/top:property"}}{{/crossLink}} property changes.
@@ -13453,7 +13612,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._bottom = (value !== undefined && value !== null) ? value : -1.0;
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Frustum's   {{#crossLink "Frustum/bottom:property"}}{{/crossLink}} property changes.
@@ -13484,7 +13643,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._near = (value !== undefined && value !== null) ? value : 0.1;
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Frustum's {{#crossLink "Frustum/near:property"}}{{/crossLink}} property changes.
@@ -13515,7 +13674,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._far = (value !== undefined && value !== null) ? value : 10000.0;
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Frustum's  {{#crossLink "Frustum/far:property"}}{{/crossLink}} property changes.
@@ -13915,7 +14074,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     eye[1] = value[1];
                     eye[2] = value[2];
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Lookat's  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} property changes.
@@ -13952,7 +14111,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     look[1] = value[1];
                     look[2] = value[2];
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0);; // Ensure matrix built on next "tick";
 
                     /**
                      * Fired whenever this Lookat's  {{#crossLink "Lookat/look:property"}}{{/crossLink}} property changes.
@@ -13987,7 +14146,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     up[1] = value[1];
                     up[2] = value[2];
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Lookat's  {{#crossLink "Lookat/up:property"}}{{/crossLink}} property changes.
@@ -14196,7 +14355,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._left = (value !== undefined && value !== null) ? value : -1.0;
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Ortho's  {{#crossLink "Ortho/left:property"}}{{/crossLink}} property changes.
@@ -14567,7 +14726,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._renderer.imageDirty = true;
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Perspective's {{#crossLink "Perspective/fovy:property"}}{{/crossLink}} property changes.
@@ -14600,7 +14759,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._renderer.imageDirty = true;
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Perspective's   {{#crossLink "Perspective/near:property"}}{{/crossLink}} property changes.
@@ -14632,7 +14791,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     this._renderer.imageDirty = true;
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
                      * Fired whenever this Perspective's  {{#crossLink "Perspective/far:property"}}{{/crossLink}} property changes.
@@ -32031,6 +32190,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             this.transform = cfg.transform;
             this.billboard = cfg.billboard;
             this.stationary = cfg.stationary;
+            this.viewport = cfg.viewport;
 
             // Cached boundary for each coordinate space
             // The Entity's Geometry component caches the Local-space boundary
@@ -32752,6 +32912,37 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
+             * The {{#crossLink "Viewport"}}{{/crossLink}} attached to this Entity.
+             *
+             * Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/viewport:property"}}viewport{{/crossLink}}
+             * when set to a null or undefined value.
+             *
+             * Fires an {{#crossLink "Entity/viewport:event"}}{{/crossLink}} event on change.
+             *
+             * @property viewport
+             * @type Viewport
+             */
+            viewport: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this Entity's {{#crossLink "Entity/viewport:property"}}{{/crossLink}}
+                     * property changes.
+                     *
+                     * @event viewport
+                     * @param value The property's new value
+                     */
+                    this._setChild("XEO.Viewport", "viewport", value);
+                },
+
+                get: function () {
+                    return this._children.viewport;
+                }
+            },
+
+            /**
              * The {{#crossLink "Stationary"}}{{/crossLink}} attached to this Entity.
              *
              * When {{#crossLink "Stationary/property:active"}}{{/crossLink}}, the {{#crossLink "Stationary"}}{{/crossLink}}
@@ -33162,6 +33353,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             children.transform._compile();
             children.billboard._compile();
             children.stationary._compile();
+            children.viewport._compile();
 
             // (Re)build this Entity in the renderer; for each Entity in teh scene graph,
             // there is an "object" in the renderer, that has the same ID as the entity
@@ -33214,7 +33406,8 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 stage: children.stage.id,
                 transform: children.transform.id,
                 billboard: children.billboard.id,
-                stationary: children.stationary.id
+                stationary: children.stationary.id,
+                viewport: children.viewport.id
             };
         },
 
@@ -34655,6 +34848,194 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
         _destroy: function () {
             this._state.destroy();
+        }
+    });
+
+})();
+;/**
+ A **Viewport** defines a viewport within the canvas in which attached {{#crossLink "Entity"}}Entities{{/crossLink}} will render.
+
+ <ul>
+ <li>Make a Viewport automatically size to its {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}{{/crossLink}}
+ by setting its {{#crossLink "Viewport/autoBoundary:property"}}{{/crossLink}} property ````true```` (default is ````false````).</li>
+ </ul>
+ ## Example
+
+ ````javascript
+ new XEO.Entity({
+
+    geometry: new XEO.SphereGeometry(),
+
+    material: new XEO.PhongMaterial({
+        diffuseMap: new XEO.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+        })
+    }),
+
+    viewport: new XEO.Viewport({
+        boundary: [0, 0, 500, 400],
+        autoBoundary: false // Don't autosize to canvas (default)
+    })
+ });
+ ````
+
+ @class Viewport
+ @module XEO
+ @submodule rendering
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}, creates this Viewport within the
+ default {{#crossLink "Scene"}}{{/crossLink}} when omitted.
+ @param [cfg] {*} Viewport configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent
+ {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Viewport.
+ @param [cfg.boundary] {Array of Number} Canvas-space Viewport boundary, given as
+ (min, max, width, height). Defaults to the size of the parent
+ {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}{{/crossLink}}.
+ @param [cfg.autoBoundary=false] {Boolean} Indicates whether this Viewport's {{#crossLink "Viewport/boundary:property"}}{{/crossLink}}
+ automatically synchronizes with the size of the parent {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}{{/crossLink}}.
+
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    XEO.Viewport = XEO.Component.extend({
+
+        type: "XEO.Viewport",
+
+        _init: function (cfg) {
+
+            this._state = new XEO.renderer.Viewport({
+                boundary: [0, 0, 100, 100]
+            });
+
+            this.boundary = cfg.boundary;
+            this.autoBoundary = cfg.autoBoundary;
+        },
+
+        _props: {
+
+            /**
+             The canvas-space boundary of this Viewport, indicated as [min, max, width, height].
+
+             Defaults to the size of the parent
+             {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}{{/crossLink}}.
+
+             Ignores attempts to set value when {{#crossLink "autoBoundary/autoBoundary:property"}}{{/crossLink}} is ````true````.
+
+             Fires a {{#crossLink "Viewport/boundary:event"}}{{/crossLink}} event on change.
+
+             @property boundary
+             @default [size of Scene Canvas]
+             @type {Array of Number}
+             */
+            boundary: {
+
+                set: function (value) {
+
+                    if (this._autoBoundary) {
+                        return;
+                    }
+
+                    if (!value) {
+                        var canvas = this.scene.canvas;
+                        value = [0, 0, canvas.width, canvas.height];
+                    }
+
+                    this._state.boundary = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this Viewport's {{#crossLink "Viewport/boundary:property"}}{{/crossLink}} property changes.
+
+                     @event boundary
+                     @param value {Boolean} The property's new value
+                     */
+                    this.fire("boundary", this._state.boundary);
+                },
+
+                get: function () {
+                    return this._state.boundary;
+                }
+            },
+
+            /**
+             Indicates whether this Viewport's {{#crossLink "Viewport/boundary:property"}}{{/crossLink}} automatically
+             synchronizes with the size of the parent {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}{{/crossLink}}.
+
+             When set true, then this Viewport will fire a {{#crossLink "Viewport/boundary/event"}}{{/crossLink}} whenever
+             the {{#crossLink "Canvas"}}{{/crossLink}} resizes. Also fires that event as soon as this ````autoBoundary````
+             property is changed.
+
+             Fires a {{#crossLink "Viewport/autoBoundary:event"}}{{/crossLink}} event on change.
+
+             @property autoBoundary
+             @default false
+             @type Boolean
+             */
+            autoBoundary: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (value === this._autoBoundary) {
+                        return;
+                    }
+
+                    this._autoBoundary = value;
+
+                    if (this._autoBoundary) {
+                        this._onCanvasSize = this.scene.canvas.on("size",
+                            function (e) {
+
+                                this._state.boundary = [0, 0, e.width, e.height];
+
+                                /**
+                                 Fired whenever this Viewport's {{#crossLink "Viewport/boundary:property"}}{{/crossLink}} property changes.
+
+                                 @event boundary
+                                 @param value {Boolean} The property's new value
+                                 */
+                                this.fire("boundary", this._state.boundary);
+
+                            }, this);
+
+                    } else if (this._onCanvasSize) {
+                        this.scene.canvas.off(this._onCanvasSize);
+                        this._onCanvasSize = null;
+                    }
+
+                    /**
+                     Fired whenever this Viewport's {{#crossLink "autoBoundary/autoBoundary:property"}}{{/crossLink}} property changes.
+
+                     @event autoBoundary
+                     @param value The property's new value
+                     */
+                    this.fire("autoBoundary", this._autoBoundary);
+                },
+
+                get: function () {
+                    return this._autoBoundary;
+                }
+            }
+        },
+
+        _compile: function () {
+            this._renderer.viewport = this._state;
+        },
+
+        _getJSON: function () {
+            var json = {};
+            if (this._autoBoundary) {
+                json.autoBoundary = true;
+            } else {
+                json.boundary = this._state.boundary.slice();
+            }
+            return json;
         }
     });
 

@@ -115,6 +115,7 @@
                                 <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
@@ -299,6 +300,11 @@
                 deltaTime: null
             };
 
+            var renderEvent = {
+                sceneId: null,
+                pass: null
+            };
+
             // Hoisted vars
 
             var taskBudget = 8; // How long we&#x27;re allowed to spend on tasks in each frame
@@ -374,9 +380,32 @@
             }
 
             function render() {
+
+                var scene;
+                var passes;
+                var i;
+                var clear;
+
                 for (id in self.scenes) {
                     if (self.scenes.hasOwnProperty(id)) {
-                        self.scenes[id]._compile(); // Render, maybe rebuild draw list first
+
+                        scene = self.scenes[id];
+                        passes = scene.passes;
+
+                        renderEvent.sceneId = id;
+
+                        for (i = 0; i &lt; passes; i++) {
+
+                            renderEvent.pass = i;
+
+                            scene.fire(&quot;rendering&quot;, renderEvent, true);
+
+                            clear = (i === 0);
+
+                            scene._compile(clear); // Render, maybe rebuild draw list first
+
+                            scene.fire(&quot;rendered&quot;, renderEvent, true);
+                        }
                     }
                 }
             }
@@ -472,6 +501,14 @@
         scheduleTask: function (callback, scope) {
             this._taskQueue.push(callback);
             this._taskQueue.push(scope);
+        },
+
+        deferTask: function (callback, scope) {
+            if (scope) {
+                callback.call(scope);
+            } else {
+                callback();
+            }
         },
 
         // Pops and propcesses tasks in the queue, until the

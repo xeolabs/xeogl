@@ -115,6 +115,7 @@
                                 <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
@@ -407,6 +408,7 @@
             this.transform = cfg.transform;
             this.billboard = cfg.billboard;
             this.stationary = cfg.stationary;
+            this.viewport = cfg.viewport;
 
             // Cached boundary for each coordinate space
             // The Entity&#x27;s Geometry component caches the Local-space boundary
@@ -1128,6 +1130,37 @@
             },
 
             /**
+             * The {{#crossLink &quot;Viewport&quot;}}{{/crossLink}} attached to this Entity.
+             *
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. Defaults to the parent
+             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/viewport:property&quot;}}viewport{{/crossLink}}
+             * when set to a null or undefined value.
+             *
+             * Fires an {{#crossLink &quot;Entity/viewport:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property viewport
+             * @type Viewport
+             */
+            viewport: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this Entity&#x27;s {{#crossLink &quot;Entity/viewport:property&quot;}}{{/crossLink}}
+                     * property changes.
+                     *
+                     * @event viewport
+                     * @param value The property&#x27;s new value
+                     */
+                    this._setChild(&quot;XEO.Viewport&quot;, &quot;viewport&quot;, value);
+                },
+
+                get: function () {
+                    return this._children.viewport;
+                }
+            },
+
+            /**
              * The {{#crossLink &quot;Stationary&quot;}}{{/crossLink}} attached to this Entity.
              *
              * When {{#crossLink &quot;Stationary/property:active&quot;}}{{/crossLink}}, the {{#crossLink &quot;Stationary&quot;}}{{/crossLink}}
@@ -1538,6 +1571,7 @@
             children.transform._compile();
             children.billboard._compile();
             children.stationary._compile();
+            children.viewport._compile();
 
             // (Re)build this Entity in the renderer; for each Entity in teh scene graph,
             // there is an &quot;object&quot; in the renderer, that has the same ID as the entity
@@ -1590,7 +1624,8 @@
                 stage: children.stage.id,
                 transform: children.transform.id,
                 billboard: children.billboard.id,
-                stationary: children.stationary.id
+                stationary: children.stationary.id,
+                viewport: children.viewport.id
             };
         },
 

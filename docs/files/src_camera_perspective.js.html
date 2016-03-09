@@ -115,6 +115,7 @@
                                 <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
@@ -312,7 +313,7 @@
 
                     this._renderer.imageDirty = true;
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next &quot;tick&quot;
 
                     /**
                      * Fired whenever this Perspective&#x27;s {{#crossLink &quot;Perspective/fovy:property&quot;}}{{/crossLink}} property changes.
@@ -345,7 +346,7 @@
 
                     this._renderer.imageDirty = true;
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next &quot;tick&quot;
 
                     /**
                      * Fired whenever this Perspective&#x27;s   {{#crossLink &quot;Perspective/near:property&quot;}}{{/crossLink}} property changes.
@@ -377,7 +378,7 @@
 
                     this._renderer.imageDirty = true;
 
-                    this._scheduleUpdate();
+                    this._scheduleUpdate(0); // Ensure matrix built on next &quot;tick&quot;
 
                     /**
                      * Fired whenever this Perspective&#x27;s  {{#crossLink &quot;Perspective/far:property&quot;}}{{/crossLink}} property changes.

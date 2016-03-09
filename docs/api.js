@@ -76,6 +76,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "TorusGeometry",
         "Transform",
         "Translate",
+        "Viewport",
         "Visibility",
         "XEO",
         "XEO.math.math"
