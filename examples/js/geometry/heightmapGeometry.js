@@ -21,8 +21,8 @@
  @param [cfg.src=undefined] {String} Path to an image file to source this Heightmap from.
  @param [cfg.image=undefined] {HTMLImageElement} An HTML DOM Image object to source this Heightmap from.
  @param [cfg.xSize=1] {Number} Dimension on the X-axis.
- @param [cfg.ySize=1] {Number} Dimension on the Y-axis.
- @param [cfg.zSize=0.25] {Number} Dimension (height) on the Z-axis.
+ @param [cfg.ySize=0.25] {Number} Dimension on the Y-axis.
+ @param [cfg.zSize=1] {Number} Dimension (height) on the Z-axis.
  @param [cfg.xSegments=1] {Number} Number of segments on the X-axis (width).
  @param [cfg.zSegments=1] {Number} Number of segments on the Z-axis (depth).
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
@@ -481,14 +481,14 @@
              * Fires a {{#crossLink "Heightmap/ySize:event"}}{{/crossLink}} event on change.
              *
              * @property ySize
-             * @default 1.0
+             * @default 0.25
              * @type Number
              */
             ySize: {
 
                 set: function (value) {
 
-                    value = value || 1.0;
+                    value = value || 0.25;
 
                     if (this._ySize === value) {
                         return;
@@ -525,14 +525,14 @@
              * Fires a {{#crossLink "Heightmap/zSize:event"}}{{/crossLink}} event on change.
              *
              * @property zSize
-             * @default 0.25
+             * @default 1.0
              * @type Number
              */
             zSize: {
 
                 set: function (value) {
 
-                    value = value || 0.25;
+                    value = value || 1.0;
 
                     if (this._zSize === value) {
                         return;
