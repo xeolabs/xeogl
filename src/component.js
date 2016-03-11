@@ -796,24 +796,27 @@
          * You would typically use this method to conveniently instantiate components that you'd want to
          * share (ie. "instance") among your {{#crossLink "Entity"}}Entities{{/crossLink}}.
          *
-         * The method is given a component type and configuration, like so:
+         * The method is given a component type, configuration and optional instance ID, like so:
          *
          * ````javascript
          * var material = myComponent.create(XEO.PhongMaterial, {
          *      diffuse: [1,0,0],
          *      specular: [1,1,0]
-         * });
+         * }, "myMaterial");
          * ````
          *
          * The first time you call this method for the given ````type```` and ````instanceId````, this method will create the
          * {{#crossLink "PhongMaterial"}}{{/crossLink}}, passing the given  attributes to the component's constructor.
          *
          * If you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same
-         * component instance that it returned the first time, and will ignore the attributes:
+         * component instance that it returned the first time, and will ignore the configuration:
          *
          * ````javascript
-         * var material2 = component.create(XEO.PhongMaterial, "myMaterial", { specular: [1,1,0] });
+         * var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
          * ````
+         *
+         * So inthis example, our {{#crossLink "PhongMaterial"}}{{/crossLink}} will continue to have the red specular
+         * and diffuse color that we specified the first time.
          *
          * Each time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a
          * reference count for the component instance. You can release the shared component instance with a call to
