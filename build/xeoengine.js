@@ -15096,54 +15096,62 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 },
                 false);
 
-            // Publish canvas size changes on each scene tick
+            // Publish canvas size and position changes on each scene tick
 
-            var lastWidth = null;
-            var lastHeight = null;
+            var lastWindowWidth = null;
+            var lastWindowHeight = null;
+
+            var lastCanvasWidth = null;
+            var lastCanvasHeight = null;
 
             this._tick = this.scene.on("tick",
                 function () {
 
                     var canvas = self.canvas;
 
-                    if (canvas.clientWidth !== lastWidth || canvas.clientHeight !== lastHeight) {
+                    var newPosition = (window.innerWidth !== lastWindowWidth || window.innerHeight !== lastWindowHeight);
+                    var newSize = (canvas.clientWidth !== lastCanvasWidth || canvas.clientHeight !== lastCanvasHeight);
 
-                        var newWidth = canvas.clientWidth;
-                        var newHeight = canvas.clientHeight;
-
-                        //canvas.width = canvas.clientWidth;
-                        //canvas.height = canvas.clientHeight;
-                        /**
-                         * Fired whenever the canvas has resized
-                         * @event resized
-                         * @param width {Number} The new canvas width
-                         * @param height {Number} The new canvas height
-                         * @param aspect {Number} The new canvas aspect ratio
-                         */
-                        self.fire("size", {
-                            width: newWidth,
-                            height: newHeight,
-                            aspect: newHeight / newWidth
-                        });
+                    if (newPosition || newSize) {
 
                         self._spinner._adjustPosition();
                         self._resizeOverlay();
 
-                        var countPixels = 0;
-                        var scene;
+                        if (newSize) {
 
-                        for (var sceneId in XEO.scenes) {
-                            if (XEO.scenes.hasOwnProperty(sceneId)) {
-                                scene = XEO.scenes[sceneId];
-                                countPixels += scene.canvas.canvas.clientWidth * scene.canvas.canvas.clientHeight;
+                            var newWidth = canvas.clientWidth;
+                            var newHeight = canvas.clientHeight;
+
+                            // TODO: Wasteful to re-count pixel size of each canvas on each canvas' resize
+                            var countPixels = 0;
+                            var scene;
+                            for (var sceneId in XEO.scenes) {
+                                if (XEO.scenes.hasOwnProperty(sceneId)) {
+                                    scene = XEO.scenes[sceneId];
+                                    countPixels += scene.canvas.canvas.clientWidth * scene.canvas.canvas.clientHeight;
+                                }
                             }
+                            XEO.stats.memory.pixels = countPixels;
+
+                            canvas.width = canvas.clientWidth;
+                            canvas.height = canvas.clientHeight;
+
+                            /**
+                             * Fired whenever the canvas has resized
+                             * @event resized
+                             * @param width {Number} The new canvas width
+                             * @param height {Number} The new canvas height
+                             * @param aspect {Number} The new canvas aspect ratio
+                             */
+                            self.fire("size", {
+                                width: newWidth,
+                                height: newHeight,
+                                aspect: newHeight / newWidth
+                            });
+
+                            lastCanvasWidth = newWidth;
+                            lastCanvasHeight = newHeight;
                         }
-
-                        XEO.stats.memory.pixels = countPixels;
-
-                        lastWidth = newWidth;
-                        lastHeight = newHeight;
-
                     }
                 });
 

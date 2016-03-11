@@ -8967,7 +8967,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 255,
+            "line": 278,
             "description": "Fired whenever the canvas has resized",
             "itemtype": "event",
             "name": "resized",
@@ -8994,14 +8994,14 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 293,
+            "line": 301,
             "class": "Canvas",
             "module": "XEO",
             "submodule": "canvas"
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 301,
+            "line": 309,
             "description": "Creates a default canvas in the DOM.",
             "access": "private",
             "tagname": "",
@@ -9011,7 +9011,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 330,
+            "line": 338,
             "description": "Creates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
             "access": "private",
             "tagname": "",
@@ -9021,7 +9021,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 362,
+            "line": 370,
             "access": "private",
             "tagname": "",
             "class": "Canvas",
@@ -9030,7 +9030,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 382,
+            "line": 390,
             "description": "Initialises the WebGL context",
             "access": "private",
             "tagname": "",
@@ -9040,7 +9040,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 405,
+            "line": 413,
             "description": "Fired whenever the canvas failed to get a WebGL context, which probably means that WebGL\nis either unsupported or has been disabled.",
             "itemtype": "event",
             "name": "webglContextFailed",
@@ -9050,7 +9050,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 416,
+            "line": 424,
             "description": "The busy {{#crossLink \"Spinner\"}}{{/crossLink}} for this Canvas.",
             "itemtype": "property",
             "name": "spinner",
@@ -21751,23 +21751,23 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/canvas/canvas.js:293"
-        },
-        {
-            "message": "Missing item type\nCreates a default canvas in the DOM.",
             "line": " src/canvas/canvas.js:301"
         },
         {
+            "message": "Missing item type\nCreates a default canvas in the DOM.",
+            "line": " src/canvas/canvas.js:309"
+        },
+        {
             "message": "Missing item type\nCreates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
-            "line": " src/canvas/canvas.js:330"
+            "line": " src/canvas/canvas.js:338"
         },
         {
             "message": "Missing item type",
-            "line": " src/canvas/canvas.js:362"
+            "line": " src/canvas/canvas.js:370"
         },
         {
             "message": "Missing item type\nInitialises the WebGL context",
-            "line": " src/canvas/canvas.js:382"
+            "line": " src/canvas/canvas.js:390"
         },
         {
             "message": "Missing item type\nReturns point on this CubicBezierCurve at the given position.",
