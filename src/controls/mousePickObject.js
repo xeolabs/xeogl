@@ -109,12 +109,28 @@
                         var self = this;
 
                         var tolerance = 2; // Pixels
+                        var over = false;
                         var down = false;
                         var downX;
                         var downY;
 
+                        this._onMouseOver = input.on("mouseover",
+                            function () {
+                                over = true;
+                            });
+
+                        this._onMouseOut = input.on("mouseout",
+                            function () {
+                                over = false;
+                            });
+
                         this._onMouseDown = input.on("mousedown",
                             function (canvasPos) {
+
+                                if (!over) {
+                                    return;
+                                }
+
                                 down = true;
                                 downX = canvasPos[0];
                                 downY = canvasPos[1];
@@ -124,6 +140,10 @@
                             function (canvasPos) {
 
                                 if (!down) {
+                                    return;
+                                }
+
+                                if (!over) {
                                     return;
                                 }
 

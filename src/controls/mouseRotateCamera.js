@@ -70,14 +70,14 @@
         _init: function (cfg) {
 
             // Event handles
-            
+
             this._onTick = null;
             this._onMouseDown = null;
             this._onMouseMove = null;
             this._onMouseUp = null;
-            
+
             // Init properties
-            
+
             this.camera = cfg.camera;
             this.sensitivity = cfg.sensitivity;
             this.active = cfg.active !== false;
@@ -199,23 +199,32 @@
                     var input = this.scene.input;
 
                     if (value) {
-                        
+
                         var lastX;
                         var lastY;
                         var xDelta = 0;
                         var yDelta = 0;
                         var down = false;
+                        var over = false;
                         var angle;
 
                         this._onTick = this.scene.on("tick",
                             function () {
 
                                 var camera = this._children.camera;
-                                
+
                                 if (!camera) {
                                     return;
                                 }
-                                
+
+                                if (!over) {
+                                    return;
+                                }
+
+                                if (!down) {
+                                    return;
+                                }
+
                                 if (xDelta !== 0) {
 
                                     angle = -xDelta * this._sensitivity;
@@ -246,12 +255,20 @@
                         this._onMouseDown = input.on("mousedown",
                             function (e) {
 
+                                xDelta = 0;
+                                yDelta = 0;
+
+                                if (!over) {
+                                    return;
+                                }
+
                                 if (input.mouseDownLeft
                                     && !input.mouseDownRight
                                     && !input.keyDown[input.KEY_SHIFT]
                                     && !input.mouseDownMiddle) {
 
                                     down = true;
+
                                     lastX = e[0];
                                     lastY = e[1];
 
@@ -263,17 +280,49 @@
 
                         this._onMouseUp = input.on("mouseup",
                             function () {
+
                                 down = false;
+
+                                xDelta = 0;
+                                yDelta = 0;
                             });
+
+                        this._onMouseOver = input.on("mouseover",
+                            function () {
+
+                                over = true;
+
+                                xDelta = 0;
+                                yDelta = 0;
+                            });
+
+                        this._onMouseOut = input.on("mouseout",
+                            function () {
+
+                                over = false;
+
+                                xDelta = 0;
+                                yDelta = 0;
+                            });
+
 
                         this._onMouseMove = input.on("mousemove",
                             function (e) {
-                                if (down) {
-                                    xDelta += (e[0] - lastX) * this._sensitivity;
-                                    yDelta += (e[1] - lastY) * this._sensitivity;
-                                    lastX = e[0];
-                                    lastY = e[1];
+
+                                if (!over) {
+                                    return;
                                 }
+
+                                if (!down) {
+                                    return;
+                                }
+
+                                xDelta += (e[0] - lastX) * this._sensitivity;
+                                yDelta += (e[1] - lastY) * this._sensitivity;
+
+                                lastX = e[0];
+                                lastY = e[1];
+
                             }, this);
 
                     } else {
@@ -283,6 +332,8 @@
                         input.off(this._onMouseDown);
                         input.off(this._onMouseUp);
                         input.off(this._onMouseMove);
+                        input.off(this._onMouseOver);
+                        input.off(this._onMouseOut);
                     }
 
                     /**

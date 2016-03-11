@@ -148,6 +148,12 @@
              */
             this.enabled = true;
 
+            /** True while mouse is over the parent {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}Canvas{{/crossLink}}
+             *
+             * @type {boolean}
+             */
+            this.mouseover = false;
+
             // Capture input events and publish them on this component
 
             document.addEventListener("keydown",
@@ -208,6 +214,47 @@
                         }
                     }
                 });
+
+            cfg.element.addEventListener("mouseenter",
+                this._mouseDownListener = function (e) {
+
+                    if (!self.enabled) {
+                        return;
+                    }
+
+                    self.mouseover = true;
+
+                    var coords = self._getClickCoordsWithinElement(e);
+
+                    /**
+                     * Fired whenever the mouse is moved into of the parent
+                     * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
+                     * @event mouseover
+                     * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
+                     */
+                    self.fire("mouseover", coords, true);
+                });
+
+            cfg.element.addEventListener("mouseleave",
+                this._mouseDownListener = function (e) {
+
+                    if (!self.enabled) {
+                        return;
+                    }
+
+                    self.mouseover = false;
+
+                    var coords = self._getClickCoordsWithinElement(e);
+
+                    /**
+                     * Fired whenever the mouse is moved out of the parent
+                     * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
+                     * @event mouseout
+                     * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
+                     */
+                    self.fire("mouseout", coords, true);
+                });
+
 
             cfg.element.addEventListener("mousedown",
                 this._mouseDownListener = function (e) {
@@ -322,11 +369,14 @@
             cfg.element.addEventListener("mousemove",
                 this._mouseMoveListener = function (e) {
 
+
                     if (!self.enabled) {
                         return;
                     }
 
                     var coords = self._getClickCoordsWithinElement(e);
+
+                    console.log("mousemove=" + coords[0] + ", " + coords[1])
 
                     /**
                      * Fired whenever the mouse is moved over the parent

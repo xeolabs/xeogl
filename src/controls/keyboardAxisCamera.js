@@ -149,6 +149,10 @@
                                     return;
                                 }
 
+                                if (!input.mouseover) {
+                                    return;
+                                }
+
                                 if (keyCode === input.KEY_NUM_1
                                     || keyCode === input.KEY_NUM_2
                                     || keyCode === input.KEY_NUM_3

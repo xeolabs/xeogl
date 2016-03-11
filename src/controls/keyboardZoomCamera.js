@@ -159,6 +159,10 @@
                                     return;
                                 }
 
+                                if (!input.mouseover) {
+                                    return;
+                                }
+
                                 var elapsed = params.deltaTime;
 
                                 if (!input.ctrlDown && !input.altDown) {

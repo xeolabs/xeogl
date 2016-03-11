@@ -209,6 +209,10 @@
                                     return;
                                 }
 
+                                if (!input.mouseover) {
+                                    return;
+                                }
+
                                 var elapsed = params.deltaTime;
 
                                 var yawRate = self._sensitivity * 0.3;
