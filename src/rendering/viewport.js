@@ -69,7 +69,7 @@
              Defaults to the size of the parent
              {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}{{/crossLink}}.
 
-             Ignores attempts to set value when {{#crossLink "autoBoundary/autoBoundary:property"}}{{/crossLink}} is ````true````.
+             Ignores attempts to set value when {{#crossLink "Viewport/autoBoundary:property"}}{{/crossLink}} is ````true````.
 
              Fires a {{#crossLink "Viewport/boundary:event"}}{{/crossLink}} event on change.
 
