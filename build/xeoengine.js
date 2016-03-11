@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-03-09
+ * Built on 2016-03-11
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -16910,6 +16910,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                                     return;
                                 }
 
+                                if (!input.mouseover) {
+                                    return;
+                                }
+
                                 if (keyCode === input.KEY_NUM_1
                                     || keyCode === input.KEY_NUM_2
                                     || keyCode === input.KEY_NUM_3
@@ -17264,6 +17268,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                                     return;
                                 }
 
+                                if (!input.mouseover) {
+                                    return;
+                                }
+
                                 var elapsed = params.deltaTime;
 
                                 var yawRate = self._sensitivity * 0.3;
@@ -17518,6 +17526,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                                     return;
                                 }
 
+                                if (!input.mouseover) {
+                                    return;
+                                }
+
                                 var elapsed = params.deltaTime;
 
                                 if (!input.ctrlDown && !input.altDown) {
@@ -17765,6 +17777,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                                     return;
                                 }
 
+                                if (!input.mouseover) {
+                                    return;
+                                }
+
                                 var elapsed = params.deltaTime;
 
                                 if (!input.ctrlDown && !input.altDown) {
@@ -17903,14 +17919,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         _init: function (cfg) {
 
             // Event handles
-            
+
             this._onTick = null;
             this._onMouseDown = null;
             this._onMouseMove = null;
             this._onMouseUp = null;
-            
+
             // Init properties
-            
+
             this.camera = cfg.camera;
             this.sensitivity = cfg.sensitivity;
             this.active = cfg.active !== false;
@@ -18032,23 +18048,32 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     var input = this.scene.input;
 
                     if (value) {
-                        
+
                         var lastX;
                         var lastY;
                         var xDelta = 0;
                         var yDelta = 0;
                         var down = false;
+                        var over = false;
                         var angle;
 
                         this._onTick = this.scene.on("tick",
                             function () {
 
                                 var camera = this._children.camera;
-                                
+
                                 if (!camera) {
                                     return;
                                 }
-                                
+
+                                if (!over) {
+                                    return;
+                                }
+
+                                if (!down) {
+                                    return;
+                                }
+
                                 if (xDelta !== 0) {
 
                                     angle = -xDelta * this._sensitivity;
@@ -18079,12 +18104,20 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         this._onMouseDown = input.on("mousedown",
                             function (e) {
 
+                                xDelta = 0;
+                                yDelta = 0;
+
+                                if (!over) {
+                                    return;
+                                }
+
                                 if (input.mouseDownLeft
                                     && !input.mouseDownRight
                                     && !input.keyDown[input.KEY_SHIFT]
                                     && !input.mouseDownMiddle) {
 
                                     down = true;
+
                                     lastX = e[0];
                                     lastY = e[1];
 
@@ -18096,17 +18129,49 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                         this._onMouseUp = input.on("mouseup",
                             function () {
+
                                 down = false;
+
+                                xDelta = 0;
+                                yDelta = 0;
                             });
+
+                        this._onMouseOver = input.on("mouseover",
+                            function () {
+
+                                over = true;
+
+                                xDelta = 0;
+                                yDelta = 0;
+                            });
+
+                        this._onMouseOut = input.on("mouseout",
+                            function () {
+
+                                over = false;
+
+                                xDelta = 0;
+                                yDelta = 0;
+                            });
+
 
                         this._onMouseMove = input.on("mousemove",
                             function (e) {
-                                if (down) {
-                                    xDelta += (e[0] - lastX) * this._sensitivity;
-                                    yDelta += (e[1] - lastY) * this._sensitivity;
-                                    lastX = e[0];
-                                    lastY = e[1];
+
+                                if (!over) {
+                                    return;
                                 }
+
+                                if (!down) {
+                                    return;
+                                }
+
+                                xDelta += (e[0] - lastX) * this._sensitivity;
+                                yDelta += (e[1] - lastY) * this._sensitivity;
+
+                                lastX = e[0];
+                                lastY = e[1];
+
                             }, this);
 
                     } else {
@@ -18116,6 +18181,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         input.off(this._onMouseDown);
                         input.off(this._onMouseUp);
                         input.off(this._onMouseMove);
+                        input.off(this._onMouseOver);
+                        input.off(this._onMouseOut);
                     }
 
                     /**
@@ -18360,6 +18427,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                                 down = false;
                             });
 
+                        this._onMouseUp = input.on("mouseout",
+                            function () {
+                                down = false;
+                            });
+
                         this._onMouseMove = input.on("mousemove",
                             function (e) {
                                 if (down) {
@@ -18523,12 +18595,28 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         var self = this;
 
                         var tolerance = 2; // Pixels
+                        var over = false;
                         var down = false;
                         var downX;
                         var downY;
 
+                        this._onMouseOver = input.on("mouseover",
+                            function () {
+                                over = true;
+                            });
+
+                        this._onMouseOut = input.on("mouseout",
+                            function () {
+                                over = false;
+                            });
+
                         this._onMouseDown = input.on("mousedown",
                             function (canvasPos) {
+
+                                if (!over) {
+                                    return;
+                                }
+
                                 down = true;
                                 downX = canvasPos[0];
                                 downY = canvasPos[1];
@@ -18538,6 +18626,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                             function (canvasPos) {
 
                                 if (!down) {
+                                    return;
+                                }
+
+                                if (!over) {
                                     return;
                                 }
 
@@ -25392,6 +25484,12 @@ XEO.PathGeometry = XEO.Geometry.extend({
              */
             this.enabled = true;
 
+            /** True while mouse is over the parent {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}Canvas{{/crossLink}}
+             *
+             * @type {boolean}
+             */
+            this.mouseover = false;
+
             // Capture input events and publish them on this component
 
             document.addEventListener("keydown",
@@ -25452,6 +25550,47 @@ XEO.PathGeometry = XEO.Geometry.extend({
                         }
                     }
                 });
+
+            cfg.element.addEventListener("mouseenter",
+                this._mouseDownListener = function (e) {
+
+                    if (!self.enabled) {
+                        return;
+                    }
+
+                    self.mouseover = true;
+
+                    var coords = self._getClickCoordsWithinElement(e);
+
+                    /**
+                     * Fired whenever the mouse is moved into of the parent
+                     * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
+                     * @event mouseover
+                     * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
+                     */
+                    self.fire("mouseover", coords, true);
+                });
+
+            cfg.element.addEventListener("mouseleave",
+                this._mouseDownListener = function (e) {
+
+                    if (!self.enabled) {
+                        return;
+                    }
+
+                    self.mouseover = false;
+
+                    var coords = self._getClickCoordsWithinElement(e);
+
+                    /**
+                     * Fired whenever the mouse is moved out of the parent
+                     * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
+                     * @event mouseout
+                     * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
+                     */
+                    self.fire("mouseout", coords, true);
+                });
+
 
             cfg.element.addEventListener("mousedown",
                 this._mouseDownListener = function (e) {
@@ -25566,11 +25705,14 @@ XEO.PathGeometry = XEO.Geometry.extend({
             cfg.element.addEventListener("mousemove",
                 this._mouseMoveListener = function (e) {
 
+
                     if (!self.enabled) {
                         return;
                     }
 
                     var coords = self._getClickCoordsWithinElement(e);
+
+                    console.log("mousemove=" + coords[0] + ", " + coords[1])
 
                     /**
                      * Fired whenever the mouse is moved over the parent

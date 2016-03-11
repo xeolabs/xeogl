@@ -390,6 +390,11 @@
                                 down = false;
                             });
 
+                        this._onMouseUp = input.on(&quot;mouseout&quot;,
+                            function () {
+                                down = false;
+                            });
+
                         this._onMouseMove = input.on(&quot;mousemove&quot;,
                             function (e) {
                                 if (down) {
