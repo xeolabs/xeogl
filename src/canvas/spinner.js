@@ -2,10 +2,10 @@
  A Spinner is a loading indicator that displays the center of its {{#crossLink "Canvas"}}{{/crossLink}} while things are loading or otherwise busy.
 
  Spinners are normally shown by {{#crossLink "Model"}}Models{{/crossLink}} while they are loading, however they may also
- be shown by application code that wants to indicate business.
+ be shown by any application code that wants to indicate business.
 
- A Spinner component has a {{#crossLink "Spinner/process:property"}}{{/crossLink}} count that indicates how many
- currently-active processes it represents. As a process starts, a process would increment the count, then as it
+ A Spinner component has a {{#crossLink "Spinner/processes:property"}}{{/crossLink}} count that indicates how many
+ active processes it currently represents. As a process starts, a process would increment the count, then as it
  completes (or fails), would decrement it again.
 
  A Spinner is only visible while the count is greater than zero.
