@@ -196,8 +196,7 @@
 
 
 <div class="box intro">
-    <p>Publishes key and mouse events that occur on the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s <a href="../classes/Canvas.html" class="crosslink">Canvas</a>.</p>
-<h2 id="overview">Overview</h2>
+    <p>Publishes keyboard and mouse events that occur on the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s <a href="../classes/Canvas.html" class="crosslink">Canvas</a>.</p>
 <ul>
 <li>Each <a href="../classes/Scene.html" class="crosslink">Scene</a> provides an Input on itself as a read-only property.</li>
 </ul>
@@ -876,18 +875,20 @@ input.on("keyup", function(keyCode) {
         <p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 <p>You would typically use this method to conveniently instantiate components that you&#39;d want to
 share (ie. "instance") among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
-<p>The method is given a component type and configuration, like so:</p>
+<p>The method is given a component type, configuration and optional instance ID, like so:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(XEO.PhongMaterial, {
      diffuse: [1,0,0],
      specular: [1,1,0]
-});
+}, "myMaterial");
 </code></pre>
 <p>The first time you call this method for the given <code>type</code> and <code>instanceId</code>, this method will create the
 <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, passing the given  attributes to the component&#39;s constructor.</p>
 <p>If you call this method again, specifying the same <code>type</code> and <code>instanceId</code>, the method will return the same
-component instance that it returned the first time, and will ignore the attributes:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, "myMaterial", { specular: [1,1,0] });
+component instance that it returned the first time, and will ignore the configuration:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
 </code></pre>
+<p>So inthis example, our <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> will continue to have the red specular
+and diffuse color that we specified the first time.</p>
 <p>Each time you call this method with the same <code>type</code> and <code>instanceId</code>, the Scene will internally increment a
 reference count for the component instance. You can release the shared component instance with a call to
 Scene/putSharedComponent:method, and once you have released it as many
@@ -966,7 +967,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l997"><code>src&#x2F;component.js:997</code></a>
+        <a href="../files/src_component.js.html#l1000"><code>src&#x2F;component.js:1000</code></a>
         </p>
 
 
@@ -1659,7 +1660,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l935"><code>src&#x2F;component.js:935</code></a>
+                            <a href="../files/src_component.js.html#l938"><code>src&#x2F;component.js:938</code></a>
                             </p>
                     
                     
@@ -1685,7 +1686,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l711"><code>src&#x2F;input&#x2F;input.js:711</code></a>
+                            <a href="../files/src_input_input.js.html#l709"><code>src&#x2F;input&#x2F;input.js:709</code></a>
                             </p>
                     
                     
@@ -1711,7 +1712,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1031"><code>src&#x2F;input&#x2F;input.js:1031</code></a>
+                            <a href="../files/src_input_input.js.html#l1029"><code>src&#x2F;input&#x2F;input.js:1029</code></a>
                             </p>
                     
                     
@@ -1737,7 +1738,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l519"><code>src&#x2F;input&#x2F;input.js:519</code></a>
+                            <a href="../files/src_input_input.js.html#l517"><code>src&#x2F;input&#x2F;input.js:517</code></a>
                             </p>
                     
                     
@@ -1763,7 +1764,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l719"><code>src&#x2F;input&#x2F;input.js:719</code></a>
+                            <a href="../files/src_input_input.js.html#l717"><code>src&#x2F;input&#x2F;input.js:717</code></a>
                             </p>
                     
                     
@@ -1789,7 +1790,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1239"><code>src&#x2F;input&#x2F;input.js:1239</code></a>
+                            <a href="../files/src_input_input.js.html#l1237"><code>src&#x2F;input&#x2F;input.js:1237</code></a>
                             </p>
                     
                     
@@ -1815,7 +1816,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l479"><code>src&#x2F;input&#x2F;input.js:479</code></a>
+                            <a href="../files/src_input_input.js.html#l477"><code>src&#x2F;input&#x2F;input.js:477</code></a>
                             </p>
                     
                     
@@ -1841,7 +1842,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l727"><code>src&#x2F;input&#x2F;input.js:727</code></a>
+                            <a href="../files/src_input_input.js.html#l725"><code>src&#x2F;input&#x2F;input.js:725</code></a>
                             </p>
                     
                     
@@ -1867,7 +1868,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l535"><code>src&#x2F;input&#x2F;input.js:535</code></a>
+                            <a href="../files/src_input_input.js.html#l533"><code>src&#x2F;input&#x2F;input.js:533</code></a>
                             </p>
                     
                     
@@ -1893,7 +1894,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1247"><code>src&#x2F;input&#x2F;input.js:1247</code></a>
+                            <a href="../files/src_input_input.js.html#l1245"><code>src&#x2F;input&#x2F;input.js:1245</code></a>
                             </p>
                     
                     
@@ -1919,7 +1920,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1191"><code>src&#x2F;input&#x2F;input.js:1191</code></a>
+                            <a href="../files/src_input_input.js.html#l1189"><code>src&#x2F;input&#x2F;input.js:1189</code></a>
                             </p>
                     
                     
@@ -1945,7 +1946,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l511"><code>src&#x2F;input&#x2F;input.js:511</code></a>
+                            <a href="../files/src_input_input.js.html#l509"><code>src&#x2F;input&#x2F;input.js:509</code></a>
                             </p>
                     
                     
@@ -1971,7 +1972,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l735"><code>src&#x2F;input&#x2F;input.js:735</code></a>
+                            <a href="../files/src_input_input.js.html#l733"><code>src&#x2F;input&#x2F;input.js:733</code></a>
                             </p>
                     
                     
@@ -1997,7 +1998,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1199"><code>src&#x2F;input&#x2F;input.js:1199</code></a>
+                            <a href="../files/src_input_input.js.html#l1197"><code>src&#x2F;input&#x2F;input.js:1197</code></a>
                             </p>
                     
                     
@@ -2023,7 +2024,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1047"><code>src&#x2F;input&#x2F;input.js:1047</code></a>
+                            <a href="../files/src_input_input.js.html#l1045"><code>src&#x2F;input&#x2F;input.js:1045</code></a>
                             </p>
                     
                     
@@ -2049,7 +2050,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l623"><code>src&#x2F;input&#x2F;input.js:623</code></a>
+                            <a href="../files/src_input_input.js.html#l621"><code>src&#x2F;input&#x2F;input.js:621</code></a>
                             </p>
                     
                     
@@ -2075,7 +2076,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1055"><code>src&#x2F;input&#x2F;input.js:1055</code></a>
+                            <a href="../files/src_input_input.js.html#l1053"><code>src&#x2F;input&#x2F;input.js:1053</code></a>
                             </p>
                     
                     
@@ -2101,7 +2102,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l607"><code>src&#x2F;input&#x2F;input.js:607</code></a>
+                            <a href="../files/src_input_input.js.html#l605"><code>src&#x2F;input&#x2F;input.js:605</code></a>
                             </p>
                     
                     
@@ -2127,7 +2128,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l743"><code>src&#x2F;input&#x2F;input.js:743</code></a>
+                            <a href="../files/src_input_input.js.html#l741"><code>src&#x2F;input&#x2F;input.js:741</code></a>
                             </p>
                     
                     
@@ -2153,7 +2154,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l567"><code>src&#x2F;input&#x2F;input.js:567</code></a>
+                            <a href="../files/src_input_input.js.html#l565"><code>src&#x2F;input&#x2F;input.js:565</code></a>
                             </p>
                     
                     
@@ -2179,7 +2180,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l495"><code>src&#x2F;input&#x2F;input.js:495</code></a>
+                            <a href="../files/src_input_input.js.html#l493"><code>src&#x2F;input&#x2F;input.js:493</code></a>
                             </p>
                     
                     
@@ -2205,7 +2206,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1183"><code>src&#x2F;input&#x2F;input.js:1183</code></a>
+                            <a href="../files/src_input_input.js.html#l1181"><code>src&#x2F;input&#x2F;input.js:1181</code></a>
                             </p>
                     
                     
@@ -2231,7 +2232,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l543"><code>src&#x2F;input&#x2F;input.js:543</code></a>
+                            <a href="../files/src_input_input.js.html#l541"><code>src&#x2F;input&#x2F;input.js:541</code></a>
                             </p>
                     
                     
@@ -2257,7 +2258,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l751"><code>src&#x2F;input&#x2F;input.js:751</code></a>
+                            <a href="../files/src_input_input.js.html#l749"><code>src&#x2F;input&#x2F;input.js:749</code></a>
                             </p>
                     
                     
@@ -2283,7 +2284,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1063"><code>src&#x2F;input&#x2F;input.js:1063</code></a>
+                            <a href="../files/src_input_input.js.html#l1061"><code>src&#x2F;input&#x2F;input.js:1061</code></a>
                             </p>
                     
                     
@@ -2309,7 +2310,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1135"><code>src&#x2F;input&#x2F;input.js:1135</code></a>
+                            <a href="../files/src_input_input.js.html#l1133"><code>src&#x2F;input&#x2F;input.js:1133</code></a>
                             </p>
                     
                     
@@ -2335,7 +2336,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1143"><code>src&#x2F;input&#x2F;input.js:1143</code></a>
+                            <a href="../files/src_input_input.js.html#l1141"><code>src&#x2F;input&#x2F;input.js:1141</code></a>
                             </p>
                     
                     
@@ -2361,7 +2362,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1151"><code>src&#x2F;input&#x2F;input.js:1151</code></a>
+                            <a href="../files/src_input_input.js.html#l1149"><code>src&#x2F;input&#x2F;input.js:1149</code></a>
                             </p>
                     
                     
@@ -2387,7 +2388,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1071"><code>src&#x2F;input&#x2F;input.js:1071</code></a>
+                            <a href="../files/src_input_input.js.html#l1069"><code>src&#x2F;input&#x2F;input.js:1069</code></a>
                             </p>
                     
                     
@@ -2413,7 +2414,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1079"><code>src&#x2F;input&#x2F;input.js:1079</code></a>
+                            <a href="../files/src_input_input.js.html#l1077"><code>src&#x2F;input&#x2F;input.js:1077</code></a>
                             </p>
                     
                     
@@ -2439,7 +2440,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1087"><code>src&#x2F;input&#x2F;input.js:1087</code></a>
+                            <a href="../files/src_input_input.js.html#l1085"><code>src&#x2F;input&#x2F;input.js:1085</code></a>
                             </p>
                     
                     
@@ -2465,7 +2466,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1095"><code>src&#x2F;input&#x2F;input.js:1095</code></a>
+                            <a href="../files/src_input_input.js.html#l1093"><code>src&#x2F;input&#x2F;input.js:1093</code></a>
                             </p>
                     
                     
@@ -2491,7 +2492,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1103"><code>src&#x2F;input&#x2F;input.js:1103</code></a>
+                            <a href="../files/src_input_input.js.html#l1101"><code>src&#x2F;input&#x2F;input.js:1101</code></a>
                             </p>
                     
                     
@@ -2517,7 +2518,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1111"><code>src&#x2F;input&#x2F;input.js:1111</code></a>
+                            <a href="../files/src_input_input.js.html#l1109"><code>src&#x2F;input&#x2F;input.js:1109</code></a>
                             </p>
                     
                     
@@ -2543,7 +2544,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1119"><code>src&#x2F;input&#x2F;input.js:1119</code></a>
+                            <a href="../files/src_input_input.js.html#l1117"><code>src&#x2F;input&#x2F;input.js:1117</code></a>
                             </p>
                     
                     
@@ -2569,7 +2570,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1127"><code>src&#x2F;input&#x2F;input.js:1127</code></a>
+                            <a href="../files/src_input_input.js.html#l1125"><code>src&#x2F;input&#x2F;input.js:1125</code></a>
                             </p>
                     
                     
@@ -2595,7 +2596,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1215"><code>src&#x2F;input&#x2F;input.js:1215</code></a>
+                            <a href="../files/src_input_input.js.html#l1213"><code>src&#x2F;input&#x2F;input.js:1213</code></a>
                             </p>
                     
                     
@@ -2621,7 +2622,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l759"><code>src&#x2F;input&#x2F;input.js:759</code></a>
+                            <a href="../files/src_input_input.js.html#l757"><code>src&#x2F;input&#x2F;input.js:757</code></a>
                             </p>
                     
                     
@@ -2647,7 +2648,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1223"><code>src&#x2F;input&#x2F;input.js:1223</code></a>
+                            <a href="../files/src_input_input.js.html#l1221"><code>src&#x2F;input&#x2F;input.js:1221</code></a>
                             </p>
                     
                     
@@ -2673,7 +2674,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l767"><code>src&#x2F;input&#x2F;input.js:767</code></a>
+                            <a href="../files/src_input_input.js.html#l765"><code>src&#x2F;input&#x2F;input.js:765</code></a>
                             </p>
                     
                     
@@ -2699,7 +2700,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l575"><code>src&#x2F;input&#x2F;input.js:575</code></a>
+                            <a href="../files/src_input_input.js.html#l573"><code>src&#x2F;input&#x2F;input.js:573</code></a>
                             </p>
                     
                     
@@ -2725,7 +2726,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l775"><code>src&#x2F;input&#x2F;input.js:775</code></a>
+                            <a href="../files/src_input_input.js.html#l773"><code>src&#x2F;input&#x2F;input.js:773</code></a>
                             </p>
                     
                     
@@ -2751,7 +2752,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l615"><code>src&#x2F;input&#x2F;input.js:615</code></a>
+                            <a href="../files/src_input_input.js.html#l613"><code>src&#x2F;input&#x2F;input.js:613</code></a>
                             </p>
                     
                     
@@ -2777,7 +2778,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l783"><code>src&#x2F;input&#x2F;input.js:783</code></a>
+                            <a href="../files/src_input_input.js.html#l781"><code>src&#x2F;input&#x2F;input.js:781</code></a>
                             </p>
                     
                     
@@ -2803,7 +2804,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l791"><code>src&#x2F;input&#x2F;input.js:791</code></a>
+                            <a href="../files/src_input_input.js.html#l789"><code>src&#x2F;input&#x2F;input.js:789</code></a>
                             </p>
                     
                     
@@ -2829,7 +2830,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l799"><code>src&#x2F;input&#x2F;input.js:799</code></a>
+                            <a href="../files/src_input_input.js.html#l797"><code>src&#x2F;input&#x2F;input.js:797</code></a>
                             </p>
                     
                     
@@ -2855,7 +2856,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l583"><code>src&#x2F;input&#x2F;input.js:583</code></a>
+                            <a href="../files/src_input_input.js.html#l581"><code>src&#x2F;input&#x2F;input.js:581</code></a>
                             </p>
                     
                     
@@ -2881,7 +2882,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l919"><code>src&#x2F;input&#x2F;input.js:919</code></a>
+                            <a href="../files/src_input_input.js.html#l917"><code>src&#x2F;input&#x2F;input.js:917</code></a>
                             </p>
                     
                     
@@ -2907,7 +2908,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l807"><code>src&#x2F;input&#x2F;input.js:807</code></a>
+                            <a href="../files/src_input_input.js.html#l805"><code>src&#x2F;input&#x2F;input.js:805</code></a>
                             </p>
                     
                     
@@ -2933,7 +2934,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1023"><code>src&#x2F;input&#x2F;input.js:1023</code></a>
+                            <a href="../files/src_input_input.js.html#l1021"><code>src&#x2F;input&#x2F;input.js:1021</code></a>
                             </p>
                     
                     
@@ -2959,7 +2960,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l815"><code>src&#x2F;input&#x2F;input.js:815</code></a>
+                            <a href="../files/src_input_input.js.html#l813"><code>src&#x2F;input&#x2F;input.js:813</code></a>
                             </p>
                     
                     
@@ -2985,7 +2986,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l631"><code>src&#x2F;input&#x2F;input.js:631</code></a>
+                            <a href="../files/src_input_input.js.html#l629"><code>src&#x2F;input&#x2F;input.js:629</code></a>
                             </p>
                     
                     
@@ -3011,7 +3012,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l639"><code>src&#x2F;input&#x2F;input.js:639</code></a>
+                            <a href="../files/src_input_input.js.html#l637"><code>src&#x2F;input&#x2F;input.js:637</code></a>
                             </p>
                     
                     
@@ -3037,7 +3038,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l647"><code>src&#x2F;input&#x2F;input.js:647</code></a>
+                            <a href="../files/src_input_input.js.html#l645"><code>src&#x2F;input&#x2F;input.js:645</code></a>
                             </p>
                     
                     
@@ -3063,7 +3064,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l655"><code>src&#x2F;input&#x2F;input.js:655</code></a>
+                            <a href="../files/src_input_input.js.html#l653"><code>src&#x2F;input&#x2F;input.js:653</code></a>
                             </p>
                     
                     
@@ -3089,7 +3090,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l663"><code>src&#x2F;input&#x2F;input.js:663</code></a>
+                            <a href="../files/src_input_input.js.html#l661"><code>src&#x2F;input&#x2F;input.js:661</code></a>
                             </p>
                     
                     
@@ -3115,7 +3116,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l671"><code>src&#x2F;input&#x2F;input.js:671</code></a>
+                            <a href="../files/src_input_input.js.html#l669"><code>src&#x2F;input&#x2F;input.js:669</code></a>
                             </p>
                     
                     
@@ -3141,7 +3142,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l679"><code>src&#x2F;input&#x2F;input.js:679</code></a>
+                            <a href="../files/src_input_input.js.html#l677"><code>src&#x2F;input&#x2F;input.js:677</code></a>
                             </p>
                     
                     
@@ -3167,7 +3168,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l687"><code>src&#x2F;input&#x2F;input.js:687</code></a>
+                            <a href="../files/src_input_input.js.html#l685"><code>src&#x2F;input&#x2F;input.js:685</code></a>
                             </p>
                     
                     
@@ -3193,7 +3194,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l695"><code>src&#x2F;input&#x2F;input.js:695</code></a>
+                            <a href="../files/src_input_input.js.html#l693"><code>src&#x2F;input&#x2F;input.js:693</code></a>
                             </p>
                     
                     
@@ -3219,7 +3220,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l703"><code>src&#x2F;input&#x2F;input.js:703</code></a>
+                            <a href="../files/src_input_input.js.html#l701"><code>src&#x2F;input&#x2F;input.js:701</code></a>
                             </p>
                     
                     
@@ -3245,7 +3246,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1159"><code>src&#x2F;input&#x2F;input.js:1159</code></a>
+                            <a href="../files/src_input_input.js.html#l1157"><code>src&#x2F;input&#x2F;input.js:1157</code></a>
                             </p>
                     
                     
@@ -3271,7 +3272,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l959"><code>src&#x2F;input&#x2F;input.js:959</code></a>
+                            <a href="../files/src_input_input.js.html#l957"><code>src&#x2F;input&#x2F;input.js:957</code></a>
                             </p>
                     
                     
@@ -3297,7 +3298,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l943"><code>src&#x2F;input&#x2F;input.js:943</code></a>
+                            <a href="../files/src_input_input.js.html#l941"><code>src&#x2F;input&#x2F;input.js:941</code></a>
                             </p>
                     
                     
@@ -3323,7 +3324,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l951"><code>src&#x2F;input&#x2F;input.js:951</code></a>
+                            <a href="../files/src_input_input.js.html#l949"><code>src&#x2F;input&#x2F;input.js:949</code></a>
                             </p>
                     
                     
@@ -3349,7 +3350,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l967"><code>src&#x2F;input&#x2F;input.js:967</code></a>
+                            <a href="../files/src_input_input.js.html#l965"><code>src&#x2F;input&#x2F;input.js:965</code></a>
                             </p>
                     
                     
@@ -3375,7 +3376,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l975"><code>src&#x2F;input&#x2F;input.js:975</code></a>
+                            <a href="../files/src_input_input.js.html#l973"><code>src&#x2F;input&#x2F;input.js:973</code></a>
                             </p>
                     
                     
@@ -3401,7 +3402,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l983"><code>src&#x2F;input&#x2F;input.js:983</code></a>
+                            <a href="../files/src_input_input.js.html#l981"><code>src&#x2F;input&#x2F;input.js:981</code></a>
                             </p>
                     
                     
@@ -3427,7 +3428,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l991"><code>src&#x2F;input&#x2F;input.js:991</code></a>
+                            <a href="../files/src_input_input.js.html#l989"><code>src&#x2F;input&#x2F;input.js:989</code></a>
                             </p>
                     
                     
@@ -3453,7 +3454,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l999"><code>src&#x2F;input&#x2F;input.js:999</code></a>
+                            <a href="../files/src_input_input.js.html#l997"><code>src&#x2F;input&#x2F;input.js:997</code></a>
                             </p>
                     
                     
@@ -3479,7 +3480,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1007"><code>src&#x2F;input&#x2F;input.js:1007</code></a>
+                            <a href="../files/src_input_input.js.html#l1005"><code>src&#x2F;input&#x2F;input.js:1005</code></a>
                             </p>
                     
                     
@@ -3505,7 +3506,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1015"><code>src&#x2F;input&#x2F;input.js:1015</code></a>
+                            <a href="../files/src_input_input.js.html#l1013"><code>src&#x2F;input&#x2F;input.js:1013</code></a>
                             </p>
                     
                     
@@ -3531,7 +3532,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l823"><code>src&#x2F;input&#x2F;input.js:823</code></a>
+                            <a href="../files/src_input_input.js.html#l821"><code>src&#x2F;input&#x2F;input.js:821</code></a>
                             </p>
                     
                     
@@ -3557,7 +3558,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1231"><code>src&#x2F;input&#x2F;input.js:1231</code></a>
+                            <a href="../files/src_input_input.js.html#l1229"><code>src&#x2F;input&#x2F;input.js:1229</code></a>
                             </p>
                     
                     
@@ -3583,7 +3584,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l831"><code>src&#x2F;input&#x2F;input.js:831</code></a>
+                            <a href="../files/src_input_input.js.html#l829"><code>src&#x2F;input&#x2F;input.js:829</code></a>
                             </p>
                     
                     
@@ -3609,7 +3610,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l559"><code>src&#x2F;input&#x2F;input.js:559</code></a>
+                            <a href="../files/src_input_input.js.html#l557"><code>src&#x2F;input&#x2F;input.js:557</code></a>
                             </p>
                     
                     
@@ -3635,7 +3636,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l551"><code>src&#x2F;input&#x2F;input.js:551</code></a>
+                            <a href="../files/src_input_input.js.html#l549"><code>src&#x2F;input&#x2F;input.js:549</code></a>
                             </p>
                     
                     
@@ -3661,7 +3662,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l527"><code>src&#x2F;input&#x2F;input.js:527</code></a>
+                            <a href="../files/src_input_input.js.html#l525"><code>src&#x2F;input&#x2F;input.js:525</code></a>
                             </p>
                     
                     
@@ -3687,7 +3688,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1207"><code>src&#x2F;input&#x2F;input.js:1207</code></a>
+                            <a href="../files/src_input_input.js.html#l1205"><code>src&#x2F;input&#x2F;input.js:1205</code></a>
                             </p>
                     
                     
@@ -3713,7 +3714,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l839"><code>src&#x2F;input&#x2F;input.js:839</code></a>
+                            <a href="../files/src_input_input.js.html#l837"><code>src&#x2F;input&#x2F;input.js:837</code></a>
                             </p>
                     
                     
@@ -3739,7 +3740,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l847"><code>src&#x2F;input&#x2F;input.js:847</code></a>
+                            <a href="../files/src_input_input.js.html#l845"><code>src&#x2F;input&#x2F;input.js:845</code></a>
                             </p>
                     
                     
@@ -3765,7 +3766,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l599"><code>src&#x2F;input&#x2F;input.js:599</code></a>
+                            <a href="../files/src_input_input.js.html#l597"><code>src&#x2F;input&#x2F;input.js:597</code></a>
                             </p>
                     
                     
@@ -3791,7 +3792,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l927"><code>src&#x2F;input&#x2F;input.js:927</code></a>
+                            <a href="../files/src_input_input.js.html#l925"><code>src&#x2F;input&#x2F;input.js:925</code></a>
                             </p>
                     
                     
@@ -3817,7 +3818,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l855"><code>src&#x2F;input&#x2F;input.js:855</code></a>
+                            <a href="../files/src_input_input.js.html#l853"><code>src&#x2F;input&#x2F;input.js:853</code></a>
                             </p>
                     
                     
@@ -3843,7 +3844,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1167"><code>src&#x2F;input&#x2F;input.js:1167</code></a>
+                            <a href="../files/src_input_input.js.html#l1165"><code>src&#x2F;input&#x2F;input.js:1165</code></a>
                             </p>
                     
                     
@@ -3869,7 +3870,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l935"><code>src&#x2F;input&#x2F;input.js:935</code></a>
+                            <a href="../files/src_input_input.js.html#l933"><code>src&#x2F;input&#x2F;input.js:933</code></a>
                             </p>
                     
                     
@@ -3895,7 +3896,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1175"><code>src&#x2F;input&#x2F;input.js:1175</code></a>
+                            <a href="../files/src_input_input.js.html#l1173"><code>src&#x2F;input&#x2F;input.js:1173</code></a>
                             </p>
                     
                     
@@ -3921,7 +3922,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l503"><code>src&#x2F;input&#x2F;input.js:503</code></a>
+                            <a href="../files/src_input_input.js.html#l501"><code>src&#x2F;input&#x2F;input.js:501</code></a>
                             </p>
                     
                     
@@ -3947,7 +3948,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1255"><code>src&#x2F;input&#x2F;input.js:1255</code></a>
+                            <a href="../files/src_input_input.js.html#l1253"><code>src&#x2F;input&#x2F;input.js:1253</code></a>
                             </p>
                     
                     
@@ -3973,7 +3974,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1263"><code>src&#x2F;input&#x2F;input.js:1263</code></a>
+                            <a href="../files/src_input_input.js.html#l1261"><code>src&#x2F;input&#x2F;input.js:1261</code></a>
                             </p>
                     
                     
@@ -3999,7 +4000,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l1039"><code>src&#x2F;input&#x2F;input.js:1039</code></a>
+                            <a href="../files/src_input_input.js.html#l1037"><code>src&#x2F;input&#x2F;input.js:1037</code></a>
                             </p>
                     
                     
@@ -4025,7 +4026,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l863"><code>src&#x2F;input&#x2F;input.js:863</code></a>
+                            <a href="../files/src_input_input.js.html#l861"><code>src&#x2F;input&#x2F;input.js:861</code></a>
                             </p>
                     
                     
@@ -4051,7 +4052,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l487"><code>src&#x2F;input&#x2F;input.js:487</code></a>
+                            <a href="../files/src_input_input.js.html#l485"><code>src&#x2F;input&#x2F;input.js:485</code></a>
                             </p>
                     
                     
@@ -4077,7 +4078,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l871"><code>src&#x2F;input&#x2F;input.js:871</code></a>
+                            <a href="../files/src_input_input.js.html#l869"><code>src&#x2F;input&#x2F;input.js:869</code></a>
                             </p>
                     
                     
@@ -4103,7 +4104,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l591"><code>src&#x2F;input&#x2F;input.js:591</code></a>
+                            <a href="../files/src_input_input.js.html#l589"><code>src&#x2F;input&#x2F;input.js:589</code></a>
                             </p>
                     
                     
@@ -4129,7 +4130,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l879"><code>src&#x2F;input&#x2F;input.js:879</code></a>
+                            <a href="../files/src_input_input.js.html#l877"><code>src&#x2F;input&#x2F;input.js:877</code></a>
                             </p>
                     
                     
@@ -4155,7 +4156,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l887"><code>src&#x2F;input&#x2F;input.js:887</code></a>
+                            <a href="../files/src_input_input.js.html#l885"><code>src&#x2F;input&#x2F;input.js:885</code></a>
                             </p>
                     
                     
@@ -4181,7 +4182,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l895"><code>src&#x2F;input&#x2F;input.js:895</code></a>
+                            <a href="../files/src_input_input.js.html#l893"><code>src&#x2F;input&#x2F;input.js:893</code></a>
                             </p>
                     
                     
@@ -4207,7 +4208,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l903"><code>src&#x2F;input&#x2F;input.js:903</code></a>
+                            <a href="../files/src_input_input.js.html#l901"><code>src&#x2F;input&#x2F;input.js:901</code></a>
                             </p>
                     
                     
@@ -4233,7 +4234,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l911"><code>src&#x2F;input&#x2F;input.js:911</code></a>
+                            <a href="../files/src_input_input.js.html#l909"><code>src&#x2F;input&#x2F;input.js:909</code></a>
                             </p>
                     
                     
@@ -4313,7 +4314,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l963"><code>src&#x2F;component.js:963</code></a>
+                            <a href="../files/src_component.js.html#l966"><code>src&#x2F;component.js:966</code></a>
                             </p>
                     
                     
@@ -4405,7 +4406,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l360"><code>src&#x2F;input&#x2F;input.js:360</code></a>
+                            <a href="../files/src_input_input.js.html#l358"><code>src&#x2F;input&#x2F;input.js:358</code></a>
                             </p>
                     
                     
@@ -4448,7 +4449,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1044"><code>src&#x2F;component.js:1044</code></a>
+                            <a href="../files/src_component.js.html#l1047"><code>src&#x2F;component.js:1047</code></a>
                             </p>
                     
                     
@@ -4473,7 +4474,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l177"><code>src&#x2F;input&#x2F;input.js:177</code></a>
+                            <a href="../files/src_input_input.js.html#l175"><code>src&#x2F;input&#x2F;input.js:175</code></a>
                             </p>
                     
                     
@@ -4516,7 +4517,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l207"><code>src&#x2F;input&#x2F;input.js:207</code></a>
+                            <a href="../files/src_input_input.js.html#l205"><code>src&#x2F;input&#x2F;input.js:205</code></a>
                             </p>
                     
                     
@@ -4559,7 +4560,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l431"><code>src&#x2F;input&#x2F;input.js:431</code></a>
+                            <a href="../files/src_input_input.js.html#l429"><code>src&#x2F;input&#x2F;input.js:429</code></a>
                             </p>
                     
                     
@@ -4602,7 +4603,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l286"><code>src&#x2F;input&#x2F;input.js:286</code></a>
+                            <a href="../files/src_input_input.js.html#l284"><code>src&#x2F;input&#x2F;input.js:284</code></a>
                             </p>
                     
                     
@@ -4645,7 +4646,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l381"><code>src&#x2F;input&#x2F;input.js:381</code></a>
+                            <a href="../files/src_input_input.js.html#l379"><code>src&#x2F;input&#x2F;input.js:379</code></a>
                             </p>
                     
                     
@@ -4688,7 +4689,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l249"><code>src&#x2F;input&#x2F;input.js:249</code></a>
+                            <a href="../files/src_input_input.js.html#l247"><code>src&#x2F;input&#x2F;input.js:247</code></a>
                             </p>
                     
                     
@@ -4731,7 +4732,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l229"><code>src&#x2F;input&#x2F;input.js:229</code></a>
+                            <a href="../files/src_input_input.js.html#l227"><code>src&#x2F;input&#x2F;input.js:227</code></a>
                             </p>
                     
                     
@@ -4774,7 +4775,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l322"><code>src&#x2F;input&#x2F;input.js:322</code></a>
+                            <a href="../files/src_input_input.js.html#l320"><code>src&#x2F;input&#x2F;input.js:320</code></a>
                             </p>
                     
                     
@@ -4817,7 +4818,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_input_input.js.html#l398"><code>src&#x2F;input&#x2F;input.js:398</code></a>
+                            <a href="../files/src_input_input.js.html#l396"><code>src&#x2F;input&#x2F;input.js:396</code></a>
                             </p>
                     
                     

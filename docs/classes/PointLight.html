@@ -197,54 +197,41 @@
 
 <div class="box intro">
     <p>A <strong>PointLight</strong> defines a positional light source that originates from a single point and spreads outward in all directions, to illuminate
-attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
-<h2 id="overview">Overview</h2>
-<ul>
-
-<li>PointLights are grouped, along with other light source types, within <a href="../classes/Lights.html" class="crosslink">Lights</a> components,
-which are attached to <a href="../classes/Entity.html" class="crosslink">Entities</a>.</li>
-
-<li>PointLights have a position, but no direction.</li>
-
-<li>PointLights may be defined in either <strong>World</strong> or <strong>View</strong> coordinate space. When in World-space, their positions
-are relative to the World coordinate system, and will appear to move as the <a href="../classes/Camera.html" class="crosslink">Camera</a> moves.
-When in View-space, their positions are relative to the View coordinate system, and will behave as if fixed to the viewer&#39;s
-head as the <a href="../classes/Camera.html" class="crosslink">Camera</a> moves.</li>
-
-<li>PointLights have <a href="../classes/PointLight.html#property_constantAttenuation" class="crosslink">constantAttenuation</a>, <a href="../classes/PointLight.html#property_linearAttenuation" class="crosslink">linearAttenuation</a> and
-<a href="../classes/PointLight.html#property_quadraticAttenuation" class="crosslink">quadraticAttenuation</a> factors, which indicate how their intensity attenuates over distance.</li>
-
-<li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that PointLights create within xeoEngine&#39;s shaders.</li>
-
-</ul>
-
-<p><img src="../../../assets/images/PointLight.png"></img></p>
+ attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+<p><ul>
+ <li>PointLights are grouped, along with other light source types, within <a href="../classes/Lights.html" class="crosslink">Lights</a> components,
+ which are attached to <a href="../classes/Entity.html" class="crosslink">Entities</a>.</li>
+ <li>PointLights have a position, but no direction.</li>
+ <li>PointLights may be defined in either <strong>World</strong> or <strong>View</strong> coordinate space. When in World-space, their positions
+ are relative to the World coordinate system, and will appear to move as the <a href="../classes/Camera.html" class="crosslink">Camera</a> moves.
+ When in View-space, their positions are relative to the View coordinate system, and will behave as if fixed to the viewer&#39;s
+ head as the <a href="../classes/Camera.html" class="crosslink">Camera</a> moves.</li>
+ <li>PointLights have <a href="../classes/PointLight.html#property_constantAttenuation" class="crosslink">constantAttenuation</a>, <a href="../classes/PointLight.html#property_linearAttenuation" class="crosslink">linearAttenuation</a> and
+ <a href="../classes/PointLight.html#property_quadraticAttenuation" class="crosslink">quadraticAttenuation</a> factors, which indicate how their intensity attenuates over distance.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that PointLights create within xeoEngine&#39;s shaders.</li>
+ </ul>
+<img src="../../../assets/images/PointLight.png"></img></p>
 <h2 id="example">Example</h2>
-<pre class="code prettyprint"><code class="lang-javascript">var entity = new XEO.Entity(scene, {
-
+<pre class="code prettyprint"><code class="lang-javascript"> var entity = new XEO.Entity(scene, {
        lights: new XEO.Lights({
-           lights: [
-               new XEO.PointLight({
-                   pos: [0, 100, 100],
-                   color: [0.5, 0.7, 0.5],
-                   intensity: 1
-                   constantAttenuation: 0,
-                   linearAttenuation: 0,
-                   quadraticAttenuation: 0,
-                   space: "view"
-               })
-           ]
-       }),
-,
-       material: new XEO.PhongMaterial({
-           diffuse: [0.5, 0.5, 0.0]
-       }),
-
+            lights: [
+                new XEO.PointLight({
+                    pos: [0, 100, 100],
+                    color: [0.5, 0.7, 0.5],
+                    intensity: 1
+                    constantAttenuation: 0,
+                    linearAttenuation: 0,
+                    quadraticAttenuation: 0,
+                    space: "view"
+                })
+            ]
+        }),
+ ,
+        material: new XEO.PhongMaterial({
+            diffuse: [0.5, 0.5, 0.0]
+        }),
        geometry: new XEO.BoxGeometry()
- });
-
-// Update the light&#39;s color
-entity.lights.lights[0].color[0] = 1.0;
+  });
 </code></pre>
 
 </div>
@@ -299,7 +286,7 @@ entity.lights.lights[0].color[0] = 1.0;
         
                             <div class="param-description">
                                 <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a>, creates this PointLight within the
-        default <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted</p>
+         default <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted</p>
         
                             </div>
         
@@ -642,18 +629,20 @@ entity.lights.lights[0].color[0] = 1.0;
         <p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 <p>You would typically use this method to conveniently instantiate components that you&#39;d want to
 share (ie. "instance") among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
-<p>The method is given a component type and configuration, like so:</p>
+<p>The method is given a component type, configuration and optional instance ID, like so:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(XEO.PhongMaterial, {
      diffuse: [1,0,0],
      specular: [1,1,0]
-});
+}, "myMaterial");
 </code></pre>
 <p>The first time you call this method for the given <code>type</code> and <code>instanceId</code>, this method will create the
 <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, passing the given  attributes to the component&#39;s constructor.</p>
 <p>If you call this method again, specifying the same <code>type</code> and <code>instanceId</code>, the method will return the same
-component instance that it returned the first time, and will ignore the attributes:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, "myMaterial", { specular: [1,1,0] });
+component instance that it returned the first time, and will ignore the configuration:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
 </code></pre>
+<p>So inthis example, our <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> will continue to have the red specular
+and diffuse color that we specified the first time.</p>
 <p>Each time you call this method with the same <code>type</code> and <code>instanceId</code>, the Scene will internally increment a
 reference count for the component instance. You can release the shared component instance with a call to
 Scene/putSharedComponent:method, and once you have released it as many
@@ -732,7 +721,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l997"><code>src&#x2F;component.js:997</code></a>
+        <a href="../files/src_component.js.html#l1000"><code>src&#x2F;component.js:1000</code></a>
         </p>
 
 
@@ -1348,7 +1337,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_pointLight.js.html#l142"><code>src&#x2F;lighting&#x2F;pointLight.js:142</code></a>
+                            <a href="../files/src_lighting_pointLight.js.html#l131"><code>src&#x2F;lighting&#x2F;pointLight.js:131</code></a>
                             </p>
                     
                     
@@ -1375,7 +1364,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_pointLight.js.html#l204"><code>src&#x2F;lighting&#x2F;pointLight.js:204</code></a>
+                            <a href="../files/src_lighting_pointLight.js.html#l193"><code>src&#x2F;lighting&#x2F;pointLight.js:193</code></a>
                             </p>
                     
                     
@@ -1453,7 +1442,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_pointLight.js.html#l172"><code>src&#x2F;lighting&#x2F;pointLight.js:172</code></a>
+                            <a href="../files/src_lighting_pointLight.js.html#l161"><code>src&#x2F;lighting&#x2F;pointLight.js:161</code></a>
                             </p>
                     
                     
@@ -1506,7 +1495,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l935"><code>src&#x2F;component.js:935</code></a>
+                            <a href="../files/src_component.js.html#l938"><code>src&#x2F;component.js:938</code></a>
                             </p>
                     
                     
@@ -1531,7 +1520,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_pointLight.js.html#l235"><code>src&#x2F;lighting&#x2F;pointLight.js:235</code></a>
+                            <a href="../files/src_lighting_pointLight.js.html#l224"><code>src&#x2F;lighting&#x2F;pointLight.js:224</code></a>
                             </p>
                     
                     
@@ -1583,7 +1572,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_pointLight.js.html#l110"><code>src&#x2F;lighting&#x2F;pointLight.js:110</code></a>
+                            <a href="../files/src_lighting_pointLight.js.html#l99"><code>src&#x2F;lighting&#x2F;pointLight.js:99</code></a>
                             </p>
                     
                     
@@ -1611,7 +1600,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_pointLight.js.html#l266"><code>src&#x2F;lighting&#x2F;pointLight.js:266</code></a>
+                            <a href="../files/src_lighting_pointLight.js.html#l255"><code>src&#x2F;lighting&#x2F;pointLight.js:255</code></a>
                             </p>
                     
                     
@@ -1664,7 +1653,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_pointLight.js.html#l297"><code>src&#x2F;lighting&#x2F;pointLight.js:297</code></a>
+                            <a href="../files/src_lighting_pointLight.js.html#l286"><code>src&#x2F;lighting&#x2F;pointLight.js:286</code></a>
                             </p>
                     
                     
@@ -1701,7 +1690,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l963"><code>src&#x2F;component.js:963</code></a>
+                            <a href="../files/src_component.js.html#l966"><code>src&#x2F;component.js:966</code></a>
                             </p>
                     
                     
@@ -1793,7 +1782,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_pointLight.js.html#l159"><code>src&#x2F;lighting&#x2F;pointLight.js:159</code></a>
+                            <a href="../files/src_lighting_pointLight.js.html#l148"><code>src&#x2F;lighting&#x2F;pointLight.js:148</code></a>
                             </p>
                     
                     
@@ -1835,7 +1824,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_pointLight.js.html#l221"><code>src&#x2F;lighting&#x2F;pointLight.js:221</code></a>
+                            <a href="../files/src_lighting_pointLight.js.html#l210"><code>src&#x2F;lighting&#x2F;pointLight.js:210</code></a>
                             </p>
                     
                     
@@ -1877,7 +1866,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1044"><code>src&#x2F;component.js:1044</code></a>
+                            <a href="../files/src_component.js.html#l1047"><code>src&#x2F;component.js:1047</code></a>
                             </p>
                     
                     
@@ -1902,7 +1891,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_pointLight.js.html#l191"><code>src&#x2F;lighting&#x2F;pointLight.js:191</code></a>
+                            <a href="../files/src_lighting_pointLight.js.html#l180"><code>src&#x2F;lighting&#x2F;pointLight.js:180</code></a>
                             </p>
                     
                     
@@ -1944,7 +1933,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_pointLight.js.html#l252"><code>src&#x2F;lighting&#x2F;pointLight.js:252</code></a>
+                            <a href="../files/src_lighting_pointLight.js.html#l241"><code>src&#x2F;lighting&#x2F;pointLight.js:241</code></a>
                             </p>
                     
                     
@@ -1986,7 +1975,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_pointLight.js.html#l129"><code>src&#x2F;lighting&#x2F;pointLight.js:129</code></a>
+                            <a href="../files/src_lighting_pointLight.js.html#l118"><code>src&#x2F;lighting&#x2F;pointLight.js:118</code></a>
                             </p>
                     
                     
@@ -2028,7 +2017,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_pointLight.js.html#l283"><code>src&#x2F;lighting&#x2F;pointLight.js:283</code></a>
+                            <a href="../files/src_lighting_pointLight.js.html#l272"><code>src&#x2F;lighting&#x2F;pointLight.js:272</code></a>
                             </p>
                     
                     
@@ -2070,7 +2059,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_pointLight.js.html#l321"><code>src&#x2F;lighting&#x2F;pointLight.js:321</code></a>
+                            <a href="../files/src_lighting_pointLight.js.html#l310"><code>src&#x2F;lighting&#x2F;pointLight.js:310</code></a>
                             </p>
                     
                     

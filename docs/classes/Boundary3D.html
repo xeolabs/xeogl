@@ -197,71 +197,49 @@
 
 <div class="box intro">
     <p>A <strong>Boundary3D</strong> provides the axis-aligned and object-aligned extents of its owner component.</p>
-<h2 id="overview">Overview</h2>
+<p>A Boundary3D provides spatial info in these properties:</p>
+<ul>
+<li><a href="../classes/Boundary3D.html#property_obb" class="crosslink">obb</a> - an object-aligned bounding box (OBB), as an array of eight corner vertex positions</li>
+<li><a href="../classes/Boundary3D.html#property_aabb" class="crosslink">aabb</a> - an axis-aligned bounding box (AABB), as minimum and maximum corner vertex positions</li>
+<li><a href="../classes/Boundary3D.html#property_center" class="crosslink">center</a> - center coordinate</li>
+</ul>
+
 <p>As shown in the diagram below, the following xeoEngine components have Boundary3Ds:</p>
 <ul>
-<li>A <a href="../classes/Scene.html#property_worldBoundary" class="crosslink">Scene&#39;s worldBoundary</a> provides a <strong>World</strong>-space boundary of all its <a href="../classes/Entity.html" class="crosslink">Entities</a></li>
-<li>A <a href="../classes/Geometry.html#property_localBoundary" class="crosslink">Geometry&#39;s localBoundary</a> provides a <strong>Local</strong>-space boundary enclosing its <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a></li>
+<li>A <a href="../classes/Scene.html#property_worldBoundary" class="crosslink">Scene&#39;s worldBoundary</a> provides the <strong>World</strong>-space boundary of all its <a href="../classes/Entity.html" class="crosslink">Entities</a></li>
+<li>A <a href="../classes/Geometry.html#property_localBoundary" class="crosslink">Geometry&#39;s localBoundary</a> provides the <strong>Local</strong>-space boundary of its <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a></li>
 <li>An <a href="../classes/Entity.html#property_localBoundary" class="crosslink">Entity&#39;s localBoundary</a> (also) provides the <strong>Local</strong>-space boundary of its <a href="../classes/Geometry.html" class="crosslink">Geometry</a></li>
-<li>An <a href="../classes/Entity.html#property_worldBoundary" class="crosslink">Entity&#39;s worldBoundary</a> provides a <strong>World</strong>-space boundary that encloses
+<li>An <a href="../classes/Entity.html#property_worldBoundary" class="crosslink">Entity&#39;s worldBoundary</a> provides the <strong>World</strong>-space boundary of
 its <a href="../classes/Geometry.html" class="crosslink">Geometry&#39;s</a> <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a> after
 their transformation by the <a href="../classes/Entity.html#property_transform" class="crosslink">Entity&#39;s Modelling transform</a>.</li>
-<li>An <a href="../classes/Entity.html#property_viewBoundary" class="crosslink">Entity&#39;s viewBoundary</a> provides a <strong>View</strong>-space boundary that encloses
+<li>An <a href="../classes/Entity.html#property_viewBoundary" class="crosslink">Entity&#39;s viewBoundary</a> provides the <strong>View</strong>-space boundary of
 its <a href="../classes/Geometry.html" class="crosslink">Geometry&#39;s</a> <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a> after
 their transformation by both the <a href="../classes/Entity.html#property_transform" class="crosslink">Entity&#39;s Modelling transform</a> <strong>and</strong> <a href="../classes/Camera.html#property_view" class="crosslink">Viewing transform</a>.</li>
-<li>A <a href="../classes/CollectionBoundary.html#property_worldBoundary" class="crosslink">CollectionBoundary&#39;s worldBoundary</a> provides a <strong>World</strong>-space boundary that encloses all the <a href="../classes/Entity.html" class="crosslink">Entities</a> contained within its <a href="../classes/Collection.html" class="crosslink">Collection</a>.</li>
+<li>A <a href="../classes/CollectionBoundary.html#property_worldBoundary" class="crosslink">CollectionBoundary&#39;s worldBoundary</a> provides the <strong>World</strong>-space boundary of all the <a href="../classes/Entity.html" class="crosslink">Entities</a> contained within its <a href="../classes/Collection.html" class="crosslink">Collection</a>.</li>
 </ul>
-<p>Also shown in the diagram is an <a href="../classes/Entity.html#property_canvasBoundary" class="crosslink">Entity&#39;s canvasBoundary</a>, which is a <a href="../classes/Boundary2D.html" class="crosslink">Boundary2D</a> that provides a <strong>Canvas</strong>-space boundary that encloses the <a href="../classes/Geometry.html" class="crosslink">Geometry&#39;s</a> <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a>, after
+<p>The diagram also shows an <a href="../classes/Entity.html#property_canvasBoundary" class="crosslink">Entity&#39;s canvasBoundary</a>, which is a <a href="../classes/Boundary2D.html" class="crosslink">Boundary2D</a> that provides the <strong>Canvas</strong>-space boundary of the <a href="../classes/Geometry.html" class="crosslink">Geometry&#39;s</a> <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a> after
 their transformation by the <a href="../classes/Entity.html#property_transform" class="crosslink">Entity&#39;s Modelling transform</a>, <a href="../classes/Camera.html#property_view" class="crosslink">Viewing transform</a>
 and <a href="../classes/Camera.html#property_project" class="crosslink">Projection transform</a>.</p>
 <p><br><br>
 <img src="../../../assets/images/Boundary3D.png"></img></p>
-<h2 id="obb-and-aabb-representations">OBB and AABB Representations</h2>
-<p>Each Boundary3D instance provides two boundary representations, in these properties:</p>
-<ul>
-<li><a href="../classes/Boundary3D.html#property_obb" class="crosslink">obb</a> - an object-aligned bounding box (OBB), as an array of eight corner vertex positions</li>
-<li><a href="../classes/Boundary3D.html#property_aabb" class="crosslink">aabb</a> - an axis-aligned bounding box (AABB), as minimum and maximum corner vertex positions</li>
-</ul>
-
-<p>The screenshot below shows an Entity (the green nut) with wireframe boxes indicating its World-space OOBB (yellow). World-space AABB (red) and
-Canvas-space AABB (green).</p>
-<p><br><br>
-<img src="../../../assets/images/boundaries.png"></img></p>
 <h2 id="example">Example</h2>
 <p>In the example below we&#39;ll get the World-space Boundary3D of an <a href="../classes/Entity.html" class="crosslink">Entity</a>, subscribe to updates on the Boundary3D,
 then animate the <a href="../classes/Entity.html" class="crosslink">Entity&#39;s</a> modelling transform, which gives our callback a running update
 of the moving Boundary3D extents.</p>
-<pre class="code prettyprint"><code class="lang-javascript">
-// Geometry and modelling transform components
-
-var geometry = new XEO.BoxGeometry();
-
-var translate = new XEO.Translate({
-   xyz: [-5, 0, 0]
-});
-
-// Create an Entity that has the Geometry and the transform
+<pre class="code prettyprint"><code class="lang-javascript">// Entity With a Geometry and Transform
 
 var entity = new XEO.Entity({
-      geometry: myGeometry,
-      transform: translate
+       geometry: new XEO.BoxGeometry(),
+       transform: new XEO.Translate({
+           xyz: [-5, 0, 0]
+       })
  });
-
-// Get the Entity&#39;s World-space Boundary3D and query its
-// various spatial properties
-
-var worldBoundary = entity.worldBoundary;
-
-var obb = worldBoundary.obb; // Object-aligned boundary, an array of eight corner vertex positions
-var aabb = worldBoundary.aabb; // an axis-aligned bounding box (AABB), as minimum and maximum corner vertex positions
-var center = worldBoundary.center; // Center point
 
 // Subscribe to updates to the Boundary3D
 
-worldBoundary.on("updated",
-    function() {
+var worldBoundary = entity.worldBoundary;
 
-       // Query the updated Boundary3D properties
+worldBoundary.on("updated", function() {
 
        obb = worldBoundary.obb;
        aabb = worldBoundary.aabb;
@@ -636,18 +614,20 @@ scene.on("tick", function() {
         <p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 <p>You would typically use this method to conveniently instantiate components that you&#39;d want to
 share (ie. "instance") among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
-<p>The method is given a component type and configuration, like so:</p>
+<p>The method is given a component type, configuration and optional instance ID, like so:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(XEO.PhongMaterial, {
      diffuse: [1,0,0],
      specular: [1,1,0]
-});
+}, "myMaterial");
 </code></pre>
 <p>The first time you call this method for the given <code>type</code> and <code>instanceId</code>, this method will create the
 <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, passing the given  attributes to the component&#39;s constructor.</p>
 <p>If you call this method again, specifying the same <code>type</code> and <code>instanceId</code>, the method will return the same
-component instance that it returned the first time, and will ignore the attributes:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, "myMaterial", { specular: [1,1,0] });
+component instance that it returned the first time, and will ignore the configuration:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
 </code></pre>
+<p>So inthis example, our <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> will continue to have the red specular
+and diffuse color that we specified the first time.</p>
 <p>Each time you call this method with the same <code>type</code> and <code>instanceId</code>, the Scene will internally increment a
 reference count for the component instance. You can release the shared component instance with a call to
 Scene/putSharedComponent:method, and once you have released it as many
@@ -726,7 +706,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l997"><code>src&#x2F;component.js:997</code></a>
+        <a href="../files/src_component.js.html#l1000"><code>src&#x2F;component.js:1000</code></a>
         </p>
 
 
@@ -1343,7 +1323,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_boundaries_boundary3d.js.html#l172"><code>src&#x2F;boundaries&#x2F;boundary3d.js:172</code></a>
+                            <a href="../files/src_boundaries_boundary3d.js.html#l146"><code>src&#x2F;boundaries&#x2F;boundary3d.js:146</code></a>
                             </p>
                     
                     
@@ -1369,7 +1349,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_boundaries_boundary3d.js.html#l191"><code>src&#x2F;boundaries&#x2F;boundary3d.js:191</code></a>
+                            <a href="../files/src_boundaries_boundary3d.js.html#l165"><code>src&#x2F;boundaries&#x2F;boundary3d.js:165</code></a>
                             </p>
                     
                     
@@ -1471,7 +1451,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l935"><code>src&#x2F;component.js:935</code></a>
+                            <a href="../files/src_component.js.html#l938"><code>src&#x2F;component.js:938</code></a>
                             </p>
                     
                     
@@ -1522,7 +1502,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_boundaries_boundary3d.js.html#l153"><code>src&#x2F;boundaries&#x2F;boundary3d.js:153</code></a>
+                            <a href="../files/src_boundaries_boundary3d.js.html#l127"><code>src&#x2F;boundaries&#x2F;boundary3d.js:127</code></a>
                             </p>
                     
                     
@@ -1577,7 +1557,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l963"><code>src&#x2F;component.js:963</code></a>
+                            <a href="../files/src_component.js.html#l966"><code>src&#x2F;component.js:966</code></a>
                             </p>
                     
                     
@@ -1669,7 +1649,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1044"><code>src&#x2F;component.js:1044</code></a>
+                            <a href="../files/src_component.js.html#l1047"><code>src&#x2F;component.js:1047</code></a>
                             </p>
                     
                     
@@ -1694,7 +1674,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_boundaries_boundary3d.js.html#l116"><code>src&#x2F;boundaries&#x2F;boundary3d.js:116</code></a>
+                            <a href="../files/src_boundaries_boundary3d.js.html#l90"><code>src&#x2F;boundaries&#x2F;boundary3d.js:90</code></a>
                             </p>
                     
                     

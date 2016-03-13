@@ -197,60 +197,42 @@
 
 <div class="box intro">
     <p>A <strong>Modes</strong> toggles various xeoEngine modes and capabilities for attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
-<h2 id="overview">Overview</h2>
-<ul>
-
-<li>Though the rendering modes are defined by various different components attached to the <a href="../classes/Entity.html" class="crosslink">Entities</a>,
-Modes components provide a single point through which you can toggle them on or off.</li>
-
-<li>A Modes may be shared among multiple <a href="../classes/Entity.html" class="crosslink">Entities</a> to toggle
-rendering modes for them as a group.</li>
-
-<li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Modes create within xeoEngine&#39;s shaders.</li>
-
-</ul>
-
-<p><img src="../../../assets/images/Modes.png"></img></p>
+<p><ul>
+ <li>Though the rendering modes are defined by various different components attached to the <a href="../classes/Entity.html" class="crosslink">Entities</a>,
+ Modes components provide a single point through which you can toggle them on or off.</li>
+ <li>A Modes may be shared among multiple <a href="../classes/Entity.html" class="crosslink">Entities</a> to toggle
+ rendering modes for them as a group.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Modes create within xeoEngine&#39;s shaders.</li>
+ </ul>
+<img src="../../../assets/images/Modes.png"></img></p>
 <h2 id="example">Example</h2>
-<p>In this example we have a Modes that toggles rendering modes for
-two <a href="../classes/Entity.html" class="crosslink">Entities</a>. The properties of the Modes are initialised to their
-default values.</p>
-<pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
-
-// Create a Modes with default properties
-var modes = new XEO.Modes(scene, {
-   pickable: true,             // Enable picking
-   clippable true,              // Enable effect of XEO.Clip components
-   transparent : false,        // Disable transparency
-   backfaces : true,           // Render backfaces
-   frontface : "ccw"
-});
-
+<p>In this example we have a Modes that toggles rendering modes for two <a href="../classes/Entity.html" class="crosslink">Entities</a>. The
+ properties of the Modes are initialised to their default values.</p>
+<pre class="code prettyprint"><code class="lang-javascript"> // Create a Modes with default properties
+ var modes = new XEO.Modes(scene, {
+    collidable: true,           // Include Entities in boundary calculations
+    pickable: true,             // Enable picking
+    clippable true,             // Enable effect of XEO.Clip components
+    transparent : false,        // Disable transparency
+    backfaces : true,           // Render backfaces
+    frontface : "ccw"
+ });
+var boxGeometry = new XEO.BoxGeometry();
 // Create two Entities whose rendering modes will be controlled by our Modes
-
-var entity1 = new XEO.Entity(scene, {
-      modes: modes
-});
-
+var entity1 = new XEO.Entity({
+     geometry: boxGeometry,
+     modes: modes,
+     translate: new XEO.Translate({
+        xyz: [3, 0, 0]
+     })
+ });
 var entity2 = new XEO.Entity(scene, {
-      modes: modes
-});
-
-// Subscribe to change on the Modes&#39; "backfaces" property
-var handle = modes.on("backfaces", function(value) {
-      //...
-});
-
-// Hide backfaces on our Entities by flipping the Modes&#39; "backfaces" property,
-// which will also call our handler
-modes.backfaces = false;
-
-// Unsubscribe from the Modes again
-modes.off(handle);
-
-// When we destroy our Modes, the Entities will fall back
-// on the Scene&#39;s default Modes instance
-modes.destroy();
+     geometry: boxGeometry,
+     modes: modes,
+     translate: new XEO.Translate({
+        xyz: [3, 0, 0]
+     })
+ });
 </code></pre>
 
 </div>
@@ -372,10 +354,10 @@ modes.destroy();
         
                                         <div class="param-description">
                                             <p>Whether to enable the transparency effect created by <a href="../classes/Material.html" class="crosslink">Material</a>s when they have
-        <a href="../classes/PhongMaterial.html#property_opacity" class="crosslink">opacity</a> &lt; 1.0. This mode will set attached <a href="../classes/Entity.html" class="crosslink">Entities</a> transparent (ie. to be rendered in a
-        transparency pass with blending enabled etc), while
-        the <a href="../classes/PhongMaterial.html#property_opacity" class="crosslink">opacity</a> will indicate the <strong>degree</strong> of their transparency
-        (ie. where opacity of 0.0 indicates maximum translucency and opacity of 1.0 indicates minimum translucency).</p>
+         <a href="../classes/PhongMaterial.html#property_opacity" class="crosslink">opacity</a> &lt; 1.0. This mode will set attached <a href="../classes/Entity.html" class="crosslink">Entities</a> transparent (ie. to be rendered in a
+         transparency pass with blending enabled etc), while
+         the <a href="../classes/PhongMaterial.html#property_opacity" class="crosslink">opacity</a> will indicate the <strong>degree</strong> of their transparency
+         (ie. where opacity of 0.0 indicates maximum translucency and opacity of 1.0 indicates minimum translucency).</p>
         
                                         </div>
         
@@ -409,7 +391,7 @@ modes.destroy();
         
                                         <div class="param-description">
                                             <p>Whether attached <a href="../classes/Entity.html" class="crosslink">Entities</a> are included in boundary-related calculations. Set this false if the
-        <a href="../classes/Entity.html" class="crosslink">Entities</a> are things like helpers or indicators that should not be included in boundary calculations.</p>
+         <a href="../classes/Entity.html" class="crosslink">Entities</a> are things like helpers or indicators that should not be included in boundary calculations.</p>
         
                                         </div>
         
@@ -633,18 +615,20 @@ modes.destroy();
         <p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 <p>You would typically use this method to conveniently instantiate components that you&#39;d want to
 share (ie. "instance") among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
-<p>The method is given a component type and configuration, like so:</p>
+<p>The method is given a component type, configuration and optional instance ID, like so:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(XEO.PhongMaterial, {
      diffuse: [1,0,0],
      specular: [1,1,0]
-});
+}, "myMaterial");
 </code></pre>
 <p>The first time you call this method for the given <code>type</code> and <code>instanceId</code>, this method will create the
 <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, passing the given  attributes to the component&#39;s constructor.</p>
 <p>If you call this method again, specifying the same <code>type</code> and <code>instanceId</code>, the method will return the same
-component instance that it returned the first time, and will ignore the attributes:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, "myMaterial", { specular: [1,1,0] });
+component instance that it returned the first time, and will ignore the configuration:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
 </code></pre>
+<p>So inthis example, our <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> will continue to have the red specular
+and diffuse color that we specified the first time.</p>
 <p>Each time you call this method with the same <code>type</code> and <code>instanceId</code>, the Scene will internally increment a
 reference count for the component instance. You can release the shared component instance with a call to
 Scene/putSharedComponent:method, and once you have released it as many
@@ -723,7 +707,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l997"><code>src&#x2F;component.js:997</code></a>
+        <a href="../files/src_component.js.html#l1000"><code>src&#x2F;component.js:1000</code></a>
         </p>
 
 
@@ -1339,7 +1323,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l219"><code>src&#x2F;rendering&#x2F;modes.js:219</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l205"><code>src&#x2F;rendering&#x2F;modes.js:205</code></a>
                             </p>
                     
                     
@@ -1368,7 +1352,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l149"><code>src&#x2F;rendering&#x2F;modes.js:149</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l135"><code>src&#x2F;rendering&#x2F;modes.js:135</code></a>
                             </p>
                     
                     
@@ -1397,7 +1381,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l289"><code>src&#x2F;rendering&#x2F;modes.js:289</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l275"><code>src&#x2F;rendering&#x2F;modes.js:275</code></a>
                             </p>
                     
                     
@@ -1454,7 +1438,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l255"><code>src&#x2F;rendering&#x2F;modes.js:255</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l241"><code>src&#x2F;rendering&#x2F;modes.js:241</code></a>
                             </p>
                     
                     
@@ -1535,7 +1519,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l935"><code>src&#x2F;component.js:935</code></a>
+                            <a href="../files/src_component.js.html#l938"><code>src&#x2F;component.js:938</code></a>
                             </p>
                     
                     
@@ -1585,7 +1569,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l116"><code>src&#x2F;rendering&#x2F;modes.js:116</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l102"><code>src&#x2F;rendering&#x2F;modes.js:102</code></a>
                             </p>
                     
                     
@@ -1643,7 +1627,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l963"><code>src&#x2F;component.js:963</code></a>
+                            <a href="../files/src_component.js.html#l966"><code>src&#x2F;component.js:966</code></a>
                             </p>
                     
                     
@@ -1700,7 +1684,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l183"><code>src&#x2F;rendering&#x2F;modes.js:183</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l169"><code>src&#x2F;rendering&#x2F;modes.js:169</code></a>
                             </p>
                     
                     
@@ -1766,7 +1750,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l241"><code>src&#x2F;rendering&#x2F;modes.js:241</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l227"><code>src&#x2F;rendering&#x2F;modes.js:227</code></a>
                             </p>
                     
                     
@@ -1808,7 +1792,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l169"><code>src&#x2F;rendering&#x2F;modes.js:169</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l155"><code>src&#x2F;rendering&#x2F;modes.js:155</code></a>
                             </p>
                     
                     
@@ -1850,7 +1834,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l317"><code>src&#x2F;rendering&#x2F;modes.js:317</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l303"><code>src&#x2F;rendering&#x2F;modes.js:303</code></a>
                             </p>
                     
                     
@@ -1892,7 +1876,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1044"><code>src&#x2F;component.js:1044</code></a>
+                            <a href="../files/src_component.js.html#l1047"><code>src&#x2F;component.js:1047</code></a>
                             </p>
                     
                     
@@ -1917,7 +1901,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l275"><code>src&#x2F;rendering&#x2F;modes.js:275</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l261"><code>src&#x2F;rendering&#x2F;modes.js:261</code></a>
                             </p>
                     
                     
@@ -1959,7 +1943,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l135"><code>src&#x2F;rendering&#x2F;modes.js:135</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l121"><code>src&#x2F;rendering&#x2F;modes.js:121</code></a>
                             </p>
                     
                     
@@ -2001,7 +1985,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_modes.js.html#l205"><code>src&#x2F;rendering&#x2F;modes.js:205</code></a>
+                            <a href="../files/src_rendering_modes.js.html#l191"><code>src&#x2F;rendering&#x2F;modes.js:191</code></a>
                             </p>
                     
                     

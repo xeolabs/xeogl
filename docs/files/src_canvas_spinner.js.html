@@ -183,16 +183,18 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A Spinner is a loading indicator that displays the center of its {{#crossLink &quot;Canvas&quot;}}{{/crossLink}} while things are loading or otherwise busy.
+ A Spinner displays a spinner animation at the center of its {{#crossLink &quot;Canvas&quot;}}{{/crossLink}} while things are loading or otherwise busy.
 
- Spinners are normally shown by {{#crossLink &quot;Model&quot;}}Models{{/crossLink}} while they are loading, however they may also
- be shown by application code that wants to indicate business.
+ &lt;ul&gt;
+ &lt;li&gt;Spinners are normally shown by {{#crossLink &quot;Model&quot;}}Models{{/crossLink}} while they are loading, however they may also
+ be shown by any application code that wants to indicate business.&lt;/li&gt;
+ &lt;li&gt;A Spinner component has a {{#crossLink &quot;Spinner/processes:property&quot;}}{{/crossLink}} count that indicates how many
+ active processes it currently represents. As a process starts, a process would increment {{#crossLink &quot;Spinner/processes:property&quot;}}{{/crossLink}}, then as it
+ completes (or fails), would decrement it again.&lt;/li&gt;
+ &lt;li&gt;A Spinner is only visible while {{#crossLink &quot;Spinner/processes:property&quot;}}{{/crossLink}} is greater than zero.&lt;/li&gt;
+ &lt;/ul&gt;
 
- A Spinner component has a {{#crossLink &quot;Spinner/process:property&quot;}}{{/crossLink}} count that indicates how many
- currently-active processes it represents. As a process starts, a process would increment the count, then as it
- completes (or fails), would decrement it again.
-
- A Spinner is only visible while the count is greater than zero.
+ &lt;img src=&quot;../../../assets/images/Spinner.png&quot;&gt;&lt;/img&gt;
 
  ## Example
 

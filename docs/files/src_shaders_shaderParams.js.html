@@ -185,8 +185,6 @@
 /**
  A **ShaderParams** sets uniform values for {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} on attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
 
- ## Overview
-
  &lt;ul&gt;
  &lt;li&gt;Use ShaderParams components when you need to share the same {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}} among multiple {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}},
  while setting the {{#crossLink &quot;Shader&quot;}}Shaders{{/crossLink}}&#x27; uniforms differently for each {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}}.&lt;/li&gt;
@@ -196,127 +194,117 @@
 
  ## Example
 
- This example shows the simplest way to use a {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}}, where we&#x27;re just going to render a ripply water
- pattern to a screen-aligned quad. As with all our examples, we&#x27;re just creating the
- essential components while falling back on the &lt;a href=&quot;XEO.Scene.html#defaults&quot; class=&quot;crosslink&quot;&gt;Scene&#x27;s default components&lt;/a&gt;
- for everything else.
+ In this example we&#x27;ll create the effect shown below, in which we render a rippling water pattern to the left and right halves
+ of the canvas, independently. We&#x27;ll have a {{#crossLink &quot;Shader&quot;}}{{/crossLink}} that creates the water pattern, which
+ we&#x27;ll share between two {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
+ Each {{#crossLink &quot;Entity&quot;}}{{/crossLink}} will have its own screen-aligned quad {{#crossLink &quot;Geometry&quot;}}{{/crossLink}},
+ as well its own {{#crossLink &quot;ShaderParams&quot;}}{{/crossLink}} to update the update the {{#crossLink &quot;Shader&quot;}}{{/crossLink}}&#x27;s
+ rippling rate independently.
 
  &lt;img src=&quot;../../assets/images/shaderParamsExample1.png&quot;&gt;&lt;/img&gt;
 
- In our scene definition, we have an  {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}} that has a {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} that is our
- screen-aligned quad, plus a {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}} that will render the fragments of that quad with our cool rippling water pattern.
- Finally, we animate the rippling by periodically updating the {{#crossLink &quot;Shader&quot;}}Shader{{/crossLink}}&#x27;s &quot;time&quot; uniform.
-
  &#x60;&#x60;&#x60;&#x60;javascript
- var scene = new XEO.Scene();
-
  // Shader that&#x27;s shared by both our Entities. Note the &#x27;xeo_aPosition&#x27; and &#x27;xeo_aUV attributes&#x27;,
  // which will receive the positions and UVs from the Geometry components. Also note the &#x27;time&#x27;
  // uniform, which we&#x27;ll be animating via the ShaderParams components.
 
- var shader = new XEO.Shader(scene, {
+ var shader = new XEO.Shader({
 
-       // Vertex shading stage
-       vertex: [
-           &quot;attribute vec3 xeo_aPosition;&quot;,
-           &quot;attribute vec2 xeo_aUV;&quot;,
-           &quot;varying vec2 vUv;&quot;,
-           &quot;void main () {&quot;,
-           &quot;    gl_Position = vec4(xeo_aPosition, 1.0);&quot;,
-           &quot;    vUv = xeo_aUV;&quot;,
-           &quot;}&quot;
-       ],
+    // Vertex shading stage
+    vertex: [
+        &quot;attribute vec3 xeo_aPosition;&quot;,
+        &quot;attribute vec2 xeo_aUV;&quot;,
+        &quot;varying vec2 vUv;&quot;,
+        &quot;void main () {&quot;,
+        &quot;    gl_Position = vec4(xeo_aPosition, 1.0);&quot;,
+        &quot;    vUv = xeo_aUV;&quot;,
+        &quot;}&quot;
+    ],
 
-       // Fragment shading stage
-       fragment: [
-           &quot;precision mediump float;&quot;,
+    // Fragment shading stage
+    fragment: [
+        &quot;precision mediump float;&quot;,
 
-           &quot;uniform float time;&quot;,
-           &quot;varying vec2 vUv;&quot;,
+        &quot;uniform float time;&quot;,
+        &quot;varying vec2 vUv;&quot;,
 
-           &quot;void main( void ) {&quot;,
-           &quot;    vec2 sp = vUv;&quot;,
-           &quot;    vec2 p = sp*5.0 - vec2(10.0);&quot;,
-           &quot;    vec2 i = p;&quot;,
-           &quot;    float c = 1.0;&quot;,
-           &quot;    float inten = 0.10;&quot;,
-           &quot;    for (int n = 0; n &lt; 10; n++) {&quot;,
-           &quot;        float t = time * (1.0 - (3.0 / float(n+1)));&quot;,
-           &quot;        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));&quot;,
-           &quot;        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));&quot;,
-           &quot;    }&quot;,
-           &quot;    c /= float(10);&quot;,
-           &quot;    c = 1.5-sqrt(c);&quot;,
-           &quot;    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);&quot;,
-           &quot;}&quot;
-       ],
+        &quot;void main( void ) {&quot;,
+        &quot;    vec2 sp = vUv;&quot;,
+        &quot;    vec2 p = sp*5.0 - vec2(10.0);&quot;,
+        &quot;    vec2 i = p;&quot;,
+        &quot;    float c = 1.0;&quot;,
+        &quot;    float inten = 0.10;&quot;,
+        &quot;    for (int n = 0; n &lt; 10; n++) {&quot;,
+        &quot;        float t = time * (1.0 - (3.0 / float(n+1)));&quot;,
+        &quot;        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));&quot;,
+        &quot;        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));&quot;,
+        &quot;    }&quot;,
+        &quot;    c /= float(10);&quot;,
+        &quot;    c = 1.5-sqrt(c);&quot;,
+        &quot;    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);&quot;,
+        &quot;}&quot;
+    ],
 
-       // Initial values for the &#x27;time&#x27; uniform in the fragment stage.
-       params: {
-           time: 0.0
-       }
-  });
+    // Initial values for the &#x27;time&#x27; uniform in the fragment stage.
+    params: {
+        time: 0.0
+    }
+ });
 
- // First Object using our Shader, with a quad covering the left half of the canvas,
+ // First Entity using our Shader, with a quad covering the left half of the canvas,
  // along with its own ShaderParams to independently set its own values for the Shader&#x27;s uniforms.
 
- var quad1 = new XEO.Geometry(scene, {
-       primitive:&quot;triangles&quot;,
-       positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
-       normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
-       uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
-       indices:[ 0, 1, 2, 0, 2, 3 ]
-  });
+ var entity1 = new XEO.Entity({
+    shader: shader,
+    geometry: new XEO.Geometry({
+        primitive:&quot;triangles&quot;,
+        positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
+        normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
+        uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
+        indices:[ 0, 1, 2, 0, 2, 3 ]
+    }),
+    shaderParams1: new XEO.ShaderParams({
+        params: {
+            time: 0.0
+        }
+    })
+ });
 
- var shaderParams1 = new XEO.ShaderParams(scene, {
-       params: {
-           time: 0.0
-       }
-  });
-
- var object1 = new XEO.Entity(scene, {
-       shader: shader,
-       geometry: quad1,
-       shaderParams1: shaderParams1
-  });
-
- // Second Object using the Shader, with a quad covering the right half of the canvas,
+ // Second Entity using the Shader, with a quad covering the right half of the canvas,
  // along with its own ShaderParams to independently set its own values for the Shader&#x27;s uniforms.
 
- var quad2 = new XEO.Geometry(scene, {
-       primitive:&quot;triangles&quot;,
-       positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
-       normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
-       uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
-       indices:[ 0, 1, 2, 0, 2, 3 ]
-  });
-
- var shaderParams2 = new XEO.ShaderParams(scene, {
-       params: {
-           time: 0.0
-       }
-  });
-
- var object2 = new XEO.Entity(scene, {
-       shader: shader,
-       geometry2: quad2,
-       shaderParams2: shaderParams2
-  });
-
+ var entity2 = new XEO.Entity({
+    shader: shader,
+    geometry: new XEO.Geometry({
+        primitive:&quot;triangles&quot;,
+        positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
+        normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
+        uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
+        indices:[ 0, 1, 2, 0, 2, 3 ]
+    }),
+    shaderParams: new XEO.ShaderParams({
+        params: {
+            time: 0.0
+        }
+    })
+ });
  &#x60;&#x60;&#x60;&#x60;
- Now let&#x27;s animate the &quot;time&quot; parameter on the Shader, for each Object independently:
+ Now let&#x27;s animate the &quot;time&quot; parameter on the Shader, for each Entity independently:
 
  &#x60;&#x60;&#x60;&#x60; javascript
+ // Get the default Scene off the first Entity
+ var scene = entity1.scene;
+
  scene.on(&quot;tick&quot;, function(params) {
 
-            shaderParams1.setParams({
-                time: params.timeElapsed
-            });
+    entity1.shaderParams.setParams({
+        time: params.timeElapsed
+    });
 
-            shaderParams2.setParams({
-                time: params.timeElapsed  * 0.5
-            });
-        });
+    entity2.shaderParams.setParams({
+        time: params.timeElapsed  * 0.5
+    });
+});
  &#x60;&#x60;&#x60;&#x60;
  @class ShaderParams
  @module XEO

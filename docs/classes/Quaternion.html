@@ -196,58 +196,57 @@
 
 
 <div class="box intro">
-    <p>A <strong>Quaternion</strong> applies a rotation transformation to associated <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
-<h2 id="overview">Overview</h2>
-<p><ul>
- <li>Quaternion is a sub-class of <a href="../classes/Transform.html" class="crosslink">Transform</a>.</li>
- <li>Instances of Transform and its sub-classes may be connected into hierarchies.</li>
- <li>An <a href="../classes/Entity.html" class="crosslink">Entity</a> would be connected to a leaf Transform
- within a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.</li>
- <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine&#39;s shaders.</li>
- </ul>
-<img src="../../../assets/images/Quaternion.png"></img></p>
+    <p>A <strong>Quaternion</strong> applies a rotation transformation to associated <a href="../classes/Entity.html" class="crosslink">Entities</a> or <a href="../classes/Model.html" class="crosslink">Models</a>.</p>
+<ul>
+<li>Quaternion is a sub-class of <a href="../classes/Transform.html" class="crosslink">Transform</a>.</li>
+<li>Instances of <a href="../classes/Transform.html" class="crosslink">Transform</a> and its sub-classes may be connected into hierarchies.</li>
+<li>When an <a href="../classes/Entity.html" class="crosslink">Entity</a> or <a href="../classes/Model.html" class="crosslink">Model</a> is connected to a
+leaf <a href="../classes/Transform.html" class="crosslink">Transform</a> within a <a href="../classes/Transform.html" class="crosslink">Transform</a> hierarchy, it will be
+transformed by each <a href="../classes/Transform.html" class="crosslink">Transform</a> on the path up to the root, in that order.</li>
+<li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine&#39;s shaders.</li>
+</ul>
+
+<p><img src="../../../assets/images/Quaternion.png"></img></p>
 <h2 id="example">Example</h2>
 <p>In this example we have two <a href="../classes/Entity.html" class="crosslink">Entities</a> that are transformed by a hierarchy that contains
- Quaternion, <a href="../classes/Translate.html" class="crosslink">Translate</a> and <a href="../classes/Scale.html" class="crosslink">Scale</a> transforms.
- The Entities share the same <a href="../classes/Geometry.html" class="crosslink">Geometry</a>, which is the default 2x2x2 cube.<br></p>
-<pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
-
-var quaternion = new XEO.Quaternion(scene, {
-    xyzw: [0, 0, 0, 1], // Unit quaternion
+Quaternion, <a href="../classes/Translate.html" class="crosslink">Translate</a> and <a href="../classes/Scale.html" class="crosslink">Scale</a> transforms.
+The Entities share the same <a href="../classes/BoxGeometry.html" class="crosslink">BoxGeometry</a>.<br></p>
+<pre class="code prettyprint"><code class="lang-javascript">var quaternion = new XEO.Quaternion({
+   xyzw: [0, 0, 0, 1], // Unit quaternion
 });
 
-var translate1 = new XEO.Translate(scene, {
-   parent: quaternion,
-   xyz: [-5, 0, 0] // Translate along -X axis
+var translate1 = new XEO.Translate({
+  parent: quaternion,
+  xyz: [-5, 0, 0] // Translate along -X axis
 });
 
-var translate2 = new XEO.Translate(scene, {
-   parent: quaternion,
-   xyz: [5, 0, 0] // Translate along +X axis
+var translate2 = new XEO.Translate({
+  parent: quaternion,
+  xyz: [5, 0, 0] // Translate along +X axis
 });
 
-var scale = new XEO.Scale(scene, {
-   parent: translate2,
-   xyz: [1, 2, 1] // Scale x2 on Y axis
+var scale = new XEO.Scale({
+  parent: translate2,
+  xyz: [1, 2, 1] // Scale x2 on Y axis
 });
 
-var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+var geometry = new XEO.BoxGeometry();
 
-var Entity1 = new XEO.Entity(scene, {
-   transform: translate1,
-   geometry: geometry
+var entity1 = new XEO.Entity(scene, {
+  transform: translate1,
+  geometry: geometry
 });
 
-var Entity2 = new XEO.Entity(scene, {
-   transform: scale,
-   geometry: geometry
+var entity2 = new XEO.Entity({
+  transform: scale,
+  geometry: geometry
 });
 </code></pre>
 <p>Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.</p>
 <p>Let&#39;s insert a <a href="../classes/Scale.html" class="crosslink">Scale</a> between the first Translate and the first <a href="../classes/Entity.html" class="crosslink">Entity</a>:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var scale2 = new XEO.Scale(scene, {
-   parent: translate1,
-   xyz: [1, 1, 2] // Scale x2 on Z axis
+<pre class="code prettyprint"><code class="lang-javascript">var scale2 = new XEO.Scale({
+  parent: translate1,
+  xyz: [1, 1, 2] // Scale x2 on Z axis
 });
 
 Entity2.transform = scale2;
@@ -255,7 +254,7 @@ Entity2.transform = scale2;
 <p>And just for fun, we&#39;ll start spinning the Quaternion:</p>
 <pre class="code prettyprint"><code class="lang-javascript">// Rotate 0.2 degrees about Y-axis on each frame
 scene.on("tick", function(e) {
-    quaternion.rotate([0, 1, 0, 0.2]);
+   quaternion.rotate([0, 1, 0, 0.2]);
 });
 </code></pre>
 
@@ -311,7 +310,7 @@ scene.on("tick", function(e) {
         
                             <div class="param-description">
                                 <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this Quaternion in the default
-         <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
+        <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
         
                             </div>
         
@@ -564,18 +563,20 @@ scene.on("tick", function(e) {
         <p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 <p>You would typically use this method to conveniently instantiate components that you&#39;d want to
 share (ie. "instance") among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
-<p>The method is given a component type and configuration, like so:</p>
+<p>The method is given a component type, configuration and optional instance ID, like so:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(XEO.PhongMaterial, {
      diffuse: [1,0,0],
      specular: [1,1,0]
-});
+}, "myMaterial");
 </code></pre>
 <p>The first time you call this method for the given <code>type</code> and <code>instanceId</code>, this method will create the
 <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, passing the given  attributes to the component&#39;s constructor.</p>
 <p>If you call this method again, specifying the same <code>type</code> and <code>instanceId</code>, the method will return the same
-component instance that it returned the first time, and will ignore the attributes:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, "myMaterial", { specular: [1,1,0] });
+component instance that it returned the first time, and will ignore the configuration:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
 </code></pre>
+<p>So inthis example, our <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> will continue to have the red specular
+and diffuse color that we specified the first time.</p>
 <p>Each time you call this method with the same <code>type</code> and <code>instanceId</code>, the Scene will internally increment a
 reference count for the component instance. You can release the shared component instance with a call to
 Scene/putSharedComponent:method, and once you have released it as many
@@ -654,7 +655,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l997"><code>src&#x2F;component.js:997</code></a>
+        <a href="../files/src_component.js.html#l1000"><code>src&#x2F;component.js:1000</code></a>
         </p>
 
 
@@ -1218,7 +1219,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_transforms_quaternion.js.html#l133"><code>src&#x2F;transforms&#x2F;quaternion.js:133</code></a>
+        <a href="../files/src_transforms_quaternion.js.html#l129"><code>src&#x2F;transforms&#x2F;quaternion.js:129</code></a>
         </p>
 
 
@@ -1403,7 +1404,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l935"><code>src&#x2F;component.js:935</code></a>
+                            <a href="../files/src_component.js.html#l938"><code>src&#x2F;component.js:938</code></a>
                             </p>
                     
                     
@@ -1431,7 +1432,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Transform
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_transforms_transform.js.html#l231"><code>src&#x2F;transforms&#x2F;transform.js:231</code></a>
+                            <a href="../files/src_transforms_transform.js.html#l233"><code>src&#x2F;transforms&#x2F;transform.js:233</code></a>
                             </p>
                     
                     
@@ -1483,7 +1484,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Transform.html#property_parent">Transform</a>:
-                            <a href="../files/src_transforms_transform.js.html#l174"><code>src&#x2F;transforms&#x2F;transform.js:174</code></a>
+                            <a href="../files/src_transforms_transform.js.html#l176"><code>src&#x2F;transforms&#x2F;transform.js:176</code></a>
                             </p>
                     
                     
@@ -1539,7 +1540,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l963"><code>src&#x2F;component.js:963</code></a>
+                            <a href="../files/src_component.js.html#l966"><code>src&#x2F;component.js:966</code></a>
                             </p>
                     
                     
@@ -1625,7 +1626,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_quaternion.js.html#l105"><code>src&#x2F;transforms&#x2F;quaternion.js:105</code></a>
+                            <a href="../files/src_transforms_quaternion.js.html#l101"><code>src&#x2F;transforms&#x2F;quaternion.js:101</code></a>
                             </p>
                     
                     
@@ -1658,7 +1659,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1044"><code>src&#x2F;component.js:1044</code></a>
+                            <a href="../files/src_component.js.html#l1047"><code>src&#x2F;component.js:1047</code></a>
                             </p>
                     
                     
@@ -1683,7 +1684,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Transform.html#event_matrix">Transform</a>:
-                            <a href="../files/src_transforms_transform.js.html#l254"><code>src&#x2F;transforms&#x2F;transform.js:254</code></a>
+                            <a href="../files/src_transforms_transform.js.html#l256"><code>src&#x2F;transforms&#x2F;transform.js:256</code></a>
                             </p>
                     
                     
@@ -1725,7 +1726,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Transform.html#event_parent">Transform</a>:
-                            <a href="../files/src_transforms_transform.js.html#l210"><code>src&#x2F;transforms&#x2F;transform.js:210</code></a>
+                            <a href="../files/src_transforms_transform.js.html#l212"><code>src&#x2F;transforms&#x2F;transform.js:212</code></a>
                             </p>
                     
                     
@@ -1767,7 +1768,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Transform.html#event_updated">Transform</a>:
-                            <a href="../files/src_transforms_transform.js.html#l300"><code>src&#x2F;transforms&#x2F;transform.js:300</code></a>
+                            <a href="../files/src_transforms_transform.js.html#l302"><code>src&#x2F;transforms&#x2F;transform.js:302</code></a>
                             </p>
                     
                     
@@ -1794,7 +1795,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_quaternion.js.html#l118"><code>src&#x2F;transforms&#x2F;quaternion.js:118</code></a>
+                            <a href="../files/src_transforms_quaternion.js.html#l114"><code>src&#x2F;transforms&#x2F;quaternion.js:114</code></a>
                             </p>
                     
                     

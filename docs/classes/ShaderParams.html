@@ -197,7 +197,6 @@
 
 <div class="box intro">
     <p>A <strong>ShaderParams</strong> sets uniform values for <a href="../classes/Shader.html" class="crosslink">Shaders</a> on attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
-<h2 id="overview">Overview</h2>
 <ul>
 <li>Use ShaderParams components when you need to share the same <a href="../classes/Shader.html" class="crosslink">Shaders</a> among multiple <a href="../classes/Entity.html" class="crosslink">Entities</a>,
 while setting the <a href="../classes/Shader.html" class="crosslink">Shaders</a>&#39; uniforms differently for each <a href="../classes/Entity.html" class="crosslink">Entity</a>.</li>
@@ -205,120 +204,112 @@ while setting the <a href="../classes/Shader.html" class="crosslink">Shaders</a>
 
 <p><img src="../../../assets/images/ShaderParams.png"></img></p>
 <h2 id="example">Example</h2>
-<p>This example shows the simplest way to use a <a href="../classes/Shader.html" class="crosslink">Shader</a>, where we&#39;re just going to render a ripply water
-pattern to a screen-aligned quad. As with all our examples, we&#39;re just creating the
-essential components while falling back on the <a href="XEO.Scene.html#defaults" class="crosslink">Scene&#39;s default components</a>
-for everything else.</p>
+<p>In this example we&#39;ll create the effect shown below, in which we render a rippling water pattern to the left and right halves
+of the canvas, independently. We&#39;ll have a <a href="../classes/Shader.html" class="crosslink">Shader</a> that creates the water pattern, which
+we&#39;ll share between two <a href="../classes/Entity.html" class="crosslink">Entities</a>.
+Each <a href="../classes/Entity.html" class="crosslink">Entity</a> will have its own screen-aligned quad <a href="../classes/Geometry.html" class="crosslink">Geometry</a>,
+as well its own <a href="../classes/ShaderParams.html" class="crosslink">ShaderParams</a> to update the update the <a href="../classes/Shader.html" class="crosslink">Shader</a>&#39;s
+rippling rate independently.</p>
 <p><img src="../../assets/images/shaderParamsExample1.png"></img></p>
-<p>In our scene definition, we have an  <a href="../classes/Entity.html" class="crosslink">Entity</a> that has a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that is our
-screen-aligned quad, plus a <a href="../classes/Shader.html" class="crosslink">Shader</a> that will render the fragments of that quad with our cool rippling water pattern.
-Finally, we animate the rippling by periodically updating the <a href="../classes/Shader.html" class="crosslink">Shader</a>&#39;s "time" uniform.</p>
-<pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
-
-// Shader that&#39;s shared by both our Entities. Note the &#39;xeo_aPosition&#39; and &#39;xeo_aUV attributes&#39;,
+<pre class="code prettyprint"><code class="lang-javascript">// Shader that&#39;s shared by both our Entities. Note the &#39;xeo_aPosition&#39; and &#39;xeo_aUV attributes&#39;,
 // which will receive the positions and UVs from the Geometry components. Also note the &#39;time&#39;
 // uniform, which we&#39;ll be animating via the ShaderParams components.
 
-var shader = new XEO.Shader(scene, {
+var shader = new XEO.Shader({
 
-      // Vertex shading stage
-      vertex: [
-          "attribute vec3 xeo_aPosition;",
-          "attribute vec2 xeo_aUV;",
-          "varying vec2 vUv;",
-          "void main () {",
-          "    gl_Position = vec4(xeo_aPosition, 1.0);",
-          "    vUv = xeo_aUV;",
-          "}"
-      ],
+   // Vertex shading stage
+   vertex: [
+       "attribute vec3 xeo_aPosition;",
+       "attribute vec2 xeo_aUV;",
+       "varying vec2 vUv;",
+       "void main () {",
+       "    gl_Position = vec4(xeo_aPosition, 1.0);",
+       "    vUv = xeo_aUV;",
+       "}"
+   ],
 
-      // Fragment shading stage
-      fragment: [
-          "precision mediump float;",
+   // Fragment shading stage
+   fragment: [
+       "precision mediump float;",
 
-          "uniform float time;",
-          "varying vec2 vUv;",
+       "uniform float time;",
+       "varying vec2 vUv;",
 
-          "void main( void ) {",
-          "    vec2 sp = vUv;",
-          "    vec2 p = sp*5.0 - vec2(10.0);",
-          "    vec2 i = p;",
-          "    float c = 1.0;",
-          "    float inten = 0.10;",
-          "    for (int n = 0; n &lt; 10; n++) {",
-          "        float t = time * (1.0 - (3.0 / float(n+1)));",
-          "        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));",
-          "        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));",
-          "    }",
-          "    c /= float(10);",
-          "    c = 1.5-sqrt(c);",
-          "    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);",
-          "}"
-      ],
+       "void main( void ) {",
+       "    vec2 sp = vUv;",
+       "    vec2 p = sp*5.0 - vec2(10.0);",
+       "    vec2 i = p;",
+       "    float c = 1.0;",
+       "    float inten = 0.10;",
+       "    for (int n = 0; n &lt; 10; n++) {",
+       "        float t = time * (1.0 - (3.0 / float(n+1)));",
+       "        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));",
+       "        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));",
+       "    }",
+       "    c /= float(10);",
+       "    c = 1.5-sqrt(c);",
+       "    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);",
+       "}"
+   ],
 
-      // Initial values for the &#39;time&#39; uniform in the fragment stage.
-      params: {
-          time: 0.0
-      }
- });
+   // Initial values for the &#39;time&#39; uniform in the fragment stage.
+   params: {
+       time: 0.0
+   }
+});
 
-// First Object using our Shader, with a quad covering the left half of the canvas,
+// First Entity using our Shader, with a quad covering the left half of the canvas,
 // along with its own ShaderParams to independently set its own values for the Shader&#39;s uniforms.
 
-var quad1 = new XEO.Geometry(scene, {
-      primitive:"triangles",
-      positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
-      normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
-      uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
-      indices:[ 0, 1, 2, 0, 2, 3 ]
- });
+var entity1 = new XEO.Entity({
+   shader: shader,
+   geometry: new XEO.Geometry({
+       primitive:"triangles",
+       positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
+       normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
+       uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
+       indices:[ 0, 1, 2, 0, 2, 3 ]
+   }),
+   shaderParams1: new XEO.ShaderParams({
+       params: {
+           time: 0.0
+       }
+   })
+});
 
-var shaderParams1 = new XEO.ShaderParams(scene, {
-      params: {
-          time: 0.0
-      }
- });
-
-var object1 = new XEO.Entity(scene, {
-      shader: shader,
-      geometry: quad1,
-      shaderParams1: shaderParams1
- });
-
-// Second Object using the Shader, with a quad covering the right half of the canvas,
+// Second Entity using the Shader, with a quad covering the right half of the canvas,
 // along with its own ShaderParams to independently set its own values for the Shader&#39;s uniforms.
 
-var quad2 = new XEO.Geometry(scene, {
-      primitive:"triangles",
-      positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
-      normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
-      uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
-      indices:[ 0, 1, 2, 0, 2, 3 ]
- });
-
-var shaderParams2 = new XEO.ShaderParams(scene, {
-      params: {
-          time: 0.0
-      }
- });
-
-var object2 = new XEO.Entity(scene, {
-      shader: shader,
-      geometry2: quad2,
-      shaderParams2: shaderParams2
- });
+var entity2 = new XEO.Entity({
+   shader: shader,
+   geometry: new XEO.Geometry({
+       primitive:"triangles",
+       positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
+       normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
+       uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
+       indices:[ 0, 1, 2, 0, 2, 3 ]
+   }),
+   shaderParams: new XEO.ShaderParams({
+       params: {
+           time: 0.0
+       }
+   })
+});
 </code></pre>
-<p>Now let&#39;s animate the "time" parameter on the Shader, for each Object independently:</p>
-<pre class="code prettyprint"><code class="lang-javascript">scene.on("tick", function(params) {
+<p>Now let&#39;s animate the "time" parameter on the Shader, for each Entity independently:</p>
+<pre class="code prettyprint"><code class="lang-javascript">// Get the default Scene off the first Entity
+var scene = entity1.scene;
 
-           shaderParams1.setParams({
-               time: params.timeElapsed
-           });
+scene.on("tick", function(params) {
 
-           shaderParams2.setParams({
-               time: params.timeElapsed  * 0.5
-           });
-       });
+   entity1.shaderParams.setParams({
+       time: params.timeElapsed
+   });
+
+   entity2.shaderParams.setParams({
+       time: params.timeElapsed  * 0.5
+   });
+});
 </code></pre>
 
 </div>
@@ -606,18 +597,20 @@ var object2 = new XEO.Entity(scene, {
         <p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 <p>You would typically use this method to conveniently instantiate components that you&#39;d want to
 share (ie. "instance") among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
-<p>The method is given a component type and configuration, like so:</p>
+<p>The method is given a component type, configuration and optional instance ID, like so:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(XEO.PhongMaterial, {
      diffuse: [1,0,0],
      specular: [1,1,0]
-});
+}, "myMaterial");
 </code></pre>
 <p>The first time you call this method for the given <code>type</code> and <code>instanceId</code>, this method will create the
 <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, passing the given  attributes to the component&#39;s constructor.</p>
 <p>If you call this method again, specifying the same <code>type</code> and <code>instanceId</code>, the method will return the same
-component instance that it returned the first time, and will ignore the attributes:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, "myMaterial", { specular: [1,1,0] });
+component instance that it returned the first time, and will ignore the configuration:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
 </code></pre>
+<p>So inthis example, our <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> will continue to have the red specular
+and diffuse color that we specified the first time.</p>
 <p>Each time you call this method with the same <code>type</code> and <code>instanceId</code>, the Scene will internally increment a
 reference count for the component instance. You can release the shared component instance with a call to
 Scene/putSharedComponent:method, and once you have released it as many
@@ -696,7 +689,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l997"><code>src&#x2F;component.js:997</code></a>
+        <a href="../files/src_component.js.html#l1000"><code>src&#x2F;component.js:1000</code></a>
         </p>
 
 
@@ -1260,7 +1253,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_shaders_shaderParams.js.html#l186"><code>src&#x2F;shaders&#x2F;shaderParams.js:186</code></a>
+        <a href="../files/src_shaders_shaderParams.js.html#l174"><code>src&#x2F;shaders&#x2F;shaderParams.js:174</code></a>
         </p>
 
 
@@ -1449,7 +1442,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l935"><code>src&#x2F;component.js:935</code></a>
+                            <a href="../files/src_component.js.html#l938"><code>src&#x2F;component.js:938</code></a>
                             </p>
                     
                     
@@ -1499,7 +1492,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_shaders_shaderParams.js.html#l168"><code>src&#x2F;shaders&#x2F;shaderParams.js:168</code></a>
+                            <a href="../files/src_shaders_shaderParams.js.html#l156"><code>src&#x2F;shaders&#x2F;shaderParams.js:156</code></a>
                             </p>
                     
                     
@@ -1557,7 +1550,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l963"><code>src&#x2F;component.js:963</code></a>
+                            <a href="../files/src_component.js.html#l966"><code>src&#x2F;component.js:966</code></a>
                             </p>
                     
                     
@@ -1649,7 +1642,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1044"><code>src&#x2F;component.js:1044</code></a>
+                            <a href="../files/src_component.js.html#l1047"><code>src&#x2F;component.js:1047</code></a>
                             </p>
                     
                     
@@ -1674,7 +1667,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_shaders_shaderParams.js.html#l208"><code>src&#x2F;shaders&#x2F;shaderParams.js:208</code></a>
+                            <a href="../files/src_shaders_shaderParams.js.html#l196"><code>src&#x2F;shaders&#x2F;shaderParams.js:196</code></a>
                             </p>
                     
                     

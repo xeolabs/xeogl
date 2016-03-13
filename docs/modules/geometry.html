@@ -190,7 +190,49 @@
 
 
 <div class="box intro">
-    <p>A path geometry.</p>
+    <p>A <strong>PathGeometry</strong> is a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that is defined by a <a href="../classes/Curve.html" class="crosslink">Curve</a>.</p>
+<h2 id="example">Example</h2>
+<p>An <a href="../classes/Entity.html" class="crosslink">Entity</a> with a PathGeometry, a <a href="../classes/Path.html" class="crosslink">Path</a> and
+a <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>:</p>
+<pre class="code prettyprint"><code class="lang-javascript">new XEO.Entity({
+
+    geometry: new XEO.PathGeometry({
+
+       divisions: 10,
+
+       path: new XEO.Path({
+
+           // Subpaths
+
+           curves: [
+               new XEO.CubicBezierCurve({
+                   v0: [-10, 0, 0],
+                   v1: [-5, 15, 0],
+                   v2: [20, 15, 0],
+                   v3: [10, 0, 0]
+               }),
+               new XEO.QuadraticBezierCurve({
+                   v0: [10, 0, 0],
+                   v1: [30, 15, 0],
+                   v2: [20, 0, 0]
+               }),
+               new XEO.SplineCurve({
+                   points: [
+                       [20, 0, 0],
+                       [-5, 15, 0],
+                       [20, 15, 0],
+                       [10, 0, 0]
+                   ]
+               })
+           ]
+       })
+    }),
+
+    material: new XEO.PhongMaterial(
+       diffuse: [1,0,0]
+    })
+});
+</code></pre>
 
 </div>
 

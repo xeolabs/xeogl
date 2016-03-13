@@ -197,95 +197,27 @@
 
 <div class="box intro">
     <p>A <strong>Clips</strong> is a group of arbitrarily-aligned World-space <a href="../classes/Clip.html" class="crosslink">Clip</a> planes, which may be used to create
-cross-sectional views of attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+ cross-section views of attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
 <h2 id="overview">Overview</h2>
-<ul>
-
-<li>Each <a href="../classes/Clip.html" class="crosslink">Clip</a> is specified in World-space, as being perpendicular to a vector
-<a href="../classes/Clip.html#property_dir" class="crosslink">dir</a> that emanates from the origin, offset at a
-distance <a href="../classes/Clip.html#property_dist" class="crosslink">dist</a> along that vector. </li>
-
-<li>You can move each <a href="../classes/Clip.html" class="crosslink">Clip</a> back and forth along its vector by varying
-its <a href="../classes/Clip.html#property_dist" class="crosslink">dist</a>.</li>
-
-<li>Likewise, you can rotate each <a href="../classes/Clip.html" class="crosslink">Clip</a> about the origin by rotating
-its <a href="../classes/Clip.html#property_dir" class="crosslink">dir</a> vector.</li>
-
-<li>Each <a href="../classes/Clip.html" class="crosslink">Clip</a> is has a <a href="../classes/Clip.html#property_mode" class="crosslink">mode</a>, which indicates whether it is disabled ("disabled"), discarding fragments that fall on the origin-side of the plane ("inside"), or clipping fragments that fall on the other side of the plane from the origin ("outside").</li>
-
-<li>You can update each <a href="../classes/Clip.html" class="crosslink">Clip</a>&#39;s <a href="../classes/Clip.html#property_mode" class="crosslink">mode</a> to
-activate or deactivate it, or to switch which side it discards fragments from.</li>
-
-<li>Clipping may also be enabled or disabled for specific <a href="../classes/Entity.html" class="crosslink">Entities</a>
-via the Modes/clipping:property flag on <a href="../classes/Modes.html" class="crosslink">Modes</a> components
-attached to those <a href="../classes/Entity.html" class="crosslink">Entities</a>.</li>
-
-<li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Clips create within xeoEngine&#39;s shaders.</li>
-
-</ul>
-
-<p><img src="../../../assets/images/Clips.png"></img></p>
+<p><ul>
+ <li>Each <a href="../classes/Clip.html" class="crosslink">Clip</a> is specified in World-space, as being perpendicular to a vector
+ <a href="../classes/Clip.html#property_dir" class="crosslink">dir</a> that emanates from the origin, offset at a
+ distance <a href="../classes/Clip.html#property_dist" class="crosslink">dist</a> along that vector. </li>
+ <li>You can move each <a href="../classes/Clip.html" class="crosslink">Clip</a> back and forth along its vector by varying
+ its <a href="../classes/Clip.html#property_dist" class="crosslink">dist</a>.</li>
+ <li>Likewise, you can rotate each <a href="../classes/Clip.html" class="crosslink">Clip</a> about the origin by rotating
+ its <a href="../classes/Clip.html#property_dir" class="crosslink">dir</a> vector.</li>
+ <li>Each <a href="../classes/Clip.html" class="crosslink">Clip</a> is has a <a href="../classes/Clip.html#property_mode" class="crosslink">mode</a>, which indicates whether it is disabled ("disabled"), discarding fragments that fall on the origin-side of the plane ("inside"), or clipping fragments that fall on the other side of the plane from the origin ("outside").</li>
+ <li>You can update each <a href="../classes/Clip.html" class="crosslink">Clip</a>&#39;s <a href="../classes/Clip.html#property_mode" class="crosslink">mode</a> to
+ activate or deactivate it, or to switch which side it discards fragments from.</li>
+ <li>Clipping may also be enabled or disabled for specific <a href="../classes/Entity.html" class="crosslink">Entities</a>
+ via the Modes/clipping:property flag on <a href="../classes/Modes.html" class="crosslink">Modes</a> components
+ attached to those <a href="../classes/Entity.html" class="crosslink">Entities</a>.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Clips create within xeoEngine&#39;s shaders.</li>
+ </ul>
+ <img src="../../../assets/images/Clips.png"></img></p>
 <h2 id="example">Example</h2>
-<ul>
-
-<li>In this example we have an <a href="../classes/Entity.html" class="crosslink">Entity</a> that&#39;s clipped by a <a href="../classes/Clips.html" class="crosslink">Clips</a>
-that contains two <a href="../classes/Clip.html" class="crosslink">Clip</a> planes.</li>
-
-<li>The first <a href="../classes/Clip.html" class="crosslink">Clip</a> plane is on the
-positive diagonal, while the second is on the negative diagonal.</li>
-
-<li>The <a href="../classes/Entity.html" class="crosslink">Entity&#39;s</a>
-<a href="../classes/Geometry.html" class="crosslink">Geometry</a> is the default 2x2x2 box, and the planes will clip off two of the box&#39;s corners.</li>
-
-</ul>
-
-<pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
-
-// Clip plane on negative diagonal
-var clip1 = new XEO.Clip(scene, {
-       dir: [-1.0, -1.0, -1.0], // Direction of Clip from World space origin
-       dist: 2.0,               // Distance along direction vector
-       mode: "outside"          // Clip fragments that fall beyond the plane
-    });
-
-// Clip plane on positive diagonal
-var clip2 = new XEO.Clip(scene, {
-       dir: [1.0, 1.0, 1.0],
-       dist: 2.0,
-       mode: "outside"
-    });
-
-// Group the planes in a Clips
-var clips = new XEO.Clip(scene, {
-       clips: [
-           clip1,
-           clip2
-       ]
-    });
-
-// Geometry defaults to a 2x2x2 box
-var geometry = new XEO.Geometry(scene);
-
-// Create an Entity, which is a box sliced by our clip planes
-var entity = new XEO.Entity(scene, {
-       clips: clips,
-       geometry: geometry
-    });
-</code></pre>
-<h3 id="toggling-clipping-on-and-off">Toggling clipping on and off</h3>
-<p>Now we&#39;ll attach a <a href="../classes/Modes.html" class="crosslink">Modes</a> to the <a href="../classes/Entity.html" class="crosslink">Entity</a>, so that we can
-enable or disable clipping of it:</p>
-<pre class="code prettyprint"><code class="lang-javascript">// Create the Modes
-var modes = new XEO.Modes(scene, {
-   clipping: true
-});
-
-// Attach our Entity to the Modes
-entity.modes = modes;
-
-// Disable clipping for the Entity
-modes.clipping = false;
-</code></pre>
+<p>See <a href="../classes/Clip.html" class="crosslink">Clip</a> for an example.</p>
 
 </div>
 
@@ -339,7 +271,7 @@ modes.clipping = false;
         
                             <div class="param-description">
                                 <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this Clips in the default
-        <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
+         <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
         
                             </div>
         
@@ -363,7 +295,7 @@ modes.clipping = false;
         
                                         <div class="param-description">
                                             <p>Optional ID, unique among all components in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>,
-        generated automatically when omitted.</p>
+         generated automatically when omitted.</p>
         
                                         </div>
         
@@ -386,7 +318,7 @@ modes.clipping = false;
         
                                         <div class="param-description">
                                             <p>Array containing either IDs or instances of
-        <a href="../classes/Clip.html" class="crosslink">Clip</a> components within the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+         <a href="../classes/Clip.html" class="crosslink">Clip</a> components within the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
         
                                         </div>
         
@@ -570,18 +502,20 @@ modes.clipping = false;
         <p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 <p>You would typically use this method to conveniently instantiate components that you&#39;d want to
 share (ie. "instance") among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
-<p>The method is given a component type and configuration, like so:</p>
+<p>The method is given a component type, configuration and optional instance ID, like so:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(XEO.PhongMaterial, {
      diffuse: [1,0,0],
      specular: [1,1,0]
-});
+}, "myMaterial");
 </code></pre>
 <p>The first time you call this method for the given <code>type</code> and <code>instanceId</code>, this method will create the
 <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, passing the given  attributes to the component&#39;s constructor.</p>
 <p>If you call this method again, specifying the same <code>type</code> and <code>instanceId</code>, the method will return the same
-component instance that it returned the first time, and will ignore the attributes:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, "myMaterial", { specular: [1,1,0] });
+component instance that it returned the first time, and will ignore the configuration:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
 </code></pre>
+<p>So inthis example, our <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> will continue to have the red specular
+and diffuse color that we specified the first time.</p>
 <p>Each time you call this method with the same <code>type</code> and <code>instanceId</code>, the Scene will internally increment a
 reference count for the component instance. You can release the shared component instance with a call to
 Scene/putSharedComponent:method, and once you have released it as many
@@ -660,7 +594,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l997"><code>src&#x2F;component.js:997</code></a>
+        <a href="../files/src_component.js.html#l1000"><code>src&#x2F;component.js:1000</code></a>
         </p>
 
 
@@ -1276,7 +1210,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_clipping_clips.js.html#l151"><code>src&#x2F;clipping&#x2F;clips.js:151</code></a>
+                            <a href="../files/src_clipping_clips.js.html#l79"><code>src&#x2F;clipping&#x2F;clips.js:79</code></a>
                             </p>
                     
                     
@@ -1380,7 +1314,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l935"><code>src&#x2F;component.js:935</code></a>
+                            <a href="../files/src_component.js.html#l938"><code>src&#x2F;component.js:938</code></a>
                             </p>
                     
                     
@@ -1460,7 +1394,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l963"><code>src&#x2F;component.js:963</code></a>
+                            <a href="../files/src_component.js.html#l966"><code>src&#x2F;component.js:966</code></a>
                             </p>
                     
                     
@@ -1552,7 +1486,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_clipping_clips.js.html#l246"><code>src&#x2F;clipping&#x2F;clips.js:246</code></a>
+                            <a href="../files/src_clipping_clips.js.html#l174"><code>src&#x2F;clipping&#x2F;clips.js:174</code></a>
                             </p>
                     
                     
@@ -1594,7 +1528,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1044"><code>src&#x2F;component.js:1044</code></a>
+                            <a href="../files/src_component.js.html#l1047"><code>src&#x2F;component.js:1047</code></a>
                             </p>
                     
                     

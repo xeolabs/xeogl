@@ -183,105 +183,33 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
+
  A **Clips** is a group of arbitrarily-aligned World-space {{#crossLink &quot;Clip&quot;}}Clip{{/crossLink}} planes, which may be used to create
- cross-sectional views of attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
+ cross-section views of attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
 
  ## Overview
 
  &lt;ul&gt;
-
  &lt;li&gt;Each {{#crossLink &quot;Clip&quot;}}Clip{{/crossLink}} is specified in World-space, as being perpendicular to a vector
  {{#crossLink &quot;Clip/dir:property&quot;}}{{/crossLink}} that emanates from the origin, offset at a
  distance {{#crossLink &quot;Clip/dist:property&quot;}}{{/crossLink}} along that vector. &lt;/li&gt;
-
  &lt;li&gt;You can move each {{#crossLink &quot;Clip&quot;}}Clip{{/crossLink}} back and forth along its vector by varying
  its {{#crossLink &quot;Clip/dist:property&quot;}}{{/crossLink}}.&lt;/li&gt;
-
  &lt;li&gt;Likewise, you can rotate each {{#crossLink &quot;Clip&quot;}}Clip{{/crossLink}} about the origin by rotating
  its {{#crossLink &quot;Clip/dir:property&quot;}}{{/crossLink}} vector.&lt;/li&gt;
-
  &lt;li&gt;Each {{#crossLink &quot;Clip&quot;}}Clip{{/crossLink}} is has a {{#crossLink &quot;Clip/mode:property&quot;}}{{/crossLink}}, which indicates whether it is disabled (&quot;disabled&quot;), discarding fragments that fall on the origin-side of the plane (&quot;inside&quot;), or clipping fragments that fall on the other side of the plane from the origin (&quot;outside&quot;).&lt;/li&gt;
-
  &lt;li&gt;You can update each {{#crossLink &quot;Clip&quot;}}Clip{{/crossLink}}&#x27;s {{#crossLink &quot;Clip/mode:property&quot;}}{{/crossLink}} to
  activate or deactivate it, or to switch which side it discards fragments from.&lt;/li&gt;
-
  &lt;li&gt;Clipping may also be enabled or disabled for specific {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}
  via the {{#crossLink &quot;Modes/clipping:property&quot;}}{{/crossLink}} flag on {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} components
  attached to those {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.&lt;/li&gt;
-
  &lt;li&gt;See &lt;a href=&quot;Shader.html#inputs&quot;&gt;Shader Inputs&lt;/a&gt; for the variables that Clips create within xeoEngine&#x27;s shaders.&lt;/li&gt;
-
  &lt;/ul&gt;
-
  &lt;img src=&quot;../../../assets/images/Clips.png&quot;&gt;&lt;/img&gt;
 
  ## Example
 
- &lt;ul&gt;
-
- &lt;li&gt;In this example we have an {{#crossLink &quot;Entity&quot;}}{{/crossLink}} that&#x27;s clipped by a {{#crossLink &quot;Clips&quot;}}{{/crossLink}}
- that contains two {{#crossLink &quot;Clip&quot;}}{{/crossLink}} planes.&lt;/li&gt;
-
- &lt;li&gt;The first {{#crossLink &quot;Clip&quot;}}{{/crossLink}} plane is on the
- positive diagonal, while the second is on the negative diagonal.&lt;/li&gt;
-
- &lt;li&gt;The {{#crossLink &quot;Entity&quot;}}Entity&#x27;s{{/crossLink}}
- {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} is the default 2x2x2 box, and the planes will clip off two of the box&#x27;s corners.&lt;/li&gt;
-
- &lt;/ul&gt;
-
- &#x60;&#x60;&#x60;&#x60;javascript
- var scene = new XEO.Scene();
-
- // Clip plane on negative diagonal
- var clip1 = new XEO.Clip(scene, {
-        dir: [-1.0, -1.0, -1.0], // Direction of Clip from World space origin
-        dist: 2.0,               // Distance along direction vector
-        mode: &quot;outside&quot;          // Clip fragments that fall beyond the plane
-     });
-
- // Clip plane on positive diagonal
- var clip2 = new XEO.Clip(scene, {
-        dir: [1.0, 1.0, 1.0],
-        dist: 2.0,
-        mode: &quot;outside&quot;
-     });
-
- // Group the planes in a Clips
- var clips = new XEO.Clip(scene, {
-        clips: [
-            clip1,
-            clip2
-        ]
-     });
-
- // Geometry defaults to a 2x2x2 box
- var geometry = new XEO.Geometry(scene);
-
- // Create an Entity, which is a box sliced by our clip planes
- var entity = new XEO.Entity(scene, {
-        clips: clips,
-        geometry: geometry
-     });
- &#x60;&#x60;&#x60;&#x60;
-
- ### Toggling clipping on and off
-
- Now we&#x27;ll attach a {{#crossLink &quot;Modes&quot;}}{{/crossLink}} to the {{#crossLink &quot;Entity&quot;}}{{/crossLink}}, so that we can
- enable or disable clipping of it:
-
- &#x60;&#x60;&#x60;&#x60; javascript
- // Create the Modes
- var modes = new XEO.Modes(scene, {
-    clipping: true
- });
-
- // Attach our Entity to the Modes
- entity.modes = modes;
-
- // Disable clipping for the Entity
- modes.clipping = false;
- &#x60;&#x60;&#x60;&#x60;
+ See {{#crossLink &quot;Clip&quot;}}{{/crossLink}} for an example.
 
  @class Clips
  @module XEO

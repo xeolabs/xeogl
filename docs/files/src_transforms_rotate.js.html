@@ -183,16 +183,14 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
-
- A **Rotate** rotates associated {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} about an axis vector.
-
- ## Overview
+ A **Rotate** rotates associated {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} or {{#crossLink &quot;Model&quot;}}Models{{/crossLink}} about an axis vector.
 
  &lt;ul&gt;
  &lt;li&gt;Rotate is a sub-class of {{#crossLink &quot;Transform&quot;}}{{/crossLink}}&lt;/li&gt;
- &lt;li&gt;Instances of Transform and its sub-classes may be connected into hierarchies.&lt;/li&gt;
- &lt;li&gt;An {{#crossLink &quot;Entity&quot;}}{{/crossLink}} would be connected to a leaf Transform
- within a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.&lt;/li&gt;
+ &lt;li&gt;Instances of {{#crossLink &quot;Transform&quot;}}{{/crossLink}} and its sub-classes may be connected into hierarchies.&lt;/li&gt;
+ &lt;li&gt;When an {{#crossLink &quot;Entity&quot;}}{{/crossLink}} or {{#crossLink &quot;Model&quot;}}{{/crossLink}} is connected to a leaf {{#crossLink &quot;Transform&quot;}}{{/crossLink}}
+ within a {{#crossLink &quot;Transform&quot;}}{{/crossLink}} hierarchy, it will be transformed by each {{#crossLink &quot;Transform&quot;}}{{/crossLink}}
+ on the path up to the root, in that order.&lt;/li&gt;
  &lt;li&gt;See &lt;a href=&quot;./Shader.html#inputs&quot;&gt;Shader Inputs&lt;/a&gt; for the variables that Transform create within xeoEngine&#x27;s shaders.&lt;/li&gt;
  &lt;/ul&gt;
 
@@ -203,42 +201,40 @@
 
  In this example we have two {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} that are transformed by a hierarchy that contains
  Rotate, {{#crossLink &quot;Translate&quot;}}{{/crossLink}} and {{#crossLink &quot;Scale&quot;}}{{/crossLink}} transforms.
- The Entities share the same {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}, which is the default 2x2x2 cube.&lt;br&gt;
+ The Entities share the same {{#crossLink &quot;BoxGeometry&quot;}}{{/crossLink}}.&lt;br&gt;
 
  &#x60;&#x60;&#x60;&#x60;javascript
- var scene = new XEO.Scene();
-
- var rotate = new XEO.Rotate(scene, {
+ var rotate = new XEO.Rotate({
     xyz: [0, 1, 0], // Rotate 30 degrees about Y axis
     angle: 30
-});
+ });
 
- var translate1 = new XEO.Translate(scene, {
+ var translate1 = new XEO.Translate({
     parent: rotate,
     xyz: [-5, 0, 0] // Translate along -X axis
-});
+ });
 
- var translate2 = new XEO.Translate(scene, {
+ var translate2 = new XEO.Translate({
     parent: rotate,
     xyz: [5, 0, 0] // Translate along +X axis
-});
+ });
 
- var scale = new XEO.Scale(scene, {
+ var scale = new XEO.Scale({
     parent: translate2,
     xyz: [1, 2, 1] // Scale x2 on Y axis
-});
+ });
 
  var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
 
- var Entity1 = new XEO.Entity(scene, {
+ var Entity1 = new XEO.Entity({
     transform: translate1,
     geometry: geometry
-});
+ });
 
- var Entity2 = new XEO.Entity(scene, {
+ var Entity2 = new XEO.Entity({
     transform: scale,
     geometry: geometry
-});
+ });
  &#x60;&#x60;&#x60;&#x60;
 
  Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
@@ -246,21 +242,21 @@
  Let&#x27;s insert a {{#crossLink &quot;Scale&quot;}}{{/crossLink}} between the first Translate and the first {{#crossLink &quot;Entity&quot;}}{{/crossLink}}:
 
  &#x60;&#x60;&#x60;&#x60;javascript
- var scale2 = new XEO.Scale(scene, {
+ var scale2 = new XEO.Scale({
     parent: translate1,
     xyz: [1, 1, 2] // Scale x2 on Z axis
-});
+ });
 
  Entity2.transform = scale2;
  &#x60;&#x60;&#x60;&#x60;
 
- And just for fun, we&#x27;ll start spinning the {{#crossLink &quot;Rotate&quot;}}{{/crossLink}}:
+ Let&#x27;s start spinning the {{#crossLink &quot;Rotate&quot;}}{{/crossLink}}:
 
  &#x60;&#x60;&#x60;&#x60;javascript
  // Rotate 0.2 degrees on each frame
  scene.on(&quot;tick&quot;, function(e) {
     rotate.angle += 0.2;
-});
+ });
  &#x60;&#x60;&#x60;&#x60;
  @class Rotate
  @module XEO

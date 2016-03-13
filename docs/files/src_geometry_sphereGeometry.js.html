@@ -187,8 +187,24 @@
 
  ## Example
 
- &#x60;&#x60;&#x60;&#x60;javascript
+ An {{#crossLink &quot;Entity&quot;}}{{/crossLink}} with a SphereGeometry and a {{#crossLink &quot;PhongMaterial&quot;}}{{/crossLink}} with
+ diffuse {{#crossLink &quot;Texture&quot;}}{{/crossLink}}:
 
+ &#x60;&#x60;&#x60;&#x60;javascript
+ new XEO.Entity({
+
+     geometry: new XEO.SphereGeometry({
+         radius: 1.5,
+         heightSegments: 60,
+         widthSegments: 60
+     }),
+
+     material: new XEO.PhongMaterial({
+        diffuseMap: new XEO.Texture({
+            src: &quot;textures/diffuse/uvGrid2.jpg&quot;
+        })
+     })
+ });
  &#x60;&#x60;&#x60;&#x60;
 
  @class SphereGeometry

@@ -185,15 +185,13 @@
 /**
  A **Texture** specifies a texture map.
 
- ## Overview
-
  &lt;ul&gt;
- &lt;li&gt;Textures are grouped within {{#crossLink &quot;Material&quot;}}Material{{/crossLink}}s, which are attached to
+ &lt;li&gt;Textures are grouped within {{#crossLink &quot;PhongMaterial&quot;}}PhongMaterials{{/crossLink}}s, which are attached to
  {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.&lt;/li&gt;
  &lt;li&gt;To create a Texture from an image file, set the Texture&#x27;s {{#crossLink &quot;Texture/src:property&quot;}}{{/crossLink}}
  property to the image file path.&lt;/li&gt;
- &lt;li&gt;To create a Texture from an HTML DOM Image object, set the Texture&#x27;s {{#crossLink &quot;Texture/image:property&quot;}}{{/crossLink}}
- property to the object.&lt;/li&gt;
+ &lt;li&gt;To create a Texture from an HTMLImageElement, set the Texture&#x27;s {{#crossLink &quot;Texture/image:property&quot;}}{{/crossLink}}
+ property to the HTMLImageElement.&lt;/li&gt;
  &lt;li&gt;To render color images of {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} to a Texture, set the Texture&#x27;s {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}}
  property to a {{#crossLink &quot;ColorTarget&quot;}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.&lt;/li&gt;
  &lt;li&gt;Similarly, to render depth images of {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} to a Texture, set the Texture&#x27;s {{#crossLink &quot;Texture/target:property&quot;}}{{/crossLink}}
@@ -206,60 +204,54 @@
 
  ## Example
 
- The example below has:
+ In this example we have an Entity with
+
  &lt;ul&gt;
- &lt;li&gt;three Textures,&lt;/li&gt;
- &lt;li&gt;a {{#crossLink &quot;PhongMaterial&quot;}}{{/crossLink}} which applies the {{#crossLink &quot;Texture&quot;}}{{/crossLink}}s as diffuse, normal and specular maps,&lt;/li&gt;
- &lt;li&gt;a {{#crossLink &quot;Lights&quot;}}{{/crossLink}} containing an {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}} and a {{#crossLink &quot;PointLight&quot;}}{{/crossLink}},&lt;/li&gt;
- &lt;li&gt;a {{#crossLink &quot;BoxGeometry&quot;}}{{/crossLink}}, and
- &lt;li&gt;an {{#crossLink &quot;Entity&quot;}}{{/crossLink}} attached to all of the above.&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;Lights&quot;}}{{/crossLink}} containing an {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}} and a {{#crossLink &quot;DirLight&quot;}}{{/crossLink}},&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;PhongMaterial&quot;}}{{/crossLink}} which applies diffuse and specular {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}}, and
+ &lt;li&gt;a {{#crossLink &quot;TorusGeometry&quot;}}{{/crossLink}}.&lt;/li&gt;
  &lt;/ul&gt;
 
+ Note that xeoEngine will ignore the {{#crossLink &quot;PhongMaterial&quot;}}PhongMaterial&#x27;s{{/crossLink}} {{#crossLink &quot;PhongMaterial/diffuse:property&quot;}}{{/crossLink}}
+  and {{#crossLink &quot;PhongMaterial/specular:property&quot;}}{{/crossLink}} properties, since we assigned {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} to the {{#crossLink &quot;PhongMaterial&quot;}}PhongMaterial&#x27;s{{/crossLink}} {{#crossLink &quot;PhongMaterial/diffuseMap:property&quot;}}{{/crossLink}} and
+ {{#crossLink &quot;PhongMaterial/specularMap:property&quot;}}{{/crossLink}} properties. The {{#crossLink &quot;Texture&quot;}}Textures&#x27;{{/crossLink}} pixel
+ colors directly provide the diffuse and specular components for each fragment across the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} surface.
+
  &#x60;&#x60;&#x60;&#x60; javascript
- var texture1 = new XEO.Texture({
-    src: &quot;diffuseMap.jpg&quot;
- });
-
- var texture2 = new XEO.Texture({
-    src: &quot;normalMap.jpg&quot;
- });
-
- var texture3 = new XEO.Texture({
-    src: &quot;specularMap.jpg&quot;
-});
-
- var material = new XEO.PhongMaterial({
-    ambient: [0.3, 0.3, 0.3],
-    shininess: 30,
-    diffuseMap: texture1,
-    normalMap: texture2,
-    specularMap: texture3
-});
-
- var light1 = new XEO.PointLight({
-    pos: [0, 100, 100],
-    color: [0.5, 0.7, 0.5]
-});
-
- var light2 = new XEO.AmbientLight({
-    color: [0.5, 0.7, 0.5]
-});
-
- var lights = new XEO.Lights({
-    lights: [
-        light1,
-        light2
-    ]
-});
-
- var geometry = new XEO.BoxGeometry();
-
  var entity = new XEO.Entity({
-    lights: lights,
-    material: material,
-    geometry: geometry
+
+    lights: new XEO.Lights({
+        lights: [
+            new XEO.AmbientLight({
+                color: [0.7, 0.7, 0.7]
+            }),
+            new XEO.DirLight({
+                dir: [-1, -1, -1],
+                color: [0.5, 0.7, 0.5],
+                intensity: [1.0, 1.0, 1.0],
+                space: &quot;view&quot;
+            })
+        ]
+    }),
+
+    material: new XEO.PhongMaterial({
+        ambient: [0.3, 0.3, 0.3],
+        diffuse: [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below
+        specular: [1.0, 1.0, 1.0],   // Ignored, since we have assigned a Texture to specularMap, below
+        diffuseMap: new XEO.Texture({
+            src: &quot;diffuseMap.jpg&quot;
+        }),
+        specularMap: new XEO.Fresnel({
+            src: &quot;diffuseMap.jpg&quot;
+        }),
+        shininess: 80, // Default
+        opacity: 1.0 // Default
+    }),
+
+    geometry: new XEO.TorusGeometry()
 });
  &#x60;&#x60;&#x60;&#x60;
+
  @class Texture
  @module XEO
  @submodule materials
@@ -678,7 +670,7 @@
                         this._onTargetActive = null;
                     }
 
-                    this._target = this._setChild(&quot;XEO.RenderBuf&quot;, &quot;renderBuf&quot;, value);
+                    this._target = this._setChild(null, &quot;renderBuf&quot;, value);
 
                     this._imageDirty = false;
                     this._srcDirty = false;

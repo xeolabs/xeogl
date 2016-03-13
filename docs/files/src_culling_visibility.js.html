@@ -185,12 +185,11 @@
 /**
  A **Visibility** toggles the visibility of attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
 
- ## Overview
-
  &lt;ul&gt;
+ &lt;li&gt;An {{#crossLink &quot;Entity&quot;}}{{/crossLink}} is visible when its Visibility&#x27;s {{#crossLink &quot;Visibility/visible:property&quot;}}{{/crossLink}}
+ property is true and {{#crossLink &quot;Cull&quot;}}Cull&#x27;s{{/crossLink}} {{#crossLink &quot;Cull/culled:property&quot;}}{{/crossLink}} property is false.&lt;/li&gt;
  &lt;li&gt;Visibility components are intended for users to control the visibility of {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} via UIs.&lt;/li&gt;
  &lt;li&gt;{{#crossLink &quot;Cull&quot;}}{{/crossLink}} components are intended for **visibility culling systems** to control the visibility of {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.&lt;/li&gt;
- &lt;li&gt;Each {{#crossLink &quot;Entity&quot;}}{{/crossLink}} is visible when its {{#crossLink &quot;Visibility&quot;}}Visibility&#x27;s{{/crossLink}} {{#crossLink &quot;Visibility/visible:property&quot;}}visible{{/crossLink}} property is true and {{#crossLink &quot;Cull&quot;}}Cull&#x27;s{{/crossLink}} {{#crossLink &quot;Cull/culled:property&quot;}}visible{{/crossLink}} is false.&lt;/li&gt;
  &lt;li&gt;A Visibility may be shared among multiple {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} to toggle
  their visibility as a group.&lt;/li&gt;
  &lt;/ul&gt;
@@ -203,20 +202,17 @@
  two {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
 
  &#x60;&#x60;&#x60;&#x60;javascript
-var scene = new XEO.Scene();
-
-// Create a Visibility
-var visibility = new XEO.Visibility(scene, {
+var visibility = new XEO.Visibility({
     visible: true
 });
 
 // Create two Entities whose visibility will be controlled by our Visibility
 
-var entity1 = new XEO.Entity(scene, {
+var entity1 = new XEO.Entity({
     visibility: visibility
 });
 
-var entity2 = new XEO.Entity(scene, {
+var entity2 = new XEO.Entity({
     visibility: visibility
 });
 

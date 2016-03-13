@@ -190,12 +190,17 @@
  &lt;li&gt;**Cylindrical** billboards rotate their {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} towards the {{#crossLink &quot;Camera&quot;}}{{/crossLink}}, but only around the Y-axis.&lt;/li&gt;
  &lt;li&gt;A Billboard will cause {{#crossLink &quot;Scale&quot;}}{{/crossLink}} transformations to have no effect on its {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}&lt;/li&gt;
  &lt;/ul&gt;
-&lt;br&gt;
+
  &lt;img src=&quot;../../../assets/images/Billboard.png&quot;&gt;&lt;/img&gt;
 
- ### Example
+ ## Example
+
+ Let&#x27;s create 1000 {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} that always face towards the viewpoint as we orbit the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} about the X and Y axis:
 
  &#x60;&#x60;&#x60;&#x60; javascript
+ // Create 1000 Entities in default Scene with shared Geometry,
+ // PhongMaterial and Billboard
+
  var geometry = new XEO.Geometry({
         primitive: &quot;triangles&quot;,
         positions: [3, 3, 0, -3, 3, 0, -3, -3, 0, 3, -3, 0],
@@ -215,7 +220,6 @@
     });
 
  for (var i = 0; i &lt; 1000; i++) {
-
         new XEO.Entity({
             geometry: geometry,
             material: material,
@@ -226,13 +230,11 @@
         });
   }
 
+ // Move eye back to see everything, then orbit Camera
+
  var scene = XEO.scene;
 
- // Move the camera back a bit
-
  scene.camera.view.zoom(120);
-
- // Orbit the eye position about the look position.
 
  scene.on(&quot;tick&quot;,
      function () {

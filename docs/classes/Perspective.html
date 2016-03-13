@@ -197,7 +197,6 @@
 
 <div class="box intro">
     <p>A <strong>Perspective</strong> component defines a perspective projection transform.</p>
-<h2 id="overview">Overview</h2>
 <ul>
 
 <li><a href="../classes/Camera.html" class="crosslink">Camera</a> components pair these with viewing transform components, such as
@@ -208,39 +207,25 @@
 
 <p><img src="../../../assets/images/Perspective.png"></img></p>
 <h2 id="example">Example</h2>
-<p>In this example we have an <a href="../classes/Entity.html" class="crosslink">Entity</a> that&#39;s attached to a
-<a href="../classes/Camera.html" class="crosslink">Camera</a> that has a <a href="../classes/Lookat.html" class="crosslink">Lookat</a> view transform and a Perspective
-projection transform.</p>
-<pre class="code prettyprint"><code class="lang-Javascript">var scene = new XEO.Scene();
+<pre class="code prettyprint"><code class="lang-Javascript">new XEO.Entity({
 
-var lookat = new XEO.Lookat(scene, {
-       eye: [0, 0, -4],
-       look: [0, 0, 0],
-       up: [0, 1, 0]
-   });
+    camera: XEO.Camera({
 
-var perspective = new XEO.Perspective(scene, {
-       fovy: 60,
-       near: 0.1,
-       far: 1000
-   });
+       view: new XEO.Lookat({
+           eye: [0, 0, -4],
+           look: [0, 0, 0],
+           up: [0, 1, 0]
+       }),
 
-var camera = new XEO.Camera(scene, {
-       view: lookat,
-       project: perspective
-   });
+       project: new XEO.Perspective({
+           fovy: 60,
+           near: 0.1,
+           far: 1000
+       })
+    }),
 
-var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
-
-var entity = new XEO.Entity(scene, {
-       camera: camera,
-       geometry: geometry
-   });
-
-scene.on("tick", function () {
-      camera.view.rotateEyeY(0.5);
-      camera.view.rotateEyeX(0.3);
-   });
+    new XEO.BoxGeometry();
+});
 </code></pre>
 
 </div>
@@ -570,18 +555,20 @@ scene.on("tick", function () {
         <p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 <p>You would typically use this method to conveniently instantiate components that you&#39;d want to
 share (ie. "instance") among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
-<p>The method is given a component type and configuration, like so:</p>
+<p>The method is given a component type, configuration and optional instance ID, like so:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(XEO.PhongMaterial, {
      diffuse: [1,0,0],
      specular: [1,1,0]
-});
+}, "myMaterial");
 </code></pre>
 <p>The first time you call this method for the given <code>type</code> and <code>instanceId</code>, this method will create the
 <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, passing the given  attributes to the component&#39;s constructor.</p>
 <p>If you call this method again, specifying the same <code>type</code> and <code>instanceId</code>, the method will return the same
-component instance that it returned the first time, and will ignore the attributes:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, "myMaterial", { specular: [1,1,0] });
+component instance that it returned the first time, and will ignore the configuration:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
 </code></pre>
+<p>So inthis example, our <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> will continue to have the red specular
+and diffuse color that we specified the first time.</p>
 <p>Each time you call this method with the same <code>type</code> and <code>instanceId</code>, the Scene will internally increment a
 reference count for the component instance. You can release the shared component instance with a call to
 Scene/putSharedComponent:method, and once you have released it as many
@@ -660,7 +647,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l997"><code>src&#x2F;component.js:997</code></a>
+        <a href="../files/src_component.js.html#l1000"><code>src&#x2F;component.js:1000</code></a>
         </p>
 
 
@@ -1301,7 +1288,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_perspective.js.html#l180"><code>src&#x2F;camera&#x2F;perspective.js:180</code></a>
+                            <a href="../files/src_camera_perspective.js.html#l164"><code>src&#x2F;camera&#x2F;perspective.js:164</code></a>
                             </p>
                     
                     
@@ -1328,7 +1315,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_perspective.js.html#l115"><code>src&#x2F;camera&#x2F;perspective.js:115</code></a>
+                            <a href="../files/src_camera_perspective.js.html#l99"><code>src&#x2F;camera&#x2F;perspective.js:99</code></a>
                             </p>
                     
                     
@@ -1407,7 +1394,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l935"><code>src&#x2F;component.js:935</code></a>
+                            <a href="../files/src_component.js.html#l938"><code>src&#x2F;component.js:938</code></a>
                             </p>
                     
                     
@@ -1435,7 +1422,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Projection
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_camera_perspective.js.html#l213"><code>src&#x2F;camera&#x2F;perspective.js:213</code></a>
+                            <a href="../files/src_camera_perspective.js.html#l197"><code>src&#x2F;camera&#x2F;perspective.js:197</code></a>
                             </p>
                     
                     
@@ -1486,7 +1473,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_perspective.js.html#l148"><code>src&#x2F;camera&#x2F;perspective.js:148</code></a>
+                            <a href="../files/src_camera_perspective.js.html#l132"><code>src&#x2F;camera&#x2F;perspective.js:132</code></a>
                             </p>
                     
                     
@@ -1543,7 +1530,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l963"><code>src&#x2F;component.js:963</code></a>
+                            <a href="../files/src_component.js.html#l966"><code>src&#x2F;component.js:966</code></a>
                             </p>
                     
                     
@@ -1635,7 +1622,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1044"><code>src&#x2F;component.js:1044</code></a>
+                            <a href="../files/src_component.js.html#l1047"><code>src&#x2F;component.js:1047</code></a>
                             </p>
                     
                     
@@ -1660,7 +1647,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_perspective.js.html#l199"><code>src&#x2F;camera&#x2F;perspective.js:199</code></a>
+                            <a href="../files/src_camera_perspective.js.html#l183"><code>src&#x2F;camera&#x2F;perspective.js:183</code></a>
                             </p>
                     
                     
@@ -1702,7 +1689,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_perspective.js.html#l134"><code>src&#x2F;camera&#x2F;perspective.js:134</code></a>
+                            <a href="../files/src_camera_perspective.js.html#l118"><code>src&#x2F;camera&#x2F;perspective.js:118</code></a>
                             </p>
                     
                     
@@ -1747,7 +1734,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Projection
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_camera_perspective.js.html#l104"><code>src&#x2F;camera&#x2F;perspective.js:104</code></a>
+                            <a href="../files/src_camera_perspective.js.html#l88"><code>src&#x2F;camera&#x2F;perspective.js:88</code></a>
                             </p>
                     
                     
@@ -1789,7 +1776,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_perspective.js.html#l167"><code>src&#x2F;camera&#x2F;perspective.js:167</code></a>
+                            <a href="../files/src_camera_perspective.js.html#l151"><code>src&#x2F;camera&#x2F;perspective.js:151</code></a>
                             </p>
                     
                     

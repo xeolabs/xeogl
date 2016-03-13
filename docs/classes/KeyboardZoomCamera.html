@@ -197,7 +197,6 @@
 
 <div class="box intro">
     <p>A <strong>KeyboardZoomCamera</strong> zooms a <a href="../classes/Camera.html" class="crosslink">Camera</a> using the + and - keys.</p>
-<h2 id="overview">Overview</h2>
 <ul>
 <li>A KeyboardZoomCamera updates the <a href="../classes/Lookat.html" class="crosslink">Lookat</a> attached to the target <a href="../classes/Camera.html" class="crosslink">Camera</a>.
 <li>Zooming involves translating the positions of the <a href="../classes/Lookat.html" class="crosslink">Lookat&#39;s</a>
@@ -206,15 +205,27 @@ along the <a href="../classes/Lookat.html#property_eye" class="crosslink">eye</a
 </ul>
 
 <h2 id="example">Example</h2>
-<pre class="code prettyprint"><code class="lang-Javascript">var scene = new XEO.Scene();
+<pre class="code prettyprint"><code class="lang-Javascript">var camera = new XEO.Camera({
+    view: new XEO.Lookat({
+        eye: [0, 0, -10],
+        look: [0, 0, 0],
+        up: [0, 1, 0]
+    }),
+    project: new XEO.Perspective({
+        fovy: 60,
+        near: 0.1,
+        far: 1000
+    })
+});
 
-var camera = new XEO.Camera(scene);
+var entity = new XEO.Entity({
+    camera: camera,
+    geometry: new XEO.BoxGeometry()
+});
 
-var control = new XEO.KeyboardZoomCamera(scene, {
-       camera: camera
-   });
-
-var entity = new XEO.Entity(scene);
+new XEO.KeyboardZoomCamera({
+    camera: camera
+});
 </code></pre>
 
 </div>
@@ -537,18 +548,20 @@ var entity = new XEO.Entity(scene);
         <p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 <p>You would typically use this method to conveniently instantiate components that you&#39;d want to
 share (ie. "instance") among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
-<p>The method is given a component type and configuration, like so:</p>
+<p>The method is given a component type, configuration and optional instance ID, like so:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(XEO.PhongMaterial, {
      diffuse: [1,0,0],
      specular: [1,1,0]
-});
+}, "myMaterial");
 </code></pre>
 <p>The first time you call this method for the given <code>type</code> and <code>instanceId</code>, this method will create the
 <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, passing the given  attributes to the component&#39;s constructor.</p>
 <p>If you call this method again, specifying the same <code>type</code> and <code>instanceId</code>, the method will return the same
-component instance that it returned the first time, and will ignore the attributes:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, "myMaterial", { specular: [1,1,0] });
+component instance that it returned the first time, and will ignore the configuration:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
 </code></pre>
+<p>So inthis example, our <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> will continue to have the red specular
+and diffuse color that we specified the first time.</p>
 <p>Each time you call this method with the same <code>type</code> and <code>instanceId</code>, the Scene will internally increment a
 reference count for the component instance. You can release the shared component instance with a call to
 Scene/putSharedComponent:method, and once you have released it as many
@@ -627,7 +640,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l997"><code>src&#x2F;component.js:997</code></a>
+        <a href="../files/src_component.js.html#l1000"><code>src&#x2F;component.js:1000</code></a>
         </p>
 
 
@@ -1243,7 +1256,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_keyboardZoomCamera.js.html#l131"><code>src&#x2F;controls&#x2F;keyboardZoomCamera.js:131</code></a>
+                            <a href="../files/src_controls_keyboardZoomCamera.js.html#l140"><code>src&#x2F;controls&#x2F;keyboardZoomCamera.js:140</code></a>
                             </p>
                     
                     
@@ -1269,7 +1282,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_keyboardZoomCamera.js.html#l72"><code>src&#x2F;controls&#x2F;keyboardZoomCamera.js:72</code></a>
+                            <a href="../files/src_controls_keyboardZoomCamera.js.html#l81"><code>src&#x2F;controls&#x2F;keyboardZoomCamera.js:81</code></a>
                             </p>
                     
                     
@@ -1375,7 +1388,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l935"><code>src&#x2F;component.js:935</code></a>
+                            <a href="../files/src_component.js.html#l938"><code>src&#x2F;component.js:938</code></a>
                             </p>
                     
                     
@@ -1451,7 +1464,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_keyboardZoomCamera.js.html#l102"><code>src&#x2F;controls&#x2F;keyboardZoomCamera.js:102</code></a>
+                            <a href="../files/src_controls_keyboardZoomCamera.js.html#l111"><code>src&#x2F;controls&#x2F;keyboardZoomCamera.js:111</code></a>
                             </p>
                     
                     
@@ -1482,7 +1495,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l963"><code>src&#x2F;component.js:963</code></a>
+                            <a href="../files/src_component.js.html#l966"><code>src&#x2F;component.js:966</code></a>
                             </p>
                     
                     
@@ -1543,7 +1556,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_controls_keyboardZoomCamera.js.html#l48"><code>src&#x2F;controls&#x2F;keyboardZoomCamera.js:48</code></a>
+                            <a href="../files/src_controls_keyboardZoomCamera.js.html#l57"><code>src&#x2F;controls&#x2F;keyboardZoomCamera.js:57</code></a>
                             </p>
                     
                     
@@ -1574,7 +1587,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_keyboardZoomCamera.js.html#l198"><code>src&#x2F;controls&#x2F;keyboardZoomCamera.js:198</code></a>
+                            <a href="../files/src_controls_keyboardZoomCamera.js.html#l207"><code>src&#x2F;controls&#x2F;keyboardZoomCamera.js:207</code></a>
                             </p>
                     
                     
@@ -1616,7 +1629,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_keyboardZoomCamera.js.html#l88"><code>src&#x2F;controls&#x2F;keyboardZoomCamera.js:88</code></a>
+                            <a href="../files/src_controls_keyboardZoomCamera.js.html#l97"><code>src&#x2F;controls&#x2F;keyboardZoomCamera.js:97</code></a>
                             </p>
                     
                     
@@ -1658,7 +1671,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1044"><code>src&#x2F;component.js:1044</code></a>
+                            <a href="../files/src_component.js.html#l1047"><code>src&#x2F;component.js:1047</code></a>
                             </p>
                     
                     
@@ -1683,7 +1696,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_keyboardZoomCamera.js.html#l117"><code>src&#x2F;controls&#x2F;keyboardZoomCamera.js:117</code></a>
+                            <a href="../files/src_controls_keyboardZoomCamera.js.html#l126"><code>src&#x2F;controls&#x2F;keyboardZoomCamera.js:126</code></a>
                             </p>
                     
                     

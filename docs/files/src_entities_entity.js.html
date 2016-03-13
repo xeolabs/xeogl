@@ -357,6 +357,8 @@
  {{#crossLink &quot;Scene/stage:property&quot;}}stage{{/crossLink}}.
  @param [cfg.transform] {String|Transform} ID or instance of a modelling transform to attach to this Entity. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
  {{#crossLink &quot;Scene/transform:property&quot;}}transform{{/crossLink}} (which is an identity matrix which performs no transformation).
+ @param [cfg.viewport] {String|Viewport} ID or instance of a {{#crossLink &quot;Viewport&quot;}}{{/crossLink}} attached to this Entity. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance,
+ {{#crossLink &quot;Scene/viewport:property&quot;}}{{/crossLink}}, which is automatically resizes to the canvas.
  @param [cfg.loading] {Boolean} Flag which indicates that this Entity is freshly loaded. This will increment the
  {{#crossLink &quot;Spinner/processes:property&quot;}}Spinner processes{{/crossLink}} count, and then when this Entity is first
  rendered, will decrement the count again.
@@ -1132,9 +1134,9 @@
             /**
              * The {{#crossLink &quot;Viewport&quot;}}{{/crossLink}} attached to this Entity.
              *
-             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. Defaults to the parent
-             * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/viewport:property&quot;}}viewport{{/crossLink}}
-             * when set to a null or undefined value.
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this Entity. When set to a null or undefined value,
+             * defaults to the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default {{#crossLink &quot;Scene/viewport:property&quot;}}viewport{{/crossLink}},
+             * which automatically resizes to the canvas.
              *
              * Fires an {{#crossLink &quot;Entity/viewport:event&quot;}}{{/crossLink}} event on change.
              *

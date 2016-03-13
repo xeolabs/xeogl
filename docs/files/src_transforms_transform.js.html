@@ -183,16 +183,17 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **Transform** defines a modelling matrix to transform attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
+ A **Transform** defines a modelling matrix to transform attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} or {{#crossLink &quot;Model&quot;}}Models{{/crossLink}}.
 
  ## Overview
 
  &lt;ul&gt;
  &lt;li&gt;Sub-classes of Transform are: {{#crossLink &quot;Translate&quot;}}{{/crossLink}},
  {{#crossLink &quot;Scale&quot;}}{{/crossLink}}, {{#crossLink &quot;Rotate&quot;}}{{/crossLink}}, and {{#crossLink &quot;Quaternion&quot;}}{{/crossLink}}&lt;/li&gt;
- &lt;li&gt;Instances of Transform and its sub-classes may be connected into hierarchies.&lt;/li&gt;
- &lt;li&gt;When an {{#crossLink &quot;Entity&quot;}}{{/crossLink}} or {{#crossLink &quot;Model&quot;}}{{/crossLink}} is connected to a leaf Transform
- within a Transform hierarchy, it will be transformed by each Transform on the path up to the root, in that order.&lt;/li&gt;
+ &lt;li&gt;Instances of {{#crossLink &quot;Transform&quot;}}{{/crossLink}} and its sub-classes may be connected into hierarchies.&lt;/li&gt;
+ &lt;li&gt;When an {{#crossLink &quot;Entity&quot;}}{{/crossLink}} or {{#crossLink &quot;Model&quot;}}{{/crossLink}} is connected to a leaf {{#crossLink &quot;Transform&quot;}}{{/crossLink}}
+ within a {{#crossLink &quot;Transform&quot;}}{{/crossLink}} hierarchy, it will be transformed by each {{#crossLink &quot;Transform&quot;}}{{/crossLink}}
+ on the path up to the root, in that order.&lt;/li&gt;
  &lt;li&gt;See &lt;a href=&quot;./Shader.html#inputs&quot;&gt;Shader Inputs&lt;/a&gt; for the variables that Transform create within xeoEngine&#x27;s shaders.&lt;/li&gt;
  &lt;/ul&gt;
 
@@ -200,104 +201,107 @@
 
  ## Example
 
- TODO
+ In this example we&#x27;ll create the table shown below, which consists of five {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}
+ that share a {{#crossLink &quot;BoxGeometry&quot;}}{{/crossLink}} and each connect to a different leaf within a hierarchy of
+ {{#crossLink &quot;Translate&quot;}}{{/crossLink}}, {{#crossLink &quot;Rotate&quot;}}{{/crossLink}} and {{#crossLink &quot;Scale&quot;}}{{/crossLink}}
+ components. Each {{#crossLink &quot;Entity&quot;}}{{/crossLink}} also has its own {{#crossLink &quot;PhongMaterial&quot;}}{{/crossLink}} to
+ give it a distinct color.
 
  &lt;img src=&quot;../../../assets/images/transformHierarchy.png&quot;&gt;&lt;/img&gt;
 
  &#x60;&#x60;&#x60;&#x60;javascript
+ // Shared Geometry
+ var boxGeometry = new XEO.BoxGeometry();
 
  // Position of entire table
-
  var tablePos = new XEO.Translate({
-        xyz: [0, 6, 0]
-    });
+    xyz: [0, 6, 0]
+ });
 
  // Orientation of entire table
-
  var tableRotate = new XEO.Rotate({
-        xyz: [1, 1, 1],
-        angle: 0,
-        parent: tablePos
-    });
+    xyz: [1, 1, 1],
+    angle: 0,
+    parent: tablePos
+ });
 
  // Red table leg
-
- var tableLg1 = new XEO.Entity({
-        transform: new XEO.Scale({
-            xyz: [1, 3, 1],
-            parent: new XEO.Translate({
-                xyz: [-4, -6, -4],
-                parent: tableRotate
-            })
-        }),
-        material: new XEO.PhongMaterial({
-            diffuse: [1, 0.3, 0.3]
+ var tableLeg1 = new XEO.Entity({
+    geometry: boxGeometry,
+    transform: new XEO.Scale({
+        xyz: [1, 3, 1],
+        parent: new XEO.Translate({
+            xyz: [-4, -6, -4],
+            parent: tableRotate
         })
-    });
+    }),
+    material: new XEO.PhongMaterial({
+        diffuse: [1, 0.3, 0.3]
+    })
+ });
 
  // Green table leg
-
  var tableLeg2 = new XEO.Entity({
-        transform: new XEO.Scale({
-            xyz: [1, 3, 1],
-            parent: new XEO.Translate({
-                xyz: [4, -6, -4],
-                parent: tableRotate
-            })
-        }),
-        material: new XEO.PhongMaterial({
-            diffuse: [0.3, 1.0, 0.3]
+    geometry: boxGeometry,
+    transform: new XEO.Scale({
+        xyz: [1, 3, 1],
+        parent: new XEO.Translate({
+            xyz: [4, -6, -4],
+            parent: tableRotate
         })
-    });
+    }),
+    material: new XEO.PhongMaterial({
+        diffuse: [0.3, 1.0, 0.3]
+    })
+ });
 
  // Blue table leg
-
  var tableLeg3 = new XEO.Entity({
-        transform: new XEO.Scale({
-            xyz: [1, 3, 1],
-            parent: new XEO.Translate({
-                xyz: [4, -6, 4],
-                parent: tableRotate
-            })
-        }),
-        material: new XEO.PhongMaterial({
-            diffuse: [0.3, 0.3, 1.0]
+    geometry: boxGeometry,
+    transform: new XEO.Scale({
+        xyz: [1, 3, 1],
+        parent: new XEO.Translate({
+            xyz: [4, -6, 4],
+            parent: tableRotate
         })
-    });
+    }),
+    material: new XEO.PhongMaterial({
+        diffuse: [0.3, 0.3, 1.0]
+    })
+ });
 
  // Yellow table leg
-
  var tableLeg4 = new XEO.Entity({
-        transform: new XEO.Scale({
-            xyz: [1, 3, 1],
-            parent: new XEO.Translate({
-                xyz: [-4, -6, 4],
-                parent: tableRotate
-            })
-        }),
-        material: new XEO.PhongMaterial({
-            diffuse: [1.0, 1.0, 0.0]
+    geometry: boxGeometry,
+    transform: new XEO.Scale({
+        xyz: [1, 3, 1],
+        parent: new XEO.Translate({
+            xyz: [-4, -6, 4],
+            parent: tableRotate
         })
-    });
+    }),
+    material: new XEO.PhongMaterial({
+        diffuse: [1.0, 1.0, 0.0]
+    })
+ });
 
  // Purple table top
-
  var tableTop = new XEO.Entity({
-        transform: new XEO.Scale({
-            xyz: [6, 0.5, 6],
-            parent: new XEO.Translate({
-                xyz: [0, -3, 0],
-                parent: tableRotate
-            })
-        }),
-        material: new XEO.PhongMaterial({
-            diffuse: [1.0, 0.3, 1.0]
+    geometry: boxGeometry,
+    transform: new XEO.Scale({
+        xyz: [6, 0.5, 6],
+        parent: new XEO.Translate({
+            xyz: [0, -3, 0],
+            parent: tableRotate
         })
-    });
+    }),
+    material: new XEO.PhongMaterial({
+        diffuse: [1.0, 0.3, 1.0]
+    })
+ });
 
  // Zoom camera out a bit
  // Get the Camera from one of the Entities
-
  tableTop.camera.view.zoom(10);
 
  // Spin the entire table
@@ -305,11 +309,9 @@
  var angle = 0;
 
  scene.on(&quot;tick&quot;, function () {
-
-        angle += 0.5;
-
-        tableRotate.angle = angle;
-    });
+    angle += 0.5;
+    tableRotate.angle = angle;
+ });
  &#x60;&#x60;&#x60;&#x60;
 
  @class Transform

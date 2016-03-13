@@ -183,18 +183,9 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **Curve** is the abstract base class for various other curve classes.
 
- ## Overview
-
- The Curve is subclassed by the following component types:
-
- &lt;ul&gt;
- &lt;li&gt;{{#crossLink &quot;SplineCurve&quot;}}{{/crossLink}}&lt;/li&gt;
- &lt;li&gt;{{#crossLink &quot;CubicBezierCurve&quot;}}{{/crossLink}}&lt;/li&gt;
- &lt;li&gt;{{#crossLink &quot;QuadraticBezierCurve&quot;}}{{/crossLink}}&lt;/li&gt;
- &lt;li&gt;{{#crossLink &quot;Path&quot;}}{{/crossLink}}&lt;/li&gt;
- &lt;/u&gt;
+ **Curve** is the abstract base class for {{#crossLink &quot;SplineCurve&quot;}}{{/crossLink}},
+ {{#crossLink &quot;CubicBezierCurve&quot;}}{{/crossLink}}, {{#crossLink &quot;QuadraticBezierCurve&quot;}}{{/crossLink}} and {{#crossLink &quot;Path&quot;}}{{/crossLink}}.
 
  @class Curve
  @module XEO
@@ -266,7 +257,7 @@
             /**
              Tangent on this Curve at position {{#crossLink &quot;Curve/t:property&quot;}}{{/crossLink}}.
 
-             @property point
+             @property tangent
              @type {{Array of Number}}
              */
             tangent: {

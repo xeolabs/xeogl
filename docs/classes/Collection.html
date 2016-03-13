@@ -196,18 +196,19 @@
 
 
 <div class="box intro">
-    <p>A <strong>Collection</strong> is a general-purpose group of <a href="../classes/Component.html" class="crosslink">Components</a>.</p>
-<h2 id="overview">Overview</h2>
+    <p>A <strong>Collection</strong> is a set of <a href="../classes/Component.html" class="crosslink">Components</a>.</p>
 <ul>
 <li>A <a href="../classes/Component.html" class="crosslink">Component</a> can be included in more than one Collection.</li>
 <li><a href="../classes/Component.html" class="crosslink">Components</a> can be added to a Collection by instance, ID or type.</li>
 <li>A Collection supports iteration over its <a href="../classes/Component.html" class="crosslink">Components</a>.</li>
 <li>A <a href="../classes/Model.html" class="crosslink">Model</a> stores the <a href="../classes/Component.html" class="crosslink">Components</a> it has loaded in a Collection.</li>
-<li>A <a href="../classes/CollectionBoundary.html" class="crosslink">CollectionBoundary</a> can be used to track the World-space bounding box that encloses a Collection.</li>
+<li>A <a href="../classes/CollectionBoundary.html" class="crosslink">CollectionBoundary</a> provides a World-space <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> that encloses a Collection.</li>
 </ul>
 
 <p><img src="../../../assets/images/Collection.png"></img></p>
-<h2 id="example">Example</h2>
+<h2 id="creating-collections">Creating Collections</h2>
+<p>Our first Collection contains a <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, added by ID, plus a <a href="../classes/BoxGeometry.html" class="crosslink">BoxGeometry</a> and
+an <a href="../classes/Entity.html" class="crosslink">Entity</a>, both added by instance.</p>
 <pre class="code prettyprint"><code class="lang-javascript">var material = new XEO.PhongMaterial({
     id: "myMaterial",
     diffuse: [0.5, 0.5, 0.0]
@@ -221,45 +222,67 @@ var Entity = new XEO.Entity({
    geometry: geometry
 });
 
-// Our first collection contains the Material, added by ID,
-// plus the Geometry and Entity, both added by instance.
-
-var collection1 = new XEO.Collection({ // Initialize with three components
+var collection1 = new XEO.Collection({ // Initialize with the three components
    components: [
        "myMaterial",
        geometry,
-       Entity
+       myEntity
    ]
 });
-
-// Our second Collection includes the geometry, added by instance,
-// and the Entity, added by type. If there were more than
-// one Entity in the scene, then that type would ensure
-// that all the Entities were in the Collection.
-
-var collection2 = new XEO.Collection();
+</code></pre>
+<p>Our second Collection includes the <a href="../classes/BoxGeometry.html" class="crosslink">BoxGeometry</a>, added by instance,
+and the <a href="../classes/Entity.html" class="crosslink">Entity</a>, added by type. If there were more than
+one <a href="../classes/Entity.html" class="crosslink">Entity</a> in the scene, then that type would ensure
+that all the <a href="../classes/Entity.html" class="crosslink">Entities</a> were in the Collection.</p>
+<pre class="code prettyprint"><code class="lang-javascript">var collection2 = new XEO.Collection();
 
 collection2.add([  // Add two components
    geometry,
    "XEO.Entity",
 ]);
-
-// We can iterate over the components in a Collection like so:
-
-collection1.iterate(
-   function(component) {
-       //..
-   });
-
-// And remove components from a Collection
-// by instance, ID or type:
-
-collection1.remove("myMaterial"); // Remove one component by ID
-collection1.remove([geometry, Entity]); // Remove two components by instance
-
+</code></pre>
+<h2 id="accessing-components">Accessing Components</h2>
+<p>Iterate over the components in a Collection using the convenience iterator:</p>
+<pre class="code prettyprint"><code class="lang-javascript">collection1.iterate(function(component) {
+    if (component.isType("XEO.Entity")) {
+        this.log("Found the Entity: " + component.id);
+    }
+    //..
+});
+</code></pre>
+<p>A Collection also registers its components by type:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var entities = collection1.types["XEO.Entity"];
+var theEntity = entities["myEntity"];
+</code></pre>
+<h2 id="removing-components">Removing Components</h2>
+<p>We can remove components from a Collection by instance, ID or type:</p>
+<pre class="code prettyprint"><code class="lang-javascript">collection1.remove("myMaterial"); // Remove one component by ID
+collection1.remove([geometry, myEntity]); // Remove two components by instance
 collection2.remove("XEO.Geometry"); // Remove all Geometries
 </code></pre>
-<p>TODO</p>
+<h2 id="getting-the-boundary-of-a-collection">Getting the boundary of a Collection</h2>
+<p>A <a href="../classes/CollectionBoundary.html" class="crosslink">CollectionBoundary</a> provides a <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> that
+dynamically fits to the collective World-space boundary of all the Components in a Collection.</p>
+<pre class="code prettyprint"><code class="lang-javascript">var collectionBoundary = new XEO.CollectionBoundary({
+   collection: collection1
+});
+
+var worldBoundary = collectionBoundary.worldBoundary;
+</code></pre>
+<p>The <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>
+will automatically update whenever we add, remove or update any Components that have World-space boundaries. We can subscribe
+to updates on it like so:</p>
+<pre class="code prettyprint"><code class="lang-javascript">worldBoundary.on("updated", function() {
+    obb = worldBoundary.obb;
+    aabb = worldBoundary.aabb;
+    center = worldBoundary.center;
+    //...
+});
+</code></pre>
+<p>Now, if we now re-insert our <a href="../classes/Entity.html" class="crosslink">Entity</a> into to our Collection,
+the <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> will fire our update handler.</p>
+<pre class="code prettyprint"><code class="lang-javascript">collection1.add(myEntity);
+</code></pre>
 
 </div>
 
@@ -553,7 +576,7 @@ collection2.remove("XEO.Geometry"); // Remove all Geometries
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_collections_collection.js.html#l150"><code>src&#x2F;collections&#x2F;collection.js:150</code></a>
+        <a href="../files/src_collections_collection.js.html#l194"><code>src&#x2F;collections&#x2F;collection.js:194</code></a>
         </p>
 
 
@@ -606,7 +629,7 @@ collection2.remove("XEO.Geometry"); // Remove all Geometries
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_collections_collection.js.html#l297"><code>src&#x2F;collections&#x2F;collection.js:297</code></a>
+        <a href="../files/src_collections_collection.js.html#l341"><code>src&#x2F;collections&#x2F;collection.js:341</code></a>
         </p>
 
 
@@ -665,18 +688,20 @@ collection2.remove("XEO.Geometry"); // Remove all Geometries
         <p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 <p>You would typically use this method to conveniently instantiate components that you&#39;d want to
 share (ie. "instance") among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
-<p>The method is given a component type and configuration, like so:</p>
+<p>The method is given a component type, configuration and optional instance ID, like so:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(XEO.PhongMaterial, {
      diffuse: [1,0,0],
      specular: [1,1,0]
-});
+}, "myMaterial");
 </code></pre>
 <p>The first time you call this method for the given <code>type</code> and <code>instanceId</code>, this method will create the
 <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, passing the given  attributes to the component&#39;s constructor.</p>
 <p>If you call this method again, specifying the same <code>type</code> and <code>instanceId</code>, the method will return the same
-component instance that it returned the first time, and will ignore the attributes:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, "myMaterial", { specular: [1,1,0] });
+component instance that it returned the first time, and will ignore the configuration:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
 </code></pre>
+<p>So inthis example, our <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> will continue to have the red specular
+and diffuse color that we specified the first time.</p>
 <p>Each time you call this method with the same <code>type</code> and <code>instanceId</code>, the Scene will internally increment a
 reference count for the component instance. You can release the shared component instance with a call to
 Scene/putSharedComponent:method, and once you have released it as many
@@ -755,7 +780,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l997"><code>src&#x2F;component.js:997</code></a>
+        <a href="../files/src_component.js.html#l1000"><code>src&#x2F;component.js:1000</code></a>
         </p>
 
 
@@ -791,7 +816,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_collections_collection.js.html#l311"><code>src&#x2F;collections&#x2F;collection.js:311</code></a>
+        <a href="../files/src_collections_collection.js.html#l355"><code>src&#x2F;collections&#x2F;collection.js:355</code></a>
         </p>
 
 
@@ -1057,7 +1082,7 @@ myRotate.isType(XEO.Entity); // Returns false, because XEO.Rotate does not (even
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_collections_collection.js.html#l383"><code>src&#x2F;collections&#x2F;collection.js:383</code></a>
+        <a href="../files/src_collections_collection.js.html#l427"><code>src&#x2F;collections&#x2F;collection.js:427</code></a>
         </p>
 
 
@@ -1421,7 +1446,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_collections_collection.js.html#l323"><code>src&#x2F;collections&#x2F;collection.js:323</code></a>
+        <a href="../files/src_collections_collection.js.html#l367"><code>src&#x2F;collections&#x2F;collection.js:367</code></a>
         </p>
 
 
@@ -1531,7 +1556,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_collections_collection.js.html#l102"><code>src&#x2F;collections&#x2F;collection.js:102</code></a>
+                            <a href="../files/src_collections_collection.js.html#l146"><code>src&#x2F;collections&#x2F;collection.js:146</code></a>
                             </p>
                     
                     
@@ -1634,7 +1659,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l935"><code>src&#x2F;component.js:935</code></a>
+                            <a href="../files/src_component.js.html#l938"><code>src&#x2F;component.js:938</code></a>
                             </p>
                     
                     
@@ -1684,7 +1709,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_collections_collection.js.html#l112"><code>src&#x2F;collections&#x2F;collection.js:112</code></a>
+                            <a href="../files/src_collections_collection.js.html#l156"><code>src&#x2F;collections&#x2F;collection.js:156</code></a>
                             </p>
                     
                     
@@ -1739,7 +1764,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l963"><code>src&#x2F;component.js:963</code></a>
+                            <a href="../files/src_component.js.html#l966"><code>src&#x2F;component.js:966</code></a>
                             </p>
                     
                     
@@ -1800,7 +1825,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_collections_collection.js.html#l91"><code>src&#x2F;collections&#x2F;collection.js:91</code></a>
+                            <a href="../files/src_collections_collection.js.html#l135"><code>src&#x2F;collections&#x2F;collection.js:135</code></a>
                             </p>
                     
                     
@@ -1825,7 +1850,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_collections_collection.js.html#l120"><code>src&#x2F;collections&#x2F;collection.js:120</code></a>
+                            <a href="../files/src_collections_collection.js.html#l164"><code>src&#x2F;collections&#x2F;collection.js:164</code></a>
                             </p>
                     
                     
@@ -1867,7 +1892,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_collections_collection.js.html#l265"><code>src&#x2F;collections&#x2F;collection.js:265</code></a>
+                            <a href="../files/src_collections_collection.js.html#l309"><code>src&#x2F;collections&#x2F;collection.js:309</code></a>
                             </p>
                     
                     
@@ -1909,7 +1934,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1044"><code>src&#x2F;component.js:1044</code></a>
+                            <a href="../files/src_component.js.html#l1047"><code>src&#x2F;component.js:1047</code></a>
                             </p>
                     
                     
@@ -1934,7 +1959,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_collections_collection.js.html#l371"><code>src&#x2F;collections&#x2F;collection.js:371</code></a>
+                            <a href="../files/src_collections_collection.js.html#l415"><code>src&#x2F;collections&#x2F;collection.js:415</code></a>
                             </p>
                     
                     

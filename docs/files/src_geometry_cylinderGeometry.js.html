@@ -183,12 +183,31 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **Cylinder** defines cylindrical geometry for attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
+ A **CylinderGeometry** defines cylindrical geometry for attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
 
  ## Example
 
- &#x60;&#x60;&#x60;&#x60;javascript
+ An {{#crossLink &quot;Entity&quot;}}{{/crossLink}} with a CylinderGeometry and a {{#crossLink &quot;PhongMaterial&quot;}}{{/crossLink}} with
+ diffuse {{#crossLink &quot;Texture&quot;}}{{/crossLink}}:
 
+ &#x60;&#x60;&#x60;&#x60;javascript
+ new XEO.Entity({
+
+     geometry: new XEO.CylinderGeometry({
+         radiusTop: 2.0,
+         radiusBottom: 2.0,
+         height: 5.0,
+         radialSegments: 20,
+         heightSegments: 1,
+         openEnded: false
+     }),
+
+     material: new XEO.PhongMaterial({
+        diffuseMap: new XEO.Texture({
+            src: &quot;textures/diffuse/uvGrid2.jpg&quot;
+        })
+     })
+ });
  &#x60;&#x60;&#x60;&#x60;
 
  @class CylinderGeometry

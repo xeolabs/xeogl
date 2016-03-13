@@ -183,7 +183,53 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A path geometry.
+ A **PathGeometry** is a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is defined by a {{#crossLink &quot;Curve&quot;}}{{/crossLink}}.
+
+ ## Example
+
+ An {{#crossLink &quot;Entity&quot;}}{{/crossLink}} with a PathGeometry, a {{#crossLink &quot;Path&quot;}}{{/crossLink}} and
+ a {{#crossLink &quot;PhongMaterial&quot;}}{{/crossLink}}:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ new XEO.Entity({
+
+     geometry: new XEO.PathGeometry({
+
+        divisions: 10,
+
+        path: new XEO.Path({
+
+            // Subpaths
+
+            curves: [
+                new XEO.CubicBezierCurve({
+                    v0: [-10, 0, 0],
+                    v1: [-5, 15, 0],
+                    v2: [20, 15, 0],
+                    v3: [10, 0, 0]
+                }),
+                new XEO.QuadraticBezierCurve({
+                    v0: [10, 0, 0],
+                    v1: [30, 15, 0],
+                    v2: [20, 0, 0]
+                }),
+                new XEO.SplineCurve({
+                    points: [
+                        [20, 0, 0],
+                        [-5, 15, 0],
+                        [20, 15, 0],
+                        [10, 0, 0]
+                    ]
+                })
+            ]
+        })
+     }),
+
+     material: new XEO.PhongMaterial(
+        diffuse: [1,0,0]
+     })
+ });
+ &#x60;&#x60;&#x60;&#x60;
 
  @class PathGeometry
  @module geometry

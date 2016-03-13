@@ -183,9 +183,7 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **Projection** component defines a projection transformation.
-
- ## Overview
+ A **Projection** component defines a projection transformation as a 4x4 matrix.
 
  &lt;ul&gt;
  &lt;li&gt;Projection is the base class for (at least) the {{#crossLink &quot;Perspective&quot;}}{{/crossLink}} and {{#crossLink &quot;Ortho&quot;}}{{/crossLink}} types.&lt;/li&gt;
@@ -197,36 +195,23 @@
 
  ## Example
 
- In this example we have an {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}} that&#x27;s attached to a
- {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} that has a {{#crossLink &quot;Lookat&quot;}}Lookat{{/crossLink}} and a
- Projection:
-
  &#x60;&#x60;&#x60;&#x60;Javascript
- var entity = new XEO.Entity({
+ new XEO.Entity({
 
-        camera: new XEO.Camera({
+     camera: XEO.Camera({
 
-            view: new XEO.Lookat({
-                eye: [0, 0, -4],
-                look: [0, 0, 0],
-                up: [0, 1, 0]
-            }),
+         view: new XEO.Lookat({
+             eye: [0, 0, -4],
+             look: [0, 0, 0],
+             up: [0, 1, 0]
+         }),
 
-            project: new XEO.Projection({
-                matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-            })
-        }),
+         project: new XEO.Projection({
+             matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+         })
+     }),
 
-        geometry: new XEO.BoxGeometry()
-    });
-
- var scene = entity.scene;
- var view = entity.camera.view;
-
- scene.on(&quot;tick&quot;,
-    function () {
-        view.rotateEyeY(0.5);
-        view.rotateEyeX(0.3);
+     new XEO.BoxGeometry();
  });
  &#x60;&#x60;&#x60;&#x60;
 

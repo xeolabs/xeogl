@@ -186,8 +186,6 @@
  A **DirLight** is a directional light source that illuminates all attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} equally
  from a given direction.
 
- ## Overview
-
  &lt;ul&gt;
  &lt;li&gt;DirLights are grouped, along with other light source types, within {{#crossLink &quot;Lights&quot;}}Lights{{/crossLink}} components,
  which are attached to {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.&lt;/li&gt;
@@ -208,7 +206,7 @@
 
     lights: new XEO.Lights({
         lights: [
-            new XEO.DirLight(scene, {
+            new XEO.DirLight({
                 dir:         [-1, -1, -1],
                 color:       [0.5, 0.7, 0.5],
                 intensity:   1.0,

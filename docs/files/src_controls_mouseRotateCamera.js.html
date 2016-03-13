@@ -185,8 +185,6 @@
 /**
  A **MouseRotateCamera** orbits a {{#crossLink &quot;Camera&quot;}}{{/crossLink}} about its point-of-interest using the mouse.
 
- ## Overview
-
  &lt;ul&gt;
  &lt;li&gt;A MouseRotateCamera updates the {{#crossLink &quot;Lookat&quot;}}{{/crossLink}} attached to the target {{#crossLink &quot;Camera&quot;}}{{/crossLink}}.
  &lt;li&gt;The point-of-interest is the {{#crossLink &quot;Lookat&quot;}}Lookat&#x27;s{{/crossLink}} {{#crossLink &quot;Lookat/look:property&quot;}}{{/crossLink}}.&lt;/li&gt;
@@ -204,20 +202,32 @@
  ## Example
 
  &#x60;&#x60;&#x60;&#x60;Javascript
- var scene = new XEO.Scene();
+ var camera = new XEO.Camera({
+     view: new XEO.Lookat({
+         eye: [0, 0, -10],
+         look: [0, 0, 0],
+         up: [0, 1, 0]
+     }),
+     project: new XEO.Perspective({
+         fovy: 60,
+         near: 0.1,
+         far: 1000
+     })
+ });
 
- var camera = new XEO.Camera(scene);
+ var entity = new XEO.Entity({
+     camera: camera,
+     geometry: new XEO.BoxGeometry()
+ });
 
- var control = new XEO.MouseRotateCamera(scene, {
+ new XEO.MouseRotateCamera(scene, {
 
-        camera: camera,
+     camera: camera,
 
-        // &quot;First person&quot; mode rotates look about eye.
-        // By default however, we orbit eye about look.
-        firstPerson: false
-    });
-
- var entity = new XEO.Entity(scene);
+     // &quot;First person&quot; mode rotates look about eye.
+     // By default however, we orbit eye about look.
+     firstPerson: false
+ });
  &#x60;&#x60;&#x60;&#x60;
 
  @class MouseRotateCamera

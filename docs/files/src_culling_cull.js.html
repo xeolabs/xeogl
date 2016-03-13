@@ -185,12 +185,10 @@
 /**
  A **Cull** toggles the culling of attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
 
- ## Overview
-
  &lt;ul&gt;
+ &lt;li&gt;An {{#crossLink &quot;Entity&quot;}}{{/crossLink}} is visible when its Cull&#x27;s {{#crossLink &quot;Cull/culled:property&quot;}}{{/crossLink}} property is true and {{#crossLink &quot;Visibility&quot;}}Visibility&#x27;s{{/crossLink}} {{#crossLink &quot;Visibility/visible:property&quot;}}{{/crossLink}} property is false.&lt;/li&gt;
  &lt;li&gt;Cull components are intended for **visibility culling systems** to control the visibility of {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.&lt;/li&gt;
  &lt;li&gt;{{#crossLink &quot;Visibility&quot;}}{{/crossLink}} components are intended for users to control the visibility of {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} via UIs.&lt;/li&gt;
- &lt;li&gt;Each {{#crossLink &quot;Entity&quot;}}{{/crossLink}} is visible when its {{#crossLink &quot;Visibility&quot;}}Visibility&#x27;s{{/crossLink}} {{#crossLink &quot;Visibility/visible:property&quot;}}visible{{/crossLink}} property is true and {{#crossLink &quot;Cull&quot;}}Cull&#x27;s{{/crossLink}} {{#crossLink &quot;Cull/culled:property&quot;}}visible{{/crossLink}} is false.
  &lt;li&gt;A Cull may be shared among multiple {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} to toggle
  their culling status as a group.&lt;/li&gt;
  &lt;/ul&gt;
@@ -203,20 +201,18 @@
  two {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
 
  &#x60;&#x60;&#x60;&#x60;javascript
- var scene = new XEO.Scene();
-
  // Create a Cull component
- var cull = new XEO.Cull(scene, {
+ var cull = new XEO.Cull({
     culled: false
 });
 
  // Create two Entities whose culling will be controlled by our Cull
 
- var entity1 = new XEO.Entity(scene, {
+ var entity1 = new XEO.Entity({
     cull: cull
 });
 
- var entity2 = new XEO.Entity(scene, {
+ var entity2 = new XEO.Entity({
     cull: cull
 });
 

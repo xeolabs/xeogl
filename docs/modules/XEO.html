@@ -702,7 +702,53 @@
                     </a>
 
                     <div class="module-submodule-description">
-                        A path geometry.
+                        A **PathGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that is defined by a {{#crossLink "Curve"}}{{/crossLink}}.
+
+## Example
+
+An {{#crossLink "Entity"}}{{/crossLink}} with a PathGeometry, a {{#crossLink "Path"}}{{/crossLink}} and
+a {{#crossLink "PhongMaterial"}}{{/crossLink}}:
+
+<code>&#x60;</code>`javascript
+new XEO.Entity({
+
+    geometry: new XEO.PathGeometry({
+
+       divisions: 10,
+
+       path: new XEO.Path({
+
+           // Subpaths
+
+           curves: [
+               new XEO.CubicBezierCurve({
+                   v0: [-10, 0, 0],
+                   v1: [-5, 15, 0],
+                   v2: [20, 15, 0],
+                   v3: [10, 0, 0]
+               }),
+               new XEO.QuadraticBezierCurve({
+                   v0: [10, 0, 0],
+                   v1: [30, 15, 0],
+                   v2: [20, 0, 0]
+               }),
+               new XEO.SplineCurve({
+                   points: [
+                       [20, 0, 0],
+                       [-5, 15, 0],
+                       [20, 15, 0],
+                       [10, 0, 0]
+                   ]
+               })
+           ]
+       })
+    }),
+
+    material: new XEO.PhongMaterial(
+       diffuse: [1,0,0]
+    })
+});
+<code>&#x60;</code>`
                     </div>
                 </li>
                 <li class="module-submodule">

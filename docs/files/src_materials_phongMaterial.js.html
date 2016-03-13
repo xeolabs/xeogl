@@ -183,108 +183,85 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
+
  A **PhongMaterial** is a {{#crossLink &quot;Material&quot;}}{{/crossLink}} that defines the surface appearance of
  attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} using
  the &lt;a href=&quot;http://en.wikipedia.org/wiki/Phong_reflection_model&quot;&gt;Phong&lt;/a&gt; lighting model.
 
- ## Overview
-
  &lt;ul&gt;
-
- &lt;li&gt;These PhongMaterial properties, along with {{#crossLink &quot;PhongMaterial/emissive:property&quot;}}{{/crossLink}},
+ &lt;li&gt;PhongMaterial properties, along with {{#crossLink &quot;PhongMaterial/emissive:property&quot;}}{{/crossLink}},
  {{#crossLink &quot;PhongMaterial/opacity:property&quot;}}{{/crossLink}} and {{#crossLink &quot;PhongMaterial/reflectivity:property&quot;}}{{/crossLink}},
  specify attributes that are to be **applied uniformly** across the surface of attached {{#crossLink &quot;Geometry&quot;}}Geometries{{/crossLink}}.&lt;/li&gt;
-
  &lt;li&gt;Most of those attributes can be textured, **effectively replacing the values set for those properties**, by
  assigning {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} to the PhongMaterial&#x27;s
  {{#crossLink &quot;PhongMaterial/diffuseMap:property&quot;}}{{/crossLink}}, {{#crossLink &quot;PhongMaterial/specularMap:property&quot;}}{{/crossLink}},
  {{#crossLink &quot;PhongMaterial/emissiveMap:property&quot;}}{{/crossLink}}, {{#crossLink &quot;PhongMaterial/opacityMap:property&quot;}}{{/crossLink}}
  and  {{#crossLink &quot;PhongMaterial/reflectivityMap:property&quot;}}{{/crossLink}} properties.&lt;/li&gt;
-
  &lt;li&gt;For example, the value of {{#crossLink &quot;PhongMaterial/diffuse:property&quot;}}{{/crossLink}} will be ignored if your
  PhongMaterial also has a {{#crossLink &quot;PhongMaterial/diffuseMap:property&quot;}}{{/crossLink}} set to a {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}.
  The {{#crossLink &quot;Texture&quot;}}Texture&#x27;s{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the
  {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} surface, ie. they are not multiplied by
  the {{#crossLink &quot;PhongMaterial/diffuse:property&quot;}}{{/crossLink}} for each pixel, as is done in many shading systems.&lt;/li&gt;
-
  &lt;li&gt;When the {{#crossLink &quot;Entity&quot;}}{{/crossLink}}&#x27;s {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} has a
  {{#crossLink &quot;Geometry/primitive:property&quot;}}{{/crossLink}} set to &quot;lines&quot; or &quot;points&quot; then only the {{#crossLink &quot;PhongMaterial&quot;}}{{/crossLink}}&#x27;s
  {{#crossLink &quot;PhongMaterial/emissive:property&quot;}}{{/crossLink}}, {{#crossLink &quot;PhongMaterial/emissiveMap:property&quot;}}{{/crossLink}},
  {{#crossLink &quot;PhongMaterial/opacity:property&quot;}}{{/crossLink}} and {{#crossLink &quot;PhongMaterial/opacityMap:property&quot;}}{{/crossLink}}
  will actually be applied, since those primitive types cannot be shaded.&lt;/li&gt;
-
  &lt;li&gt;See &lt;a href=&quot;Shader.html#inputs&quot;&gt;Shader Inputs&lt;/a&gt; for the variables that PhongMaterials create within xeoEngine&#x27;s shaders.&lt;/li&gt;
-
  &lt;/ul&gt;
 
- &lt;img src=&quot;../../../assets/images/Material.png&quot;&gt;&lt;/img&gt;
+ &lt;img src=&quot;../../../assets/images/PhongMaterial.png&quot;&gt;&lt;/img&gt;
 
  ## Example
 
- In this example we have
+ In this example we have an Entity with
 
  &lt;ul&gt;
- &lt;li&gt;a {{#crossLink &quot;Texture&quot;}}{{/crossLink}},&lt;/li&gt;
- &lt;li&gt;a {{#crossLink &quot;Fresnel&quot;}}{{/crossLink}},&lt;/li&gt;
- &lt;li&gt;a {{#crossLink &quot;PhongMaterial&quot;}}{{/crossLink}} which applies the {{#crossLink &quot;Texture&quot;}}{{/crossLink}} as a diffuse map and the {{#crossLink &quot;Fresnel&quot;}}{{/crossLink}} as a specular Fresnel effect,&lt;/li&gt;
  &lt;li&gt;a {{#crossLink &quot;Lights&quot;}}{{/crossLink}} containing an {{#crossLink &quot;AmbientLight&quot;}}{{/crossLink}} and a {{#crossLink &quot;DirLight&quot;}}{{/crossLink}},&lt;/li&gt;
- &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape, and
- &lt;li&gt;an {{#crossLink &quot;Entity&quot;}}{{/crossLink}} attached to all of the above.&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;PhongMaterial&quot;}}{{/crossLink}} which applies a {{#crossLink &quot;Texture&quot;}}{{/crossLink}} as a diffuse map and a specular {{#crossLink &quot;Fresnel&quot;}}{{/crossLink}}, and
+ &lt;li&gt;a {{#crossLink &quot;TorusGeometry&quot;}}{{/crossLink}}.&lt;/li&gt;
  &lt;/ul&gt;
 
- Note that the value for the {{#crossLink &quot;PhongMaterial&quot;}}PhongMaterial&#x27;s{{/crossLink}} {{#crossLink &quot;PhongMaterial/diffuse:property&quot;}}{{/crossLink}}
- property is ignored and redundant, since we assign a {{#crossLink &quot;Texture&quot;}}{{/crossLink}} to the
- {{#crossLink &quot;PhongMaterial&quot;}}PhongMaterial&#x27;s{{/crossLink}} {{#crossLink &quot;PhongMaterial/diffuseMap:property&quot;}}{{/crossLink}} property.
- The {{#crossLink &quot;Texture&quot;}}Texture&#x27;s{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the
- {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} surface.
+ Note that xeoEngine will ignore the PhongMaterial&#x27;s {{#crossLink &quot;PhongMaterial/diffuse:property&quot;}}{{/crossLink}}
+ property, since we assigned the {{#crossLink &quot;Texture&quot;}}{{/crossLink}} to the PhongMaterial&#x27;s
+ {{#crossLink &quot;PhongMaterial/diffuseMap:property&quot;}}{{/crossLink}} property. The {{#crossLink &quot;Texture&quot;}}Texture&#x27;s{{/crossLink}} pixel
+ colors directly provide the diffuse color of each fragment across the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} surface.
 
  &#x60;&#x60;&#x60;&#x60; javascript
- var scene = new XEO.Scene();
+ var entity = new XEO.Entity({
 
- var diffuseMap = new XEO.Texture(scene, {
-    src: &quot;diffuseMap.jpg&quot;
- });
+    lights: new XEO.Lights({
+        lights: [
+            new XEO.AmbientLight({
+                color: [0.7, 0.7, 0.7]
+            }),
+            new XEO.DirLight({
+                dir: [-1, -1, -1],
+                color: [0.5, 0.7, 0.5],
+                intensity: [1.0, 1.0, 1.0],
+                space: &quot;view&quot;
+            })
+        ]
+    }),
 
- var fresnel = new XEO.Fresnel(scene, {
-    leftColor: [1.0, 1.0, 1.0],
-    rightColor: [0.0, 0.0, 0.0],
-    power: 4
- });
+    material: new XEO.PhongMaterial({
+        ambient: [0.3, 0.3, 0.3],
+        diffuse: [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below
+        diffuseMap: new XEO.Texture({
+            src: &quot;diffuseMap.jpg&quot;
+        }),
+        specular: [1, 1, 1],
+        specularFresnel: new XEO.Fresnel({
+            leftColor: [1.0, 1.0, 1.0],
+            rightColor: [0.0, 0.0, 0.0],
+            power: 4
+        }),
+        shininess: 80, // Default
+        opacity: 1.0 // Default
+    }),
 
- var material = new XEO.PhongMaterial(scene, {
-    ambient:         [0.3, 0.3, 0.3],
-    diffuse:         [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below
-    diffuseMap:      diffuseMap,
-    specular:        [1, 1, 1],
-    shininess:       80,
-    specularFresnel: fresnel
- });
-
- var ambientLight = new XEO.AmbientLight(scene, {
-    color: [0.7, 0.7, 0.7]
- });
-
- var dirLight = new XEO.DirLight(scene, {
-    dir:        [-1, -1, -1],
-    color:      [0.5, 0.7, 0.5],
-    intensity:  [1.0, 1.0, 1.0],
-    space:      &quot;view&quot;
- });
-
- var lights = new XEO.Lights(scene, {
-    lights: [
-        ambientLight,
-        dirLight
-    ]
- });
-
- var geometry = new XEO.Geometry(scene); // Geometry without parameters will default to a 2x2x2 box.
-
- var entity = new XEO.Entity(scene, {
-    lights: lights,
-    material: material,
-    geometry: geometry
- });
+    geometry: new XEO.TorusGeometry()
+});
  &#x60;&#x60;&#x60;&#x60;
 
  @class PhongMaterial

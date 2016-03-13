@@ -185,9 +185,7 @@
 
 
 /**
- A **Camera** defines a viewpoint on attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
-
- ## Overview
+ A **Camera** defines viewing and projection transforms for attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
 
  &lt;ul&gt;
  &lt;li&gt; A Camera is composed of a viewing transform and a {{#crossLink &quot;Projection&quot;}}{{/crossLink}}.&lt;/li&gt;
@@ -209,48 +207,30 @@
 
  ## Example
 
- In the example below, we have
-
- &lt;ul&gt;
- &lt;li&gt;a {{#crossLink &quot;Lookat&quot;}}{{/crossLink}} view transform,&lt;/li&gt;
- &lt;li&gt;a {{#crossLink &quot;Perspective&quot;}}{{/crossLink}} projection transform,&lt;/li&gt;
- &lt;li&gt;a Camera attached to the {{#crossLink &quot;Lookat&quot;}}{{/crossLink}} and {{#crossLink &quot;Perspective&quot;}}{{/crossLink}},&lt;/li&gt;
- &lt;li&gt;a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that is the default box shape, and
- &lt;li&gt;an {{#crossLink &quot;Entity&quot;}}{{/crossLink}} attached to all of the above.&lt;/li&gt;
- &lt;/ul&gt;
-
+ The example below defines an {{#crossLink &quot;Entity&quot;}}{{/crossLink}} that has a Camera with
+ a {{#crossLink &quot;Lookat&quot;}}{{/crossLink}} view transform and a {{#crossLink &quot;Perspective&quot;}}{{/crossLink}} projection transform.
 
  &#x60;&#x60;&#x60;&#x60; javascript
- var scene = new XEO.Scene();
+ var entity = new XEO.Entity({
+     camera: new XEO.Camera({
+         view: new XEO.Lookat({
+             eye: [0, 0, -10],
+             look: [0, 0, 0],
+             up: [0, 1, 0]
+         }),
+         project: new XEO.Lookat({
+             fovy: 60,
+             near: 0.1,
+             far: 1000
+         })
+     }),
+     geometry: new XEO.BoxGeometry()
+ });
 
- var lookat = new XEO.Lookat(scene, {
-        eye: [0, 0, -10],
-        look: [0, 0, 0],
-        up: [0, 1, 0]
-    });
-
- var perspective = new XEO.Lookat(scene, {
-        fovy: 60,
-        near: 0.1,
-        far: 1000
-    });
-
- var camera = new XEO.Camera(scene, {
-        view: lookat,
-        project: perspective
-    });
-
- var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
-
- var entity = new XEO.Entity(scene, {
-        camera: camera,
-        geometry: geometry
-    });
-
- scene.on(&quot;tick&quot;, function () {
-       camera.view.rotateEyeY(0.5);
-       camera.view.rotateEyeX(0.3);
-    });
+ entity.scene.on(&quot;tick&quot;, function () {
+     camera.view.rotateEyeY(0.5);
+     camera.view.rotateEyeX(0.3);
+ });
  &#x60;&#x60;&#x60;&#x60;
  @class Camera
  @module XEO

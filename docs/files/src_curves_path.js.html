@@ -183,59 +183,62 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **Path** is a complex curved path constructed from various types of sub-curves.
-
- ## Overview
-
- A Path can be constructed from the following {{#crossLink &quot;Curve&quot;}}{{/crossLink}} sub-classes:
+ A **Path** is a complex curved path constructed from various {{#crossLink &quot;Curve&quot;}}{{/crossLink}} subtypes.
 
  &lt;ul&gt;
-    &lt;li&gt;{{#crossLink &quot;SplineCurve&quot;}}{{/crossLink}}&lt;/li&gt;
-    &lt;li&gt;{{#crossLink &quot;CubicBezierCurve&quot;}}{{/crossLink}}&lt;/li&gt;
-    &lt;li&gt;{{#crossLink &quot;QuadraticBezierCurve&quot;}}{{/crossLink}}&lt;/li&gt;
+ &lt;li&gt;A Path can be constructed from these {{#crossLink &quot;Curve&quot;}}{{/crossLink}} subtypes: {{#crossLink &quot;SplineCurve&quot;}}{{/crossLink}},
+ {{#crossLink &quot;CubicBezierCurve&quot;}}{{/crossLink}} and {{#crossLink &quot;QuadraticBezierCurve&quot;}}{{/crossLink}}.&lt;/li&gt;
+ &lt;li&gt;You can sample a {{#crossLink &quot;Path/point:property&quot;}}{{/crossLink}} and a {{#crossLink &quot;Curve/tangent:property&quot;}}{{/crossLink}}
+ vector on a Path for any given value of {{#crossLink &quot;Path/t:property&quot;}}{{/crossLink}} in the range [0..1].&lt;/li&gt;
+ &lt;li&gt;When you set {{#crossLink &quot;Path/t:property&quot;}}{{/crossLink}} on a Path, its
+ {{#crossLink &quot;Path/point:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Curve/tangent:property&quot;}}{{/crossLink}} properties
+ will update accordingly.&lt;/li&gt;
  &lt;/ul&gt;
 
  ## Example
 
- &#x60;&#x60;&#x60;&#x60;javascript
+ Create a Path containing a {{#crossLink &quot;CubicBezierCurve&quot;}}{{/crossLink}}, a {{#crossLink &quot;QuadraticBezierCurve&quot;}}{{/crossLink}}
+ and a {{#crossLink &quot;SplineCurve&quot;}}{{/crossLink}}, subscribe to updates on its {{#crossLink &quot;Path/point:property&quot;}}{{/crossLink}} and
+ {{#crossLink &quot;Curve/tangent:property&quot;}}{{/crossLink}} properties, then vary its {{#crossLink &quot;Path/t:property&quot;}}{{/crossLink}}
+ property over time:
 
+ &#x60;&#x60;&#x60;&#x60;javascript
  var path = new XEO.Path({
-        curves: [
-            new XEO.CubicBezierCurve({
-                v0: [-10, 0, 0],
-                v1: [-5, 15, 0],
-                v2: [20, 15, 0],
-                v3: [10, 0, 0]
-            }),
-            new XEO.QuadraticBezierCurve({
-                v0: [-10, 0, 0],
-                v1: [20, 15, 0],
-                v2: [10, 0, 0]
-            }),
-            new XEO.SplineCurve({
-                points: [
-                    [-10, 0, 0],
-                    [-5, 15, 0],
-                    [20, 15, 0],
-                    [10, 0, 0]
-                ]
-            })
-        ]
-    });
+     curves: [
+         new XEO.CubicBezierCurve({
+             v0: [-10, 0, 0],
+             v1: [-5, 15, 0],
+             v2: [20, 15, 0],
+             v3: [10, 0, 0]
+         }),
+         new XEO.QuadraticBezierCurve({
+             v0: [-10, 0, 0],
+             v1: [20, 15, 0],
+             v2: [10, 0, 0]
+         }),
+         new XEO.SplineCurve({
+             points: [
+                 [-10, 0, 0],
+                 [-5, 15, 0],
+                 [20, 15, 0],
+                 [10, 0, 0]
+             ]
+         })
+     ]
+ });
 
  path.scene.on(&quot;tick&quot;, function(e) {
 
-        path.t = (e.time - e.startTime) * 0.01;
+     path.t = (e.time - e.startTime) * 0.01;
 
-        var point = path.point;
-        var tangent = path.tangent;
+     var point = path.point;
+     var tangent = path.tangent;
 
-        this.log(&quot;t=&quot; + path.t + &quot;, point=&quot; +
-            JSON.stringify(point) + &quot;, tangent=&quot; +
-                JSON.stringify(tangent));
-    });
+     this.log(&quot;t=&quot; + path.t + &quot;, point=&quot; +
+         JSON.stringify(point) + &quot;, tangent=&quot; +
+             JSON.stringify(tangent));
+ });
  &#x60;&#x60;&#x60;&#x60;
-
  @class Path
  @module XEO
  @submodule curves

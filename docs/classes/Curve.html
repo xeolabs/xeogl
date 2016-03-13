@@ -196,15 +196,8 @@
 
 
 <div class="box intro">
-    <p>A <strong>Curve</strong> is the abstract base class for various other curve classes.</p>
-<h2 id="overview">Overview</h2>
-<p>The Curve is subclassed by the following component types:</p>
-<p><ul></p>
-<p><li><a href="../classes/SplineCurve.html" class="crosslink">SplineCurve</a></li></p>
-<p><li><a href="../classes/CubicBezierCurve.html" class="crosslink">CubicBezierCurve</a></li></p>
-<p><li><a href="../classes/QuadraticBezierCurve.html" class="crosslink">QuadraticBezierCurve</a></li></p>
-<p><li><a href="../classes/Path.html" class="crosslink">Path</a></li>
-</u></p>
+    <p><strong>Curve</strong> is the abstract base class for <a href="../classes/SplineCurve.html" class="crosslink">SplineCurve</a>,
+ <a href="../classes/CubicBezierCurve.html" class="crosslink">CubicBezierCurve</a>, <a href="../classes/QuadraticBezierCurve.html" class="crosslink">QuadraticBezierCurve</a> and <a href="../classes/Path.html" class="crosslink">Path</a>.</p>
 
 </div>
 
@@ -413,10 +406,6 @@
                                 <a href="#property_metadata">metadata</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_point">point</a>
-
-                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_scene">scene</a>
 
@@ -431,6 +420,10 @@
                             </li>
                             <li class="index-item property">
                                 <a href="#property_t">t</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_tangent">tangent</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -502,18 +495,20 @@
         <p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 <p>You would typically use this method to conveniently instantiate components that you&#39;d want to
 share (ie. "instance") among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
-<p>The method is given a component type and configuration, like so:</p>
+<p>The method is given a component type, configuration and optional instance ID, like so:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(XEO.PhongMaterial, {
      diffuse: [1,0,0],
      specular: [1,1,0]
-});
+}, "myMaterial");
 </code></pre>
 <p>The first time you call this method for the given <code>type</code> and <code>instanceId</code>, this method will create the
 <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, passing the given  attributes to the component&#39;s constructor.</p>
 <p>If you call this method again, specifying the same <code>type</code> and <code>instanceId</code>, the method will return the same
-component instance that it returned the first time, and will ignore the attributes:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, "myMaterial", { specular: [1,1,0] });
+component instance that it returned the first time, and will ignore the configuration:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
 </code></pre>
+<p>So inthis example, our <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> will continue to have the red specular
+and diffuse color that we specified the first time.</p>
 <p>Each time you call this method with the same <code>type</code> and <code>instanceId</code>, the Scene will internally increment a
 reference count for the component instance. You can release the shared component instance with a call to
 Scene/putSharedComponent:method, and once you have released it as many
@@ -592,7 +587,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l997"><code>src&#x2F;component.js:997</code></a>
+        <a href="../files/src_component.js.html#l1000"><code>src&#x2F;component.js:1000</code></a>
         </p>
 
 
@@ -781,7 +776,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_curves_curve.js.html#l152"><code>src&#x2F;curves&#x2F;curve.js:152</code></a>
+        <a href="../files/src_curves_curve.js.html#l143"><code>src&#x2F;curves&#x2F;curve.js:143</code></a>
         </p>
 
 
@@ -848,7 +843,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_curves_curve.js.html#l110"><code>src&#x2F;curves&#x2F;curve.js:110</code></a>
+        <a href="../files/src_curves_curve.js.html#l101"><code>src&#x2F;curves&#x2F;curve.js:101</code></a>
         </p>
 
 
@@ -1419,7 +1414,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l935"><code>src&#x2F;component.js:935</code></a>
+                            <a href="../files/src_component.js.html#l938"><code>src&#x2F;component.js:938</code></a>
                             </p>
                     
                     
@@ -1444,7 +1439,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_curve.js.html#l96"><code>src&#x2F;curves&#x2F;curve.js:96</code></a>
+                            <a href="../files/src_curves_curve.js.html#l87"><code>src&#x2F;curves&#x2F;curve.js:87</code></a>
                             </p>
                     
                     
@@ -1477,31 +1472,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Arbitrary, user-defined metadata on this component.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_point" class="property item">
-                        <h3 class="name"><code>point</code></h3>
-                        <span class="type">Array of Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_curves_curve.js.html#l82"><code>src&#x2F;curves&#x2F;curve.js:82</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Tangent on this Curve at position <a href="../classes/Curve.html#property_t" class="crosslink">t</a>.</p>
                     
                         </div>
                     
@@ -1549,7 +1519,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l963"><code>src&#x2F;component.js:963</code></a>
+                            <a href="../files/src_component.js.html#l966"><code>src&#x2F;component.js:966</code></a>
                             </p>
                     
                     
@@ -1606,7 +1576,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_curve.js.html#l48"><code>src&#x2F;curves&#x2F;curve.js:48</code></a>
+                            <a href="../files/src_curves_curve.js.html#l39"><code>src&#x2F;curves&#x2F;curve.js:39</code></a>
                             </p>
                     
                     
@@ -1620,6 +1590,31 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                             <p><strong>Default:</strong> 0</p>
+                    
+                    
+                    </div>
+                    <div id="property_tangent" class="property item">
+                        <h3 class="name"><code>tangent</code></h3>
+                        <span class="type">Array of Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_curves_curve.js.html#l73"><code>src&#x2F;curves&#x2F;curve.js:73</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Tangent on this Curve at position <a href="../classes/Curve.html#property_t" class="crosslink">t</a>.</p>
+                    
+                        </div>
+                    
                     
                     
                     </div>
@@ -1638,7 +1633,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_curves_curve.js.html#l32"><code>src&#x2F;curves&#x2F;curve.js:32</code></a>
+                            <a href="../files/src_curves_curve.js.html#l23"><code>src&#x2F;curves&#x2F;curve.js:23</code></a>
                             </p>
                     
                     
@@ -1669,7 +1664,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1044"><code>src&#x2F;component.js:1044</code></a>
+                            <a href="../files/src_component.js.html#l1047"><code>src&#x2F;component.js:1047</code></a>
                             </p>
                     
                     
@@ -1694,7 +1689,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_curve.js.html#l67"><code>src&#x2F;curves&#x2F;curve.js:67</code></a>
+                            <a href="../files/src_curves_curve.js.html#l58"><code>src&#x2F;curves&#x2F;curve.js:58</code></a>
                             </p>
                     
                     

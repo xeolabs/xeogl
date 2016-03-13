@@ -185,16 +185,6 @@
 /**
  A **Scene** models a 3D scene as a fully-editable and serializable &lt;a href=&quot;http://gameprogrammingpatterns.com/component.html&quot; target=&quot;_other&quot;&gt;component-entity&lt;/a&gt; graph.
 
- ## Contents
-
- &lt;Ul&gt;
- &lt;li&gt;&lt;a href=&quot;#sceneStructure&quot;&gt;Scene Structure&lt;/a&gt;&lt;/li&gt;
- &lt;li&gt;&lt;a href=&quot;#sceneCanvas&quot;&gt;The Scene Canvas&lt;/a&gt;&lt;/li&gt;
- &lt;li&gt;&lt;a href=&quot;#findingByID&quot;&gt;Finding Scenes and Components by ID&lt;/a&gt;&lt;/li&gt;
- &lt;li&gt;&lt;a href=&quot;#defaults&quot;&gt;The Default Scene&lt;/a&gt;&lt;/li&gt;
- &lt;li&gt;&lt;a href=&quot;#savingAndLoading&quot;&gt;Saving and Loading Scenes&lt;/a&gt;&lt;/li&gt;
- &lt;/ul&gt;
-
  ## &lt;a name=&quot;sceneStructure&quot;&gt;Scene Structure&lt;/a&gt;
 
  A Scene contains a soup of instances of various {{#crossLink &quot;Component&quot;}}Component{{/crossLink}} subtypes, such as
@@ -303,6 +293,7 @@
  For example:
 
  &#x60;&#x60;&#x60;&#x60; javascript
+
  var material2 = new XEO.PhongMaterial({
     diffuse: { r: 0.6, g: 0.6, b: 0.7 },
     specular: { 1.0, 1.0, 1.0 }

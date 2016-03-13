@@ -183,23 +183,27 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
-
  A **Skybox** is a textured box that does not translate with respect to the
  {{#crossLink &quot;Lookat&quot;}}viewing transform{{/crossLink}}, to a provide the appearance of a background
  for associated {{#crossLink &quot;Entities&quot;}}Entities{{/crossLink}}.
 
- ## Overview
-
- TODO
-
  ## Example
+
+ In the example below we&#x27;re going to create twenty randomly-positioned and colored {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}
+ and wrap them in a Skybox. The Skybox will use the texture image shown on the left, and the result will appear as shown
+ on the right.
+
+ &lt;img src=&quot;../../assets/images/skyboxMiramarClouds.jpg&quot;&gt;&amp;nbsp;&amp;nbsp;&lt;img src=&quot;../../assets/images/skyboxScreenshot.png&quot;&gt;
 
  &#x60;&#x60;&#x60;&#x60;javascript
  // A bunch of random cube Entities
 
- for (var i = 0; i &lt; 20; i++) {
+ // Share this BoxGeometry among the Entities
+ var boxGeometry = new BoxGeometry();
 
+ for (var i = 0; i &lt; 20; i++) {
         new XEO.Entity({
+            geometry: boxGeometry,
             transform: new XEO.Translate({
                 xyz: [
                     Math.random() * 15 - 7,
@@ -218,26 +222,21 @@
     }
 
  // A Skybox that wraps our Entities in a cloudy background
-
  var skybox = new XEO.Skybox({
         src: &quot;textures/skybox/miramarClouds.jpg&quot;,
         size: 1000 // Default
     });
 
- // Move the camera back a bit
+ // Get the default Scene off the Skybox
+ var scene = skybox.scene;
 
- skybox.scene.camera.view.eye = [0, 0, -30];
+ // Move the camera back a bit
+ scene.camera.view.eye = [0, 0, -30];
 
  // Slowly orbit the camera on each frame
-
- skybox.scene.on(&quot;tick&quot;,
- function () {
-         skybox.scene.camera.view.rotateEyeY(0.2);
+ scene.on(&quot;tick&quot;, function () {
+         scene.camera.view.rotateEyeY(0.2);
      });
-
- // Allow user camera control
-
- new XEO.CameraControl();
  &#x60;&#x60;&#x60;&#x60;
 
  @class Skybox

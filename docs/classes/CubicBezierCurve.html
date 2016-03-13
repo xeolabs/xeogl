@@ -196,36 +196,43 @@
 
 
 <div class="box intro">
-    <p>A <strong>CubicBezierCurve</strong> extends <a href="../classes/Curve.html" class="crosslink">Curve</a> to provide a cubic Bezier curve.</p>
-<h2 id="overview">Overview</h2>
-<p><img style="border:1px solid;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/B%C3%A9zier_3_big.gif/240px-B%C3%A9zier_3_big.gif"/></p>
-<p><em><a href="https://en.wikipedia.org/wiki/B%C3%A9zier_curve">Cubic Bezier Curve from WikiPedia</a></em></p>
+    <p>A <strong>CubicBezierCurve</strong> is a <a href="../classes/Curve.html" class="crosslink">Curve</a> along which a 3D position can be animated.</p>
 <ul>
-   <li>To build a complex path, you can combine an unlimited combination of CubicBezierCurves,
+<li>As shown in the diagram below, a CubicBezierCurve is defined by four control points.</li>
+<li>You can sample a <a href="../classes/CubicBezierCurve.html#property_point" class="crosslink">point</a> and a CubicBezierCurve/tangent:property
+vector on a CubicBezierCurve for any given value of <a href="../classes/CubicBezierCurve.html#property_t" class="crosslink">t</a> in the range [0..1].</li>
+<li>When you set <a href="../classes/CubicBezierCurve.html#property_t" class="crosslink">t</a> on a CubicBezierCurve, its
+<a href="../classes/CubicBezierCurve.html#property_point" class="crosslink">point</a> and CubicBezierCurve/tangent:property properties
+will update accordingly.</li>
+<li>To build a complex path, you can combine an unlimited combination of CubicBezierCurves,
 <a href="../classes/QuadraticBezierCurve.html" class="crosslink">QuadraticBezierCurves</a> and <a href="../classes/SplineCurve.html" class="crosslink">SplineCurves</a>
-within a <a href="../classes/Path.html" class="crosslink">Path</a>.</li>
+into a <a href="../classes/Path.html" class="crosslink">Path</a>.</li>
 </ul>
 
-<h2 id="example">Example</h2>
-<pre class="code prettyprint"><code class="lang-javascript">
-var curve = new XEO.CubicBezierCurve({
-       v0: [-10, 0, 0],
-       v1: [-5, 15, 0],
-       v2: [20, 15, 0],
-       v3: [10, 0, 0]
-   });
+<p><img style="border:1px solid;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/B%C3%A9zier_3_big.gif/240px-B%C3%A9zier_3_big.gif"/><br>
+<em><a href="https://en.wikipedia.org/wiki/B%C3%A9zier_curve">Cubic Bezier Curve from WikiPedia</a></em></p>
+<h2 id="example-1">Example 1</h2>
+<p>Create a CubicBezierCurve, subscribe to updates on its <a href="../classes/CubicBezierCurve.html#property_point" class="crosslink">point</a> and
+<a href="../classes/Curve.html#property_tangent" class="crosslink">tangent</a> properties, then vary its <a href="../classes/CubicBezierCurve.html#property_t" class="crosslink">t</a>
+property over time:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var curve = new XEO.CubicBezierCurve({
+    v0: [-10, 0, 0],
+    v1: [-5, 15, 0],
+    v2: [20, 15, 0],
+    v3: [10, 0, 0]
+});
 
 curve.scene.on("tick", function(e) {
 
-       curve.t = (e.time - e.startTime) * 0.01;
+    curve.t = (e.time - e.startTime) * 0.01;
 
-       var point = curve.point;
-       var tangent = curve.tangent;
+    var point = curve.point;
+    var tangent = curve.tangent;
 
-       this.log("t=" + curve.t + ", point=" +
+    this.log("t=" + curve.t + ", point=" +
            JSON.stringify(point) + ", tangent=" +
                JSON.stringify(tangent));
-   });
+});
 </code></pre>
 
 </div>
@@ -479,7 +486,7 @@ curve.scene.on("tick", function(e) {
                                 <a href="#property_metadata">metadata</a>
 
                             </li>
-                            <li class="index-item property inherited">
+                            <li class="index-item property">
                                 <a href="#property_point">point</a>
 
                             </li>
@@ -497,6 +504,10 @@ curve.scene.on("tick", function(e) {
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_t">t</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_tangent">tangent</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -600,18 +611,20 @@ curve.scene.on("tick", function(e) {
         <p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 <p>You would typically use this method to conveniently instantiate components that you&#39;d want to
 share (ie. "instance") among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
-<p>The method is given a component type and configuration, like so:</p>
+<p>The method is given a component type, configuration and optional instance ID, like so:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(XEO.PhongMaterial, {
      diffuse: [1,0,0],
      specular: [1,1,0]
-});
+}, "myMaterial");
 </code></pre>
 <p>The first time you call this method for the given <code>type</code> and <code>instanceId</code>, this method will create the
 <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, passing the given  attributes to the component&#39;s constructor.</p>
 <p>If you call this method again, specifying the same <code>type</code> and <code>instanceId</code>, the method will return the same
-component instance that it returned the first time, and will ignore the attributes:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, "myMaterial", { specular: [1,1,0] });
+component instance that it returned the first time, and will ignore the configuration:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
 </code></pre>
+<p>So inthis example, our <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> will continue to have the red specular
+and diffuse color that we specified the first time.</p>
 <p>Each time you call this method with the same <code>type</code> and <code>instanceId</code>, the Scene will internally increment a
 reference count for the component instance. You can release the shared component instance with a call to
 Scene/putSharedComponent:method, and once you have released it as many
@@ -690,7 +703,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l997"><code>src&#x2F;component.js:997</code></a>
+        <a href="../files/src_component.js.html#l1000"><code>src&#x2F;component.js:1000</code></a>
         </p>
 
 
@@ -879,7 +892,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Curve.html#method_getPoints">Curve</a>:
-        <a href="../files/src_curves_curve.js.html#l152"><code>src&#x2F;curves&#x2F;curve.js:152</code></a>
+        <a href="../files/src_curves_curve.js.html#l143"><code>src&#x2F;curves&#x2F;curve.js:143</code></a>
         </p>
 
 
@@ -946,7 +959,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Curve.html#method_getTangent">Curve</a>:
-        <a href="../files/src_curves_curve.js.html#l110"><code>src&#x2F;curves&#x2F;curve.js:110</code></a>
+        <a href="../files/src_curves_curve.js.html#l101"><code>src&#x2F;curves&#x2F;curve.js:101</code></a>
         </p>
 
 
@@ -1517,7 +1530,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l935"><code>src&#x2F;component.js:935</code></a>
+                            <a href="../files/src_component.js.html#l938"><code>src&#x2F;component.js:938</code></a>
                             </p>
                     
                     
@@ -1542,7 +1555,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Curve.html#property_length">Curve</a>:
-                            <a href="../files/src_curves_curve.js.html#l96"><code>src&#x2F;curves&#x2F;curve.js:96</code></a>
+                            <a href="../files/src_curves_curve.js.html#l87"><code>src&#x2F;curves&#x2F;curve.js:87</code></a>
                             </p>
                     
                     
@@ -1590,12 +1603,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Curve.html#property_point">
-                                    Curve
-                                </a>
-                                but overwritten in
-                            <a href="../files/src_curves_cubicBezierCurve.js.html#l224"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:224</code></a>
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_curves_cubicBezierCurve.js.html#l230"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:230</code></a>
                             </p>
                     
                     
@@ -1650,7 +1660,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l963"><code>src&#x2F;component.js:963</code></a>
+                            <a href="../files/src_component.js.html#l966"><code>src&#x2F;component.js:966</code></a>
                             </p>
                     
                     
@@ -1710,7 +1720,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Curve
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_curves_cubicBezierCurve.js.html#l192"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:192</code></a>
+                            <a href="../files/src_curves_cubicBezierCurve.js.html#l198"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:198</code></a>
                             </p>
                     
                     
@@ -1724,6 +1734,31 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                             <p><strong>Default:</strong> 0</p>
+                    
+                    
+                    </div>
+                    <div id="property_tangent" class="property item inherited">
+                        <h3 class="name"><code>tangent</code></h3>
+                        <span class="type">Array of Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Curve.html#property_tangent">Curve</a>:
+                            <a href="../files/src_curves_curve.js.html#l73"><code>src&#x2F;curves&#x2F;curve.js:73</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Tangent on this Curve at position <a href="../classes/Curve.html#property_t" class="crosslink">t</a>.</p>
+                    
+                        </div>
+                    
                     
                     
                     </div>
@@ -1742,7 +1777,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_curves_cubicBezierCurve.js.html#l61"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:61</code></a>
+                            <a href="../files/src_curves_cubicBezierCurve.js.html#l67"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:67</code></a>
                             </p>
                     
                     
@@ -1767,7 +1802,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_cubicBezierCurve.js.html#l84"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:84</code></a>
+                            <a href="../files/src_curves_cubicBezierCurve.js.html#l90"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:90</code></a>
                             </p>
                     
                     
@@ -1794,7 +1829,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_cubicBezierCurve.js.html#l111"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:111</code></a>
+                            <a href="../files/src_curves_cubicBezierCurve.js.html#l117"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:117</code></a>
                             </p>
                     
                     
@@ -1821,7 +1856,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_cubicBezierCurve.js.html#l138"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:138</code></a>
+                            <a href="../files/src_curves_cubicBezierCurve.js.html#l144"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:144</code></a>
                             </p>
                     
                     
@@ -1848,7 +1883,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_cubicBezierCurve.js.html#l165"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:165</code></a>
+                            <a href="../files/src_curves_cubicBezierCurve.js.html#l171"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:171</code></a>
                             </p>
                     
                     
@@ -1881,7 +1916,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1044"><code>src&#x2F;component.js:1044</code></a>
+                            <a href="../files/src_component.js.html#l1047"><code>src&#x2F;component.js:1047</code></a>
                             </p>
                     
                     
@@ -1909,7 +1944,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Curve
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_curves_cubicBezierCurve.js.html#l210"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:210</code></a>
+                            <a href="../files/src_curves_cubicBezierCurve.js.html#l216"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:216</code></a>
                             </p>
                     
                     
@@ -1952,7 +1987,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_cubicBezierCurve.js.html#l97"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:97</code></a>
+                            <a href="../files/src_curves_cubicBezierCurve.js.html#l103"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:103</code></a>
                             </p>
                     
                     
@@ -1995,7 +2030,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_cubicBezierCurve.js.html#l124"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:124</code></a>
+                            <a href="../files/src_curves_cubicBezierCurve.js.html#l130"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:130</code></a>
                             </p>
                     
                     
@@ -2038,7 +2073,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_cubicBezierCurve.js.html#l151"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:151</code></a>
+                            <a href="../files/src_curves_cubicBezierCurve.js.html#l157"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:157</code></a>
                             </p>
                     
                     
@@ -2081,7 +2116,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_cubicBezierCurve.js.html#l178"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:178</code></a>
+                            <a href="../files/src_curves_cubicBezierCurve.js.html#l184"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:184</code></a>
                             </p>
                     
                     

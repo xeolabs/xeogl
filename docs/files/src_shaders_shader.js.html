@@ -185,8 +185,6 @@
 /**
  A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
 
- ## Overview
-
  &lt;ul&gt;
  &lt;li&gt;Normally you would rely on xeoEngine to automatically generate shaders for you, however the Shader component allows you to author them manually.&lt;/li&gt;
  &lt;li&gt;You can use xeoEngine&#x27;s reserved uniform and variable names in your Shaders to read all the WebGL state that&#x27;s set by other
@@ -208,88 +206,85 @@
  &lt;img src=&quot;../../assets/images/shaderExample1.png&quot;&gt;&lt;/img&gt;
 
  In our scene definition, we have an  {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}} that has a {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}} that is our
- screen-aligned quad, plus a Shader that will render the fragments of that quad with our cool rippling water pattern.
+ screen-aligned quad, plus a Shader that will render the fragments of that quad with our rippling water pattern.
  Finally, we animate the rippling by periodically updating the Shader&#x27;s &quot;time&quot; uniform.
 
  &#x60;&#x60;&#x60;&#x60;javascript
-
- var scene = new XEO.Scene();
-
- // Shader that&#x27;s used by our Object. Note the &#x27;xeo_aPosition&#x27; and &#x27;xeo_aUV attributes&#x27;,
+ // Shader that&#x27;s used by our Entity. Note the &#x27;xeo_aPosition&#x27; and &#x27;xeo_aUV attributes&#x27;,
  // which will receive the positions and UVs from the Geometry. Also note the &#x27;time&#x27;
  // uniform, which we&#x27;ll be animating via Shader#setParams.
 
- var shader = new XEO.Shader(scene, {
+ var shader = new XEO.Shader({
 
-       // Vertex shading stage
-       vertex: [
-           &quot;attribute vec3 xeo_aPosition;&quot;,
-           &quot;attribute vec2 xeo_aUV;&quot;,
-           &quot;varying vec2 vUv;&quot;,
-           &quot;void main () {&quot;,
-           &quot;    gl_Position = vec4(xeo_aPosition, 1.0);&quot;,
-           &quot;    vUv = xeo_aUV;&quot;,
-           &quot;}&quot;
-       ],
+    // Vertex shading stage
+    vertex: [
+        &quot;attribute vec3 xeo_aPosition;&quot;,
+        &quot;attribute vec2 xeo_aUV;&quot;,
+        &quot;varying vec2 vUv;&quot;,
+        &quot;void main () {&quot;,
+        &quot;    gl_Position = vec4(xeo_aPosition, 1.0);&quot;,
+        &quot;    vUv = xeo_aUV;&quot;,
+        &quot;}&quot;
+    ],
 
-       // Fragment shading stage
-       fragment: [
-           &quot;precision mediump float;&quot;,
+    // Fragment shading stage
+    fragment: [
+        &quot;precision mediump float;&quot;,
 
-           &quot;uniform float time;&quot;,
-           &quot;varying vec2 vUv;&quot;,
+        &quot;uniform float time;&quot;,
+        &quot;varying vec2 vUv;&quot;,
 
-           &quot;void main( void ) {&quot;,
-           &quot;    vec2 sp = vUv;&quot;,
-           &quot;    vec2 p = sp*5.0 - vec2(10.0);&quot;,
-           &quot;    vec2 i = p;&quot;,
-           &quot;    float c = 1.0;&quot;,
-           &quot;    float inten = 0.10;&quot;,
-           &quot;    for (int n = 0; n &lt; 10; n++) {&quot;,
-           &quot;        float t = time * (1.0 - (3.0 / float(n+1)));&quot;,
-           &quot;        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));&quot;,
-           &quot;        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));&quot;,
-           &quot;    }&quot;,
-           &quot;    c /= float(10);&quot;,
-           &quot;    c = 1.5-sqrt(c);&quot;,
-           &quot;    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);&quot;,
-           &quot;}&quot;
-       ],
+        &quot;void main( void ) {&quot;,
+        &quot;    vec2 sp = vUv;&quot;,
+        &quot;    vec2 p = sp*5.0 - vec2(10.0);&quot;,
+        &quot;    vec2 i = p;&quot;,
+        &quot;    float c = 1.0;&quot;,
+        &quot;    float inten = 0.10;&quot;,
+        &quot;    for (int n = 0; n &lt; 10; n++) {&quot;,
+        &quot;        float t = time * (1.0 - (3.0 / float(n+1)));&quot;,
+        &quot;        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));&quot;,
+        &quot;        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));&quot;,
+        &quot;    }&quot;,
+        &quot;    c /= float(10);&quot;,
+        &quot;    c = 1.5-sqrt(c);&quot;,
+        &quot;    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);&quot;,
+        &quot;}&quot;
+    ],
 
-       // Initial value for the &#x27;time&#x27; uniform in the fragment stage.
-       params: {
-           time: 0.0
-       }
-  });
+    // Initial value for the &#x27;time&#x27; uniform in the fragment stage.
+    params: {
+        time: 0.0
+    }
+ });
 
  // A screen-aligned quad
- var quad = new XEO.Geometry(scene, {
-       primitive:&quot;triangles&quot;,
-       positions:[ 1, 1, 0, -1, 1, 0, -1, -1, 0, 1, -1, 0 ],
-       normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
-       uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
-       indices:[ 0, 1, 2, 0, 2, 3 ]
-  });
+ var quad = new XEO.Geometry({
+    primitive:&quot;triangles&quot;,
+    positions:[ 1, 1, 0, -1, 1, 0, -1, -1, 0, 1, -1, 0 ],
+    normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
+    uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
+    indices:[ 0, 1, 2, 0, 2, 3 ]
+ });
 
- var object = new XEO.Entity(scene, {
-       shader: shader,
-       geometry: quad
-  });
+ var entity = new XEO.Entity(scene, {
+    shader: shader,
+    geometry: quad
+ });
 
  &#x60;&#x60;&#x60;&#x60;
  Now let&#x27;s animate the &quot;time&quot; parameter on the Shader, to make the water ripple:
 
  &#x60;&#x60;&#x60;&#x60; javascript
  scene.on(&quot;tick&quot;, function(params) {
-            shader.setParams({
-                time: params.timeElapsed
-            });
-        });
+     shader.setParams({
+         time: params.timeElapsed
+     });
+ });
  &#x60;&#x60;&#x60;&#x60;
 
  ## &lt;a name=&quot;inputs&quot;&gt;Shader Inputs&lt;/a&gt;
 
- xeoEngine provides the following inputs for your shaders.
+ xeoEngine provides the following inputs for your shaders (work in progress).
 
  #### Attributes
 
@@ -331,14 +326,14 @@
  | uniform vec3 xeo_uEmissive;       |  | {{#crossLink &quot;PhongMaterial/emissive:property&quot;}}{{/crossLink}} |
  | uniform float xeo_uOpacity;       |  | {{#crossLink &quot;PhongMaterial/opacity:property&quot;}}{{/crossLink}} |
  | uniform float xeo_uShininess;       |  | {{#crossLink &quot;PhongMaterial/shininess:property&quot;}}{{/crossLink}} |
- | uniform float xeo_uDiffuseFresnelBias;       |  | {{#crossLink &quot;Fresnel/bias:property&quot;}}{{/crossLink}} |
+ | uniform float xeo_uDiffuseFresnelEdgeBias;       |  | {{#crossLink &quot;Fresnel/edgeBias:property&quot;}}{{/crossLink}} |
 
  #### Varying
 
  *Varying types are used in fragment shaders*
 
  | Varying | Description | Depends on  |
- |---|---|
+ |---|---|---|
  | varying vec4 xeo_vWorldPosition | |
  | varying vec4 xeo_vViewPosition | |
  | varying vec4 xeo_vColor | |
@@ -348,7 +343,7 @@
  *Samplers are used in fragment shaders*
 
  | Varying | Description | Depends on  |
- |---|---|
+ |---|---|---|
 
 
 

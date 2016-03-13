@@ -183,43 +183,47 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **QuadraticBezierCurve** extends {{#crossLink &quot;Curve&quot;}}{{/crossLink}} to provide a cubic Bezier curve.
-
- ## Overview
-
- &lt;img style=&quot;border:1px solid;&quot; src=&quot;https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/B%C3%A9zier_2_big.gif/240px-B%C3%A9zier_2_big.gif&quot;/&gt;
-
- *[Quadratic Bezier Curve from WikiPedia](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)*
+ A **QuadraticBezierCurve** is a {{#crossLink &quot;Curve&quot;}}{{/crossLink}} along which a 3D position can be animated.
 
  &lt;ul&gt;
+    &lt;li&gt;As shown in the diagram below, a QuadraticBezierCurve is defined by three control points.&lt;/li&gt;
+ &lt;li&gt;You can sample a {{#crossLink &quot;QuadraticBezierCurve/point:property&quot;}}{{/crossLink}} and a {{#crossLink &quot;Curve/tangent:property&quot;}}{{/crossLink}}
+ vector on a QuadraticBezierCurve for any given value of {{#crossLink &quot;QuadraticBezierCurve/t:property&quot;}}{{/crossLink}} in the range [0..1].&lt;/li&gt;
+ &lt;li&gt;When you set {{#crossLink &quot;QuadraticBezierCurve/t:property&quot;}}{{/crossLink}} on a QuadraticBezierCurve, its
+ {{#crossLink &quot;QuadraticBezierCurve/point:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Curve/tangent:property&quot;}}{{/crossLink}} properties
+ will update accordingly.&lt;/li&gt;
     &lt;li&gt;To build a complex path, you can combine an unlimited combination of QuadraticBezierCurves,
  {{#crossLink &quot;CubicBezierCurve&quot;}}CubicBezierCurves{{/crossLink}} and {{#crossLink &quot;SplineCurve&quot;}}SplineCurves{{/crossLink}}
- within a {{#crossLink &quot;Path&quot;}}{{/crossLink}}.&lt;/li&gt;
+ into a {{#crossLink &quot;Path&quot;}}{{/crossLink}}.&lt;/li&gt;
  &lt;/ul&gt;
+
+ &lt;img style=&quot;border:1px solid;&quot; src=&quot;https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/B%C3%A9zier_2_big.gif/240px-B%C3%A9zier_2_big.gif&quot;/&gt;&lt;br&gt;
+ *[Quadratic Bezier Curve from WikiPedia](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)*
 
  ## Example 1
 
- In our first example, we&#x27;ll define a QuadraticBezierCurve and update it on each scene tick,
- while logging the curve&#x27;s changing properties.
+ Create a QuadraticBezierCurve, subscribe to updates on its {{#crossLink &quot;QuadraticBezierCurve/point:property&quot;}}{{/crossLink}} and
+ {{#crossLink &quot;Curve/tangent:property&quot;}}{{/crossLink}} properties, then vary its {{#crossLink &quot;QuadraticBezierCurve/t:property&quot;}}{{/crossLink}}
+ property over time:
 
  &#x60;&#x60;&#x60;&#x60;javascript
  var curve = new XEO.QuadraticBezierCurve({
-        v0: [-10, 0, 0],
-        v1: [20, 15, 0],
-        v2: [10, 0, 0]
-    });
+     v0: [-10, 0, 0],
+     v1: [20, 15, 0],
+     v2: [10, 0, 0]
+ });
 
  curve.scene.on(&quot;tick&quot;, function(e) {
 
-        curve.t = (e.time - e.startTime) * 0.01;
+     curve.t = (e.time - e.startTime) * 0.01;
 
-        var point = curve.point;
-        var tangent = curve.tangent;
+     var point = curve.point;
+     var tangent = curve.tangent;
 
-        this.log(&quot;t=&quot; + curve.t + &quot;, point=&quot; +
+     this.log(&quot;t=&quot; + curve.t + &quot;, point=&quot; +
             JSON.stringify(point) + &quot;, tangent=&quot; +
                 JSON.stringify(tangent));
-    });
+ });
  &#x60;&#x60;&#x60;&#x60;
 
  ## Example 2
@@ -233,31 +237,31 @@
 
  &#x60;&#x60;&#x60;&#x60;javascript
  var curve = new XEO.QuadraticBezierCurve({
-        v0: [1, 0, 0],
-        v1: [0, 1, 0],
-        v2: [0, 0, 1]
-    });
+     v0: [1, 0, 0],
+     v1: [0, 1, 0],
+     v2: [0, 0, 1]
+ });
 
  // Create a Entity with a PhongMaterial
  var material = new XEO.PhongMaterial({
-        diffuse: [0, 0, 0]
-    });
+     diffuse: [0, 0, 0]
+ });
 
  var entity = new XEO.Entity({
-        material: material
-    });
+     material: material
+ });
 
  // Bind the PhongMaterial diffuse color
  // to the QuadraticBezierCurve
  curve.on(&quot;t&quot;, function() {
-        material.diffuse = curve.point;
-    });
+     material.diffuse = curve.point;
+ });
 
  // Animate the QuadraticBezierCurve, which in turn
  // updates the PhongMaterial diffuse color
  var tick = entity.scene.on(&quot;tick&quot;, function (e) {
-        curve.t = (e.time - e.startTime) * 0.00005;
-   });
+     curve.t = (e.time - e.startTime) * 0.00005;
+ });
  &#x60;&#x60;&#x60;&#x60;
 
  ## Example 3
@@ -273,20 +277,20 @@
 
  &#x60;&#x60;&#x60;&#x60;javascript
  var curve = new XEO.QuadraticBezierCurve({
-        v0: [-10, 0, 0],
-        v1: [20, 15, 0],
-        v2: [10, 0, 0]
-    });
+     v0: [-10, 0, 0],
+     v1: [20, 15, 0],
+     v2: [10, 0, 0]
+ });
 
  curve.scene.on(&quot;tick&quot;, function(e) {
 
-        var t = (e.time - e.startTime) * 0.01;
+     var t = (e.time - e.startTime) * 0.01;
 
-        var point = curve.getPoint(t);
-        var tangent = curve.getTangent(t);
+     var point = curve.getPoint(t);
+     var tangent = curve.getTangent(t);
 
-        this.log(&quot;t=&quot; + t + &quot;, point=&quot; + JSON.stringify(point) + &quot;, tangent=&quot; + JSON.stringify(tangent));
-    });
+     this.log(&quot;t=&quot; + t + &quot;, point=&quot; + JSON.stringify(point) + &quot;, tangent=&quot; + JSON.stringify(tangent));
+ });
  &#x60;&#x60;&#x60;&#x60;
 
  ## Example 4
@@ -298,16 +302,16 @@
 
  &#x60;&#x60;&#x60;&#x60;javascript
  var curve = new XEO.QuadraticBezierCurve({
-        v0: [-10, 0, 0],
-        v1: [20, 15, 0],
-        v2: [10, 0, 0]
-    });
+     v0: [-10, 0, 0],
+     v1: [20, 15, 0],
+     v2: [10, 0, 0]
+ });
 
  // Geometry which creates a line-strip through fifty
  // points sampled at equidistant positions on our QuadraticBezierCurve
 
  var geometry = new XEO.Geometry({
-    positions: XEO.math.flatten(curve.getPoints(50))
+     positions: XEO.math.flatten(curve.getPoints(50))
  });
  &#x60;&#x60;&#x60;&#x60;
 

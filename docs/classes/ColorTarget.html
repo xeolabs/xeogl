@@ -197,8 +197,7 @@
 
 <div class="box intro">
     <p>A <strong>ColorTarget</strong> is a  <a href="http://en.wikipedia.org/wiki/Render_Target" target="other">render target</a>  that
-captures the colors of the pixels rendered for the attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
-<h2 id="overview">Overview</h2>
+captures the colors pixels rendered for associated <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
 <ul>
 <li>ColorTargets are typically used when <em>rendering-to-texture</em>.</li>
 <li>A ColorTarget provides the pixel colors as a dynamic color image that may be consumed by <a href="../classes/Texture.html" class="crosslink">Textures</a>.</li>
@@ -211,48 +210,29 @@ with <a href="../classes/DepthTarget.html" class="crosslink">DepthTargets</a> an
 
 <p><img src="../../../assets/images/ColorTarget.png"></img></p>
 <h2 id="example">Example</h2>
-<p>In this example we essentially have one <a href="../classes/Entity.html" class="crosslink">Entity</a>
-that&#39;s rendered to a <a href="../classes/Texture.html" class="crosslink">Texture</a>, which is then applied to a second <a href="../classes/Entity.html" class="crosslink">Entity</a>.</p>
-<p>The scene contains:</p>
-<ul>
-<li>a ColorTarget,</li>
-<li>a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that is the default box shape,
-<li>an <a href="../classes/Entity.html" class="crosslink">Entity</a> that renders the <a href="../classes/Geometry.html" class="crosslink">Geometry</a> pixel color values to the ColorTarget,</li>
-<li>a <a href="../classes/Texture.html" class="crosslink">Texture</a> that sources its pixels from the ColorTarget,</li>
-<li>a <a href="../classes/Material.html" class="crosslink">Material</a> that includes the <a href="../classes/Texture.html" class="crosslink">Texture</a>, and</li>
-<li>a second <a href="../classes/Entity.html" class="crosslink">Entity</a> that renders the <a href="../classes/Geometry.html" class="crosslink">Geometry</a>, with the <a href="../classes/Material.html" class="crosslink">Material</a> applied to it.</li>
-</ul>
-
-
-<pre class="code prettyprint"><code class="lang-javascript">var scene = new XEO.Scene();
-
-var colorTarget = new XEO.ColorTarget(scene);
-
-var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+<p>This example contains an <a href="../classes/Entity.html" class="crosslink">Entity</a> that renders its pixel colors to a ColorTarget, which is then
+piped into a <a href="../classes/Texture.html" class="crosslink">Texture</a> that&#39;s applied to a second <a href="../classes/Entity.html" class="crosslink">Entity</a>.</li>
+</ul></p>
+<pre class="code prettyprint"><code class="lang-javascript">var colorTarget = new XEO.ColorTarget();
 
 // First Entity renders to the ColorTarget
 
-var entity1 = new XEO.Entity(scene, {
-   geometry: geometry,
+var entity1 = new XEO.Entity({
+   geometry: new XEO.BoxGeometry(),
    colorTarget: colorTarget
 });
 
-var texture = new XEO.Texture(scene, {
-   target: colorTarget
-});
-
-var material = new XEO.PhongMaterial(scene, {
-   textures: [
-       texture
-   ]
-});
 
 // Second Entity is textured with the
 // image of the first Entity
 
-var entity2 = new XEO.Entity(scene, {
-   geometry: geometry,  // Reuse our simple box geometry
-   material: material
+var entity2 = new XEO.Entity({
+    geometry: new XEO.BoxGeometry()
+    material: new XEO.PhongMaterial({
+        diffuseMap: new XEO.Texture({
+           target: colorTarget
+        })
+    })
 });
 </code></pre>
 
@@ -557,18 +537,20 @@ var entity2 = new XEO.Entity(scene, {
         <p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 <p>You would typically use this method to conveniently instantiate components that you&#39;d want to
 share (ie. "instance") among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
-<p>The method is given a component type and configuration, like so:</p>
+<p>The method is given a component type, configuration and optional instance ID, like so:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(XEO.PhongMaterial, {
      diffuse: [1,0,0],
      specular: [1,1,0]
-});
+}, "myMaterial");
 </code></pre>
 <p>The first time you call this method for the given <code>type</code> and <code>instanceId</code>, this method will create the
 <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, passing the given  attributes to the component&#39;s constructor.</p>
 <p>If you call this method again, specifying the same <code>type</code> and <code>instanceId</code>, the method will return the same
-component instance that it returned the first time, and will ignore the attributes:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, "myMaterial", { specular: [1,1,0] });
+component instance that it returned the first time, and will ignore the configuration:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
 </code></pre>
+<p>So inthis example, our <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> will continue to have the red specular
+and diffuse color that we specified the first time.</p>
 <p>Each time you call this method with the same <code>type</code> and <code>instanceId</code>, the Scene will internally increment a
 reference count for the component instance. You can release the shared component instance with a call to
 Scene/putSharedComponent:method, and once you have released it as many
@@ -647,7 +629,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l997"><code>src&#x2F;component.js:997</code></a>
+        <a href="../files/src_component.js.html#l1000"><code>src&#x2F;component.js:1000</code></a>
         </p>
 
 
@@ -1263,7 +1245,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_colorTarget.js.html#l148"><code>src&#x2F;rendering&#x2F;colorTarget.js:148</code></a>
+                            <a href="../files/src_rendering_colorTarget.js.html#l126"><code>src&#x2F;rendering&#x2F;colorTarget.js:126</code></a>
                             </p>
                     
                     
@@ -1369,7 +1351,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l935"><code>src&#x2F;component.js:935</code></a>
+                            <a href="../files/src_component.js.html#l938"><code>src&#x2F;component.js:938</code></a>
                             </p>
                     
                     
@@ -1445,7 +1427,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_colorTarget.js.html#l114"><code>src&#x2F;rendering&#x2F;colorTarget.js:114</code></a>
+                            <a href="../files/src_rendering_colorTarget.js.html#l92"><code>src&#x2F;rendering&#x2F;colorTarget.js:92</code></a>
                             </p>
                     
                     
@@ -1476,7 +1458,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l963"><code>src&#x2F;component.js:963</code></a>
+                            <a href="../files/src_component.js.html#l966"><code>src&#x2F;component.js:966</code></a>
                             </p>
                     
                     
@@ -1568,7 +1550,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_colorTarget.js.html#l193"><code>src&#x2F;rendering&#x2F;colorTarget.js:193</code></a>
+                            <a href="../files/src_rendering_colorTarget.js.html#l171"><code>src&#x2F;rendering&#x2F;colorTarget.js:171</code></a>
                             </p>
                     
                     
@@ -1610,7 +1592,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1044"><code>src&#x2F;component.js:1044</code></a>
+                            <a href="../files/src_component.js.html#l1047"><code>src&#x2F;component.js:1047</code></a>
                             </p>
                     
                     
@@ -1635,7 +1617,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_colorTarget.js.html#l135"><code>src&#x2F;rendering&#x2F;colorTarget.js:135</code></a>
+                            <a href="../files/src_rendering_colorTarget.js.html#l113"><code>src&#x2F;rendering&#x2F;colorTarget.js:113</code></a>
                             </p>
                     
                     
