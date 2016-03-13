@@ -1,18 +1,18 @@
 /**
- A **SplineCurve** extends {{#crossLink "Curve"}}{{/crossLink}} to provide a spline curve.
-
- ## Overview
-
- <img style="border:1px solid; background: white;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Quadratic_spline_six_segments.svg/200px-Quadratic_spline_six_segments.svg.png"/>
-
- *[Spline Curve from Wikipedia](https://en.wikipedia.org/wiki/Spline_(mathematics))*
+ A **SplineCurve** is a {{#crossLink "Curve"}}{{/crossLink}} along which a 3D position can be animated.
 
  <ul>
+    <li>As shown in the diagram below, a SplineCurve is defined by three or more control points.</li>
+    <li>You can sample a {{#crossLink "SplineCurve/point:property"}}{{/crossLink}} and a {{#crossLink "Curve/tangent:property"}}{{/crossLink}}
+ vector on a SplineCurve for any given value of {{#crossLink "SplineCurve/t:property"}}{{/crossLink}} in the range [0..1].</li>
+    <li>When you set {{#crossLink "SplineCurve/t:property"}}{{/crossLink}} on a SplineCurve, its {{#crossLink "SplineCurve/point:property"}}{{/crossLink}} and {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties will update accordingly.</li>
     <li>To build a complex path, you can combine an unlimited combination of SplineCurves,
  {{#crossLink "CubicBezierCurve"}}CubicBezierCurves{{/crossLink}} and {{#crossLink "QuadraticBezierCurve"}}QuadraticBezierCurves{{/crossLink}}
- within a {{#crossLink "Path"}}{{/crossLink}}.</li>
+ into a {{#crossLink "Path"}}{{/crossLink}}.</li>
  </ul>
 
+ <img style="border:1px solid; background: white;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Quadratic_spline_six_segments.svg/200px-Quadratic_spline_six_segments.svg.png"/><br>
+ *<a href="https://en.wikipedia.org/wiki/Spline_(mathematics)">Spline Curve from Wikipedia</a>*
 
  ## Example 1
 
@@ -21,25 +21,24 @@
  property over time:
 
  ````javascript
-
  var curve = new XEO.SplineCurve({
-        points: [
-            [-10, 0, 0],
-            [-5, 15, 0],
-            [20, 15, 0],
-            [10, 0, 0]
-        ]
-    });
+     points: [
+         [-10, 0, 0],
+         [-5, 15, 0],
+         [20, 15, 0],
+         [10, 0, 0]
+     ]
+ });
 
  curve.scene.on("tick", function(e) {
 
-        curve.t = (e.time - e.startTime) * 0.01;
+     curve.t = (e.time - e.startTime) * 0.01;
 
-        var point = curve.point;
-        var tangent = curve.tangent;
+     var point = curve.point;
+     var tangent = curve.tangent;
 
-        this.log("t=" + curve.t + ", point=" + JSON.stringify(point) + ", tangent=" + JSON.stringify(tangent));
-    });
+     this.log("t=" + curve.t + ", point=" + JSON.stringify(point) + ", tangent=" + JSON.stringify(tangent));
+ });
  ````
 
  ## Example 2
@@ -50,23 +49,23 @@
 
  ````javascript
  var curve = new XEO.SplineCurve({
-        points: [
-            [-10, 0, 0],
-            [-5, 15, 0],
-            [20, 15, 0],
-            [10, 0, 0]
-        ]
-    });
+     points: [
+         [-10, 0, 0],
+         [-5, 15, 0],
+         [20, 15, 0],
+         [10, 0, 0]
+     ]
+ });
 
  curve.scene.on("tick", function(e) {
 
-        var t = (e.time - e.startTime) * 0.01;
+     var t = (e.time - e.startTime) * 0.01;
 
-        var point = curve.getPoint(t);
-        var tangent = curve.getTangent(t);
+     var point = curve.getPoint(t);
+     var tangent = curve.getTangent(t);
 
-        this.log("t=" + t + ", point=" + JSON.stringify(point) + ", tangent=" + JSON.stringify(tangent));
-    });
+     this.log("t=" + t + ", point=" + JSON.stringify(point) + ", tangent=" + JSON.stringify(tangent));
+ });
  ````
 
  @class SplineCurve

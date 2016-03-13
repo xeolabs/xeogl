@@ -1,61 +1,37 @@
 /**
  A **Geometry** defines the geometric shape of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- ## Contents
-
- <ul>
- <li><a href="#overview">Overview</a></li>
- <li><a href="#defaultShape">Default box shape</a></li>
- <li><a href="#sceneDefault">Scene's default Geometry</a></li>
- <li><a href="#sharing">Sharing among Entities</a></li>
- <li><a href="#triangles">Defining a triangle mesh</a></li>
- <li><a href="#editing">Editing Geometry</a></li>
- <li><a href="#backfaces">Toggling backfaces on or off</li>
- <li><a href="#frontfaces">Setting frontface vertex winding</li>
- </ul>
-
- ## <a name="overview">Overview</a>
-
  <ul>
  <li>Like everything in xeoEngine, all properties on a Geometry are dynamically editable.</li>
- <li>A Geometry's {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} type can be 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' or 'triangle-fan'".</li>
- <li>Depending on the {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} type, a Geometry can have {{#crossLink "Geometry/positions:property"}}vertex positions{{/crossLink}},
- {{#crossLink "Geometry/colors:property"}}vertex colors{{/crossLink}}, {{#crossLink "Geometry/uv:property"}}UV coordinates{{/crossLink}},
- {{#crossLink "Geometry/normals:property"}}normal vectors{{/crossLink}}, as well as {{#crossLink "Geometry/indices:property"}}{{/crossLink}},
- which specify how the vertices connect together to form the primitives.</li>
- <li>When no shape is specified (ie. no primitive type, vertex arrays and indices), a Geometry will default to a 2x2x2 box
- made of triangles, with UV coordinates, vertex colors and normals. This default is used for most of the examples in this documentation.</li>
- <li>A {{#crossLink "Scene"}}{{/crossLink}} provides such a box as its default {{#crossLink "Scene/geometry:property"}}{{/crossLink}},
- for {{#crossLink "Entity"}}Entities{{/crossLink}} to fall back on, when they are not explicitly attached to a Geometry.</li>
+ <li>When no shape is specified, a Geometry will be a 2x2x2 box by default.</li>
+ <li>A {{#crossLink "Scene"}}{{/crossLink}} provides a 2x2x2 box for {{#crossLink "Entity"}}Entities{{/crossLink}}
+ default to when they are not configured with a Geometry.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Geometries create within xeoEngine's shaders.</li>
+ <li>A Geometry provides its local-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.</li>
  </ul>
 
  <img src="../../../assets/images/Geometry.png"></img>
 
- ## <a name="defaultShape">Default box shape</a>
+ ## Default shape</a>
 
- If you create a Geometry with no specified shape, it will default to a 2x2x2 box defined as a triangle mesh.
+ If you create a Geometry with no specified shape, it will default to a box-shaped triangle mesh with dimensions 2x2x2:
 
  ```` javascript
- var geometry = new XEO.Geometry(scene); // 2x2x2 box
-
- var entity1 = new XEO.Entity(scene, {
-    geometry: geometry
+ var entity = new XEO.Entity({
+    geometry: new XEO.Geometry() // 2x2x2 box
 });
  ````
 
- ## <a name="sceneDefault">Scene's default Geometry</a>
+ ## Scene's default Geometry
 
- If you create an {{#crossLink "Entity"}}Entity{{/crossLink}} with no Geometry, it will inherit its {{#crossLink "Scene"}}Scene{{/crossLink}}'s
- default {{#crossLink "Scene/geometry:property"}}{{/crossLink}}, which is also a 2x2x2 box:
+ If you create an {{#crossLink "Entity"}}{{/crossLink}} with no Geometry, it will inherit its {{#crossLink "Scene"}}Scene's{{/crossLink}}
+ default {{#crossLink "Scene/geometry:property"}}{{/crossLink}}, which is a 2x2x2 triangle mesh box:
 
  ```` javascript
- var scene = new XEO.Scene();
-
- var entity1 = new XEO.Entity(scene);
+ var entity2 = new XEO.Entity();
  ````
 
- ## <a name="sharing">Sharing among Entities</a>
+ ## Sharing among Entities
 
  xeoEngine components can be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}}. For components like
  Geometry and {{#crossLink "Texture"}}{{/crossLink}}, this can provide significant memory
@@ -63,39 +39,26 @@
  each {{#crossLink "Entity"}}{{/crossLink}}, but will only need to bind the Geometry's arrays once on WebGL.
 
  ```` javascript
- var scene = new XEO.Scene();
+ var boxGeometry = new XEO.BoxGeometry();
 
- var geometry = new XEO.Geometry(scene); // 2x2x2 box by default
+ new XEO.Entity({
+    geometry: boxGeometry
+ });
 
- // Create two Entities which share our Geometry
-
- var entity1 = new XEO.Entity(scene, {
-    geometry: geometry
-});
-
- // Offset the second Entity slightly on the World-space
- // X-axis using a Translate modelling transform
-
- var translate = new XEO.Translate(scene, {
-    xyz: [5, 0, 0
-});
-
- var entity2 = new XEO.Entity(scene, {
-    geometry: geometry,
-    transform: translate
-});
+ new XEO.Entity({
+    geometry: boxGeometry,
+    transform:  new XEO.Translate({
+        xyz: [5, 0, 0
+    })
+ });
  ````
 
- ## <a name="triangles">Defining a triangle mesh</a>
+ ## Creating a custom Geometry
 
- Finally, we'll create an {{#crossLink "Entity"}}Entity{{/crossLink}} with a Geometry that we've **explicitly**
- configured as a 2x2x2 box:
+ Let's create an {{#crossLink "Entity"}}{{/crossLink}} with a custom Geometry that's a quad-shaped triangle mesh:
 
  ```` javascript
- var scene = new XEO.Scene();
-
- // Create a 2x2x2 box centered at the World-space origin
- var geometry = new XEO.Geometry(scene, {
+ var quadGeometry = new XEO.Geometry({
 
         // Supported primitives are 'points', 'lines', 'line-loop', 'line-strip', 'triangles',
         // 'triangle-strip' and 'triangle-fan'.primitive: "triangles",
@@ -103,141 +66,110 @@
 
         // Vertex positions
         positions : [
-
-            // Front face
-            -1.0, -1.0, 1.0,
-            1.0, -1.0, 1.0,
-            1.0, 1.0, 1.0,
-            -1.0, 1.0, 1.0,
-
-            // Back face
-            -1.0, -1.0, -1.0,
-            -1.0, 1.0, -1.0,
-             1.0, 1.0, -1.0,
-            1.0, -1.0, -1.0,
-
-            // Top face
-            -1.0, 1.0, -1.0,
-            -1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0,
-            1.0, 1.0, -1.0,
-
-            // Bottom face
-            -1.0, -1.0, -1.0,
-            1.0, -1.0, -1.0,
-            1.0, -1.0, 1.0,
-            -1.0, -1.0, 1.0,
-
-            // Right face
-            1.0, -1.0, -1.0,
-            1.0, 1.0, -1.0,
-            1.0, 1.0, 1.0,
-            1.0, -1.0, 1.0,
-
-            // Left face
-            -1.0, -1.0, -1.0,
-            -1.0, -1.0, 1.0,
-            -1.0, 1.0, 1.0,
-            -1.0, 1.0, -1.0
+            -1.0, -1.0, 1.0,  // 0
+             1.0, -1.0, 1.0,  // 1
+             1.0,  1.0, 1.0,  // 2
+            -1.0,  1.0, 1.0   // 3
         ],
 
         // Vertex colors
         colors: [
-            1.0,  1.0,  1.0,  1.0,    // Front face: white
-            1.0,  0.0,  0.0,  1.0,    // Back face: red
-            0.0,  1.0,  0.0,  1.0,    // Top face: green
-            0.0,  0.0,  1.0,  1.0,    // Bottom face: blue
-            1.0,  1.0,  0.0,  1.0,    // Right face: yellow
-            1.0,  0.0,  1.0,  1.0     // Left face: purple
+            1.0,  1.0,  1.0,  1.0, // 0
+            1.0,  0.0,  0.0,  1.0, // 1
+            0.0,  1.0,  0.0,  1.0, // 2
+            0.0,  0.0,  1.0,  1.0  // 3
         ],
 
         // Vertex normals
         normals: [
-            0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
-            1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
-            0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
-            -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0,
-            0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0,
-            0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1
+            0, 0, 1, // 0
+            0, 0, 1, // 1
+            0, 0, 1, // 2
+            0, 0, 1  // 3
         ],
 
         // UV coordinates
         uv: [
-            1, 1, 0, 1, 0, 0, 1, 0,
-            0, 1, 0, 0, 1, 0, 1, 1,
-            1, 0, 1, 1, 0, 1, 0, 0,
-            1, 1, 0, 1, 0, 0, 1, 0,
-            0, 0, 1, 0, 1, 1, 0, 1,
-            0, 0, 1, 0, 1, 1, 0, 1
+            0, 0, // 0
+            1, 0, // 1
+            1, 1, // 2
+            1, 0  // 3
         ],
 
         // Triangle indices
         indices: [
-            0,  1,  2,      0,  2,  3,    // front
-            4,  5,  6,      4,  6,  7,    // back
-            8,  9,  10,     8,  10, 11,   // top
-            12, 13, 14,     12, 14, 15,   // bottom
-            16, 17, 18,     16, 18, 19,   // right
-            20, 21, 22,     20, 22, 23    // left
+            0,  1,  2,
+            0,  2,  3
         ]
 });
 
- var entity = new XEO.Entity(scene, {
-    geometry: geometry
-});
+ var quadEntity = new XEO.Entity({
+    geometry: quadGeometry
+ });
  ````
- ## <a name="editing">Editing Geometry</a>
+ ## Editing Geometry
 
- Recall that everything in xeoEngine is dynamically editable, including Geometry. Let's remove the front and back faces
- from our triangle mesh Geometry by updating its **indices** array:
+ Recall that everything in xeoEngine is dynamically editable. Let's update the
+ {{#crossLink "Geometry/indices:property"}}{{/crossLink}} to reverse the direction of the triangles:
 
  ````javascript
- geometry2.indices = [
- 8,  9,  10,     8,  10, 11,   // top
- 12, 13, 14,     12, 14, 15,   // bottom
- 16, 17, 18,     16, 18, 19,   // right
- 20, 21, 22,     20, 22, 23    // left
+ customGeometry.indices = [
+     2, 1, 0,
+     3, 2, 0
  ];
  ````
 
- Now let's make it wireframe by changing its primitive type from **faces** to **lines**:
+ Now let's make it wireframe by changing its primitive type from ````triangles```` to ````lines````:
 
  ````javascript
- geometry2.primitive = "lines";
+ quadGeometry.primitive = "lines";
  ````
 
- ## <a name="backfaces">Toggling backfaces on or off</a>
+ ## Toggling back-faces on and off
 
  Now we'll attach a {{#crossLink "Modes"}}{{/crossLink}} to that last {{#crossLink "Entity"}}{{/crossLink}}, so that
- we can show or hide its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} backfaces:
+ we can show or hide its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} back-faces:
 
  ```` javascript
- var modes = new XEO.Modes(scene);
+ var modes = new XEO.Modes();
 
- entity.modes = modes;
+ quadEntity.modes = modes;
 
  // Hide backfaces
 
  modes.backfaces = false;
-
  ````
 
- ## <a name="frontfaces">Setting frontface vertex winding</a>
+ ## Setting front-face vertex winding
 
  The <a href="https://www.opengl.org/wiki/Face_Culling" target="other">vertex winding order</a> of each face determines
- whether it's a frontface or a backface.
+ whether it's a front-face or a back-face.
 
- By default, xeoEngine considers faces to be frontfaces if they have a counter-clockwise
+ By default, xeoEngine considers faces to be front-faces if they have a counter-clockwise
  winding order, but we can change that by setting the {{#crossLink "Modes"}}{{/crossLink}}
- {{#crossLink "Modes/frontface:property"}}{{/crossLink}} property, like so:
+ {{#crossLink "Modes/frontface:property"}}{{/crossLink}} property:
 
  ```` javascript
- // Set the winding order for frontfaces to clockwise
+ // Set the winding order for front-faces to clockwise
  // Options are "ccw" for counter-clockwise or "cw" for clockwise
 
- entity.frontface = "cw";
+ modes.frontface = "cw";
  ````
 
+ ## Getting boundary
+
+ ````javascript
+ var localBoundary = quadGeometry.localBoundary;
+
+ localBoundary.on("updated", function() {
+
+        obb = localBoundary.obb;
+        aabb = localBoundary.aabb;
+        center = localBoundary.center;
+
+        //...
+    });
+ ````
 
  @class Geometry
  @module XEO

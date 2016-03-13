@@ -70,7 +70,7 @@
     "src/controls/keyboardZoomCamera.js",
     "src/controls/mouseRotateCamera.js",
     "src/controls/mousePanCamera.js",
-    "src/controls/mousePickObject.js",
+    "src/controls/mousePickEntity.js",
     "src/controls/mouseZoomCamera.js",
     "src/culling/_module.js",
     "src/culling/cull.js",

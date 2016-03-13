@@ -16,61 +16,23 @@
 
  ### Example
 
- In this example we have
- <ul>
- <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}},</li>
- <li>an AmbientLight,</li>
- <li>a {{#crossLink "Lights"}}{{/crossLink}} containing the AmbientLight,</li>
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
- <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
- </ul>
-
  ```` javascript
- var scene = new XEO.Scene();
-
- var material = new XEO.PhongMaterial(scene, {
-    ambient: [0.3, 0.3, 0.3],
-    diffuse: [1, 1, 1],
-    specular: [1.1, 1],
-    shininess: 30
- });
-
- // Within xeoEngine's lighting calculations, the AmbientLight's
- // ambient color will be multiplied by the Material's ambient color
-
- var ambientLight = new XEO.AmbientLight(scene, {
-    color: [0.7, 0.7, 0.7]
- });
-
- var lights = new XEO.Lights(scene, {
-    lights: [
-        ambientLight
-    ]
- });
-
- var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
-
  var entity = new XEO.Entity(scene, {
-    lights: lights,
-    material: material,
-    geometry: geometry
- });
 
- ````
- As with all components, we can observe and change properties on AmbientLights like so:
+        lights: new XEO.Lights({
+            lights: [
+                new XEO.AmbientLight({
+                    color: [0.7, 0.7, 0.7]
+                })
+            ]
+        }),
+ ,
+        material: new XEO.PhongMaterial({
+            diffuse: [0.5, 0.5, 0.0]
+        }),
 
- ````Javascript
- // Attach a change listener to a property
- var handle = ambientLight.on("color",
- function(value) {
-            // Property value has changed
-    });
-
-
- ambientLight.color = [0.6, 0.6, 0.6]; // Fires the change listener
-
-
- ambientLight.off(handle); // Detach the change listener
+        geometry: new XEO.BoxGeometry()
+  });
  ````
 
  @class AmbientLight

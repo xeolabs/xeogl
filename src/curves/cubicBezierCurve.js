@@ -1,40 +1,46 @@
 /**
- A **CubicBezierCurve** extends {{#crossLink "Curve"}}{{/crossLink}} to provide a cubic Bezier curve.
-
- ## Overview
-
- <img style="border:1px solid;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/B%C3%A9zier_3_big.gif/240px-B%C3%A9zier_3_big.gif"/>
-
- *[Cubic Bezier Curve from WikiPedia](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)*
+ A **CubicBezierCurve** is a {{#crossLink "Curve"}}{{/crossLink}} along which a 3D position can be animated.
 
  <ul>
-    <li>To build a complex path, you can combine an unlimited combination of CubicBezierCurves,
+ <li>As shown in the diagram below, a CubicBezierCurve is defined by four control points.</li>
+ <li>You can sample a {{#crossLink "CubicBezierCurve/point:property"}}{{/crossLink}} and a {{#crossLink "CubicBezierCurve/tangent:property"}}{{/crossLink}}
+ vector on a CubicBezierCurve for any given value of {{#crossLink "CubicBezierCurve/t:property"}}{{/crossLink}} in the range [0..1].</li>
+ <li>When you set {{#crossLink "CubicBezierCurve/t:property"}}{{/crossLink}} on a CubicBezierCurve, its
+ {{#crossLink "CubicBezierCurve/point:property"}}{{/crossLink}} and {{#crossLink "CubicBezierCurve/tangent:property"}}{{/crossLink}} properties
+ will update accordingly.</li>
+ <li>To build a complex path, you can combine an unlimited combination of CubicBezierCurves,
  {{#crossLink "QuadraticBezierCurve"}}QuadraticBezierCurves{{/crossLink}} and {{#crossLink "SplineCurve"}}SplineCurves{{/crossLink}}
- within a {{#crossLink "Path"}}{{/crossLink}}.</li>
+ into a {{#crossLink "Path"}}{{/crossLink}}.</li>
  </ul>
 
- ## Example
+ <img style="border:1px solid;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/B%C3%A9zier_3_big.gif/240px-B%C3%A9zier_3_big.gif"/><br>
+ *[Cubic Bezier Curve from WikiPedia](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)*
+
+ ## Example 1
+
+ Create a CubicBezierCurve, subscribe to updates on its {{#crossLink "CubicBezierCurve/point:property"}}{{/crossLink}} and
+ {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties, then vary its {{#crossLink "CubicBezierCurve/t:property"}}{{/crossLink}}
+ property over time:
 
  ````javascript
-
  var curve = new XEO.CubicBezierCurve({
-        v0: [-10, 0, 0],
-        v1: [-5, 15, 0],
-        v2: [20, 15, 0],
-        v3: [10, 0, 0]
-    });
+     v0: [-10, 0, 0],
+     v1: [-5, 15, 0],
+     v2: [20, 15, 0],
+     v3: [10, 0, 0]
+ });
 
  curve.scene.on("tick", function(e) {
 
-        curve.t = (e.time - e.startTime) * 0.01;
+     curve.t = (e.time - e.startTime) * 0.01;
 
-        var point = curve.point;
-        var tangent = curve.tangent;
+     var point = curve.point;
+     var tangent = curve.tangent;
 
-        this.log("t=" + curve.t + ", point=" +
+     this.log("t=" + curve.t + ", point=" +
             JSON.stringify(point) + ", tangent=" +
                 JSON.stringify(tangent));
-    });
+ });
  ````
 
  @class CubicBezierCurve

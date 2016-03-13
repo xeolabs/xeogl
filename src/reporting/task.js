@@ -1,8 +1,6 @@
 /**
  A **Task** represents an asynchronously-running process within a {{#crossLink "Tasks"}}Tasks{{/crossLink}}.
 
- ## Overview
-
  See the {{#crossLink "Tasks"}}{{/crossLink}} documentation for more information.</li>
 
  <img src="../../../assets/images/Task.png"></img>

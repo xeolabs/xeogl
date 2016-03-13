@@ -1,10 +1,29 @@
 /**
- A **Cylinder** defines cylindrical geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **CylinderGeometry** defines cylindrical geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Example
 
- ````javascript
+ An {{#crossLink "Entity"}}{{/crossLink}} with a CylinderGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
+ diffuse {{#crossLink "Texture"}}{{/crossLink}}:
 
+ ````javascript
+ new XEO.Entity({
+
+     geometry: new XEO.CylinderGeometry({
+         radiusTop: 2.0,
+         radiusBottom: 2.0,
+         height: 5.0,
+         radialSegments: 20,
+         heightSegments: 1,
+         openEnded: false
+     }),
+
+     material: new XEO.PhongMaterial({
+        diffuseMap: new XEO.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+        })
+     })
+ });
  ````
 
  @class CylinderGeometry

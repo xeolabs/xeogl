@@ -1,16 +1,7 @@
 /**
- A **Curve** is the abstract base class for various other curve classes.
 
- ## Overview
-
- The Curve is subclassed by the following component types:
-
- <ul>
- <li>{{#crossLink "SplineCurve"}}{{/crossLink}}</li>
- <li>{{#crossLink "CubicBezierCurve"}}{{/crossLink}}</li>
- <li>{{#crossLink "QuadraticBezierCurve"}}{{/crossLink}}</li>
- <li>{{#crossLink "Path"}}{{/crossLink}}</li>
- </u>
+ **Curve** is the abstract base class for {{#crossLink "SplineCurve"}}{{/crossLink}},
+ {{#crossLink "CubicBezierCurve"}}{{/crossLink}}, {{#crossLink "QuadraticBezierCurve"}}{{/crossLink}} and {{#crossLink "Path"}}{{/crossLink}}.
 
  @class Curve
  @module XEO
@@ -82,7 +73,7 @@
             /**
              Tangent on this Curve at position {{#crossLink "Curve/t:property"}}{{/crossLink}}.
 
-             @property point
+             @property tangent
              @type {{Array of Number}}
              */
             tangent: {

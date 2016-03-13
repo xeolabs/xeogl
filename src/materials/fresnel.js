@@ -1,10 +1,8 @@
 /**
  A **Fresnel** specifies a Fresnel effect.
 
- ## Overview
-
  <ul>
- <li>Fresnels are grouped within {{#crossLink "Material"}}Material{{/crossLink}}s, which are attached to
+ <li>Fresnels are grouped within {{#crossLink "PhongMaterial"}}{{/crossLink}}s, which are attached to
  {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Fresnels create within xeoEngine's shaders.</li>
  </ul>
@@ -13,64 +11,30 @@
 
  ## Example
 
- The example below has:
- <ul>
- <li>two Fresnels,</li>
- <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies the {{#crossLink "Fresnel"}}{{/crossLink}}s to diffuse and specular shading,</li>
- <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "PointLight"}}{{/crossLink}},</li>
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} that has the default box shape, and
- <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
- </ul>
+ ````javascript
+ var entity = new XEO.Entity({
 
- ```` javascript
- var scene = new XEO.Scene();
+     material: new XEO.PhongMaterial({
+         ambient: [0.3, 0.3, 0.3],
+         shininess: 30,
 
- var fresnel1 = new XEO.Fresnel(scene, {
-    edgeColor: [1.0, 1.0, 1.0],
-    centerColor: [0.0, 0.0, 0.0],
-    power: 4,
-    bias: 0.6
-});
+         diffuseFresnel: new XEO.Fresnel({
+             edgeColor: [1.0, 1.0, 1.0],
+             centerColor: [0.0, 0.0, 0.0],
+             power: 4,
+             bias: 0.6
+         }),
 
- var fresnel2 = new XEO.Fresnel(scene, {
-    edgeColor: [1.0, 1.0, 1.0],
-    centerColor: [0.0, 0.0, 0.0],
-    power: 4,
-    bias: 0.2
-});
+         specularFresnel: new XEO.Fresnel({
+             edgeColor: [1.0, 1.0, 1.0],
+             centerColor: [0.0, 0.0, 0.0],
+             power: 4,
+             bias: 0.2
+         })
+     }),
 
- var material = new XEO.PhongMaterial(scene, {
-    ambient: [0.3, 0.3, 0.3],
-    shininess: 30,
-    diffuseFresnel: fresnel1,
-    specularFresnel: fresnel3
-});
-
- var light1 = new XEO.PointLight(scene, {
-    pos: [0, 100, 100],
-    diffuse: [0.5, 0.7, 0.5],
-    specular: [1.0, 1.0, 1.0]
-});
-
- var light2 = new XEO.AmbientLight(scene, {
-    color: [0.5, 0.7, 0.5]
-});
-
- var lights = new XEO.Lights(scene, {
-    lights: [
-        light1,
-        light2
-    ]
-});
-
- // Geometry without parameters will default to a 2x2x2 box.
- var geometry = new XEO.Geometry(scene);
-
- var entity = new XEO.Entity(scene, {
-    lights: lights,
-    material: material,
-    geometry: geometry
-});
+     new XEO.TorusGeometry()
+ });
  ````
 
  @class Fresnel

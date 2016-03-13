@@ -3,8 +3,34 @@
 
  ## Example
 
- ````javascript
+ An {{#crossLink "Entity"}}{{/crossLink}} with a LatheGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
+ diffuse {{#crossLink "Texture"}}{{/crossLink}}:
 
+ ````javascript
+ new XEO.Entity({
+
+     geometry: new XEO.LatheGeometry({
+        primitive: "triangles",
+        points: [
+            [ 0, 0,  8],
+            [-2, 0,  5],
+            [-1, 0,  5.1],
+            [-1, 0, -2],
+            [ 0, 0, -2]
+        ],
+        segments: 10,
+        phiStart: 0,
+        phiLength:90,
+        lod: 1.0, // Default
+        autoNormals: true // Default
+     }),
+
+     material: new XEO.PhongMaterial({
+        diffuseMap: new XEO.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+        })
+     })
+ });
  ````
 
  @class LatheGeometry

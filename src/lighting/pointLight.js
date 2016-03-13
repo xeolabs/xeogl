@@ -1,26 +1,19 @@
 /**
+
  A **PointLight** defines a positional light source that originates from a single point and spreads outward in all directions, to illuminate
  attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- ## Overview
-
  <ul>
-
  <li>PointLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
  which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
-
  <li>PointLights have a position, but no direction.</li>
-
  <li>PointLights may be defined in either **World** or **View** coordinate space. When in World-space, their positions
  are relative to the World coordinate system, and will appear to move as the {{#crossLink "Camera"}}{{/crossLink}} moves.
  When in View-space, their positions are relative to the View coordinate system, and will behave as if fixed to the viewer's
  head as the {{#crossLink "Camera"}}{{/crossLink}} moves.</li>
-
  <li>PointLights have {{#crossLink "PointLight/constantAttenuation:property"}}{{/crossLink}}, {{#crossLink "PointLight/linearAttenuation:property"}}{{/crossLink}} and
  {{#crossLink "PointLight/quadraticAttenuation:property"}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.</li>
-
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that PointLights create within xeoEngine's shaders.</li>
-
  </ul>
 
  <img src="../../../assets/images/PointLight.png"></img>
@@ -50,10 +43,6 @@
 
         geometry: new XEO.BoxGeometry()
   });
-
- // Update the light's color
- entity.lights.lights[0].color[0] = 1.0;
-
  ````
 
  @class PointLight

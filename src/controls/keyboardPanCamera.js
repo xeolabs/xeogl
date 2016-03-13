@@ -1,8 +1,6 @@
 /**
  A **KeyboardPanCamera** pans a {{#crossLink "Camera"}}{{/crossLink}} using the W,S,A,D,X and Z keys.
 
- ## Overview
-
  <ul>
  <li>A KeyboardPanCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
  <li>Panning up and down involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
@@ -19,15 +17,27 @@
  ## Example
 
  ````Javascript
- var scene = new XEO.Scene();
+ var camera = new XEO.Camera({
+     view: new XEO.Lookat({
+         eye: [0, 0, -10],
+         look: [0, 0, 0],
+         up: [0, 1, 0]
+     }),
+     project: new XEO.Perspective({
+         fovy: 60,
+         near: 0.1,
+         far: 1000
+     })
+ });
 
- var camera = new XEO.Camera(scene);
+ var entity = new XEO.Entity({
+     camera: camera,
+     geometry: new XEO.BoxGeometry()
+ });
 
- var control = new XEO.KeyboardPanCamera(scene, {
-        camera: camera
-    });
-
- var entity = new XEO.Entity(scene);
+ new XEO.KeyboardPanCamera({
+     camera: camera
+ });
  ````
 
  @class KeyboardPanCamera

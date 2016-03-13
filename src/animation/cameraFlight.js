@@ -1,8 +1,6 @@
 /**
  A **CameraFlight** flies a {{#crossLink "Camera"}}{{/crossLink}} to a given target.
 
- ## Overview
-
  <ul>
  <li>A CameraFlight animates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the {{#crossLink "Camera"}}{{/crossLink}}.</li>
  <li>A CameraFlight can be attached to a different {{#crossLink "Camera"}}{{/crossLink}} at any time.</li>
@@ -20,7 +18,7 @@
 
  </ul>
 
- ### Example 1: Flying to a position
+ ## Flying to a position
 
  Flying the CameraFlight from the previous example to specified eye, look and up positions:
 
@@ -33,7 +31,7 @@
     // Arrived
  });
  ````
- ### Example 2: Flying to an Entity
+ ## Flying to an Entity
 
  Flying to an {{#crossLink "Entity"}}{{/crossLink}} (which provides a World-space
  {{#crossLink "Boundary3D"}}{{/crossLink}} via its {{#crossLink "Entity/worldBoundary:property"}}{{/crossLink}} property):
@@ -55,7 +53,7 @@
  cameraFlight.flyTo(entity);
  ````
 
- ### Example 3: Flying to a Boundary3D
+ ## Flying to a Boundary3D
 
  Flying the CameraFlight from the previous two examples explicitly to the World-space
  {{#crossLink "Boundary3D"}}{{/crossLink}} of the {{#crossLink "Entity"}}{{/crossLink}} property):
@@ -66,7 +64,7 @@
  cameraFlight.flyTo(worldBoundary);
  ````
 
- ### Example 4: Flying to an AABB
+ ## Flying to an AABB
 
  Flying the CameraFlight from the previous two examples explicitly to the {{#crossLink "Boundary3D"}}Boundary3D's{{/crossLink}}
  axis-aligned bounding box:

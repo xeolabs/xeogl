@@ -1,8 +1,6 @@
 /**
  A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- ## Overview
-
  <ul>
  <li>Normally you would rely on xeoEngine to automatically generate shaders for you, however the Shader component allows you to author them manually.</li>
  <li>You can use xeoEngine's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other
@@ -24,88 +22,85 @@
  <img src="../../assets/images/shaderExample1.png"></img>
 
  In our scene definition, we have an  {{#crossLink "Entity"}}Entity{{/crossLink}} that has a {{#crossLink "Geometry"}}Geometry{{/crossLink}} that is our
- screen-aligned quad, plus a Shader that will render the fragments of that quad with our cool rippling water pattern.
+ screen-aligned quad, plus a Shader that will render the fragments of that quad with our rippling water pattern.
  Finally, we animate the rippling by periodically updating the Shader's "time" uniform.
 
  ````javascript
-
- var scene = new XEO.Scene();
-
- // Shader that's used by our Object. Note the 'xeo_aPosition' and 'xeo_aUV attributes',
+ // Shader that's used by our Entity. Note the 'xeo_aPosition' and 'xeo_aUV attributes',
  // which will receive the positions and UVs from the Geometry. Also note the 'time'
  // uniform, which we'll be animating via Shader#setParams.
 
- var shader = new XEO.Shader(scene, {
+ var shader = new XEO.Shader({
 
-       // Vertex shading stage
-       vertex: [
-           "attribute vec3 xeo_aPosition;",
-           "attribute vec2 xeo_aUV;",
-           "varying vec2 vUv;",
-           "void main () {",
-           "    gl_Position = vec4(xeo_aPosition, 1.0);",
-           "    vUv = xeo_aUV;",
-           "}"
-       ],
+    // Vertex shading stage
+    vertex: [
+        "attribute vec3 xeo_aPosition;",
+        "attribute vec2 xeo_aUV;",
+        "varying vec2 vUv;",
+        "void main () {",
+        "    gl_Position = vec4(xeo_aPosition, 1.0);",
+        "    vUv = xeo_aUV;",
+        "}"
+    ],
 
-       // Fragment shading stage
-       fragment: [
-           "precision mediump float;",
+    // Fragment shading stage
+    fragment: [
+        "precision mediump float;",
 
-           "uniform float time;",
-           "varying vec2 vUv;",
+        "uniform float time;",
+        "varying vec2 vUv;",
 
-           "void main( void ) {",
-           "    vec2 sp = vUv;",
-           "    vec2 p = sp*5.0 - vec2(10.0);",
-           "    vec2 i = p;",
-           "    float c = 1.0;",
-           "    float inten = 0.10;",
-           "    for (int n = 0; n < 10; n++) {",
-           "        float t = time * (1.0 - (3.0 / float(n+1)));",
-           "        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));",
-           "        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));",
-           "    }",
-           "    c /= float(10);",
-           "    c = 1.5-sqrt(c);",
-           "    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);",
-           "}"
-       ],
+        "void main( void ) {",
+        "    vec2 sp = vUv;",
+        "    vec2 p = sp*5.0 - vec2(10.0);",
+        "    vec2 i = p;",
+        "    float c = 1.0;",
+        "    float inten = 0.10;",
+        "    for (int n = 0; n < 10; n++) {",
+        "        float t = time * (1.0 - (3.0 / float(n+1)));",
+        "        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));",
+        "        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));",
+        "    }",
+        "    c /= float(10);",
+        "    c = 1.5-sqrt(c);",
+        "    gl_FragColor = vec4(vec3(c*c*c*c), 999.0) + vec4(0.0, 0.3, 0.5, 1.0);",
+        "}"
+    ],
 
-       // Initial value for the 'time' uniform in the fragment stage.
-       params: {
-           time: 0.0
-       }
-  });
+    // Initial value for the 'time' uniform in the fragment stage.
+    params: {
+        time: 0.0
+    }
+ });
 
  // A screen-aligned quad
- var quad = new XEO.Geometry(scene, {
-       primitive:"triangles",
-       positions:[ 1, 1, 0, -1, 1, 0, -1, -1, 0, 1, -1, 0 ],
-       normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
-       uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
-       indices:[ 0, 1, 2, 0, 2, 3 ]
-  });
+ var quad = new XEO.Geometry({
+    primitive:"triangles",
+    positions:[ 1, 1, 0, -1, 1, 0, -1, -1, 0, 1, -1, 0 ],
+    normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
+    uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
+    indices:[ 0, 1, 2, 0, 2, 3 ]
+ });
 
- var object = new XEO.Entity(scene, {
-       shader: shader,
-       geometry: quad
-  });
+ var entity = new XEO.Entity(scene, {
+    shader: shader,
+    geometry: quad
+ });
 
  ````
  Now let's animate the "time" parameter on the Shader, to make the water ripple:
 
  ```` javascript
  scene.on("tick", function(params) {
-            shader.setParams({
-                time: params.timeElapsed
-            });
-        });
+     shader.setParams({
+         time: params.timeElapsed
+     });
+ });
  ````
 
  ## <a name="inputs">Shader Inputs</a>
 
- xeoEngine provides the following inputs for your shaders.
+ xeoEngine provides the following inputs for your shaders (work in progress).
 
  #### Attributes
 
@@ -147,14 +142,14 @@
  | uniform vec3 xeo_uEmissive;       |  | {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} |
  | uniform float xeo_uOpacity;       |  | {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} |
  | uniform float xeo_uShininess;       |  | {{#crossLink "PhongMaterial/shininess:property"}}{{/crossLink}} |
- | uniform float xeo_uDiffuseFresnelBias;       |  | {{#crossLink "Fresnel/bias:property"}}{{/crossLink}} |
+ | uniform float xeo_uDiffuseFresnelEdgeBias;       |  | {{#crossLink "Fresnel/edgeBias:property"}}{{/crossLink}} |
 
  #### Varying
 
  *Varying types are used in fragment shaders*
 
  | Varying | Description | Depends on  |
- |---|---|
+ |---|---|---|
  | varying vec4 xeo_vWorldPosition | |
  | varying vec4 xeo_vViewPosition | |
  | varying vec4 xeo_vColor | |
@@ -164,7 +159,7 @@
  *Samplers are used in fragment shaders*
 
  | Varying | Description | Depends on  |
- |---|---|
+ |---|---|---|
 
 
 

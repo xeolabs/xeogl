@@ -1,31 +1,26 @@
 /**
  A **Canvas** manages a {{#crossLink "Scene"}}Scene{{/crossLink}}'s HTML canvas and its WebGL context.
 
- ## Overview
-
  <ul>
-
  <li>Each {{#crossLink "Scene"}}Scene{{/crossLink}} provides a Canvas as a read-only property on itself.</li>
-
  <li>When a {{#crossLink "Scene"}}Scene{{/crossLink}} is configured with the ID of
  an existing <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a>, then
  the Canvas will bind to that, otherwise the Canvas will automatically create its own.</li>
-
- <li>A Canvas will fire a {{#crossLink "Canvas/resized:event"}}{{/crossLink}} event whenever
+ <li>A Canvas will fire a {{#crossLink "Canvas/size:event"}}{{/crossLink}} event whenever
  the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a> resizes.</li>
-
  <li>A Canvas is responsible for obtaining a WebGL context from
  the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a>.</li>
-
  <li>A Canvas also fires a {{#crossLink "Canvas/webglContextLost:event"}}{{/crossLink}} event when the WebGL context is
  lost, and a {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} when it is restored again.</li>
-
  <li>The various components within the parent {{#crossLink "Scene"}}Scene{{/crossLink}} will transparently recover on
  the {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} event.</li>
-
  </ul>
 
  <img src="../../../assets/images/Canvas.png"></img>
+
+ <br><br>
+ Note that a Canvas also has a {{#crossLink "Spinner"}}{{/crossLink}}, which shows a
+ busy spinner when a {{#crossLink "Model"}}{{/crossLink}} is loading, or when directed by application logic.
 
  ## Example
 
@@ -44,8 +39,8 @@
  // Get the WebGL context off the Canvas
  var gl = canvas.gl;
 
- // Subscribe to Canvas resize events
- canvas.on("resize", function(e) {
+ // Subscribe to Canvas size updates
+ canvas.on("size", function(e) {
         var width = e.width;
         var height = e.height;
         var aspect = e.aspect;
@@ -68,7 +63,7 @@
  {{#crossLink "Scene"}}{{/crossLink}} with the ID of the element, like this:
 
  ```` javascript
- // Create a Scene, this time configuting it with the
+ // Create a Scene, this time configuring it with the
  // ID of an existing DOM canvas element
  var scene = new XEO.Scene({
           canvasId: "myCanvas"
@@ -277,7 +272,7 @@
 
                             /**
                              * Fired whenever the canvas has resized
-                             * @event resized
+                             * @event size
                              * @param width {Number} The new canvas width
                              * @param height {Number} The new canvas height
                              * @param aspect {Number} The new canvas aspect ratio

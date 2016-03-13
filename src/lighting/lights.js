@@ -1,8 +1,6 @@
 /**
  A **Lights** defines a group of light sources that illuminate attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- ## Overview
-
  A Lights may contain a virtually unlimited number of three types of light source:
 
  <ul>
@@ -18,60 +16,45 @@
 
  ## Example
 
- In this example we have an {{#crossLink "Entity"}}{{/crossLink}} that has a {{#crossLink "Geometry"}}{{/crossLink}},
- a {{#crossLink "PhongMaterial"}}{{/crossLink}} and a {{#crossLink "Lights"}}{{/crossLink}}. The {{#crossLink "Lights"}}{{/crossLink}}
- contains an {{#crossLink "AmbientLight"}}{{/crossLink}}, a {{#crossLink "DirLight"}}{{/crossLink}} and a {{#crossLink "PointLight"}}{{/crossLink}}.
-
-
  ```` javascript
- var scene = new XEO.Scene();
+ var entity = new XEO.Entity({
 
- var material = new XEO.PhongMaterial(scene, {
-    ambient:    [0.3, 0.3, 0.3],
-    diffuse:    [0.7, 0.7, 0.7],
-    specular:   [1. 1, 1],
-    shininess:  30
-});
+     lights: new XEO.Lights({
+         lights: [
 
- var ambientLight = new XEO.AmbientLight(scene, {
-    color: [0.7, 0.7, 0.7],
-    intensity:   1.0
-});
+             new XEO.AmbientLight({
+                 color: [0.7, 0.7, 0.7]
+             })
 
- var dirLight = new XEO.DirLight(scene, {
-    dir:        [-1, -1, -1],
-    color:    [0.5, 0.7, 0.5],
-    intensity:   1.0,
-    space:      "view"
-});
+             new XEO.DirLight({
+                 dir:         [-1, -1, -1],
+                 color:       [0.5, 0.7, 0.5],
+                 intensity:   1.0,
+                 space:      "view"  // Other option is "world", for World-space
+             }),
 
- var pointLight = new XEO.PointLight(scene, {
-    pos: [0, 100, 100],
-    color: [0.5, 0.7, 0.5],
-    intensity: [1.0, 1.0, 1.0],
-    constantAttenuation: 0,
-    linearAttenuation: 0,
-    quadraticAttenuation: 0,
-    space: "view"
-});
+             new XEO.PointLight({
+                 pos: [0, 100, 100],
+                 color: [0.5, 0.7, 0.5],
+                 intensity: 1
+                 constantAttenuation: 0,
+                 linearAttenuation: 0,
+                 quadraticAttenuation: 0,
+                 space: "view"
+             })
+         ]
+    }),
 
- var lights = new XEO.Lights(scene, {
-    lights: [
-        ambientLight,
-        dirLight,
-        pointLight
-    ]
-});
+    material: new XEO.PhongMaterial({
+        ambient:    [0.3, 0.3, 0.3],
+        diffuse:    [0.7, 0.7, 0.7],
+        specular:   [1. 1, 1],
+        shininess:  30
+    }),
 
- var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
-
- var entity = new XEO.Entity(scene, {
-    lights: lights,
-    material: material,
-    geometry: geometry
-});
+    geometry: new XEO.BoxGeometry()
+ });
  ````
-
 
  @class Lights
  @constructor

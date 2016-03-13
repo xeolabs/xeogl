@@ -1,66 +1,52 @@
 /**
+
  A **Modes** toggles various xeoEngine modes and capabilities for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- ## Overview
-
  <ul>
-
  <li>Though the rendering modes are defined by various different components attached to the {{#crossLink "Entity"}}Entities{{/crossLink}},
  Modes components provide a single point through which you can toggle them on or off.</li>
-
  <li>A Modes may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
  rendering modes for them as a group.</li>
-
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Modes create within xeoEngine's shaders.</li>
-
  </ul>
 
  <img src="../../../assets/images/Modes.png"></img>
 
  ## Example
 
- In this example we have a Modes that toggles rendering modes for
- two {{#crossLink "Entity"}}Entities{{/crossLink}}. The properties of the Modes are initialised to their
- default values.
+ In this example we have a Modes that toggles rendering modes for two {{#crossLink "Entity"}}Entities{{/crossLink}}. The
+ properties of the Modes are initialised to their default values.
 
  ````javascript
- var scene = new XEO.Scene();
-
  // Create a Modes with default properties
  var modes = new XEO.Modes(scene, {
+    collidable: true,           // Include Entities in boundary calculations
     pickable: true,             // Enable picking
-    clippable true,              // Enable effect of XEO.Clip components
+    clippable true,             // Enable effect of XEO.Clip components
     transparent : false,        // Disable transparency
     backfaces : true,           // Render backfaces
     frontface : "ccw"
  });
 
+ var boxGeometry = new XEO.BoxGeometry();
+
  // Create two Entities whose rendering modes will be controlled by our Modes
 
- var entity1 = new XEO.Entity(scene, {
-       modes: modes
+ var entity1 = new XEO.Entity({
+     geometry: boxGeometry,
+     modes: modes,
+     translate: new XEO.Translate({
+        xyz: [3, 0, 0]
+     })
  });
 
  var entity2 = new XEO.Entity(scene, {
-       modes: modes
+     geometry: boxGeometry,
+     modes: modes,
+     translate: new XEO.Translate({
+        xyz: [3, 0, 0]
+     })
  });
-
- // Subscribe to change on the Modes' "backfaces" property
- var handle = modes.on("backfaces", function(value) {
-       //...
- });
-
- // Hide backfaces on our Entities by flipping the Modes' "backfaces" property,
- // which will also call our handler
- modes.backfaces = false;
-
- // Unsubscribe from the Modes again
- modes.off(handle);
-
- // When we destroy our Modes, the Entities will fall back
- // on the Scene's default Modes instance
- modes.destroy();
-
  ````
 
  @class Modes

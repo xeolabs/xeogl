@@ -2,20 +2,14 @@
  A **Stage** is a bin of {{#crossLink "Entity"}}Entities{{/crossLink}} that is rendered in a specified priority with respect to
  other Stages in the same {{#crossLink "Scene"}}{{/crossLink}}.
 
- ## Overview
-
  <ul>
  <li>When the parent {{#crossLink "Scene"}}Scene{{/crossLink}} renders, each Stage renders its bin
  of {{#crossLink "Entity"}}Entities{{/crossLink}} in turn, from the lowest priority Stage to the highest.</li>
-
  <li>Stages are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>
-
  <li>You can control the render order of the individual {{#crossLink "Entity"}}Entities{{/crossLink}} ***within*** a Stage
  by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.</li>
-
  <li>{{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
  {{#crossLink "Entity"}}Entities{{/crossLink}} within Stages.</li>
-
  <li>{{#crossLink "Entity"}}Entities{{/crossLink}} not explicitly attached to a Stage are implicitly
  attached to the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
  {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has
@@ -28,54 +22,36 @@
  ## Example
 
  In this example we're performing render-to-texture using {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} and
- {{#crossLink "Texture"}}Texture{{/crossLink}} components.
+ {{#crossLink "Texture"}}{{/crossLink}} components.
 
- Note how we use two prioritized Stages, to ensure that the {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} is
- rendered ***before*** the {{#crossLink "Texture"}}Texture{{/crossLink}} that consumes it.
+ The first Entity renders its fragment colors to a {{#crossLink "ColorTarget"}}{{/crossLink}}, which is piped into a
+ {{#crossLink "Texture"}}{{/crossLink}} that's applied to a second {{#crossLink "Entity"}}{{/crossLink}}. To ensure
+ that the {{#crossLink "ColorTarget"}}{{/crossLink}} is rendered ***before*** the {{#crossLink "Texture"}}{{/crossLink}}
+ that consumes it, we've attached each {{#crossLink "Entity"}}{{/crossLink}} to a prioritized {{#crossLink "Stage"}}{{/crossLink}}.
 
  ````javascript
- var scene = new XEO.Scene();
-
  // First stage: an Entity that renders to a ColorTarget
-
- var stage1 = new XEO.Stage(scene, {
-       priority: 0
-  });
-
- var geometry = new XEO.Geometry(scene); // Geometry with no parameters defaults to a 2x2x2 box
-
- var colorTarget = new XEO.ColorTarget(scene);
-
- var entity1 = new XEO.Entity(scene, {
-       stage: stage1,
-       geometry: geometry,
-       colorTarget: colorTarget
-  });
+ var entity1 = new XEO.Entity({
+    stage: new XEO.Stage({
+        priority: 0
+    }),
+    geometry: new XEO.BoxGeometry(),
+    colorTarget: new XEO.ColorTarget()
+});
 
 
  // Second stage: an Entity with a Texture that sources from the ColorTarget
-
- var stage2 = new XEO.Stage(scene, {
-       priority: 1
-  });
-
- var texture = new XEO.Texture(scene, {
-       target: colorTarget
-  });
-
- var material = new XEO.PhongMaterial(scene, {
-       textures: [
-           texture
-       ]
-  });
-
- var geometry2 = new XEO.Geometry(scene);
-
- var entity2 = new XEO.Entity(scene, {
-       stage: stage2,
-       material: material,
-       geometry: geometry2
-  });
+ var entity2 = new XEO.Entity({
+    stage: new XEO.Stage( {
+        priority: 1
+    }),
+    material: new XEO.PhongMaterial({
+        diffuseMap: new XEO.Texture({
+            target: entity1.colorTarget
+        })
+    }),
+    geometry: new XEO.BoxGeometry()
+});
  ````
 
  @class Stage

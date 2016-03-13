@@ -1,34 +1,30 @@
 /**
  A **MousePickEntity** picks {{#crossLink "Entity"}}Entities{{/crossLink}} with mouse clicks.
 
- ## Overview
-
  TODO
 
  ## Example
 
  ````Javascript
- var scene = new XEO.Scene({ element: "myDiv" });
-
  // Create some Entities
 
- var entity1 = new XEO.Entity(scene, {
+ var entity1 = new XEO.Entity({
     id: "entity1",
     transform: new XEO.Translate(scene, { xyz: [-5, 0, 0] })
  });
 
- var entity2 = new XEO.Entity(scene, {
+ var entity2 = new XEO.Entity({
     id: "entity2",
     transform: new XEO.Translate(scene, { xyz: [0, 0, 0] })
  });
 
- var entity3 = new XEO.Entity(scene, {
+ var entity3 = new XEO.Entity({
     id: "entity3",
     transform: new XEO.Translate(scene, { xyz: [5, 0, 0] })
  });
 
  // Create a MousePickEntity
- var mousePickEntity = new XEO.MousePickEntity(scene, {
+ var mousePickEntity = new XEO.MousePickEntity({
 
     // We want the 3D World-space coordinates
     // of each location we pick

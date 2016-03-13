@@ -1,21 +1,25 @@
 /**
-
  A **Skybox** is a textured box that does not translate with respect to the
  {{#crossLink "Lookat"}}viewing transform{{/crossLink}}, to a provide the appearance of a background
  for associated {{#crossLink "Entities"}}Entities{{/crossLink}}.
 
- ## Overview
-
- TODO
-
  ## Example
+
+ In the example below we're going to create twenty randomly-positioned and colored {{#crossLink "Entity"}}Entities{{/crossLink}}
+ and wrap them in a Skybox. The Skybox will use the texture image shown on the left, and the result will appear as shown
+ on the right.
+
+ <img src="../../assets/images/skyboxMiramarClouds.jpg">&nbsp;&nbsp;<img src="../../assets/images/skyboxScreenshot.png">
 
  ````javascript
  // A bunch of random cube Entities
 
- for (var i = 0; i < 20; i++) {
+ // Share this BoxGeometry among the Entities
+ var boxGeometry = new BoxGeometry();
 
+ for (var i = 0; i < 20; i++) {
         new XEO.Entity({
+            geometry: boxGeometry,
             transform: new XEO.Translate({
                 xyz: [
                     Math.random() * 15 - 7,
@@ -34,26 +38,21 @@
     }
 
  // A Skybox that wraps our Entities in a cloudy background
-
  var skybox = new XEO.Skybox({
         src: "textures/skybox/miramarClouds.jpg",
         size: 1000 // Default
     });
 
- // Move the camera back a bit
+ // Get the default Scene off the Skybox
+ var scene = skybox.scene;
 
- skybox.scene.camera.view.eye = [0, 0, -30];
+ // Move the camera back a bit
+ scene.camera.view.eye = [0, 0, -30];
 
  // Slowly orbit the camera on each frame
-
- skybox.scene.on("tick",
- function () {
-         skybox.scene.camera.view.rotateEyeY(0.2);
+ scene.on("tick", function () {
+         scene.camera.view.rotateEyeY(0.2);
      });
-
- // Allow user camera control
-
- new XEO.CameraControl();
  ````
 
  @class Skybox

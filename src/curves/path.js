@@ -1,57 +1,60 @@
 /**
- A **Path** is a complex curved path constructed from various types of sub-curves.
-
- ## Overview
-
- A Path can be constructed from the following {{#crossLink "Curve"}}{{/crossLink}} sub-classes:
+ A **Path** is a complex curved path constructed from various {{#crossLink "Curve"}}{{/crossLink}} subtypes.
 
  <ul>
-    <li>{{#crossLink "SplineCurve"}}{{/crossLink}}</li>
-    <li>{{#crossLink "CubicBezierCurve"}}{{/crossLink}}</li>
-    <li>{{#crossLink "QuadraticBezierCurve"}}{{/crossLink}}</li>
+ <li>A Path can be constructed from these {{#crossLink "Curve"}}{{/crossLink}} subtypes: {{#crossLink "SplineCurve"}}{{/crossLink}},
+ {{#crossLink "CubicBezierCurve"}}{{/crossLink}} and {{#crossLink "QuadraticBezierCurve"}}{{/crossLink}}.</li>
+ <li>You can sample a {{#crossLink "Path/point:property"}}{{/crossLink}} and a {{#crossLink "Curve/tangent:property"}}{{/crossLink}}
+ vector on a Path for any given value of {{#crossLink "Path/t:property"}}{{/crossLink}} in the range [0..1].</li>
+ <li>When you set {{#crossLink "Path/t:property"}}{{/crossLink}} on a Path, its
+ {{#crossLink "Path/point:property"}}{{/crossLink}} and {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties
+ will update accordingly.</li>
  </ul>
 
  ## Example
 
- ````javascript
+ Create a Path containing a {{#crossLink "CubicBezierCurve"}}{{/crossLink}}, a {{#crossLink "QuadraticBezierCurve"}}{{/crossLink}}
+ and a {{#crossLink "SplineCurve"}}{{/crossLink}}, subscribe to updates on its {{#crossLink "Path/point:property"}}{{/crossLink}} and
+ {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties, then vary its {{#crossLink "Path/t:property"}}{{/crossLink}}
+ property over time:
 
+ ````javascript
  var path = new XEO.Path({
-        curves: [
-            new XEO.CubicBezierCurve({
-                v0: [-10, 0, 0],
-                v1: [-5, 15, 0],
-                v2: [20, 15, 0],
-                v3: [10, 0, 0]
-            }),
-            new XEO.QuadraticBezierCurve({
-                v0: [-10, 0, 0],
-                v1: [20, 15, 0],
-                v2: [10, 0, 0]
-            }),
-            new XEO.SplineCurve({
-                points: [
-                    [-10, 0, 0],
-                    [-5, 15, 0],
-                    [20, 15, 0],
-                    [10, 0, 0]
-                ]
-            })
-        ]
-    });
+     curves: [
+         new XEO.CubicBezierCurve({
+             v0: [-10, 0, 0],
+             v1: [-5, 15, 0],
+             v2: [20, 15, 0],
+             v3: [10, 0, 0]
+         }),
+         new XEO.QuadraticBezierCurve({
+             v0: [-10, 0, 0],
+             v1: [20, 15, 0],
+             v2: [10, 0, 0]
+         }),
+         new XEO.SplineCurve({
+             points: [
+                 [-10, 0, 0],
+                 [-5, 15, 0],
+                 [20, 15, 0],
+                 [10, 0, 0]
+             ]
+         })
+     ]
+ });
 
  path.scene.on("tick", function(e) {
 
-        path.t = (e.time - e.startTime) * 0.01;
+     path.t = (e.time - e.startTime) * 0.01;
 
-        var point = path.point;
-        var tangent = path.tangent;
+     var point = path.point;
+     var tangent = path.tangent;
 
-        this.log("t=" + path.t + ", point=" +
-            JSON.stringify(point) + ", tangent=" +
-                JSON.stringify(tangent));
-    });
+     this.log("t=" + path.t + ", point=" +
+         JSON.stringify(point) + ", tangent=" +
+             JSON.stringify(tangent));
+ });
  ````
-
  @class Path
  @module XEO
  @submodule curves

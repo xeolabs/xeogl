@@ -1,8 +1,6 @@
 /**
  A **Configs** holds configuration properties for the parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
 
- ## Overview
-
  <ul>
  <li>Each {{#crossLink "Scene"}}Scene{{/crossLink}} provides a Configs on itself as a read-only property.</li>
  <li>Config property values are set on a Configs using its {{#crossLink "Configs/set:method"}}{{/crossLink}} method,

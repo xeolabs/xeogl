@@ -3,8 +3,24 @@
 
  ## Example
 
- ````javascript
+ An {{#crossLink "Entity"}}{{/crossLink}} with a BoxGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
+ diffuse {{#crossLink "Texture"}}{{/crossLink}}:
 
+ ````javascript
+ new XEO.Entity({
+
+     geometry: new XEO.BoxGeometry({
+        xSize: 1,
+        ySize: 1,
+        zSize: 1
+     }),
+
+     material: new XEO.PhongMaterial({
+        diffuseMap: new XEO.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+        })
+     })
+ });
  ````
 
  @class BoxGeometry

@@ -1,20 +1,20 @@
 /**
- A **Collection** is a general-purpose group of {{#crossLink "Component"}}Components{{/crossLink}}.
-
- ## Overview
+ A **Collection** is a set of {{#crossLink "Component"}}Components{{/crossLink}}.
 
  <ul>
  <li>A {{#crossLink "Component"}}Component{{/crossLink}} can be included in more than one Collection.</li>
  <li>{{#crossLink "Component"}}Components{{/crossLink}} can be added to a Collection by instance, ID or type.</li>
  <li>A Collection supports iteration over its {{#crossLink "Component"}}Components{{/crossLink}}.</li>
  <li>A {{#crossLink "Model"}}Model{{/crossLink}} stores the {{#crossLink "Component"}}Components{{/crossLink}} it has loaded in a Collection.</li>
- <li>A {{#crossLink "CollectionBoundary"}}CollectionBoundary{{/crossLink}} can be used to track the World-space bounding box that encloses a Collection.</li>
+ <li>A {{#crossLink "CollectionBoundary"}}CollectionBoundary{{/crossLink}} provides a World-space {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses a Collection.</li>
  </ul>
 
  <img src="../../../assets/images/Collection.png"></img>
 
- ## Example
+ ## Creating Collections
 
+ Our first Collection contains a {{#crossLink "PhongMaterial"}}{{/crossLink}}, added by ID, plus a {{#crossLink "BoxGeometry"}}{{/crossLink}} and
+ an {{#crossLink "Entity"}}{{/crossLink}}, both added by instance.
 
  ````javascript
  var material = new XEO.PhongMaterial({
@@ -30,46 +30,90 @@
     geometry: geometry
  });
 
- // Our first collection contains the Material, added by ID,
- // plus the Geometry and Entity, both added by instance.
-
- var collection1 = new XEO.Collection({ // Initialize with three components
+ var collection1 = new XEO.Collection({ // Initialize with the three components
     components: [
         "myMaterial",
         geometry,
-        Entity
+        myEntity
     ]
  });
+ ````
+ Our second Collection includes the {{#crossLink "BoxGeometry"}}{{/crossLink}}, added by instance,
+ and the {{#crossLink "Entity"}}{{/crossLink}}, added by type. If there were more than
+ one {{#crossLink "Entity"}}{{/crossLink}} in the scene, then that type would ensure
+ that all the {{#crossLink "Entity"}}Entities{{/crossLink}} were in the Collection.
 
- // Our second Collection includes the geometry, added by instance,
- // and the Entity, added by type. If there were more than
- // one Entity in the scene, then that type would ensure
- // that all the Entities were in the Collection.
-
+ ````javascript
  var collection2 = new XEO.Collection();
 
  collection2.add([  // Add two components
     geometry,
     "XEO.Entity",
  ]);
+ ````
 
- // We can iterate over the components in a Collection like so:
+ ## Accessing Components
 
- collection1.iterate(
-    function(component) {
-        //..
-    });
+ Iterate over the components in a Collection using the convenience iterator:
 
- // And remove components from a Collection
- // by instance, ID or type:
+ ````javascript
+ collection1.iterate(function(component) {
+     if (component.isType("XEO.Entity")) {
+         this.log("Found the Entity: " + component.id);
+     }
+     //..
+ });
+ ````
 
+ A Collection also registers its components by type:
+
+ ````javascript
+ var entities = collection1.types["XEO.Entity"];
+ var theEntity = entities["myEntity"];
+ ````
+
+ ## Removing Components
+
+ We can remove components from a Collection by instance, ID or type:
+
+ ````javascript
  collection1.remove("myMaterial"); // Remove one component by ID
- collection1.remove([geometry, Entity]); // Remove two components by instance
-
+ collection1.remove([geometry, myEntity]); // Remove two components by instance
  collection2.remove("XEO.Geometry"); // Remove all Geometries
  ````
 
- TODO
+ ## Getting the boundary of a Collection
+
+ A {{#crossLink "CollectionBoundary"}}{{/crossLink}} provides a {{#crossLink "Boundary3D"}}{{/crossLink}} that
+ dynamically fits to the collective World-space boundary of all the Components in a Collection.
+
+ ````javascript
+ var collectionBoundary = new XEO.CollectionBoundary({
+    collection: collection1
+ });
+
+ var worldBoundary = collectionBoundary.worldBoundary;
+ ````
+ The {{#crossLink "Boundary3D"}}{{/crossLink}}
+ will automatically update whenever we add, remove or update any Components that have World-space boundaries. We can subscribe
+ to updates on it like so:
+
+ ````javascript
+ worldBoundary.on("updated", function() {
+     obb = worldBoundary.obb;
+     aabb = worldBoundary.aabb;
+     center = worldBoundary.center;
+     //...
+ });
+ ````
+
+ Now, if we now re-insert our {{#crossLink "Entity"}}{{/crossLink}} into to our Collection,
+ the {{#crossLink "Boundary3D"}}{{/crossLink}} will fire our update handler.
+
+ ````javascript
+ collection1.add(myEntity);
+ ````
+
 
  @class Collection
  @module XEO

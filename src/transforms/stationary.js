@@ -1,11 +1,6 @@
 /**
-
  A **Stationary** disables the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}} translations for
- associated {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
- ## Overview
-
- TODO
+ associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
 
  <img src="../../../assets/images/Stationary.png"></img>
 

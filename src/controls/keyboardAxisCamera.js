@@ -2,8 +2,6 @@
  A **KeyboardAxisCamera** switches a {{#crossLink "Camera"}}{{/crossLink}} between preset left, right, anterior,
  posterior, superior and inferior views using the keyboard.
 
- ## Overview
-
  <ul>
  <li>A KeyboardAxisCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
  </ul>
@@ -22,15 +20,27 @@
  ## Example
 
  ````Javascript
- var scene = new XEO.Scene();
+ var camera = new XEO.Camera({
+     view: new XEO.Lookat({
+         eye: [0, 0, -10],
+         look: [0, 0, 0],
+         up: [0, 1, 0]
+     }),
+     project: new XEO.Perspective({
+         fovy: 60,
+         near: 0.1,
+         far: 1000
+     })
+ });
 
- var camera = new XEO.Camera(scene);
+ var entity = new XEO.Entity({
+     camera: camera,
+     geometry: new XEO.BoxGeometry()
+ });
 
- var control = new XEO.KeyboardAxisCamera(scene, {
-        camera: camera
-    });
-
- var entity = new XEO.Entity(scene);
+ new XEO.KeyboardAxisCamera({
+     camera: camera
+ });
  ````
 
  @class KeyboardAxisCamera

@@ -1,8 +1,6 @@
 /**
  A **Frustum** defines a perspective projection as a frustum-shaped view volume.
 
- ## Overview
-
  <ul>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
  {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
@@ -13,45 +11,29 @@
 
  ## Example
 
- In this example we have an {{#crossLink "Entity"}}Entity{{/crossLink}} that's attached to a
- {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and a Frustum
- projection transform.
-
  ````Javascript
+ new XEO.Entity({
 
- var scene = new XEO.Scene();
+     camera: XEO.Camera({
 
- var lookat = new XEO.Lookat(scene, {
-        eye: [0, 0, -4],
-        look: [0, 0, 0],
-        up: [0, 1, 0]
-    });
+        view: new XEO.Lookat({
+            eye: [0, 0, -4],
+            look: [0, 0, 0],
+            up: [0, 1, 0]
+        }),
 
- var frustum = new XEO.Frustum(scene, {
-        left: -0.1,
-        right: 0.1,
-        bottom: -0.1,
-        top: 0.1,
-        near: 0.15,
-        far: 1000
-    });
+        project: new XEO.Frustum(scene, {
+            left: -0.1,
+            right: 0.1,
+            bottom: -0.1,
+            top: 0.1,
+            near: 0.15,
+            far: 1000
+        })
+     }),
 
- var camera = new XEO.Camera(scene, {
-        view: lookat,
-        project: frustum
-    });
-
- var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
-
- var entity = new XEO.Entity(scene, {
-        camera: camera,
-        geometry: geometry
-    });
-
- scene.on("tick", function () {
-       camera.view.rotateEyeY(0.5);
-       camera.view.rotateEyeX(0.3);
-    });
+     new XEO.BoxGeometry();
+ });
  ````
 
  @class Frustum

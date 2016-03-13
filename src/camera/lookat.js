@@ -3,8 +3,6 @@
  {{#crossLink "Lookat/look:property"}}look{{/crossLink}} position and an {{#crossLink "Lookat/up:property"}}up{{/crossLink}}
  vector.
 
- ## Overview
-
  <ul>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with projection transforms such as
  {{#crossLink "Perspective"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
@@ -15,41 +13,26 @@
 
  ## Example
 
- In this example we have a Lookat that positions the eye at -4 on the World-space Z-axis, while looking at the origin.
- Then we attach our Lookat to a {{#crossLink "Camera"}}{{/crossLink}}. which we attach to an {{#crossLink "Entity"}}{{/crossLink}}.
-
  ````Javascript
- var scene = new XEO.Scene();
+ new XEO.Entity({
 
- var lookat = new XEO.Lookat(scene, {
-        eye: [0, 0, -4],
-        look: [0, 0, 0],
-        up: [0, 1, 0],
-        gimbalLockY: true // Rotate about world-space Y-axis (default is false)
-    });
+     camera: XEO.Camera({
 
- var perspective = new XEO.Perspective(scene, {
-        fovy: 60,
-        near: 0.1,
-        far: 1000
-    });
+        view: new XEO.Lookat({
+            eye: [0, 0, -4],
+            look: [0, 0, 0],
+            up: [0, 1, 0]
+        }),
 
- var camera = new XEO.Camera(scene, {
-        view: lookat,
-        project: perspective
-    });
+        project: new XEO.Perspective({
+            fovy: 60,
+            near: 0.1,
+            far: 1000
+        })
+     }),
 
- var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
-
- var entity = new XEO.Entity(scene, {
-        camera: camera,
-        geometry: geometry
-    });
-
- scene.on("tick", function () {
-       camera.view.rotateEyeY(0.5);
-       camera.view.rotateEyeX(0.3);
-    });
+     new XEO.BoxGeometry();
+ });
  ````
 
  @class Lookat

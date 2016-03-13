@@ -1,47 +1,74 @@
 /**
- A **CollectionBoundary** TODO.
-
- ## Overview
+ A **CollectionBoundary** provides the World-space boundary of the components within a {{#crossLink "Collection"}}{{/crossLink}}.
 
  <ul>
-
- <li>TODO</li>
-
+ <li>A CollectionBoundary provides its boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.</li>
+ <li>The {{#crossLink "Boundary3D"}}{{/crossLink}} dynamically fits to the collective boundary of components
+ that provide their own World-space {{#crossLink "Boundary3D"}}Boundar3Ds{{/crossLink}}.</li>
+ <li>The {{#crossLink "Boundary3D"}}{{/crossLink}} automatically resizes whenever we add or remove components that
+ have World-space {{#crossLink "Boundary3D"}}Boundary3Ds{{/crossLink}}, or whenever
+ we cause those components to update their {{#crossLink "Boundary3D"}}Boundary3Ds{{/crossLink}}.</li>
  </ul>
 
  <img src="../../../assets/images/CollectionBoundary.png"></img>
 
  ## Example
 
- TODO
+ Let's create a {{#crossLink "Collection"}}{{/crossLink}} that contains two {{#crossLink "Entity"}}Entities{{/crossLink}}:
+
+ ````javascript
+ var entity = new XEO.Entity({
+        geometry: new XEO.BoxGeometry(),
+        transform: new XEO.Translate({
+            xyz: [-5, 0, 0]
+        })
+  });
+
+ var entity2 = new XEO.Entity({
+        geometry: new XEO.BoxGeometry(),
+        transform: new XEO.Translate({
+            xyz: [0, -5, 0]
+        })
+  });
+
+ var collection = new XEO.Collection({
+    components: [
+        entity1,
+        entity2
+    ]
+ });
+ ````
+ Now we'll create a {{#crossLink "CollectionBoundary"}}{{/crossLink}} that provides
+ a World-space {{#crossLink "Boundary3D"}}{{/crossLink}} that will dynamically fit to the collective World-space boundary of
+ the {{#crossLink "Entity"}}Entities{{/crossLink}}:
 
  ````javascript
  var collectionBoundary = new XEO.CollectionBoundary({
+    collection: collection1
+ });
 
-    collection: new XEO.Collection({
+ var worldBoundary = collectionBoundary.worldBoundary;
+ ````
+ The {{#crossLink "Boundary3D"}}{{/crossLink}}
+ will automatically update whenever we add, remove or update any Components within the {{#crossLink "Collection"}}{{/crossLink}}
+ that have World-space boundaries.
 
-        components: [
-            new XEO.Entity({
-                ..,,
-            }),
-            new XEO.Entity({
-                ..,,
-            }),
-            new XEO.Entity({
-                //..
-            })
-        ]
-    })
-});
+ We can subscribe to updates on it like so:
 
- var showBoundary = new XEO.Entity({
-        geometry: new XEO.BoundaryGeometry({
-            boundary: collectionBoundary.worldBoundary
-        }),
-        material: new XEO.PhongMaterial({
-            diffuse: [1,0,0]
-        })
-    });
+ ````javascript
+ worldBoundary.on("updated", function() {
+     obb = worldBoundary.obb;
+     aabb = worldBoundary.aabb;
+     center = worldBoundary.center;
+     //...
+ });
+ ````
+
+ Now, if we now remove one of our {{#crossLink "Entity"}}Entities{{/crossLink}} from our {{#crossLink "Collection"}}{{/crossLink}},
+ the {{#crossLink "Boundary3D"}}{{/crossLink}} will fire our update handler:
+
+ ````javascript
+ collection1.add(myEntity);
  ````
 
  @class CollectionBoundary

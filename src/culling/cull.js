@@ -1,12 +1,10 @@
 /**
  A **Cull** toggles the culling of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- ## Overview
-
  <ul>
+ <li>An {{#crossLink "Entity"}}{{/crossLink}} is visible when its Cull's {{#crossLink "Cull/culled:property"}}{{/crossLink}} property is true and {{#crossLink "Visibility"}}Visibility's{{/crossLink}} {{#crossLink "Visibility/visible:property"}}{{/crossLink}} property is false.</li>
  <li>Cull components are intended for **visibility culling systems** to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>{{#crossLink "Visibility"}}{{/crossLink}} components are intended for users to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}} via UIs.</li>
- <li>Each {{#crossLink "Entity"}}{{/crossLink}} is visible when its {{#crossLink "Visibility"}}Visibility's{{/crossLink}} {{#crossLink "Visibility/visible:property"}}visible{{/crossLink}} property is true and {{#crossLink "Cull"}}Cull's{{/crossLink}} {{#crossLink "Cull/culled:property"}}visible{{/crossLink}} is false.
  <li>A Cull may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
  their culling status as a group.</li>
  </ul>
@@ -19,20 +17,18 @@
  two {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ````javascript
- var scene = new XEO.Scene();
-
  // Create a Cull component
- var cull = new XEO.Cull(scene, {
+ var cull = new XEO.Cull({
     culled: false
 });
 
  // Create two Entities whose culling will be controlled by our Cull
 
- var entity1 = new XEO.Entity(scene, {
+ var entity1 = new XEO.Entity({
     cull: cull
 });
 
- var entity2 = new XEO.Entity(scene, {
+ var entity2 = new XEO.Entity({
     cull: cull
 });
 

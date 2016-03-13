@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>
+    <br><br>
+    render-to-texture using <a href="../docs/classes/ColorTarget.html" target="_docs">ColorTarget</a>
+    and <a href="../docs/classes/Texture.html" target="_docs">Texture</a> components
+</div>
+
+<script>
+
+    // Shader that's shared by both our Entities. Note the 'xeo_aPosition' and 'xeo_aUV attributes',
+    // which will receive the positions and UVs from the Geometry components. Also note the 'time'
+    // uniform, which we'll be animating via the ShaderParams components.
+
+    var shader = new XEO.Shader({
+
+        // Vertex shading stage
+        vertex: [
+            "attribute vec3 xeo_aPosition;",
+            "attribute vec2 xeo_aUV;",
+            "varying vec2 vUv;",
+            "void main () {",
+            "    gl_Position = vec4(xeo_aPosition, 1.0);",
+            "    vUv = xeo_aUV;",
+            "}"
+        ],
+
+        // Fragment shading stage
+        fragment: [
+            "precision mediump float;",
+
+            "uniform float time;",
+            "varying vec2 vUv;",
+
+            "void main( void ) {",
+            "    vec2 sp = vUv;",
+            "    vec2 p = sp*5.0 - vec2(10.0);",
+            "    vec2 i = p;",
+            "    float c = 1.0;",
+            "    float inten = 0.10;",
+            "    for (int n = 0; n < 10; n++) {",
+            "        float t = time * (1.0 - (3.0 / float(n+1)));",
+            "        i = p + vec2(cos(t - i.x) + sin(t + i.y), sin(t - i.y) + cos(t + i.x));",
+            "        c += 1.0/length(vec2(p.x / (sin(i.x+t)/inten),p.y / (cos(i.y+t)/inten)));",
+            "    }",
+            "    c /= float(10);",
+            "    c = 1.5-sqrt(c);",
+            "    gl_FragColor = vec4(1.0, 0.3, 0.5, 1.0);",
+            "}"
+        ],
+
+        // Initial values for the 'time' uniform in the fragment stage.
+        params: {
+            time: 0.0
+        }
+    });
+
+    // First Entity using our Shader, with a quad covering the left half of the canvas,
+    // along with its own ShaderParams to independently set its own values for the Shader's uniforms.
+
+    var entity1 = new XEO.Entity({
+        shader: shader,
+        geometry: new XEO.Geometry({
+            primitive: "triangles",
+            positions: [
+                -1, 1, 0,
+                0, 1, 0,
+                0, -1, 0,
+                -1, -1, 0
+            ],
+            normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],
+            uv: [1, 1, 0, 1, 0, 0, 1, 0],
+            indices: [0, 1, 2, 0, 2, 3]
+        }),
+        shaderParams1: new XEO.ShaderParams({
+            params: {
+                time: 0.0
+            }
+        })
+    });
+
+    // Second Entity using the Shader, with a quad covering the right half of the canvas,
+    // along with its own ShaderParams to independently set its own values for the Shader's uniforms.
+
+    var entity2 = new XEO.Entity({
+        shader: shader,
+        geometry: new XEO.Geometry({
+            primitive: "triangles",
+            positions: [
+                1, 1, 0,
+                0, 1, 0,
+                0, -1, 0,
+                1, -1, 0
+            ],
+            normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],
+            uv: [1, 1, 0, 1, 0, 0, 1, 0],
+            indices: [2, 1, 0, 3, 2, 0]
+        }),
+        shaderParams: new XEO.ShaderParams({
+            params: {
+                time: 0.0
+            }
+        })
+    });
+
+    // Now let's animate the "time" parameter on the Shader, for each Entity independently:
+
+    // Get the default Scene off the first Entity
+    var scene = entity1.scene;
+
+    scene.on("tick", function (params) {
+
+        entity1.shaderParams.setParams({
+            time: params.timeElapsed
+        });
+
+//        entity2.shaderParams.setParams({
+//            time: params.timeElapsed  * 0.5
+//        });
+    });
+
+    new XEO.CameraControl();
+
+</script>
+</body>
+</html>

@@ -1,9 +1,7 @@
 
 
 /**
- A **Camera** defines a viewpoint on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
- ## Overview
+ A **Camera** defines viewing and projection transforms for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  <ul>
  <li> A Camera is composed of a viewing transform and a {{#crossLink "Projection"}}{{/crossLink}}.</li>
@@ -25,48 +23,30 @@
 
  ## Example
 
- In the example below, we have
-
- <ul>
- <li>a {{#crossLink "Lookat"}}{{/crossLink}} view transform,</li>
- <li>a {{#crossLink "Perspective"}}{{/crossLink}} projection transform,</li>
- <li>a Camera attached to the {{#crossLink "Lookat"}}{{/crossLink}} and {{#crossLink "Perspective"}}{{/crossLink}},</li>
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
- <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
- </ul>
-
+ The example below defines an {{#crossLink "Entity"}}{{/crossLink}} that has a Camera with
+ a {{#crossLink "Lookat"}}{{/crossLink}} view transform and a {{#crossLink "Perspective"}}{{/crossLink}} projection transform.
 
  ```` javascript
- var scene = new XEO.Scene();
+ var entity = new XEO.Entity({
+     camera: new XEO.Camera({
+         view: new XEO.Lookat({
+             eye: [0, 0, -10],
+             look: [0, 0, 0],
+             up: [0, 1, 0]
+         }),
+         project: new XEO.Lookat({
+             fovy: 60,
+             near: 0.1,
+             far: 1000
+         })
+     }),
+     geometry: new XEO.BoxGeometry()
+ });
 
- var lookat = new XEO.Lookat(scene, {
-        eye: [0, 0, -10],
-        look: [0, 0, 0],
-        up: [0, 1, 0]
-    });
-
- var perspective = new XEO.Lookat(scene, {
-        fovy: 60,
-        near: 0.1,
-        far: 1000
-    });
-
- var camera = new XEO.Camera(scene, {
-        view: lookat,
-        project: perspective
-    });
-
- var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
-
- var entity = new XEO.Entity(scene, {
-        camera: camera,
-        geometry: geometry
-    });
-
- scene.on("tick", function () {
-       camera.view.rotateEyeY(0.5);
-       camera.view.rotateEyeX(0.3);
-    });
+ entity.scene.on("tick", function () {
+     camera.view.rotateEyeY(0.5);
+     camera.view.rotateEyeX(0.3);
+ });
  ````
  @class Camera
  @module XEO

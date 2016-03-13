@@ -1,8 +1,6 @@
 /**
  A **ColorTarget** is a  <a href="http://en.wikipedia.org/wiki/Render_Target" target="other">render target</a>  that
- captures the colors of the pixels rendered for the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
- ## Overview
+ captures the colors pixels rendered for associated {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  <ul>
  <li>ColorTargets are typically used when *rendering-to-texture*.</li>
@@ -18,51 +16,31 @@
 
  ## Example
 
- In this example we essentially have one {{#crossLink "Entity"}}{{/crossLink}}
- that's rendered to a {{#crossLink "Texture"}}{{/crossLink}}, which is then applied to a second {{#crossLink "Entity"}}{{/crossLink}}.
-
- The scene contains:
-
- <ul>
- <li>a ColorTarget,</li>
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape,
- <li>an {{#crossLink "Entity"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}} pixel color values to the ColorTarget,</li>
- <li>a {{#crossLink "Texture"}}{{/crossLink}} that sources its pixels from the ColorTarget,</li>
- <li>a {{#crossLink "Material"}}{{/crossLink}} that includes the {{#crossLink "Texture"}}{{/crossLink}}, and</li>
- <li>a second {{#crossLink "Entity"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}}, with the {{#crossLink "Material"}}{{/crossLink}} applied to it.</li>
+ This example contains an {{#crossLink "Entity"}}{{/crossLink}} that renders its pixel colors to a ColorTarget, which is then
+ piped into a {{#crossLink "Texture"}}{{/crossLink}} that's applied to a second {{#crossLink "Entity"}}{{/crossLink}}.</li>
  </ul>
 
-
  ````javascript
- var scene = new XEO.Scene();
-
- var colorTarget = new XEO.ColorTarget(scene);
-
- var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+ var colorTarget = new XEO.ColorTarget();
 
  // First Entity renders to the ColorTarget
 
- var entity1 = new XEO.Entity(scene, {
-    geometry: geometry,
+ var entity1 = new XEO.Entity({
+    geometry: new XEO.BoxGeometry(),
     colorTarget: colorTarget
-});
+ });
 
- var texture = new XEO.Texture(scene, {
-    target: colorTarget
-});
-
- var material = new XEO.PhongMaterial(scene, {
-    textures: [
-        texture
-    ]
-});
 
  // Second Entity is textured with the
  // image of the first Entity
 
- var entity2 = new XEO.Entity(scene, {
-    geometry: geometry,  // Reuse our simple box geometry
-    material: material
+ var entity2 = new XEO.Entity({
+     geometry: new XEO.BoxGeometry()
+     material: new XEO.PhongMaterial({
+         diffuseMap: new XEO.Texture({
+            target: colorTarget
+         })
+     })
 });
  ````
 

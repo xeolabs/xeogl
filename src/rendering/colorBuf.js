@@ -1,44 +1,28 @@
 /**
+
  A **ColorBuf** configures the WebGL color buffer for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- ## Overview
-
  <ul>
-
  <li>A ColorBuf configures **the way** that pixels are written to the WebGL color buffer.</li>
  <li>ColorBuf is not to be confused with {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, which stores rendered pixel
  colors for consumption by {{#crossLink "Texture"}}Textures{{/crossLink}}, used when performing *render-to-texture*.</li>
-
  </ul>
 
  <img src="../../../assets/images/ColorBuf.png"></img>
 
  ## Example
 
- In this example we're configuring the WebGL color buffer for an {{#crossLink "Entity"}}{{/crossLink}}.
-
- This example scene contains:
-
- <ul>
- <li>a ColorBuf that enables blending and sets the color mask,</li>
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape, and
- <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
- </ul>
+ This example creates a {{#crossLink "Entity"}}{{/crossLink}} with a ColorBuf
+ that sets the WebGL color mask and enables blending:
 
  ````javascript
- var scene = new XEO.Scene();
-
- var colorBuf = new XEO.ColorBuf(scene, {
-    blendEnabled: true,
-    colorMask: [true, true, true, true]
-});
-
- var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
-
- var Entity = new XEO.Entity(scene, {
-    colorBuf: colorBuf,
-    geometry: geometry
-});
+ new XEO.Entity({
+     geometry: new XEO.BoxGeometry(),
+     colorBuf: new XEO.ColorBuf({
+         blendEnabled: true,
+         colorMask: [true, true, true, true]
+     })
+ });
  ````
 
  @class ColorBuf

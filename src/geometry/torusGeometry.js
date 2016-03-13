@@ -3,8 +3,26 @@
 
  ## Example
 
- ````javascript
+ An {{#crossLink "Entity"}}{{/crossLink}} with a TorusGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
+ diffuse {{#crossLink "Texture"}}{{/crossLink}}:
 
+ ````javascript
+ new XEO.Entity({
+
+     geometry: new XEO.TorusGeometry({
+         radius: 1.0,
+         tube: 0.3,
+         radialSegments: 32,
+         tubeSegments: 24,
+         arc: Math.PI * 2.0
+     }),
+
+     material: new XEO.PhongMaterial({
+        diffuseMap: new XEO.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+        })
+     })
+ });
  ````
 
  @class TorusGeometry

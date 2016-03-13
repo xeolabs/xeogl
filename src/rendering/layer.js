@@ -1,7 +1,5 @@
 /**
- A **Layer** specifies the render order of {{#crossLink "Entity"}}Entities{{/crossLink}} within their {{#crossLink "Stage"}}Stages{{/crossLink}}.
-
- ## Overview
+ A **Layer** sets the rendering order of {{#crossLink "Entity"}}Entities{{/crossLink}} within their {{#crossLink "Stage"}}Stages{{/crossLink}}.
 
  <ul>
  <li>When xeoEngine renders a {{#crossLink "Scene"}}Scene{{/crossLink}}, each {{#crossLink "Stage"}}Stage{{/crossLink}} within that will render its bin
@@ -45,103 +43,64 @@
  each assigned to a different prioritised {{#crossLink "Layer"}}{{/crossLink}} to ensure that they are rendered in the right order.
 
  ````javascript
- var scene = new XEO.Scene();
-
- // View transform
- var lookat = new XEO.Lookat(scene, {
-    eye: [0,0,10]
-});
-
- // Camera, using Scene's default projection transform
- var camera = new XEO.Camera(scene, {
-    view: lookat
-});
-
  // A Stage, just for completeness
- // We could instead just implicitly use the Scene's default Stage
- var stage = new XEO.Stage(scene, {
+ // We could instead just implicitly default to the Scene's default Stage
+ var stage = new XEO.Stage({
     priority: 0
 });
 
- // Geometry with no parameters defaults to a 2x2x2 box
- var geometry = new XEO.Geometry(scene);
+ // Geometry we'll share among our Entities
+ var geometry = new XEO.BoxGeometry();
 
- //-----------------------------------------------------------------------------
  // Innermost box
  // Blue and opaque, in Layer with render order 0, renders first
- //-----------------------------------------------------------------------------
 
- var layer1 = new XEO.Layer(scene, {
-    priority: 1
-});
-
- var material1 = new XEO.PhongMaterial(scene, {
-    diffuse: [0.2, 0.2, 1.0],
-    opacity: 1.0
-});
-
- var entity1 = new XEO.Entity(scene, {
-    camera: camera,
+ var entity1 = new XEO.Entity({
     geometry: geometry,
     stage: stage,
-    layer: layer1,
-    material: material1
+    layer: new XEO.Layer({
+        priority: 1
+    }),
+    material: new XEO.PhongMaterial({
+        diffuse: [0.2, 0.2, 1.0],
+        opacity: 1.0
+    })
 });
 
- //-----------------------------------------------------------------------------
  // Middle box
  // Red and transparent, in Layer with render order 2, renders next
- //-----------------------------------------------------------------------------
 
- var layer2 = new XEO.Layer(scene, {
-    priority: 2
-});
-
- var material2 = new XEO.PhongMaterial(scene, {
-    diffuse: [1, 0.2, 0.2],
-    opacity: 0.2
-});
-
- var scale2 = new XEO.Scale(scene, {
-    xyz: [6, 6, 6]
-});
-
- var entity2 = new XEO.Entity(scene, {
-    camera: camera,
+ var entity2 = new XEO.Entity({
     geometry: geometry,
     stage: stage,
-    layer: layer2,
-    material: material2,
-    scale: scale2
+    layer: new XEO.Layer({
+        priority: 2
+    }),
+    material: new XEO.Layer({
+        priority: 2
+    }),
+    scale: new XEO.Scale({
+        xyz: [6, 6, 6]
+    })
 });
 
- //-----------------------------------------------------------------------------
  // Outermost box
  // Green and transparent, in Layer with render order 3, renders last
- //-----------------------------------------------------------------------------
 
- var layer3 = new XEO.Layer(scene, {
-    priority: 3
-});
-
- var material3 = new XEO.PhongMaterial(scene, {
-    diffuse: [0.2, 1, 0.2],
-    opacity: 0.2
-});
-
- var scale3 = new XEO.Scale(scene, {
-    xyz: [9, 9, 9]
-});
-
- var entity3 = new XEO.Entity(scene, {
-    camera: camera,
+ var entity3 = new XEO.Entity({
     geometry: geometry,
     stage: stage,
-    layer: layer3,
-    material: material3,
-    scale: scale3
+    layer: new XEO.Layer({
+        priority: 3
+    }),
+    material: new XEO.PhongMaterial({
+        diffuse: [0.2, 1, 0.2],
+        opacity: 0.2
+    }),
+    scale: new XEO.Scale({
+        xyz: [9, 9, 9]
+    })
 });
-
  ````
 
  @class Layer

@@ -1,7 +1,5 @@
 /**
- A **MousePanCamera** pans a {{#crossLink "Camera"}}{{/crossLink}} using the mouse.
-
- ## Overview
+ A **MousePanCamera** pans a {{#crossLink "Camera"}}{{/crossLink}} with the mouse.
 
  <ul>
  <li>A MousePanCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
@@ -20,15 +18,27 @@
  ## Example
 
  ````Javascript
- var scene = new XEO.Scene();
+ var camera = new XEO.Camera({
+     view: new XEO.Lookat({
+         eye: [0, 0, -10],
+         look: [0, 0, 0],
+         up: [0, 1, 0]
+     }),
+     project: new XEO.Perspective({
+         fovy: 60,
+         near: 0.1,
+         far: 1000
+     })
+ });
 
- var camera = new XEO.Camera(scene);
+ var entity = new XEO.Entity({
+     camera: camera,
+     geometry: new XEO.BoxGeometry()
+ });
 
- var control = new XEO.MousePanCamera(scene, {
-        camera: camera
-    });
-
- var entity = new XEO.Entity(scene);
+ new XEO.MousePanCamera({
+     camera: camera
+ });
  ````
 
  @class MousePanCamera

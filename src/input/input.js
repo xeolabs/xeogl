@@ -1,7 +1,5 @@
 /**
- Publishes key and mouse events that occur on the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
-
- ## Overview
+ Publishes keyboard and mouse events that occur on the parent {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Canvas"}}{{/crossLink}}.
 
  <ul>
  <li>Each {{#crossLink "Scene"}}{{/crossLink}} provides an Input on itself as a read-only property.</li>

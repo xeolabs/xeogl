@@ -1,7 +1,5 @@
 /**
- A **Projection** component defines a projection transformation.
-
- ## Overview
+ A **Projection** component defines a projection transformation as a 4x4 matrix.
 
  <ul>
  <li>Projection is the base class for (at least) the {{#crossLink "Perspective"}}{{/crossLink}} and {{#crossLink "Ortho"}}{{/crossLink}} types.</li>
@@ -13,36 +11,23 @@
 
  ## Example
 
- In this example we have an {{#crossLink "Entity"}}Entity{{/crossLink}} that's attached to a
- {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} and a
- Projection:
-
  ````Javascript
- var entity = new XEO.Entity({
+ new XEO.Entity({
 
-        camera: new XEO.Camera({
+     camera: XEO.Camera({
 
-            view: new XEO.Lookat({
-                eye: [0, 0, -4],
-                look: [0, 0, 0],
-                up: [0, 1, 0]
-            }),
+         view: new XEO.Lookat({
+             eye: [0, 0, -4],
+             look: [0, 0, 0],
+             up: [0, 1, 0]
+         }),
 
-            project: new XEO.Projection({
-                matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-            })
-        }),
+         project: new XEO.Projection({
+             matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+         })
+     }),
 
-        geometry: new XEO.BoxGeometry()
-    });
-
- var scene = entity.scene;
- var view = entity.camera.view;
-
- scene.on("tick",
-    function () {
-        view.rotateEyeY(0.5);
-        view.rotateEyeX(0.3);
+     new XEO.BoxGeometry();
  });
  ````
 

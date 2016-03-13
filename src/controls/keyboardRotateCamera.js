@@ -1,8 +1,6 @@
 /**
  A **KeyboardRotateCamera** orbits a {{#crossLink "Camera"}}{{/crossLink}} about its point-of-interest using the keyboard's arrow keys.
 
- ## Overview
-
  <ul>
  <li>A KeyboardRotateCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to its target {{#crossLink "Camera"}}{{/crossLink}}.
  <li>The point-of-interest is the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
@@ -20,23 +18,33 @@
  ## Example
 
  ````Javascript
- var scene = new XEO.Scene();
+ var camera = new XEO.Camera({
+     view: new XEO.Lookat({
+         eye: [0, 0, -10],
+         look: [0, 0, 0],
+         up: [0, 1, 0]
+     }),
+     project: new XEO.Perspective({
+         fovy: 60,
+         near: 0.1,
+         far: 1000
+     })
+ });
 
- var camera = new XEO.Camera(scene);
+ var entity = new XEO.Entity({
+     camera: camera,
+     geometry: new XEO.BoxGeometry()
+ });
 
- var control = new XEO.KeyboardRotateCamera(scene, {
+ new XEO.KeyboardRotateCamera(scene, {
 
-        camera: camera,
+     camera: camera,
 
-        // "First person" mode rotates look about eye.
-        // By default however, we orbit eye about look.
-        firstPerson: false
-    });
-
- var entity = new XEO.Entity(scene);
+     // "First person" mode rotates look about eye.
+     // By default however, we orbit eye about look.
+     firstPerson: false
+ });
  ````
-
-
  @class KeyboardRotateCamera
  @module XEO
  @submodule controls

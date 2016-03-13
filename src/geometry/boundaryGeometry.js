@@ -4,8 +4,38 @@
 
  ## Example
 
+ An {{#crossLink "Entity"}}{{/crossLink}} with a BoundaryGeometry that shows the extents of the
+ World-space {{#crossLink "Boundary3D"}}{{/crossLink}} of another {{#crossLink "Entity"}}{{/crossLink}}:
+
  ````javascript
 
+ // First Entity with a BoxGeometry
+ var box = new XEO.Entity({
+     geometry: new XEO.BoxGeometry({
+        xSize: 1,
+        ySize: 1,
+        zSize: 1
+     })
+ });
+
+ // World-space boundary of the first entity
+ var worldBoundary = box.worldBoundary;
+
+ // Second Entity with a BoundaryGeometry that shows a wireframe box
+ // for the World-space boundary of the first Entity
+
+ new XEO.Entity({
+
+     geometry: new XEO.BoundaryGeometry({
+         boundary: worldBoundary
+     }),
+
+     material: new XEO.PhongMaterial({
+         diffuse: [0.5, 1.0, 0.5],
+         emissive: [0.5, 1.0, 0.5],
+         lineWidth:2
+     })
+ });
  ````
 
  @class BoundaryGeometry

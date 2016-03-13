@@ -3,8 +3,27 @@
 
  ## Example
 
- ````javascript
+ An {{#crossLink "Entity"}}{{/crossLink}} with a PlaneGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
+ diffuse {{#crossLink "Texture"}}{{/crossLink}}:
 
+ ````javascript
+ new XEO.Entity({
+
+     geometry: new XEO.PlaneGeometry({
+         primitive: "triangles",
+         xSize: 2,
+         zSize: 2,
+         xSegments: 10,
+         zSegments: 10,
+         lod: 1.0 // Default
+     }),
+
+     material: new XEO.PhongMaterial({
+        diffuseMap: new XEO.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+        })
+     })
+ });
  ````
 
  @class PlaneGeometry

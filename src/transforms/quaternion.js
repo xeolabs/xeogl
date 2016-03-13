@@ -1,14 +1,12 @@
 /**
-
- A **Quaternion** applies a rotation transformation to associated {{#crossLink "Entity"}}Entities{{/crossLink}}.
-
- ## Overview
+ A **Quaternion** applies a rotation transformation to associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
 
  <ul>
  <li>Quaternion is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
- <li>Instances of Transform and its sub-classes may be connected into hierarchies.</li>
- <li>An {{#crossLink "Entity"}}{{/crossLink}} would be connected to a leaf Transform
- within a hierarchy, and would be transformed by each Transform on the path up to the root, in that order.</li>
+ <li>Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.</li>
+ <li>When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a
+ leaf {{#crossLink "Transform"}}{{/crossLink}} within a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, it will be
+ transformed by each {{#crossLink "Transform"}}{{/crossLink}} on the path up to the root, in that order.</li>
  <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>
  </ul>
 
@@ -18,38 +16,36 @@
 
  In this example we have two {{#crossLink "Entity"}}Entities{{/crossLink}} that are transformed by a hierarchy that contains
  Quaternion, {{#crossLink "Translate"}}{{/crossLink}} and {{#crossLink "Scale"}}{{/crossLink}} transforms.
- The Entities share the same {{#crossLink "Geometry"}}{{/crossLink}}, which is the default 2x2x2 cube.<br>
+ The Entities share the same {{#crossLink "BoxGeometry"}}{{/crossLink}}.<br>
 
  ````javascript
-var scene = new XEO.Scene();
-
-var quaternion = new XEO.Quaternion(scene, {
+var quaternion = new XEO.Quaternion({
     xyzw: [0, 0, 0, 1], // Unit quaternion
 });
 
-var translate1 = new XEO.Translate(scene, {
+var translate1 = new XEO.Translate({
    parent: quaternion,
    xyz: [-5, 0, 0] // Translate along -X axis
 });
 
-var translate2 = new XEO.Translate(scene, {
+var translate2 = new XEO.Translate({
    parent: quaternion,
    xyz: [5, 0, 0] // Translate along +X axis
 });
 
-var scale = new XEO.Scale(scene, {
+var scale = new XEO.Scale({
    parent: translate2,
    xyz: [1, 2, 1] // Scale x2 on Y axis
 });
 
-var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+var geometry = new XEO.BoxGeometry();
 
-var Entity1 = new XEO.Entity(scene, {
+var entity1 = new XEO.Entity(scene, {
    transform: translate1,
    geometry: geometry
 });
 
-var Entity2 = new XEO.Entity(scene, {
+var entity2 = new XEO.Entity({
    transform: scale,
    geometry: geometry
 });
@@ -60,7 +56,7 @@ Since everything in xeoEngine is dynamically editable, we can restructure the tr
 Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "Entity"}}{{/crossLink}}:
 
 ````javascript
-var scale2 = new XEO.Scale(scene, {
+var scale2 = new XEO.Scale({
    parent: translate1,
    xyz: [1, 1, 2] // Scale x2 on Z axis
 });

@@ -1,8 +1,6 @@
 /**
  A **KeyboardZoomCamera** zooms a {{#crossLink "Camera"}}{{/crossLink}} using the + and - keys.
 
- ## Overview
-
  <ul>
  <li>A KeyboardZoomCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
  <li>Zooming involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
@@ -13,17 +11,28 @@
  ## Example
 
  ````Javascript
- var scene = new XEO.Scene();
+ var camera = new XEO.Camera({
+     view: new XEO.Lookat({
+         eye: [0, 0, -10],
+         look: [0, 0, 0],
+         up: [0, 1, 0]
+     }),
+     project: new XEO.Perspective({
+         fovy: 60,
+         near: 0.1,
+         far: 1000
+     })
+ });
 
- var camera = new XEO.Camera(scene);
+ var entity = new XEO.Entity({
+     camera: camera,
+     geometry: new XEO.BoxGeometry()
+ });
 
- var control = new XEO.KeyboardZoomCamera(scene, {
-        camera: camera
-    });
-
- var entity = new XEO.Entity(scene);
+ new XEO.KeyboardZoomCamera({
+     camera: camera
+ });
  ````
-
  @class KeyboardZoomCamera
  @module XEO
  @submodule controls

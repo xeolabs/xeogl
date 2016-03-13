@@ -1,8 +1,6 @@
 /**
  An **Ortho** component defines an orthographic projection transform.
 
- ## Overview
-
  <ul>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
  {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
@@ -14,45 +12,29 @@
 
  ## Example
 
- In this example we have an {{#crossLink "Entity"}}Entity{{/crossLink}} that's attached to a
- {{#crossLink "Camera"}}Camera{{/crossLink}} that has a {{#crossLink "Lookat"}}Lookat{{/crossLink}} view transform and an Ortho
- projection transform.
-
  ````Javascript
- var scene = new XEO.Scene();
+ new XEO.Entity({
 
- var lookat = new XEO.Lookat(scene, {
-        eye: [0, 0, -4],
-        look: [0, 0, 0],
-        up: [0, 1, 0]
-    });
+     camera: XEO.Camera({
 
- var ortho = new XEO.Ortho(scene, {
-        left: -3.0,
-        right: 3.0,
-        bottom: -3.0,
-        top: 3.0,
-        near: 0.1,
-        far: 1000
-    });
+         view: new XEO.Lookat({
+             eye: [0, 0, -4],
+             look: [0, 0, 0],
+             up: [0, 1, 0]
+         }),
 
- var camera = new XEO.Camera(scene, {
-        view: lookat,
-        project: ortho
-    });
+         project: new XEO.Frustum(scene, {
+             left: -3.0,
+             right: 3.0,
+             bottom: -3.0,
+             top: 3.0,
+             near: 0.1,
+             far: 1000
+         })
+     }),
 
- var geometry = new XEO.Geometry(scene);  // Defaults to a 2x2x2 box
-
- var entity = new XEO.Entity(scene, {
-        camera: camera,
-        geometry: geometry
-    });
-
- scene.on("tick",
-    function () {
-                camera.view.rotateEyeY(0.5);
-                camera.view.rotateEyeX(0.3);
-            });
+     new XEO.BoxGeometry();
+ });
  ````
 
  @class Ortho

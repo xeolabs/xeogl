@@ -30,17 +30,16 @@
                 priority: 0
             }),
 
-
-            colorTarget: new XEO.ColorTarget({
+            coXlorTarget: new XEO.ColorTarget({
                 //    size: [1000,1000]
             }),
 
-            camera: new XEO.Camera({
+            camerZXa: new XEO.Camera({
                 view: new XEO.Lookat(),
                 project: new XEO.Ortho()
             }),
 
-            geometry: new XEO.PlaneGeometry({
+            geometry: new XEO.BoxGeometry({
                 xSize: 2,
                 zSize: 2
             }),
@@ -65,6 +64,7 @@
                     "            if(min(fract(pos.x*10.0),fract(pos.y*10.0))<0.1){",
                     "                gl_FragColor = vec4(0.0, 0.5 + fract(pos.x*0.2-time*0.05+5.0), 0.0, 1.0);",
                     "            }",
+                    "                gl_FragColor = vec4(1.0, 1.0,1.0, 1.0);",
                     "        }"
                 ],
                 params: {
@@ -83,48 +83,50 @@
             })
         });
 
+        new XEO.CameraControl()
+
         // We'll apply the color target as a texture on this plane
-
-        var box = new XEO.Entity({
-
-            stage: new XEO.Stage({
-                priority: 1
-            }),
-
-            geometry: new XEO.BoxGeometry(),
-
-            material: new XEO.PhongMaterial({
-
-                diffuseMap: new XEO.Texture({
-                    target: textureGenerator.colorTarget
-//                    ,
-//                    wrapS: "clampToEdge",
-//                    wrapT: "clampToEdge"
-
-                })
-            })
-        });
-
-        box.camera.view.zoom(-5);
-
-        // Game loop
+//
+//        var box = new XEO.Entity({
+//
+//            stage: new XEO.Stage({
+//                priority: 1
+//            }),
+//
+//            geometry: new XEO.BoxGeometry(),
+//
+//            material: new XEO.PhongMaterial({
+//
+//                diffuseMap: new XEO.Texture({
+//                    target: textureGenerator.colorTarget
+////                    ,
+////                    wrapS: "clampToEdge",
+////                    wrapT: "clampToEdge"
+//
+//                })
+//            })
+//        });
+//
+//        box.camera.view.zoom(-5);
+//
+//        // Game loop
 
         var t = 0;
 
-        box.scene.on("tick",
+        XEO.scene.on("tick",
                 function () {
 
                     // Orbit the water's camera
 //                water.camera.view.rotateEyeY(1.2);
 //                water.camera.view.rotateEyeX(0.3);
 
-                    box.shader.setParams({time: t});
-
-                    t += 0.1;
-
-                    // Orbit the plane's camera
-                    box.camera.view.rotateEyeY(0.2);
-                    box.camera.view.rotateEyeX(0.3);
+//                    box.shader.setParams({time: t});
+//
+//                    t += 0.1;
+//
+//                    // Orbit the plane's camera
+//                    box.camera.view.rotateEyeY(0.2);
+//                    box.camera.view.rotateEyeX(0.3);
                 });
 
     };

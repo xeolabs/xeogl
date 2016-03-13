@@ -3,33 +3,52 @@
 
  ## Example
 
+ In the example below we create an {{#crossLink "Entity"}}{{/crossLink}} and a {{#crossLink "Camera"}}{{/crossLink}},
+ then we create a {{#crossLink "CameraPath"}}{{/crossLink}} that binds the {{#crossLink "Camera"}}{{/crossLink}} to a
+ {{#crossLink "SplineCurve"}}{{/crossLink}}. Finally, we periodically update the position 't' on
+ the {{#crossLink "SplineCurve"}}{{/crossLink}} within the {{#crossLink "Scene"}}{{/crossLink}}'s animation loop, which
+ causes the {{#crossLink "Camera"}}{{/crossLink}} to move with that position along the {{#crossLink "SplineCurve"}}{{/crossLink}}.
+
  ````Javascript
+ var camera = new XEO.Camera({
+     view: new XEO.Lookat({
+         eye: [0, 0, -10],
+         look: [0, 0, 0],
+         up: [0, 1, 0]
+     }),
+     project: new XEO.Perspective({
+         fovy: 60,
+         near: 0.1,
+         far: 1000
+     })
+ });
 
- var entity = new XEO.Entity();
-
- var camera = new XEO.Camera();
+ var entity = new XEO.Entity({
+     camera: camera,
+     geometry: new XEO.BoxGeometry()
+ });
 
  var spline = new XEO.SplineCurve({
-            points: [
-                [0, 0, 100],
-                [10, 5, 60],
-                [7, 2, 20],
-                [2, -1, 10]
-            ]
-        });
+     points: [
+         [0, 0, 100],
+         [10, 5, 60],
+         [7, 2, 20],
+         [2, -1, 10]
+     ]
+ });
 
- var cameraPath = new XEO.CameraPath({
+ new XEO.CameraPath({
     camera: camera,
     path: spline
  });
 
- XEO.scene.on("tick",
- function(e) {
+ // Periodically update the position 't' on the SplineCurve, which causes the CameraPath
+ // to interpolate the Camera to that position
 
-        var t = (e.time - e.startTime) * 0.01;
-
-        spline.t = t;
-    });
+ XEO.scene.on("tick", function(e) {
+     var t = (e.time - e.startTime) * 0.01;
+     spline.t = t;
+ });
  ````
 
  @class CameraPath

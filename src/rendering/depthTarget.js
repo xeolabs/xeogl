@@ -2,8 +2,6 @@
  A **DepthTarget** is a  <a href="http://en.wikipedia.org/wiki/Render_Target" target="other">render target</a>  that
  captures the depths of the pixels rendered for the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- ## Overview
-
  <ul>
  <li>DepthTargets are typically used when *rendering-to-texture*.</li>
  <li>A DepthTarget provides the pixel depths as a dynamic color-encoded image that may be fed into {{#crossLink "Texture"}}Textures{{/crossLink}}.</li>
@@ -18,54 +16,31 @@
 
  ## Example
 
- In the example below, we essentially have one {{#crossLink "Entity"}}{{/crossLink}}
- that renders its pixel Z-depth values to a {{#crossLink "Texture"}}{{/crossLink}}, which is then applied
- to a second {{#crossLink "Entity"}}{{/crossLink}}.
-
- The scene contains:
-
- <ul>
- <li>a DepthTarget,</li>
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} that is the default box shape,
- <li>an {{#crossLink "Entity"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}} fragment depth values to the DepthTarget,</li>
- <li>a {{#crossLink "Texture"}}{{/crossLink}} that sources its pixels from the DepthTarget,</li>
- <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} that includes the {{#crossLink "Texture"}}{{/crossLink}}, and</li>
- <li>a second {{#crossLink "Entity"}}{{/crossLink}} that renders the {{#crossLink "Geometry"}}{{/crossLink}}, with the {{#crossLink "Material"}}{{/crossLink}} applied to it.</li>
+ This example contains an {{#crossLink "Entity"}}{{/crossLink}} that renders its (RBGA-encoded) pixel depths to a DepthTarget, which is then
+ piped into a {{#crossLink "Texture"}}{{/crossLink}} that's applied to a second {{#crossLink "Entity"}}{{/crossLink}}.</li>
  </ul>
 
- The pixel colours in the DepthTarget will be depths encoded into RGBA, so will look a little weird when applied directly to the second
- {{#crossLink "Entity"}}{{/crossLink}} as a {{#crossLink "Texture"}}{{/crossLink}}. In practice the {{#crossLink "Texture"}}{{/crossLink}}
- would carry the depth values into a custom {{#crossLink "Shader"}}{{/crossLink}}, which would then be applied to the second {{#crossLink "Entity"}}{{/crossLink}}.
-
  ````javascript
- var scene = new XEO.Scene();
+ var depthTarget = new XEO.DepthTarget();
 
- var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box.
+ // First Entity renders to the DepthTarget
 
- var depthTarget = new XEO.DepthTarget(scene);
-
- // First Entity renders its pixel depth values to our DepthTarget
- var entity1 = new XEO.Entity(scene, {
+ var entity1 = new XEO.Entity({
+    geometry: new XEO.BoxGeometry(),
     depthTarget: depthTarget
-});
+ });
 
- // Texture consumes our DepthTarget
- var texture = new XEO.Texture(scene, {
-    target: depthTarget
-});
 
- // Material contains our Texture
- var material = new XEO.PhongMaterial(scene, {
-    textures: [
-        texture
-    ]
-});
+ // Second Entity is textured with the
+ // image of the first Entity
 
- // Second Entity is effectively textured with the color-encoded
- // pixel depths of the first Entity
- var entity2 = new XEO.Entity(scene, {
-    geometry: geometry,  // Reuse our simple box geometry
-    material: material
+ var entity2 = new XEO.Entity({
+     geometry: new XEO.BoxGeometry()
+     material: new XEO.PhongMaterial({
+         diffuseMap: new XEO.Texture({
+            target: depthTarget
+         })
+     })
 });
  ````
  @class DepthTarget

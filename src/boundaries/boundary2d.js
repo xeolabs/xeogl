@@ -1,8 +1,6 @@
 /**
  A **Boundary2D** is a Canvas-space 2D boundary.
 
- ## Overview
-
  A Boundary2D provides its spatial info in these properties:
 
  <ul>
@@ -23,38 +21,28 @@
 
  An {{#crossLink "Entity"}}{{/crossLink}} provides its Canvas-space boundary as a Boundary2D that encloses
  its {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
- transformation by the Entity's {{#crossLink "Entity/transform:property"}}Modelling transform{{/crossLink}}
- and projection by the matrix of the Entity's {{#crossLink "Entity/camera:property"}}Modelling transform{{/crossLink}}.
+ transformation by the Entity's {{#crossLink "Entity/transform:property"}}modelling transform{{/crossLink}}
+ and {{#crossLink "Entity/camera:property"}}projection transform{{/crossLink}}.
 
- In this example we get the boundary and subscribe to updates on it, then animate the modelling transform,
- which gives us a running update of the moving boundary extents via our update handler.
+ In the example below we'll create an {{#crossLink "Entity"}}{{/crossLink}}, get its Boundary2D, subscribe to updates on it,
+ then animate the {{#crossLink "Entity"}}Entity's{{/crossLink}} {{#crossLink "Translate"}}{{/crossLink}}
+ which gives us a running update of the Boundary2D's moving extents via our update handler.
 
  ```` javascript
+ // Entity With a Geometry and Transform
 
- // Modelling transform
- var translate = new XEO.Translate({
-    xyz: [-5, 0, 0]
- });
-
- // Entity that applies the modelling transform to the Geometry
  var entity = new XEO.Entity({
-       geometry: myGeometry,
-       transform: translate
+        geometry: new XEO.BoxGeometry(),
+        transform: new XEO.Translate({
+            xyz: [-5, 0, 0]
+        })
   });
 
- var canvasBoundary = entity.canvasBoundary();
-
- // Canvas-space AABB
- var aabb = canvasBoundary.aabb;
-
- // Canvas-space center
- var center = canvasBoundary.center;
-
  // Subscribe to updates to the Boundary2D
- canvasBoundary.on("updated",
- function() {
 
-        // Get the updated properties again
+ var canvasBoundary = entity.canvasBoundary;
+
+ canvasBoundary.on("updated", function() {
 
         aabb = canvasBoundary.aabb;
         center = canvasBoundary.center;
@@ -69,7 +57,7 @@
  var x = 0;
 
  entity.scene.on("tick", function() {
-    translate.xyz: [x, 0, 0];
+    entity.transform.xyz: [x, 0, 0];
     x += 0.5;
  });
  ````
