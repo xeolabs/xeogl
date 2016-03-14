@@ -1,4 +1,5 @@
 /**
+
  A **PathGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that is defined by a {{#crossLink "Curve"}}{{/crossLink}}.
 
  ## Usage
@@ -48,7 +49,8 @@
  ````
 
  @class PathGeometry
- @module geometry
+ @module XEO
+ @submodule geometry
  @extends Geometry
  */
 XEO.PathGeometry = XEO.Geometry.extend({
