@@ -25,7 +25,7 @@
 
  <img src="../../../assets/images/Clip.png"></img>
 
- ## Example
+ ## Usage
 
  <ul>
  <li>In this example we have an {{#crossLink "Entity"}}{{/crossLink}} that's clipped by a {{#crossLink "Clips"}}{{/crossLink}}

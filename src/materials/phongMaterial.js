@@ -28,7 +28,7 @@
 
  <img src="../../../assets/images/PhongMaterial.png"></img>
 
- ## Example
+ ## Usage
 
  In this example we have an Entity with
 

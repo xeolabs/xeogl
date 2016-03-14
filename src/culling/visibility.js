@@ -12,7 +12,7 @@
 
  <img src="../../../assets/images/Visibility.png"></img>
 
- ## Example
+ ## Usage
 
  This example creates a Visibility that toggles the visibility of
  two {{#crossLink "Entity"}}Entities{{/crossLink}}.

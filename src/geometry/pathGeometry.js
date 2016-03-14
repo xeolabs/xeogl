@@ -1,7 +1,7 @@
 /**
  A **PathGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that is defined by a {{#crossLink "Curve"}}{{/crossLink}}.
 
- ## Example
+ ## Usage
 
  An {{#crossLink "Entity"}}{{/crossLink}} with a PathGeometry, a {{#crossLink "Path"}}{{/crossLink}} and
  a {{#crossLink "PhongMaterial"}}{{/crossLink}}:

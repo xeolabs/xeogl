@@ -14,7 +14,14 @@
  and {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vectors.</li>
  </ul>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)</li>
+ <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
+ </ul>
+
+ ## Usage
 
  ````Javascript
  var camera = new XEO.Camera({

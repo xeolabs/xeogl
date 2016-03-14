@@ -12,7 +12,7 @@
 
  <img src="../../../assets/images/Modes.png"></img>
 
- ## Example
+ ## Usage
 
  In this example we have a Modes that toggles rendering modes for two {{#crossLink "Entity"}}Entities{{/crossLink}}. The
  properties of the Modes are initialised to their default values.

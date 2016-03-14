@@ -3,6 +3,16 @@
  **Curve** is the abstract base class for {{#crossLink "SplineCurve"}}{{/crossLink}},
  {{#crossLink "CubicBezierCurve"}}{{/crossLink}}, {{#crossLink "QuadraticBezierCurve"}}{{/crossLink}} and {{#crossLink "Path"}}{{/crossLink}}.
 
+ ## Examples
+
+ <ul>
+ <li>[CubicBezierCurve example](../../examples/#curves_CubicBezierCurve)</li>
+ <li>[Tweening position along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve)</li>
+ <li>[Tweening color along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve_color)</li>
+ <li>[SplineCurve example](../../examples/#curves_SplineCurve)</li>
+ <li>[Path example](../../examples/#curves_Path)</li>
+ </ul>
+
  @class Curve
  @module XEO
  @submodule curves

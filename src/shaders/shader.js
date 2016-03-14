@@ -14,7 +14,7 @@
 
  <img src="../../../assets/images/Shader.png"></img>
 
- ## Example
+ ## Usage
 
  This example shows the simplest way to use a Shader, where we're just going to render a ripply water
  pattern to a screen-aligned quad.

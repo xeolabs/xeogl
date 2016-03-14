@@ -9,7 +9,13 @@
 
  <img src="../../../assets/images/Frustum.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Camera with frustum projection](../../examples/#camera_frustum)</li>
+ </ul>
+
+ ## Usage
 
  ````Javascript
  new XEO.Entity({

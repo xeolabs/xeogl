@@ -12,7 +12,14 @@
 
  <img src="../../../assets/images/CollectionBoundary.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Visualizing a CollectionBoundary](../../examples/#boundaries_CollectionBoundary)</li>
+ <li>[Visualizing a CollectionBoundary hierarchy](../../examples/#boundaries_CollectionBoundary_hierarchy)</li>
+ </ul>
+
+ ## Usage
 
  Let's create a {{#crossLink "Collection"}}{{/crossLink}} that contains two {{#crossLink "Entity"}}Entities{{/crossLink}}:
 

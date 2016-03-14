@@ -15,7 +15,13 @@
 
  <img src="../../../assets/images/Transform.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Transform hierarchy](../../examples/#transforms_hierarchy)</li>
+ </ul>
+
+ ## Usage
 
  In this example we'll create the table shown below, which consists of five {{#crossLink "Entity"}}Entities{{/crossLink}}
  that share a {{#crossLink "BoxGeometry"}}{{/crossLink}} and each connect to a different leaf within a hierarchy of

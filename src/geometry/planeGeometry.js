@@ -1,7 +1,13 @@
 /**
  A **PlaneGeometry** defines a plane geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Textured PlaneGeometry](../../examples/#geometry_PlaneGeometry)</li>
+ </ul>
+
+ ## Usage
 
  An {{#crossLink "Entity"}}{{/crossLink}} with a PlaneGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
  diffuse {{#crossLink "Texture"}}{{/crossLink}}:

@@ -14,7 +14,7 @@
 
  <img src="../../../assets/images/DepthTarget.png"></img>
 
- ## Example
+ ## Usage
 
  This example contains an {{#crossLink "Entity"}}{{/crossLink}} that renders its (RBGA-encoded) pixel depths to a DepthTarget, which is then
  piped into a {{#crossLink "Texture"}}{{/crossLink}} that's applied to a second {{#crossLink "Entity"}}{{/crossLink}}.</li>

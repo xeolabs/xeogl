@@ -28,7 +28,18 @@
  <br><br>
  <img src="../../../assets/images/Boundary3D.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Entity World-space boundary](../../examples/#boundaries_Entity_worldBoundary)</li>
+ <li>[Entity View-space boundary](../../examples/#boundaries_Entity_viewBoundary)</li>
+ <li>[Entity Canvas-space boundary](../../examples/#boundaries_Entity_canvasBoundary)</li>
+ <li>[Flying camera to Entity World-space boundaries](../../examples/#boundaries_flyToBoundary)</li>
+ <li>[Visualizing a CollectionBoundary](../../examples/#boundaries_CollectionBoundary)</li>
+ <li>[Visualizing a CollectionBoundary hierarchy](../../examples/#boundaries_CollectionBoundary_hierarchy)</li>
+ </ul>
+
+ ## Usage
 
  In the example below we'll get the World-space Boundary3D of an {{#crossLink "Entity"}}{{/crossLink}}, subscribe to updates on the Boundary3D,
  then animate the {{#crossLink "Entity"}}Entity's{{/crossLink}} modelling transform, which gives our callback a running update

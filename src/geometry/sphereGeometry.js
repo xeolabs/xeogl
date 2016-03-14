@@ -1,7 +1,7 @@
 /**
  A **SphereGeometry** defines spherical geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- ## Example
+ ## Usage
 
  An {{#crossLink "Entity"}}{{/crossLink}} with a SphereGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
  diffuse {{#crossLink "Texture"}}{{/crossLink}}:

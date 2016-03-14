@@ -1,7 +1,7 @@
 /**
  A **LatheGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that's defined as the revolution of a profile about an exis.
 
- ## Example
+ ## Usage
 
  An {{#crossLink "Entity"}}{{/crossLink}} with a LatheGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
  diffuse {{#crossLink "Texture"}}{{/crossLink}}:

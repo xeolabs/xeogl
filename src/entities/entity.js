@@ -7,6 +7,11 @@
 
  <img src="../../../assets/images/Entity.png"></img>
 
+ ## Examples
+
+ <ul>
+ <li>[Minimal Entity example](../../examples/#entities_minimal)</li>
+ </ul>
 
  ## Boundaries
 

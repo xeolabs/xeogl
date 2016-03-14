@@ -23,7 +23,7 @@
  </ul>
  <img src="../../../assets/images/Clips.png"></img>
 
- ## Example
+ ## Usage
 
  See {{#crossLink "Clip"}}{{/crossLink}} for an example.
 

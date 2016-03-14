@@ -5,7 +5,14 @@
  <li>Make a Viewport automatically size to its {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}{{/crossLink}}
  by setting its {{#crossLink "Viewport/autoBoundary:property"}}{{/crossLink}} property ````true```` (default is ````false````).</li>
  </ul>
- ## Example
+
+ ## Examples
+
+ <ul>
+ <li>[Multiple viewports](../../examples/#canvas_multipleViewports)</li>
+ </ul>
+
+ ## Usage
 
  ````javascript
  new XEO.Entity({

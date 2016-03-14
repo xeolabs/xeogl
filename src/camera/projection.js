@@ -9,7 +9,13 @@
 
  <img src="../../../assets/images/Projection.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Camera with perspective projection](../../examples/#camera_perspective)</li>
+ </ul>
+
+ ## Usage
 
  ````Javascript
  new XEO.Entity({

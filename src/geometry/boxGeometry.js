@@ -1,7 +1,13 @@
 /**
  A **BoxGeometry** defines box-shaped geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Textured BoxGeometry](../../examples/#geometry_BoxGeometry)</li>
+ </ul>
+
+ ## Usage
 
  An {{#crossLink "Entity"}}{{/crossLink}} with a BoxGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
  diffuse {{#crossLink "Texture"}}{{/crossLink}}:

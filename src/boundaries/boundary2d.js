@@ -17,7 +17,13 @@
 
  <img src="../../../assets/images/Boundary2D.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Visualizing an Entity's Canvas-space boundary](../../examples/#boundaries_Entity_canvasBoundary)</li>
+ </ul>
+
+ ## Usage
 
  An {{#crossLink "Entity"}}{{/crossLink}} provides its Canvas-space boundary as a Boundary2D that encloses
  its {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after

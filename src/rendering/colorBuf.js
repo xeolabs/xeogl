@@ -10,7 +10,7 @@
 
  <img src="../../../assets/images/ColorBuf.png"></img>
 
- ## Example
+ ## Usage
 
  This example creates a {{#crossLink "Entity"}}{{/crossLink}} with a ColorBuf
  that sets the WebGL color mask and enables blending:

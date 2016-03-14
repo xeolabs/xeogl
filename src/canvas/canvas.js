@@ -22,7 +22,13 @@
  Note that a Canvas also has a {{#crossLink "Spinner"}}{{/crossLink}}, which shows a
  busy spinner when a {{#crossLink "Model"}}{{/crossLink}} is loading, or when directed by application logic.
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Multiple canvases](../../examples/#scene_multipleScenes)</li>
+ </ul>
+
+ ## Usage
 
  In the example below, we're creating a {{#crossLink "Scene"}}Scene{{/crossLink}} without specifying an HTML canvas element
  for it. This causes the {{#crossLink "Scene"}}Scene{{/crossLink}}'s Canvas component to create its own default element

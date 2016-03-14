@@ -11,6 +11,16 @@
 
  <img src="../../../assets/images/Collection.png"></img>
 
+ ## Examples
+
+ <ul>
+ <li>[Adding Entities to a Collection](../../examples/#collections_Collection_creating_add)</li>
+ <li>[Adding components types to a Collection](../../examples/#collections_Collection_creating_type)</li>
+ <li>[Iterating a Collection](../../examples/#boundaries_Collection_iterating)</li>
+ <li>[Visualizing World-space boundary of a Collection](../../examples/#boundaries_CollectionBoundary)</li>
+ <li>[Visualizing World-space boundaries of a hierarchy of Collections](../../examples/#boundaries_CollectionBoundary_hierarchy)</li>
+ </ul>
+
  ## Creating Collections
 
  Our first Collection contains a {{#crossLink "PhongMaterial"}}{{/crossLink}}, added by ID, plus a {{#crossLink "BoxGeometry"}}{{/crossLink}} and

@@ -3,7 +3,14 @@
  {{#crossLink "Lookat"}}viewing transform{{/crossLink}}, to a provide the appearance of a background
  for associated {{#crossLink "Entities"}}Entities{{/crossLink}}.
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Basic Skybox](../../examples/#skyboxes_skybox)</li>
+ <li>[Custom Skybox](../../examples/#skyboxes_customSkybox)</li>
+ </ul>
+
+ ## Usage
 
  In the example below we're going to create twenty randomly-positioned and colored {{#crossLink "Entity"}}Entities{{/crossLink}}
  and wrap them in a Skybox. The Skybox will use the texture image shown on the left, and the result will appear as shown

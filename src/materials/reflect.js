@@ -20,7 +20,7 @@
 
  <img src="../../../assets/images/Reflect.png"></img>
 
- ## Example
+ ## Usage
 
  The example below has:
  <ul>

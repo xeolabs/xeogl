@@ -15,7 +15,14 @@
  will orbit the {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
  </ul>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)</li>
+ <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
+ </ul>
+
+ ## Usage
 
  ````Javascript
  var camera = new XEO.Camera({

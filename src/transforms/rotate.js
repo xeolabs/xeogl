@@ -10,10 +10,15 @@
  <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>
  </ul>
 
-
  <img src="../../../assets/images/Rotate.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Transform hierarchy](../../examples/#transforms_hierarchy)</li>
+ </ul>
+
+ ## Usage
 
  In this example we have two {{#crossLink "Entity"}}Entities{{/crossLink}} that are transformed by a hierarchy that contains
  Rotate, {{#crossLink "Translate"}}{{/crossLink}} and {{#crossLink "Scale"}}{{/crossLink}} transforms.

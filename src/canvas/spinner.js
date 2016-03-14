@@ -12,7 +12,13 @@
 
  <img src="../../../assets/images/Spinner.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Loading glTF model with spinner](../../examples/#importing_gltf_gearbox)</li>
+ </ul>
+
+ ## Usage
 
  ````javascript
  var spinner = myScene.canvas.spinner;

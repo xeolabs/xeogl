@@ -19,7 +19,7 @@
 
  <img src="../../../assets/images/Stage.png"></img>
 
- ## Example
+ ## Usage
 
  In this example we're performing render-to-texture using {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} and
  {{#crossLink "Texture"}}{{/crossLink}} components.
