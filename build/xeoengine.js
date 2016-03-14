@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-03-13
+ * Built on 2016-03-14
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -10520,7 +10520,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  component instances. In many Scenes, for example, you might not even bother to create your own {{#crossLink "Camera"}}Camera{{/crossLink}} and just
  let all your {{#crossLink "Entity"}}Entities{{/crossLink}} fall back on the default one.
 
- ## Example
+ ## Usage
 
  Here's the JavaScript for the diagram above. As mentioned earlier, note that we only provide components for our {{#crossLink "Entity"}}Entities{{/crossLink}} when we need to
  override the default components that the Scene would have provided them, and that the same component instances may be shared among multiple Entities.
@@ -12254,7 +12254,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
      <img src="../../../assets/images/MorphTargets.png"></img>
 
-     ## Example
+     ## Usage
 
      TODO
 
@@ -12377,7 +12377,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  <li>an instance or ID of any {{#crossLink "Component"}}{{/crossLink}} subtype that provides a World-space</li>
  {{#crossLink "Boundary3D"}}{{/crossLink}} in a "worldBoundary" property, or</li>
  <li>an axis-aligned World-space bounding box.</li>
+ </ul>
 
+ ## Examples
+
+ <ul>
+ <li>[Flying to Entity](../../examples/#CameraFlight_Entity)</li>
+ <li>[Flying to Boundary3D](../../examples/#CameraFlight_Boundary3D)</li>
+ <li>[Flying to AABB](../../examples/#CameraFlight_AABB)</li>
  </ul>
 
  ## Flying to a position
@@ -12822,7 +12829,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 ;/**
  A **CameraPath** flies a {{#crossLink "Camera"}}{{/crossLink}} along a {{#crossLink "Curve"}}{{/crossLink}}.
 
- ## Example
+ ## Usage
 
  In the example below we create an {{#crossLink "Entity"}}{{/crossLink}} and a {{#crossLink "Camera"}}{{/crossLink}},
  then we create a {{#crossLink "CameraPath"}}{{/crossLink}} that binds the {{#crossLink "Camera"}}{{/crossLink}} to a
@@ -13082,7 +13089,13 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  <img src="../../../assets/images/Camera.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Perspective Camera](../../examples/#camera_perspective)</li>
+ </ul>
+
+ ## Usage
 
  The example below defines an {{#crossLink "Entity"}}{{/crossLink}} that has a Camera with
  a {{#crossLink "Lookat"}}{{/crossLink}} view transform and a {{#crossLink "Perspective"}}{{/crossLink}} projection transform.
@@ -13282,7 +13295,13 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  <img src="../../../assets/images/Projection.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Camera with perspective projection](../../examples/#camera_perspective)</li>
+ </ul>
+
+ ## Usage
 
  ````Javascript
  new XEO.Entity({
@@ -13395,7 +13414,13 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  <img src="../../../assets/images/Frustum.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Camera with frustum projection](../../examples/#camera_frustum)</li>
+ </ul>
+
+ ## Usage
 
  ````Javascript
  new XEO.Entity({
@@ -13745,7 +13770,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  <img src="../../../assets/images/Lookat.png"></img>
 
- ## Example
+ ## Usage
 
  ````Javascript
  new XEO.Entity({
@@ -14196,7 +14221,13 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  <img src="../../../assets/images/Ortho.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Camera with orthographic projection](../../examples/#camera_ortho)</li>
+ </ul>
+
+ ## Usage
 
  ````Javascript
  new XEO.Entity({
@@ -14541,7 +14572,13 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  <img src="../../../assets/images/Perspective.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Camera with perspective projection](../../examples/#camera_perspective)</li>
+ </ul>
+
+ ## Usage
 
  ````Javascript
  new XEO.Entity({
@@ -14790,7 +14827,13 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  Note that a Canvas also has a {{#crossLink "Spinner"}}{{/crossLink}}, which shows a
  busy spinner when a {{#crossLink "Model"}}{{/crossLink}} is loading, or when directed by application logic.
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Multiple canvases](../../examples/#scene_multipleScenes)</li>
+ </ul>
+
+ ## Usage
 
  In the example below, we're creating a {{#crossLink "Scene"}}Scene{{/crossLink}} without specifying an HTML canvas element
  for it. This causes the {{#crossLink "Scene"}}Scene{{/crossLink}}'s Canvas component to create its own default element
@@ -15219,7 +15262,13 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  <img src="../../../assets/images/Spinner.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Loading glTF model with spinner](../../examples/#importing_gltf_gearbox)</li>
+ </ul>
+
+ ## Usage
 
  ````javascript
  var spinner = myScene.canvas.spinner;
@@ -15539,7 +15588,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  <img src="../../../assets/images/Clip.png"></img>
 
- ## Example
+ ## Usage
 
  <ul>
  <li>In this example we have an {{#crossLink "Entity"}}{{/crossLink}} that's clipped by a {{#crossLink "Clips"}}{{/crossLink}}
@@ -15773,7 +15822,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  </ul>
  <img src="../../../assets/images/Clips.png"></img>
 
- ## Example
+ ## Usage
 
  See {{#crossLink "Clip"}}{{/crossLink}} for an example.
 
@@ -16026,7 +16075,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  | TODO  | TODO  |
 
 
- ## Example
+ ## Usage
 
  In this example, we're subscribing to change events for a {{#crossLink "Scene"}}Scene's{{/crossLink}} "foo" configuration property, then updating that
  property, which fires a change event.
@@ -16136,10 +16185,21 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  <li>A CameraControl manages the life-cycles of its control sub-components, destroying them when the CameraControl is destroyed.</li>
  </ul>
 
- <br><br>
  <img src="../../../assets/images/CameraControl.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
+ <li>[KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)</li>
+ <li>[KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)</li>
+ <li>[KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)</li>
+ <li>[KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)</li>
+ <li>[KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)</li>
+ <li>[KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)</li>
+ </ul>
+
+ ## Usage
 
  ````Javascript
  var camera = new XEO.Camera({
@@ -16601,7 +16661,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  <li>'6' - inferior, viewing center from along +Y axis</li>
  </ul>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[KeyboardAxisCamera example](../../examples/#interaction_KeyboardAxisCamera)</li>
+ <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
+ </ul>
+
+ ## Usage
 
  ````Javascript
  var camera = new XEO.Camera({
@@ -16907,7 +16974,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  will orbit the {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
  </ul>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)</li>
+ <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
+ </ul>
+
+ ## Usage
 
  ````Javascript
  var camera = new XEO.Camera({
@@ -17216,7 +17290,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  and {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vectors.</li>
  </ul>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)</li>
+ <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
+ </ul>
+
+ ## Usage
 
  ````Javascript
  var camera = new XEO.Camera({
@@ -17477,7 +17558,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  along the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
  </ul>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)</li>
+ <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
+ </ul>
+
+ ## Usage
 
  ````Javascript
  var camera = new XEO.Camera({
@@ -17724,7 +17812,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  will orbit the {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
  </ul>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[MouseRotateCamera example](../../examples/#interaction_MouseRotateCamera)</li>
+ <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
+ </ul>
+
+ ## Usage
 
  ````Javascript
  var camera = new XEO.Camera({
@@ -18106,7 +18201,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  and {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vectors.</li>
  </ul>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[MousePanCamera example](../../examples/#interaction_MousePanCamera)</li>
+ <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
+ </ul>
+
+ ## Usage
 
  ````Javascript
  var camera = new XEO.Camera({
@@ -18367,9 +18469,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 ;/**
  A **MousePickEntity** picks {{#crossLink "Entity"}}Entities{{/crossLink}} with mouse clicks.
 
- TODO
+ ## Examples
 
- ## Example
+ <ul>
+ <li>[MousePickEntity example](../../examples/#interaction_MousePickEntity)</li>
+ <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
+ </ul>
+
+ ## Usage
 
  ````Javascript
  // Create some Entities
@@ -18629,7 +18736,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  along the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
  </ul>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[MouseZoomCamera example](../../examples/#interaction_MouseZoomCamera)</li>
+ <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
+ </ul>
+
+ ## Usage
 
  ````Javascript
  var camera = new XEO.Camera({
@@ -18920,7 +19034,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  <img src="../../../assets/images/Cull.png"></img>
 
- ## Example
+ ## Usage
 
  This example creates a Cull that toggles the culling of
  two {{#crossLink "Entity"}}Entities{{/crossLink}}.
@@ -19056,7 +19170,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
  <img src="../../../assets/images/Visibility.png"></img>
 
- ## Example
+ ## Usage
 
  This example creates a Visibility that toggles the visibility of
  two {{#crossLink "Entity"}}Entities{{/crossLink}}.
@@ -19180,6 +19294,16 @@ visibility.destroy();
 
  **Curve** is the abstract base class for {{#crossLink "SplineCurve"}}{{/crossLink}},
  {{#crossLink "CubicBezierCurve"}}{{/crossLink}}, {{#crossLink "QuadraticBezierCurve"}}{{/crossLink}} and {{#crossLink "Path"}}{{/crossLink}}.
+
+ ## Examples
+
+ <ul>
+ <li>[CubicBezierCurve example](../../examples/#curves_CubicBezierCurve)</li>
+ <li>[Tweening position along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve)</li>
+ <li>[Tweening color along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve_color)</li>
+ <li>[SplineCurve example](../../examples/#curves_SplineCurve)</li>
+ <li>[Path example](../../examples/#curves_Path)</li>
+ </ul>
 
  @class Curve
  @module XEO
@@ -19500,7 +19624,14 @@ visibility.destroy();
  <img style="border:1px solid;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/B%C3%A9zier_3_big.gif/240px-B%C3%A9zier_3_big.gif"/><br>
  *[Cubic Bezier Curve from WikiPedia](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)*
 
- ## Example 1
+ ## Examples
+
+ <ul>
+ <li>[CubicBezierCurve example](../../examples/#curves_CubicBezierCurve)</li>
+ <li>[Path example](../../examples/#curves_Path)</li>
+ </ul>
+
+ ## Usage 1
 
  Create a CubicBezierCurve, subscribe to updates on its {{#crossLink "CubicBezierCurve/point:property"}}{{/crossLink}} and
  {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties, then vary its {{#crossLink "CubicBezierCurve/t:property"}}{{/crossLink}}
@@ -19770,7 +19901,14 @@ visibility.destroy();
  <img style="border:1px solid; background: white;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Quadratic_spline_six_segments.svg/200px-Quadratic_spline_six_segments.svg.png"/><br>
  *<a href="https://en.wikipedia.org/wiki/Spline_(mathematics)">Spline Curve from Wikipedia</a>*
 
- ## Example 1
+ ## Examples
+
+ <ul>
+ <li>[SplineCurve example](../../examples/#curves_SplineCurve)</li>
+ <li>[Path example](../../examples/#curves_Path)</li>
+ </ul>
+
+ ## Usage 1
 
  Create a SplineCurve, subscribe to updates on its {{#crossLink "SplineCurve/point:property"}}{{/crossLink}} and
  {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties, then vary its {{#crossLink "SplineCurve/t:property"}}{{/crossLink}}
@@ -19797,7 +19935,7 @@ visibility.destroy();
  });
  ````
 
- ## Example 2
+ ## Usage 2
 
  Alternatively, we can randomly sample the point and vector at a given **t** with calls
  to the SplineCurve's {{#crossLink "SplineCurve/getPoint:method"}}{{/crossLink}} and
@@ -19997,7 +20135,15 @@ visibility.destroy();
  <img style="border:1px solid;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/B%C3%A9zier_2_big.gif/240px-B%C3%A9zier_2_big.gif"/><br>
  *[Quadratic Bezier Curve from WikiPedia](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)*
 
- ## Example 1
+ ## Examples
+
+ <ul>
+ <li>[Tweening position along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve)</li>
+ <li>[Tweening color along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve_color)</li>
+ <li>[Path example](../../examples/#curves_Path)</li>
+ </ul>
+
+ ## Usage 1
 
  Create a QuadraticBezierCurve, subscribe to updates on its {{#crossLink "QuadraticBezierCurve/point:property"}}{{/crossLink}} and
  {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties, then vary its {{#crossLink "QuadraticBezierCurve/t:property"}}{{/crossLink}}
@@ -20023,7 +20169,7 @@ visibility.destroy();
  });
  ````
 
- ## Example 2
+ ## Usage 2
 
  In the next example, we'll create an {{#crossLink "Entity"}}{{/crossLink}} with a
  {{#crossLink "PhongMaterial"}}{{/crossLink}} whose diffuse color is bound to the
@@ -20061,7 +20207,7 @@ visibility.destroy();
  });
  ````
 
- ## Example 3
+ ## Usage 3
 
  In the previous two examples, we relied on our QuadraticBezierCurves to remember their progress in their
  {{#crossLink "QuadraticBezierCurve/t:property"}}{{/crossLink}} and {{#crossLink "QuadraticBezierCurve/point:property"}}{{/crossLink}}
@@ -20090,7 +20236,7 @@ visibility.destroy();
  });
  ````
 
- ## Example 4
+ ## Usage 4
 
  When we want to build a {{#crossLink "Geometry"}}{{/crossLink}} from a QuadraticBezierCurve, we can sample points
  along the curve using its {{#crossLink "Curve/getPoints:method"}}{{/crossLink}} method, as shown below.
@@ -20324,7 +20470,17 @@ visibility.destroy();
  will update accordingly.</li>
  </ul>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[CubicBezierCurve example](../../examples/#curves_CubicBezierCurve)</li>
+ <li>[Tweening position along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve)</li>
+ <li>[Tweening color along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve_color)</li>
+ <li>[SplineCurve example](../../examples/#curves_SplineCurve)</li>
+ <li>[Path example](../../examples/#curves_Path)</li>
+ </ul>
+
+ ## Usage
 
  Create a Path containing a {{#crossLink "CubicBezierCurve"}}{{/crossLink}}, a {{#crossLink "QuadraticBezierCurve"}}{{/crossLink}}
  and a {{#crossLink "SplineCurve"}}{{/crossLink}}, subscribe to updates on its {{#crossLink "Path/point:property"}}{{/crossLink}} and
@@ -20717,6 +20873,16 @@ visibility.destroy();
  </ul>
 
  <img src="../../../assets/images/Geometry.png"></img>
+
+ ## Examples
+
+ <ul>
+ <li>[Simple triangle mesh](../../examples/#geometry_triangles)</li>
+ <li>[Triangle mesh with diffuse texture](../../examples/#geometry_triangles_texture)</li>
+ <li>[Triangle mesh with vertex colors](../../examples/#geometry_triangles_vertexColors)</li>
+ <li>[Wireframe box](../../examples/#geometry_lines)</li>
+ <li>[Dynamically modifying a TorusGeometry](../../examples/#geometry_modifying)</li>
+ </ul>
 
  ## Default shape</a>
 
@@ -21960,7 +22126,13 @@ visibility.destroy();
 ;/**
  A **BoxGeometry** defines box-shaped geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Textured BoxGeometry](../../examples/#geometry_BoxGeometry)</li>
+ </ul>
+
+ ## Usage
 
  An {{#crossLink "Entity"}}{{/crossLink}} with a BoxGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
  diffuse {{#crossLink "Texture"}}{{/crossLink}}:
@@ -22334,7 +22506,13 @@ visibility.destroy();
  A **BoundaryGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the entity-aligned wireframe bounding box (OBB)
  of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Rendering a BoundaryGeometry](../../examples/#geometry_BoundaryGeometry)</li>
+ </ul>
+
+ ## Usage
 
  An {{#crossLink "Entity"}}{{/crossLink}} with a BoundaryGeometry that shows the extents of the
  World-space {{#crossLink "Boundary3D"}}{{/crossLink}} of another {{#crossLink "Entity"}}{{/crossLink}}:
@@ -22600,7 +22778,7 @@ visibility.destroy();
 ;/**
  A **TorusGeometry** defines torus-shaped geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- ## Example
+ ## Usage
 
  An {{#crossLink "Entity"}}{{/crossLink}} with a TorusGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
  diffuse {{#crossLink "Texture"}}{{/crossLink}}:
@@ -23033,7 +23211,7 @@ visibility.destroy();
 ;/**
  A **SphereGeometry** defines spherical geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- ## Example
+ ## Usage
 
  An {{#crossLink "Entity"}}{{/crossLink}} with a SphereGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
  diffuse {{#crossLink "Texture"}}{{/crossLink}}:
@@ -23374,7 +23552,7 @@ visibility.destroy();
 ;/**
  A **PathGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that is defined by a {{#crossLink "Curve"}}{{/crossLink}}.
 
- ## Example
+ ## Usage
 
  An {{#crossLink "Entity"}}{{/crossLink}} with a PathGeometry, a {{#crossLink "Path"}}{{/crossLink}} and
  a {{#crossLink "PhongMaterial"}}{{/crossLink}}:
@@ -23584,7 +23762,13 @@ XEO.PathGeometry = XEO.Geometry.extend({
 });;/**
  A **CylinderGeometry** defines cylindrical geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Textured CylinderGeometry](../../examples/#geometry_CylinderGeometry)</li>
+ </ul>
+
+ ## Usage
 
  An {{#crossLink "Entity"}}{{/crossLink}} with a CylinderGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
  diffuse {{#crossLink "Texture"}}{{/crossLink}}:
@@ -24136,7 +24320,13 @@ XEO.PathGeometry = XEO.Geometry.extend({
 ;/**
  A **PlaneGeometry** defines a plane geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Textured PlaneGeometry](../../examples/#geometry_PlaneGeometry)</li>
+ </ul>
+
+ ## Usage
 
  An {{#crossLink "Entity"}}{{/crossLink}} with a PlaneGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
  diffuse {{#crossLink "Texture"}}{{/crossLink}}:
@@ -24534,7 +24724,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 ;/**
  A **LatheGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that's defined as the revolution of a profile about an exis.
 
- ## Example
+ ## Usage
 
  An {{#crossLink "Entity"}}{{/crossLink}} with a LatheGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
  diffuse {{#crossLink "Texture"}}{{/crossLink}}:
@@ -24923,6 +25113,16 @@ XEO.PathGeometry = XEO.Geometry.extend({
  </ul>
 
  <img src="../../../assets/images/Collection.png"></img>
+
+ ## Examples
+
+ <ul>
+ <li>[Adding Entities to a Collection](../../examples/#collections_Collection_creating_add)</li>
+ <li>[Adding components types to a Collection](../../examples/#collections_Collection_creating_type)</li>
+ <li>[Iterating a Collection](../../examples/#boundaries_Collection_iterating)</li>
+ <li>[Visualizing World-space boundary of a Collection](../../examples/#boundaries_CollectionBoundary)</li>
+ <li>[Visualizing World-space boundaries of a hierarchy of Collections](../../examples/#boundaries_CollectionBoundary_hierarchy)</li>
+ </ul>
 
  ## Creating Collections
 
@@ -25389,7 +25589,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
  <img src="../../../assets/images/Input.png"></img>
 
- ## Example
+ ## Usage
 
  In this example, we're subscribing to some mouse and key events that will occur on
  a {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
@@ -25755,8 +25955,6 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     }
 
                     var coords = self._getClickCoordsWithinElement(e);
-
-                    console.log("mousemove=" + coords[0] + ", " + coords[1])
 
                     /**
                      * Fired whenever the mouse is moved over the parent
@@ -26677,7 +26875,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
  <img src="../../../assets/images/Lights.png"></img>
 
- ## Example
+ ## Usage
 
  ```` javascript
  var entity = new XEO.Entity({
@@ -26974,10 +27172,16 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
  <img src="../../../assets/images/AmbientLight.png"></img>
 
- ### Example
+ ## Examples
+
+ <ul>
+ <li>[Ambient light source](../../examples/#lights_ambient)</li>
+ </ul>
+
+ ## Usage
 
  ```` javascript
- var entity = new XEO.Entity(scene, {
+ var entity = new XEO.Entity({
 
         lights: new XEO.Lights({
             lights: [
@@ -27117,7 +27321,14 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
  <img src="../../../assets/images/DirLight.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[View-space directional light](../../examples/#lights_directional_view)</li>
+ <li>[World-space directional light](../../examples/#lights_directional_world)</li>
+ </ul>
+
+ ## Usage
 
  ```` javascript
  var entity = new XEO.Entity({
@@ -27360,7 +27571,14 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
  <img src="../../../assets/images/PointLight.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[View-space point light](../../examples/#lights_point_view)</li>
+ <li>[World-space point light](../../examples/#lights_point_world)</li>
+ </ul>
+
+ ## Usage
 
  ```` javascript
  var entity = new XEO.Entity(scene, {
@@ -28987,6 +29205,17 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
      <img src="../../../assets/images/Model.png"></img>
 
+     ## Examples
+
+     <ul>
+     <li>[Gearbox](../../examples/#importing_gltf_gearbox)</li>
+     <li>[Buggy](../../examples/#importing_gltf_buggy)</li>
+     <li>[Reciprocating Saw](../../examples/#importing_gltf_ReciprocatingSaw)</li>
+     <li>[Textured Duck](../../examples/#importing_gltf_duck)</li>
+     <li>[Gearbox with entity explorer UI](../../examples/#demos_ui_explorer)</li>
+     <li>[Fly camera to gearbox entities](../../examples/#boundaries_flyToBoundary)</li>
+     </ul>
+
      ### Loading a glTF file
 
      First, create a Model, which immediately loads a glTF model into its {{#crossLink "Scene"}}{{/crossLink}} (which in this case is the default {{#crossLink "Scene"}}{{/crossLink}}, since we didn't explicitly configure the Model with one):
@@ -29469,7 +29698,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  <img src="../../../assets/images/PhongMaterial.png"></img>
 
- ## Example
+ ## Usage
 
  In this example we have an Entity with
 
@@ -30523,9 +30752,23 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Textures create within xeoEngine's shaders.</li>
  </ul>
 
+ ## Examples
+
+ <ul>
+ <li>[Diffuse Texture](../../examples/#materials_texture_diffuse)</li>
+ <li>[Specular Texture](../../examples/#materials_texture_specular)</li>
+ <li>[Opacity Texture](../../examples/#materials_texture_opacity)</li>
+ <li>[Emissive Texture](../../examples/#materials_texture_emissive)</li>
+ <li>[Reflectivity Texture](../../examples/#materials_texture_reflectivity)</li>
+ <li>[Normal map](../../examples/#materials_texture_normalMap)</li>
+ <li>[Diffuse Video Texture](../../examples/#materials_texture_video)</li>
+ <li>[Diffuse Procedural Texture](../../examples/#materials_texture_procedural)</li>
+ <li>[Texture Animation](../../examples/#materials_texture_animation)</li>
+ </ul>
+
  <img src="../../../assets/images/Texture.png"></img>
 
- ## Example
+ ## Usage
 
  In this example we have an Entity with
 
@@ -31459,9 +31702,18 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Fresnels create within xeoEngine's shaders.</li>
  </ul>
 
+ ## Examples
+
+ <ul>
+ <li>[Diffuse Fresnel](../../examples/#materials_fresnel_diffuse)</li>
+ <li>[Specular Fresnel](../../examples/#materials_fresnel_specular)</li>
+ <li>[Opacity Fresnel](../../examples/#materials_fresnel_opacity)</li>
+ <li>[Emissive Fresnel](../../examples/#materials_fresnel_emissive)</li>
+ </ul>
+
  <img src="../../../assets/images/Fresnel.png"></img>
 
- ## Example
+ ## Usage
 
  ````javascript
  var entity = new XEO.Entity({
@@ -31726,7 +31978,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  <img src="../../../assets/images/Reflect.png"></img>
 
- ## Example
+ ## Usage
 
  The example below has:
  <ul>
@@ -32031,6 +32283,11 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  <img src="../../../assets/images/Entity.png"></img>
 
+ ## Examples
+
+ <ul>
+ <li>[Minimal Entity example](../../examples/#entities_minimal)</li>
+ </ul>
 
  ## Boundaries
 
@@ -33518,7 +33775,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  <img src="../../../assets/images/ColorBuf.png"></img>
 
- ## Example
+ ## Usage
 
  This example creates a {{#crossLink "Entity"}}{{/crossLink}} with a ColorBuf
  that sets the WebGL color mask and enables blending:
@@ -33658,7 +33915,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  <img src="../../../assets/images/DepthBuf.png"></img>
 
- ## Example
+ ## Usage
 
  The example below creates a {{#crossLink "Entity"}}{{/crossLink}} with a DepthBuf
  that uses the "less" depth comparison function and sets pixels depths to 0.5 whenever it's cleared.
@@ -33886,7 +34143,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  <img src="../../../assets/images/Layer.png"></img>
 
- ## Example
+ ## Usage
 
  In this example we'll use Layers to perform <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency sorting</a>,
  which ensures that transparent entities are rendered farthest-to-nearest, so that they alpha-blend correctly with each other.
@@ -34072,7 +34329,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  <img src="../../../assets/images/ColorTarget.png"></img>
 
- ## Example
+ ## Usage
 
  This example contains an {{#crossLink "Entity"}}{{/crossLink}} that renders its pixel colors to a ColorTarget, which is then
  piped into a {{#crossLink "Texture"}}{{/crossLink}} that's applied to a second {{#crossLink "Entity"}}{{/crossLink}}.</li>
@@ -34285,7 +34542,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  <img src="../../../assets/images/DepthTarget.png"></img>
 
- ## Example
+ ## Usage
 
  This example contains an {{#crossLink "Entity"}}{{/crossLink}} that renders its (RBGA-encoded) pixel depths to a DepthTarget, which is then
  piped into a {{#crossLink "Texture"}}{{/crossLink}} that's applied to a second {{#crossLink "Entity"}}{{/crossLink}}.</li>
@@ -34451,7 +34708,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  <img src="../../../assets/images/Modes.png"></img>
 
- ## Example
+ ## Usage
 
  In this example we have a Modes that toggles rendering modes for two {{#crossLink "Entity"}}Entities{{/crossLink}}. The
  properties of the Modes are initialised to their default values.
@@ -34782,7 +35039,14 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  <li>Make a Viewport automatically size to its {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}{{/crossLink}}
  by setting its {{#crossLink "Viewport/autoBoundary:property"}}{{/crossLink}} property ````true```` (default is ````false````).</li>
  </ul>
- ## Example
+
+ ## Examples
+
+ <ul>
+ <li>[Multiple viewports](../../examples/#canvas_multipleViewports)</li>
+ </ul>
+
+ ## Usage
 
  ````javascript
  new XEO.Entity({
@@ -34984,7 +35248,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  <img src="../../../assets/images/Stage.png"></img>
 
- ## Example
+ ## Usage
 
  In this example we're performing render-to-texture using {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} and
  {{#crossLink "Texture"}}{{/crossLink}} components.
@@ -35245,7 +35509,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  <img src="../../../assets/images/Tasks.png"></img>
 
- ## Example
+ ## Usage
 
  This example shows how to manage tasks and subscribe to their life cycles.
 
@@ -35469,7 +35733,7 @@ myTask2.setFailed();
 
  <img src="../../../assets/images/Shader.png"></img>
 
- ## Example
+ ## Usage
 
  This example shows the simplest way to use a Shader, where we're just going to render a ripply water
  pattern to a screen-aligned quad.
@@ -35802,7 +36066,7 @@ myTask2.setFailed();
 
  <img src="../../../assets/images/ShaderParams.png"></img>
 
- ## Example
+ ## Usage
 
  In this example we'll create the effect shown below, in which we render a rippling water pattern to the left and right halves
  of the canvas, independently. We'll have a {{#crossLink "Shader"}}{{/crossLink}} that creates the water pattern, which
@@ -36017,7 +36281,14 @@ myTask2.setFailed();
  {{#crossLink "Lookat"}}viewing transform{{/crossLink}}, to a provide the appearance of a background
  for associated {{#crossLink "Entities"}}Entities{{/crossLink}}.
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Basic Skybox](../../examples/#skyboxes_skybox)</li>
+ <li>[Custom Skybox](../../examples/#skyboxes_customSkybox)</li>
+ </ul>
+
+ ## Usage
 
  In the example below we're going to create twenty randomly-positioned and colored {{#crossLink "Entity"}}Entities{{/crossLink}}
  and wrap them in a Skybox. The Skybox will use the texture image shown on the left, and the result will appear as shown
@@ -36256,7 +36527,13 @@ myTask2.setFailed();
 
  <img src="../../../assets/images/Boundary2D.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Visualizing an Entity's Canvas-space boundary](../../examples/#boundaries_Entity_canvasBoundary)</li>
+ </ul>
+
+ ## Usage
 
  An {{#crossLink "Entity"}}{{/crossLink}} provides its Canvas-space boundary as a Boundary2D that encloses
  its {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
@@ -36533,7 +36810,18 @@ myTask2.setFailed();
  <br><br>
  <img src="../../../assets/images/Boundary3D.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Entity World-space boundary](../../examples/#boundaries_Entity_worldBoundary)</li>
+ <li>[Entity View-space boundary](../../examples/#boundaries_Entity_viewBoundary)</li>
+ <li>[Entity Canvas-space boundary](../../examples/#boundaries_Entity_canvasBoundary)</li>
+ <li>[Flying camera to Entity World-space boundaries](../../examples/#boundaries_flyToBoundary)</li>
+ <li>[Visualizing a CollectionBoundary](../../examples/#boundaries_CollectionBoundary)</li>
+ <li>[Visualizing a CollectionBoundary hierarchy](../../examples/#boundaries_CollectionBoundary_hierarchy)</li>
+ </ul>
+
+ ## Usage
 
  In the example below we'll get the World-space Boundary3D of an {{#crossLink "Entity"}}{{/crossLink}}, subscribe to updates on the Boundary3D,
  then animate the {{#crossLink "Entity"}}Entity's{{/crossLink}} modelling transform, which gives our callback a running update
@@ -36825,7 +37113,14 @@ myTask2.setFailed();
 
  <img src="../../../assets/images/CollectionBoundary.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Visualizing a CollectionBoundary](../../examples/#boundaries_CollectionBoundary)</li>
+ <li>[Visualizing a CollectionBoundary hierarchy](../../examples/#boundaries_CollectionBoundary_hierarchy)</li>
+ </ul>
+
+ ## Usage
 
  Let's create a {{#crossLink "Collection"}}{{/crossLink}} that contains two {{#crossLink "Entity"}}Entities{{/crossLink}}:
 
@@ -37178,7 +37473,13 @@ myTask2.setFailed();
 
  <img src="../../../assets/images/Transform.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Transform hierarchy](../../examples/#transforms_hierarchy)</li>
+ </ul>
+
+ ## Usage
 
  In this example we'll create the table shown below, which consists of five {{#crossLink "Entity"}}Entities{{/crossLink}}
  that share a {{#crossLink "BoxGeometry"}}{{/crossLink}} and each connect to a different leaf within a hierarchy of
@@ -37553,10 +37854,15 @@ myTask2.setFailed();
  <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>
  </ul>
 
-
  <img src="../../../assets/images/Rotate.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Transform hierarchy](../../examples/#transforms_hierarchy)</li>
+ </ul>
+
+ ## Usage
 
  In this example we have two {{#crossLink "Entity"}}Entities{{/crossLink}} that are transformed by a hierarchy that contains
  Rotate, {{#crossLink "Translate"}}{{/crossLink}} and {{#crossLink "Scale"}}{{/crossLink}} transforms.
@@ -37757,7 +38063,7 @@ myTask2.setFailed();
 
  <img src="../../../assets/images/Quaternion.png"></img>
 
- ## Example
+ ## Usage
 
  In this example we have two {{#crossLink "Entity"}}Entities{{/crossLink}} that are transformed by a hierarchy that contains
  Quaternion, {{#crossLink "Translate"}}{{/crossLink}} and {{#crossLink "Scale"}}{{/crossLink}} transforms.
@@ -37901,7 +38207,13 @@ scene.on("tick", function(e) {
 
  <img src="../../../assets/images/Scale.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Transform hierarchy](../../examples/#transforms_hierarchy)</li>
+ </ul>
+
+ ## Usage
 
  In this example we have two {{#crossLink "Entity"}}Entities{{/crossLink}} that are transformed by a hierarchy that contains
  {{#crossLink "Rotate"}}{{/crossLink}}, {{#crossLink "Translate"}}{{/crossLink}} and Scale transforms.
@@ -38048,7 +38360,13 @@ scene.on("tick", function(e) {
 
  <img src="../../../assets/images/Translate.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Transform hierarchy](../../examples/#transforms_hierarchy)</li>
+ </ul>
+
+ ## Usage
 
  This example has two {{#crossLink "Entity"}}Entities{{/crossLink}} that are transformed by a hierarchy that contains
  {{#crossLink "Rotate"}}{{/crossLink}}, Translate and {{#crossLink "Scale"}}{{/crossLink}} transforms.
@@ -38201,7 +38519,16 @@ scene.on("tick", function(e) {
 
  <img src="../../../assets/images/Billboard.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Spherical billboards](../../examples/#billboards_spherical)</li>
+ <li>[Cylindrical billboards](../../examples/#billboards_cylindrical)</li>
+ <li>[Clouds using billboards](../../examples/#billboards_spherical_clouds)</li>
+ <li>[Billboards with video textures](../../examples/#billboards_spherical_video)</li>
+ </ul>
+
+ ## Usage
 
  Let's create 1000 {{#crossLink "Entity"}}Entities{{/crossLink}} that always face towards the viewpoint as we orbit the {{#crossLink "Camera"}}{{/crossLink}} about the X and Y axis:
 
@@ -38385,9 +38712,11 @@ scene.on("tick", function(e) {
 
  <img src="../../../assets/images/Stationary.png"></img>
 
- ## Example
+ ## Examples
 
- TODO
+ <ul>
+ <li>[Custom Skybox using a Stationary component](../../examples/#skyboxes_customSkybox)</li>
+ </ul>
 
  @class Stationary
  @module XEO
