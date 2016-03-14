@@ -577,7 +577,9 @@
         },
         "src/geometry/_module.js": {
             "name": "src/geometry/_module.js",
-            "modules": {},
+            "modules": {
+                "geometry": 1
+            },
             "classes": {},
             "fors": {},
             "namespaces": {}
@@ -629,9 +631,7 @@
         },
         "src/geometry/pathGeometry.js": {
             "name": "src/geometry/pathGeometry.js",
-            "modules": {
-                "geometry": 1
-            },
+            "modules": {},
             "classes": {
                 "PathGeometry": 1
             },
@@ -1095,7 +1095,6 @@
         "XEO": {
             "name": "XEO",
             "submodules": {
-                "undefined": 1,
                 "animation": 1,
                 "boundaries": 1,
                 "camera": 1,
@@ -1120,7 +1119,6 @@
                 "transforms": 1
             },
             "classes": {
-                "PlaneGeometry": 1,
                 "CameraFlight": 1,
                 "CameraPath": 1,
                 "MorphTargets": 1,
@@ -1161,6 +1159,8 @@
                 "CylinderGeometry": 1,
                 "Geometry": 1,
                 "LatheGeometry": 1,
+                "PathGeometry": 1,
+                "PlaneGeometry": 1,
                 "SphereGeometry": 1,
                 "TorusGeometry": 1,
                 "Model": 1,
@@ -1412,12 +1412,12 @@
             "name": "geometry",
             "submodules": {},
             "classes": {
-                "PathGeometry": 1,
                 "BoundaryGeometry": 1,
                 "BoxGeometry": 1,
                 "CylinderGeometry": 1,
                 "Geometry": 1,
                 "LatheGeometry": 1,
+                "PathGeometry": 1,
                 "PlaneGeometry": 1,
                 "SphereGeometry": 1,
                 "TorusGeometry": 1
@@ -1429,8 +1429,7 @@
             "namespace": "",
             "file": "src/geometry/torusGeometry.js",
             "line": 1,
-            "description": "A **PathGeometry** is a {{#crossLink \"Geometry\"}}{{/crossLink}} that is defined by a {{#crossLink \"Curve\"}}{{/crossLink}}.\n\n## Usage\n\nAn {{#crossLink \"Entity\"}}{{/crossLink}} with a PathGeometry, a {{#crossLink \"Path\"}}{{/crossLink}} and\na {{#crossLink \"PhongMaterial\"}}{{/crossLink}}:\n\n````javascript\nnew XEO.Entity({\n\n    geometry: new XEO.PathGeometry({\n\n       divisions: 10,\n\n       path: new XEO.Path({\n\n           // Subpaths\n\n           curves: [\n               new XEO.CubicBezierCurve({\n                   v0: [-10, 0, 0],\n                   v1: [-5, 15, 0],\n                   v2: [20, 15, 0],\n                   v3: [10, 0, 0]\n               }),\n               new XEO.QuadraticBezierCurve({\n                   v0: [10, 0, 0],\n                   v1: [30, 15, 0],\n                   v2: [20, 0, 0]\n               }),\n               new XEO.SplineCurve({\n                   points: [\n                       [20, 0, 0],\n                       [-5, 15, 0],\n                       [20, 15, 0],\n                       [10, 0, 0]\n                   ]\n               })\n           ]\n       })\n    }),\n\n    material: new XEO.PhongMaterial(\n       diffuse: [1,0,0]\n    })\n});\n````",
-            "tag": "module"
+            "description": "Components for defining geometry."
         },
         "importing": {
             "name": "importing",
@@ -4237,11 +4236,12 @@
             "extensions": [],
             "plugin_for": [],
             "extension_for": [],
-            "module": "geometry",
+            "module": "XEO",
             "namespace": "",
             "file": "src/geometry/pathGeometry.js",
             "line": 1,
-            "description": "A **PathGeometry** is a {{#crossLink \"Geometry\"}}{{/crossLink}} that is defined by a {{#crossLink \"Curve\"}}{{/crossLink}}.\n\n## Usage\n\nAn {{#crossLink \"Entity\"}}{{/crossLink}} with a PathGeometry, a {{#crossLink \"Path\"}}{{/crossLink}} and\na {{#crossLink \"PhongMaterial\"}}{{/crossLink}}:\n\n````javascript\nnew XEO.Entity({\n\n    geometry: new XEO.PathGeometry({\n\n       divisions: 10,\n\n       path: new XEO.Path({\n\n           // Subpaths\n\n           curves: [\n               new XEO.CubicBezierCurve({\n                   v0: [-10, 0, 0],\n                   v1: [-5, 15, 0],\n                   v2: [20, 15, 0],\n                   v3: [10, 0, 0]\n               }),\n               new XEO.QuadraticBezierCurve({\n                   v0: [10, 0, 0],\n                   v1: [30, 15, 0],\n                   v2: [20, 0, 0]\n               }),\n               new XEO.SplineCurve({\n                   points: [\n                       [20, 0, 0],\n                       [-5, 15, 0],\n                       [20, 15, 0],\n                       [10, 0, 0]\n                   ]\n               })\n           ]\n       })\n    }),\n\n    material: new XEO.PhongMaterial(\n       diffuse: [1,0,0]\n    })\n});\n````",
+            "description": "A **PathGeometry** is a {{#crossLink \"Geometry\"}}{{/crossLink}} that is defined by a {{#crossLink \"Curve\"}}{{/crossLink}}.\n## Usage\nAn {{#crossLink \"Entity\"}}{{/crossLink}} with a PathGeometry, a {{#crossLink \"Path\"}}{{/crossLink}} and\n a {{#crossLink \"PhongMaterial\"}}{{/crossLink}}:\n````javascript\n new XEO.Entity({\n    geometry: new XEO.PathGeometry({\n       divisions: 10,\n       path: new XEO.Path({\n           // Subpaths\n           curves: [\n                new XEO.CubicBezierCurve({\n                    v0: [-10, 0, 0],\n                    v1: [-5, 15, 0],\n                    v2: [20, 15, 0],\n                    v3: [10, 0, 0]\n                }),\n                new XEO.QuadraticBezierCurve({\n                    v0: [10, 0, 0],\n                    v1: [30, 15, 0],\n                    v2: [20, 0, 0]\n                }),\n                new XEO.SplineCurve({\n                    points: [\n                        [20, 0, 0],\n                        [-5, 15, 0],\n                        [20, 15, 0],\n                        [10, 0, 0]\n                    ]\n                })\n            ]\n        })\n     }),\n    material: new XEO.PhongMaterial(\n        diffuse: [1,0,0]\n     })\n });\n ````",
+            "submodule": "geometry",
             "extends": "Geometry"
         },
         "PlaneGeometry": {
@@ -12612,26 +12612,28 @@
         },
         {
             "file": "src/geometry/pathGeometry.js",
-            "line": 68,
+            "line": 70,
             "description": "Implement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",
             "access": "protected",
             "tagname": "",
             "class": "PathGeometry",
-            "module": "geometry"
+            "module": "XEO",
+            "submodule": "geometry"
         },
         {
             "file": "src/geometry/pathGeometry.js",
-            "line": 115,
+            "line": 117,
             "description": "The Path for this PathGeometry.\n\nFires a {{#crossLink \"PathGeometry/path:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "path",
             "type": "{Path}",
             "class": "PathGeometry",
-            "module": "geometry"
+            "module": "XEO",
+            "submodule": "geometry"
         },
         {
             "file": "src/geometry/pathGeometry.js",
-            "line": 135,
+            "line": 137,
             "description": "Fired whenever this CameraPaths's {{#crossLink \"CameraPath/path:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "path",
@@ -12642,18 +12644,20 @@
                 }
             ],
             "class": "PathGeometry",
-            "module": "geometry"
+            "module": "XEO",
+            "submodule": "geometry"
         },
         {
             "file": "src/geometry/pathGeometry.js",
-            "line": 162,
+            "line": 164,
             "description": "The number of segments in this PathGeometry.\n\nFires a {{#crossLink \"PathGeometry/divisions:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "divisions",
             "default": "6",
             "type": "{Number}",
             "class": "PathGeometry",
-            "module": "geometry"
+            "module": "XEO",
+            "submodule": "geometry"
         },
         {
             "file": "src/geometry/planeGeometry.js",
@@ -21809,7 +21813,7 @@
         },
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",
-            "line": " src/geometry/pathGeometry.js:68"
+            "line": " src/geometry/pathGeometry.js:70"
         },
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",

@@ -122,29 +122,29 @@
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
-                                <li><a href="../modules/animation.html">animation</a></li>
-                                <li><a href="../modules/boundaries.html">boundaries</a></li>
-                                <li><a href="../modules/camera.html">camera</a></li>
-                                <li><a href="../modules/canvas.html">canvas</a></li>
-                                <li><a href="../modules/clipping.html">clipping</a></li>
-                                <li><a href="../modules/collections.html">collections</a></li>
-                                <li><a href="../modules/configs.html">configs</a></li>
-                                <li><a href="../modules/controls.html">controls</a></li>
-                                <li><a href="../modules/culling.html">culling</a></li>
-                                <li><a href="../modules/curves.html">curves</a></li>
-                                <li><a href="../modules/entities.html">entities</a></li>
-                                <li><a href="../modules/geometry.html">geometry</a></li>
-                                <li><a href="../modules/importing.html">importing</a></li>
-                                <li><a href="../modules/input.html">input</a></li>
-                                <li><a href="../modules/lighting.html">lighting</a></li>
-                                <li><a href="../modules/materials.html">materials</a></li>
-                                <li><a href="../modules/math.html">math</a></li>
-                                <li><a href="../modules/rendering.html">rendering</a></li>
-                                <li><a href="../modules/reporting.html">reporting</a></li>
-                                <li><a href="../modules/shaders.html">shaders</a></li>
-                                <li><a href="../modules/skyboxes.html">skyboxes</a></li>
-                                <li><a href="../modules/transforms.html">transforms</a></li>
-                                <li><a href="../modules/XEO.html">XEO</a></li>
+                                <li><a href="..//modules/animation.html">animation</a></li>
+                                <li><a href="..//modules/boundaries.html">boundaries</a></li>
+                                <li><a href="..//modules/camera.html">camera</a></li>
+                                <li><a href="..//modules/canvas.html">canvas</a></li>
+                                <li><a href="..//modules/clipping.html">clipping</a></li>
+                                <li><a href="..//modules/collections.html">collections</a></li>
+                                <li><a href="..//modules/configs.html">configs</a></li>
+                                <li><a href="..//modules/controls.html">controls</a></li>
+                                <li><a href="..//modules/culling.html">culling</a></li>
+                                <li><a href="..//modules/curves.html">curves</a></li>
+                                <li><a href="..//modules/entities.html">entities</a></li>
+                                <li><a href="..//modules/geometry.html">geometry</a></li>
+                                <li><a href="..//modules/importing.html">importing</a></li>
+                                <li><a href="..//modules/input.html">input</a></li>
+                                <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/materials.html">materials</a></li>
+                                <li><a href="..//modules/math.html">math</a></li>
+                                <li><a href="..//modules/rendering.html">rendering</a></li>
+                                <li><a href="..//modules/reporting.html">reporting</a></li>
+                                <li><a href="..//modules/shaders.html">shaders</a></li>
+                                <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="..//modules/transforms.html">transforms</a></li>
+                                <li><a href="..//modules/XEO.html">XEO</a></li>
                             </ul>
                         </div>
                     </div>
@@ -189,7 +189,8 @@
             Defined in: <a href="../files/src_geometry_pathGeometry.js.html#l1"><code>src&#x2F;geometry&#x2F;pathGeometry.js:1</code></a>
         </div>
 
-            Module: <a href="../modules/geometry.html">geometry</a>
+            Module: <a href="../modules/geometry.html">geometry</a><br>
+            Parent Module: <a href="../modules/XEO.html">XEO</a>
 
 </div>
 
@@ -198,45 +199,39 @@
     <p>A <strong>PathGeometry</strong> is a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that is defined by a <a href="../classes/Curve.html" class="crosslink">Curve</a>.</p>
 <h2 id="usage">Usage</h2>
 <p>An <a href="../classes/Entity.html" class="crosslink">Entity</a> with a PathGeometry, a <a href="../classes/Path.html" class="crosslink">Path</a> and
-a <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>:</p>
-<pre class="code prettyprint"><code class="lang-javascript">new XEO.Entity({
-
+ a <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>:</p>
+<pre class="code prettyprint"><code class="lang-javascript"> new XEO.Entity({
     geometry: new XEO.PathGeometry({
-
        divisions: 10,
-
        path: new XEO.Path({
-
            // Subpaths
-
            curves: [
-               new XEO.CubicBezierCurve({
-                   v0: [-10, 0, 0],
-                   v1: [-5, 15, 0],
-                   v2: [20, 15, 0],
-                   v3: [10, 0, 0]
-               }),
-               new XEO.QuadraticBezierCurve({
-                   v0: [10, 0, 0],
-                   v1: [30, 15, 0],
-                   v2: [20, 0, 0]
-               }),
-               new XEO.SplineCurve({
-                   points: [
-                       [20, 0, 0],
-                       [-5, 15, 0],
-                       [20, 15, 0],
-                       [10, 0, 0]
-                   ]
-               })
-           ]
-       })
-    }),
-
+                new XEO.CubicBezierCurve({
+                    v0: [-10, 0, 0],
+                    v1: [-5, 15, 0],
+                    v2: [20, 15, 0],
+                    v3: [10, 0, 0]
+                }),
+                new XEO.QuadraticBezierCurve({
+                    v0: [10, 0, 0],
+                    v1: [30, 15, 0],
+                    v2: [20, 0, 0]
+                }),
+                new XEO.SplineCurve({
+                    points: [
+                        [20, 0, 0],
+                        [-5, 15, 0],
+                        [20, 15, 0],
+                        [10, 0, 0]
+                    ]
+                })
+            ]
+        })
+     }),
     material: new XEO.PhongMaterial(
-       diffuse: [1,0,0]
-    })
-});
+        diffuse: [1,0,0]
+     })
+ });
 </code></pre>
 
 </div>
@@ -1273,7 +1268,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_geometry_pathGeometry.js.html#l162"><code>src&#x2F;geometry&#x2F;pathGeometry.js:162</code></a>
+                            <a href="../files/src_geometry_pathGeometry.js.html#l164"><code>src&#x2F;geometry&#x2F;pathGeometry.js:164</code></a>
                             </p>
                     
                     
@@ -1488,7 +1483,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_geometry_pathGeometry.js.html#l115"><code>src&#x2F;geometry&#x2F;pathGeometry.js:115</code></a>
+                            <a href="../files/src_geometry_pathGeometry.js.html#l117"><code>src&#x2F;geometry&#x2F;pathGeometry.js:117</code></a>
                             </p>
                     
                     
@@ -1941,7 +1936,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_geometry_pathGeometry.js.html#l135"><code>src&#x2F;geometry&#x2F;pathGeometry.js:135</code></a>
+                            <a href="../files/src_geometry_pathGeometry.js.html#l137"><code>src&#x2F;geometry&#x2F;pathGeometry.js:137</code></a>
                             </p>
                     
                     

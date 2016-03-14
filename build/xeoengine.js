@@ -23571,6 +23571,7 @@ visibility.destroy();
 
 })();
 ;/**
+
  A **PathGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that is defined by a {{#crossLink "Curve"}}{{/crossLink}}.
 
  ## Usage
@@ -23620,7 +23621,8 @@ visibility.destroy();
  ````
 
  @class PathGeometry
- @module geometry
+ @module XEO
+ @submodule geometry
  @extends Geometry
  */
 XEO.PathGeometry = XEO.Geometry.extend({

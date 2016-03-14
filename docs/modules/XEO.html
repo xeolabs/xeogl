@@ -122,29 +122,29 @@
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
-                                <li><a href="../modules/animation.html">animation</a></li>
-                                <li><a href="../modules/boundaries.html">boundaries</a></li>
-                                <li><a href="../modules/camera.html">camera</a></li>
-                                <li><a href="../modules/canvas.html">canvas</a></li>
-                                <li><a href="../modules/clipping.html">clipping</a></li>
-                                <li><a href="../modules/collections.html">collections</a></li>
-                                <li><a href="../modules/configs.html">configs</a></li>
-                                <li><a href="../modules/controls.html">controls</a></li>
-                                <li><a href="../modules/culling.html">culling</a></li>
-                                <li><a href="../modules/curves.html">curves</a></li>
-                                <li><a href="../modules/entities.html">entities</a></li>
-                                <li><a href="../modules/geometry.html">geometry</a></li>
-                                <li><a href="../modules/importing.html">importing</a></li>
-                                <li><a href="../modules/input.html">input</a></li>
-                                <li><a href="../modules/lighting.html">lighting</a></li>
-                                <li><a href="../modules/materials.html">materials</a></li>
-                                <li><a href="../modules/math.html">math</a></li>
-                                <li><a href="../modules/rendering.html">rendering</a></li>
-                                <li><a href="../modules/reporting.html">reporting</a></li>
-                                <li><a href="../modules/shaders.html">shaders</a></li>
-                                <li><a href="../modules/skyboxes.html">skyboxes</a></li>
-                                <li><a href="../modules/transforms.html">transforms</a></li>
-                                <li><a href="../modules/XEO.html">XEO</a></li>
+                                <li><a href="..//modules/animation.html">animation</a></li>
+                                <li><a href="..//modules/boundaries.html">boundaries</a></li>
+                                <li><a href="..//modules/camera.html">camera</a></li>
+                                <li><a href="..//modules/canvas.html">canvas</a></li>
+                                <li><a href="..//modules/clipping.html">clipping</a></li>
+                                <li><a href="..//modules/collections.html">collections</a></li>
+                                <li><a href="..//modules/configs.html">configs</a></li>
+                                <li><a href="..//modules/controls.html">controls</a></li>
+                                <li><a href="..//modules/culling.html">culling</a></li>
+                                <li><a href="..//modules/curves.html">curves</a></li>
+                                <li><a href="..//modules/entities.html">entities</a></li>
+                                <li><a href="..//modules/geometry.html">geometry</a></li>
+                                <li><a href="..//modules/importing.html">importing</a></li>
+                                <li><a href="..//modules/input.html">input</a></li>
+                                <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/materials.html">materials</a></li>
+                                <li><a href="..//modules/math.html">math</a></li>
+                                <li><a href="..//modules/rendering.html">rendering</a></li>
+                                <li><a href="..//modules/reporting.html">reporting</a></li>
+                                <li><a href="..//modules/shaders.html">shaders</a></li>
+                                <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="..//modules/transforms.html">transforms</a></li>
+                                <li><a href="..//modules/XEO.html">XEO</a></li>
                             </ul>
                         </div>
                     </div>
@@ -446,6 +446,11 @@
                     </a>
                 </li>
                 <li class="module-class">
+                    <a href="../classes/PathGeometry.html">
+                        PathGeometry
+                    </a>
+                </li>
+                <li class="module-class">
                     <a href="../classes/Perspective.html">
                         Perspective
                     </a>
@@ -702,53 +707,7 @@
                     </a>
 
                     <div class="module-submodule-description">
-                        A **PathGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that is defined by a {{#crossLink "Curve"}}{{/crossLink}}.
-
-## Usage
-
-An {{#crossLink "Entity"}}{{/crossLink}} with a PathGeometry, a {{#crossLink "Path"}}{{/crossLink}} and
-a {{#crossLink "PhongMaterial"}}{{/crossLink}}:
-
-<code>&#x60;</code>`javascript
-new XEO.Entity({
-
-    geometry: new XEO.PathGeometry({
-
-       divisions: 10,
-
-       path: new XEO.Path({
-
-           // Subpaths
-
-           curves: [
-               new XEO.CubicBezierCurve({
-                   v0: [-10, 0, 0],
-                   v1: [-5, 15, 0],
-                   v2: [20, 15, 0],
-                   v3: [10, 0, 0]
-               }),
-               new XEO.QuadraticBezierCurve({
-                   v0: [10, 0, 0],
-                   v1: [30, 15, 0],
-                   v2: [20, 0, 0]
-               }),
-               new XEO.SplineCurve({
-                   points: [
-                       [20, 0, 0],
-                       [-5, 15, 0],
-                       [20, 15, 0],
-                       [10, 0, 0]
-                   ]
-               })
-           ]
-       })
-    }),
-
-    material: new XEO.PhongMaterial(
-       diffuse: [1,0,0]
-    })
-});
-<code>&#x60;</code>`
+                        Components for defining geometry.
                     </div>
                 </li>
                 <li class="module-submodule">
