@@ -188,27 +188,28 @@
  &lt;ul&gt;
  &lt;li&gt;When xeoEngine renders a {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, each {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} within that will render its bin
  of {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} in turn, from the lowest priority {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} to the highest.&lt;/li&gt;
-
  &lt;li&gt;{{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}} are typically used for ordering the render-to-texture steps in posteffects pipelines.&lt;/li&gt;
-
  &lt;li&gt;You can control the render order of the individual {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} ***within*** a {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}}
  by associating them with {{#crossLink &quot;Layer&quot;}}Layers{{/crossLink}}.&lt;/li&gt;
-
  &lt;li&gt;{{#crossLink &quot;Layer&quot;}}Layers{{/crossLink}} are typically used to &lt;a href=&quot;https://www.opengl.org/wiki/Transparency_Sorting&quot; target=&quot;_other&quot;&gt;transparency-sort&lt;/a&gt; the
  {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} within {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}}.&lt;/li&gt;
-
-
  &lt;li&gt;{{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} not explicitly attached to a Layer are implicitly
  attached to the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default
  {{#crossLink &quot;Scene/layer:property&quot;}}layer{{/crossLink}}. which has
  a {{#crossLink &quot;Layer/priority:property&quot;}}{{/crossLink}} value of zero.&lt;/li&gt;
-
  &lt;li&gt;You can use Layers without defining any {{#crossLink &quot;Stage&quot;}}Stages{{/crossLink}} if you simply let your
  {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} fall back on the {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default
  {{#crossLink &quot;Scene/stage:property&quot;}}stage{{/crossLink}}. which has a {{#crossLink &quot;Stage/priority:property&quot;}}{{/crossLink}} value of zero.&lt;/li&gt;
  &lt;/ul&gt;
 
  &lt;img src=&quot;../../../assets/images/Layer.png&quot;&gt;&lt;/img&gt;
+
+ ## Examples
+
+ &lt;ul&gt;
+ &lt;li&gt;[Z-sorted transparent entities](../../examples/#materials_techniques_transparencySort)&lt;/li&gt;
+ &lt;li&gt;[Clouds as billboarded and z-sorted alpha maps](../../examples/#billboards_spherical_clouds)&lt;/li&gt;
+ &lt;/ul&gt;
 
  ## Usage
 

@@ -200,27 +200,27 @@
 <ul>
 <li>When xeoEngine renders a <a href="../classes/Scene.html" class="crosslink">Scene</a>, each <a href="../classes/Stage.html" class="crosslink">Stage</a> within that will render its bin
 of <a href="../classes/Entity.html" class="crosslink">Entities</a> in turn, from the lowest priority <a href="../classes/Stage.html" class="crosslink">Stage</a> to the highest.</li>
-
 <li><a href="../classes/Stage.html" class="crosslink">Stages</a> are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>
-
 <li>You can control the render order of the individual <a href="../classes/Entity.html" class="crosslink">Entities</a> <strong><em>within</em></strong> a <a href="../classes/Stage.html" class="crosslink">Stage</a>
 by associating them with <a href="../classes/Layer.html" class="crosslink">Layers</a>.</li>
-
 <li><a href="../classes/Layer.html" class="crosslink">Layers</a> are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
 <a href="../classes/Entity.html" class="crosslink">Entities</a> within <a href="../classes/Stage.html" class="crosslink">Stages</a>.</li>
-
-
 <li><a href="../classes/Entity.html" class="crosslink">Entities</a> not explicitly attached to a Layer are implicitly
 attached to the <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default
 <a href="../classes/Scene.html#property_layer" class="crosslink">layer</a>. which has
 a <a href="../classes/Layer.html#property_priority" class="crosslink">priority</a> value of zero.</li>
-
 <li>You can use Layers without defining any <a href="../classes/Stage.html" class="crosslink">Stages</a> if you simply let your
 <a href="../classes/Entity.html" class="crosslink">Entities</a> fall back on the <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default
 <a href="../classes/Scene.html#property_stage" class="crosslink">stage</a>. which has a <a href="../classes/Stage.html#property_priority" class="crosslink">priority</a> value of zero.</li>
 </ul>
 
 <p><img src="../../../assets/images/Layer.png"></img></p>
+<h2 id="examples">Examples</h2>
+<ul>
+<li><a href="../../examples/#materials_techniques_transparencySort">Z-sorted transparent entities</a></li>
+<li><a href="../../examples/#billboards_spherical_clouds">Clouds as billboarded and z-sorted alpha maps</a></li>
+</ul>
+
 <h2 id="usage">Usage</h2>
 <p>In this example we&#39;ll use Layers to perform <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency sorting</a>,
 which ensures that transparent entities are rendered farthest-to-nearest, so that they alpha-blend correctly with each other.</p>
@@ -1408,7 +1408,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_layer.js.html#l137"><code>src&#x2F;rendering&#x2F;layer.js:137</code></a>
+                            <a href="../files/src_rendering_layer.js.html#l138"><code>src&#x2F;rendering&#x2F;layer.js:138</code></a>
                             </p>
                     
                     
@@ -1584,7 +1584,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_rendering_layer.js.html#l168"><code>src&#x2F;rendering&#x2F;layer.js:168</code></a>
+                            <a href="../files/src_rendering_layer.js.html#l169"><code>src&#x2F;rendering&#x2F;layer.js:169</code></a>
                             </p>
                     
                     

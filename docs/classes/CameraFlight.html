@@ -198,7 +198,7 @@
 <div class="box intro">
     <p>A <strong>CameraFlight</strong> flies a <a href="../classes/Camera.html" class="crosslink">Camera</a> to a given target.</p>
 <ul>
-<li>A CameraFlight animates the <a href="../classes/Lookat.html" class="crosslink">Lookat</a> attached to the <a href="../classes/Camera.html" class="crosslink">Camera</a>.</li>
+<li>A CameraFlight animates the <a href="../classes/Lookat.html" class="crosslink">Lookat</a> attached to its <a href="../classes/Camera.html" class="crosslink">Camera</a>.</li>
 <li>A CameraFlight can be attached to a different <a href="../classes/Camera.html" class="crosslink">Camera</a> at any time.</li>
 <li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>
 </ul>
@@ -234,11 +234,11 @@
 <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> via its <a href="../classes/Entity.html#property_worldBoundary" class="crosslink">worldBoundary</a> property):</p>
 <pre class="code prettyprint"><code class="lang-Javascript">var camera = new XEO.Camera();
 
-// Create a CameraFlight that takes exactly ten seconds to fly
+// Create a CameraFlight that takes exactly twenty seconds to fly
 // the Camera to each specified target
 var cameraFlight = new XEO.CameraFlight({
    camera: camera,
-   duration: 20
+   duration: 20 // Seconds
 });
 
 // Create a Entity, which gets all the default components

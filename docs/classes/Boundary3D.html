@@ -250,7 +250,6 @@ var entity = new XEO.Entity({
 var worldBoundary = entity.worldBoundary;
 
 worldBoundary.on("updated", function() {
-
        obb = worldBoundary.obb;
        aabb = worldBoundary.aabb;
        center = worldBoundary.center;
@@ -264,7 +263,7 @@ worldBoundary.on("updated", function() {
 
 var x = 0;
 
-scene.on("tick", function() {
+entity.scene.on("tick", function() {
    translate.xyz: [x, 0, 0];
    x += 0.5;
 });
@@ -1333,7 +1332,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_boundaries_boundary3d.js.html#l157"><code>src&#x2F;boundaries&#x2F;boundary3d.js:157</code></a>
+                            <a href="../files/src_boundaries_boundary3d.js.html#l156"><code>src&#x2F;boundaries&#x2F;boundary3d.js:156</code></a>
                             </p>
                     
                     
@@ -1359,7 +1358,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_boundaries_boundary3d.js.html#l176"><code>src&#x2F;boundaries&#x2F;boundary3d.js:176</code></a>
+                            <a href="../files/src_boundaries_boundary3d.js.html#l175"><code>src&#x2F;boundaries&#x2F;boundary3d.js:175</code></a>
                             </p>
                     
                     
@@ -1512,7 +1511,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_boundaries_boundary3d.js.html#l138"><code>src&#x2F;boundaries&#x2F;boundary3d.js:138</code></a>
+                            <a href="../files/src_boundaries_boundary3d.js.html#l137"><code>src&#x2F;boundaries&#x2F;boundary3d.js:137</code></a>
                             </p>
                     
                     
@@ -1684,7 +1683,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_boundaries_boundary3d.js.html#l101"><code>src&#x2F;boundaries&#x2F;boundary3d.js:101</code></a>
+                            <a href="../files/src_boundaries_boundary3d.js.html#l100"><code>src&#x2F;boundaries&#x2F;boundary3d.js:100</code></a>
                             </p>
                     
                     

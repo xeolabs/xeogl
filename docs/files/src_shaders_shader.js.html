@@ -275,7 +275,7 @@
  Now let&#x27;s animate the &quot;time&quot; parameter on the Shader, to make the water ripple:
 
  &#x60;&#x60;&#x60;&#x60; javascript
- scene.on(&quot;tick&quot;, function(params) {
+ entity.scene.on(&quot;tick&quot;, function(params) {
      shader.setParams({
          time: params.timeElapsed
      });
@@ -344,7 +344,6 @@
 
  | Varying | Description | Depends on  |
  |---|---|---|
-
 
 
  @class Shader

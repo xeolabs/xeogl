@@ -225,18 +225,18 @@ an <a href="../classes/Entity.html" class="crosslink">Entity</a>, both added by 
 
 var geometry = new XEO.BoxGeometry();
 
-var Entity = new XEO.Entity({
+var entity = new XEO.Entity({
    id: "myEntity",
    material: material,
    geometry: geometry
 });
 
 var collection1 = new XEO.Collection({ // Initialize with the three components
-   components: [
-       "myMaterial",
-       geometry,
-       myEntity
-   ]
+    components: [
+        "myMaterial",
+        geometry,
+        myEntity
+    ]
 });
 </code></pre>
 <p>Our second Collection includes the <a href="../classes/BoxGeometry.html" class="crosslink">BoxGeometry</a>, added by instance,

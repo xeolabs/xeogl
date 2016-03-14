@@ -194,6 +194,32 @@
  &lt;li&gt;[Custom Skybox using a Stationary component](../../examples/#skyboxes_customSkybox)&lt;/li&gt;
  &lt;/ul&gt;
 
+ ## Usage
+
+ An {{#crossLink &quot;Entity&quot;}}{{/crossLink}} with a Stationary that will cause it to never translate with respect to
+ the viewpoint, as if far away.
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ new XEO.Entity({
+
+     geometry: new XEO.BoxGeometry({
+         xSize: 1,
+         ySize: 1,
+         zSize: 1
+     }),
+
+     material: new XEO.PhongMaterial({
+         diffuseMap: new XEO.Texture({
+            src: &quot;textures/diffuse/uvGrid2.jpg&quot;
+         })
+     }),
+
+     stationary: new XEO.Stationary({ // Locks position with respect to viewpoint
+         active: true
+     })
+ });
+ &#x60;&#x60;&#x60;&#x60;
+
  @class Stationary
  @module XEO
  @submodule transforms

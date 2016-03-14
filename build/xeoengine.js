@@ -4816,16 +4816,19 @@
 
         var func = null;
 
-        var value = null;
+        var value0 = null;
+        var value1 = null;
+        var value2 = null;
+        var value3 = null;
 
         if (type === gl.BOOL) {
 
             func = function (v) {
-                if (value === v) {
+                if (value0 === v) {
                     renderStats.setUniformCacheHits++;
                     return;
                 }
-                value = v;
+                value0 = v;
                 gl.uniform1i(location, v);
                 renderStats.setUniform++;
             };
@@ -4833,11 +4836,12 @@
         } else if (type === gl.BOOL_VEC2) {
 
             func = function (v) {
-                if (value !== null && value[0] === v[0] && value[1] === v[1]) {
+                if (value0 === v[0] && value1 === v[1]) {
                     renderStats.setUniformCacheHits++;
                     return;
                 }
-                value = v;
+                value0 = v[0];
+                value1 = v[1];
                 gl.uniform2iv(location, v);
                 renderStats.setUniform++;
             };
@@ -4845,11 +4849,13 @@
         } else if (type === gl.BOOL_VEC3) {
 
             func = function (v) {
-                if (value !== null && value[0] === v[0] && value[1] === v[1] && value[2] === v[2]) {
+                if (value0 === v[0] && value1 === v[1] && value2 === v[2]) {
                     renderStats.setUniformCacheHits++;
                     return;
                 }
-                value = v;
+                value0 = v[0];
+                value1 = v[1];
+                value2 = v[2];
                 gl.uniform3iv(location, v);
                 renderStats.setUniform++;
             };
@@ -4857,11 +4863,14 @@
         } else if (type === gl.BOOL_VEC4) {
 
             func = function (v) {
-                if (value !== null && value[0] === v[0] && value[1] === v[1] && value[2] === v[2] && value[3] === v[3]) {
+                if (value0 === v[0] && value1 === v[1] && value2 === v[2] && value3 === v[3]) {
                     renderStats.setUniformCacheHits++;
                     return;
                 }
-                value = v;
+                value0 = v[0];
+                value1 = v[1];
+                value2 = v[2];
+                value3 = v[3];
                 gl.uniform4iv(location, v);
                 renderStats.setUniform++;
             };
@@ -4869,11 +4878,11 @@
         } else if (type === gl.INT) {
 
             func = function (v) {
-                if (value === v) {
+                if (value0 === v) {
                     renderStats.setUniformCacheHits++;
                     return;
                 }
-                value = v;
+                value0 = v;
                 gl.uniform1iv(location, v);
                 renderStats.setUniform++;
             };
@@ -4881,11 +4890,12 @@
         } else if (type === gl.INT_VEC2) {
 
             func = function (v) {
-                if (value !== null && value[0] === v[0] && value[1] === v[1]) {
+                if (value0 === v[0] && value1 === v[1]) {
                     renderStats.setUniformCacheHits++;
                     return;
                 }
-                value = v;
+                value0 = v[0];
+                value1 = v[1];
                 gl.uniform2iv(location, v);
                 renderStats.setUniform++;
             };
@@ -4893,11 +4903,13 @@
         } else if (type === gl.INT_VEC3) {
 
             func = function (v) {
-                if (value !== null && value[0] === v[0] && value[1] === v[1] && value[2] === v[2]) {
+                if (value0 === v[0] && value1 === v[1] && value2 === v[2]) {
                     renderStats.setUniformCacheHits++;
                     return;
                 }
-                value = v;
+                value0 = v[0];
+                value1 = v[1];
+                value2 = v[2];
                 gl.uniform3iv(location, v);
                 renderStats.setUniform++;
             };
@@ -4905,11 +4917,14 @@
         } else if (type === gl.INT_VEC4) {
 
             func = function (v) {
-                if (value !== null && value[0] === v[0] && value[1] === v[1] && value[2] === v[2] && value[3] === v[3]) {
+                if (value0 === v[0] && value1 === v[1] && value2 === v[2] && value3 === v[3]) {
                     renderStats.setUniformCacheHits++;
                     return;
                 }
-                value = v;
+                value0 = v[0];
+                value1 = v[1];
+                value2 = v[2];
+                value3 = v[3];
                 gl.uniform4iv(location, v);
                 renderStats.setUniform++;
             };
@@ -4917,11 +4932,11 @@
         } else if (type === gl.FLOAT) {
 
             func = function (v) {
-                if (value === v) {
+                if (value0 === v) {
                     renderStats.setUniformCacheHits++;
                     return;
                 }
-                value = v;
+                value0 = v;
                 gl.uniform1f(location, v);
                 renderStats.setUniform++;
             };
@@ -4929,11 +4944,12 @@
         } else if (type === gl.FLOAT_VEC2) {
 
             func = function (v) {
-                if (value !== null && value[0] === v[0] && value[1] === v[1]) {
+                if (value0 === v[0] && value1 === v[1]) {
                     renderStats.setUniformCacheHits++;
                     return;
                 }
-                value = v;
+                value0 = v[0];
+                value1 = v[1];
                 gl.uniform2fv(location, v);
                 renderStats.setUniform++;
             };
@@ -4941,11 +4957,13 @@
         } else if (type === gl.FLOAT_VEC3) {
 
             func = function (v) {
-                if (value !== null && value[0] === v[0] && value[1] === v[1] && value[2] === v[2]) {
+                if (value0 === v[0] && value1 === v[1] && value2 === v[2]) {
                     renderStats.setUniformCacheHits++;
                     return;
                 }
-                value = v;
+                value0 = v[0];
+                value1 = v[1];
+                value2 = v[2];
                 gl.uniform3fv(location, v);
                 renderStats.setUniform++;
             };
@@ -4953,11 +4971,14 @@
         } else if (type === gl.FLOAT_VEC4) {
 
             func = function (v) {
-                if (value !== null && value[0] === v[0] && value[1] === v[1] && value[2] === v[2] && value[3] === v[3]) {
+                if (value0 === v[0] && value1 === v[1] && value2 === v[2] && value3 === v[3]) {
                     renderStats.setUniformCacheHits++;
                     return;
                 }
-                value = v;
+                value0 = v[0];
+                value1 = v[1];
+                value2 = v[2];
+                value3 = v[3];
                 gl.uniform4fv(location, v);
                 renderStats.setUniform++;
             };
@@ -12364,7 +12385,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  A **CameraFlight** flies a {{#crossLink "Camera"}}{{/crossLink}} to a given target.
 
  <ul>
- <li>A CameraFlight animates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the {{#crossLink "Camera"}}{{/crossLink}}.</li>
+ <li>A CameraFlight animates the {{#crossLink "Lookat"}}{{/crossLink}} attached to its {{#crossLink "Camera"}}{{/crossLink}}.</li>
  <li>A CameraFlight can be attached to a different {{#crossLink "Camera"}}{{/crossLink}} at any time.</li>
  <li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>
  </ul>
@@ -12408,11 +12429,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  ````Javascript
  var camera = new XEO.Camera();
 
- // Create a CameraFlight that takes exactly ten seconds to fly
+ // Create a CameraFlight that takes exactly twenty seconds to fly
  // the Camera to each specified target
  var cameraFlight = new XEO.CameraFlight({
     camera: camera,
-    duration: 20
+    duration: 20 // Seconds
  });
 
  // Create a Entity, which gets all the default components
@@ -13288,7 +13309,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  A **Projection** component defines a projection transformation as a 4x4 matrix.
 
  <ul>
- <li>Projection is the base class for (at least) the {{#crossLink "Perspective"}}{{/crossLink}} and {{#crossLink "Ortho"}}{{/crossLink}} types.</li>
+ <li>Projection is the base class for (at least) the {{#crossLink "Perspective"}}{{/crossLink}} and {{#crossLink "Ortho"}}{{/crossLink}} components.</li>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair Projections with {{#crossLink "Lookat"}}Lookat{{/crossLink}} components.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Projection components create within xeoEngine's shaders.</li>
  </ul>
@@ -13319,7 +13340,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          })
      }),
 
-     new XEO.BoxGeometry();
+     geometry: new XEO.BoxGeometry()
  });
  ````
 
@@ -13443,7 +13464,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         })
      }),
 
-     new XEO.BoxGeometry();
+     geometry: new XEO.BoxGeometry()
  });
  ````
 
@@ -13790,7 +13811,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         })
      }),
 
-     new XEO.BoxGeometry();
+     geometry: new XEO.BoxGeometry()
  });
  ````
 
@@ -14250,7 +14271,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          })
      }),
 
-     new XEO.BoxGeometry();
+     geometry: new XEO.BoxGeometry()
  });
  ````
 
@@ -14598,7 +14619,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         })
      }),
 
-     new XEO.BoxGeometry();
+     perspective: new XEO.BoxGeometry()
  });
  ````
 
@@ -25137,18 +25158,18 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
  var geometry = new XEO.BoxGeometry();
 
- var Entity = new XEO.Entity({
+ var entity = new XEO.Entity({
     id: "myEntity",
     material: material,
     geometry: geometry
  });
 
  var collection1 = new XEO.Collection({ // Initialize with the three components
-    components: [
-        "myMaterial",
-        geometry,
-        myEntity
-    ]
+     components: [
+         "myMaterial",
+         geometry,
+         myEntity
+     ]
  });
  ````
  Our second Collection includes the {{#crossLink "BoxGeometry"}}{{/crossLink}}, added by instance,
@@ -30752,6 +30773,8 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Textures create within xeoEngine's shaders.</li>
  </ul>
 
+ <img src="../../../assets/images/Texture.png"></img>
+
  ## Examples
 
  <ul>
@@ -30765,8 +30788,6 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  <li>[Diffuse Procedural Texture](../../examples/#materials_texture_procedural)</li>
  <li>[Texture Animation](../../examples/#materials_texture_animation)</li>
  </ul>
-
- <img src="../../../assets/images/Texture.png"></img>
 
  ## Usage
 
@@ -34121,27 +34142,28 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  <ul>
  <li>When xeoEngine renders a {{#crossLink "Scene"}}Scene{{/crossLink}}, each {{#crossLink "Stage"}}Stage{{/crossLink}} within that will render its bin
  of {{#crossLink "Entity"}}Entities{{/crossLink}} in turn, from the lowest priority {{#crossLink "Stage"}}Stage{{/crossLink}} to the highest.</li>
-
  <li>{{#crossLink "Stage"}}Stages{{/crossLink}} are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>
-
  <li>You can control the render order of the individual {{#crossLink "Entity"}}Entities{{/crossLink}} ***within*** a {{#crossLink "Stage"}}Stage{{/crossLink}}
  by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.</li>
-
  <li>{{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
  {{#crossLink "Entity"}}Entities{{/crossLink}} within {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
-
-
  <li>{{#crossLink "Entity"}}Entities{{/crossLink}} not explicitly attached to a Layer are implicitly
  attached to the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
  {{#crossLink "Scene/layer:property"}}layer{{/crossLink}}. which has
  a {{#crossLink "Layer/priority:property"}}{{/crossLink}} value of zero.</li>
-
  <li>You can use Layers without defining any {{#crossLink "Stage"}}Stages{{/crossLink}} if you simply let your
  {{#crossLink "Entity"}}Entities{{/crossLink}} fall back on the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
  {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.</li>
  </ul>
 
  <img src="../../../assets/images/Layer.png"></img>
+
+ ## Examples
+
+ <ul>
+ <li>[Z-sorted transparent entities](../../examples/#materials_techniques_transparencySort)</li>
+ <li>[Clouds as billboarded and z-sorted alpha maps](../../examples/#billboards_spherical_clouds)</li>
+ </ul>
 
  ## Usage
 
@@ -35248,6 +35270,12 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
  <img src="../../../assets/images/Stage.png"></img>
 
+ ## Examples
+
+ <ul>
+ <li>[Procedural texture using RTT](../../examples/#materials_texture_procedural)</li>
+ </ul>
+
  ## Usage
 
  In this example we're performing render-to-texture using {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} and
@@ -35810,7 +35838,7 @@ myTask2.setFailed();
  Now let's animate the "time" parameter on the Shader, to make the water ripple:
 
  ```` javascript
- scene.on("tick", function(params) {
+ entity.scene.on("tick", function(params) {
      shader.setParams({
          time: params.timeElapsed
      });
@@ -35879,7 +35907,6 @@ myTask2.setFailed();
 
  | Varying | Description | Depends on  |
  |---|---|---|
-
 
 
  @class Shader
@@ -36559,7 +36586,6 @@ myTask2.setFailed();
  var canvasBoundary = entity.canvasBoundary;
 
  canvasBoundary.on("updated", function() {
-
         aabb = canvasBoundary.aabb;
         center = canvasBoundary.center;
 
@@ -36842,7 +36868,6 @@ myTask2.setFailed();
  var worldBoundary = entity.worldBoundary;
 
  worldBoundary.on("updated", function() {
-
         obb = worldBoundary.obb;
         aabb = worldBoundary.aabb;
         center = worldBoundary.center;
@@ -36856,7 +36881,7 @@ myTask2.setFailed();
 
  var x = 0;
 
- scene.on("tick", function() {
+ entity.scene.on("tick", function() {
     translate.xyz: [x, 0, 0];
     x += 0.5;
  });
@@ -37458,8 +37483,6 @@ myTask2.setFailed();
  * @submodule transforms
  */;/**
  A **Transform** defines a modelling matrix to transform attached {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
-
- ## Overview
 
  <ul>
  <li>Sub-classes of Transform are: {{#crossLink "Translate"}}{{/crossLink}},
@@ -38717,6 +38740,32 @@ scene.on("tick", function(e) {
  <ul>
  <li>[Custom Skybox using a Stationary component](../../examples/#skyboxes_customSkybox)</li>
  </ul>
+
+ ## Usage
+
+ An {{#crossLink "Entity"}}{{/crossLink}} with a Stationary that will cause it to never translate with respect to
+ the viewpoint, as if far away.
+
+ ````javascript
+ new XEO.Entity({
+
+     geometry: new XEO.BoxGeometry({
+         xSize: 1,
+         ySize: 1,
+         zSize: 1
+     }),
+
+     material: new XEO.PhongMaterial({
+         diffuseMap: new XEO.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+         })
+     }),
+
+     stationary: new XEO.Stationary({ // Locks position with respect to viewpoint
+         active: true
+     })
+ });
+ ````
 
  @class Stationary
  @module XEO
