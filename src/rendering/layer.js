@@ -4,27 +4,28 @@
  <ul>
  <li>When xeoEngine renders a {{#crossLink "Scene"}}Scene{{/crossLink}}, each {{#crossLink "Stage"}}Stage{{/crossLink}} within that will render its bin
  of {{#crossLink "Entity"}}Entities{{/crossLink}} in turn, from the lowest priority {{#crossLink "Stage"}}Stage{{/crossLink}} to the highest.</li>
-
  <li>{{#crossLink "Stage"}}Stages{{/crossLink}} are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>
-
  <li>You can control the render order of the individual {{#crossLink "Entity"}}Entities{{/crossLink}} ***within*** a {{#crossLink "Stage"}}Stage{{/crossLink}}
  by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.</li>
-
  <li>{{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
  {{#crossLink "Entity"}}Entities{{/crossLink}} within {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
-
-
  <li>{{#crossLink "Entity"}}Entities{{/crossLink}} not explicitly attached to a Layer are implicitly
  attached to the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
  {{#crossLink "Scene/layer:property"}}layer{{/crossLink}}. which has
  a {{#crossLink "Layer/priority:property"}}{{/crossLink}} value of zero.</li>
-
  <li>You can use Layers without defining any {{#crossLink "Stage"}}Stages{{/crossLink}} if you simply let your
  {{#crossLink "Entity"}}Entities{{/crossLink}} fall back on the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
  {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.</li>
  </ul>
 
  <img src="../../../assets/images/Layer.png"></img>
+
+ ## Examples
+
+ <ul>
+ <li>[Z-sorted transparent entities](../../examples/#materials_techniques_transparencySort)</li>
+ <li>[Clouds as billboarded and z-sorted alpha maps](../../examples/#billboards_spherical_clouds)</li>
+ </ul>
 
  ## Usage
 

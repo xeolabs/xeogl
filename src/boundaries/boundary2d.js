@@ -49,7 +49,6 @@
  var canvasBoundary = entity.canvasBoundary;
 
  canvasBoundary.on("updated", function() {
-
         aabb = canvasBoundary.aabb;
         center = canvasBoundary.center;
 

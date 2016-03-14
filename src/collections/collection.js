@@ -34,18 +34,18 @@
 
  var geometry = new XEO.BoxGeometry();
 
- var Entity = new XEO.Entity({
+ var entity = new XEO.Entity({
     id: "myEntity",
     material: material,
     geometry: geometry
  });
 
  var collection1 = new XEO.Collection({ // Initialize with the three components
-    components: [
-        "myMaterial",
-        geometry,
-        myEntity
-    ]
+     components: [
+         "myMaterial",
+         geometry,
+         myEntity
+     ]
  });
  ````
  Our second Collection includes the {{#crossLink "BoxGeometry"}}{{/crossLink}}, added by instance,

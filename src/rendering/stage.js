@@ -19,6 +19,12 @@
 
  <img src="../../../assets/images/Stage.png"></img>
 
+ ## Examples
+
+ <ul>
+ <li>[Procedural texture using RTT](../../examples/#materials_texture_procedural)</li>
+ </ul>
+
  ## Usage
 
  In this example we're performing render-to-texture using {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} and
