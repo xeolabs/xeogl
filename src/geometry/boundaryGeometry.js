@@ -2,7 +2,13 @@
  A **BoundaryGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the entity-aligned wireframe bounding box (OBB)
  of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Rendering a BoundaryGeometry](../../examples/#geometry_BoundaryGeometry)</li>
+ </ul>
+
+ ## Usage
 
  An {{#crossLink "Entity"}}{{/crossLink}} with a BoundaryGeometry that shows the extents of the
  World-space {{#crossLink "Boundary3D"}}{{/crossLink}} of another {{#crossLink "Entity"}}{{/crossLink}}:

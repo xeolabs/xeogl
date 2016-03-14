@@ -12,7 +12,7 @@
 
  <img src="../../../assets/images/Quaternion.png"></img>
 
- ## Example
+ ## Usage
 
  In this example we have two {{#crossLink "Entity"}}Entities{{/crossLink}} that are transformed by a hierarchy that contains
  Quaternion, {{#crossLink "Translate"}}{{/crossLink}} and {{#crossLink "Scale"}}{{/crossLink}} transforms.

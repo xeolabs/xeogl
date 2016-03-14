@@ -1,9 +1,14 @@
 /**
  A **MousePickEntity** picks {{#crossLink "Entity"}}Entities{{/crossLink}} with mouse clicks.
 
- TODO
+ ## Examples
 
- ## Example
+ <ul>
+ <li>[MousePickEntity example](../../examples/#interaction_MousePickEntity)</li>
+ <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
+ </ul>
+
+ ## Usage
 
  ````Javascript
  // Create some Entities

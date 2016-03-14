@@ -18,7 +18,14 @@
 
  <img src="../../../assets/images/PointLight.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[View-space point light](../../examples/#lights_point_view)</li>
+ <li>[World-space point light](../../examples/#lights_point_world)</li>
+ </ul>
+
+ ## Usage
 
  ```` javascript
  var entity = new XEO.Entity(scene, {

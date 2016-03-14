@@ -15,7 +15,14 @@
  <li>an instance or ID of any {{#crossLink "Component"}}{{/crossLink}} subtype that provides a World-space</li>
  {{#crossLink "Boundary3D"}}{{/crossLink}} in a "worldBoundary" property, or</li>
  <li>an axis-aligned World-space bounding box.</li>
+ </ul>
 
+ ## Examples
+
+ <ul>
+ <li>[Flying to Entity](../../examples/#CameraFlight_Entity)</li>
+ <li>[Flying to Boundary3D](../../examples/#CameraFlight_Boundary3D)</li>
+ <li>[Flying to AABB](../../examples/#CameraFlight_AABB)</li>
  </ul>
 
  ## Flying to a position

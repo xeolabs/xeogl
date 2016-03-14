@@ -26,10 +26,21 @@
  <li>A CameraControl manages the life-cycles of its control sub-components, destroying them when the CameraControl is destroyed.</li>
  </ul>
 
- <br><br>
  <img src="../../../assets/images/CameraControl.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
+ <li>[KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)</li>
+ <li>[KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)</li>
+ <li>[KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)</li>
+ <li>[KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)</li>
+ <li>[KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)</li>
+ <li>[KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)</li>
+ </ul>
+
+ ## Usage
 
  ````Javascript
  var camera = new XEO.Camera({

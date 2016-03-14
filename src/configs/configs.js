@@ -21,7 +21,7 @@
  | TODO  | TODO  |
 
 
- ## Example
+ ## Usage
 
  In this example, we're subscribing to change events for a {{#crossLink "Scene"}}Scene's{{/crossLink}} "foo" configuration property, then updating that
  property, which fires a change event.

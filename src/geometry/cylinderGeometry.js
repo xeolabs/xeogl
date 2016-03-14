@@ -1,7 +1,13 @@
 /**
  A **CylinderGeometry** defines cylindrical geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Textured CylinderGeometry](../../examples/#geometry_CylinderGeometry)</li>
+ </ul>
+
+ ## Usage
 
  An {{#crossLink "Entity"}}{{/crossLink}} with a CylinderGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
  diffuse {{#crossLink "Texture"}}{{/crossLink}}:

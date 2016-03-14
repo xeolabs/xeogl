@@ -9,7 +9,7 @@
 
      <img src="../../../assets/images/MorphTargets.png"></img>
 
-     ## Example
+     ## Usage
 
      TODO
 

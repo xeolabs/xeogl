@@ -15,7 +15,14 @@
 
  <img src="../../../assets/images/DirLight.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[View-space directional light](../../examples/#lights_directional_view)</li>
+ <li>[World-space directional light](../../examples/#lights_directional_world)</li>
+ </ul>
+
+ ## Usage
 
  ```` javascript
  var entity = new XEO.Entity({

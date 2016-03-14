@@ -14,7 +14,14 @@
  <img style="border:1px solid; background: white;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Quadratic_spline_six_segments.svg/200px-Quadratic_spline_six_segments.svg.png"/><br>
  *<a href="https://en.wikipedia.org/wiki/Spline_(mathematics)">Spline Curve from Wikipedia</a>*
 
- ## Example 1
+ ## Examples
+
+ <ul>
+ <li>[SplineCurve example](../../examples/#curves_SplineCurve)</li>
+ <li>[Path example](../../examples/#curves_Path)</li>
+ </ul>
+
+ ## Usage 1
 
  Create a SplineCurve, subscribe to updates on its {{#crossLink "SplineCurve/point:property"}}{{/crossLink}} and
  {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties, then vary its {{#crossLink "SplineCurve/t:property"}}{{/crossLink}}
@@ -41,7 +48,7 @@
  });
  ````
 
- ## Example 2
+ ## Usage 2
 
  Alternatively, we can randomly sample the point and vector at a given **t** with calls
  to the SplineCurve's {{#crossLink "SplineCurve/getPoint:method"}}{{/crossLink}} and

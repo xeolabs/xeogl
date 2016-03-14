@@ -1,7 +1,7 @@
 /**
  A **CameraPath** flies a {{#crossLink "Camera"}}{{/crossLink}} along a {{#crossLink "Curve"}}{{/crossLink}}.
 
- ## Example
+ ## Usage
 
  In the example below we create an {{#crossLink "Entity"}}{{/crossLink}} and a {{#crossLink "Camera"}}{{/crossLink}},
  then we create a {{#crossLink "CameraPath"}}{{/crossLink}} that binds the {{#crossLink "Camera"}}{{/crossLink}} to a

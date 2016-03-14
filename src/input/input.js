@@ -7,7 +7,7 @@
 
  <img src="../../../assets/images/Input.png"></img>
 
- ## Example
+ ## Usage
 
  In this example, we're subscribing to some mouse and key events that will occur on
  a {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
@@ -373,8 +373,6 @@
                     }
 
                     var coords = self._getClickCoordsWithinElement(e);
-
-                    console.log("mousemove=" + coords[0] + ", " + coords[1])
 
                     /**
                      * Fired whenever the mouse is moved over the parent

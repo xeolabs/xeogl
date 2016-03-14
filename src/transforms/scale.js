@@ -12,7 +12,13 @@
 
  <img src="../../../assets/images/Scale.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Transform hierarchy](../../examples/#transforms_hierarchy)</li>
+ </ul>
+
+ ## Usage
 
  In this example we have two {{#crossLink "Entity"}}Entities{{/crossLink}} that are transformed by a hierarchy that contains
  {{#crossLink "Rotate"}}{{/crossLink}}, {{#crossLink "Translate"}}{{/crossLink}} and Scale transforms.

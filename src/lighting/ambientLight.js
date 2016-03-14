@@ -14,10 +14,16 @@
 
  <img src="../../../assets/images/AmbientLight.png"></img>
 
- ### Example
+ ## Examples
+
+ <ul>
+ <li>[Ambient light source](../../examples/#lights_ambient)</li>
+ </ul>
+
+ ## Usage
 
  ```` javascript
- var entity = new XEO.Entity(scene, {
+ var entity = new XEO.Entity({
 
         lights: new XEO.Lights({
             lights: [

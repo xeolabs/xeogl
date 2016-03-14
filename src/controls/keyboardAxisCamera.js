@@ -17,7 +17,14 @@
  <li>'6' - inferior, viewing center from along +Y axis</li>
  </ul>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[KeyboardAxisCamera example](../../examples/#interaction_KeyboardAxisCamera)</li>
+ <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
+ </ul>
+
+ ## Usage
 
  ````Javascript
  var camera = new XEO.Camera({

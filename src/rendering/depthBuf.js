@@ -9,7 +9,7 @@
 
  <img src="../../../assets/images/DepthBuf.png"></img>
 
- ## Example
+ ## Usage
 
  The example below creates a {{#crossLink "Entity"}}{{/crossLink}} with a DepthBuf
  that uses the "less" depth comparison function and sets pixels depths to 0.5 whenever it's cleared.

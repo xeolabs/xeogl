@@ -12,6 +12,16 @@
 
  <img src="../../../assets/images/Geometry.png"></img>
 
+ ## Examples
+
+ <ul>
+ <li>[Simple triangle mesh](../../examples/#geometry_triangles)</li>
+ <li>[Triangle mesh with diffuse texture](../../examples/#geometry_triangles_texture)</li>
+ <li>[Triangle mesh with vertex colors](../../examples/#geometry_triangles_vertexColors)</li>
+ <li>[Wireframe box](../../examples/#geometry_lines)</li>
+ <li>[Dynamically modifying a TorusGeometry](../../examples/#geometry_modifying)</li>
+ </ul>
+
  ## Default shape</a>
 
  If you create a Geometry with no specified shape, it will default to a box-shaped triangle mesh with dimensions 2x2x2:

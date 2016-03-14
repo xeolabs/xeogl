@@ -16,9 +16,23 @@
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Textures create within xeoEngine's shaders.</li>
  </ul>
 
+ ## Examples
+
+ <ul>
+ <li>[Diffuse Texture](../../examples/#materials_texture_diffuse)</li>
+ <li>[Specular Texture](../../examples/#materials_texture_specular)</li>
+ <li>[Opacity Texture](../../examples/#materials_texture_opacity)</li>
+ <li>[Emissive Texture](../../examples/#materials_texture_emissive)</li>
+ <li>[Reflectivity Texture](../../examples/#materials_texture_reflectivity)</li>
+ <li>[Normal map](../../examples/#materials_texture_normalMap)</li>
+ <li>[Diffuse Video Texture](../../examples/#materials_texture_video)</li>
+ <li>[Diffuse Procedural Texture](../../examples/#materials_texture_procedural)</li>
+ <li>[Texture Animation](../../examples/#materials_texture_animation)</li>
+ </ul>
+
  <img src="../../../assets/images/Texture.png"></img>
 
- ## Example
+ ## Usage
 
  In this example we have an Entity with
 

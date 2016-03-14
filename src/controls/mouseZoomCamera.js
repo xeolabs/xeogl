@@ -8,7 +8,14 @@
  along the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
  </ul>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[MouseZoomCamera example](../../examples/#interaction_MouseZoomCamera)</li>
+ <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
+ </ul>
+
+ ## Usage
 
  ````Javascript
  var camera = new XEO.Camera({

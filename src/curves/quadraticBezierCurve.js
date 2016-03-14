@@ -16,7 +16,15 @@
  <img style="border:1px solid;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/B%C3%A9zier_2_big.gif/240px-B%C3%A9zier_2_big.gif"/><br>
  *[Quadratic Bezier Curve from WikiPedia](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)*
 
- ## Example 1
+ ## Examples
+
+ <ul>
+ <li>[Tweening position along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve)</li>
+ <li>[Tweening color along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve_color)</li>
+ <li>[Path example](../../examples/#curves_Path)</li>
+ </ul>
+
+ ## Usage 1
 
  Create a QuadraticBezierCurve, subscribe to updates on its {{#crossLink "QuadraticBezierCurve/point:property"}}{{/crossLink}} and
  {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties, then vary its {{#crossLink "QuadraticBezierCurve/t:property"}}{{/crossLink}}
@@ -42,7 +50,7 @@
  });
  ````
 
- ## Example 2
+ ## Usage 2
 
  In the next example, we'll create an {{#crossLink "Entity"}}{{/crossLink}} with a
  {{#crossLink "PhongMaterial"}}{{/crossLink}} whose diffuse color is bound to the
@@ -80,7 +88,7 @@
  });
  ````
 
- ## Example 3
+ ## Usage 3
 
  In the previous two examples, we relied on our QuadraticBezierCurves to remember their progress in their
  {{#crossLink "QuadraticBezierCurve/t:property"}}{{/crossLink}} and {{#crossLink "QuadraticBezierCurve/point:property"}}{{/crossLink}}
@@ -109,7 +117,7 @@
  });
  ````
 
- ## Example 4
+ ## Usage 4
 
  When we want to build a {{#crossLink "Geometry"}}{{/crossLink}} from a QuadraticBezierCurve, we can sample points
  along the curve using its {{#crossLink "Curve/getPoints:method"}}{{/crossLink}} method, as shown below.

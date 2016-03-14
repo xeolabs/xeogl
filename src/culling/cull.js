@@ -11,7 +11,7 @@
 
  <img src="../../../assets/images/Cull.png"></img>
 
- ## Example
+ ## Usage
 
  This example creates a Cull that toggles the culling of
  two {{#crossLink "Entity"}}Entities{{/crossLink}}.

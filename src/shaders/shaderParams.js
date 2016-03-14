@@ -8,7 +8,7 @@
 
  <img src="../../../assets/images/ShaderParams.png"></img>
 
- ## Example
+ ## Usage
 
  In this example we'll create the effect shown below, in which we render a rippling water pattern to the left and right halves
  of the canvas, independently. We'll have a {{#crossLink "Shader"}}{{/crossLink}} that creates the water pattern, which

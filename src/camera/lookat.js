@@ -11,7 +11,7 @@
 
  <img src="../../../assets/images/Lookat.png"></img>
 
- ## Example
+ ## Usage
 
  ````Javascript
  new XEO.Entity({

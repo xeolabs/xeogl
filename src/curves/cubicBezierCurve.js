@@ -16,7 +16,14 @@
  <img style="border:1px solid;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/B%C3%A9zier_3_big.gif/240px-B%C3%A9zier_3_big.gif"/><br>
  *[Cubic Bezier Curve from WikiPedia](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)*
 
- ## Example 1
+ ## Examples
+
+ <ul>
+ <li>[CubicBezierCurve example](../../examples/#curves_CubicBezierCurve)</li>
+ <li>[Path example](../../examples/#curves_Path)</li>
+ </ul>
+
+ ## Usage 1
 
  Create a CubicBezierCurve, subscribe to updates on its {{#crossLink "CubicBezierCurve/point:property"}}{{/crossLink}} and
  {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties, then vary its {{#crossLink "CubicBezierCurve/t:property"}}{{/crossLink}}

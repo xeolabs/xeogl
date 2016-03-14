@@ -9,7 +9,16 @@
 
  <img src="../../../assets/images/Billboard.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Spherical billboards](../../examples/#billboards_spherical)</li>
+ <li>[Cylindrical billboards](../../examples/#billboards_cylindrical)</li>
+ <li>[Clouds using billboards](../../examples/#billboards_spherical_clouds)</li>
+ <li>[Billboards with video textures](../../examples/#billboards_spherical_video)</li>
+ </ul>
+
+ ## Usage
 
  Let's create 1000 {{#crossLink "Entity"}}Entities{{/crossLink}} that always face towards the viewpoint as we orbit the {{#crossLink "Camera"}}{{/crossLink}} about the X and Y axis:
 

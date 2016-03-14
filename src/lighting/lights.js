@@ -14,7 +14,7 @@
 
  <img src="../../../assets/images/Lights.png"></img>
 
- ## Example
+ ## Usage
 
  ```` javascript
  var entity = new XEO.Entity({

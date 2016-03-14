@@ -10,7 +10,13 @@
 
  <img src="../../../assets/images/Ortho.png"></img>
 
- ## Example
+ ## Examples
+
+ <ul>
+ <li>[Camera with orthographic projection](../../examples/#camera_ortho)</li>
+ </ul>
+
+ ## Usage
 
  ````Javascript
  new XEO.Entity({

@@ -7,9 +7,18 @@
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Fresnels create within xeoEngine's shaders.</li>
  </ul>
 
+ ## Examples
+
+ <ul>
+ <li>[Diffuse Fresnel](../../examples/#materials_fresnel_diffuse)</li>
+ <li>[Specular Fresnel](../../examples/#materials_fresnel_specular)</li>
+ <li>[Opacity Fresnel](../../examples/#materials_fresnel_opacity)</li>
+ <li>[Emissive Fresnel](../../examples/#materials_fresnel_emissive)</li>
+ </ul>
+
  <img src="../../../assets/images/Fresnel.png"></img>
 
- ## Example
+ ## Usage
 
  ````javascript
  var entity = new XEO.Entity({

@@ -14,7 +14,7 @@
 
  <img src="../../../assets/images/ColorTarget.png"></img>
 
- ## Example
+ ## Usage
 
  This example contains an {{#crossLink "Entity"}}{{/crossLink}} that renders its pixel colors to a ColorTarget, which is then
  piped into a {{#crossLink "Texture"}}{{/crossLink}} that's applied to a second {{#crossLink "Entity"}}{{/crossLink}}.</li>

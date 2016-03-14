@@ -44,7 +44,7 @@
  component instances. In many Scenes, for example, you might not even bother to create your own {{#crossLink "Camera"}}Camera{{/crossLink}} and just
  let all your {{#crossLink "Entity"}}Entities{{/crossLink}} fall back on the default one.
 
- ## Example
+ ## Usage
 
  Here's the JavaScript for the diagram above. As mentioned earlier, note that we only provide components for our {{#crossLink "Entity"}}Entities{{/crossLink}} when we need to
  override the default components that the Scene would have provided them, and that the same component instances may be shared among multiple Entities.

@@ -4,9 +4,11 @@
 
  <img src="../../../assets/images/Stationary.png"></img>
 
- ## Example
+ ## Examples
 
- TODO
+ <ul>
+ <li>[Custom Skybox using a Stationary component](../../examples/#skyboxes_customSkybox)</li>
+ </ul>
 
  @class Stationary
  @module XEO

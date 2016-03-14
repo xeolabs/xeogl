@@ -26,7 +26,7 @@
 
  <img src="../../../assets/images/Layer.png"></img>
 
- ## Example
+ ## Usage
 
  In this example we'll use Layers to perform <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency sorting</a>,
  which ensures that transparent entities are rendered farthest-to-nearest, so that they alpha-blend correctly with each other.

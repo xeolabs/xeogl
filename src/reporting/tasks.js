@@ -13,7 +13,7 @@
 
  <img src="../../../assets/images/Tasks.png"></img>
 
- ## Example
+ ## Usage
 
  This example shows how to manage tasks and subscribe to their life cycles.
 
