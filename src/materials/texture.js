@@ -16,6 +16,8 @@
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Textures create within xeoEngine's shaders.</li>
  </ul>
 
+ <img src="../../../assets/images/Texture.png"></img>
+
  ## Examples
 
  <ul>
@@ -29,8 +31,6 @@
  <li>[Diffuse Procedural Texture](../../examples/#materials_texture_procedural)</li>
  <li>[Texture Animation](../../examples/#materials_texture_animation)</li>
  </ul>
-
- <img src="../../../assets/images/Texture.png"></img>
 
  ## Usage
 

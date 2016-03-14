@@ -32,7 +32,9 @@
     });
 
     var entity = new XEO.Entity({
-        lights: lights
+        lights: lights,
+        geometry: new XEO.BoxGeometry(),
+        material: material
     });
 
     entity.scene.on("tick",

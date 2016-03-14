@@ -39,7 +39,7 @@
          })
      }),
 
-     new XEO.BoxGeometry();
+     geometry: new XEO.BoxGeometry()
  });
  ````
 

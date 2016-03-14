@@ -37,7 +37,7 @@
         })
      }),
 
-     new XEO.BoxGeometry();
+     perspective: new XEO.BoxGeometry()
  });
  ````
 

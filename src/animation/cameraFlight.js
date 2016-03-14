@@ -2,7 +2,7 @@
  A **CameraFlight** flies a {{#crossLink "Camera"}}{{/crossLink}} to a given target.
 
  <ul>
- <li>A CameraFlight animates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the {{#crossLink "Camera"}}{{/crossLink}}.</li>
+ <li>A CameraFlight animates the {{#crossLink "Lookat"}}{{/crossLink}} attached to its {{#crossLink "Camera"}}{{/crossLink}}.</li>
  <li>A CameraFlight can be attached to a different {{#crossLink "Camera"}}{{/crossLink}} at any time.</li>
  <li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>
  </ul>
@@ -46,11 +46,11 @@
  ````Javascript
  var camera = new XEO.Camera();
 
- // Create a CameraFlight that takes exactly ten seconds to fly
+ // Create a CameraFlight that takes exactly twenty seconds to fly
  // the Camera to each specified target
  var cameraFlight = new XEO.CameraFlight({
     camera: camera,
-    duration: 20
+    duration: 20 // Seconds
  });
 
  // Create a Entity, which gets all the default components

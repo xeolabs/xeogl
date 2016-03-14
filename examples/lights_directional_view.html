@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeoengine.js"></script>
     <script src="js/libs/dat.gui.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -16,10 +16,13 @@
                                                       target="_docs">DirLight</a> in View-scape
 </div>
 
+<div id="dat-gui-container">
+</div>
+
 <script>
 
     var dirLight = new XEO.DirLight({
-        dir: [0, 0, -1],
+        dir: [0.0, 0.0, -1.0],
         color: [0.7, 0.7, 0.8],
         intensity: 1.0,
         space: "view"
@@ -50,7 +53,7 @@
 
         this.message = "Directional light";
 
-        this["dir[0]"] = 1.0;
+        this["dir[0]"] =  1.0;
         this["dir[1]"] = -1.0;
         this["dir[2]"] = -1.0;
 
@@ -86,12 +89,14 @@
 
     var gui = new dat.GUI();
 
+    document.getElementById('dat-gui-container').appendChild(gui.domElement);
+
     var menu = new Menu();
 
     var direction = gui.addFolder('Direction');
-    direction.add(menu, 'dir[0]', -1.0, 1.0);
-    direction.add(menu, 'dir[1]', -1.0, 1.0);
-    direction.add(menu, 'dir[2]', -1.0, 1.0);
+    direction.add(menu, 'dir[0]', -1.1, 1.0);
+    direction.add(menu, 'dir[1]', -1.1, 1.0);
+    direction.add(menu, 'dir[2]', -1.1, 1.0);
     direction.open();
 
     var color = gui.addFolder('Color');

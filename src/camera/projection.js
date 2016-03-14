@@ -2,7 +2,7 @@
  A **Projection** component defines a projection transformation as a 4x4 matrix.
 
  <ul>
- <li>Projection is the base class for (at least) the {{#crossLink "Perspective"}}{{/crossLink}} and {{#crossLink "Ortho"}}{{/crossLink}} types.</li>
+ <li>Projection is the base class for (at least) the {{#crossLink "Perspective"}}{{/crossLink}} and {{#crossLink "Ortho"}}{{/crossLink}} components.</li>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair Projections with {{#crossLink "Lookat"}}Lookat{{/crossLink}} components.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Projection components create within xeoEngine's shaders.</li>
  </ul>
@@ -33,7 +33,7 @@
          })
      }),
 
-     new XEO.BoxGeometry();
+     geometry: new XEO.BoxGeometry()
  });
  ````
 

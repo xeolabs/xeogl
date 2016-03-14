@@ -60,7 +60,6 @@
  var worldBoundary = entity.worldBoundary;
 
  worldBoundary.on("updated", function() {
-
         obb = worldBoundary.obb;
         aabb = worldBoundary.aabb;
         center = worldBoundary.center;
@@ -74,7 +73,7 @@
 
  var x = 0;
 
- scene.on("tick", function() {
+ entity.scene.on("tick", function() {
     translate.xyz: [x, 0, 0];
     x += 0.5;
  });

@@ -18,30 +18,34 @@
 
 <script>
 
-    var scene = new XEO.Scene();
-
-    var lookat = new XEO.Lookat(scene, {
+    var lookat = new XEO.Lookat({
         eye: [0, 0, -4],
         look: [0, 0, 0],
         up: [0, 1, 0]
     });
 
-    var perspective = new XEO.Perspective(scene, {
+    var perspective = new XEO.Perspective({
         fovy: 60,
         near: 0.1,
         far: 1000
     });
 
-    var camera = new XEO.Camera(scene, {
+    var camera = new XEO.Camera({
         view: lookat,
         project: perspective
     });
 
-    var entity = new XEO.Entity(scene, {
-        camera: camera
+    var entity = new XEO.Entity({
+        camera: camera,
+        geometry: new XEO.BoxGeometry(),
+        material: new XEO.PhongMaterial({
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            })
+        })
     });
 
-    scene.on("tick",
+    entity.scene.on("tick",
             function () {
                 camera.view.rotateEyeY(0.5);
                 camera.view.rotateEyeX(0.3);

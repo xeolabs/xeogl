@@ -20,15 +20,13 @@
 
     // Creating a Camera with a Frustum-based projection transform.
 
-    var scene = new XEO.Scene();
-
-    var lookat = new XEO.Lookat(scene, {
+    var lookat = new XEO.Lookat({
         eye: [0, 0, -4],
         look: [0, 0, 0],
         up: [0, 1, 0]
     });
 
-    var frustum = new XEO.Frustum(scene, {
+    var frustum = new XEO.Frustum({
         left: -0.1,
         right: 0.1,
         bottom: -0.1,
@@ -37,19 +35,22 @@
         far: 1000
     });
 
-    var camera = new XEO.Camera(scene, {
+    var camera = new XEO.Camera({
         view: lookat,
         project: frustum
     });
 
-    var geometry = new XEO.BoxGeometry(scene);  // Defaults to a 2x2x2 box
-
-    var entity = new XEO.Entity(scene, {
+    var entity = new XEO.Entity({
         camera: camera,
-        geometry: geometry
+        geometry: new XEO.BoxGeometry(),
+        material: new XEO.PhongMaterial({
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            })
+        })
     });
 
-    scene.on("tick",
+    entity.scene.on("tick",
             function () {
                 camera.view.rotateEyeY(0.5);
                 camera.view.rotateEyeX(0.3);

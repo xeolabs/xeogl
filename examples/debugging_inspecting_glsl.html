@@ -23,7 +23,7 @@
     var buf = [];
 
     function log(data) {
-        buf.push(JSON.stringify(data));
+        buf.push(JSON.stringify(data, null, "\t"));
         if (buf.length > 30) {
             buf.shift();
         }
@@ -34,10 +34,12 @@
         id: "myObject"
     });
 
-    entity.scene.once("tick2",
-            function () {
-                log(entity.glsl);
-            });
+    setTimeout(function () {  // TODO: GLSL only available once Entity internally compiled - maybe query asynch?
+        entity.scene.once("tick",
+                function () {
+                    log(entity.glsl);
+                });
+    }, 1000);
 
 </script>
 </body>
