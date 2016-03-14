@@ -20,9 +20,9 @@
  ## Examples
 
  <ul>
- <li>[Flying to Entity](../../examples/#CameraFlight_Entity)</li>
- <li>[Flying to Boundary3D](../../examples/#CameraFlight_Boundary3D)</li>
- <li>[Flying to AABB](../../examples/#CameraFlight_AABB)</li>
+ <li>[Flying to Entity](../../examples/#animation_CameraFlight_Entity)</li>
+ <li>[Flying to Boundary3D](../../examples/#animation_CameraFlight_Boundary3D)</li>
+ <li>[Flying to AABB](../../examples/#animation_CameraFlight_AABB)</li>
  </ul>
 
  ## Flying to a position
