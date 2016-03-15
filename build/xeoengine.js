@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-03-14
+ * Built on 2016-03-15
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -29235,8 +29235,11 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
      <li>[Buggy](../../examples/#importing_gltf_buggy)</li>
      <li>[Reciprocating Saw](../../examples/#importing_gltf_ReciprocatingSaw)</li>
      <li>[Textured Duck](../../examples/#importing_gltf_duck)</li>
-     <li>[Gearbox with entity explorer UI](../../examples/#demos_ui_explorer)</li>
-     <li>[Fly camera to gearbox entities](../../examples/#boundaries_flyToBoundary)</li>
+     <li>[Model with entity explorer UI](../../examples/#demos_ui_explorer)</li>
+     <li>[Fly camera to model entities](../../examples/#boundaries_flyToBoundary)</li>
+     <li>[Ensuring individual materials on Model entities](../../examples/#importing_gltf_techniques_uniqueMaterials)</li>
+     <li>[Adding transforms to Models via constructor](../../examples/#importing_gltf_techniques_configTransform)</li>
+     <li>[Adding transforms to Models after loading](../../examples/#importing_gltf_techniques_attachTransform)</li>
      </ul>
 
      ### Loading a glTF file
