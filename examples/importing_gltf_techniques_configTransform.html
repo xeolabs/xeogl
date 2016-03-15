@@ -44,14 +44,13 @@
 
     // Set initial camera position
     var view = buggy.scene.camera.view;
+    view.eye = [0, 40, 100];
 
     // Allow user camera control
     new XEO.CameraControl();
 
     // Slowly rotate Model
-
     var buggyRotation = buggy.scene.components["buggyRotation"];
-
     buggy.scene.on("tick",
             function () {
                 buggyRotation.angle += 0.1;

@@ -26,7 +26,6 @@
 
     // Set initial camera position
     var view = buggy.scene.camera.view;
-
     view.eye = [0, 40, 100];
 
     // Allow user camera control
@@ -34,7 +33,6 @@
 
     // Attach a transform hierarchy to the Model
     // Shrink the model 50%, rotate it about Y
-
     buggy.transform = new XEO.Translate({ // Translate Model to rotate roughly about center
         xyz: [-35, 0, 0],
 
@@ -50,9 +48,7 @@
     });
 
     // Slowly rotate Model
-
     var buggyRotation = buggy.scene.components["buggyRotation"];
-
     buggy.scene.on("tick",
             function () {
                 buggyRotation.angle += 0.1;
