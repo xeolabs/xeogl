@@ -29,9 +29,13 @@
      <li>[Model with entity explorer UI](../../examples/#demos_ui_explorer)</li>
      <li>[Fly camera to model entities](../../examples/#boundaries_flyToBoundary)</li>
      <li>[Ensuring individual materials on Model entities](../../examples/#importing_gltf_techniques_uniqueMaterials)</li>
-     <li>[Adding transforms to Models via constructor](../../examples/#importing_gltf_techniques_configTransform)</li>
-     <li>[Adding transforms to Models after loading](../../examples/#importing_gltf_techniques_attachTransform)</li>
+     <li>[Attaching transforms to Models, via constructor](../../examples/#importing_gltf_techniques_configTransform)</li>
+     <li>[Attaching transforms to Models, via property](../../examples/#importing_gltf_techniques_attachTransform)</li>
      </ul>
+
+     ## Tutorials
+
+     <li>[Importing glTF](https://github.com/xeolabs/xeoengine/wiki/Importing-glTF#attaching-transforms-to-models)</li>
 
      ### Loading a glTF file
 
