@@ -29244,7 +29244,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
      ## Tutorials
 
-     <li>[Importing glTF](https://github.com/xeolabs/xeoengine/wiki/Importing-glTF#attaching-transforms-to-models)</li>
+     <li>[Importing glTF](https://github.com/xeolabs/xeoengine/wiki/Importing-glTF)</li>
 
      ### Loading a glTF file
 
