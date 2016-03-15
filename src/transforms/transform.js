@@ -17,6 +17,8 @@
 
  <ul>
  <li>[Transform hierarchy](../../examples/#transforms_hierarchy)</li>
+ <li>[Attaching transforms to Models, via constructor](../../examples/#importing_gltf_techniques_configTransform)</li>
+ <li>[Attaching transforms to Models, via property](../../examples/#importing_gltf_techniques_attachTransform)</li>
  </ul>
 
  ## Usage
