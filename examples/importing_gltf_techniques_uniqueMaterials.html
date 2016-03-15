@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeoengine.min.js"></script>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>importing glTF using a <a
+        href="../docs/classes/Model.html" target="_docs">XEO.Model</a> then ensuring that each
+    <a href="../docs/classes/Entity.html" target="_docs">XEO.Entity</a><br>gets its own copy of its
+    <a href="../docs/classes/PhongMaterial.html" target="_docs">XEO.PhongMaterial</a>, which we then
+    adjust to a random color
+</div>
+
+<script>
+
+    // Entity's loaded by Models from glTF will likely share Materials
+    // among themselves. In order to be able to update Materials for
+    // Entity's individually, we need to ensure that the Entity's each
+    // have their own Material instance.
+
+    // This example demonstrates how to ensure that each Entity loaded
+    // in a Model gets its own unique Material instance.
+
+    // Load glTF gearbox model
+    var gearbox = new XEO.Model({
+        id: "gearbox",
+        src: "models/gltf/gearbox/gearbox_assy.gltf"
+    });
+
+    // Once the Model is loaded, iterate over its Entity's
+    // and replace each of their PhongMaterials with a clone,
+    // while storing the clone in the Model's Collection so that
+    // it gets destroyed when the Model is destroyed or reloaded.
+
+    // Also, just to show the uniqueness, we'll set the diffuse
+    // color on each Material to a random value.
+
+    gearbox.on("loaded", function () {
+
+        gearbox.collection.iterate(function (c) {
+
+            if (c.isType("XEO.Entity")) {
+
+                var material = c.material.clone();
+
+                c.material = material;
+
+                c.material.diffuse = [Math.random(), Math.random(), Math.random()];
+
+                gearbox.collection.add(material);
+            }
+        });
+
+        // Set initial camera position
+        var view = gearbox.scene.camera.view;
+
+        view.eye = [184.21, 10.54, -7.03];
+        view.look = [159.20, 17.02, 3.21];
+        view.up = [-0.15, 0.97, 0.13];
+
+        // Allow user camera control
+        new XEO.CameraControl();
+
+        // Slowly orbit camera about model
+        gearbox.scene.on("tick",
+                function () {
+                    view.rotateEyeY(0.3);
+                    view.rotateEyeX(0.1);
+                });
+    });
+
+</script>
+</body>
+</html>
