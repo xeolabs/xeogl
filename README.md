@@ -4,6 +4,10 @@
 
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/a834272d6bf448f7a77947d7b784f261)](https://www.codacy.com/app/lindsay-kay/xeoengine)
 
+<p align="center">
+<img align="center" src="http://i.giphy.com/xThuWpjFISMUrGemR2.gif" width="100%" alt="xeoEngine glTF"/>
+</p>
+
 ## About
 
 **xeoEngine** is a data-driven WebGL-based engine for quick and easy 3D visualization on the Web. 
