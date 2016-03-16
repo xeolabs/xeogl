@@ -40,7 +40,7 @@
 
             if (frameCtx.blendEnabled && !frameCtx.depthMode) {
                 gl.enable(gl.BLEND);
-                gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+                gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
             }
 
             gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);

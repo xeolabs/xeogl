@@ -785,6 +785,8 @@
                 }
             }
 
+            add("   vec4 fragColor;");
+
             if (normals) {
 
                 // Get Lambertian shading terms
@@ -877,7 +879,7 @@
                 add();
                 comment("   Phong BRDF");
                 add();
-                add("   gl_FragColor = vec4((specular * specularLight) + ((diffuseLight + (ambient * xeo_uLightAmbientIntensity) ) * diffuse) + emissive, opacity);");
+                add("   fragColor = vec4((specular * specularLight) + ((diffuseLight + (ambient * xeo_uLightAmbientIntensity) ) * diffuse) + emissive, opacity);");
 
             } else {
 
@@ -885,8 +887,12 @@
                 add();
                 comment("   Non-Lambertian BRDF");
                 add();
-                add("   gl_FragColor = vec4(emissive + diffuse, opacity);");
+                add("   fragColor = vec4(emissive + diffuse, opacity);");
             }
+
+            add("   fragColor.rgb *= fragColor.a;");
+
+            add("   gl_FragColor = fragColor;");
 
             add("}");
 
