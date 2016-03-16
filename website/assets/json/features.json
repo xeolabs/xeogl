@@ -1,18 +1,14 @@
 {
   "Main features": [
     "Data-driven, entity-component scene graph",
-    "Dynamically-editable scenes",
-    "Fully-observable scene state",
-    "[[JSON-persistable scene state|components_toJSON]]",
+    "Runtime editable scenes",
+    "Fully observable scene state",
     "[[Cloneable scene components|components_cloning]]",
     "[[Multiple scenes in a page|scene_multipleScenes]]",
     "[[Performance monitoring|profiling_statistics]]",
-    "Fast [[ray picking|interaction_picking_triangles_normalAndUV]] for large numbers of dynamic entities"
+    "Fast and flexible [[picking|interaction_picking_triangles_normalAndUV]]"
   ],
   "Optimizations": [
-    "Scene graph dynamically compiled to fast internal render graph",
-    "WebGL state management (sorting, batching, caching etc.)",
-    "Task queuing with per-frame budget",
     "#See the <a href='https://github.com/xeolabs/xeoengine/wiki/Implementation-Notes' target='_wiki'>wiki</a> for implementation notes on optimizations in xeoEngine."
   ],
   "Cameras": [
