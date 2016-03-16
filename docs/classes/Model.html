@@ -224,130 +224,7 @@ which will cause it to load components from the new file (destroying any compone
 <h2 id="tutorials">Tutorials</h2>
 <li><a href="https://github.com/xeolabs/xeoengine/wiki/Importing-glTF">Importing glTF</a></li>
 
-<h3 id="loading-a-gltf-file">Loading a glTF file</h3>
-<p>First, create a Model, which immediately loads a glTF model into its <a href="../classes/Scene.html" class="crosslink">Scene</a> (which in this case is the default <a href="../classes/Scene.html" class="crosslink">Scene</a>, since we didn&#39;t explicitly configure the Model with one):</p>
-<pre class="code prettyprint"><code class="lang-javascript">var gearboxModel = new XEO.Model({
-   src: "models/gltf/gearbox/gearbox_assy.gltf"
-});
-</code></pre>
-<p>We can bind a callback, to get notification when the Model has loaded, which will
-fire immediately if the Model happens to be loaded already:</p>
-<pre class="code prettyprint"><code class="lang-javascript">gearboxModel.on("loaded", function() {
-        // Model has loaded!
-    });
-</code></pre>
-<h3 id="iterating-over-loaded-components">Iterating over loaded components</h3>
-<p>The Model&#39;s <a href="../classes/Collection.html" class="crosslink">Collection</a> which now contains all the scene components
-it created while loading the glTF file.</p>
-<p>Let&#39;s iterate over the <a href="../classes/Collection.html" class="crosslink">Collection</a> and log the ID of each
-<a href="../classes/Entity.html" class="crosslink">Entity</a> we that find in there:</p>
-<pre class="code prettyprint"><code class="lang-javascript">gearboxModel.collection.iterate(function(c) {
-    if (c.type === "XEO.Entity") {
-        this.log("Entity found: " + c.id);
-    }
-});
-</code></pre>
-<h3 id="getting-the-boundary-of-a-model">Getting the boundary of a Model</h3>
-<p>To visualize the World-space boundary of a Model, we can create a <a href="../classes/CollectionBoundary.html" class="crosslink">CollectionBoundary</a>,
-generate a <a href="../classes/BoundaryGeometry.html" class="crosslink">BoundaryGeometry</a> from that, then create an <a href="../classes/Entity.html" class="crosslink">Entity</a>
-to visualize the <a href="../classes/BoundaryGeometry.html" class="crosslink">BoundaryGeometry</a>:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var collectionBoundary = new XEO.CollectionBoundary({
-    collection: model.collection
-});
-
-var boundaryGeometry = new XEO.BoundaryGeometry({
-    boundary: collectionBoundary.worldBoundary
-});
-
-// The Entity will be a red wireframe box indicating the
-// extents of the boundary
-
-new XEO.Entity({
-    geometry: boundaryGeometry,
-    material: new XEO.PhongMaterial({
-        diffuse: [1,0,0]
-    })
-});
-</code></pre>
-<p>Now whenever we set the Model to a new file (see example below), the World-space boundary will automatically update accordingly, as will
-our boundary indicator <a href="../classes/Entity.html" class="crosslink">Entity</a>.</p>
-<h3 id="flying-the-camera-to-look-at-a-model">Flying the Camera to look at a Model</h3>
-<p>To position the Model entirely within view, we can use a <a href="../classes/CameraFlight.html" class="crosslink">CameraFlight</a> to fly the <a href="../classes/Camera.html" class="crosslink">Camera</a> (in this case the default, implicit one) to look at the World-space extents of our <a href="../classes/CollectionBoundary.html" class="crosslink">CollectionBoundary</a>:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var flight = new XEO.CameraFlight({
-   duration: 1.5
-});
-
-flight.flyTo(collectionBoundary.worldBoundary, function() {
-        // Optional callback to fire on arrival
-    });
-</code></pre>
-<h3 id="transforming-the-model">Transforming the Model</h3>
-<p>A Model can be attached to a modelling <a href="../classes/Transform.html" class="crosslink">Transform</a> hierarchy to transform it within
-the World-space coordinate system.</p>
-<p>The hierarchy can be attached on instantiation:</p>
-<pre class="code prettyprint"><code class="lang-javascript">gearboxModel = new XEO.Model({
-   src: "models/gltf/gearbox/gearbox_assy.gltf",
-
-   transform: new XEO.Rotate({
-       id: "spinY",
-       xyz: [0, 1, 0],
-       angle: 0,
-
-       parent: new XEO.Rotate({
-           id: "spinZ",
-           xyz: [0, 0, 1],
-           angle: 0
-       })
-   })
-});
-</code></pre>
-<p>Alternatively, you can attach the <a href="../classes/Transform.html" class="crosslink">Transform</a> hierarchy afterwards:</p>
-<pre class="code prettyprint"><code class="lang-javascript">gearboxModel.transform = new XEO.Rotate({
-       id: "spinY",
-       xyz: [0, 1, 0],
-       angle: 0,
-
-       parent: new XEO.Rotate({
-           id: "spinZ",
-           xyz: [0, 0, 1],
-           angle: 0
-       })
-   });
-</code></pre>
-<p>And of course, the hierarchy may be dynamically-editable, since everything in a xeoEngine scene is editable at
-runtime. Animating or updating the <a href="../classes/Transform.html" class="crosslink">Transform</a> hierarchy will automatically update the
-boundaries on the <a href="../classes/CollectionBoundary.html" class="crosslink">CollectionBoundary</a> shown in previous examples.</p>
-<p>You can access the <a href="../classes/Transform.html" class="crosslink">Transforms</a> by ID:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var scene = gearboxMode.scene;
-var spinY = scene.components["spinY"];
-var spinZ = scene.components["spinZ"];
-
-gearboxModel.scene.on("tick", function () {
-           spinY.angle += 0.1;
-           spinZ.angle += 0.2;
-       });
-</code></pre>
-<p>or by walking the <a href="../classes/Transform.html" class="crosslink">Transform</a> hierarchy:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var scene = gearboxMode.scene;
-var spinY = gearbox.transform;
-var spinZ = gearbox.transform.parent;
-
-gearboxModel.scene.on("tick", function () {
-           spinY.angle += 0.1;
-           spinZ.angle += 0.2;
-       });
-</code></pre>
-<h3 id="switching-to-a-different-gltf-file">Switching to a different glTF file</h3>
-<p>Let&#39;s set the Model to a different file path:</p>
-<pre class="code prettyprint"><code class="lang-javascript">gearboxModel.src = "models/gltf/buggy/buggy.gltf"
-</code></pre>
-<p>Once loaded, the <a href="../classes/Collection.html" class="crosslink">Collection</a> will then contain an entirely different collection of scene
-components, created from this new glTF file.</p>
-<h3 id="destroying-a-model">Destroying a Model</h3>
-<p>Finally, a Model manages the lifecycle of it&#39;s components. Therefore, destroying a Model also destroys all the
-components it loaded:</p>
-<pre class="code prettyprint"><code class="lang-javascript">gearboxModel.destroy();
-</code></pre>
+<p><iframe src="//giphy.com/embed/xThuWpjFISMUrGemR2" width="480" height="334" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="http://giphy.com/gifs/webgl-xeoengine-xThuWpjFISMUrGemR2">via GIPHY</a></p></p>
 
 </div>
 
@@ -1246,7 +1123,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_importing_model.js.html#l365"><code>src&#x2F;importing&#x2F;model.js:365</code></a>
+                            <a href="../files/src_importing_model.js.html#l197"><code>src&#x2F;importing&#x2F;model.js:197</code></a>
                             </p>
                     
                     
@@ -1428,7 +1305,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_importing_model.js.html#l254"><code>src&#x2F;importing&#x2F;model.js:254</code></a>
+                            <a href="../files/src_importing_model.js.html#l86"><code>src&#x2F;importing&#x2F;model.js:86</code></a>
                             </p>
                     
                     
@@ -1517,7 +1394,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_importing_model.js.html#l385"><code>src&#x2F;importing&#x2F;model.js:385</code></a>
+                            <a href="../files/src_importing_model.js.html#l217"><code>src&#x2F;importing&#x2F;model.js:217</code></a>
                             </p>
                     
                     
@@ -1607,7 +1484,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_importing_model.js.html#l344"><code>src&#x2F;importing&#x2F;model.js:344</code></a>
+                            <a href="../files/src_importing_model.js.html#l176"><code>src&#x2F;importing&#x2F;model.js:176</code></a>
                             </p>
                     
                     
@@ -1633,7 +1510,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_importing_model.js.html#l352"><code>src&#x2F;importing&#x2F;model.js:352</code></a>
+                            <a href="../files/src_importing_model.js.html#l184"><code>src&#x2F;importing&#x2F;model.js:184</code></a>
                             </p>
                     
                     
@@ -1675,7 +1552,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_importing_model.js.html#l403"><code>src&#x2F;importing&#x2F;model.js:403</code></a>
+                            <a href="../files/src_importing_model.js.html#l235"><code>src&#x2F;importing&#x2F;model.js:235</code></a>
                             </p>
                     
                     
