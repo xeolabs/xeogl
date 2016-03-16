@@ -3593,6 +3593,8 @@
                 }
             }
 
+            add("   vec4 fragColor;");
+
             if (normals) {
 
                 // Get Lambertian shading terms
@@ -3685,7 +3687,7 @@
                 add();
                 comment("   Phong BRDF");
                 add();
-                add("   gl_FragColor = vec4((specular * specularLight) + ((diffuseLight + (ambient * xeo_uLightAmbientIntensity) ) * diffuse) + emissive, opacity);");
+                add("   fragColor = vec4((specular * specularLight) + ((diffuseLight + (ambient * xeo_uLightAmbientIntensity) ) * diffuse) + emissive, opacity);");
 
             } else {
 
@@ -3693,8 +3695,12 @@
                 add();
                 comment("   Non-Lambertian BRDF");
                 add();
-                add("   gl_FragColor = vec4(emissive + diffuse, opacity);");
+                add("   fragColor = vec4(emissive + diffuse, opacity);");
             }
+
+            add("   fragColor.rgb *= fragColor.a;");
+
+            add("   gl_FragColor = fragColor;");
 
             add("}");
 
@@ -5802,7 +5808,7 @@
                         // Entering a transparency bin
 
                         gl.enable(gl.BLEND);
-                        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+                        gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
                         frameCtx.blendEnabled = true;
                     } else {
 
@@ -6319,7 +6325,7 @@
 
             if (frameCtx.blendEnabled && !frameCtx.depthMode) {
                 gl.enable(gl.BLEND);
-                gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+                gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
             }
 
             gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
@@ -29246,7 +29252,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
      <li>[Importing glTF](https://github.com/xeolabs/xeoengine/wiki/Importing-glTF)</li>
 
-     <iframe src="//giphy.com/embed/xThuWpjFISMUrGemR2" width="480" height="334" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="http://giphy.com/gifs/webgl-xeoengine-xThuWpjFISMUrGemR2">via GIPHY</a></p>
+
 
      @class Model
      @module XEO
