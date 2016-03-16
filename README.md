@@ -6,17 +6,13 @@
 
 ## About
 
-**xeoEngine** is a WebGL-based 3D engine from [@xeolabs](http://xeolabs.com) that aims to provide tons of power and flexibility within a 
-comprehensive [object-component-based](http://gameprogrammingpatterns.com/component.html) API.
-
-This engine is based on lessons learned from the development and application of [SceneJS](http://scenejs.org).
-
-It's currently at **beta** status, so stuff will change.
+**xeoEngine** is a data-driven WebGL-based engine for quick and easy 3D visualization on the Web. Find out more in the [Getting Started](https://github.com/xeolabs/xeoengine/wiki/Getting-Started) guide.
 
 ## Resources 
 
+ - [Website](http://xeoengine.org)
  - [Examples](http://xeoengine.org/examples) 
- - [API Documentation](http://xeoengine.org/docs/index.html)
+ - [API Docs](http://xeoengine.org/docs/index.html)
  - [Wiki](https://github.com/xeolabs/xeoengine/wiki)
  
 ## Building
