@@ -10,7 +10,7 @@ module.exports = function (grunt) {
         PROJECT_NAME: "<%= pkg.name %>",
         ENGINE_VERSION: "<%= pkg.version %>",
         build_dir: "build/<%= ENGINE_VERSION %>",
-        license: grunt.file.read("LICENSE.txt"),
+        license: grunt.file.read("MIT-LICENSE"),
 
         concat: {
             options: {
