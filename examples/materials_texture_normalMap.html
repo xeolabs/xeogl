@@ -5,51 +5,55 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeoengine.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
     <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>normal map <a href="../docs/classes/Texture.html"
-                                                                               target="_docs">Texture</a>
+                                                                                     target="_docs">Texture</a>
     <br><br>
     <img src="textures/normal/chesterfieldNormalMap.png" width="300px" height="300px">
 </div>
 
 <script>
 
-    var geometry = new XEO.TorusGeometry({
-        radius: 3.0,
-        tube: 1.0,
-        radialSegments: 32,
-        tubeSegments: 24,
-        arc: Math.PI * 2.0
+
+    var pointLight = new XEO.PointLight({
+        pos: [1.0, 1.0, 3.0],
+        color: [0.7, 0.7, 0.8],
+        intensity: 1.0,
+        constantAttenuation: 0.2,
+        linearAttenuation: 0.0,
+        quadraticAttenuation: 0.0,
+        space: "view"
     });
 
-    var texture = new XEO.Texture({
-        src: "textures/normal/chesterfieldNormalMap.png",
-        minFilter: "linearMipmapLinear",
-        magFiler: "linear",
-        wrapS: "repeat",
-        wrapT: "repeat",
-        translate: [0, 0, 0],
-        scale: [1, 1, 1],
-        rotate: 0
+    var lights = new XEO.Lights({
+        lights: [
+            pointLight
+        ]
     });
 
-    var material = new XEO.PhongMaterial({
-        ambient: [0.3, 0.3, 0.3],
-        shininess: 30,
-        normalMap: texture,
-        modes: new XEO.Modes({
-            backfaces: true
-        })
-    });
 
     var entity = new XEO.Entity({
-        geometry: geometry,
-        material: material
+
+        lights: lights,
+
+        geometry: new XEO.BoxGeometry({
+//            xSize: 3,
+//            ySize: 3,
+//            zSize: 3
+        }),
+
+        material: new XEO.PhongMaterial({
+            diffuse: [0.5, 0.5, 0.9],
+
+            norSmalMap: new XEO.Texture({
+                src: "textures/normal/chesterfieldNormalMap.png"
+            })
+        })
     });
 
     entity.scene.on("tick",

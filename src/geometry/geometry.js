@@ -124,8 +124,8 @@
 
  ````javascript
  customGeometry.indices = [
-     2, 1, 0,
-     3, 2, 0
+ 2, 1, 0,
+ 3, 2, 0
  ];
  ````
 
@@ -559,11 +559,18 @@
                 this._tangents.destroy();
             }
 
+            if (!this._positionsData || !this._indicesData || !this._uvData) {
+                return null;
+            }
+
+            this._tangentsData = XEO.math.buildTangents(this._positionsData, this._indicesData, this._uvData);
+
             var gl = this.scene.canvas.gl;
 
             var usage = gl.STATIC_DRAW;
 
-            this._tangents = this._tangentsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._tangentsData), this._tangentsData.length, 4, usage) : null;
+            this._tangents = this._tangentsData ?
+                new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._tangentsData), this._tangentsData.length, 3, usage) : null;
 
             if (this._tangents) {
                 memoryStats.tangents += this._tangents.numItems;

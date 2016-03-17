@@ -92,7 +92,8 @@
         }
 
         function hasNormalMap() {
-            return (states.geometry.normals && states.material.normalMap);
+            var geometry = states.geometry;
+            return (geometry.positions && geometry.indices && geometry.normals && geometry.uv && states.material.normalMap);
         }
 
         /**
@@ -210,10 +211,6 @@
                 add("varying vec3 xeo_vViewEyeVec;           // Output: View-space vector from fragment position to eye");
                 add("varying vec3 xeo_vViewNormal;           // Output: View-space normal");
 
-                if (normalMapping) {
-                    add("attribute vec4 xeo_aTangent;            // Vertex tangent vector");
-                }
-
                 // Lights
                 for (i = 0, len = states.lights.lights.length; i < len; i++) {
 
@@ -237,6 +234,11 @@
 
                     add("varying vec4 xeo_vViewLightVecAndDist" + i + "; // Output: Vector from vertex to light, packaged with the pre-computed length of that vector");
                 }
+            }
+
+            if (normalMapping) {
+                add("attribute vec3 xeo_aTangent;");
+                add("varying   vec3 xeo_vTangent;");
             }
 
             if (texturing) {
@@ -337,9 +339,11 @@
 
                     // Compute tangent-bitangent-normal matrix
 
-                    add("   vec3 tangent = normalize((xeo_uViewNormalMatrix * xeo_uModelNormalMatrix * xeo_aTangent).xyz);");
+                    add("   vec3 tangent = normalize((xeo_uViewNormalMatrix * xeo_uModelNormalMatrix * vec4(xeo_aTangent, 1.0)).xyz);");
                     add("   vec3 bitangent = cross(xeo_vViewNormal, tangent);");
-                    add("   mat3 TBM = mat3(tangent, bitangent, xeo_vViewNormal);");
+                    add("   mat3 TBN = mat3(tangent, bitangent, xeo_vViewNormal);");
+
+                    add("   xeo_vTangent = tangent;");
                 }
 
                 add("   vec3 tmpVec3;");
@@ -370,7 +374,7 @@
                             if (normalMapping) {
 
                                 // Transform to Tangent space
-                                add("   tmpVec3 *= TBM;");
+                                add("   tmpVec3 *= TBN;");
                             }
 
                         } else {
@@ -382,7 +386,7 @@
                             if (normalMapping) {
 
                                 // Transform to Tangent space
-                                add("   tmpVec3 *= TBM;");
+                                add("   tmpVec3 *= TBN;");
                             }
                         }
 
@@ -404,7 +408,7 @@
 
                             if (normalMapping) {
                                 // Transform to Tangent space
-                                add("   tmpVec3 *= TBM;");
+                                add("   tmpVec3 *= TBN;");
                             }
 
                         } else {
@@ -416,7 +420,7 @@
                             if (normalMapping) {
 
                                 // Transform to tangent space
-                                add("   tmpVec3 *= TBM;");
+                                add("   tmpVec3 *= TBN;");
                             }
                         }
 
@@ -429,7 +433,7 @@
                 add("   xeo_vViewEyeVec = - viewPosition.xyz;");
 
                 if (normalMapping) {
-                    add("   xeo_vViewEyeVec *= TBM;");
+                    add("   xeo_vViewEyeVec *= TBN;");
                 }
             }
 
@@ -482,6 +486,10 @@
                 add("uniform vec3 xeo_uSpecular;");
                 add("uniform float xeo_uShininess;");
                 add("uniform float xeo_uReflectivity;");
+            }
+
+            if (normalMapping) {
+                add("varying vec3 xeo_vTangent;");
             }
 
             add("uniform vec3 xeo_uEmissive;");
@@ -804,6 +812,15 @@
                 add("   float lightDist;");
                 add("   float attenuation;");
 
+                if (normalMapping) {
+
+                    // Compute tangent-bitangent-normal matrix
+
+                    add("vec3 tangent = normalize(xeo_vTangent);");
+                    add("vec3 bitangent = cross(xeo_vViewNormal, tangent);");
+                    add("mat3 TBN = mat3(tangent, bitangent, xeo_vViewNormal);");
+                }
+
                 for (i = 0, len = states.lights.lights.length; i < len; i++) {
 
                     light = states.lights.lights[i];
@@ -813,6 +830,12 @@
                     }
 
                     add("   viewLightVec = normalize(xeo_vViewLightVecAndDist" + i + ".xyz);");
+
+                    if (normalMapping) {
+
+                        // Transform to Tangent space
+                        add("viewLightVec *= TBN;");
+                    }
 
                     if (light.type === "point") {
                         add();
