@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-03-16
+ * Built on 2016-03-17
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -29250,9 +29250,11 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
      ## Tutorials
 
+     Find API documentation for Model here:
+
+     <ul>
      <li>[Importing glTF](https://github.com/xeolabs/xeoengine/wiki/Importing-glTF)</li>
-
-
+     </ul>
 
      @class Model
      @module XEO
