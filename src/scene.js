@@ -988,19 +988,19 @@
                                 // Directional light source #1
                                 new XEO.DirLight(this, {
                                     id: "default.light1",
-                                    dir: [-0.5, -0.5, 1.0],
+                                    dir: [-0.5, 0.5, -1.0],
                                     color: [1.0, 1.0, 0.9],
-                                    intensity: 0.5,
-                                    space: "world"
+                                    intensity: 0.8,
+                                    space: "view"
                                 }),
                                 //
                                 // Directional light source #2
                                 new XEO.DirLight(this, {
                                     id: "default.light2",
-                                    dir: [1.0, -0.9, 0.7],
+                                    dir: [1.0, -0.9, -0.7],
                                     color: [1.0, 1.0, 1.0],
-                                    intensity: 0.5,
-                                    space: "world"
+                                    intensity: 0.8,
+                                    space: "view"
                                 })
                             ]
                         });

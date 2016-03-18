@@ -55,8 +55,8 @@
             }
 
             if (state.normalMap) {
-                this._uBumpMap = "xeo_uNormalMap";
-                this._uBumpMapMatrix = draw.getUniform("xeo_uNormalMapMatrix");
+                this._uNormalMap = "xeo_uNormalMap";
+                this._uNormalMapMatrix = draw.getUniform("xeo_uNormalMapMatrix");
             }
 
             // Fresnel effects
@@ -205,15 +205,15 @@
                 }
             }
 
-            // Bump map
+            // Normal map
 
-            if (state.bumpMap && state.bumpMap.texture) {
+            if (state.normalMap && state.normalMap.texture) {
 
-                draw.bindTexture(this._uBumpMap, state.normalMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                draw.bindTexture(this._uNormalMap, state.normalMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
                 frameCtx.bindTexture++;
 
-                if (this._uBumpMapMatrix) {
-                    this._uBumpMapMatrix.setValue(state.normalMap.matrix);
+                if (this._uNormalMapMatrix) {
+                    this._uNormalMapMatrix.setValue(state.normalMap.matrix);
                 }
             }
 

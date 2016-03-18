@@ -11,59 +11,51 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>normal map <a href="../docs/classes/Texture.html"
-                                                                                     target="_docs">Texture</a>
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>diffuse and normal map <a href="../docs/classes/Texture.html"
+                                                                                     target="_docs">Textures</a>
     <br><br>
-    <img src="textures/normal/chesterfieldNormalMap.png" width="300px" height="300px">
+    <img src="textures/diffuse/chesterfieldDiffuseMap.png" width="200px" height="200px">
+    <br><br>
+    <img src="textures/normal/chesterfieldNormalMap.png" width="200px" height="200px">
 </div>
 
 <script>
 
 
-    var pointLight = new XEO.PointLight({
-        pos: [1.0, 1.0, 3.0],
-        color: [0.7, 0.7, 0.8],
-        intensity: 1.0,
-        constantAttenuation: 0.2,
-        linearAttenuation: 0.0,
-        quadraticAttenuation: 0.0,
-        space: "view"
-    });
-
-    var lights = new XEO.Lights({
-        lights: [
-            pointLight
-        ]
-    });
-
-
     var entity = new XEO.Entity({
 
-        lights: lights,
-
-        geometry: new XEO.BoxGeometry({
-//            xSize: 3,
-//            ySize: 3,
-//            zSize: 3
-        }),
+        geometry: new XEO.BoxGeometry(),
 
         material: new XEO.PhongMaterial({
-            diffuse: [0.5, 0.5, 0.9],
 
-            norSmalMap: new XEO.Texture({
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/chesterfieldDiffuseMap.png"
+            }),
+
+            normalMap: new XEO.Texture({
                 src: "textures/normal/chesterfieldNormalMap.png"
             })
+        }),
+
+        modes: new XEO.Modes({
+            transparent: true
         })
     });
 
-    entity.scene.on("tick",
+    var scene = entity.scene;
+
+    var view = scene.camera.view;
+
+    view.eye = [0, 0, -4];
+
+    scene.on("tick",
             function () {
 
-                var view = entity.scene.camera.view;
-
-                view.rotateEyeY(0.6);
-                view.rotateEyeX(0.3);
+                view.rotateEyeY(0.3);
+                view.rotateEyeX(0.1);
             });
+
+    new XEO.CameraControl();
 
 </script>
 </body>
