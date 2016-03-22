@@ -17,14 +17,18 @@
  ## Examples
 
  <ul>
- <li>[SplineCurve example](../../examples/#curves_SplineCurve)</li>
+ <li>[Simple SplineCurve example](../../examples/#curves_SplineCurve)</li>
+ <li>[Moving a PointLight along a SplineCurve](../../examples/#lights_point_world)</li>
  <li>[Path example](../../examples/#curves_Path)</li>
  </ul>
 
- ## Usage 1
+ ## Usage
 
- Create a SplineCurve, subscribe to updates on its {{#crossLink "SplineCurve/point:property"}}{{/crossLink}} and
- {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties, then vary its {{#crossLink "SplineCurve/t:property"}}{{/crossLink}}
+ #### Animation along a SplineCurve
+
+ Let's create a SplineCurve, subscribe to updates on its {{#crossLink "SplineCurve/point:property"}}{{/crossLink}},
+ {{#crossLink "Curve/tangent:property"}}{{/crossLink}} and {{#crossLink "Curve/t:property"}}{{/crossLink}} properties,
+ then vary its {{#crossLink "SplineCurve/t:property"}}{{/crossLink}}
  property over time:
 
  ````javascript
@@ -37,33 +41,30 @@
      ]
  });
 
+ curve.on("point", function(point) {
+     this.log("curve.point=" + JSON.stringify(point));
+ });
+
+ curve.on("tangent", function(tangent) {
+     this.log("curve.tangent=" + JSON.stringify(tangent));
+ });
+
+ curve.on("t", function(t) {
+     this.log("curve.t=" + t);
+ });
+
  curve.scene.on("tick", function(e) {
-
      curve.t = (e.time - e.startTime) * 0.01;
-
-     var point = curve.point;
-     var tangent = curve.tangent;
-
-     this.log("t=" + curve.t + ", point=" + JSON.stringify(point) + ", tangent=" + JSON.stringify(tangent));
  });
  ````
 
- ## Usage 2
+ #### Randomly sampling points
 
- Alternatively, we can randomly sample the point and vector at a given **t** with calls
- to the SplineCurve's {{#crossLink "SplineCurve/getPoint:method"}}{{/crossLink}} and
- {{#crossLink "Curve/getTangent:method"}}{{/crossLink}} methods:
+ Use SplineCurve's {{#crossLink "SplineCurve/getPoint:method"}}{{/crossLink}} and
+ {{#crossLink "Curve/getTangent:method"}}{{/crossLink}} methods to sample the point and vector
+ at a given **t**:
 
  ````javascript
- var curve = new XEO.SplineCurve({
-     points: [
-         [-10, 0, 0],
-         [-5, 15, 0],
-         [20, 15, 0],
-         [10, 0, 0]
-     ]
- });
-
  curve.scene.on("tick", function(e) {
 
      var t = (e.time - e.startTime) * 0.01;
@@ -72,6 +73,18 @@
      var tangent = curve.getTangent(t);
 
      this.log("t=" + t + ", point=" + JSON.stringify(point) + ", tangent=" + JSON.stringify(tangent));
+ });
+ ````
+
+ #### Sampling multiple points
+
+ Use SplineCurve's {{#crossLink "Curve/getPoints:method"}}{{/crossLink}} method to sample a list of equidistant points
+ along it. In the snippet below, we'll build a {{#crossLink "Geometry"}}{{/crossLink}} that renders a line along the
+ curve.  Note that we need to flatten the points array for consumption by the {{#crossLink "Geometry"}}{{/crossLink}}.
+
+ ````javascript
+ var geometry = new XEO.Geometry({
+     positions: XEO.math.flatten(curve.getPoints(50))
  });
  ````
 

@@ -23,10 +23,13 @@
  <li>[Path example](../../examples/#curves_Path)</li>
  </ul>
 
- ## Usage 1
+ ## Usage
 
- Create a CubicBezierCurve, subscribe to updates on its {{#crossLink "CubicBezierCurve/point:property"}}{{/crossLink}} and
- {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties, then vary its {{#crossLink "CubicBezierCurve/t:property"}}{{/crossLink}}
+ #### Animation along a CubicBezierCurve
+
+ Let's create a CubicBezierCurve, subscribe to updates on its {{#crossLink "CubicBezierCurve/point:property"}}{{/crossLink}},
+ {{#crossLink "Curve/tangent:property"}}{{/crossLink}} and {{#crossLink "Curve/t:property"}}{{/crossLink}} properties,
+ then vary its {{#crossLink "CubicBezierCurve/t:property"}}{{/crossLink}}
  property over time:
 
  ````javascript
@@ -37,16 +40,50 @@
      v3: [10, 0, 0]
  });
 
+ curve.on("point", function(point) {
+     this.log("curve.point=" + JSON.stringify(point));
+ });
+
+ curve.on("tangent", function(tangent) {
+     this.log("curve.tangent=" + JSON.stringify(tangent));
+ });
+
+ curve.on("t", function(t) {
+     this.log("curve.t=" + t);
+ });
+
+ curve.scene.on("tick", function(e) {
+     curve.t = (e.time - e.startTime) * 0.01;
+ });
+ ````
+
+ #### Randomly sampling points
+
+ Use CubicBezierCurve's {{#crossLink "CubicBezierCurve/getPoint:method"}}{{/crossLink}} and
+ {{#crossLink "Curve/getTangent:method"}}{{/crossLink}} methods to sample the point and vector
+ at a given **t**:
+
+ ````javascript
  curve.scene.on("tick", function(e) {
 
-     curve.t = (e.time - e.startTime) * 0.01;
+     var t = (e.time - e.startTime) * 0.01;
 
-     var point = curve.point;
-     var tangent = curve.tangent;
+     var point = curve.getPoint(t);
+     var tangent = curve.getTangent(t);
 
-     this.log("t=" + curve.t + ", point=" +
-            JSON.stringify(point) + ", tangent=" +
-                JSON.stringify(tangent));
+     this.log("t=" + t + ", point=" + JSON.stringify(point) + ", tangent=" + JSON.stringify(tangent));
+ });
+ ````
+
+ #### Sampling multiple points
+
+ Use CubicBezierCurve's {{#crossLink "Curve/getPoints:method"}}{{/crossLink}} method to sample a list of equidistant points
+ along it. In the snippet below, we'll build a {{#crossLink "Geometry"}}{{/crossLink}} that renders a line along the
+ curve.  Note that we need to flatten the points array for consumption by the {{#crossLink "Geometry"}}{{/crossLink}}.
+
+ ````javascript
+ var geometry = new XEO.Geometry({
+     positions: XEO.math.flatten(curve.getPoints(50))
  });
  ````
 
@@ -250,6 +287,7 @@
 
         /**
          * Returns point on this CubicBezierCurve at the given position.
+         * @method getPoint
          * @param {Number} t Position to get point at.
          * @returns {{Array of Number}}
          */

@@ -23,6 +23,8 @@
 
  ## Usage
 
+ #### Animation along a SplineCurve
+
  Create a Path containing a {{#crossLink "CubicBezierCurve"}}{{/crossLink}}, a {{#crossLink "QuadraticBezierCurve"}}{{/crossLink}}
  and a {{#crossLink "SplineCurve"}}{{/crossLink}}, subscribe to updates on its {{#crossLink "Path/point:property"}}{{/crossLink}} and
  {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties, then vary its {{#crossLink "Path/t:property"}}{{/crossLink}}
@@ -53,29 +55,64 @@
      ]
  });
 
+ path.on("point", function(point) {
+     this.log("path.point=" + JSON.stringify(point));
+ });
+
+ path.on("tangent", function(tangent) {
+     this.log("path.tangent=" + JSON.stringify(tangent));
+ });
+
+ path.on("t", function(t) {
+     this.log("path.t=" + t);
+ });
+
  path.scene.on("tick", function(e) {
-
      path.t = (e.time - e.startTime) * 0.01;
-
-     var point = path.point;
-     var tangent = path.tangent;
-
-     this.log("t=" + path.t + ", point=" +
-         JSON.stringify(point) + ", tangent=" +
-             JSON.stringify(tangent));
  });
  ````
+
+ #### Randomly sampling points
+
+ Use Path's {{#crossLink "Path/getPoint:method"}}{{/crossLink}} and
+ {{#crossLink "path/getTangent:method"}}{{/crossLink}} methods to sample the point and vector
+ at a given **t**:
+
+ ````javascript
+ path.scene.on("tick", function(e) {
+
+     var t = (e.time - e.startTime) * 0.01;
+
+     var point = path.getPoint(t);
+     var tangent = path.getTangent(t);
+
+     this.log("t=" + t + ", point=" + JSON.stringify(point) + ", tangent=" + JSON.stringify(tangent));
+ });
+ ````
+
+ #### Sampling multiple points
+
+ Use Path's {{#crossLink "path/getPoints:method"}}{{/crossLink}} method to sample a list of equidistant points
+ along it. In the snippet below, we'll build a {{#crossLink "Geometry"}}{{/crossLink}} that renders a line along the
+ path.  Note that we need to flatten the points array for consumption by the {{#crossLink "Geometry"}}{{/crossLink}}.
+
+ ````javascript
+ var geometry = new XEO.Geometry({
+     positions: XEO.math.flatten(path.getPoints(50))
+ });
+ ````
+ 
  @class Path
  @module XEO
- @submodule curves
+ @submodule paths
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
  @param [cfg] {*} Fly configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Path.
- @param [cfg.curves=[]] IDs or instances of {{#crossLink "Curve"}}{{/crossLink}} subtypes to add to this Path.
+ @param [cfg.paths=[]] IDs or instances of {{#crossLink "path"}}{{/crossLink}} subtypes to add to this Path.
  @param [cfg.t=0] Current position on this Path, in range between 0..1.
- @extends Curve
+ @extends path
  */
 (function () {
 
