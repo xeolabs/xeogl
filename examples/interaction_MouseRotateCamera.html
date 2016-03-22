@@ -11,13 +11,16 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br><a href="../docs/classes/MouseRotateCamera.html" target="_docs">MouseorbitCamera</a>
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br><a href="../docs/classes/MouseRotateCamera.html"
+                                                                          target="_docs">MouseorbitCamera</a>
 </div>
 
 <script>
 
     var camera = new XEO.Camera({
-        view: new XEO.Lookat()
+        view: new XEO.Lookat({
+            gimbalLockY: false // Default is true
+        })
     });
 
     var entity = new XEO.Entity({

@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.js"></script>
+    <script src="../build/xeoengine.min.js"></script>
     <script src="js/libs/dat.gui.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -22,7 +22,7 @@
 <script>
 
     var dirLight = new XEO.DirLight({
-        dir: [0.0, 0.0, -1.0],
+        dir: [0.0, 0.0, 1.0],
         color: [0.7, 0.7, 0.8],
         intensity: 1.0,
         space: "view"
@@ -42,6 +42,9 @@
             radialSegments: 32,
             tubeSegments: 24,
             arc: Math.PI * 2.0
+        }),
+        transform: new XEO.Translate({
+            xyz: [1,0,0]
         })
     });
 
@@ -53,7 +56,7 @@
 
         this.message = "Directional light";
 
-        this["dir[0]"] =  1.0;
+        this["dir[0]"] = -1.0;
         this["dir[1]"] = -1.0;
         this["dir[2]"] = -1.0;
 

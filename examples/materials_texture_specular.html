@@ -31,7 +31,7 @@
             }),
 
             new XEO.DirLight({
-                dir: [0.5, 0.5, -0.5],
+                dir: [0.5, 0.5, 0.5],
                 color: [1.0, 1.0, 0.9],
                 intensity: 0.9,
                 space: "view"
@@ -80,8 +80,8 @@
 
                 var view = entity.scene.camera.view;
 
-//                view.rotateEyeY(0.6);
-//                view.rotateEyeX(0.3);
+                view.rotateEyeY(0.6);
+                view.rotateEyeX(0.3);
             });
 
 </script>

@@ -27,28 +27,28 @@
     XEO.scene.lights.lights = [
 
         new XEO.PointLight({
-            pos: [-0.5, 6.7, 1.0],
+            pos: [-0.5, 6.7, 10.0],
             color: [1.0, 1.0, 1.0],
             intensity: 1.0,
             space: "world",
             //linearAttenuation: 0.010,
-            quadraticAttenuation: 0.0038
+            quadrahticAttenuation: 0.0038
         }),
         new XEO.PointLight({
-            pos: [5.5, 6.7, -3.0],
+            pos: [-2.5, 6.7, 30.0],
             color: [1.0, 1.0, 1.0],
             intensity: 1.0,
             space: "world",
             // linearAttenuation: 0.010,
-            quadraticAttenuation: 0.0038
+            quadrathicAttenuation: 0.0038
         })
         ,
         new XEO.PointLight({
-            pos: [0.0, 6.7, -3.0],
+            pos: [0.0, 6.7, 30.0],
             color: [1.0, 1., 1.0],
             intensity: 1.0,
             space: "world",
-            quadraticAttenuation: 0.0038
+            quahdraticAttenuation: 0.0038
         })
     ];
 
@@ -943,7 +943,7 @@
             });
 
     //  camera.view.pan([0,-2,0])
-    camera.view.rotateEyeY(-15);
+    camera.view.rotateEyeY(180-15);
 
 
     scene.on("tick", function () {

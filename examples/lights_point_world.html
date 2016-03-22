@@ -15,80 +15,134 @@
 
 <div id="infoLight">
     <a href="http://xeoengine.org">xeoEngine</a> - <a href="../docs/classes/PointLight.html"
-                                                      target="_docs">PointLight in World-space</a>
+                                                      target="_docs">PointLight in View-space</a>
 </div>
 
 <script>
 
-    var pointLight1 = new XEO.PointLight({
-        pos: [3.0, 3.0, 3.0],
-        color: [0.7, 0.7, 0.8],
-        intensity: 0.4,
-        constantAttenuation: 0.3,
-        linearAttenuation: 0.0,
-        quadraticAttenuation: 0.0,
-        space: "world"
+    XEO.scene.lights.lights = [];
+
+    var geometry = new XEO.SphereGeometry({
+        radius: 1.5,
+        heightSegments: 60,
+        widthSegments: 60
     });
 
-    var pointLight2 = new XEO.PointLight({
-        pos: [-3.0, -3.0, 3.0],
-        color: [1.0, 0.3, 0.3],
-        intensity: 0.4,
-        constantAttenuation: 0.3,
-        linearAttenuation: 0.0,
-        quadraticAttenuation: 0.0,
-        space: "world"
+    var material = new XEO.PhongMaterial({
+        ambient: [0.3, 0.3, 0.3],
+        shininess: 30,
+        diffuseMap: new XEO.Texture({
+            src: "textures/diffuse/chesterfieldDiffuseMap.png",
+            scale: [5, 5, 5]
+        }),
+
+        normalMap: new XEO.Texture({
+            src: "textures/normal/chesterfieldNormalMap.png",
+            scale: [5, 5, 5]
+        })
     });
 
-    var pointLight3 = new XEO.PointLight({
-        pos: [3.0, -3.0, -3.0],
-        color: [0.3, 1.0, 0.3],
-        intensity: 0.4,
-        constantAttenuation: 0.3,
-        linearAttenuation: 0.0,
-        quadraticAttenuation: 0.0,
+    var pointLight0 = new XEO.PointLight({
+        pos: [0, 0, 0],
+        color: [1.0, 1.0, 0.0],
+        intensity: 1.0,
+        constantAttenuation: 0.2,
+        linearAttenuation: 0.0005,
+        quadraticAttenuation: 0.0005,
         space: "world"
     });
 
     var lights = new XEO.Lights({
         lights: [
-            pointLight1,
-            pointLight2,
-            pointLight3
+            new XEO.AmbientLight({
+                color: [0.3, 0.3, 0.3]
+            }),
+            pointLight0
         ]
     });
 
-    var entity = new XEO.Entity({
-        lights: lights,
-        geometry: new XEO.TorusGeometry({
-            radius: 1.5,
-            tube:.4
-        })
-    });
+    for (var x = -15; x <= 15; x += 4) {
+        for (var z = -15; z <= 15; z += 4) {
 
-    XEO.debug
-            .id("light1")
-            .radius(0.3)
-            .color([0.7, 0.7, 0.8])
-            .pos(pointLight1.pos)
-            .sphere();
+            new XEO.Entity({
+                lights: lights,
+                geometry: geometry,
+                material: material,
+                transform: new XEO.Translate({
+                    xyz: [x, 0, z]
+                })
+            });
+        }
+    }
 
-    XEO.debug
-            .id("light2")
-            .radius(0.3)
-            .color([1.0, 0.3, 0.3])
-            .pos(pointLight2.pos)
-            .sphere();
+    var scene = XEO.scene;
+    var view = scene.view;
 
-    XEO.debug
-            .id("light3")
-            .radius(0.3)
-            .color([0.3, 1.0, 0.3])
-            .pos(pointLight3.pos)
-            .sphere();
+    view.rotateEyeX(20);
+    view.eye = [0, 20, -30];
+
+    (function () {
+
+        var curve = new XEO.SplineCurve({
+            points: [
+                [-16, 3, -16],
+                [0, 3, -3],
+                [16, 3, -16],
+                [0, 3, 0],
+                [0, 26, 0],
+                [0, 3, 0],
+                [16, 3, 16],
+                [-16, 3, 16],
+                [-16, 3, -16]
+            ]
+        });
+
+        new XEO.Entity({
+            geometry: new XEO.Geometry({
+                positions: XEO.math.flatten(curve.getPoints(100))
+            }),
+            material: new XEO.PhongMaterial({
+                diffuse: [0.3, 0.3, 0]
+            }),
+            visibility: new XEO.Visibility({
+                visible: false
+            })
+        });
+
+        var icon = new XEO.Entity({
+            geometry: new XEO.SphereGeometry({
+                radius: .5
+            }),
+            material: new XEO.PhongMaterial({
+                ambient: [0, 0, 0],
+                diffuse: [0, 0, 0],
+                emissive: [1.0, 0, 0]
+            }),
+            transform: new XEO.Translate()
+        });
+
+        pointLight0.on("pos", function (pos) {
+            icon.transform.xyz = pos;
+        });
+
+        pointLight0.on("color", function (color) {
+            icon.material.emissive = color;
+        });
+
+        curve.on("t", function () {
+            pointLight0.pos = curve.point;
+        });
+
+        var t = 0;
+
+        scene.on("tick", function () {
+            curve.t = t % 1.0;
+            t += 0.001;
+        });
+    })();
+
 
     new XEO.CameraControl();
-
 </script>
 </body>
 </html>
