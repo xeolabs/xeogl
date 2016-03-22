@@ -222,7 +222,11 @@ head as the <a href="../classes/Camera.html" class="crosslink">Camera</a> moves.
    lights: new XEO.Lights({
        lights: [
            new XEO.DirLight({
-               dir:         [-1, -1, -1],
+
+               // Note that this is the direction the light is shining,
+               // not the direction to the light source
+
+               dir:         [1, 1, 1],
                color:       [0.5, 0.7, 0.5],
                intensity:   1.0,
                space:      "view"  // Other option is "world", for World-space
@@ -338,7 +342,8 @@ head as the <a href="../classes/Camera.html" class="crosslink">Camera</a> moves.
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>A unit vector indicating the direction of illumination, given in either World or View space, depending on the value of the <strong>space</strong> parameter.</p>
+                                            <p>A unit vector indicating the direction that the light is shining,
+        given in either World or View space, depending on the value of the <strong>space</strong> parameter.</p>
         
                                         </div>
         
@@ -1287,7 +1292,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_dirLight.js.html#l130"><code>src&#x2F;lighting&#x2F;dirLight.js:130</code></a>
+                            <a href="../files/src_lighting_dirLight.js.html#l135"><code>src&#x2F;lighting&#x2F;dirLight.js:135</code></a>
                             </p>
                     
                     
@@ -1339,14 +1344,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_dirLight.js.html#l94"><code>src&#x2F;lighting&#x2F;dirLight.js:94</code></a>
+                            <a href="../files/src_lighting_dirLight.js.html#l99"><code>src&#x2F;lighting&#x2F;dirLight.js:99</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The direction of this DirLight.</p>
+                            <p>The direction in which the light is shining.</p>
                     <p>Fires a <a href="../classes/DirLight.html#event_dir" class="crosslink">dir</a> event on change.</p>
                     
                         </div>
@@ -1392,7 +1397,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_dirLight.js.html#l166"><code>src&#x2F;lighting&#x2F;dirLight.js:166</code></a>
+                            <a href="../files/src_lighting_dirLight.js.html#l171"><code>src&#x2F;lighting&#x2F;dirLight.js:171</code></a>
                             </p>
                     
                     
@@ -1521,7 +1526,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_dirLight.js.html#l198"><code>src&#x2F;lighting&#x2F;dirLight.js:198</code></a>
+                            <a href="../files/src_lighting_dirLight.js.html#l203"><code>src&#x2F;lighting&#x2F;dirLight.js:203</code></a>
                             </p>
                     
                     
@@ -1650,7 +1655,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_dirLight.js.html#l153"><code>src&#x2F;lighting&#x2F;dirLight.js:153</code></a>
+                            <a href="../files/src_lighting_dirLight.js.html#l158"><code>src&#x2F;lighting&#x2F;dirLight.js:158</code></a>
                             </p>
                     
                     
@@ -1717,7 +1722,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_dirLight.js.html#l117"><code>src&#x2F;lighting&#x2F;dirLight.js:117</code></a>
+                            <a href="../files/src_lighting_dirLight.js.html#l122"><code>src&#x2F;lighting&#x2F;dirLight.js:122</code></a>
                             </p>
                     
                     
@@ -1759,7 +1764,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_dirLight.js.html#l185"><code>src&#x2F;lighting&#x2F;dirLight.js:185</code></a>
+                            <a href="../files/src_lighting_dirLight.js.html#l190"><code>src&#x2F;lighting&#x2F;dirLight.js:190</code></a>
                             </p>
                     
                     
@@ -1801,7 +1806,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_lighting_dirLight.js.html#l222"><code>src&#x2F;lighting&#x2F;dirLight.js:222</code></a>
+                            <a href="../files/src_lighting_dirLight.js.html#l227"><code>src&#x2F;lighting&#x2F;dirLight.js:227</code></a>
                             </p>
                     
                     

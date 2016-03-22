@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-03-17
+ * Built on 2016-03-22
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -2900,7 +2900,8 @@
         }
 
         function hasNormalMap() {
-            return (states.geometry.normals && states.material.normalMap);
+            var geometry = states.geometry;
+            return (geometry.positions && geometry.indices && geometry.normals && geometry.uv && states.material.normalMap);
         }
 
         /**
@@ -2921,6 +2922,7 @@
 
         function vertexPickObject() {
             begin();
+            add("// Object picking vertex shader");
             add("attribute vec3 xeo_aPosition;");
             add("uniform mat4 xeo_uModelMatrix;");
             add("uniform mat4 xeo_uViewMatrix;");
@@ -2939,6 +2941,7 @@
 
         function fragmentPickObject() {
             begin();
+            add("// Object picking fragment shader");
             add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
             add("uniform vec4 xeo_uPickColor;");
             add("void main(void) {");
@@ -2949,6 +2952,7 @@
 
         function vertexPickPrimitive() {
             begin();
+            add("// Triangle picking vertex shader");
             add("attribute vec3 xeo_aPosition;");
             add("attribute vec4 xeo_aColor;");
             add("uniform vec3 xeo_uPickColor;");
@@ -2970,6 +2974,7 @@
 
         function fragmentPickPrimitive() {
             begin();
+            add("// Triangle picking fragment shader");
             add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
             add("varying vec4 xeo_vColor;");
             add("void main(void) {");
@@ -2994,11 +2999,11 @@
 
             begin();
 
-            add("// Modeling matrix");
+            add("// Drawing vertex shader");
+
             add("uniform mat4 xeo_uModelMatrix;          // Modeling matrix");
             add("uniform mat4 xeo_uViewMatrix;           // Viewing matrix");
             add("uniform mat4 xeo_uProjMatrix;           // Projection matrix");
-            //add("uniform vec3 xeo_uEye;                  // World-space eye position");
 
             add("attribute vec3 xeo_aPosition;           // Local-space vertex position");
 
@@ -3017,10 +3022,6 @@
 
                 add("varying vec3 xeo_vViewEyeVec;           // Output: View-space vector from fragment position to eye");
                 add("varying vec3 xeo_vViewNormal;           // Output: View-space normal");
-
-                if (normalMapping) {
-                    add("attribute vec4 xeo_aTangent;            // Vertex tangent vector");
-                }
 
                 // Lights
                 for (i = 0, len = states.lights.lights.length; i < len; i++) {
@@ -3045,6 +3046,10 @@
 
                     add("varying vec4 xeo_vViewLightVecAndDist" + i + "; // Output: Vector from vertex to light, packaged with the pre-computed length of that vector");
                 }
+            }
+
+            if (normalMapping) {
+                add("attribute vec3 xeo_aTangent;");
             }
 
             if (texturing) {
@@ -3139,18 +3144,19 @@
             if (normals) {
 
                 add("   vec3 worldNormal = (modelNormalMatrix * localNormal).xyz; ");
-                add("   xeo_vViewNormal = (viewNormalMatrix * vec4(worldNormal, 1.0)).xyz;");
+                add("   xeo_vViewNormal = normalize((viewNormalMatrix * vec4(worldNormal, 1.0)).xyz);");
 
                 if (normalMapping) {
 
-                    // Compute tangent-bitangent-normal matrix
+                    // Compute the tangent-bitangent-normal (TBN) matrix
 
-                    add("   vec3 tangent = normalize((xeo_uViewNormalMatrix * xeo_uModelNormalMatrix * xeo_aTangent).xyz);");
+                    add("   vec3 tangent = normalize((xeo_uViewNormalMatrix * xeo_uModelNormalMatrix * vec4(xeo_aTangent, 1.0)).xyz);");
                     add("   vec3 bitangent = cross(xeo_vViewNormal, tangent);");
-                    add("   mat3 TBM = mat3(tangent, bitangent, xeo_vViewNormal);");
+                    add("   mat3 TBN = mat3(tangent, bitangent, xeo_vViewNormal);");
                 }
 
                 add("   vec3 tmpVec3;");
+                add("   float lightDist;");
 
                 // Lights
 
@@ -3173,12 +3179,12 @@
                             add("   tmpVec3 = xeo_uLightDir" + i + ";");
 
                             // Transform to View space
-                            add("   tmpVec3 = vec3(viewMatrix * vec4(tmpVec3, 0.0)).xyz;");
+                            add("   tmpVec3 = vec3(viewMatrix * vec4(tmpVec3, 1.0)).xyz;");
 
                             if (normalMapping) {
 
                                 // Transform to Tangent space
-                                add("   tmpVec3 *= TBM;");
+                                add("   tmpVec3 *= TBN;");
                             }
 
                         } else {
@@ -3190,12 +3196,12 @@
                             if (normalMapping) {
 
                                 // Transform to Tangent space
-                                add("   tmpVec3 *= TBM;");
+                                add("   tmpVec3 *= TBN;");
                             }
                         }
 
-                        // Output
-                        add("   xeo_vViewLightVecAndDist" + i + " = vec4(-tmpVec3, 0.0);");
+                        // Pipe the light direction and zero distance through to the fragment shader
+                        add("   xeo_vViewLightVecAndDist" + i + " = vec4(tmpVec3, 0.0);");
                     }
 
                     if (light.type === "point") {
@@ -3206,38 +3212,47 @@
 
                             // World space
 
-                            // Transform into View space
+                            // Get vertex -> light vector in View space
+                            // Transform light pos to View space first
+                            add("   tmpVec3 = (viewMatrix * vec4(xeo_uLightPos" + i + ", 1.0)).xyz - viewPosition.xyz;"); // Vector from World coordinate to light pos
 
-                            add("   tmpVec3 = (viewMatrix * vec4(xeo_uLightPos" + i + ", 0.0)).xyz - viewPosition.xyz;"); // Vector from World coordinate to light pos
+                            // Get distance to light
+                            add("   lightDist = abs(length(tmpVec3));");
 
                             if (normalMapping) {
-                                // Transform to Tangent space
-                                add("   tmpVec3 *= TBM;");
+
+                                // Transform light vector to Tangent space
+                               add("   tmpVec3 *= TBN;");
                             }
 
                         } else {
 
                             // View space
 
+                            // Get vertex -> light vector in View space
                             add("   tmpVec3 = xeo_uLightPos" + i + ".xyz - viewPosition.xyz;"); // Vector from View coordinate to light pos
+
+                            // Get distance to light
+                            add("   lightDist = abs(length(tmpVec3));");
 
                             if (normalMapping) {
 
-                                // Transform to tangent space
-                                add("   tmpVec3 *= TBM;");
+                                // Transform light vector to tangent space
+                                add("   tmpVec3 *= TBN;");
                             }
                         }
 
-                        // Output
-                        add("   xeo_vViewLightVecAndDist" + i + " = vec4(tmpVec3, length(xeo_uLightPos" + i + ".xyz - worldPosition.xyz));");
+                        // Pipe the light direction and distance through to the fragment shader
+                        add("   xeo_vViewLightVecAndDist" + i + " = vec4(tmpVec3, lightDist);");
                     }
                 }
 
-                //add("   xeo_vViewEyeVec = ((viewMatrix * vec4(xeo_uEye, 0.0)).xyz  - viewPosition.xyz);");
-                add("   xeo_vViewEyeVec = - viewPosition.xyz;");
+                add("   xeo_vViewEyeVec = -viewPosition.xyz;");
 
                 if (normalMapping) {
-                    add("   xeo_vViewEyeVec *= TBM;");
+
+                    // Transform vertex->eye vector to tangent space
+                    add("   xeo_vViewEyeVec *= TBN;");
                 }
             }
 
@@ -3278,6 +3293,8 @@
 
             begin();
 
+            add("// Drawing fragment shader");
+
             add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
             add();
 
@@ -3290,6 +3307,10 @@
                 add("uniform vec3 xeo_uSpecular;");
                 add("uniform float xeo_uShininess;");
                 add("uniform float xeo_uReflectivity;");
+            }
+
+            if (normalMapping) {
+            //    add("varying vec3 xeo_vTangent;");
             }
 
             add("uniform vec3 xeo_uEmissive;");
@@ -3370,7 +3391,7 @@
 
             if (normals) {
 
-                // World-space vector from fragment to eye
+                // View-space vector from fragment to eye
 
                 add("varying vec3 xeo_vViewEyeVec;");
 
@@ -3482,6 +3503,7 @@
                 add("   float reflectivity = xeo_uReflectivity;");
 
                 if (normalMapping) {
+
                     add("   vec3 viewNormal = vec3(0.0, 1.0, 0.0);");
 
                 } else {
@@ -3579,17 +3601,14 @@
                 }
 
                 if (normalMapping) {
-
-                    if (material.normalMap) {
-                        add();
-                        if (material.normalMap.matrix) {
-                            add("   textureCoord = (xeo_uNormalMapMatrix * texturePos).xy;");
-                        } else {
-                            add("   textureCoord = texturePos.xy;");
-                        }
-                        add("   textureCoord.y = -textureCoord.y;");
-                        add("   viewNormal = normalize(texture2D(xeo_uNormalMap, vec2(textureCoord.x, -textureCoord.y)).xyz * 2.0 - 1.0);");
+                    add();
+                    if (material.normalMap.matrix) {
+                        add("   textureCoord = (xeo_uNormalMapMatrix * texturePos).xy;");
+                    } else {
+                        add("   textureCoord = texturePos.xy;");
                     }
+                    add("   textureCoord.y = -textureCoord.y;");
+                    add("   viewNormal = normalize(texture2D(xeo_uNormalMap, vec2(textureCoord.x, textureCoord.y)).xyz * 2.0 - 1.0);");
                 }
             }
 
@@ -3600,17 +3619,15 @@
                 // Get Lambertian shading terms
 
                 add();
-                comment("   Apply lights");
-
-                add();
                 add("   vec3  diffuseLight = vec3(0.0, 0.0, 0.0);");
                 add("   vec3  specularLight = vec3(0.0, 0.0, 0.0);");
 
                 add();
                 add("   vec3  viewLightVec;");
-                add("   float dotN;");
+                add("   float specAngle;");
                 add("   float lightDist;");
                 add("   float attenuation;");
+
 
                 for (i = 0, len = states.lights.lights.length; i < len; i++) {
 
@@ -3620,31 +3637,34 @@
                         continue;
                     }
 
+                    // If normal mapping, the fragment->light vector will be in tangent space
                     add("   viewLightVec = normalize(xeo_vViewLightVecAndDist" + i + ".xyz);");
+
 
                     if (light.type === "point") {
                         add();
-                        add("   dotN = max(dot(viewNormal, viewLightVec), 0.0);");
+
+                        add("   specAngle = max(dot(viewNormal, viewLightVec), 0.0);");
+
                         add("   lightDist = xeo_vViewLightVecAndDist" + i + ".w;");
+
                         add("   attenuation = 1.0 - (" +
                             "  xeo_uLightAttenuation" + i + "[0] + " +
                             "  xeo_uLightAttenuation" + i + "[1] * lightDist + " +
                             "  xeo_uLightAttenuation" + i + "[2] * lightDist * lightDist);");
 
-                        add("   diffuseLight += dotN * xeo_uLightColor" + i + " * attenuation;");
+                        add("   diffuseLight += xeo_uLightIntensity" + i + " * specAngle * xeo_uLightColor" + i + " * attenuation;");
 
-                        add("   specularLight += xeo_uLightIntensity" + i +
-                            " *  pow(max(dot(reflect(viewLightVec, -viewNormal), -viewEyeVec), 0.0), shininess) * attenuation;");
+                        add("   specularLight += xeo_uLightIntensity" + i + " *  pow(max(dot(reflect(-viewLightVec, -viewNormal), viewEyeVec), 0.0), shininess) * attenuation;");
                     }
 
                     if (light.type === "dir") {
-                        add();
-                        add("   dotN = max(dot(viewNormal, viewLightVec), 0.0);");
 
-                        add("   diffuseLight += dotN * xeo_uLightColor" + i + ";");
+                        add("   specAngle = max(dot(viewNormal, -viewLightVec), 0.0);");
 
-                        add("   specularLight += xeo_uLightIntensity" + i +
-                            " * pow(max(dot(reflect(viewLightVec, -viewNormal), -viewEyeVec), 0.0), shininess);");
+                        add("   diffuseLight += xeo_uLightIntensity" + i + " * specAngle * xeo_uLightColor" + i + ";");
+
+                        add("   specularLight += xeo_uLightIntensity" + i + " * pow(max(dot(reflect(viewLightVec, -viewNormal), viewEyeVec), 0.0), shininess);");
                     }
                 }
 
@@ -5940,8 +5960,8 @@
             }
 
             if (state.normalMap) {
-                this._uBumpMap = "xeo_uNormalMap";
-                this._uBumpMapMatrix = draw.getUniform("xeo_uNormalMapMatrix");
+                this._uNormalMap = "xeo_uNormalMap";
+                this._uNormalMapMatrix = draw.getUniform("xeo_uNormalMapMatrix");
             }
 
             // Fresnel effects
@@ -6090,15 +6110,15 @@
                 }
             }
 
-            // Bump map
+            // Normal map
 
-            if (state.bumpMap && state.bumpMap.texture) {
+            if (state.normalMap && state.normalMap.texture) {
 
-                draw.bindTexture(this._uBumpMap, state.normalMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                draw.bindTexture(this._uNormalMap, state.normalMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
                 frameCtx.bindTexture++;
 
-                if (this._uBumpMapMatrix) {
-                    this._uBumpMapMatrix.setValue(state.normalMap.matrix);
+                if (this._uNormalMapMatrix) {
+                    this._uNormalMapMatrix.setValue(state.normalMap.matrix);
                 }
             }
 
@@ -8724,7 +8744,7 @@
         /**
          * Builds normal vectors from positions and indices.
          *
-         * @method buildTangents
+         * @method buildNormals
          * @static
          * @param {Array of Number} positions One-dimensional flattened array of positions.
          * @param {Array of Number} indices One-dimensional flattened array of indices.*
@@ -11484,26 +11504,26 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                                 // Ambient light source #0
                                 new XEO.AmbientLight(this, {
                                     id: "default.light0",
-                                    color: [0.8, 0.8, 0.9],
-                                    intensity: 0.6
+                                    color: [0.45, 0.45, 0.5],
+                                    intensity: 0.9
                                 }),
 
                                 // Directional light source #1
                                 new XEO.DirLight(this, {
                                     id: "default.light1",
-                                    dir: [-0.5, -0.5, 1.0],
-                                    color: [1.0, 1.0, 0.9],
-                                    intensity: 0.5,
-                                    space: "world"
+                                    dir: [-0.5, 0.5, -0.6],
+                                    color: [0.8, 0.8, 0.7],
+                                    intensity: 1.0,
+                                    space: "view"
                                 }),
                                 //
                                 // Directional light source #2
                                 new XEO.DirLight(this, {
                                     id: "default.light2",
-                                    dir: [1.0, -0.9, 0.7],
-                                    color: [1.0, 1.0, 1.0],
-                                    intensity: 0.5,
-                                    space: "world"
+                                    dir: [0.5, -0.5, -0.6],
+                                    color: [0.8, 0.8, 0.8],
+                                    intensity: 1.0,
+                                    space: "view"
                                 })
                             ]
                         });
@@ -12867,7 +12887,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  ````Javascript
  var camera = new XEO.Camera({
      view: new XEO.Lookat({
-         eye: [0, 0, -10],
+         eye: [0, 0, 10],
          look: [0, 0, 0],
          up: [0, 1, 0]
      }),
@@ -13131,7 +13151,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  var entity = new XEO.Entity({
      camera: new XEO.Camera({
          view: new XEO.Lookat({
-             eye: [0, 0, -10],
+             eye: [0, 0, 10],
              look: [0, 0, 0],
              up: [0, 1, 0]
          }),
@@ -13805,7 +13825,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
      camera: XEO.Camera({
 
         view: new XEO.Lookat({
-            eye: [0, 0, -4],
+            eye: [0, 0, 4],
             look: [0, 0, 0],
             up: [0, 1, 0]
         }),
@@ -13830,7 +13850,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Lookat.
- @param [cfg.eye=[0,0,-10]] {Array of Number} Eye position.
+ @param [cfg.eye=[0,0,10]] {Array of Number} Eye position.
  @param [cfg.look=[0,0,0]] {Array of Number} The position of the point-of-interest we're looking at.
  @param [cfg.up=[0,1,0]] {Array of Number} The "up" vector.
  @param [cfg.gimbalLockY=false] {Boolean} Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.
@@ -13853,7 +13873,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this._state = new XEO.renderer.ViewTransform({
                 matrix: mat,
                 normalMatrix: invMat,
-                eye: [0, 0, -10.0],
+                eye: [0, 0, 10.0],
                 look: [0, 0, 0],
                 up: [0, 1, 0]
             });
@@ -14062,14 +14082,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * Fires an {{#crossLink "Lookat/eye:event"}}{{/crossLink}} event on change.
              *
              * @property eye
-             * @default [0,0,-10]
+             * @default [0,0,10]
              * @type Array(Number)
              */
             eye: {
 
                 set: function (value) {
 
-                    value = value || [0, 0, -10];
+                    value = value || [0, 0, 10];
 
                     var eye = this._state.eye;
 
@@ -14196,10 +14216,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
         _build: function () {
 
-            this._state.matrix = new Float32Array(XEO.math.lookAtMat4c(
-                this._state.eye[0], this._state.eye[1], this._state.eye[2],
-                this._state.look[0], this._state.look[1], this._state.look[2],
-                this._state.up[0], this._state.up[1], this._state.up[2],
+            this._state.matrix = new Float32Array(XEO.math.lookAtMat4v(
+                this._state.eye,
+                this._state.look,
+                this._state.up,
                 this._state.matrix));
 
             this._state.normalMatrix = new Float32Array(XEO.math.transposeMat4(new Float32Array(XEO.math.inverseMat4(this._state.matrix, this._state.normalMatrix), this._state.normalMatrix)));
@@ -14661,7 +14681,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this._fovy = 60.0;
             this._near = 0.1;
             this._far = 10000.0;
-            
+
             var canvas = this.scene.canvas;
 
             // Recompute aspect from change in canvas size
@@ -14803,7 +14823,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     if (this._updateScheduled) {
                         this._update();
                     }
-                    
+
                     return this._state.matrix;
                 }
             }
@@ -16231,7 +16251,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  ````Javascript
  var camera = new XEO.Camera({
      view: new XEO.Lookat({
-         eye: [0, 0, -10],
+         eye: [0, 0, 10],
          look: [0, 0, 0],
          up: [0, 1, 0]
      }),
@@ -16700,7 +16720,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  ````Javascript
  var camera = new XEO.Camera({
      view: new XEO.Lookat({
-         eye: [0, 0, -10],
+         eye: [0, 0, 10],
          look: [0, 0, 0],
          up: [0, 1, 0]
      }),
@@ -17013,7 +17033,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  ````Javascript
  var camera = new XEO.Camera({
      view: new XEO.Lookat({
-         eye: [0, 0, -10],
+         eye: [0, 0, 10],
          look: [0, 0, 0],
          up: [0, 1, 0]
      }),
@@ -17329,7 +17349,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  ````Javascript
  var camera = new XEO.Camera({
      view: new XEO.Lookat({
-         eye: [0, 0, -10],
+         eye: [0, 0, 10],
          look: [0, 0, 0],
          up: [0, 1, 0]
      }),
@@ -17597,7 +17617,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  ````Javascript
  var camera = new XEO.Camera({
      view: new XEO.Lookat({
-         eye: [0, 0, -10],
+         eye: [0, 0, 10],
          look: [0, 0, 0],
          up: [0, 1, 0]
      }),
@@ -17851,7 +17871,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  ````Javascript
  var camera = new XEO.Camera({
      view: new XEO.Lookat({
-         eye: [0, 0, -10],
+         eye: [0, 0, 10],
          look: [0, 0, 0],
          up: [0, 1, 0]
      }),
@@ -18240,7 +18260,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  ````Javascript
  var camera = new XEO.Camera({
      view: new XEO.Lookat({
-         eye: [0, 0, -10],
+         eye: [0, 0, 10],
          look: [0, 0, 0],
          up: [0, 1, 0]
      }),
@@ -18775,7 +18795,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  ````Javascript
  var camera = new XEO.Camera({
      view: new XEO.Lookat({
-         eye: [0, 0, -10],
+         eye: [0, 0, 10],
          look: [0, 0, 0],
          up: [0, 1, 0]
      }),
@@ -20178,7 +20198,7 @@ visibility.destroy();
 
  ````javascript
  var curve = new XEO.QuadraticBezierCurve({
-     v0: [-10, 0, 0],
+     v0: [10, 0, 0],
      v1: [20, 15, 0],
      v2: [10, 0, 0]
  });
@@ -20524,13 +20544,13 @@ visibility.destroy();
              v3: [10, 0, 0]
          }),
          new XEO.QuadraticBezierCurve({
-             v0: [-10, 0, 0],
+             v0: [10, 0, 0],
              v1: [20, 15, 0],
              v2: [10, 0, 0]
          }),
          new XEO.SplineCurve({
              points: [
-                 [-10, 0, 0],
+                 [10, 0, 0],
                  [-5, 15, 0],
                  [20, 15, 0],
                  [10, 0, 0]
@@ -21013,8 +21033,8 @@ visibility.destroy();
 
  ````javascript
  customGeometry.indices = [
-     2, 1, 0,
-     3, 2, 0
+ 2, 1, 0,
+ 3, 2, 0
  ];
  ````
 
@@ -21448,11 +21468,18 @@ visibility.destroy();
                 this._tangents.destroy();
             }
 
+            if (!this._positionsData || !this._indicesData || !this._uvData) {
+                return null;
+            }
+
+            this._tangentsData = XEO.math.buildTangents(this._positionsData, this._indicesData, this._uvData);
+
             var gl = this.scene.canvas.gl;
 
             var usage = gl.STATIC_DRAW;
 
-            this._tangents = this._tangentsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._tangentsData), this._tangentsData.length, 4, usage) : null;
+            this._tangents = this._tangentsData ?
+                new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._tangentsData), this._tangentsData.length, 3, usage) : null;
 
             if (this._tangents) {
                 memoryStats.tangents += this._tangents.numItems;
@@ -27365,7 +27392,11 @@ XEO.PathGeometry = XEO.Geometry.extend({
     lights: new XEO.Lights({
         lights: [
             new XEO.DirLight({
-                dir:         [-1, -1, -1],
+
+                // Note that this is the direction the light is shining,
+                // not the direction to the light source
+
+                dir:         [1, 1, 1],
                 color:       [0.5, 0.7, 0.5],
                 intensity:   1.0,
                 space:      "view"  // Other option is "world", for World-space
@@ -27393,7 +27424,8 @@ XEO.PathGeometry = XEO.Geometry.extend({
  @param [cfg] {*} The DirLight configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this DirLight.
- @param [cfg.dir=[1.0, 1.0, 1.0]] {Array(Number)} A unit vector indicating the direction of illumination, given in either World or View space, depending on the value of the **space** parameter.
+ @param [cfg.dir=[1.0, 1.0, 1.0]] {Array(Number)} A unit vector indicating the direction that the light is shining,
+ given in either World or View space, depending on the value of the **space** parameter.
  @param [cfg.color=[0.7, 0.7, 0.8 ]] {Array(Number)} The color of this DirLight.
  @param [cfg.intensity=1.0 ] {Number} The intensity of this DirLight.
  @param [cfg.space="view"] {String} The coordinate system the DirLight is defined in - "view" or "space".
@@ -27427,7 +27459,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
         _props: {
 
             /**
-             The direction of this DirLight.
+             The direction in which the light is shining.
 
              Fires a {{#crossLink "DirLight/dir:event"}}{{/crossLink}} event on change.
 
@@ -29672,7 +29704,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 emissive: [0.0, 0.0, 0.0],
 
                 opacity: 1.0,
-                shininess: 20.0,
+                shininess: 30.0,
                 reflectivity: 1.0,
                 
                 lineWidth: 1.0,
