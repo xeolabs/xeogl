@@ -14,20 +14,24 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a> - <a href="../docs/classes/PointLight.html"
-                                                      target="_docs">PointLight in View-space</a>
+    <a href="http://xeoengine.org">xeoEngine</a> - normal map <a href="../docs/classes/Texture.html" target="_docs">Texture</a>
+    with World-space <a href="../docs/classes/PointLight.html" target="_docs">PointLight</a> animated
+    along <a href="../docs/classes/SplineCurve.html" target="_docs">SplineCurve</a>
 </div>
 
 <script>
 
+    // Remove all default scene lights
     XEO.scene.lights.lights = [];
 
+    // Sphere for each of our normal-mapped objects
     var geometry = new XEO.SphereGeometry({
         radius: 1.5,
         heightSegments: 60,
         widthSegments: 60
     });
-
+    
+    // Material for each of our normal-mapped objects
     var material = new XEO.PhongMaterial({
         ambient: [0.3, 0.3, 0.3],
         shininess: 30,
@@ -42,7 +46,8 @@
         })
     });
 
-    var pointLight0 = new XEO.PointLight({
+    // The PointLight
+    var pointLight = new XEO.PointLight({
         pos: [0, 0, 0],
         color: [1.0, 1.0, 0.0],
         intensity: 1.0,
@@ -52,15 +57,17 @@
         space: "world"
     });
 
+    // Lights for our normal-mapped objects, containing the PointLight
     var lights = new XEO.Lights({
         lights: [
             new XEO.AmbientLight({
                 color: [0.3, 0.3, 0.3]
             }),
-            pointLight0
+            pointLight
         ]
     });
 
+    // Our normal-mapped objects
     for (var x = -15; x <= 15; x += 4) {
         for (var z = -15; z <= 15; z += 4) {
 
@@ -81,68 +88,74 @@
     view.rotateEyeX(20);
     view.eye = [0, 20, -30];
 
-    (function () {
+    // SplineCurve to animate PointLight along
+    var splineCurve = new XEO.SplineCurve({
+        points: [
+            [-16, 3, -16],
+            [0, 3, -3],
+            [16, 3, -16],
+            [0, 3, 0],
+            [0, 26, 0],
+            [0, 3, 0],
+            [16, 3, 16],
+            [-16, 3, 16],
+            [-16, 3, -16]
+        ]
+    });
 
-        var curve = new XEO.SplineCurve({
-            points: [
-                [-16, 3, -16],
-                [0, 3, -3],
-                [16, 3, -16],
-                [0, 3, 0],
-                [0, 26, 0],
-                [0, 3, 0],
-                [16, 3, 16],
-                [-16, 3, 16],
-                [-16, 3, -16]
-            ]
-        });
+    // Entity to show the SplineCurve
+    new XEO.Entity({
+        geometry: new XEO.Geometry({
+            positions: XEO.math.flatten(splineCurve.getPoints(100))
+        }),
+        material: new XEO.PhongMaterial({
+            diffuse: [0.5, 0.5, 0]
+        }),
+        visibility: new XEO.Visibility({
+            visible: true
+        })
+    });
 
-        new XEO.Entity({
-            geometry: new XEO.Geometry({
-                positions: XEO.math.flatten(curve.getPoints(100))
-            }),
-            material: new XEO.PhongMaterial({
-                diffuse: [0.3, 0.3, 0]
-            }),
-            visibility: new XEO.Visibility({
-                visible: false
-            })
-        });
+    // Indicator sphere to show position of PointLight
+    var pointLightIndicator = new XEO.Entity({
+        geometry: new XEO.SphereGeometry({
+            radius: .5
+        }),
+        material: new XEO.PhongMaterial({
+            ambient: [0, 0, 0],
+            diffuse: [0, 0, 0],
+            emissive: [1.0, 0, 0]
+        }),
+        transform: new XEO.Translate()
+    });
 
-        var icon = new XEO.Entity({
-            geometry: new XEO.SphereGeometry({
-                radius: .5
-            }),
-            material: new XEO.PhongMaterial({
-                ambient: [0, 0, 0],
-                diffuse: [0, 0, 0],
-                emissive: [1.0, 0, 0]
-            }),
-            transform: new XEO.Translate()
-        });
+    // Update position of indicator sphere in synch with PointLight's position
+    pointLight.on("pos", function (pos) {
+        pointLightIndicator.transform.xyz = pos;
+    });
 
-        pointLight0.on("pos", function (pos) {
-            icon.transform.xyz = pos;
-        });
+    // Update color of indicator sphere in synch with PointLight's color
+    pointLight.on("color", function (color) {
+        pointLightIndicator.material.emissive = color;
+    });
 
-        pointLight0.on("color", function (color) {
-            icon.material.emissive = color;
-        });
+    // Update position of PointLight in synch with animation progress along SplineCurve
+    splineCurve.on("t", function () {
+        pointLight.pos = splineCurve.point;
+    });
 
-        curve.on("t", function () {
-            pointLight0.pos = curve.point;
-        });
+    // Animate progress along SplineCurve
 
-        var t = 0;
+    var t = 0;
 
-        scene.on("tick", function () {
-            curve.t = t % 1.0;
-            t += 0.001;
-        });
-    })();
+    scene.on("tick", function () {
+        splineCurve.t = t % 1.0;
+        t += 0.001;
+    });
 
-
+    // Allow user camera control
     new XEO.CameraControl();
+
 </script>
 </body>
 </html>
