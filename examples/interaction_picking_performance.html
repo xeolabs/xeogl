@@ -52,7 +52,9 @@
     })();
 
     var geometry = new XEO.SphereGeometry({
-        radius: 1.0
+        radius: 1.0,
+        heightSegments: 40,
+        widthSegments: 40
     });
 
     var material = new XEO.PhongMaterial({
