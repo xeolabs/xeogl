@@ -299,6 +299,9 @@
 
             image.onerror = function () {
                 //task.setFailed();
+                if (spinnerTextures) {
+                    spinner.processes--;
+                }
             };
 
             if (src.indexOf("data") === 0) {
