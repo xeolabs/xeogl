@@ -262,6 +262,9 @@
 
             var image = new Image();
 
+            var spinner = this.scene.canvas.spinner;
+            var spinnerTextures = spinner.textures;
+
             image.onload = function () {
 
                 if (self._src === src) {
@@ -276,6 +279,10 @@
                     self._srcDirty = false;
                     self._imageDirty = true;
                     self._geometryDirty = true;
+
+                    if (spinnerTextures) {
+                        spinner.processes--;
+                    }
 
                     self._scheduleUpdate();
 
@@ -299,11 +306,19 @@
                 // Image data
                 image.src = src;
 
+                if (spinnerTextures) {
+                    spinner.processes++;
+                }
+
             } else {
 
                 // Image file
                 image.crossOrigin = "Anonymous";
                 image.src = src;
+
+                if (spinnerTextures) {
+                    spinner.processes++;
+                }
             }
         },
 

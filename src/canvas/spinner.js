@@ -4,6 +4,8 @@
  <ul>
  <li>Spinners are normally shown by {{#crossLink "Model"}}Models{{/crossLink}} while they are loading, however they may also
  be shown by any application code that wants to indicate business.</li>
+ <li>By default, they are also shown by components that load assets, such as {{#crossLink "Texture"}}{{/crossLink}}. You
+ can disable that by flipping the Spinner's {{#crossLink "Spinner/textures:property"}}{{/crossLink}} property.</li>
  <li>A Spinner component has a {{#crossLink "Spinner/processes:property"}}{{/crossLink}} count that indicates how many
  active processes it currently represents. As a process starts, a process would increment {{#crossLink "Spinner/processes:property"}}{{/crossLink}}, then as it
  completes (or fails), would decrement it again.</li>
@@ -40,6 +42,14 @@
  // so spinner becomes invisible
  spinner.process--;
 ````
+
+ By default, a Spinner shows while resources are loading for components like
+ {{#crossLink "Texture"}}{{/crossLink}}. We can disable that like this:
+
+ ````javascript
+ // Don't show while resources are loading for Textures etc.
+ spinner.textures = false;
+ ````
 
  @class Spinner
  @module XEO
@@ -95,9 +105,42 @@
             this._adjustPosition();
 
             this.processes = 0;
+
+            this.textures = cfg.textures;
         },
 
         _props: {
+
+            /**
+             * Whether Spinner shows while images are loading for components like {{#crossLink "Texture"}}{{/crossLink}}.
+             *
+             * Fires a {{#crossLink "Spinner/textures:event"}}{{/crossLink}} event on change.
+             *
+             * @property textures
+             * @default true
+             * @type Boolean
+             */
+            textures: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    this._textures = value;
+                    
+                    /**
+                     * Fired whenever this Spinner's  {{#crossLink "Spinner/textures:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event textures
+                     * @param value The property's new value
+                     */
+                    this.fire("textures", this._textures);
+                },
+
+                get: function () {
+                    return this._textures;
+                }
+            },
 
             /**
              The number of processes this Spinner represents.

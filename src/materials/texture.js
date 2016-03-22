@@ -334,6 +334,9 @@
 
             var image = new Image();
 
+            var spinner = this.scene.canvas.spinner;
+            var spinnerTextures = spinner.textures;
+
             image.onload = function () {
 
                 if (self._src === src) {
@@ -348,6 +351,10 @@
                     self._imageDirty = true;
                     self._srcDirty = false;
                     self._targetDirty = false;
+
+                    if (spinnerTextures) {
+                        spinner.processes--;
+                    }
 
                     self._scheduleUpdate();
 
@@ -372,6 +379,9 @@
 
             image.onerror = function () {
                 //              task.setFailed();
+                if (spinnerTextures) {
+                    spinner.processes--;
+                }
             };
 
             if (src.indexOf("data") === 0) {
@@ -384,6 +394,10 @@
                 // Image file
                 image.crossOrigin = "Anonymous";
                 image.src = src;
+
+                if (spinnerTextures) {
+                    spinner.processes++;
+                }
             }
         },
 
