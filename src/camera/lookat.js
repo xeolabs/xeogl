@@ -19,7 +19,7 @@
      camera: XEO.Camera({
 
         view: new XEO.Lookat({
-            eye: [0, 0, -4],
+            eye: [0, 0, 4],
             look: [0, 0, 0],
             up: [0, 1, 0]
         }),
@@ -44,7 +44,7 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Lookat.
- @param [cfg.eye=[0,0,-10]] {Array of Number} Eye position.
+ @param [cfg.eye=[0,0,10]] {Array of Number} Eye position.
  @param [cfg.look=[0,0,0]] {Array of Number} The position of the point-of-interest we're looking at.
  @param [cfg.up=[0,1,0]] {Array of Number} The "up" vector.
  @param [cfg.gimbalLockY=false] {Boolean} Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.
@@ -67,7 +67,7 @@
             this._state = new XEO.renderer.ViewTransform({
                 matrix: mat,
                 normalMatrix: invMat,
-                eye: [0, 0, -10.0],
+                eye: [0, 0, 10.0],
                 look: [0, 0, 0],
                 up: [0, 1, 0]
             });
@@ -276,14 +276,14 @@
              * Fires an {{#crossLink "Lookat/eye:event"}}{{/crossLink}} event on change.
              *
              * @property eye
-             * @default [0,0,-10]
+             * @default [0,0,10]
              * @type Array(Number)
              */
             eye: {
 
                 set: function (value) {
 
-                    value = value || [0, 0, -10];
+                    value = value || [0, 0, 10];
 
                     var eye = this._state.eye;
 
@@ -410,10 +410,10 @@
 
         _build: function () {
 
-            this._state.matrix = new Float32Array(XEO.math.lookAtMat4c(
-                this._state.eye[0], this._state.eye[1], this._state.eye[2],
-                this._state.look[0], this._state.look[1], this._state.look[2],
-                this._state.up[0], this._state.up[1], this._state.up[2],
+            this._state.matrix = new Float32Array(XEO.math.lookAtMat4v(
+                this._state.eye,
+                this._state.look,
+                this._state.up,
                 this._state.matrix));
 
             this._state.normalMatrix = new Float32Array(XEO.math.transposeMat4(new Float32Array(XEO.math.inverseMat4(this._state.matrix, this._state.normalMatrix), this._state.normalMatrix)));

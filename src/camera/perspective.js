@@ -73,7 +73,7 @@
             this._fovy = 60.0;
             this._near = 0.1;
             this._far = 10000.0;
-            
+
             var canvas = this.scene.canvas;
 
             // Recompute aspect from change in canvas size
@@ -215,7 +215,7 @@
                     if (this._updateScheduled) {
                         this._update();
                     }
-                    
+
                     return this._state.matrix;
                 }
             }

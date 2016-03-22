@@ -45,7 +45,7 @@
  ````Javascript
  var camera = new XEO.Camera({
      view: new XEO.Lookat({
-         eye: [0, 0, -10],
+         eye: [0, 0, 10],
          look: [0, 0, 0],
          up: [0, 1, 0]
      }),

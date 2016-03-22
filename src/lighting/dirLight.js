@@ -30,7 +30,11 @@
     lights: new XEO.Lights({
         lights: [
             new XEO.DirLight({
-                dir:         [-1, -1, -1],
+
+                // Note that this is the direction the light is shining,
+                // not the direction to the light source
+
+                dir:         [1, 1, 1],
                 color:       [0.5, 0.7, 0.5],
                 intensity:   1.0,
                 space:      "view"  // Other option is "world", for World-space
@@ -58,7 +62,8 @@
  @param [cfg] {*} The DirLight configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this DirLight.
- @param [cfg.dir=[1.0, 1.0, 1.0]] {Array(Number)} A unit vector indicating the direction of illumination, given in either World or View space, depending on the value of the **space** parameter.
+ @param [cfg.dir=[1.0, 1.0, 1.0]] {Array(Number)} A unit vector indicating the direction that the light is shining,
+ given in either World or View space, depending on the value of the **space** parameter.
  @param [cfg.color=[0.7, 0.7, 0.8 ]] {Array(Number)} The color of this DirLight.
  @param [cfg.intensity=1.0 ] {Number} The intensity of this DirLight.
  @param [cfg.space="view"] {String} The coordinate system the DirLight is defined in - "view" or "space".
@@ -92,7 +97,7 @@
         _props: {
 
             /**
-             The direction of this DirLight.
+             The direction in which the light is shining.
 
              Fires a {{#crossLink "DirLight/dir:event"}}{{/crossLink}} event on change.
 
