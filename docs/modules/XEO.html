@@ -139,6 +139,7 @@
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
+                                <li><a href="..//modules/paths.html">paths</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
                                 <li><a href="..//modules/reporting.html">reporting</a></li>
                                 <li><a href="..//modules/shaders.html">shaders</a></li>
@@ -753,6 +754,116 @@
 
                     <div class="module-submodule-description">
                         Math utilities.
+                    </div>
+                </li>
+                <li class="module-submodule">
+                    <a href="../modules/paths.html">
+                        paths
+                    </a>
+
+                    <div class="module-submodule-description">
+                        A **Path** is a complex curved path constructed from various {{#crossLink "Curve"}}{{/crossLink}} subtypes.
+
+<ul>
+<li>A Path can be constructed from these {{#crossLink "Curve"}}{{/crossLink}} subtypes: {{#crossLink "SplineCurve"}}{{/crossLink}},
+{{#crossLink "CubicBezierCurve"}}{{/crossLink}} and {{#crossLink "QuadraticBezierCurve"}}{{/crossLink}}.</li>
+<li>You can sample a {{#crossLink "Path/point:property"}}{{/crossLink}} and a {{#crossLink "Curve/tangent:property"}}{{/crossLink}}
+vector on a Path for any given value of {{#crossLink "Path/t:property"}}{{/crossLink}} in the range [0..1].</li>
+<li>When you set {{#crossLink "Path/t:property"}}{{/crossLink}} on a Path, its
+{{#crossLink "Path/point:property"}}{{/crossLink}} and {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties
+will update accordingly.</li>
+</ul>
+
+## Examples
+
+<ul>
+<li>[CubicBezierCurve example](../../examples/#curves_CubicBezierCurve)</li>
+<li>[Tweening position along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve)</li>
+<li>[Tweening color along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve_color)</li>
+<li>[SplineCurve example](../../examples/#curves_SplineCurve)</li>
+<li>[Path example](../../examples/#curves_Path)</li>
+</ul>
+
+## Usage
+
+#### Animation along a SplineCurve
+
+Create a Path containing a {{#crossLink "CubicBezierCurve"}}{{/crossLink}}, a {{#crossLink "QuadraticBezierCurve"}}{{/crossLink}}
+and a {{#crossLink "SplineCurve"}}{{/crossLink}}, subscribe to updates on its {{#crossLink "Path/point:property"}}{{/crossLink}} and
+{{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties, then vary its {{#crossLink "Path/t:property"}}{{/crossLink}}
+property over time:
+
+<code>&#x60;</code>`javascript
+var path = new XEO.Path({
+    curves: [
+        new XEO.CubicBezierCurve({
+            v0: [-10, 0, 0],
+            v1: [-5, 15, 0],
+            v2: [20, 15, 0],
+            v3: [10, 0, 0]
+        }),
+        new XEO.QuadraticBezierCurve({
+            v0: [10, 0, 0],
+            v1: [20, 15, 0],
+            v2: [10, 0, 0]
+        }),
+        new XEO.SplineCurve({
+            points: [
+                [10, 0, 0],
+                [-5, 15, 0],
+                [20, 15, 0],
+                [10, 0, 0]
+            ]
+        })
+    ]
+});
+
+path.on("point", function(point) {
+    this.log("path.point=" + JSON.stringify(point));
+});
+
+path.on("tangent", function(tangent) {
+    this.log("path.tangent=" + JSON.stringify(tangent));
+});
+
+path.on("t", function(t) {
+    this.log("path.t=" + t);
+});
+
+path.scene.on("tick", function(e) {
+    path.t = (e.time - e.startTime) * 0.01;
+});
+<code>&#x60;</code>`
+
+#### Randomly sampling points
+
+Use Path's {{#crossLink "Path/getPoint:method"}}{{/crossLink}} and
+{{#crossLink "path/getTangent:method"}}{{/crossLink}} methods to sample the point and vector
+at a given **t**:
+
+<code>&#x60;</code>`javascript
+path.scene.on("tick", function(e) {
+
+    var t = (e.time - e.startTime) * 0.01;
+
+    var point = path.getPoint(t);
+    var tangent = path.getTangent(t);
+
+    this.log("t=" + t + ", point=" + JSON.stringify(point) + ", tangent=" + JSON.stringify(tangent));
+});
+<code>&#x60;</code>`
+
+#### Sampling multiple points
+
+Use Path's {{#crossLink "path/getPoints:method"}}{{/crossLink}} method to sample a list of equidistant points
+along it. In the snippet below, we'll build a {{#crossLink "Geometry"}}{{/crossLink}} that renders a line along the
+path.  Note that we need to flatten the points array for consumption by the {{#crossLink "Geometry"}}{{/crossLink}}.
+
+<code>&#x60;</code>`javascript
+var geometry = new XEO.Geometry({
+    positions: XEO.math.flatten(path.getPoints(50))
+});
+<code>&#x60;</code>`
                     </div>
                 </li>
                 <li class="module-submodule">

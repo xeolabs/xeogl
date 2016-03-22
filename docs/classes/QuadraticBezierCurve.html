@@ -139,6 +139,7 @@
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
+                                <li><a href="..//modules/paths.html">paths</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
                                 <li><a href="..//modules/reporting.html">reporting</a></li>
                                 <li><a href="..//modules/shaders.html">shaders</a></li>
@@ -218,9 +219,11 @@ into a <a href="../classes/Path.html" class="crosslink">Path</a>.</li>
 <li><a href="../../examples/#curves_Path">Path example</a></li>
 </ul>
 
-<h2 id="usage-1">Usage 1</h2>
-<p>Create a QuadraticBezierCurve, subscribe to updates on its <a href="../classes/QuadraticBezierCurve.html#property_point" class="crosslink">point</a> and
-<a href="../classes/Curve.html#property_tangent" class="crosslink">tangent</a> properties, then vary its <a href="../classes/QuadraticBezierCurve.html#property_t" class="crosslink">t</a>
+<h2 id="usage">Usage</h2>
+<h4 id="animation-along-a-quadraticbeziercurve">Animation along a QuadraticBezierCurve</h4>
+<p>Let&#39;s create a QuadraticBezierCurve, subscribe to updates on its <a href="../classes/QuadraticBezierCurve.html#property_point" class="crosslink">point</a>,
+<a href="../classes/Curve.html#property_tangent" class="crosslink">tangent</a> and <a href="../classes/Curve.html#property_t" class="crosslink">t</a> properties,
+then vary its <a href="../classes/QuadraticBezierCurve.html#property_t" class="crosslink">t</a>
 property over time:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var curve = new XEO.QuadraticBezierCurve({
     v0: [10, 0, 0],
@@ -228,66 +231,27 @@ property over time:</p>
     v2: [10, 0, 0]
 });
 
-curve.scene.on("tick", function(e) {
+curve.on("point", function(point) {
+    this.log("curve.point=" + JSON.stringify(point));
+});
 
+curve.on("tangent", function(tangent) {
+    this.log("curve.tangent=" + JSON.stringify(tangent));
+});
+
+curve.on("t", function(t) {
+    this.log("curve.t=" + t);
+});
+
+curve.scene.on("tick", function(e) {
     curve.t = (e.time - e.startTime) * 0.01;
-
-    var point = curve.point;
-    var tangent = curve.tangent;
-
-    this.log("t=" + curve.t + ", point=" +
-           JSON.stringify(point) + ", tangent=" +
-               JSON.stringify(tangent));
 });
 </code></pre>
-<h2 id="usage-2">Usage 2</h2>
-<p>In the next example, we&#39;ll create an <a href="../classes/Entity.html" class="crosslink">Entity</a> with a
-<a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> whose diffuse color is bound to the
-interpolated <a href="../classes/QuadraticBezierCurve.html#property_point" class="crosslink">point</a> property on the QuadraticBezierCurve.</p>
-<p>Then we&#39;ll animate the QuadraticBezierCurve&#39;s <a href="../classes/QuadraticBezierCurve.html#property_t" class="crosslink">t</a> property
-to update the diffuse color.</p>
-<pre class="code prettyprint"><code class="lang-javascript">var curve = new XEO.QuadraticBezierCurve({
-    v0: [1, 0, 0],
-    v1: [0, 1, 0],
-    v2: [0, 0, 1]
-});
-
-// Create a Entity with a PhongMaterial
-var material = new XEO.PhongMaterial({
-    diffuse: [0, 0, 0]
-});
-
-var entity = new XEO.Entity({
-    material: material
-});
-
-// Bind the PhongMaterial diffuse color
-// to the QuadraticBezierCurve
-curve.on("t", function() {
-    material.diffuse = curve.point;
-});
-
-// Animate the QuadraticBezierCurve, which in turn
-// updates the PhongMaterial diffuse color
-var tick = entity.scene.on("tick", function (e) {
-    curve.t = (e.time - e.startTime) * 0.00005;
-});
-</code></pre>
-<h2 id="usage-3">Usage 3</h2>
-<p>In the previous two examples, we relied on our QuadraticBezierCurves to remember their progress in their
-<a href="../classes/QuadraticBezierCurve.html#property_t" class="crosslink">t</a> and <a href="../classes/QuadraticBezierCurve.html#property_point" class="crosslink">point</a>
-properties, which is useful when we want to wire components together into reactive event-driven networks, as we did with the
-PhongMaterial in the previous example.</p>
-<p>As an alternative, we can instead sample the point and vector at a given <em>t</em> via calls
-to the QuadraticBezierCurve&#39;s <a href="../classes/QuadraticBezierCurve.html#method_getPoint" class="crosslink">getPoint</a> and
-<a href="../classes/Curve.html#method_getTangent" class="crosslink">getTangent</a> methods:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var curve = new XEO.QuadraticBezierCurve({
-    v0: [-10, 0, 0],
-    v1: [20, 15, 0],
-    v2: [10, 0, 0]
-});
-
-curve.scene.on("tick", function(e) {
+<h4 id="randomly-sampling-points">Randomly sampling points</h4>
+<p>Use QuadraticBezierCurve&#39;s <a href="../classes/QuadraticBezierCurve.html#method_getPoint" class="crosslink">getPoint</a> and
+<a href="../classes/Curve.html#method_getTangent" class="crosslink">getTangent</a> methods to sample the point and vector
+at a given <strong>t</strong>:</p>
+<pre class="code prettyprint"><code class="lang-javascript">curve.scene.on("tick", function(e) {
 
     var t = (e.time - e.startTime) * 0.01;
 
@@ -297,20 +261,11 @@ curve.scene.on("tick", function(e) {
     this.log("t=" + t + ", point=" + JSON.stringify(point) + ", tangent=" + JSON.stringify(tangent));
 });
 </code></pre>
-<h2 id="usage-4">Usage 4</h2>
-<p>When we want to build a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> from a QuadraticBezierCurve, we can sample points
-along the curve using its <a href="../classes/Curve.html#method_getPoints" class="crosslink">getPoints</a> method, as shown below.</p>
-<p>Note that we need to flatten the points array for consumption by the <a href="../classes/Geometry.html" class="crosslink">Geometry</a>.</p>
-<pre class="code prettyprint"><code class="lang-javascript">var curve = new XEO.QuadraticBezierCurve({
-    v0: [-10, 0, 0],
-    v1: [20, 15, 0],
-    v2: [10, 0, 0]
-});
-
-// Geometry which creates a line-strip through fifty
-// points sampled at equidistant positions on our QuadraticBezierCurve
-
-var geometry = new XEO.Geometry({
+<h4 id="sampling-multiple-points">Sampling multiple points</h4>
+<p>Use QuadraticBezierCurve&#39;s <a href="../classes/Curve.html#method_getPoints" class="crosslink">getPoints</a> method to sample a list of equidistant points
+along it. In the snippet below, we&#39;ll build a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that renders a line along the
+curve.  Note that we need to flatten the points array for consumption by the <a href="../classes/Geometry.html" class="crosslink">Geometry</a>.</p>
+<pre class="code prettyprint"><code class="lang-javascript">var geometry = new XEO.Geometry({
     positions: XEO.math.flatten(curve.getPoints(50))
 });
 </code></pre>
@@ -957,7 +912,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_curves_quadraticBezierCurve.js.html#l312"><code>src&#x2F;curves&#x2F;quadraticBezierCurve.js:312</code></a>
+        <a href="../files/src_curves_quadraticBezierCurve.js.html#l260"><code>src&#x2F;curves&#x2F;quadraticBezierCurve.js:260</code></a>
         </p>
 
 
@@ -1024,7 +979,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Curve.html#method_getPoints">Curve</a>:
-        <a href="../files/src_curves_curve.js.html#l153"><code>src&#x2F;curves&#x2F;curve.js:153</code></a>
+        <a href="../files/src_curves_curve.js.html#l154"><code>src&#x2F;curves&#x2F;curve.js:154</code></a>
         </p>
 
 
@@ -1091,7 +1046,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Curve.html#method_getTangent">Curve</a>:
-        <a href="../files/src_curves_curve.js.html#l111"><code>src&#x2F;curves&#x2F;curve.js:111</code></a>
+        <a href="../files/src_curves_curve.js.html#l112"><code>src&#x2F;curves&#x2F;curve.js:112</code></a>
         </p>
 
 
@@ -1687,7 +1642,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Curve.html#property_length">Curve</a>:
-                            <a href="../files/src_curves_curve.js.html#l97"><code>src&#x2F;curves&#x2F;curve.js:97</code></a>
+                            <a href="../files/src_curves_curve.js.html#l98"><code>src&#x2F;curves&#x2F;curve.js:98</code></a>
                             </p>
                     
                     
@@ -1737,7 +1692,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_quadraticBezierCurve.js.html#l298"><code>src&#x2F;curves&#x2F;quadraticBezierCurve.js:298</code></a>
+                            <a href="../files/src_curves_quadraticBezierCurve.js.html#l246"><code>src&#x2F;curves&#x2F;quadraticBezierCurve.js:246</code></a>
                             </p>
                     
                     
@@ -1852,7 +1807,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Curve
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_curves_quadraticBezierCurve.js.html#l265"><code>src&#x2F;curves&#x2F;quadraticBezierCurve.js:265</code></a>
+                            <a href="../files/src_curves_quadraticBezierCurve.js.html#l213"><code>src&#x2F;curves&#x2F;quadraticBezierCurve.js:213</code></a>
                             </p>
                     
                     
@@ -1880,7 +1835,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Curve.html#property_tangent">Curve</a>:
-                            <a href="../files/src_curves_curve.js.html#l83"><code>src&#x2F;curves&#x2F;curve.js:83</code></a>
+                            <a href="../files/src_curves_curve.js.html#l84"><code>src&#x2F;curves&#x2F;curve.js:84</code></a>
                             </p>
                     
                     
@@ -1909,7 +1864,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_curves_quadraticBezierCurve.js.html#l162"><code>src&#x2F;curves&#x2F;quadraticBezierCurve.js:162</code></a>
+                            <a href="../files/src_curves_quadraticBezierCurve.js.html#l110"><code>src&#x2F;curves&#x2F;quadraticBezierCurve.js:110</code></a>
                             </p>
                     
                     
@@ -1934,7 +1889,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_quadraticBezierCurve.js.html#l184"><code>src&#x2F;curves&#x2F;quadraticBezierCurve.js:184</code></a>
+                            <a href="../files/src_curves_quadraticBezierCurve.js.html#l132"><code>src&#x2F;curves&#x2F;quadraticBezierCurve.js:132</code></a>
                             </p>
                     
                     
@@ -1961,7 +1916,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_quadraticBezierCurve.js.html#l211"><code>src&#x2F;curves&#x2F;quadraticBezierCurve.js:211</code></a>
+                            <a href="../files/src_curves_quadraticBezierCurve.js.html#l159"><code>src&#x2F;curves&#x2F;quadraticBezierCurve.js:159</code></a>
                             </p>
                     
                     
@@ -1988,7 +1943,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_quadraticBezierCurve.js.html#l238"><code>src&#x2F;curves&#x2F;quadraticBezierCurve.js:238</code></a>
+                            <a href="../files/src_curves_quadraticBezierCurve.js.html#l186"><code>src&#x2F;curves&#x2F;quadraticBezierCurve.js:186</code></a>
                             </p>
                     
                     
@@ -2049,7 +2004,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Curve
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_curves_quadraticBezierCurve.js.html#l283"><code>src&#x2F;curves&#x2F;quadraticBezierCurve.js:283</code></a>
+                            <a href="../files/src_curves_quadraticBezierCurve.js.html#l231"><code>src&#x2F;curves&#x2F;quadraticBezierCurve.js:231</code></a>
                             </p>
                     
                     
@@ -2092,7 +2047,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_quadraticBezierCurve.js.html#l197"><code>src&#x2F;curves&#x2F;quadraticBezierCurve.js:197</code></a>
+                            <a href="../files/src_curves_quadraticBezierCurve.js.html#l145"><code>src&#x2F;curves&#x2F;quadraticBezierCurve.js:145</code></a>
                             </p>
                     
                     
@@ -2135,7 +2090,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_quadraticBezierCurve.js.html#l224"><code>src&#x2F;curves&#x2F;quadraticBezierCurve.js:224</code></a>
+                            <a href="../files/src_curves_quadraticBezierCurve.js.html#l172"><code>src&#x2F;curves&#x2F;quadraticBezierCurve.js:172</code></a>
                             </p>
                     
                     
@@ -2178,7 +2133,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_quadraticBezierCurve.js.html#l251"><code>src&#x2F;curves&#x2F;quadraticBezierCurve.js:251</code></a>
+                            <a href="../files/src_curves_quadraticBezierCurve.js.html#l199"><code>src&#x2F;curves&#x2F;quadraticBezierCurve.js:199</code></a>
                             </p>
                     
                     

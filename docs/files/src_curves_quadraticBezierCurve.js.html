@@ -139,6 +139,7 @@
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
+                                <li><a href="..//modules/paths.html">paths</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
                                 <li><a href="..//modules/reporting.html">reporting</a></li>
                                 <li><a href="..//modules/shaders.html">shaders</a></li>
@@ -208,10 +209,13 @@
  &lt;li&gt;[Path example](../../examples/#curves_Path)&lt;/li&gt;
  &lt;/ul&gt;
 
- ## Usage 1
+ ## Usage
 
- Create a QuadraticBezierCurve, subscribe to updates on its {{#crossLink &quot;QuadraticBezierCurve/point:property&quot;}}{{/crossLink}} and
- {{#crossLink &quot;Curve/tangent:property&quot;}}{{/crossLink}} properties, then vary its {{#crossLink &quot;QuadraticBezierCurve/t:property&quot;}}{{/crossLink}}
+ #### Animation along a QuadraticBezierCurve
+
+ Let&#x27;s create a QuadraticBezierCurve, subscribe to updates on its {{#crossLink &quot;QuadraticBezierCurve/point:property&quot;}}{{/crossLink}},
+ {{#crossLink &quot;Curve/tangent:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Curve/t:property&quot;}}{{/crossLink}} properties,
+ then vary its {{#crossLink &quot;QuadraticBezierCurve/t:property&quot;}}{{/crossLink}}
  property over time:
 
  &#x60;&#x60;&#x60;&#x60;javascript
@@ -221,75 +225,30 @@
      v2: [10, 0, 0]
  });
 
+ curve.on(&quot;point&quot;, function(point) {
+     this.log(&quot;curve.point=&quot; + JSON.stringify(point));
+ });
+
+ curve.on(&quot;tangent&quot;, function(tangent) {
+     this.log(&quot;curve.tangent=&quot; + JSON.stringify(tangent));
+ });
+
+ curve.on(&quot;t&quot;, function(t) {
+     this.log(&quot;curve.t=&quot; + t);
+ });
+
  curve.scene.on(&quot;tick&quot;, function(e) {
-
      curve.t = (e.time - e.startTime) * 0.01;
-
-     var point = curve.point;
-     var tangent = curve.tangent;
-
-     this.log(&quot;t=&quot; + curve.t + &quot;, point=&quot; +
-            JSON.stringify(point) + &quot;, tangent=&quot; +
-                JSON.stringify(tangent));
  });
  &#x60;&#x60;&#x60;&#x60;
 
- ## Usage 2
+ #### Randomly sampling points
 
- In the next example, we&#x27;ll create an {{#crossLink &quot;Entity&quot;}}{{/crossLink}} with a
- {{#crossLink &quot;PhongMaterial&quot;}}{{/crossLink}} whose diffuse color is bound to the
- interpolated {{#crossLink &quot;QuadraticBezierCurve/point:property&quot;}}{{/crossLink}} property on the QuadraticBezierCurve.
-
- Then we&#x27;ll animate the QuadraticBezierCurve&#x27;s {{#crossLink &quot;QuadraticBezierCurve/t:property&quot;}}{{/crossLink}} property
- to update the diffuse color.
+ Use QuadraticBezierCurve&#x27;s {{#crossLink &quot;QuadraticBezierCurve/getPoint:method&quot;}}{{/crossLink}} and
+ {{#crossLink &quot;Curve/getTangent:method&quot;}}{{/crossLink}} methods to sample the point and vector
+ at a given **t**:
 
  &#x60;&#x60;&#x60;&#x60;javascript
- var curve = new XEO.QuadraticBezierCurve({
-     v0: [1, 0, 0],
-     v1: [0, 1, 0],
-     v2: [0, 0, 1]
- });
-
- // Create a Entity with a PhongMaterial
- var material = new XEO.PhongMaterial({
-     diffuse: [0, 0, 0]
- });
-
- var entity = new XEO.Entity({
-     material: material
- });
-
- // Bind the PhongMaterial diffuse color
- // to the QuadraticBezierCurve
- curve.on(&quot;t&quot;, function() {
-     material.diffuse = curve.point;
- });
-
- // Animate the QuadraticBezierCurve, which in turn
- // updates the PhongMaterial diffuse color
- var tick = entity.scene.on(&quot;tick&quot;, function (e) {
-     curve.t = (e.time - e.startTime) * 0.00005;
- });
- &#x60;&#x60;&#x60;&#x60;
-
- ## Usage 3
-
- In the previous two examples, we relied on our QuadraticBezierCurves to remember their progress in their
- {{#crossLink &quot;QuadraticBezierCurve/t:property&quot;}}{{/crossLink}} and {{#crossLink &quot;QuadraticBezierCurve/point:property&quot;}}{{/crossLink}}
- properties, which is useful when we want to wire components together into reactive event-driven networks, as we did with the
- PhongMaterial in the previous example.
-
- As an alternative, we can instead sample the point and vector at a given *t* via calls
- to the QuadraticBezierCurve&#x27;s {{#crossLink &quot;QuadraticBezierCurve/getPoint:method&quot;}}{{/crossLink}} and
- {{#crossLink &quot;Curve/getTangent:method&quot;}}{{/crossLink}} methods:
-
- &#x60;&#x60;&#x60;&#x60;javascript
- var curve = new XEO.QuadraticBezierCurve({
-     v0: [-10, 0, 0],
-     v1: [20, 15, 0],
-     v2: [10, 0, 0]
- });
-
  curve.scene.on(&quot;tick&quot;, function(e) {
 
      var t = (e.time - e.startTime) * 0.01;
@@ -301,23 +260,13 @@
  });
  &#x60;&#x60;&#x60;&#x60;
 
- ## Usage 4
+ #### Sampling multiple points
 
- When we want to build a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} from a QuadraticBezierCurve, we can sample points
- along the curve using its {{#crossLink &quot;Curve/getPoints:method&quot;}}{{/crossLink}} method, as shown below.
-
- Note that we need to flatten the points array for consumption by the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}.
+ Use QuadraticBezierCurve&#x27;s {{#crossLink &quot;Curve/getPoints:method&quot;}}{{/crossLink}} method to sample a list of equidistant points
+ along it. In the snippet below, we&#x27;ll build a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that renders a line along the
+ curve.  Note that we need to flatten the points array for consumption by the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}.
 
  &#x60;&#x60;&#x60;&#x60;javascript
- var curve = new XEO.QuadraticBezierCurve({
-     v0: [-10, 0, 0],
-     v1: [20, 15, 0],
-     v2: [10, 0, 0]
- });
-
- // Geometry which creates a line-strip through fifty
- // points sampled at equidistant positions on our QuadraticBezierCurve
-
  var geometry = new XEO.Geometry({
      positions: XEO.math.flatten(curve.getPoints(50))
  });

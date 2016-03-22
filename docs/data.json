@@ -1105,6 +1105,7 @@
                 "controls": 1,
                 "culling": 1,
                 "curves": 1,
+                "paths": 1,
                 "entities": 1,
                 "geometry": 1,
                 "importing": 1,
@@ -1380,7 +1381,6 @@
             "classes": {
                 "CubicBezierCurve": 1,
                 "Curve": 1,
-                "Path": 1,
                 "QuadraticBezierCurve": 1,
                 "SplineCurve": 1
             },
@@ -1392,6 +1392,21 @@
             "file": "src/curves/splineCurve.js",
             "line": 1,
             "description": "Components for defining 3D curves."
+        },
+        "paths": {
+            "name": "paths",
+            "submodules": {},
+            "classes": {
+                "Path": 1
+            },
+            "fors": {},
+            "is_submodule": 1,
+            "namespaces": {},
+            "module": "XEO",
+            "namespace": "",
+            "description": "A **Path** is a complex curved path constructed from various {{#crossLink \"Curve\"}}{{/crossLink}} subtypes.\n\n<ul>\n<li>A Path can be constructed from these {{#crossLink \"Curve\"}}{{/crossLink}} subtypes: {{#crossLink \"SplineCurve\"}}{{/crossLink}},\n{{#crossLink \"CubicBezierCurve\"}}{{/crossLink}} and {{#crossLink \"QuadraticBezierCurve\"}}{{/crossLink}}.</li>\n<li>You can sample a {{#crossLink \"Path/point:property\"}}{{/crossLink}} and a {{#crossLink \"Curve/tangent:property\"}}{{/crossLink}}\nvector on a Path for any given value of {{#crossLink \"Path/t:property\"}}{{/crossLink}} in the range [0..1].</li>\n<li>When you set {{#crossLink \"Path/t:property\"}}{{/crossLink}} on a Path, its\n{{#crossLink \"Path/point:property\"}}{{/crossLink}} and {{#crossLink \"Curve/tangent:property\"}}{{/crossLink}} properties\nwill update accordingly.</li>\n</ul>\n\n## Examples\n\n<ul>\n<li>[CubicBezierCurve example](../../examples/#curves_CubicBezierCurve)</li>\n<li>[Tweening position along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve)</li>\n<li>[Tweening color along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve_color)</li>\n<li>[SplineCurve example](../../examples/#curves_SplineCurve)</li>\n<li>[Path example](../../examples/#curves_Path)</li>\n</ul>\n\n## Usage\n\n#### Animation along a SplineCurve\n\nCreate a Path containing a {{#crossLink \"CubicBezierCurve\"}}{{/crossLink}}, a {{#crossLink \"QuadraticBezierCurve\"}}{{/crossLink}}\nand a {{#crossLink \"SplineCurve\"}}{{/crossLink}}, subscribe to updates on its {{#crossLink \"Path/point:property\"}}{{/crossLink}} and\n{{#crossLink \"Curve/tangent:property\"}}{{/crossLink}} properties, then vary its {{#crossLink \"Path/t:property\"}}{{/crossLink}}\nproperty over time:\n\n````javascript\nvar path = new XEO.Path({\n    curves: [\n        new XEO.CubicBezierCurve({\n            v0: [-10, 0, 0],\n            v1: [-5, 15, 0],\n            v2: [20, 15, 0],\n            v3: [10, 0, 0]\n        }),\n        new XEO.QuadraticBezierCurve({\n            v0: [10, 0, 0],\n            v1: [20, 15, 0],\n            v2: [10, 0, 0]\n        }),\n        new XEO.SplineCurve({\n            points: [\n                [10, 0, 0],\n                [-5, 15, 0],\n                [20, 15, 0],\n                [10, 0, 0]\n            ]\n        })\n    ]\n});\n\npath.on(\"point\", function(point) {\n    this.log(\"path.point=\" + JSON.stringify(point));\n});\n\npath.on(\"tangent\", function(tangent) {\n    this.log(\"path.tangent=\" + JSON.stringify(tangent));\n});\n\npath.on(\"t\", function(t) {\n    this.log(\"path.t=\" + t);\n});\n\npath.scene.on(\"tick\", function(e) {\n    path.t = (e.time - e.startTime) * 0.01;\n});\n````\n\n#### Randomly sampling points\n\nUse Path's {{#crossLink \"Path/getPoint:method\"}}{{/crossLink}} and\n{{#crossLink \"path/getTangent:method\"}}{{/crossLink}} methods to sample the point and vector\nat a given **t**:\n\n````javascript\npath.scene.on(\"tick\", function(e) {\n\n    var t = (e.time - e.startTime) * 0.01;\n\n    var point = path.getPoint(t);\n    var tangent = path.getTangent(t);\n\n    this.log(\"t=\" + t + \", point=\" + JSON.stringify(point) + \", tangent=\" + JSON.stringify(tangent));\n});\n````\n\n#### Sampling multiple points\n\nUse Path's {{#crossLink \"path/getPoints:method\"}}{{/crossLink}} method to sample a list of equidistant points\nalong it. In the snippet below, we'll build a {{#crossLink \"Geometry\"}}{{/crossLink}} that renders a line along the\npath.  Note that we need to flatten the points array for consumption by the {{#crossLink \"Geometry\"}}{{/crossLink}}.\n\n````javascript\nvar geometry = new XEO.Geometry({\n    positions: XEO.math.flatten(path.getPoints(50))\n});\n````",
+            "file": "src/curves/path.js",
+            "line": 1
         },
         "entities": {
             "name": "entities",
@@ -3360,7 +3375,7 @@
             "namespace": "",
             "file": "src/curves/cubicBezierCurve.js",
             "line": 1,
-            "description": "A **CubicBezierCurve** is a {{#crossLink \"Curve\"}}{{/crossLink}} along which a 3D position can be animated.\n\n<ul>\n<li>As shown in the diagram below, a CubicBezierCurve is defined by four control points.</li>\n<li>You can sample a {{#crossLink \"CubicBezierCurve/point:property\"}}{{/crossLink}} and a {{#crossLink \"CubicBezierCurve/tangent:property\"}}{{/crossLink}}\nvector on a CubicBezierCurve for any given value of {{#crossLink \"CubicBezierCurve/t:property\"}}{{/crossLink}} in the range [0..1].</li>\n<li>When you set {{#crossLink \"CubicBezierCurve/t:property\"}}{{/crossLink}} on a CubicBezierCurve, its\n{{#crossLink \"CubicBezierCurve/point:property\"}}{{/crossLink}} and {{#crossLink \"CubicBezierCurve/tangent:property\"}}{{/crossLink}} properties\nwill update accordingly.</li>\n<li>To build a complex path, you can combine an unlimited combination of CubicBezierCurves,\n{{#crossLink \"QuadraticBezierCurve\"}}QuadraticBezierCurves{{/crossLink}} and {{#crossLink \"SplineCurve\"}}SplineCurves{{/crossLink}}\ninto a {{#crossLink \"Path\"}}{{/crossLink}}.</li>\n</ul>\n\n<img style=\"border:1px solid;\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/B%C3%A9zier_3_big.gif/240px-B%C3%A9zier_3_big.gif\"/><br>\n*[Cubic Bezier Curve from WikiPedia](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)*\n\n## Examples\n\n<ul>\n<li>[CubicBezierCurve example](../../examples/#curves_CubicBezierCurve)</li>\n<li>[Path example](../../examples/#curves_Path)</li>\n</ul>\n\n## Usage 1\n\nCreate a CubicBezierCurve, subscribe to updates on its {{#crossLink \"CubicBezierCurve/point:property\"}}{{/crossLink}} and\n{{#crossLink \"Curve/tangent:property\"}}{{/crossLink}} properties, then vary its {{#crossLink \"CubicBezierCurve/t:property\"}}{{/crossLink}}\nproperty over time:\n\n````javascript\nvar curve = new XEO.CubicBezierCurve({\n    v0: [-10, 0, 0],\n    v1: [-5, 15, 0],\n    v2: [20, 15, 0],\n    v3: [10, 0, 0]\n});\n\ncurve.scene.on(\"tick\", function(e) {\n\n    curve.t = (e.time - e.startTime) * 0.01;\n\n    var point = curve.point;\n    var tangent = curve.tangent;\n\n    this.log(\"t=\" + curve.t + \", point=\" +\n           JSON.stringify(point) + \", tangent=\" +\n               JSON.stringify(tangent));\n});\n````",
+            "description": "A **CubicBezierCurve** is a {{#crossLink \"Curve\"}}{{/crossLink}} along which a 3D position can be animated.\n\n<ul>\n<li>As shown in the diagram below, a CubicBezierCurve is defined by four control points.</li>\n<li>You can sample a {{#crossLink \"CubicBezierCurve/point:property\"}}{{/crossLink}} and a {{#crossLink \"CubicBezierCurve/tangent:property\"}}{{/crossLink}}\nvector on a CubicBezierCurve for any given value of {{#crossLink \"CubicBezierCurve/t:property\"}}{{/crossLink}} in the range [0..1].</li>\n<li>When you set {{#crossLink \"CubicBezierCurve/t:property\"}}{{/crossLink}} on a CubicBezierCurve, its\n{{#crossLink \"CubicBezierCurve/point:property\"}}{{/crossLink}} and {{#crossLink \"CubicBezierCurve/tangent:property\"}}{{/crossLink}} properties\nwill update accordingly.</li>\n<li>To build a complex path, you can combine an unlimited combination of CubicBezierCurves,\n{{#crossLink \"QuadraticBezierCurve\"}}QuadraticBezierCurves{{/crossLink}} and {{#crossLink \"SplineCurve\"}}SplineCurves{{/crossLink}}\ninto a {{#crossLink \"Path\"}}{{/crossLink}}.</li>\n</ul>\n\n<img style=\"border:1px solid;\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/B%C3%A9zier_3_big.gif/240px-B%C3%A9zier_3_big.gif\"/><br>\n*[Cubic Bezier Curve from WikiPedia](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)*\n\n## Examples\n\n<ul>\n<li>[CubicBezierCurve example](../../examples/#curves_CubicBezierCurve)</li>\n<li>[Path example](../../examples/#curves_Path)</li>\n</ul>\n\n## Usage\n\n#### Animation along a CubicBezierCurve\n\nLet's create a CubicBezierCurve, subscribe to updates on its {{#crossLink \"CubicBezierCurve/point:property\"}}{{/crossLink}},\n{{#crossLink \"Curve/tangent:property\"}}{{/crossLink}} and {{#crossLink \"Curve/t:property\"}}{{/crossLink}} properties,\nthen vary its {{#crossLink \"CubicBezierCurve/t:property\"}}{{/crossLink}}\nproperty over time:\n\n````javascript\nvar curve = new XEO.CubicBezierCurve({\n    v0: [-10, 0, 0],\n    v1: [-5, 15, 0],\n    v2: [20, 15, 0],\n    v3: [10, 0, 0]\n});\n\ncurve.on(\"point\", function(point) {\n    this.log(\"curve.point=\" + JSON.stringify(point));\n});\n\ncurve.on(\"tangent\", function(tangent) {\n    this.log(\"curve.tangent=\" + JSON.stringify(tangent));\n});\n\ncurve.on(\"t\", function(t) {\n    this.log(\"curve.t=\" + t);\n});\n\ncurve.scene.on(\"tick\", function(e) {\n    curve.t = (e.time - e.startTime) * 0.01;\n});\n````\n\n#### Randomly sampling points\n\nUse CubicBezierCurve's {{#crossLink \"CubicBezierCurve/getPoint:method\"}}{{/crossLink}} and\n{{#crossLink \"Curve/getTangent:method\"}}{{/crossLink}} methods to sample the point and vector\nat a given **t**:\n\n````javascript\ncurve.scene.on(\"tick\", function(e) {\n\n    var t = (e.time - e.startTime) * 0.01;\n\n    var point = curve.getPoint(t);\n    var tangent = curve.getTangent(t);\n\n    this.log(\"t=\" + t + \", point=\" + JSON.stringify(point) + \", tangent=\" + JSON.stringify(tangent));\n});\n````\n\n#### Sampling multiple points\n\nUse CubicBezierCurve's {{#crossLink \"Curve/getPoints:method\"}}{{/crossLink}} method to sample a list of equidistant points\nalong it. In the snippet below, we'll build a {{#crossLink \"Geometry\"}}{{/crossLink}} that renders a line along the\ncurve.  Note that we need to flatten the points array for consumption by the {{#crossLink \"Geometry\"}}{{/crossLink}}.\n\n````javascript\nvar geometry = new XEO.Geometry({\n    positions: XEO.math.flatten(curve.getPoints(50))\n});\n````",
             "submodule": "curves",
             "is_constructor": 1,
             "params": [
@@ -3435,7 +3450,7 @@
             "namespace": "",
             "file": "src/curves/curve.js",
             "line": 1,
-            "description": "**Curve** is the abstract base class for {{#crossLink \"SplineCurve\"}}{{/crossLink}},\n {{#crossLink \"CubicBezierCurve\"}}{{/crossLink}}, {{#crossLink \"QuadraticBezierCurve\"}}{{/crossLink}} and {{#crossLink \"Path\"}}{{/crossLink}}.\n## Examples\n<ul>\n <li>[CubicBezierCurve example](../../examples/#curves_CubicBezierCurve)</li>\n <li>[Tweening position along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve)</li>\n <li>[Tweening color along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve_color)</li>\n <li>[SplineCurve example](../../examples/#curves_SplineCurve)</li>\n <li>[Path example](../../examples/#curves_Path)</li>\n </ul>",
+            "description": "**Curve** is the abstract base class for {{#crossLink \"SplineCurve\"}}{{/crossLink}},\n {{#crossLink \"CubicBezierCurve\"}}{{/crossLink}}, {{#crossLink \"QuadraticBezierCurve\"}}{{/crossLink}} and {{#crossLink \"Path\"}}{{/crossLink}}.\n## Examples\n<ul>\n <li>[CubicBezierCurve example](../../examples/#curves_CubicBezierCurve)</li>\n <li>[Tweening position along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve)</li>\n <li>[Tweening color along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve_color)</li>\n <li>[Simple SplineCurve example](../../examples/#curves_SplineCurve)</li>\n <li>[Moving a PointLight along a SplineCurve](../../examples/#lights_point_world)</li>\n <li>[Path example](../../examples/#curves_Path)</li>\n </ul>",
             "submodule": "curves",
             "is_constructor": 1,
             "params": [
@@ -3486,8 +3501,8 @@
             "namespace": "",
             "file": "src/curves/path.js",
             "line": 1,
-            "description": "A **Path** is a complex curved path constructed from various {{#crossLink \"Curve\"}}{{/crossLink}} subtypes.\n\n<ul>\n<li>A Path can be constructed from these {{#crossLink \"Curve\"}}{{/crossLink}} subtypes: {{#crossLink \"SplineCurve\"}}{{/crossLink}},\n{{#crossLink \"CubicBezierCurve\"}}{{/crossLink}} and {{#crossLink \"QuadraticBezierCurve\"}}{{/crossLink}}.</li>\n<li>You can sample a {{#crossLink \"Path/point:property\"}}{{/crossLink}} and a {{#crossLink \"Curve/tangent:property\"}}{{/crossLink}}\nvector on a Path for any given value of {{#crossLink \"Path/t:property\"}}{{/crossLink}} in the range [0..1].</li>\n<li>When you set {{#crossLink \"Path/t:property\"}}{{/crossLink}} on a Path, its\n{{#crossLink \"Path/point:property\"}}{{/crossLink}} and {{#crossLink \"Curve/tangent:property\"}}{{/crossLink}} properties\nwill update accordingly.</li>\n</ul>\n\n## Examples\n\n<ul>\n<li>[CubicBezierCurve example](../../examples/#curves_CubicBezierCurve)</li>\n<li>[Tweening position along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve)</li>\n<li>[Tweening color along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve_color)</li>\n<li>[SplineCurve example](../../examples/#curves_SplineCurve)</li>\n<li>[Path example](../../examples/#curves_Path)</li>\n</ul>\n\n## Usage\n\nCreate a Path containing a {{#crossLink \"CubicBezierCurve\"}}{{/crossLink}}, a {{#crossLink \"QuadraticBezierCurve\"}}{{/crossLink}}\nand a {{#crossLink \"SplineCurve\"}}{{/crossLink}}, subscribe to updates on its {{#crossLink \"Path/point:property\"}}{{/crossLink}} and\n{{#crossLink \"Curve/tangent:property\"}}{{/crossLink}} properties, then vary its {{#crossLink \"Path/t:property\"}}{{/crossLink}}\nproperty over time:\n\n````javascript\nvar path = new XEO.Path({\n    curves: [\n        new XEO.CubicBezierCurve({\n            v0: [-10, 0, 0],\n            v1: [-5, 15, 0],\n            v2: [20, 15, 0],\n            v3: [10, 0, 0]\n        }),\n        new XEO.QuadraticBezierCurve({\n            v0: [10, 0, 0],\n            v1: [20, 15, 0],\n            v2: [10, 0, 0]\n        }),\n        new XEO.SplineCurve({\n            points: [\n                [10, 0, 0],\n                [-5, 15, 0],\n                [20, 15, 0],\n                [10, 0, 0]\n            ]\n        })\n    ]\n});\n\npath.scene.on(\"tick\", function(e) {\n\n    path.t = (e.time - e.startTime) * 0.01;\n\n    var point = path.point;\n    var tangent = path.tangent;\n\n    this.log(\"t=\" + path.t + \", point=\" +\n        JSON.stringify(point) + \", tangent=\" +\n            JSON.stringify(tangent));\n});\n````",
-            "submodule": "curves",
+            "description": "A **Path** is a complex curved path constructed from various {{#crossLink \"Curve\"}}{{/crossLink}} subtypes.\n\n<ul>\n<li>A Path can be constructed from these {{#crossLink \"Curve\"}}{{/crossLink}} subtypes: {{#crossLink \"SplineCurve\"}}{{/crossLink}},\n{{#crossLink \"CubicBezierCurve\"}}{{/crossLink}} and {{#crossLink \"QuadraticBezierCurve\"}}{{/crossLink}}.</li>\n<li>You can sample a {{#crossLink \"Path/point:property\"}}{{/crossLink}} and a {{#crossLink \"Curve/tangent:property\"}}{{/crossLink}}\nvector on a Path for any given value of {{#crossLink \"Path/t:property\"}}{{/crossLink}} in the range [0..1].</li>\n<li>When you set {{#crossLink \"Path/t:property\"}}{{/crossLink}} on a Path, its\n{{#crossLink \"Path/point:property\"}}{{/crossLink}} and {{#crossLink \"Curve/tangent:property\"}}{{/crossLink}} properties\nwill update accordingly.</li>\n</ul>\n\n## Examples\n\n<ul>\n<li>[CubicBezierCurve example](../../examples/#curves_CubicBezierCurve)</li>\n<li>[Tweening position along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve)</li>\n<li>[Tweening color along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve_color)</li>\n<li>[SplineCurve example](../../examples/#curves_SplineCurve)</li>\n<li>[Path example](../../examples/#curves_Path)</li>\n</ul>\n\n## Usage\n\n#### Animation along a SplineCurve\n\nCreate a Path containing a {{#crossLink \"CubicBezierCurve\"}}{{/crossLink}}, a {{#crossLink \"QuadraticBezierCurve\"}}{{/crossLink}}\nand a {{#crossLink \"SplineCurve\"}}{{/crossLink}}, subscribe to updates on its {{#crossLink \"Path/point:property\"}}{{/crossLink}} and\n{{#crossLink \"Curve/tangent:property\"}}{{/crossLink}} properties, then vary its {{#crossLink \"Path/t:property\"}}{{/crossLink}}\nproperty over time:\n\n````javascript\nvar path = new XEO.Path({\n    curves: [\n        new XEO.CubicBezierCurve({\n            v0: [-10, 0, 0],\n            v1: [-5, 15, 0],\n            v2: [20, 15, 0],\n            v3: [10, 0, 0]\n        }),\n        new XEO.QuadraticBezierCurve({\n            v0: [10, 0, 0],\n            v1: [20, 15, 0],\n            v2: [10, 0, 0]\n        }),\n        new XEO.SplineCurve({\n            points: [\n                [10, 0, 0],\n                [-5, 15, 0],\n                [20, 15, 0],\n                [10, 0, 0]\n            ]\n        })\n    ]\n});\n\npath.on(\"point\", function(point) {\n    this.log(\"path.point=\" + JSON.stringify(point));\n});\n\npath.on(\"tangent\", function(tangent) {\n    this.log(\"path.tangent=\" + JSON.stringify(tangent));\n});\n\npath.on(\"t\", function(t) {\n    this.log(\"path.t=\" + t);\n});\n\npath.scene.on(\"tick\", function(e) {\n    path.t = (e.time - e.startTime) * 0.01;\n});\n````\n\n#### Randomly sampling points\n\nUse Path's {{#crossLink \"Path/getPoint:method\"}}{{/crossLink}} and\n{{#crossLink \"path/getTangent:method\"}}{{/crossLink}} methods to sample the point and vector\nat a given **t**:\n\n````javascript\npath.scene.on(\"tick\", function(e) {\n\n    var t = (e.time - e.startTime) * 0.01;\n\n    var point = path.getPoint(t);\n    var tangent = path.getTangent(t);\n\n    this.log(\"t=\" + t + \", point=\" + JSON.stringify(point) + \", tangent=\" + JSON.stringify(tangent));\n});\n````\n\n#### Sampling multiple points\n\nUse Path's {{#crossLink \"path/getPoints:method\"}}{{/crossLink}} method to sample a list of equidistant points\nalong it. In the snippet below, we'll build a {{#crossLink \"Geometry\"}}{{/crossLink}} that renders a line along the\npath.  Note that we need to flatten the points array for consumption by the {{#crossLink \"Geometry\"}}{{/crossLink}}.\n\n````javascript\nvar geometry = new XEO.Geometry({\n    positions: XEO.math.flatten(path.getPoints(50))\n});\n````",
+            "submodule": "paths",
             "is_constructor": 1,
             "params": [
                 {
@@ -3515,9 +3530,9 @@
                             "optional": true
                         },
                         {
-                            "name": "curves",
+                            "name": "paths",
                             "description": "IDs or instances of }{{/crossLink}} subtypes to add to this Path.",
-                            "type": "#crossLink \"Curve\"",
+                            "type": "#crossLink \"path\"",
                             "optional": true,
                             "optdefault": "[]"
                         },
@@ -3530,7 +3545,7 @@
                     ]
                 }
             ],
-            "extends": "Curve"
+            "extends": "path"
         },
         "QuadraticBezierCurve": {
             "name": "QuadraticBezierCurve",
@@ -3544,7 +3559,7 @@
             "namespace": "",
             "file": "src/curves/quadraticBezierCurve.js",
             "line": 1,
-            "description": "A **QuadraticBezierCurve** is a {{#crossLink \"Curve\"}}{{/crossLink}} along which a 3D position can be animated.\n\n<ul>\n   <li>As shown in the diagram below, a QuadraticBezierCurve is defined by three control points.</li>\n<li>You can sample a {{#crossLink \"QuadraticBezierCurve/point:property\"}}{{/crossLink}} and a {{#crossLink \"Curve/tangent:property\"}}{{/crossLink}}\nvector on a QuadraticBezierCurve for any given value of {{#crossLink \"QuadraticBezierCurve/t:property\"}}{{/crossLink}} in the range [0..1].</li>\n<li>When you set {{#crossLink \"QuadraticBezierCurve/t:property\"}}{{/crossLink}} on a QuadraticBezierCurve, its\n{{#crossLink \"QuadraticBezierCurve/point:property\"}}{{/crossLink}} and {{#crossLink \"Curve/tangent:property\"}}{{/crossLink}} properties\nwill update accordingly.</li>\n   <li>To build a complex path, you can combine an unlimited combination of QuadraticBezierCurves,\n{{#crossLink \"CubicBezierCurve\"}}CubicBezierCurves{{/crossLink}} and {{#crossLink \"SplineCurve\"}}SplineCurves{{/crossLink}}\ninto a {{#crossLink \"Path\"}}{{/crossLink}}.</li>\n</ul>\n\n<img style=\"border:1px solid;\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/B%C3%A9zier_2_big.gif/240px-B%C3%A9zier_2_big.gif\"/><br>\n*[Quadratic Bezier Curve from WikiPedia](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)*\n\n## Examples\n\n<ul>\n<li>[Tweening position along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve)</li>\n<li>[Tweening color along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve_color)</li>\n<li>[Path example](../../examples/#curves_Path)</li>\n</ul>\n\n## Usage 1\n\nCreate a QuadraticBezierCurve, subscribe to updates on its {{#crossLink \"QuadraticBezierCurve/point:property\"}}{{/crossLink}} and\n{{#crossLink \"Curve/tangent:property\"}}{{/crossLink}} properties, then vary its {{#crossLink \"QuadraticBezierCurve/t:property\"}}{{/crossLink}}\nproperty over time:\n\n````javascript\nvar curve = new XEO.QuadraticBezierCurve({\n    v0: [10, 0, 0],\n    v1: [20, 15, 0],\n    v2: [10, 0, 0]\n});\n\ncurve.scene.on(\"tick\", function(e) {\n\n    curve.t = (e.time - e.startTime) * 0.01;\n\n    var point = curve.point;\n    var tangent = curve.tangent;\n\n    this.log(\"t=\" + curve.t + \", point=\" +\n           JSON.stringify(point) + \", tangent=\" +\n               JSON.stringify(tangent));\n});\n````\n\n## Usage 2\n\nIn the next example, we'll create an {{#crossLink \"Entity\"}}{{/crossLink}} with a\n{{#crossLink \"PhongMaterial\"}}{{/crossLink}} whose diffuse color is bound to the\ninterpolated {{#crossLink \"QuadraticBezierCurve/point:property\"}}{{/crossLink}} property on the QuadraticBezierCurve.\n\nThen we'll animate the QuadraticBezierCurve's {{#crossLink \"QuadraticBezierCurve/t:property\"}}{{/crossLink}} property\nto update the diffuse color.\n\n````javascript\nvar curve = new XEO.QuadraticBezierCurve({\n    v0: [1, 0, 0],\n    v1: [0, 1, 0],\n    v2: [0, 0, 1]\n});\n\n// Create a Entity with a PhongMaterial\nvar material = new XEO.PhongMaterial({\n    diffuse: [0, 0, 0]\n});\n\nvar entity = new XEO.Entity({\n    material: material\n});\n\n// Bind the PhongMaterial diffuse color\n// to the QuadraticBezierCurve\ncurve.on(\"t\", function() {\n    material.diffuse = curve.point;\n});\n\n// Animate the QuadraticBezierCurve, which in turn\n// updates the PhongMaterial diffuse color\nvar tick = entity.scene.on(\"tick\", function (e) {\n    curve.t = (e.time - e.startTime) * 0.00005;\n});\n````\n\n## Usage 3\n\nIn the previous two examples, we relied on our QuadraticBezierCurves to remember their progress in their\n{{#crossLink \"QuadraticBezierCurve/t:property\"}}{{/crossLink}} and {{#crossLink \"QuadraticBezierCurve/point:property\"}}{{/crossLink}}\nproperties, which is useful when we want to wire components together into reactive event-driven networks, as we did with the\nPhongMaterial in the previous example.\n\nAs an alternative, we can instead sample the point and vector at a given *t* via calls\nto the QuadraticBezierCurve's {{#crossLink \"QuadraticBezierCurve/getPoint:method\"}}{{/crossLink}} and\n{{#crossLink \"Curve/getTangent:method\"}}{{/crossLink}} methods:\n\n````javascript\nvar curve = new XEO.QuadraticBezierCurve({\n    v0: [-10, 0, 0],\n    v1: [20, 15, 0],\n    v2: [10, 0, 0]\n});\n\ncurve.scene.on(\"tick\", function(e) {\n\n    var t = (e.time - e.startTime) * 0.01;\n\n    var point = curve.getPoint(t);\n    var tangent = curve.getTangent(t);\n\n    this.log(\"t=\" + t + \", point=\" + JSON.stringify(point) + \", tangent=\" + JSON.stringify(tangent));\n});\n````\n\n## Usage 4\n\nWhen we want to build a {{#crossLink \"Geometry\"}}{{/crossLink}} from a QuadraticBezierCurve, we can sample points\nalong the curve using its {{#crossLink \"Curve/getPoints:method\"}}{{/crossLink}} method, as shown below.\n\nNote that we need to flatten the points array for consumption by the {{#crossLink \"Geometry\"}}{{/crossLink}}.\n\n````javascript\nvar curve = new XEO.QuadraticBezierCurve({\n    v0: [-10, 0, 0],\n    v1: [20, 15, 0],\n    v2: [10, 0, 0]\n});\n\n// Geometry which creates a line-strip through fifty\n// points sampled at equidistant positions on our QuadraticBezierCurve\n\nvar geometry = new XEO.Geometry({\n    positions: XEO.math.flatten(curve.getPoints(50))\n});\n````",
+            "description": "A **QuadraticBezierCurve** is a {{#crossLink \"Curve\"}}{{/crossLink}} along which a 3D position can be animated.\n\n<ul>\n   <li>As shown in the diagram below, a QuadraticBezierCurve is defined by three control points.</li>\n<li>You can sample a {{#crossLink \"QuadraticBezierCurve/point:property\"}}{{/crossLink}} and a {{#crossLink \"Curve/tangent:property\"}}{{/crossLink}}\nvector on a QuadraticBezierCurve for any given value of {{#crossLink \"QuadraticBezierCurve/t:property\"}}{{/crossLink}} in the range [0..1].</li>\n<li>When you set {{#crossLink \"QuadraticBezierCurve/t:property\"}}{{/crossLink}} on a QuadraticBezierCurve, its\n{{#crossLink \"QuadraticBezierCurve/point:property\"}}{{/crossLink}} and {{#crossLink \"Curve/tangent:property\"}}{{/crossLink}} properties\nwill update accordingly.</li>\n   <li>To build a complex path, you can combine an unlimited combination of QuadraticBezierCurves,\n{{#crossLink \"CubicBezierCurve\"}}CubicBezierCurves{{/crossLink}} and {{#crossLink \"SplineCurve\"}}SplineCurves{{/crossLink}}\ninto a {{#crossLink \"Path\"}}{{/crossLink}}.</li>\n</ul>\n\n<img style=\"border:1px solid;\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/B%C3%A9zier_2_big.gif/240px-B%C3%A9zier_2_big.gif\"/><br>\n*[Quadratic Bezier Curve from WikiPedia](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)*\n\n## Examples\n\n<ul>\n<li>[Tweening position along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve)</li>\n<li>[Tweening color along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve_color)</li>\n<li>[Path example](../../examples/#curves_Path)</li>\n</ul>\n\n## Usage\n\n#### Animation along a QuadraticBezierCurve\n\nLet's create a QuadraticBezierCurve, subscribe to updates on its {{#crossLink \"QuadraticBezierCurve/point:property\"}}{{/crossLink}},\n{{#crossLink \"Curve/tangent:property\"}}{{/crossLink}} and {{#crossLink \"Curve/t:property\"}}{{/crossLink}} properties,\nthen vary its {{#crossLink \"QuadraticBezierCurve/t:property\"}}{{/crossLink}}\nproperty over time:\n\n````javascript\nvar curve = new XEO.QuadraticBezierCurve({\n    v0: [10, 0, 0],\n    v1: [20, 15, 0],\n    v2: [10, 0, 0]\n});\n\ncurve.on(\"point\", function(point) {\n    this.log(\"curve.point=\" + JSON.stringify(point));\n});\n\ncurve.on(\"tangent\", function(tangent) {\n    this.log(\"curve.tangent=\" + JSON.stringify(tangent));\n});\n\ncurve.on(\"t\", function(t) {\n    this.log(\"curve.t=\" + t);\n});\n\ncurve.scene.on(\"tick\", function(e) {\n    curve.t = (e.time - e.startTime) * 0.01;\n});\n````\n\n#### Randomly sampling points\n\nUse QuadraticBezierCurve's {{#crossLink \"QuadraticBezierCurve/getPoint:method\"}}{{/crossLink}} and\n{{#crossLink \"Curve/getTangent:method\"}}{{/crossLink}} methods to sample the point and vector\nat a given **t**:\n\n````javascript\ncurve.scene.on(\"tick\", function(e) {\n\n    var t = (e.time - e.startTime) * 0.01;\n\n    var point = curve.getPoint(t);\n    var tangent = curve.getTangent(t);\n\n    this.log(\"t=\" + t + \", point=\" + JSON.stringify(point) + \", tangent=\" + JSON.stringify(tangent));\n});\n````\n\n#### Sampling multiple points\n\nUse QuadraticBezierCurve's {{#crossLink \"Curve/getPoints:method\"}}{{/crossLink}} method to sample a list of equidistant points\nalong it. In the snippet below, we'll build a {{#crossLink \"Geometry\"}}{{/crossLink}} that renders a line along the\ncurve.  Note that we need to flatten the points array for consumption by the {{#crossLink \"Geometry\"}}{{/crossLink}}.\n\n````javascript\nvar geometry = new XEO.Geometry({\n    positions: XEO.math.flatten(curve.getPoints(50))\n});\n````",
             "submodule": "curves",
             "is_constructor": 1,
             "params": [
@@ -3613,7 +3628,7 @@
             "namespace": "",
             "file": "src/curves/splineCurve.js",
             "line": 1,
-            "description": "A **SplineCurve** is a {{#crossLink \"Curve\"}}{{/crossLink}} along which a 3D position can be animated.\n\n<ul>\n   <li>As shown in the diagram below, a SplineCurve is defined by three or more control points.</li>\n   <li>You can sample a {{#crossLink \"SplineCurve/point:property\"}}{{/crossLink}} and a {{#crossLink \"Curve/tangent:property\"}}{{/crossLink}}\nvector on a SplineCurve for any given value of {{#crossLink \"SplineCurve/t:property\"}}{{/crossLink}} in the range [0..1].</li>\n   <li>When you set {{#crossLink \"SplineCurve/t:property\"}}{{/crossLink}} on a SplineCurve, its {{#crossLink \"SplineCurve/point:property\"}}{{/crossLink}} and {{#crossLink \"Curve/tangent:property\"}}{{/crossLink}} properties will update accordingly.</li>\n   <li>To build a complex path, you can combine an unlimited combination of SplineCurves,\n{{#crossLink \"CubicBezierCurve\"}}CubicBezierCurves{{/crossLink}} and {{#crossLink \"QuadraticBezierCurve\"}}QuadraticBezierCurves{{/crossLink}}\ninto a {{#crossLink \"Path\"}}{{/crossLink}}.</li>\n</ul>\n\n<img style=\"border:1px solid; background: white;\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Quadratic_spline_six_segments.svg/200px-Quadratic_spline_six_segments.svg.png\"/><br>\n*<a href=\"https://en.wikipedia.org/wiki/Spline_(mathematics)\">Spline Curve from Wikipedia</a>*\n\n## Examples\n\n<ul>\n<li>[SplineCurve example](../../examples/#curves_SplineCurve)</li>\n<li>[Path example](../../examples/#curves_Path)</li>\n</ul>\n\n## Usage 1\n\nCreate a SplineCurve, subscribe to updates on its {{#crossLink \"SplineCurve/point:property\"}}{{/crossLink}} and\n{{#crossLink \"Curve/tangent:property\"}}{{/crossLink}} properties, then vary its {{#crossLink \"SplineCurve/t:property\"}}{{/crossLink}}\nproperty over time:\n\n````javascript\nvar curve = new XEO.SplineCurve({\n    points: [\n        [-10, 0, 0],\n        [-5, 15, 0],\n        [20, 15, 0],\n        [10, 0, 0]\n    ]\n});\n\ncurve.scene.on(\"tick\", function(e) {\n\n    curve.t = (e.time - e.startTime) * 0.01;\n\n    var point = curve.point;\n    var tangent = curve.tangent;\n\n    this.log(\"t=\" + curve.t + \", point=\" + JSON.stringify(point) + \", tangent=\" + JSON.stringify(tangent));\n});\n````\n\n## Usage 2\n\nAlternatively, we can randomly sample the point and vector at a given **t** with calls\nto the SplineCurve's {{#crossLink \"SplineCurve/getPoint:method\"}}{{/crossLink}} and\n{{#crossLink \"Curve/getTangent:method\"}}{{/crossLink}} methods:\n\n````javascript\nvar curve = new XEO.SplineCurve({\n    points: [\n        [-10, 0, 0],\n        [-5, 15, 0],\n        [20, 15, 0],\n        [10, 0, 0]\n    ]\n});\n\ncurve.scene.on(\"tick\", function(e) {\n\n    var t = (e.time - e.startTime) * 0.01;\n\n    var point = curve.getPoint(t);\n    var tangent = curve.getTangent(t);\n\n    this.log(\"t=\" + t + \", point=\" + JSON.stringify(point) + \", tangent=\" + JSON.stringify(tangent));\n});\n````",
+            "description": "A **SplineCurve** is a {{#crossLink \"Curve\"}}{{/crossLink}} along which a 3D position can be animated.\n\n<ul>\n   <li>As shown in the diagram below, a SplineCurve is defined by three or more control points.</li>\n   <li>You can sample a {{#crossLink \"SplineCurve/point:property\"}}{{/crossLink}} and a {{#crossLink \"Curve/tangent:property\"}}{{/crossLink}}\nvector on a SplineCurve for any given value of {{#crossLink \"SplineCurve/t:property\"}}{{/crossLink}} in the range [0..1].</li>\n   <li>When you set {{#crossLink \"SplineCurve/t:property\"}}{{/crossLink}} on a SplineCurve, its {{#crossLink \"SplineCurve/point:property\"}}{{/crossLink}} and {{#crossLink \"Curve/tangent:property\"}}{{/crossLink}} properties will update accordingly.</li>\n   <li>To build a complex path, you can combine an unlimited combination of SplineCurves,\n{{#crossLink \"CubicBezierCurve\"}}CubicBezierCurves{{/crossLink}} and {{#crossLink \"QuadraticBezierCurve\"}}QuadraticBezierCurves{{/crossLink}}\ninto a {{#crossLink \"Path\"}}{{/crossLink}}.</li>\n</ul>\n\n<img style=\"border:1px solid; background: white;\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Quadratic_spline_six_segments.svg/200px-Quadratic_spline_six_segments.svg.png\"/><br>\n*<a href=\"https://en.wikipedia.org/wiki/Spline_(mathematics)\">Spline Curve from Wikipedia</a>*\n\n## Examples\n\n<ul>\n<li>[Simple SplineCurve example](../../examples/#curves_SplineCurve)</li>\n<li>[Moving a PointLight along a SplineCurve](../../examples/#lights_point_world)</li>\n<li>[Path example](../../examples/#curves_Path)</li>\n</ul>\n\n## Usage\n\n#### Animation along a SplineCurve\n\nLet's create a SplineCurve, subscribe to updates on its {{#crossLink \"SplineCurve/point:property\"}}{{/crossLink}},\n{{#crossLink \"Curve/tangent:property\"}}{{/crossLink}} and {{#crossLink \"Curve/t:property\"}}{{/crossLink}} properties,\nthen vary its {{#crossLink \"SplineCurve/t:property\"}}{{/crossLink}}\nproperty over time:\n\n````javascript\nvar curve = new XEO.SplineCurve({\n    points: [\n        [-10, 0, 0],\n        [-5, 15, 0],\n        [20, 15, 0],\n        [10, 0, 0]\n    ]\n});\n\ncurve.on(\"point\", function(point) {\n    this.log(\"curve.point=\" + JSON.stringify(point));\n});\n\ncurve.on(\"tangent\", function(tangent) {\n    this.log(\"curve.tangent=\" + JSON.stringify(tangent));\n});\n\ncurve.on(\"t\", function(t) {\n    this.log(\"curve.t=\" + t);\n});\n\ncurve.scene.on(\"tick\", function(e) {\n    curve.t = (e.time - e.startTime) * 0.01;\n});\n````\n\n#### Randomly sampling points\n\nUse SplineCurve's {{#crossLink \"SplineCurve/getPoint:method\"}}{{/crossLink}} and\n{{#crossLink \"Curve/getTangent:method\"}}{{/crossLink}} methods to sample the point and vector\nat a given **t**:\n\n````javascript\ncurve.scene.on(\"tick\", function(e) {\n\n    var t = (e.time - e.startTime) * 0.01;\n\n    var point = curve.getPoint(t);\n    var tangent = curve.getTangent(t);\n\n    this.log(\"t=\" + t + \", point=\" + JSON.stringify(point) + \", tangent=\" + JSON.stringify(tangent));\n});\n````\n\n#### Sampling multiple points\n\nUse SplineCurve's {{#crossLink \"Curve/getPoints:method\"}}{{/crossLink}} method to sample a list of equidistant points\nalong it. In the snippet below, we'll build a {{#crossLink \"Geometry\"}}{{/crossLink}} that renders a line along the\ncurve.  Note that we need to flatten the points array for consumption by the {{#crossLink \"Geometry\"}}{{/crossLink}}.\n\n````javascript\nvar geometry = new XEO.Geometry({\n    positions: XEO.math.flatten(curve.getPoints(50))\n});\n````",
             "submodule": "curves",
             "is_constructor": 1,
             "params": [
@@ -10493,7 +10508,7 @@
         },
         {
             "file": "src/curves/cubicBezierCurve.js",
-            "line": 74,
+            "line": 111,
             "description": "JavaScript class name for this Component.",
             "itemtype": "property",
             "name": "type",
@@ -10505,7 +10520,7 @@
         },
         {
             "file": "src/curves/cubicBezierCurve.js",
-            "line": 97,
+            "line": 134,
             "description": "Starting point on this CubicBezierCurve.\n\nFires a {{#crossLink \"CubicBezierCurve/v0:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "v0",
@@ -10517,7 +10532,7 @@
         },
         {
             "file": "src/curves/cubicBezierCurve.js",
-            "line": 110,
+            "line": 147,
             "description": "Fired whenever this CubicBezierCurve's\n{{#crossLink \"CubicBezierCurve/v0:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "v0",
@@ -10533,7 +10548,7 @@
         },
         {
             "file": "src/curves/cubicBezierCurve.js",
-            "line": 124,
+            "line": 161,
             "description": "First control point on this CubicBezierCurve.\n\nFires a {{#crossLink \"CubicBezierCurve/v1:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "v1",
@@ -10545,7 +10560,7 @@
         },
         {
             "file": "src/curves/cubicBezierCurve.js",
-            "line": 137,
+            "line": 174,
             "description": "Fired whenever this CubicBezierCurve's\n{{#crossLink \"CubicBezierCurve/v1:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "v1",
@@ -10561,7 +10576,7 @@
         },
         {
             "file": "src/curves/cubicBezierCurve.js",
-            "line": 151,
+            "line": 188,
             "description": "Second control point on this CubicBezierCurve.\n\nFires a {{#crossLink \"CubicBezierCurve/v2:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "v2",
@@ -10573,7 +10588,7 @@
         },
         {
             "file": "src/curves/cubicBezierCurve.js",
-            "line": 164,
+            "line": 201,
             "description": "Fired whenever this CubicBezierCurve's\n{{#crossLink \"CubicBezierCurve/v2:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "v2",
@@ -10589,7 +10604,7 @@
         },
         {
             "file": "src/curves/cubicBezierCurve.js",
-            "line": 178,
+            "line": 215,
             "description": "End point on this CubicBezierCurve.\n\nFires a {{#crossLink \"CubicBezierCurve/v3:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "v3",
@@ -10601,7 +10616,7 @@
         },
         {
             "file": "src/curves/cubicBezierCurve.js",
-            "line": 191,
+            "line": 228,
             "description": "Fired whenever this CubicBezierCurve's\n{{#crossLink \"CubicBezierCurve/v3:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "v3",
@@ -10617,7 +10632,7 @@
         },
         {
             "file": "src/curves/cubicBezierCurve.js",
-            "line": 205,
+            "line": 242,
             "description": "Current position of progress along this CubicBezierCurve.\n\nAutomatically clamps to range [0..1].\n\nFires a {{#crossLink \"CubicBezierCurve/t:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "t",
@@ -10629,7 +10644,7 @@
         },
         {
             "file": "src/curves/cubicBezierCurve.js",
-            "line": 223,
+            "line": 260,
             "description": "Fired whenever this CubicBezierCurve's\n{{#crossLink \"CubicBezierCurve/t:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "t",
@@ -10645,7 +10660,7 @@
         },
         {
             "file": "src/curves/cubicBezierCurve.js",
-            "line": 237,
+            "line": 274,
             "description": "Point on this CubicBezierCurve at position {{#crossLink \"CubicBezierCurve/t:property\"}}{{/crossLink}}.",
             "itemtype": "property",
             "name": "point",
@@ -10656,8 +10671,10 @@
         },
         {
             "file": "src/curves/cubicBezierCurve.js",
-            "line": 251,
+            "line": 288,
             "description": "Returns point on this CubicBezierCurve at the given position.",
+            "itemtype": "method",
+            "name": "getPoint",
             "params": [
                 {
                     "name": "t",
@@ -10675,7 +10692,7 @@
         },
         {
             "file": "src/curves/curve.js",
-            "line": 33,
+            "line": 34,
             "description": "JavaScript class name for this Component.",
             "itemtype": "property",
             "name": "type",
@@ -10687,7 +10704,7 @@
         },
         {
             "file": "src/curves/curve.js",
-            "line": 49,
+            "line": 50,
             "description": "Progress along this Curve.\n\nAutomatically clamps to range [0..1].\n\nFires a {{#crossLink \"Curve/t:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "t",
@@ -10699,7 +10716,7 @@
         },
         {
             "file": "src/curves/curve.js",
-            "line": 68,
+            "line": 69,
             "description": "Fired whenever this Curve's\n{{#crossLink \"Curve/t:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "t",
@@ -10715,7 +10732,7 @@
         },
         {
             "file": "src/curves/curve.js",
-            "line": 83,
+            "line": 84,
             "description": "Tangent on this Curve at position {{#crossLink \"Curve/t:property\"}}{{/crossLink}}.",
             "itemtype": "property",
             "name": "tangent",
@@ -10726,7 +10743,7 @@
         },
         {
             "file": "src/curves/curve.js",
-            "line": 97,
+            "line": 98,
             "description": "Length of this Curve.",
             "itemtype": "property",
             "name": "length",
@@ -10737,7 +10754,7 @@
         },
         {
             "file": "src/curves/curve.js",
-            "line": 111,
+            "line": 112,
             "description": "Returns a normalized tangent vector on this Curve at the given position.",
             "itemtype": "method",
             "name": "getTangent",
@@ -10758,7 +10775,7 @@
         },
         {
             "file": "src/curves/curve.js",
-            "line": 153,
+            "line": 154,
             "description": "Samples points on this Curve, at the given number of equally-spaced divisions.",
             "itemtype": "method",
             "name": "getPoints",
@@ -10779,7 +10796,7 @@
         },
         {
             "file": "src/curves/path.js",
-            "line": 86,
+            "line": 123,
             "description": "JavaScript class name for this Component.",
             "itemtype": "property",
             "name": "type",
@@ -10787,11 +10804,11 @@
             "final": 1,
             "class": "Path",
             "module": "XEO",
-            "submodule": "curves"
+            "submodule": "paths"
         },
         {
             "file": "src/curves/path.js",
-            "line": 120,
+            "line": 157,
             "description": "Adds a {{#crossLink \"Curve\"}}{{/crossLink}} to this Path.\n\nFires a {{#crossLink \"Path/curves:event\"}}{{/crossLink}} event on change.",
             "params": [
                 {
@@ -10802,11 +10819,11 @@
             ],
             "class": "Path",
             "module": "XEO",
-            "submodule": "curves"
+            "submodule": "paths"
         },
         {
             "file": "src/curves/path.js",
-            "line": 133,
+            "line": 170,
             "description": "Fired whenever this Path's\n{{#crossLink \"Path/curves:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "curves",
@@ -10818,11 +10835,11 @@
             ],
             "class": "Path",
             "module": "XEO",
-            "submodule": "curves"
+            "submodule": "paths"
         },
         {
             "file": "src/curves/path.js",
-            "line": 144,
+            "line": 181,
             "description": "The {{#crossLink \"Curve\"}}Curves{{/crossLink}} in this Path.\n\nFires a {{#crossLink \"Path/curves:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "curves",
@@ -10830,11 +10847,11 @@
             "type": "{{Array of Spline, Path, QuadraticBezierCurve or CubicBezierCurve}}",
             "class": "Path",
             "module": "XEO",
-            "submodule": "curves"
+            "submodule": "paths"
         },
         {
             "file": "src/curves/path.js",
-            "line": 254,
+            "line": 291,
             "description": "Current point of progress along this Path.\n\nAutomatically clamps to range [0..1].\n\nFires a {{#crossLink \"Path/t:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "t",
@@ -10842,11 +10859,11 @@
             "type": "Number",
             "class": "Path",
             "module": "XEO",
-            "submodule": "curves"
+            "submodule": "paths"
         },
         {
             "file": "src/curves/path.js",
-            "line": 272,
+            "line": 309,
             "description": "Fired whenever this Path's\n{{#crossLink \"Path/t:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "t",
@@ -10858,33 +10875,33 @@
             ],
             "class": "Path",
             "module": "XEO",
-            "submodule": "curves"
+            "submodule": "paths"
         },
         {
             "file": "src/curves/path.js",
-            "line": 286,
+            "line": 323,
             "description": "Point on this Path corresponding to the current value of {{#crossLink \"Path/t:property\"}}{{/crossLink}}.",
             "itemtype": "property",
             "name": "point",
             "type": "{{Array of Number}}",
             "class": "Path",
             "module": "XEO",
-            "submodule": "curves"
+            "submodule": "paths"
         },
         {
             "file": "src/curves/path.js",
-            "line": 299,
+            "line": 336,
             "description": "Length of this Path, which is the cumulative length of all {{#crossLink \"Curve/t:property\"}}Curves{{/crossLink}}\ncurrently in {{#crossLink \"Path/curves:property\"}}{{/crossLink}}.",
             "itemtype": "property",
             "name": "length",
             "type": "{Number}",
             "class": "Path",
             "module": "XEO",
-            "submodule": "curves"
+            "submodule": "paths"
         },
         {
             "file": "src/curves/path.js",
-            "line": 315,
+            "line": 352,
             "description": "Gets a point on this Path corresponding to the given progress position.",
             "params": [
                 {
@@ -10899,11 +10916,11 @@
             },
             "class": "Path",
             "module": "XEO",
-            "submodule": "curves"
+            "submodule": "paths"
         },
         {
             "file": "src/curves/quadraticBezierCurve.js",
-            "line": 162,
+            "line": 110,
             "description": "JavaScript class name for this Component.",
             "itemtype": "property",
             "name": "type",
@@ -10915,7 +10932,7 @@
         },
         {
             "file": "src/curves/quadraticBezierCurve.js",
-            "line": 184,
+            "line": 132,
             "description": "Starting point on this QuadraticBezierCurve.\n\nFires a {{#crossLink \"QuadraticBezierCurve/v0:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "v0",
@@ -10927,7 +10944,7 @@
         },
         {
             "file": "src/curves/quadraticBezierCurve.js",
-            "line": 197,
+            "line": 145,
             "description": "Fired whenever this QuadraticBezierCurve's\n{{#crossLink \"QuadraticBezierCurve/v0:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "v0",
@@ -10943,7 +10960,7 @@
         },
         {
             "file": "src/curves/quadraticBezierCurve.js",
-            "line": 211,
+            "line": 159,
             "description": "Middle control point on this QuadraticBezierCurve.\n\nFires a {{#crossLink \"QuadraticBezierCurve/v1:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "v1",
@@ -10955,7 +10972,7 @@
         },
         {
             "file": "src/curves/quadraticBezierCurve.js",
-            "line": 224,
+            "line": 172,
             "description": "Fired whenever this QuadraticBezierCurve's\n{{#crossLink \"QuadraticBezierCurve/v1:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "v1",
@@ -10971,7 +10988,7 @@
         },
         {
             "file": "src/curves/quadraticBezierCurve.js",
-            "line": 238,
+            "line": 186,
             "description": "End point on this QuadraticBezierCurve.\n\nFires a {{#crossLink \"QuadraticBezierCurve/v2:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "v2",
@@ -10983,7 +11000,7 @@
         },
         {
             "file": "src/curves/quadraticBezierCurve.js",
-            "line": 251,
+            "line": 199,
             "description": "Fired whenever this QuadraticBezierCurve's\n{{#crossLink \"QuadraticBezierCurve/v2:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "v2",
@@ -10999,7 +11016,7 @@
         },
         {
             "file": "src/curves/quadraticBezierCurve.js",
-            "line": 265,
+            "line": 213,
             "description": "Progress along this QuadraticBezierCurve.\n\nAutomatically clamps to range [0..1].\n\nFires a {{#crossLink \"QuadraticBezierCurve/t:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "t",
@@ -11011,7 +11028,7 @@
         },
         {
             "file": "src/curves/quadraticBezierCurve.js",
-            "line": 283,
+            "line": 231,
             "description": "Fired whenever this QuadraticBezierCurve's\n{{#crossLink \"QuadraticBezierCurve/t:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "t",
@@ -11027,7 +11044,7 @@
         },
         {
             "file": "src/curves/quadraticBezierCurve.js",
-            "line": 298,
+            "line": 246,
             "description": "Point on this QuadraticBezierCurve at position {{#crossLink \"QuadraticBezierCurve/t:property\"}}{{/crossLink}}.",
             "itemtype": "property",
             "name": "point",
@@ -11038,7 +11055,7 @@
         },
         {
             "file": "src/curves/quadraticBezierCurve.js",
-            "line": 312,
+            "line": 260,
             "description": "Returns point on this QuadraticBezierCurve at the given position.",
             "itemtype": "method",
             "name": "getPoint",
@@ -11059,7 +11076,7 @@
         },
         {
             "file": "src/curves/splineCurve.js",
-            "line": 96,
+            "line": 109,
             "description": "JavaScript class name for this Component.",
             "itemtype": "property",
             "name": "type",
@@ -11071,7 +11088,7 @@
         },
         {
             "file": "src/curves/splineCurve.js",
-            "line": 116,
+            "line": 129,
             "description": "Control points on this SplineCurve.\n\nFires a {{#crossLink \"SplineCurve/points:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "points",
@@ -11083,7 +11100,7 @@
         },
         {
             "file": "src/curves/splineCurve.js",
-            "line": 131,
+            "line": 144,
             "description": "Fired whenever this SplineCurve's\n{{#crossLink \"SplineCurve/points:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "points",
@@ -11099,7 +11116,7 @@
         },
         {
             "file": "src/curves/splineCurve.js",
-            "line": 145,
+            "line": 158,
             "description": "Progress along this SplineCurve.\n\nAutomatically clamps to range [0..1].\n\nFires a {{#crossLink \"SplineCurve/t:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "t",
@@ -11111,7 +11128,7 @@
         },
         {
             "file": "src/curves/splineCurve.js",
-            "line": 163,
+            "line": 176,
             "description": "Fired whenever this SplineCurve's\n{{#crossLink \"SplineCurve/t:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "t",
@@ -11127,7 +11144,7 @@
         },
         {
             "file": "src/curves/splineCurve.js",
-            "line": 177,
+            "line": 190,
             "description": "Point on this SplineCurve at position {{#crossLink \"SplineCurve/t:property\"}}{{/crossLink}}.",
             "itemtype": "property",
             "name": "point",
@@ -11138,7 +11155,7 @@
         },
         {
             "file": "src/curves/splineCurve.js",
-            "line": 191,
+            "line": 204,
             "description": "Returns point on this SplineCurve at the given position.",
             "itemtype": "method",
             "name": "getPoint",
@@ -21097,27 +21114,27 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/curves/cubicBezierCurve.js:251"
+            "line": " src/curves/cubicBezierCurve.js:288"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/curves/curve.js:111"
+            "line": " src/curves/curve.js:112"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/curves/curve.js:153"
+            "line": " src/curves/curve.js:154"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/curves/path.js:315"
+            "line": " src/curves/path.js:352"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/curves/quadraticBezierCurve.js:312"
+            "line": " src/curves/quadraticBezierCurve.js:260"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/curves/splineCurve.js:191"
+            "line": " src/curves/splineCurve.js:204"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -21808,16 +21825,12 @@
             "line": " src/canvas/canvas.js:391"
         },
         {
-            "message": "Missing item type\nReturns point on this CubicBezierCurve at the given position.",
-            "line": " src/curves/cubicBezierCurve.js:251"
-        },
-        {
             "message": "Missing item type\nAdds a {{#crossLink \"Curve\"}}{{/crossLink}} to this Path.\n\nFires a {{#crossLink \"Path/curves:event\"}}{{/crossLink}} event on change.",
-            "line": " src/curves/path.js:120"
+            "line": " src/curves/path.js:157"
         },
         {
             "message": "Missing item type\nGets a point on this Path corresponding to the given progress position.",
-            "line": " src/curves/path.js:315"
+            "line": " src/curves/path.js:352"
         },
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",

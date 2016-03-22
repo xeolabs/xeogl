@@ -139,6 +139,7 @@
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
+                                <li><a href="..//modules/paths.html">paths</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
                                 <li><a href="..//modules/reporting.html">reporting</a></li>
                                 <li><a href="..//modules/shaders.html">shaders</a></li>
@@ -201,14 +202,18 @@
  ## Examples
 
  &lt;ul&gt;
- &lt;li&gt;[SplineCurve example](../../examples/#curves_SplineCurve)&lt;/li&gt;
+ &lt;li&gt;[Simple SplineCurve example](../../examples/#curves_SplineCurve)&lt;/li&gt;
+ &lt;li&gt;[Moving a PointLight along a SplineCurve](../../examples/#lights_point_world)&lt;/li&gt;
  &lt;li&gt;[Path example](../../examples/#curves_Path)&lt;/li&gt;
  &lt;/ul&gt;
 
- ## Usage 1
+ ## Usage
 
- Create a SplineCurve, subscribe to updates on its {{#crossLink &quot;SplineCurve/point:property&quot;}}{{/crossLink}} and
- {{#crossLink &quot;Curve/tangent:property&quot;}}{{/crossLink}} properties, then vary its {{#crossLink &quot;SplineCurve/t:property&quot;}}{{/crossLink}}
+ #### Animation along a SplineCurve
+
+ Let&#x27;s create a SplineCurve, subscribe to updates on its {{#crossLink &quot;SplineCurve/point:property&quot;}}{{/crossLink}},
+ {{#crossLink &quot;Curve/tangent:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Curve/t:property&quot;}}{{/crossLink}} properties,
+ then vary its {{#crossLink &quot;SplineCurve/t:property&quot;}}{{/crossLink}}
  property over time:
 
  &#x60;&#x60;&#x60;&#x60;javascript
@@ -221,33 +226,30 @@
      ]
  });
 
+ curve.on(&quot;point&quot;, function(point) {
+     this.log(&quot;curve.point=&quot; + JSON.stringify(point));
+ });
+
+ curve.on(&quot;tangent&quot;, function(tangent) {
+     this.log(&quot;curve.tangent=&quot; + JSON.stringify(tangent));
+ });
+
+ curve.on(&quot;t&quot;, function(t) {
+     this.log(&quot;curve.t=&quot; + t);
+ });
+
  curve.scene.on(&quot;tick&quot;, function(e) {
-
      curve.t = (e.time - e.startTime) * 0.01;
-
-     var point = curve.point;
-     var tangent = curve.tangent;
-
-     this.log(&quot;t=&quot; + curve.t + &quot;, point=&quot; + JSON.stringify(point) + &quot;, tangent=&quot; + JSON.stringify(tangent));
  });
  &#x60;&#x60;&#x60;&#x60;
 
- ## Usage 2
+ #### Randomly sampling points
 
- Alternatively, we can randomly sample the point and vector at a given **t** with calls
- to the SplineCurve&#x27;s {{#crossLink &quot;SplineCurve/getPoint:method&quot;}}{{/crossLink}} and
- {{#crossLink &quot;Curve/getTangent:method&quot;}}{{/crossLink}} methods:
+ Use SplineCurve&#x27;s {{#crossLink &quot;SplineCurve/getPoint:method&quot;}}{{/crossLink}} and
+ {{#crossLink &quot;Curve/getTangent:method&quot;}}{{/crossLink}} methods to sample the point and vector
+ at a given **t**:
 
  &#x60;&#x60;&#x60;&#x60;javascript
- var curve = new XEO.SplineCurve({
-     points: [
-         [-10, 0, 0],
-         [-5, 15, 0],
-         [20, 15, 0],
-         [10, 0, 0]
-     ]
- });
-
  curve.scene.on(&quot;tick&quot;, function(e) {
 
      var t = (e.time - e.startTime) * 0.01;
@@ -256,6 +258,18 @@
      var tangent = curve.getTangent(t);
 
      this.log(&quot;t=&quot; + t + &quot;, point=&quot; + JSON.stringify(point) + &quot;, tangent=&quot; + JSON.stringify(tangent));
+ });
+ &#x60;&#x60;&#x60;&#x60;
+
+ #### Sampling multiple points
+
+ Use SplineCurve&#x27;s {{#crossLink &quot;Curve/getPoints:method&quot;}}{{/crossLink}} method to sample a list of equidistant points
+ along it. In the snippet below, we&#x27;ll build a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that renders a line along the
+ curve.  Note that we need to flatten the points array for consumption by the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}.
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ var geometry = new XEO.Geometry({
+     positions: XEO.math.flatten(curve.getPoints(50))
  });
  &#x60;&#x60;&#x60;&#x60;
 

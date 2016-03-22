@@ -139,6 +139,7 @@
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
+                                <li><a href="..//modules/paths.html">paths</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
                                 <li><a href="..//modules/reporting.html">reporting</a></li>
                                 <li><a href="..//modules/shaders.html">shaders</a></li>
@@ -211,13 +212,16 @@ into a <a href="../classes/Path.html" class="crosslink">Path</a>.</li>
 <em><a href="https://en.wikipedia.org/wiki/Spline_(mathematics)">Spline Curve from Wikipedia</a></em></p>
 <h2 id="examples">Examples</h2>
 <ul>
-<li><a href="../../examples/#curves_SplineCurve">SplineCurve example</a></li>
+<li><a href="../../examples/#curves_SplineCurve">Simple SplineCurve example</a></li>
+<li><a href="../../examples/#lights_point_world">Moving a PointLight along a SplineCurve</a></li>
 <li><a href="../../examples/#curves_Path">Path example</a></li>
 </ul>
 
-<h2 id="usage-1">Usage 1</h2>
-<p>Create a SplineCurve, subscribe to updates on its <a href="../classes/SplineCurve.html#property_point" class="crosslink">point</a> and
-<a href="../classes/Curve.html#property_tangent" class="crosslink">tangent</a> properties, then vary its <a href="../classes/SplineCurve.html#property_t" class="crosslink">t</a>
+<h2 id="usage">Usage</h2>
+<h4 id="animation-along-a-splinecurve">Animation along a SplineCurve</h4>
+<p>Let&#39;s create a SplineCurve, subscribe to updates on its <a href="../classes/SplineCurve.html#property_point" class="crosslink">point</a>,
+<a href="../classes/Curve.html#property_tangent" class="crosslink">tangent</a> and <a href="../classes/Curve.html#property_t" class="crosslink">t</a> properties,
+then vary its <a href="../classes/SplineCurve.html#property_t" class="crosslink">t</a>
 property over time:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var curve = new XEO.SplineCurve({
     points: [
@@ -228,30 +232,27 @@ property over time:</p>
     ]
 });
 
+curve.on("point", function(point) {
+    this.log("curve.point=" + JSON.stringify(point));
+});
+
+curve.on("tangent", function(tangent) {
+    this.log("curve.tangent=" + JSON.stringify(tangent));
+});
+
+curve.on("t", function(t) {
+    this.log("curve.t=" + t);
+});
+
 curve.scene.on("tick", function(e) {
-
     curve.t = (e.time - e.startTime) * 0.01;
-
-    var point = curve.point;
-    var tangent = curve.tangent;
-
-    this.log("t=" + curve.t + ", point=" + JSON.stringify(point) + ", tangent=" + JSON.stringify(tangent));
 });
 </code></pre>
-<h2 id="usage-2">Usage 2</h2>
-<p>Alternatively, we can randomly sample the point and vector at a given <strong>t</strong> with calls
-to the SplineCurve&#39;s <a href="../classes/SplineCurve.html#method_getPoint" class="crosslink">getPoint</a> and
-<a href="../classes/Curve.html#method_getTangent" class="crosslink">getTangent</a> methods:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var curve = new XEO.SplineCurve({
-    points: [
-        [-10, 0, 0],
-        [-5, 15, 0],
-        [20, 15, 0],
-        [10, 0, 0]
-    ]
-});
-
-curve.scene.on("tick", function(e) {
+<h4 id="randomly-sampling-points">Randomly sampling points</h4>
+<p>Use SplineCurve&#39;s <a href="../classes/SplineCurve.html#method_getPoint" class="crosslink">getPoint</a> and
+<a href="../classes/Curve.html#method_getTangent" class="crosslink">getTangent</a> methods to sample the point and vector
+at a given <strong>t</strong>:</p>
+<pre class="code prettyprint"><code class="lang-javascript">curve.scene.on("tick", function(e) {
 
     var t = (e.time - e.startTime) * 0.01;
 
@@ -259,6 +260,14 @@ curve.scene.on("tick", function(e) {
     var tangent = curve.getTangent(t);
 
     this.log("t=" + t + ", point=" + JSON.stringify(point) + ", tangent=" + JSON.stringify(tangent));
+});
+</code></pre>
+<h4 id="sampling-multiple-points">Sampling multiple points</h4>
+<p>Use SplineCurve&#39;s <a href="../classes/Curve.html#method_getPoints" class="crosslink">getPoints</a> method to sample a list of equidistant points
+along it. In the snippet below, we&#39;ll build a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that renders a line along the
+curve.  Note that we need to flatten the points array for consumption by the <a href="../classes/Geometry.html" class="crosslink">Geometry</a>.</p>
+<pre class="code prettyprint"><code class="lang-javascript">var geometry = new XEO.Geometry({
+    positions: XEO.math.flatten(curve.getPoints(50))
 });
 </code></pre>
 
@@ -866,7 +875,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_curves_splineCurve.js.html#l191"><code>src&#x2F;curves&#x2F;splineCurve.js:191</code></a>
+        <a href="../files/src_curves_splineCurve.js.html#l204"><code>src&#x2F;curves&#x2F;splineCurve.js:204</code></a>
         </p>
 
 
@@ -933,7 +942,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Curve.html#method_getPoints">Curve</a>:
-        <a href="../files/src_curves_curve.js.html#l153"><code>src&#x2F;curves&#x2F;curve.js:153</code></a>
+        <a href="../files/src_curves_curve.js.html#l154"><code>src&#x2F;curves&#x2F;curve.js:154</code></a>
         </p>
 
 
@@ -1000,7 +1009,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Curve.html#method_getTangent">Curve</a>:
-        <a href="../files/src_curves_curve.js.html#l111"><code>src&#x2F;curves&#x2F;curve.js:111</code></a>
+        <a href="../files/src_curves_curve.js.html#l112"><code>src&#x2F;curves&#x2F;curve.js:112</code></a>
         </p>
 
 
@@ -1596,7 +1605,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Curve.html#property_length">Curve</a>:
-                            <a href="../files/src_curves_curve.js.html#l97"><code>src&#x2F;curves&#x2F;curve.js:97</code></a>
+                            <a href="../files/src_curves_curve.js.html#l98"><code>src&#x2F;curves&#x2F;curve.js:98</code></a>
                             </p>
                     
                     
@@ -1646,7 +1655,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_splineCurve.js.html#l177"><code>src&#x2F;curves&#x2F;splineCurve.js:177</code></a>
+                            <a href="../files/src_curves_splineCurve.js.html#l190"><code>src&#x2F;curves&#x2F;splineCurve.js:190</code></a>
                             </p>
                     
                     
@@ -1671,7 +1680,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_splineCurve.js.html#l116"><code>src&#x2F;curves&#x2F;splineCurve.js:116</code></a>
+                            <a href="../files/src_curves_splineCurve.js.html#l129"><code>src&#x2F;curves&#x2F;splineCurve.js:129</code></a>
                             </p>
                     
                     
@@ -1788,7 +1797,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Curve
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_curves_splineCurve.js.html#l145"><code>src&#x2F;curves&#x2F;splineCurve.js:145</code></a>
+                            <a href="../files/src_curves_splineCurve.js.html#l158"><code>src&#x2F;curves&#x2F;splineCurve.js:158</code></a>
                             </p>
                     
                     
@@ -1816,7 +1825,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Curve.html#property_tangent">Curve</a>:
-                            <a href="../files/src_curves_curve.js.html#l83"><code>src&#x2F;curves&#x2F;curve.js:83</code></a>
+                            <a href="../files/src_curves_curve.js.html#l84"><code>src&#x2F;curves&#x2F;curve.js:84</code></a>
                             </p>
                     
                     
@@ -1845,7 +1854,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_curves_splineCurve.js.html#l96"><code>src&#x2F;curves&#x2F;splineCurve.js:96</code></a>
+                            <a href="../files/src_curves_splineCurve.js.html#l109"><code>src&#x2F;curves&#x2F;splineCurve.js:109</code></a>
                             </p>
                     
                     
@@ -1901,7 +1910,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_splineCurve.js.html#l131"><code>src&#x2F;curves&#x2F;splineCurve.js:131</code></a>
+                            <a href="../files/src_curves_splineCurve.js.html#l144"><code>src&#x2F;curves&#x2F;splineCurve.js:144</code></a>
                             </p>
                     
                     
@@ -1947,7 +1956,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Curve
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_curves_splineCurve.js.html#l163"><code>src&#x2F;curves&#x2F;splineCurve.js:163</code></a>
+                            <a href="../files/src_curves_splineCurve.js.html#l176"><code>src&#x2F;curves&#x2F;splineCurve.js:176</code></a>
                             </p>
                     
                     

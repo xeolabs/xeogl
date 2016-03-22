@@ -139,6 +139,7 @@
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
+                                <li><a href="..//modules/paths.html">paths</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
                                 <li><a href="..//modules/reporting.html">reporting</a></li>
                                 <li><a href="..//modules/shaders.html">shaders</a></li>
@@ -182,14 +183,14 @@
 <div class="box meta">
 
         <div class="extends">
-            Extends <a href="../classes/Curve.html" class="crosslink">Curve</a>
+            Extends <a href="../classes/Path.html" class="crosslink">Path</a>
         </div>
 
         <div class="foundat">
             Defined in: <a href="../files/src_curves_path.js.html#l1"><code>src&#x2F;curves&#x2F;path.js:1</code></a>
         </div>
 
-            Module: <a href="../modules/curves.html">curves</a><br>
+            Module: <a href="../modules/paths.html">paths</a><br>
             Parent Module: <a href="../modules/XEO.html">XEO</a>
 
 </div>
@@ -217,6 +218,7 @@ will update accordingly.</li>
 </ul>
 
 <h2 id="usage">Usage</h2>
+<h4 id="animation-along-a-splinecurve">Animation along a SplineCurve</h4>
 <p>Create a Path containing a <a href="../classes/CubicBezierCurve.html" class="crosslink">CubicBezierCurve</a>, a <a href="../classes/QuadraticBezierCurve.html" class="crosslink">QuadraticBezierCurve</a>
 and a <a href="../classes/SplineCurve.html" class="crosslink">SplineCurve</a>, subscribe to updates on its <a href="../classes/Path.html#property_point" class="crosslink">point</a> and
 <a href="../classes/Curve.html#property_tangent" class="crosslink">tangent</a> properties, then vary its <a href="../classes/Path.html#property_t" class="crosslink">t</a>
@@ -245,16 +247,42 @@ property over time:</p>
     ]
 });
 
+path.on("point", function(point) {
+    this.log("path.point=" + JSON.stringify(point));
+});
+
+path.on("tangent", function(tangent) {
+    this.log("path.tangent=" + JSON.stringify(tangent));
+});
+
+path.on("t", function(t) {
+    this.log("path.t=" + t);
+});
+
 path.scene.on("tick", function(e) {
-
     path.t = (e.time - e.startTime) * 0.01;
+});
+</code></pre>
+<h4 id="randomly-sampling-points">Randomly sampling points</h4>
+<p>Use Path&#39;s Path/getPoint:method and
+Path/getTangent:method methods to sample the point and vector
+at a given <strong>t</strong>:</p>
+<pre class="code prettyprint"><code class="lang-javascript">path.scene.on("tick", function(e) {
 
-    var point = path.point;
-    var tangent = path.tangent;
+    var t = (e.time - e.startTime) * 0.01;
 
-    this.log("t=" + path.t + ", point=" +
-        JSON.stringify(point) + ", tangent=" +
-            JSON.stringify(tangent));
+    var point = path.getPoint(t);
+    var tangent = path.getTangent(t);
+
+    this.log("t=" + t + ", point=" + JSON.stringify(point) + ", tangent=" + JSON.stringify(tangent));
+});
+</code></pre>
+<h4 id="sampling-multiple-points">Sampling multiple points</h4>
+<p>Use Path&#39;s Path/getPoints:method method to sample a list of equidistant points
+along it. In the snippet below, we&#39;ll build a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that renders a line along the
+path.  Note that we need to flatten the points array for consumption by the <a href="../classes/Geometry.html" class="crosslink">Geometry</a>.</p>
+<pre class="code prettyprint"><code class="lang-javascript">var geometry = new XEO.Geometry({
+    positions: XEO.math.flatten(path.getPoints(50))
 });
 </code></pre>
 
@@ -349,8 +377,8 @@ path.scene.on("tick", function(e) {
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[curves=[]]</code>
-                                            <span class="type">#crossLink "Curve"</span>
+                                            <code class="param-name optional">[paths=[]]</code>
+                                            <span class="type">#crossLink "path"</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
@@ -384,7 +412,6 @@ path.scene.on("tick", function(e) {
     <ul class="api-class-tabs">
         <li class="api-class-tab index"><a href="#index">Index</a></li>
 
-            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
             <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
             <li class="api-class-tab events"><a href="#events">Events</a></li>
     </ul>
@@ -393,60 +420,6 @@ path.scene.on("tick", function(e) {
         <div id="index" class="api-class-tabpanel index">
             <h2 class="off-left">Index</h2>
 
-                <div class="index-section methods">
-                    <h3>Methods</h3>
-
-                    <ul class="index-list methods extends">
-                            <li class="index-item method inherited">
-                                <a href="#method_create">create</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_destroy">destroy</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_error">error</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_fire">fire</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_getPoints">getPoints</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_getTangent">getTangent</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_isType">isType</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_log">log</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_off">off</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_on">on</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_once">once</a>
-
-                            </li>
-                            <li class="index-item method inherited">
-                                <a href="#method_warn">warn</a>
-
-                            </li>
-                    </ul>
-                </div>
 
                 <div class="index-section properties">
                     <h3>Properties</h3>
@@ -456,55 +429,19 @@ path.scene.on("tick", function(e) {
                                 <a href="#property_curves">curves</a>
 
                             </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_destroyed">destroyed</a>
-
-                            </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_id">id</a>
-
-                            </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_isDefault">isDefault</a>
-
-                            </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_json">json</a>
-
-                            </li>
-                            <li class="index-item property inherited">
+                            <li class="index-item property">
                                 <a href="#property_length">length</a>
-
-                            </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_metadata">metadata</a>
 
                             </li>
                             <li class="index-item property">
                                 <a href="#property_point">point</a>
 
                             </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_scene">scene</a>
-
-                            </li>
-                            <li class="index-item property inherited inherited">
-                                <a href="#property_string">string</a>
-
-                            </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_superTypes">superTypes</a>
-
-                            </li>
-                            <li class="index-item property inherited">
+                            <li class="index-item property">
                                 <a href="#property_t">t</a>
 
                             </li>
-                            <li class="index-item property inherited">
-                                <a href="#property_tangent">tangent</a>
-
-                            </li>
-                            <li class="index-item property inherited">
+                            <li class="index-item property">
                                 <a href="#property_type">type</a>
 
                             </li>
@@ -520,11 +457,7 @@ path.scene.on("tick", function(e) {
                                 <a href="#event_curves">curves</a>
 
                             </li>
-                            <li class="index-item event inherited">
-                                <a href="#event_destroyed">destroyed</a>
-
-                            </li>
-                            <li class="index-item event inherited">
+                            <li class="index-item event">
                                 <a href="#event_t">t</a>
 
                             </li>
@@ -532,878 +465,6 @@ path.scene.on("tick", function(e) {
                 </div>
         </div>
 
-            <div id="methods" class="api-class-tabpanel">
-                <h2 class="off-left">Methods</h2>
-
-<div id="method_create" class="method item inherited">
-    <h3 class="name"><code>create</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>type</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[cfg]</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[instanceId]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/Component.html#method_create">Component</a>:
-        <a href="../files/src_component.js.html#l793"><code>src&#x2F;component.js:793</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
-<p>You would typically use this method to conveniently instantiate components that you&#39;d want to
-share (ie. "instance") among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
-<p>The method is given a component type, configuration and optional instance ID, like so:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(XEO.PhongMaterial, {
-     diffuse: [1,0,0],
-     specular: [1,1,0]
-}, "myMaterial");
-</code></pre>
-<p>The first time you call this method for the given <code>type</code> and <code>instanceId</code>, this method will create the
-<a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, passing the given  attributes to the component&#39;s constructor.</p>
-<p>If you call this method again, specifying the same <code>type</code> and <code>instanceId</code>, the method will return the same
-component instance that it returned the first time, and will ignore the configuration:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
-</code></pre>
-<p>So inthis example, our <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> will continue to have the red specular
-and diffuse color that we specified the first time.</p>
-<p>Each time you call this method with the same <code>type</code> and <code>instanceId</code>, the Scene will internally increment a
-reference count for the component instance. You can release the shared component instance with a call to
-Scene/putSharedComponent:method, and once you have released it as many
-times as you got it, the Scene will destroy the component.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">type</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                        <p>Component type - either a string like &quot;XEO.PhongMaterial&quot; or the actual
-constructor function, ie. XEO.PhongMaterial.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[cfg]</code>
-                        <span class="type"></span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Configuration for the component instance - only used if this is the first time you are getting
-the component, ignored when reusing an existing instance.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[instanceId]</code>
-                        <span class="type">String | Number</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Identifies the shared component instance. Note that this is not used as the ID of the
-component - you can specify the component ID in the <code>cfg</code> parameter.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type"></span>:
-            </div>
-        </div>
-
-
-</div>
-<div id="method_destroy" class="method item inherited">
-    <h3 class="name"><code>destroy</code></h3>
-
-        <span class="paren">()</span>
-
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l1000"><code>src&#x2F;component.js:1000</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Destroys this component.</p>
-<p>Fires a <a href="../classes/Component.html#event_destroyed" class="crosslink">destroyed</a> event on this Component.</p>
-<p>Automatically disassociates this component from other components, causing them to fall back on any
-defaults that this component overrode on them.</p>
-<p>TODO: describe effect with respect to #create</p>
-
-    </div>
-
-
-
-
-</div>
-<div id="method_error" class="method item inherited">
-    <h3 class="name"><code>error</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>message</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/Component.html#method_error">Component</a>:
-        <a href="../files/src_component.js.html#l583"><code>src&#x2F;component.js:583</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Logs an error for this component to the JavaScript console.</p>
-<p>The console message will have this format: <em><code>[ERROR] [&lt;component type&gt; =&lt;component id&gt;: &lt;message&gt;</code></em></p>
-<p>Also fires the message as an <a href="../classes/Scene.html#event_error" class="crosslink">error</a> event on the
-parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">message</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                        <p>The message to log</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_fire" class="method item inherited">
-    <h3 class="name"><code>fire</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>event</code>
-                </li>
-                <li class="arg">
-                        <code>value</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[forget=false]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/Component.html#method_fire">Component</a>:
-        <a href="../files/src_component.js.html#l424"><code>src&#x2F;component.js:424</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Fires an event on this component.</p>
-<p>Notifies existing subscribers to the event, retains the event to give to
-any subsequent notifications on that location as they are made.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">event</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                        <p>The event type name</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">value</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                        <p>The event parameters</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[forget=false]</code>
-                        <span class="type">Boolean</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>When true, does not retain for subsequent subscribers</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_getPoints" class="method item inherited">
-    <h3 class="name"><code>getPoints</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>divisions</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type">Array of Array</span>
-        </span>
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/Curve.html#method_getPoints">Curve</a>:
-        <a href="../files/src_curves_curve.js.html#l153"><code>src&#x2F;curves&#x2F;curve.js:153</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Samples points on this Curve, at the given number of equally-spaced divisions.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">divisions</code>
-                        <span class="type">Number</span>
-
-
-                    <div class="param-description">
-                        <p>The number of divisions.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">Array of Array</span>:
-                    <p>Array of sampled 3D points.</p>
-
-            </div>
-        </div>
-
-
-</div>
-<div id="method_getTangent" class="method item inherited">
-    <h3 class="name"><code>getTangent</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>t</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type">Array of Number</span>
-        </span>
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/Curve.html#method_getTangent">Curve</a>:
-        <a href="../files/src_curves_curve.js.html#l111"><code>src&#x2F;curves&#x2F;curve.js:111</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Returns a normalized tangent vector on this Curve at the given position.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">t</code>
-                        <span class="type">Number</span>
-
-
-                    <div class="param-description">
-                        <p>Position to get tangent at.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">Array of Number</span>:
-                    <p>} Normalized tangent vector</p>
-
-            </div>
-        </div>
-
-
-</div>
-<div id="method_isType" class="method item inherited">
-    <h3 class="name"><code>isType</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>type</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type">Boolean</span>
-        </span>
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/Component.html#method_isType">Component</a>:
-        <a href="../files/src_component.js.html#l359"><code>src&#x2F;component.js:359</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Tests if this component is of the given type, or is a subclass of the given type.</p>
-<p>The type may be given as either a string or a component constructor.</p>
-<p>This method works by walking up the inheritance type chain, which this component provides in
-property <a href="../classes/Component.html#property_superTypes" class="crosslink">superTypes</a>, returning true as soon as one of the type strings in
-the chain matches the given type, of false if none match.</p>
-<h4 id="examples-">Examples:</h4>
-<pre class="code prettyprint"><code class="lang-javascript">var myRotate = new XEO.Rotate({ ... });
-
-myRotate.isType(XEO.Component); // Returns true for all XEO components
-myRotate.isType("XEO.Component"); // Returns true for all XEO components
-myRotate.isType(XEO.Rotate); // Returns true
-myRotate.isType(XEO.Transform); // Returns true
-myRotate.isType("XEO.Transform"); // Returns true
-myRotate.isType(XEO.Entity); // Returns false, because XEO.Rotate does not (even indirectly) extend XEO.Entity
-</code></pre>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">type</code>
-                        <span class="type">String | Function</span>
-
-
-                    <div class="param-description">
-                        <p>Component type to compare with, eg &quot;XEO.PhongMaterial&quot;, or a XEO component constructor.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">Boolean</span>:
-                    <p>True if this component is of given type or is subclass of the given type.</p>
-
-            </div>
-        </div>
-
-
-</div>
-<div id="method_log" class="method item inherited">
-    <h3 class="name"><code>log</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>message</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/Component.html#method_log">Component</a>:
-        <a href="../files/src_component.js.html#l538"><code>src&#x2F;component.js:538</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Logs a console debugging message for this component.</p>
-<p>The console message will have this format: <em><code>[LOG] [&lt;component type&gt; &lt;component id&gt;: &lt;message&gt;</code></em></p>
-<p>Also fires the message as a <a href="../classes/Scene.html#event_log" class="crosslink">log</a> event on the
-parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">message</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                        <p>The message to log</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_off" class="method item inherited">
-    <h3 class="name"><code>off</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>handle</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/Component.html#method_off">Component</a>:
-        <a href="../files/src_component.js.html#l495"><code>src&#x2F;component.js:495</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Cancels an event subscription that was previously made with <a href="../classes/Component.html#method_on" class="crosslink">on</a> or
-<a href="../classes/Component.html#method_once" class="crosslink">once</a>.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">handle</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                        <p>Publication handle</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_on" class="method item inherited">
-    <h3 class="name"><code>on</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>event</code>
-                </li>
-                <li class="arg">
-                        <code>callback</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[scope=this]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type">String</span>
-        </span>
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/Component.html#method_on">Component</a>:
-        <a href="../files/src_component.js.html#l465"><code>src&#x2F;component.js:465</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Subscribes to an event on this component.</p>
-<p>The callback is be called with this component as scope.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">event</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                        <p>The event</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">callback</code>
-                        <span class="type">Function</span>
-
-
-                    <div class="param-description">
-                        <p>Called fired on the event</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[scope=this]</code>
-                        <span class="type">Object</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Scope for the callback</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">String</span>:
-                    <p>Handle to the subscription, which may be used to unsubscribe with {@link #off}.</p>
-
-            </div>
-        </div>
-
-
-</div>
-<div id="method_once" class="method item inherited">
-    <h3 class="name"><code>once</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>event</code>
-                </li>
-                <li class="arg">
-                        <code>callback</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[scope=this]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/Component.html#method_once">Component</a>:
-        <a href="../files/src_component.js.html#l517"><code>src&#x2F;component.js:517</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Subscribes to the next occurrence of the given event, then un-subscribes as soon as the event is handled.</p>
-<p>This is equivalent to calling <a href="../classes/Component.html#method_on" class="crosslink">on</a>, and then calling
-<a href="../classes/Component.html#method_off" class="crosslink">off</a> inside the callback function.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">event</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                        <p>Data event to listen to</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">callback</code>
-                        <span class="type">Function(data)</span>
-
-
-                    <div class="param-description">
-                        <p>Called when fresh data is available at the event</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[scope=this]</code>
-                        <span class="type">Object</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Scope for the callback</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_warn" class="method item inherited">
-    <h3 class="name"><code>warn</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>message</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>Inherited from
-                <a href="../classes/Component.html#method_warn">Component</a>:
-        <a href="../files/src_component.js.html#l563"><code>src&#x2F;component.js:563</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Logs a warning for this component to the JavaScript console.</p>
-<p>The console message will have this format: <em><code>[WARN] [&lt;component type&gt; =&lt;component id&gt;: &lt;message&gt;</code></em></p>
-<p>Also fires the message as a <a href="../classes/Scene.html#event_warn" class="crosslink">warn</a> event on the
-parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">message</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                        <p>The message to log</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-            </div>
 
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
@@ -1419,7 +480,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_path.js.html#l144"><code>src&#x2F;curves&#x2F;path.js:144</code></a>
+                            <a href="../files/src_curves_path.js.html#l181"><code>src&#x2F;curves&#x2F;path.js:181</code></a>
                             </p>
                     
                     
@@ -1435,108 +496,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_destroyed" class="property item inherited">
-                        <h3 class="name"><code>destroyed</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Component.html#property_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l281"><code>src&#x2F;component.js:281</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>True as soon as this Component has been destroyed</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_id" class="property item inherited">
-                        <h3 class="name"><code>id</code></h3>
-                        <span class="type">String</span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Component.html#property_id">Component</a>:
-                            <a href="../files/src_component.js.html#l272"><code>src&#x2F;component.js:272</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Unique ID for this Component within its parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_isDefault" class="property item inherited">
-                        <h3 class="name"><code>isDefault</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Component.html#property_isDefault">Component</a>:
-                            <a href="../files/src_component.js.html#l264"><code>src&#x2F;component.js:264</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Indicates whether this is one of the <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s built-in Components.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_json" class="property item inherited">
-                        <h3 class="name"><code>json</code></h3>
-                        <span class="type">JSON</span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l938"><code>src&#x2F;component.js:938</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>JSON object containing the state of this Component.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
                     <div id="property_length" class="property item">
                         <h3 class="name"><code>length</code></h3>
                         <span class="type">Number</span>
@@ -1546,12 +505,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Curve.html#property_length">
-                                    Curve
-                                </a>
-                                but overwritten in
-                            <a href="../files/src_curves_path.js.html#l299"><code>src&#x2F;curves&#x2F;path.js:299</code></a>
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_curves_path.js.html#l336"><code>src&#x2F;curves&#x2F;path.js:336</code></a>
                             </p>
                     
                     
@@ -1560,31 +516,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="description">
                             <p>Length of this Path, which is the cumulative length of all <a href="../classes/Curve.html#property_t" class="crosslink">Curves</a>
                     currently in <a href="../classes/Path.html#property_curves" class="crosslink">curves</a>.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_metadata" class="property item inherited">
-                        <h3 class="name"><code>metadata</code></h3>
-                        <span class="type">Object</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Component.html#property_metadata">Component</a>:
-                            <a href="../files/src_component.js.html#l256"><code>src&#x2F;component.js:256</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Arbitrary, user-defined metadata on this component.</p>
                     
                         </div>
                     
@@ -1602,7 +533,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_path.js.html#l286"><code>src&#x2F;curves&#x2F;path.js:286</code></a>
+                            <a href="../files/src_curves_path.js.html#l323"><code>src&#x2F;curves&#x2F;path.js:323</code></a>
                             </p>
                     
                     
@@ -1610,93 +541,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Point on this Path corresponding to the current value of <a href="../classes/Path.html#property_t" class="crosslink">t</a>.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_scene" class="property item inherited">
-                        <h3 class="name"><code>scene</code></h3>
-                        <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Component.html#property_scene">Component</a>:
-                            <a href="../files/src_component.js.html#l209"><code>src&#x2F;component.js:209</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The parent <a href="../classes/Scene.html" class="crosslink">Scene</a> that contains this Component.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_string" class="property item inherited">
-                        <h3 class="name"><code>string</code></h3>
-                        <span class="type">String</span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Component.html#property_string">
-                                    Component
-                                </a>
-                                but overwritten in
-                            <a href="../files/src_component.js.html#l966"><code>src&#x2F;component.js:966</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>String containing the serialized JSON state of this Component.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_superTypes" class="property item inherited">
-                        <h3 class="name"><code>superTypes</code></h3>
-                        <span class="type">Array of String</span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Component.html#property_superTypes">Component</a>:
-                            <a href="../files/src_component.js.html#l340"><code>src&#x2F;component.js:340</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>An array of strings that indicates the chain of super-types within this component&#39;s inheritance hierarchy.</p>
-                    <p>For example, if this component is a <a href="../classes/Rotate.html" class="crosslink">Rotate</a>, which
-                    extends <a href="../classes/Transform.html" class="crosslink">Transform</a>, which in turn extends <a href="../classes/Component.html" class="crosslink">Component</a>,
-                    then this property will have the value:</p>
-                    <pre class="code prettyprint"><code class="lang-json">["XEO.Component", "XEO.Transform"]
-                    </code></pre>
-                    <p>Note that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.</p>
                     
                         </div>
                     
@@ -1712,12 +556,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Curve.html#property_t">
-                                    Curve
-                                </a>
-                                but overwritten in
-                            <a href="../files/src_curves_path.js.html#l254"><code>src&#x2F;curves&#x2F;path.js:254</code></a>
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_curves_path.js.html#l291"><code>src&#x2F;curves&#x2F;path.js:291</code></a>
                             </p>
                     
                     
@@ -1734,31 +575,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_tangent" class="property item inherited">
-                        <h3 class="name"><code>tangent</code></h3>
-                        <span class="type">Array of Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Curve.html#property_tangent">Curve</a>:
-                            <a href="../files/src_curves_curve.js.html#l83"><code>src&#x2F;curves&#x2F;curve.js:83</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Tangent on this Curve at position <a href="../classes/Curve.html#property_t" class="crosslink">t</a>.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
                     <div id="property_type" class="property item">
                         <h3 class="name"><code>type</code></h3>
                         <span class="type">String</span>
@@ -1769,12 +585,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Component.html#property_type">
-                                    Component
-                                </a>
-                                but overwritten in
-                            <a href="../files/src_curves_path.js.html#l86"><code>src&#x2F;curves&#x2F;path.js:86</code></a>
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_curves_path.js.html#l123"><code>src&#x2F;curves&#x2F;path.js:123</code></a>
                             </p>
                     
                     
@@ -1805,7 +618,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_path.js.html#l133"><code>src&#x2F;curves&#x2F;path.js:133</code></a>
+                            <a href="../files/src_curves_path.js.html#l170"><code>src&#x2F;curves&#x2F;path.js:170</code></a>
                             </p>
                     
                     
@@ -1837,31 +650,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_destroyed" class="events item inherited">
-                        <h3 class="name"><code>destroyed</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1047"><code>src&#x2F;component.js:1047</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired when this Component is destroyed.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
                     <div id="event_t" class="events item">
                         <h3 class="name"><code>t</code></h3>
                         <span class="type"></span>
@@ -1871,12 +659,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Curve.html#event_t">
-                                    Curve
-                                </a>
-                                but overwritten in
-                            <a href="../files/src_curves_path.js.html#l272"><code>src&#x2F;curves&#x2F;path.js:272</code></a>
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_curves_path.js.html#l309"><code>src&#x2F;curves&#x2F;path.js:309</code></a>
                             </p>
                     
                     

@@ -19391,7 +19391,8 @@ visibility.destroy();
  <li>[CubicBezierCurve example](../../examples/#curves_CubicBezierCurve)</li>
  <li>[Tweening position along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve)</li>
  <li>[Tweening color along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve_color)</li>
- <li>[SplineCurve example](../../examples/#curves_SplineCurve)</li>
+ <li>[Simple SplineCurve example](../../examples/#curves_SplineCurve)</li>
+ <li>[Moving a PointLight along a SplineCurve](../../examples/#lights_point_world)</li>
  <li>[Path example](../../examples/#curves_Path)</li>
  </ul>
 
@@ -19721,10 +19722,13 @@ visibility.destroy();
  <li>[Path example](../../examples/#curves_Path)</li>
  </ul>
 
- ## Usage 1
+ ## Usage
 
- Create a CubicBezierCurve, subscribe to updates on its {{#crossLink "CubicBezierCurve/point:property"}}{{/crossLink}} and
- {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties, then vary its {{#crossLink "CubicBezierCurve/t:property"}}{{/crossLink}}
+ #### Animation along a CubicBezierCurve
+
+ Let's create a CubicBezierCurve, subscribe to updates on its {{#crossLink "CubicBezierCurve/point:property"}}{{/crossLink}},
+ {{#crossLink "Curve/tangent:property"}}{{/crossLink}} and {{#crossLink "Curve/t:property"}}{{/crossLink}} properties,
+ then vary its {{#crossLink "CubicBezierCurve/t:property"}}{{/crossLink}}
  property over time:
 
  ````javascript
@@ -19735,16 +19739,50 @@ visibility.destroy();
      v3: [10, 0, 0]
  });
 
+ curve.on("point", function(point) {
+     this.log("curve.point=" + JSON.stringify(point));
+ });
+
+ curve.on("tangent", function(tangent) {
+     this.log("curve.tangent=" + JSON.stringify(tangent));
+ });
+
+ curve.on("t", function(t) {
+     this.log("curve.t=" + t);
+ });
+
+ curve.scene.on("tick", function(e) {
+     curve.t = (e.time - e.startTime) * 0.01;
+ });
+ ````
+
+ #### Randomly sampling points
+
+ Use CubicBezierCurve's {{#crossLink "CubicBezierCurve/getPoint:method"}}{{/crossLink}} and
+ {{#crossLink "Curve/getTangent:method"}}{{/crossLink}} methods to sample the point and vector
+ at a given **t**:
+
+ ````javascript
  curve.scene.on("tick", function(e) {
 
-     curve.t = (e.time - e.startTime) * 0.01;
+     var t = (e.time - e.startTime) * 0.01;
 
-     var point = curve.point;
-     var tangent = curve.tangent;
+     var point = curve.getPoint(t);
+     var tangent = curve.getTangent(t);
 
-     this.log("t=" + curve.t + ", point=" +
-            JSON.stringify(point) + ", tangent=" +
-                JSON.stringify(tangent));
+     this.log("t=" + t + ", point=" + JSON.stringify(point) + ", tangent=" + JSON.stringify(tangent));
+ });
+ ````
+
+ #### Sampling multiple points
+
+ Use CubicBezierCurve's {{#crossLink "Curve/getPoints:method"}}{{/crossLink}} method to sample a list of equidistant points
+ along it. In the snippet below, we'll build a {{#crossLink "Geometry"}}{{/crossLink}} that renders a line along the
+ curve.  Note that we need to flatten the points array for consumption by the {{#crossLink "Geometry"}}{{/crossLink}}.
+
+ ````javascript
+ var geometry = new XEO.Geometry({
+     positions: XEO.math.flatten(curve.getPoints(50))
  });
  ````
 
@@ -19948,6 +19986,7 @@ visibility.destroy();
 
         /**
          * Returns point on this CubicBezierCurve at the given position.
+         * @method getPoint
          * @param {Number} t Position to get point at.
          * @returns {{Array of Number}}
          */
@@ -19994,14 +20033,18 @@ visibility.destroy();
  ## Examples
 
  <ul>
- <li>[SplineCurve example](../../examples/#curves_SplineCurve)</li>
+ <li>[Simple SplineCurve example](../../examples/#curves_SplineCurve)</li>
+ <li>[Moving a PointLight along a SplineCurve](../../examples/#lights_point_world)</li>
  <li>[Path example](../../examples/#curves_Path)</li>
  </ul>
 
- ## Usage 1
+ ## Usage
 
- Create a SplineCurve, subscribe to updates on its {{#crossLink "SplineCurve/point:property"}}{{/crossLink}} and
- {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties, then vary its {{#crossLink "SplineCurve/t:property"}}{{/crossLink}}
+ #### Animation along a SplineCurve
+
+ Let's create a SplineCurve, subscribe to updates on its {{#crossLink "SplineCurve/point:property"}}{{/crossLink}},
+ {{#crossLink "Curve/tangent:property"}}{{/crossLink}} and {{#crossLink "Curve/t:property"}}{{/crossLink}} properties,
+ then vary its {{#crossLink "SplineCurve/t:property"}}{{/crossLink}}
  property over time:
 
  ````javascript
@@ -20014,33 +20057,30 @@ visibility.destroy();
      ]
  });
 
+ curve.on("point", function(point) {
+     this.log("curve.point=" + JSON.stringify(point));
+ });
+
+ curve.on("tangent", function(tangent) {
+     this.log("curve.tangent=" + JSON.stringify(tangent));
+ });
+
+ curve.on("t", function(t) {
+     this.log("curve.t=" + t);
+ });
+
  curve.scene.on("tick", function(e) {
-
      curve.t = (e.time - e.startTime) * 0.01;
-
-     var point = curve.point;
-     var tangent = curve.tangent;
-
-     this.log("t=" + curve.t + ", point=" + JSON.stringify(point) + ", tangent=" + JSON.stringify(tangent));
  });
  ````
 
- ## Usage 2
+ #### Randomly sampling points
 
- Alternatively, we can randomly sample the point and vector at a given **t** with calls
- to the SplineCurve's {{#crossLink "SplineCurve/getPoint:method"}}{{/crossLink}} and
- {{#crossLink "Curve/getTangent:method"}}{{/crossLink}} methods:
+ Use SplineCurve's {{#crossLink "SplineCurve/getPoint:method"}}{{/crossLink}} and
+ {{#crossLink "Curve/getTangent:method"}}{{/crossLink}} methods to sample the point and vector
+ at a given **t**:
 
  ````javascript
- var curve = new XEO.SplineCurve({
-     points: [
-         [-10, 0, 0],
-         [-5, 15, 0],
-         [20, 15, 0],
-         [10, 0, 0]
-     ]
- });
-
  curve.scene.on("tick", function(e) {
 
      var t = (e.time - e.startTime) * 0.01;
@@ -20049,6 +20089,18 @@ visibility.destroy();
      var tangent = curve.getTangent(t);
 
      this.log("t=" + t + ", point=" + JSON.stringify(point) + ", tangent=" + JSON.stringify(tangent));
+ });
+ ````
+
+ #### Sampling multiple points
+
+ Use SplineCurve's {{#crossLink "Curve/getPoints:method"}}{{/crossLink}} method to sample a list of equidistant points
+ along it. In the snippet below, we'll build a {{#crossLink "Geometry"}}{{/crossLink}} that renders a line along the
+ curve.  Note that we need to flatten the points array for consumption by the {{#crossLink "Geometry"}}{{/crossLink}}.
+
+ ````javascript
+ var geometry = new XEO.Geometry({
+     positions: XEO.math.flatten(curve.getPoints(50))
  });
  ````
 
@@ -20233,10 +20285,13 @@ visibility.destroy();
  <li>[Path example](../../examples/#curves_Path)</li>
  </ul>
 
- ## Usage 1
+ ## Usage
 
- Create a QuadraticBezierCurve, subscribe to updates on its {{#crossLink "QuadraticBezierCurve/point:property"}}{{/crossLink}} and
- {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties, then vary its {{#crossLink "QuadraticBezierCurve/t:property"}}{{/crossLink}}
+ #### Animation along a QuadraticBezierCurve
+
+ Let's create a QuadraticBezierCurve, subscribe to updates on its {{#crossLink "QuadraticBezierCurve/point:property"}}{{/crossLink}},
+ {{#crossLink "Curve/tangent:property"}}{{/crossLink}} and {{#crossLink "Curve/t:property"}}{{/crossLink}} properties,
+ then vary its {{#crossLink "QuadraticBezierCurve/t:property"}}{{/crossLink}}
  property over time:
 
  ````javascript
@@ -20246,75 +20301,30 @@ visibility.destroy();
      v2: [10, 0, 0]
  });
 
+ curve.on("point", function(point) {
+     this.log("curve.point=" + JSON.stringify(point));
+ });
+
+ curve.on("tangent", function(tangent) {
+     this.log("curve.tangent=" + JSON.stringify(tangent));
+ });
+
+ curve.on("t", function(t) {
+     this.log("curve.t=" + t);
+ });
+
  curve.scene.on("tick", function(e) {
-
      curve.t = (e.time - e.startTime) * 0.01;
-
-     var point = curve.point;
-     var tangent = curve.tangent;
-
-     this.log("t=" + curve.t + ", point=" +
-            JSON.stringify(point) + ", tangent=" +
-                JSON.stringify(tangent));
  });
  ````
 
- ## Usage 2
+ #### Randomly sampling points
 
- In the next example, we'll create an {{#crossLink "Entity"}}{{/crossLink}} with a
- {{#crossLink "PhongMaterial"}}{{/crossLink}} whose diffuse color is bound to the
- interpolated {{#crossLink "QuadraticBezierCurve/point:property"}}{{/crossLink}} property on the QuadraticBezierCurve.
-
- Then we'll animate the QuadraticBezierCurve's {{#crossLink "QuadraticBezierCurve/t:property"}}{{/crossLink}} property
- to update the diffuse color.
+ Use QuadraticBezierCurve's {{#crossLink "QuadraticBezierCurve/getPoint:method"}}{{/crossLink}} and
+ {{#crossLink "Curve/getTangent:method"}}{{/crossLink}} methods to sample the point and vector
+ at a given **t**:
 
  ````javascript
- var curve = new XEO.QuadraticBezierCurve({
-     v0: [1, 0, 0],
-     v1: [0, 1, 0],
-     v2: [0, 0, 1]
- });
-
- // Create a Entity with a PhongMaterial
- var material = new XEO.PhongMaterial({
-     diffuse: [0, 0, 0]
- });
-
- var entity = new XEO.Entity({
-     material: material
- });
-
- // Bind the PhongMaterial diffuse color
- // to the QuadraticBezierCurve
- curve.on("t", function() {
-     material.diffuse = curve.point;
- });
-
- // Animate the QuadraticBezierCurve, which in turn
- // updates the PhongMaterial diffuse color
- var tick = entity.scene.on("tick", function (e) {
-     curve.t = (e.time - e.startTime) * 0.00005;
- });
- ````
-
- ## Usage 3
-
- In the previous two examples, we relied on our QuadraticBezierCurves to remember their progress in their
- {{#crossLink "QuadraticBezierCurve/t:property"}}{{/crossLink}} and {{#crossLink "QuadraticBezierCurve/point:property"}}{{/crossLink}}
- properties, which is useful when we want to wire components together into reactive event-driven networks, as we did with the
- PhongMaterial in the previous example.
-
- As an alternative, we can instead sample the point and vector at a given *t* via calls
- to the QuadraticBezierCurve's {{#crossLink "QuadraticBezierCurve/getPoint:method"}}{{/crossLink}} and
- {{#crossLink "Curve/getTangent:method"}}{{/crossLink}} methods:
-
- ````javascript
- var curve = new XEO.QuadraticBezierCurve({
-     v0: [-10, 0, 0],
-     v1: [20, 15, 0],
-     v2: [10, 0, 0]
- });
-
  curve.scene.on("tick", function(e) {
 
      var t = (e.time - e.startTime) * 0.01;
@@ -20326,23 +20336,13 @@ visibility.destroy();
  });
  ````
 
- ## Usage 4
+ #### Sampling multiple points
 
- When we want to build a {{#crossLink "Geometry"}}{{/crossLink}} from a QuadraticBezierCurve, we can sample points
- along the curve using its {{#crossLink "Curve/getPoints:method"}}{{/crossLink}} method, as shown below.
-
- Note that we need to flatten the points array for consumption by the {{#crossLink "Geometry"}}{{/crossLink}}.
+ Use QuadraticBezierCurve's {{#crossLink "Curve/getPoints:method"}}{{/crossLink}} method to sample a list of equidistant points
+ along it. In the snippet below, we'll build a {{#crossLink "Geometry"}}{{/crossLink}} that renders a line along the
+ curve.  Note that we need to flatten the points array for consumption by the {{#crossLink "Geometry"}}{{/crossLink}}.
 
  ````javascript
- var curve = new XEO.QuadraticBezierCurve({
-     v0: [-10, 0, 0],
-     v1: [20, 15, 0],
-     v2: [10, 0, 0]
- });
-
- // Geometry which creates a line-strip through fifty
- // points sampled at equidistant positions on our QuadraticBezierCurve
-
  var geometry = new XEO.Geometry({
      positions: XEO.math.flatten(curve.getPoints(50))
  });
@@ -20572,6 +20572,8 @@ visibility.destroy();
 
  ## Usage
 
+ #### Animation along a SplineCurve
+
  Create a Path containing a {{#crossLink "CubicBezierCurve"}}{{/crossLink}}, a {{#crossLink "QuadraticBezierCurve"}}{{/crossLink}}
  and a {{#crossLink "SplineCurve"}}{{/crossLink}}, subscribe to updates on its {{#crossLink "Path/point:property"}}{{/crossLink}} and
  {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties, then vary its {{#crossLink "Path/t:property"}}{{/crossLink}}
@@ -20602,29 +20604,64 @@ visibility.destroy();
      ]
  });
 
+ path.on("point", function(point) {
+     this.log("path.point=" + JSON.stringify(point));
+ });
+
+ path.on("tangent", function(tangent) {
+     this.log("path.tangent=" + JSON.stringify(tangent));
+ });
+
+ path.on("t", function(t) {
+     this.log("path.t=" + t);
+ });
+
  path.scene.on("tick", function(e) {
-
      path.t = (e.time - e.startTime) * 0.01;
-
-     var point = path.point;
-     var tangent = path.tangent;
-
-     this.log("t=" + path.t + ", point=" +
-         JSON.stringify(point) + ", tangent=" +
-             JSON.stringify(tangent));
  });
  ````
+
+ #### Randomly sampling points
+
+ Use Path's {{#crossLink "Path/getPoint:method"}}{{/crossLink}} and
+ {{#crossLink "path/getTangent:method"}}{{/crossLink}} methods to sample the point and vector
+ at a given **t**:
+
+ ````javascript
+ path.scene.on("tick", function(e) {
+
+     var t = (e.time - e.startTime) * 0.01;
+
+     var point = path.getPoint(t);
+     var tangent = path.getTangent(t);
+
+     this.log("t=" + t + ", point=" + JSON.stringify(point) + ", tangent=" + JSON.stringify(tangent));
+ });
+ ````
+
+ #### Sampling multiple points
+
+ Use Path's {{#crossLink "path/getPoints:method"}}{{/crossLink}} method to sample a list of equidistant points
+ along it. In the snippet below, we'll build a {{#crossLink "Geometry"}}{{/crossLink}} that renders a line along the
+ path.  Note that we need to flatten the points array for consumption by the {{#crossLink "Geometry"}}{{/crossLink}}.
+
+ ````javascript
+ var geometry = new XEO.Geometry({
+     positions: XEO.math.flatten(path.getPoints(50))
+ });
+ ````
+ 
  @class Path
  @module XEO
- @submodule curves
+ @submodule paths
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
  @param [cfg] {*} Fly configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Path.
- @param [cfg.curves=[]] IDs or instances of {{#crossLink "Curve"}}{{/crossLink}} subtypes to add to this Path.
+ @param [cfg.paths=[]] IDs or instances of {{#crossLink "path"}}{{/crossLink}} subtypes to add to this Path.
  @param [cfg.t=0] Current position on this Path, in range between 0..1.
- @extends Curve
+ @extends path
  */
 (function () {
 
