@@ -9,7 +9,8 @@
  <li>[CubicBezierCurve example](../../examples/#curves_CubicBezierCurve)</li>
  <li>[Tweening position along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve)</li>
  <li>[Tweening color along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve_color)</li>
- <li>[SplineCurve example](../../examples/#curves_SplineCurve)</li>
+ <li>[Simple SplineCurve example](../../examples/#curves_SplineCurve)</li>
+ <li>[Moving a PointLight along a SplineCurve](../../examples/#lights_point_world)</li>
  <li>[Path example](../../examples/#curves_Path)</li>
  </ul>
 
