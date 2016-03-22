@@ -103,7 +103,7 @@
                             continue;
                         }
 
-                        positions.push(x - (a[0] * this._xSize) * mag);
+                        positions.push(x + (a[0] * this._xSize) * mag);
                         positions.push(y + (a[1] * this._ySize) * mag);
                         positions.push(0);
 
@@ -127,7 +127,7 @@
 
                         needLine = true;
                     }
-                    x -= c.width * mag * this._xSize;
+                    x += c.width * mag * this._xSize;
 
                 }
                 y -= 35 * mag * this._ySize;
