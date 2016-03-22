@@ -2455,7 +2455,7 @@
             "namespace": "",
             "file": "src/canvas/spinner.js",
             "line": 1,
-            "description": "A Spinner displays a spinner animation at the center of its {{#crossLink \"Canvas\"}}{{/crossLink}} while things are loading or otherwise busy.\n\n<ul>\n<li>Spinners are normally shown by {{#crossLink \"Model\"}}Models{{/crossLink}} while they are loading, however they may also\nbe shown by any application code that wants to indicate business.</li>\n<li>A Spinner component has a {{#crossLink \"Spinner/processes:property\"}}{{/crossLink}} count that indicates how many\nactive processes it currently represents. As a process starts, a process would increment {{#crossLink \"Spinner/processes:property\"}}{{/crossLink}}, then as it\ncompletes (or fails), would decrement it again.</li>\n<li>A Spinner is only visible while {{#crossLink \"Spinner/processes:property\"}}{{/crossLink}} is greater than zero.</li>\n</ul>\n\n<img src=\"../../../assets/images/Spinner.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Loading glTF model with spinner](../../examples/#importing_gltf_gearbox)</li>\n</ul>\n\n## Usage\n\n````javascript\nvar spinner = myScene.canvas.spinner;\n\n// Increment count of busy processes represented by the spinner;\n// assuming the count was zero, this now shows the spinner\nspinner.processes++;\n\n// Increment the count again, by some other process;\n// spinner already visible, now requires two decrements\n// before it becomes invisible again\nspinner.processes++;\n\n// Decrement the count; count still greater\n// than zero, so spinner remains visible\nspinner.process--;\n\n// Decrement the count; count now zero,\n// so spinner becomes invisible\nspinner.process--;\n````",
+            "description": "A Spinner displays a spinner animation at the center of its {{#crossLink \"Canvas\"}}{{/crossLink}} while things are loading or otherwise busy.\n\n<ul>\n<li>Spinners are normally shown by {{#crossLink \"Model\"}}Models{{/crossLink}} while they are loading, however they may also\nbe shown by any application code that wants to indicate business.</li>\n<li>By default, they are also shown by components that load assets, such as {{#crossLink \"Texture\"}}{{/crossLink}}. You\ncan disable that by flipping the Spinner's {{#crossLink \"Spinner/textures:property\"}}{{/crossLink}} property.</li>\n<li>A Spinner component has a {{#crossLink \"Spinner/processes:property\"}}{{/crossLink}} count that indicates how many\nactive processes it currently represents. As a process starts, a process would increment {{#crossLink \"Spinner/processes:property\"}}{{/crossLink}}, then as it\ncompletes (or fails), would decrement it again.</li>\n<li>A Spinner is only visible while {{#crossLink \"Spinner/processes:property\"}}{{/crossLink}} is greater than zero.</li>\n</ul>\n\n<img src=\"../../../assets/images/Spinner.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Loading glTF model with spinner](../../examples/#importing_gltf_gearbox)</li>\n</ul>\n\n## Usage\n\n````javascript\nvar spinner = myScene.canvas.spinner;\n\n// Increment count of busy processes represented by the spinner;\n// assuming the count was zero, this now shows the spinner\nspinner.processes++;\n\n// Increment the count again, by some other process;\n// spinner already visible, now requires two decrements\n// before it becomes invisible again\nspinner.processes++;\n\n// Decrement the count; count still greater\n// than zero, so spinner remains visible\nspinner.process--;\n\n// Decrement the count; count now zero,\n// so spinner becomes invisible\nspinner.process--;\n````\n\nBy default, a Spinner shows while resources are loading for components like\n{{#crossLink \"Texture\"}}{{/crossLink}}. We can disable that like this:\n\n````javascript\n// Don't show while resources are loading for Textures etc.\nspinner.textures = false;\n````",
             "submodule": "canvas",
             "extends": "Component"
         },
@@ -9068,7 +9068,35 @@
         },
         {
             "file": "src/canvas/spinner.js",
-            "line": 102,
+            "line": 114,
+            "description": "Whether Spinner shows while images are loading for components like {{#crossLink \"Texture\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"Spinner/textures:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "textures",
+            "default": "true",
+            "type": "Boolean",
+            "class": "Spinner",
+            "module": "XEO",
+            "submodule": "canvas"
+        },
+        {
+            "file": "src/canvas/spinner.js",
+            "line": 131,
+            "description": "Fired whenever this Spinner's  {{#crossLink \"Spinner/textures:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "textures",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Spinner",
+            "module": "XEO",
+            "submodule": "canvas"
+        },
+        {
+            "file": "src/canvas/spinner.js",
+            "line": 145,
             "description": "The number of processes this Spinner represents.\n\nThe Spinner is visible while this property is greater than zero.\n\nIncrement this property whenever you commence some process during which you want\nthe Spinner to be visible, then decrement it again when the process is complete.\n\nClamps to zero if you attempt to set to to a negative value.\n\nFires a {{#crossLink \"Spinner/processes:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "processes",
@@ -9080,7 +9108,7 @@
         },
         {
             "file": "src/canvas/spinner.js",
-            "line": 136,
+            "line": 179,
             "description": "Fired whenever this Spinner's {{#crossLink \"Spinner/visible:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "processes",
@@ -15847,7 +15875,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 354,
+            "line": 361,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/image:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "image",
@@ -15864,7 +15892,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 361,
+            "line": 368,
             "description": "Fired whenever this Texture has loaded the\nimage file that its {{#crossLink \"Texture/src:property\"}}{{/crossLink}} property currently points to.",
             "itemtype": "event",
             "name": "loaded",
@@ -15881,7 +15909,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 392,
+            "line": 406,
             "description": "Indicates an HTML DOM Image object to source this Texture from.\n\nAlternatively, you could indicate the source via either of properties\n{{#crossLink \"Texture/src:property\"}}{{/crossLink}} or {{#crossLink \"Texture/target:property\"}}{{/crossLink}}.\n\nFires an {{#crossLink \"Texture/image:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Texture/src:property\"}}{{/crossLink}} and\n{{#crossLink \"Texture/target:property\"}}{{/crossLink}} properties to null.",
             "itemtype": "property",
             "name": "image",
@@ -15893,7 +15921,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 420,
+            "line": 434,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/image:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "image",
@@ -15910,7 +15938,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 433,
+            "line": 447,
             "description": "Indicates a path to an image file to source this Texture from.\n\nAlternatively, you could indicate the source via either of properties\n{{#crossLink \"Texture/image:property\"}}{{/crossLink}} or {{#crossLink \"Texture/target:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"Texture/src:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Texture/image:property\"}}{{/crossLink}} and\n{{#crossLink \"Texture/target:property\"}}{{/crossLink}} properties to null.",
             "itemtype": "property",
             "name": "src",
@@ -15922,7 +15950,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 461,
+            "line": 475,
             "description": "Fired whenever this Texture's {{#crossLink \"Texture/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -15939,7 +15967,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 475,
+            "line": 489,
             "description": "Instance or ID of a {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} or\n{{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} to source this Texture from.\n\nAlternatively, you could indicate the source via either of properties\n{{#crossLink \"Texture/src:property\"}}{{/crossLink}} or {{#crossLink \"Texture/image:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"Texture/target:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Texture/src:property\"}}{{/crossLink}} and\n{{#crossLink \"Texture/image:property\"}}{{/crossLink}} properties to null.",
             "itemtype": "property",
             "name": "target",
@@ -15951,7 +15979,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 511,
+            "line": 525,
             "description": "Fired whenever this Texture's   {{#crossLink \"Texture/target:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "target",
@@ -15968,7 +15996,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 525,
+            "line": 539,
             "description": "2D translation vector that will be added to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/translate:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "translate",
@@ -15980,7 +16008,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 545,
+            "line": 559,
             "description": "Fired whenever this Texture's   {{#crossLink \"Texture/translate:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "translate",
@@ -15997,7 +16025,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 558,
+            "line": 572,
             "description": "2D scaling vector that will be applied to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/scale:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "scale",
@@ -16009,7 +16037,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 578,
+            "line": 592,
             "description": "Fired whenever this Texture's   {{#crossLink \"Texture/scale:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "scale",
@@ -16026,7 +16054,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 591,
+            "line": 605,
             "description": "Rotation, in degrees, that will be applied to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/rotate:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "rotate",
@@ -16038,7 +16066,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 615,
+            "line": 629,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/rotate:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "rotate",
@@ -16055,7 +16083,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 628,
+            "line": 642,
             "description": "How this Texture is sampled when a texel covers less than one pixel.\n\nOptions are:\n\n<ul>\n    <li>**\"nearest\"** - Uses the value of the texture element that is nearest\n    (in Manhattan distance) to the center of the pixel being textured.</li>\n\n    <li>**\"linear\"** - Uses the weighted average of the four texture elements that are\n    closest to the center of the pixel being textured.</li>\n\n    <li>**\"nearestMipmapNearest\"** - Chooses the mipmap that most closely matches the\n    size of the pixel being textured and uses the \"nearest\" criterion (the texture\n    element nearest to the center of the pixel) to produce a texture value.</li>\n\n    <li>**\"linearMipmapNearest\"** - Chooses the mipmap that most closely matches the size of\n    the pixel being textured and uses the \"linear\" criterion (a weighted average of the\n    four texture elements that are closest to the center of the pixel) to produce a\n    texture value.</li>\n\n    <li>**\"nearestMipmapLinear\"** - Chooses the two mipmaps that most closely\n    match the size of the pixel being textured and uses the \"nearest\" criterion\n    (the texture element nearest to the center of the pixel) to produce a texture\n    value from each mipmap. The final texture value is a weighted average of those two\n    values.</li>\n\n    <li>**\"linearMipmapLinear\"** - **(default)** - Chooses the two mipmaps that most closely match the size\n    of the pixel being textured and uses the \"linear\" criterion (a weighted average\n    of the four texture elements that are closest to the center of the pixel) to\n    produce a texture value from each mipmap. The final texture value is a weighted\n    average of those two values.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/minFilter:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "minFilter",
@@ -16067,7 +16095,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 692,
+            "line": 706,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/minFilter:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "minFilter",
@@ -16084,7 +16112,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 705,
+            "line": 719,
             "description": "How this Texture is sampled when a texel covers more than one pixel.\n\nOptions are:\n\n<ul>\n    <li>**\"nearest\"** - Uses the value of the texture element that is nearest\n    (in Manhattan distance) to the center of the pixel being textured.</li>\n    <li>**\"linear\"** - **(default)** - Uses the weighted average of the four texture elements that are\n    closest to the center of the pixel being textured.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/magFilter:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "magFilter",
@@ -16096,7 +16124,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 742,
+            "line": 756,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/magFilter:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "magFilter",
@@ -16113,7 +16141,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 755,
+            "line": 769,
             "description": "Wrap parameter for this Texture's *S* coordinate.\n\nOptions are:\n\n<ul>\n    <li>**\"clampToEdge\"** -  causes *S* coordinates to be clamped to the size of the texture.</li>\n    <li>**\"mirroredRepeat\"** - causes the *S* coordinate to be set to the fractional part of the texture coordinate\n    if the integer part of *S* is even; if the integer part of *S* is odd, then the *S* texture coordinate is\n    set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *S*.</li>\n    <li>**\"repeat\"** - **(default)** - causes the integer part of the *S* coordinate to be ignored; xeoEngine uses only the\n    fractional part, thereby creating a repeating pattern.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/wrapS:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "wrapS",
@@ -16125,7 +16153,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 794,
+            "line": 808,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/wrapS:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "wrapS",
@@ -16142,7 +16170,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 807,
+            "line": 821,
             "description": "Wrap parameter for this Texture's *T* coordinate.\n\nOptions are:\n\n<ul>\n    <li>**\"clampToEdge\"** -  Causes *T* coordinates to be clamped to the size of the texture.</li>\n    <li>**\"mirroredRepeat\"** - Causes the *T* coordinate to be set to the fractional part of the texture coordinate\n    if the integer part of *T* is even; if the integer part of *T* is odd, then the *T* texture coordinate is\n    set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *T*.</li>\n    <li>**\"repeat\"** - **(default)** - Causes the integer part of the *T* coordinate to be ignored; xeoEngine uses only the\n    fractional part, thereby creating a repeating pattern.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/wrapT:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "wrapT",
@@ -16154,7 +16182,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 846,
+            "line": 860,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/wrapT:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "wrapT",
@@ -16171,7 +16199,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 859,
+            "line": 873,
             "description": "Flips this Texture's source data along its vertical axis when true.\n\nFires a {{#crossLink \"Texture/flipY:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "flipY",
@@ -16183,7 +16211,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 883,
+            "line": 897,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/flipY:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "flipY",
