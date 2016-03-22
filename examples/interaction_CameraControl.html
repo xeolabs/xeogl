@@ -23,7 +23,11 @@
 
 <script>
 
-    var camera = new XEO.Camera();
+    var camera = new XEO.Camera({
+        view: new XEO.Lookat({
+            gimbalLockY: false // Default is true
+        })
+    });
 
     var control = new XEO.CameraControl({
         camera: camera

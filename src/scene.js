@@ -981,26 +981,26 @@
                                 // Ambient light source #0
                                 new XEO.AmbientLight(this, {
                                     id: "default.light0",
-                                    color: [0.8, 0.8, 0.9],
-                                    intensity: 0.6
+                                    color: [0.45, 0.45, 0.5],
+                                    intensity: 0.9
                                 }),
 
                                 // Directional light source #1
                                 new XEO.DirLight(this, {
                                     id: "default.light1",
-                                    dir: [-0.5, -0.5, 1.0],
-                                    color: [1.0, 1.0, 0.9],
-                                    intensity: 0.5,
-                                    space: "world"
+                                    dir: [-0.5, 0.5, -0.6],
+                                    color: [0.8, 0.8, 0.7],
+                                    intensity: 1.0,
+                                    space: "view"
                                 }),
                                 //
                                 // Directional light source #2
                                 new XEO.DirLight(this, {
                                     id: "default.light2",
-                                    dir: [1.0, -0.9, 0.7],
-                                    color: [1.0, 1.0, 1.0],
-                                    intensity: 0.5,
-                                    space: "world"
+                                    dir: [0.5, -0.5, -0.6],
+                                    color: [0.8, 0.8, 0.8],
+                                    intensity: 1.0,
+                                    space: "view"
                                 })
                             ]
                         });

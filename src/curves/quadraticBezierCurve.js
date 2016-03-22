@@ -32,7 +32,7 @@
 
  ````javascript
  var curve = new XEO.QuadraticBezierCurve({
-     v0: [-10, 0, 0],
+     v0: [10, 0, 0],
      v1: [20, 15, 0],
      v2: [10, 0, 0]
  });

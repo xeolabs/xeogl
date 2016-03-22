@@ -92,7 +92,8 @@
         }
 
         function hasNormalMap() {
-            return (states.geometry.normals && states.material.normalMap);
+            var geometry = states.geometry;
+            return (geometry.positions && geometry.indices && geometry.normals && geometry.uv && states.material.normalMap);
         }
 
         /**
@@ -113,6 +114,7 @@
 
         function vertexPickObject() {
             begin();
+            add("// Object picking vertex shader");
             add("attribute vec3 xeo_aPosition;");
             add("uniform mat4 xeo_uModelMatrix;");
             add("uniform mat4 xeo_uViewMatrix;");
@@ -131,6 +133,7 @@
 
         function fragmentPickObject() {
             begin();
+            add("// Object picking fragment shader");
             add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
             add("uniform vec4 xeo_uPickColor;");
             add("void main(void) {");
@@ -141,6 +144,7 @@
 
         function vertexPickPrimitive() {
             begin();
+            add("// Triangle picking vertex shader");
             add("attribute vec3 xeo_aPosition;");
             add("attribute vec4 xeo_aColor;");
             add("uniform vec3 xeo_uPickColor;");
@@ -162,6 +166,7 @@
 
         function fragmentPickPrimitive() {
             begin();
+            add("// Triangle picking fragment shader");
             add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
             add("varying vec4 xeo_vColor;");
             add("void main(void) {");
@@ -186,11 +191,11 @@
 
             begin();
 
-            add("// Modeling matrix");
+            add("// Drawing vertex shader");
+
             add("uniform mat4 xeo_uModelMatrix;          // Modeling matrix");
             add("uniform mat4 xeo_uViewMatrix;           // Viewing matrix");
             add("uniform mat4 xeo_uProjMatrix;           // Projection matrix");
-            //add("uniform vec3 xeo_uEye;                  // World-space eye position");
 
             add("attribute vec3 xeo_aPosition;           // Local-space vertex position");
 
@@ -209,10 +214,6 @@
 
                 add("varying vec3 xeo_vViewEyeVec;           // Output: View-space vector from fragment position to eye");
                 add("varying vec3 xeo_vViewNormal;           // Output: View-space normal");
-
-                if (normalMapping) {
-                    add("attribute vec4 xeo_aTangent;            // Vertex tangent vector");
-                }
 
                 // Lights
                 for (i = 0, len = states.lights.lights.length; i < len; i++) {
@@ -237,6 +238,10 @@
 
                     add("varying vec4 xeo_vViewLightVecAndDist" + i + "; // Output: Vector from vertex to light, packaged with the pre-computed length of that vector");
                 }
+            }
+
+            if (normalMapping) {
+                add("attribute vec3 xeo_aTangent;");
             }
 
             if (texturing) {
@@ -331,18 +336,19 @@
             if (normals) {
 
                 add("   vec3 worldNormal = (modelNormalMatrix * localNormal).xyz; ");
-                add("   xeo_vViewNormal = (viewNormalMatrix * vec4(worldNormal, 1.0)).xyz;");
+                add("   xeo_vViewNormal = normalize((viewNormalMatrix * vec4(worldNormal, 1.0)).xyz);");
 
                 if (normalMapping) {
 
-                    // Compute tangent-bitangent-normal matrix
+                    // Compute the tangent-bitangent-normal (TBN) matrix
 
-                    add("   vec3 tangent = normalize((xeo_uViewNormalMatrix * xeo_uModelNormalMatrix * xeo_aTangent).xyz);");
+                    add("   vec3 tangent = normalize((xeo_uViewNormalMatrix * xeo_uModelNormalMatrix * vec4(xeo_aTangent, 1.0)).xyz);");
                     add("   vec3 bitangent = cross(xeo_vViewNormal, tangent);");
-                    add("   mat3 TBM = mat3(tangent, bitangent, xeo_vViewNormal);");
+                    add("   mat3 TBN = mat3(tangent, bitangent, xeo_vViewNormal);");
                 }
 
                 add("   vec3 tmpVec3;");
+                add("   float lightDist;");
 
                 // Lights
 
@@ -365,12 +371,12 @@
                             add("   tmpVec3 = xeo_uLightDir" + i + ";");
 
                             // Transform to View space
-                            add("   tmpVec3 = vec3(viewMatrix * vec4(tmpVec3, 0.0)).xyz;");
+                            add("   tmpVec3 = vec3(viewMatrix * vec4(tmpVec3, 1.0)).xyz;");
 
                             if (normalMapping) {
 
                                 // Transform to Tangent space
-                                add("   tmpVec3 *= TBM;");
+                                add("   tmpVec3 *= TBN;");
                             }
 
                         } else {
@@ -382,12 +388,12 @@
                             if (normalMapping) {
 
                                 // Transform to Tangent space
-                                add("   tmpVec3 *= TBM;");
+                                add("   tmpVec3 *= TBN;");
                             }
                         }
 
-                        // Output
-                        add("   xeo_vViewLightVecAndDist" + i + " = vec4(-tmpVec3, 0.0);");
+                        // Pipe the light direction and zero distance through to the fragment shader
+                        add("   xeo_vViewLightVecAndDist" + i + " = vec4(tmpVec3, 0.0);");
                     }
 
                     if (light.type === "point") {
@@ -398,38 +404,47 @@
 
                             // World space
 
-                            // Transform into View space
+                            // Get vertex -> light vector in View space
+                            // Transform light pos to View space first
+                            add("   tmpVec3 = (viewMatrix * vec4(xeo_uLightPos" + i + ", 1.0)).xyz - viewPosition.xyz;"); // Vector from World coordinate to light pos
 
-                            add("   tmpVec3 = (viewMatrix * vec4(xeo_uLightPos" + i + ", 0.0)).xyz - viewPosition.xyz;"); // Vector from World coordinate to light pos
+                            // Get distance to light
+                            add("   lightDist = abs(length(tmpVec3));");
 
                             if (normalMapping) {
-                                // Transform to Tangent space
-                                add("   tmpVec3 *= TBM;");
+
+                                // Transform light vector to Tangent space
+                               add("   tmpVec3 *= TBN;");
                             }
 
                         } else {
 
                             // View space
 
+                            // Get vertex -> light vector in View space
                             add("   tmpVec3 = xeo_uLightPos" + i + ".xyz - viewPosition.xyz;"); // Vector from View coordinate to light pos
+
+                            // Get distance to light
+                            add("   lightDist = abs(length(tmpVec3));");
 
                             if (normalMapping) {
 
-                                // Transform to tangent space
-                                add("   tmpVec3 *= TBM;");
+                                // Transform light vector to tangent space
+                                add("   tmpVec3 *= TBN;");
                             }
                         }
 
-                        // Output
-                        add("   xeo_vViewLightVecAndDist" + i + " = vec4(tmpVec3, length(xeo_uLightPos" + i + ".xyz - worldPosition.xyz));");
+                        // Pipe the light direction and distance through to the fragment shader
+                        add("   xeo_vViewLightVecAndDist" + i + " = vec4(tmpVec3, lightDist);");
                     }
                 }
 
-                //add("   xeo_vViewEyeVec = ((viewMatrix * vec4(xeo_uEye, 0.0)).xyz  - viewPosition.xyz);");
-                add("   xeo_vViewEyeVec = - viewPosition.xyz;");
+                add("   xeo_vViewEyeVec = -viewPosition.xyz;");
 
                 if (normalMapping) {
-                    add("   xeo_vViewEyeVec *= TBM;");
+
+                    // Transform vertex->eye vector to tangent space
+                    add("   xeo_vViewEyeVec *= TBN;");
                 }
             }
 
@@ -470,6 +485,8 @@
 
             begin();
 
+            add("// Drawing fragment shader");
+
             add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
             add();
 
@@ -482,6 +499,10 @@
                 add("uniform vec3 xeo_uSpecular;");
                 add("uniform float xeo_uShininess;");
                 add("uniform float xeo_uReflectivity;");
+            }
+
+            if (normalMapping) {
+            //    add("varying vec3 xeo_vTangent;");
             }
 
             add("uniform vec3 xeo_uEmissive;");
@@ -562,7 +583,7 @@
 
             if (normals) {
 
-                // World-space vector from fragment to eye
+                // View-space vector from fragment to eye
 
                 add("varying vec3 xeo_vViewEyeVec;");
 
@@ -674,6 +695,7 @@
                 add("   float reflectivity = xeo_uReflectivity;");
 
                 if (normalMapping) {
+
                     add("   vec3 viewNormal = vec3(0.0, 1.0, 0.0);");
 
                 } else {
@@ -771,17 +793,14 @@
                 }
 
                 if (normalMapping) {
-
-                    if (material.normalMap) {
-                        add();
-                        if (material.normalMap.matrix) {
-                            add("   textureCoord = (xeo_uNormalMapMatrix * texturePos).xy;");
-                        } else {
-                            add("   textureCoord = texturePos.xy;");
-                        }
-                        add("   textureCoord.y = -textureCoord.y;");
-                        add("   viewNormal = normalize(texture2D(xeo_uNormalMap, vec2(textureCoord.x, -textureCoord.y)).xyz * 2.0 - 1.0);");
+                    add();
+                    if (material.normalMap.matrix) {
+                        add("   textureCoord = (xeo_uNormalMapMatrix * texturePos).xy;");
+                    } else {
+                        add("   textureCoord = texturePos.xy;");
                     }
+                    add("   textureCoord.y = -textureCoord.y;");
+                    add("   viewNormal = normalize(texture2D(xeo_uNormalMap, vec2(textureCoord.x, textureCoord.y)).xyz * 2.0 - 1.0);");
                 }
             }
 
@@ -792,17 +811,15 @@
                 // Get Lambertian shading terms
 
                 add();
-                comment("   Apply lights");
-
-                add();
                 add("   vec3  diffuseLight = vec3(0.0, 0.0, 0.0);");
                 add("   vec3  specularLight = vec3(0.0, 0.0, 0.0);");
 
                 add();
                 add("   vec3  viewLightVec;");
-                add("   float dotN;");
+                add("   float specAngle;");
                 add("   float lightDist;");
                 add("   float attenuation;");
+
 
                 for (i = 0, len = states.lights.lights.length; i < len; i++) {
 
@@ -812,31 +829,34 @@
                         continue;
                     }
 
+                    // If normal mapping, the fragment->light vector will be in tangent space
                     add("   viewLightVec = normalize(xeo_vViewLightVecAndDist" + i + ".xyz);");
+
 
                     if (light.type === "point") {
                         add();
-                        add("   dotN = max(dot(viewNormal, viewLightVec), 0.0);");
+
+                        add("   specAngle = max(dot(viewNormal, viewLightVec), 0.0);");
+
                         add("   lightDist = xeo_vViewLightVecAndDist" + i + ".w;");
+
                         add("   attenuation = 1.0 - (" +
                             "  xeo_uLightAttenuation" + i + "[0] + " +
                             "  xeo_uLightAttenuation" + i + "[1] * lightDist + " +
                             "  xeo_uLightAttenuation" + i + "[2] * lightDist * lightDist);");
 
-                        add("   diffuseLight += dotN * xeo_uLightColor" + i + " * attenuation;");
+                        add("   diffuseLight += xeo_uLightIntensity" + i + " * specAngle * xeo_uLightColor" + i + " * attenuation;");
 
-                        add("   specularLight += xeo_uLightIntensity" + i +
-                            " *  pow(max(dot(reflect(viewLightVec, -viewNormal), -viewEyeVec), 0.0), shininess) * attenuation;");
+                        add("   specularLight += xeo_uLightIntensity" + i + " *  pow(max(dot(reflect(-viewLightVec, -viewNormal), viewEyeVec), 0.0), shininess) * attenuation;");
                     }
 
                     if (light.type === "dir") {
-                        add();
-                        add("   dotN = max(dot(viewNormal, viewLightVec), 0.0);");
 
-                        add("   diffuseLight += dotN * xeo_uLightColor" + i + ";");
+                        add("   specAngle = max(dot(viewNormal, -viewLightVec), 0.0);");
 
-                        add("   specularLight += xeo_uLightIntensity" + i +
-                            " * pow(max(dot(reflect(viewLightVec, -viewNormal), -viewEyeVec), 0.0), shininess);");
+                        add("   diffuseLight += xeo_uLightIntensity" + i + " * specAngle * xeo_uLightColor" + i + ";");
+
+                        add("   specularLight += xeo_uLightIntensity" + i + " * pow(max(dot(reflect(viewLightVec, -viewNormal), viewEyeVec), 0.0), shininess);");
                     }
                 }
 
