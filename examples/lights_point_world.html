@@ -109,7 +109,12 @@
             positions: XEO.math.flatten(splineCurve.getPoints(100))
         }),
         material: new XEO.PhongMaterial({
-            diffuse: [0.5, 0.5, 0]
+            diffuse: [0.5, 0.5, 0],
+            lineWidth:7,
+            opacity: 0.3
+        }),
+        modes: new XEO.Modes({
+            transparent: true
         }),
         visibility: new XEO.Visibility({
             visible: true
