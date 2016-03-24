@@ -123,19 +123,19 @@
             var scene = this.scene;
 
             // Shows a bounding box around each Entity we fly to
-            this._boundaryEntity = new XEO.Entity(scene, {
-                geometry: new XEO.BoundaryGeometry(scene),
-                material: new XEO.PhongMaterial(scene, {
+            this._boundaryEntity = this.create(XEO.Entity, {
+                geometry: this.create(XEO.BoundaryGeometry),
+                material: this.create(XEO.PhongMaterial, {
                     diffuse: [0, 0, 0],
                     ambient: [0, 0, 0],
                     specular: [0, 0, 0],
                     emissive: [1.0, 1.0, 0.6],
                     lineWidth: 4
                 }),
-                visibility: new XEO.Visibility(scene, {
+                visibility: this.create(XEO.Visibility, {
                     visible: false
                 }),
-                modes: new XEO.Modes(scene, {
+                modes: this.create(XEO.Modes, {
 
                     // Does not contribute to the size of any enclosing boundaries
                     // that might be calculated by xeoEngine, eg. like that returned by XEO.Scene#worldBoundary
@@ -150,7 +150,7 @@
              * @final
              * @type KeyboardAxisCamera
              */
-            this.keyboardAxis = new XEO.KeyboardAxisCamera(scene, {
+            this.keyboardAxis = this.create(XEO.KeyboardAxisCamera, {
                 camera: cfg.camera
             });
 
@@ -161,7 +161,7 @@
              * @final
              * @type KeyboardRotateCamera
              */
-            this.keyboardRotate = new XEO.KeyboardRotateCamera(scene, {
+            this.keyboardRotate = this.create(KeyboardRotateCamera, {
                 camera: cfg.camera
             });
 
@@ -172,7 +172,7 @@
              * @final
              * @type MouseRotateCamera
              */
-            this.mouseRotate = new XEO.MouseRotateCamera(scene, {
+            this.mouseRotate = this.create(XEO.MouseRotateCamera, {
                 camera: cfg.camera
             });
 
@@ -183,7 +183,7 @@
              * @final
              * @type KeyboardPanCamera
              */
-            this.keyboardPan = new XEO.KeyboardPanCamera(scene, {
+            this.keyboardPan = this.create(XEO.KeyboardPanCamera, {
                 camera: cfg.camera
             });
 
@@ -194,7 +194,7 @@
              * @final
              * @type MousePanCamera
              */
-            this.mousePan = new XEO.MousePanCamera(scene, {
+            this.mousePan = this.create(XEO.MousePanCamera, {
                 camera: cfg.camera
             });
 
@@ -205,7 +205,7 @@
              * @final
              * @type KeyboardZoomCamera
              */
-            this.keyboardZoom = new XEO.KeyboardZoomCamera(scene, {
+            this.keyboardZoom = this.create(XEO.KeyboardZoomCamera, {
                 camera: cfg.camera
             });
 
@@ -216,7 +216,7 @@
              * @final
              * @type MouseZoomCamera
              */
-            this.mouseZoom = new XEO.MouseZoomCamera(scene, {
+            this.mouseZoom = this.create(XEO.MouseZoomCamera, {
                 camera: cfg.camera
             });
 
@@ -227,7 +227,7 @@
              * @final
              * @type MousePickEntity
              */
-            this.mousePickEntity = new XEO.MousePickEntity(scene, {
+            this.mousePickEntity = this.create(XEO.MousePickEntity, {
                 rayPick: true
             });
 
@@ -245,7 +245,7 @@
              * @final
              * @type CameraFlight
              */
-            this.cameraFlight = new XEO.CameraFlight(scene, {
+            this.cameraFlight = this.create(XEO.CameraFlight, {
                 camera: cfg.camera,
                 duration: 0.5
             });
@@ -262,7 +262,7 @@
             // Fly camera to each picked entity
             // Don't change distance between look and eye
 
-          //  var view = this.cameraFlight.camera.view;
+            //  var view = this.cameraFlight.camera.view;
 
             var pos;
 
@@ -279,24 +279,24 @@
                 //
                 //var input = this.scene.input;
 
-              //  if (input.keyDown[input.KEY_SHIFT] && e.entity) {
+                //  if (input.keyDown[input.KEY_SHIFT] && e.entity) {
 
-                    // var aabb = e.entity.worldBoundary.aabb;
+                // var aabb = e.entity.worldBoundary.aabb;
 
-                    this._boundaryEntity.geometry.obb = e.entity.worldBoundary.obb;
-                    this._boundaryEntity.visibility.visible = true;
+                this._boundaryEntity.geometry.obb = e.entity.worldBoundary.obb;
+                this._boundaryEntity.visibility.visible = true;
 
-                    var center = e.entity.worldBoundary.center;
+                var center = e.entity.worldBoundary.center;
 
-                    this.cameraFlight.flyTo({
-                            aabb: e.entity.worldBoundary.aabb,
-                            oXffset: [
-                                pos[0] - center[0],
-                                pos[1] - center[1],
-                                pos[2] - center[2]
-                            ]
-                        },
-                        this._hideEntityBoundary, this);
+                this.cameraFlight.flyTo({
+                        aabb: e.entity.worldBoundary.aabb,
+                        oXffset: [
+                            pos[0] - center[0],
+                            pos[1] - center[1],
+                            pos[2] - center[2]
+                        ]
+                    },
+                    this._hideEntityBoundary, this);
 
                 //} else {
                 //
@@ -348,15 +348,12 @@
                      * @param value The property's new value
                      */
                     this.fire('firstPerson', this._firstPerson);
-                }
-
-                ,
+                },
 
                 get: function () {
                     return this._firstPerson;
                 }
-            }
-            ,
+            },
 
             /**
              * The {{#crossLink "Camera"}}{{/crossLink}} being controlled by this CameraControl.
@@ -379,11 +376,18 @@
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Camera", "camera", value);
+                    this._attach({
+                        name: "camera",
+                        type: "XEO.Camera",
+                        component: value,
+                        sceneDefault: true,
+                        onAdded: this._transformUpdated,
+                        onAddedScope: this
+                    });
 
                     // Update camera on child components
 
-                    var camera = this._children.camera;
+                    var camera = this._attached.camera;
 
                     this.keyboardAxis.camera = camera;
                     this.keyboardRotate.camera = camera;
@@ -393,15 +397,12 @@
                     this.keyboardZoom.camera = camera;
                     this.mouseZoom.camera = camera;
                     this.cameraFlight.camera = camera;
-                }
-
-                ,
+                },
 
                 get: function () {
-                    return this._children.camera;
+                    return this._attached.camera;
                 }
-            }
-            ,
+            },
 
             /**
              * Flag which indicates whether this CameraControl is active or not.
@@ -445,8 +446,7 @@
                     return this._active;
                 }
             }
-        }
-        ,
+        },
 
         _getJSON: function () {
 
@@ -455,30 +455,15 @@
                 active: this._active
             };
 
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
+            if (this._attached.camera) {
+                json.camera = this._attached.camera.id;
             }
 
             return json;
-        }
-        ,
+        },
 
         _destroy: function () {
-
             this.active = false;
-
-            // FIXME: Does not recursively destroy child components
-            this._boundaryEntity.destroy();
-
-            this.keyboardAxis.destroy();
-            this.keyboardRotate.destroy();
-            this.mouseRotate.destroy();
-            this.keyboardPan.destroy();
-            this.mousePan.destroy();
-            this.keyboardZoom.destroy();
-            this.mouseZoom.destroy();
-            this.mousePickEntity.destroy();
-            this.cameraFlight.destroy();
         }
     });
 

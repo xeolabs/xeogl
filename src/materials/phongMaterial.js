@@ -134,7 +134,7 @@
                 opacity: 1.0,
                 shininess: 30.0,
                 reflectivity: 1.0,
-                
+
                 lineWidth: 1.0,
                 pointSize: 1.0,
 
@@ -157,7 +157,7 @@
 
             this._hashDirty = true;
 
-            this.on("dirty", function() {
+            this.on("dirty", function () {
 
                 // This PhongMaterial is flagged dirty when a
                 // child component fires "dirty", which always
@@ -174,7 +174,7 @@
             this.opacity = cfg.opacity;
             this.shininess = cfg.shininess;
             this.reflectivity = cfg.reflectivity;
-            
+
             this.lineWidth = cfg.lineWidth;
             this.pointSize = cfg.pointSize;
 
@@ -460,7 +460,7 @@
                     return this._state.pointSize;
                 }
             },
-            
+
             /**
              Scalar in range 0-1 that controls how much {{#crossLink "CubeMap"}}CubeMap{{/crossLink}} is reflected by this PhongMaterial.
 
@@ -517,11 +517,11 @@
                      @event normalMap
                      @param value Number The property's new value
                      */
-                    this._setComponent("XEO.Texture", "normalMap", texture);
+                    this._attachComponent("XEO.Texture", "normalMap", texture);
                 },
 
                 get: function () {
-                    return this._children["normalMap"];
+                    return this._attached.normalMap;
                 }
             },
 
@@ -546,14 +546,14 @@
                      @event ambientMap
                      @param value Number The property's new value
                      */
-                    this._setComponent("XEO.Texture", "ambientMap", texture);
+                    this._attachComponent("XEO.Texture", "ambientMap", texture);
                 },
 
                 get: function () {
-                    return this._children["ambientMap"];
+                    return this._attached.ambientMap;
                 }
             },
-            
+
             /**
              A diffuse {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
 
@@ -575,11 +575,11 @@
                      @event diffuseMap
                      @param value Number The property's new value
                      */
-                    this._setComponent("XEO.Texture", "diffuseMap", texture);
+                    this._attachComponent("XEO.Texture", "diffuseMap", texture);
                 },
 
                 get: function () {
-                    return this._children["diffuseMap"];
+                    return this._attached.diffuseMap;
                 }
             },
 
@@ -604,11 +604,11 @@
                      @event specularMap
                      @param value Number The property's new value
                      */
-                    this._setComponent("XEO.Texture", "specularMap", texture);
+                    this._attachComponent("XEO.Texture", "specularMap", texture);
                 },
 
                 get: function () {
-                    return this._children["specularMap"];
+                    return this._attached.specularMap;
                 }
             },
 
@@ -633,11 +633,11 @@
                      @event emissiveMap
                      @param value Number The property's new value
                      */
-                    this._setComponent("XEO.Texture", "emissiveMap", texture);
+                    this._attachComponent("XEO.Texture", "emissiveMap", texture);
                 },
 
                 get: function () {
-                    return this._children["emissiveMap"];
+                    return this._attached.emissiveMap;
                 }
             },
 
@@ -662,11 +662,11 @@
                      @event opacityMap
                      @param value Number The property's new value
                      */
-                    this._setComponent("XEO.Texture", "opacityMap", texture);
+                    this._attachComponent("XEO.Texture", "opacityMap", texture);
                 },
 
                 get: function () {
-                    return this._children["opacityMap"];
+                    return this._attached.opacityMap;
                 }
             },
 
@@ -691,11 +691,11 @@
                      @event reflectivityMap
                      @param value Number The property's new value
                      */
-                    this._setComponent("XEO.Texture", "reflectivityMap", texture);
+                    this._attachComponent("XEO.Texture", "reflectivityMap", texture);
                 },
 
                 get: function () {
-                    return this._children["reflectivityMap"];
+                    return this._attached.reflectivityMap;
                 }
             },
 
@@ -718,11 +718,11 @@
                      @event reflection
                      @param value {Reflect} The property's new value
                      */
-                    this._setComponent("XEO.Reflect", "reflection", cubeMap);
+                    this._attachComponent("XEO.Reflect", "reflection", cubeMap);
                 },
 
                 get: function () {
-                    return this._children["reflection"];
+                    return this._attached.reflection;
                 }
             },
 
@@ -747,11 +747,11 @@
                      @event diffuseFresnel
                      @param value Number The property's new value
                      */
-                    this._setComponent("XEO.Fresnel", "diffuseFresnel", fresnel);
+                    this._attachComponent("XEO.Fresnel", "diffuseFresnel", fresnel);
                 },
 
                 get: function () {
-                    return this._children["diffuseFresnel"];
+                    return this._attached.diffuseFresnel;
                 }
             },
 
@@ -776,11 +776,11 @@
                      @event specularFresnel
                      @param value Number The property's new value
                      */
-                    this._setComponent("XEO.Fresnel", "specularFresnel", fresnel);
+                    this._attachComponent("XEO.Fresnel", "specularFresnel", fresnel);
                 },
 
                 get: function () {
-                    return this._children["specularFresnel"];
+                    return this._attached.specularFresnel;
                 }
             },
 
@@ -805,11 +805,11 @@
                      @event emissiveFresnel
                      @param value Number The property's new value
                      */
-                    this._setComponent("XEO.Fresnel", "emissiveFresnel", fresnel);
+                    this._attachComponent("XEO.Fresnel", "emissiveFresnel", fresnel);
                 },
 
                 get: function () {
-                    return this._children["emissiveFresnel"];
+                    return this._attached.emissiveFresnel;
                 }
             },
 
@@ -834,11 +834,11 @@
                      @event opacityFresnel
                      @param value Number The property's new value
                      */
-                    this._setComponent("XEO.Fresnel", "opacityFresnel", fresnel);
+                    this._attachComponent("XEO.Fresnel", "opacityFresnel", fresnel);
                 },
 
                 get: function () {
-                    return this._children["opacityFresnel"];
+                    return this._attached.opacityFresnel;
                 }
             },
 
@@ -863,18 +863,32 @@
                      @event reflectivityFresnel
                      @param value Number The property's new value
                      */
-                    this._setComponent("XEO.Fresnel", "reflectivityFresnel", fresnel);
+                    this._attachComponent("XEO.Fresnel", "reflectivityFresnel", fresnel);
                 },
 
                 get: function () {
-                    return this._children["reflectivityFresnel"];
+                    return this._attached.reflectivityFresnel;
                 }
             }
         },
 
-        _setComponent: function (expectedType, name, child) {
-            child = this._setChild(expectedType, name, child, false);
-            this._state[name] = child ? child._state : null;
+        _attachComponent: function (expectedType, name, component) {
+            component = this._attach({
+                name: name,
+                type: expectedType,
+                component: component,
+                sceneDefault: false,
+                on: {
+                    destroyed: {
+                        callback: function () {
+                            this._state[name] = null;
+                            this._hashDirty = true;
+                        },
+                        scope: this
+                    }
+                }
+            });
+            this._state[name] = component ? component._state : null; // FIXME: Accessing _state breaks encapsulation
             this._hashDirty = true;
         },
 
@@ -907,7 +921,7 @@
                     hash.push("/mat");
                 }
             }
-            
+
             if (state.diffuseMap) {
                 hash.push("/d");
                 if (state.diffuseMap.matrix) {
@@ -994,7 +1008,7 @@
 
 
             // Lines and points
-            
+
             if (this._state.lineWidth !== 1.0) {
                 json.lineWidth = this._state.lineWidth;
             }
@@ -1005,7 +1019,7 @@
 
             // Textures
 
-            var components = this._children;
+            var components = this._attached;
 
             if (components.normalMap) {
                 json.normalMap = components.normalMap.id;
@@ -1014,7 +1028,7 @@
             if (components.ambientMap) {
                 json.ambientMap = components.ambientMap.id;
             }
-            
+
             if (components.diffuseMap) {
                 json.diffuseMap = components.diffuseMap.id;
             }

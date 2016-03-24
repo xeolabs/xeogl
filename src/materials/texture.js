@@ -43,7 +43,7 @@
  </ul>
 
  Note that xeoEngine will ignore the {{#crossLink "PhongMaterial"}}PhongMaterial's{{/crossLink}} {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}
-  and {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} properties, since we assigned {{#crossLink "Texture"}}Textures{{/crossLink}} to the {{#crossLink "PhongMaterial"}}PhongMaterial's{{/crossLink}} {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} and
+ and {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} properties, since we assigned {{#crossLink "Texture"}}Textures{{/crossLink}} to the {{#crossLink "PhongMaterial"}}PhongMaterial's{{/crossLink}} {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} and
  {{#crossLink "PhongMaterial/specularMap:property"}}{{/crossLink}} properties. The {{#crossLink "Texture"}}Textures'{{/crossLink}} pixel
  colors directly provide the diffuse and specular components for each fragment across the {{#crossLink "Geometry"}}{{/crossLink}} surface.
 
@@ -509,12 +509,18 @@
                     this._image = null;
                     this._src = null;
 
-                    if (this._onTargetActive) {
-                        this._target.off(this._onTargetActive);
-                        this._onTargetActive = null;
-                    }
-
-                    this._target = this._setChild(null, "renderBuf", value);
+                    this._target = this._attach({
+                        name: "renderBuf",
+                        type: null,
+                        component: value,
+                        sceneDefault: true,
+                        on: {
+                            active: {
+                                callback: this._onTargetActive,
+                                scope: this
+                            }
+                        }
+                    });
 
                     this._imageDirty = false;
                     this._srcDirty = false;
@@ -532,7 +538,7 @@
                 },
 
                 get: function () {
-                    return this._children.target;
+                    return this._attached.target;
                 }
             },
 

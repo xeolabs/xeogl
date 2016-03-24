@@ -86,11 +86,11 @@
         _init: function (cfg) {
 
             // Event handles
-            
+
             this._onTick = null;
 
             // Init properties
-            
+
             this.camera = cfg.camera;
             this.active = cfg.active !== false;
             this.sensitivity = cfg.sensitivity;
@@ -120,11 +120,17 @@
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Camera", "camera", value);
+
+                    this._attach({
+                        name: "camera",
+                        type: "XEO.Camera",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.camera;
+                    return this._attached.camera;
                 }
             },
 
@@ -218,8 +224,8 @@
                         this._onTick = this.scene.on("tick",
                             function (params) {
 
-                                var camera = self._children.camera;
-                                
+                                var camera = self._attached.camera;
+
                                 if (!camera) {
                                     return;
                                 }
@@ -302,8 +308,8 @@
                 active: this._active
             };
 
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
+            if (this._attached.camera) {
+                json.camera = this._attached.camera.id;
             }
 
             return json;
