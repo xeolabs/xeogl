@@ -435,6 +435,16 @@
             return id1 === id2;
         },
 
+        /**
+         * Tests if the given value is a function
+         * @param value
+         * @returns {boolean}
+         * @private
+         */
+        _isFunction: function (value) {
+            return (typeof value === "function");
+        },
+
         /** Returns a shallow copy
          */
         _copy: function (o) {

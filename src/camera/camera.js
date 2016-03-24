@@ -1,5 +1,3 @@
-
-
 /**
  A **Camera** defines viewing and projection transforms for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
@@ -106,38 +104,30 @@
 
                 set: function (value) {
 
-                    // Unsubscribe from old projection's events
-
-                    var oldProject = this._children.project;
-
-                    if (oldProject) {
-                        oldProject.off(this._onProjectMatrix);
-                    }
-                    
                     /**
                      * Fired whenever this Camera's {{#crossLink "Camera/project:property"}}{{/crossLink}} property changes.
+                     *
                      * @event project
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Projection", "project", value);
-
-                    var newProject = this._children.project;
-
-                    if (newProject) {
-
-                        // Subscribe to new projection's events
-
-                        var self = this;
-                        
-                        this._onProjectMatrix = newProject.on("matrix",
-                            function () {
-                                self.fire("projectMatrix");
-                            });
-                    }
+                    this._attach({
+                        name: "project",
+                        type: "XEO.Projection",
+                        component: value,
+                        sceneDefault: true,
+                        on: {
+                            matrix: {
+                                callback: function () {
+                                    this.fire("projectMatrix");
+                                },
+                                scope: this
+                            }
+                        }
+                    });
                 },
 
                 get: function () {
-                    return this._children.project;
+                    return this._attached.project;
                 }
             },
 
@@ -157,61 +147,44 @@
 
                 set: function (value) {
 
-                    // Unsubscribe from old view transform's events
-
-                    var oldView = this._children.project;
-
-                    if (oldView) {
-                        oldView.off(this._onViewMatrix);
-                    }
-
                     /**
                      * Fired whenever this Camera's {{#crossLink "Camera/view:property"}}{{/crossLink}} property changes.
                      *
                      * @event view
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Lookat", "view", value); // TODO: need marker interface for view transform components
-
-                    var newView = this._children.view;
-
-                    if (newView) {
-
-                        // Subscribe to new projection's events
-
-                        var self = this;
-
-                        this._onViewMatrix = newView.on("matrix",
-                            function () {
-                                self.fire("viewMatrix");
-                            });
-                    }
+                    this._attach({
+                        name: "view",
+                        type: "XEO.Lookat",
+                        component: value,
+                        sceneDefault: true,
+                        on: {
+                            matrix: {
+                                callback: function () {
+                                    this.fire("viewMatrix");
+                                },
+                                scope: this
+                            }
+                        }
+                    });
                 },
 
                 get: function () {
-                    return this._children.view;
+                    return this._attached.view;
                 }
             }
         },
 
         _compile: function () {
-            this._children.project._compile();
-            this._children.view._compile();
+            this._attached.project._compile();
+            this._attached.view._compile();
         },
 
         _getJSON: function () {
-
-            var json = {};
-
-            if (this._children.project) {
-                json.project = this._children.project.id;
+            return { // Will always have the Scene's defaults
+                project: this._attached.project.id,
+                view: this._attached.view.id
             }
-
-            if (this._children.view) {
-                json.view = this._children.view.id;
-            }
-
-            return json;
         }
     });
 

@@ -175,7 +175,7 @@
                 this.stop();
             }
 
-            var camera = this._children.camera;
+            var camera = this._attached.camera;
 
             if (!camera) {
                 if (callback) {
@@ -358,7 +358,7 @@
 
             t = this.easing ? this._ease(t, 0, 1, 1) : t;
 
-            var view = this._children.camera.view;
+            var view = this._attached.camera.view;
 
             view.eye = XEO.math.lerpVec3(t, 0, 1, this._eye1, this._eye2, tempVec3);
             view.look = XEO.math.lerpVec3(t, 0, 1, this._look1, this._look2, tempVec3b);
@@ -422,13 +422,18 @@
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Camera", "camera", value);
+                    this._attach({
+                        name: "camera",
+                        type: "XEO.Camera",
+                        component: value,
+                        sceneDefault: true
+                    });
 
                     this.stop();
                 },
 
                 get: function () {
-                    return this._children.camera;
+                    return this._attached.camera;
                 }
             },
 
@@ -451,8 +456,8 @@
 
             var json = {};
 
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
+            if (this._attached.camera) {
+                json.camera = this._attached.camera.id;
             }
 
             return json;

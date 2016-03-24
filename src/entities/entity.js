@@ -267,36 +267,32 @@
 
                     this._setViewBoundaryDirty();
 
-                    // Unsubscribe from old Cameras's events
-
-                    var oldCamera = this._children.camera;
-
-                    if (oldCamera) {
-                        oldCamera.off(this._onCameraViewMatrix);
-                        oldCamera.off(this._onCameraProjMatrix);
-                    }
-
                     /**
                      * Fired whenever this Entity's  {{#crossLink "Entity/camera:property"}}{{/crossLink}} property changes.
                      *
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Camera", "camera", value);
-
-                    var newCamera = this._children.camera;
-
-                    if (newCamera) {
-
-                        // Subscribe to new Camera's events
-
-                        this._onCameraViewMatrix = newCamera.on("viewMatrix", this._setViewBoundaryDirty, this);
-                        this._onCameraProjMatrix = newCamera.on("projMatrix", this._setCanvasBoundaryDirty, this);
-                    }
+                    this._attach({
+                        name: "camera",
+                        type: "XEO.Camera",
+                        component: value,
+                        sceneDefault: true,
+                        on: {
+                            viewMatrix: {
+                                callback: this._setViewBoundaryDirty,
+                                scope: this
+                            },
+                            projMatrix: {
+                                callback: this._setCanvasBoundaryDirty,
+                                scope: this
+                            }
+                        }
+                    });
                 },
 
                 get: function () {
-                    return this._children.camera;
+                    return this._attached.camera;
                 }
             },
 
@@ -321,11 +317,16 @@
                      * @event clips
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Clips", "clips", value);
+                    this._attach({
+                        name: "clips",
+                        type: "XEO.Clips",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.clips;
+                    return this._attached.clips;
                 }
             },
 
@@ -350,11 +351,16 @@
                      * @event colorTarget
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.ColorTarget", "colorTarget", value);
+                    this._attach({
+                        name: "colorTarget",
+                        type: "XEO.ColorTarget",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.colorTarget;
+                    return this._attached.colorTarget;
                 }
             },
 
@@ -380,11 +386,16 @@
                      * @event colorBuf
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.ColorBuf", "colorBuf", value);
+                    this._attach({
+                        name: "colorBuf",
+                        type: "XEO.ColorBuf",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.colorBuf;
+                    return this._attached.colorBuf;
                 }
             },
 
@@ -410,11 +421,16 @@
                      * @event depthTarget
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.DepthTarget", "depthTarget", value);
+                    this._attach({
+                        name: "depthTarget",
+                        type: "XEO.DepthTarget",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.depthTarget;
+                    return this._attached.depthTarget;
                 }
             },
 
@@ -440,11 +456,16 @@
                      * @event depthBuf
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.DepthBuf", "depthBuf", value);
+                    this._attach({
+                        name: "depthBuf",
+                        type: "XEO.DepthBuf",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.depthBuf;
+                    return this._attached.depthBuf;
                 }
             },
 
@@ -470,11 +491,16 @@
                      * @event visibility
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Visibility", "visibility", value);
+                    this._attach({
+                        name: "visibility",
+                        type: "XEO.Visibility",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.visibility;
+                    return this._attached.visibility;
                 }
             },
 
@@ -500,11 +526,17 @@
                      * @event cull
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Cull", "cull", value);
+
+                    this._attach({
+                        name: "cull",
+                        type: "XEO.Cull",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.cull;
+                    return this._attached.cull;
                 }
             },
 
@@ -530,11 +562,16 @@
                      * @event modes
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Modes", "modes", value);
+                    this._attach({
+                        name: "modes",
+                        type: "XEO.Modes",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.modes;
+                    return this._attached.modes;
                 }
             },
 
@@ -562,42 +599,26 @@
 
                     this._setWorldBoundaryDirty();
 
-                    // Unsubscribe from old Geometry's events
-
-                    var oldGeometry = this._children.geometry;
-
-                    if (oldGeometry) {
-
-                        if (!value || (value.id !== undefined ? value.id : value) !== oldGeometry.id) {
-                            oldGeometry.off(this._onGeometryPositions);
-                            oldGeometry.off(this._onGeometryDestroyed);
+                    this._attach({
+                        name: "geometry",
+                        type: "XEO.Geometry",
+                        component: value,
+                        sceneDefault: true,
+                        on: {
+                            positions: {
+                                callback: this._setWorldBoundaryDirty,
+                                scope: this
+                            },
+                            destroyed: {
+                                callback: this._setWorldBoundaryDirty,
+                                scope: this
+                            }
                         }
-                    }
-
-                    /**
-                     * Fired whenever this Entity's  {{#crossLink "Entity/geometry:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event geometry
-                     * @param value The property's new value
-                     */
-                    this._setChild("XEO.Geometry", "geometry", value);
-
-                    var newGeometry = this._children.geometry;
-
-                    if (newGeometry) {
-
-                        // Subscribe to new Geometry's events
-
-                        // World-space boundary is dirty when new Geometry's
-                        // positions are updated or Geometry is destroyed.
-
-                        this._onGeometryPositions = newGeometry.on("positions", this._setWorldBoundaryDirty, this);
-                        this._onGeometryDestroyed = newGeometry.on("destroyed", this._setWorldBoundaryDirty, this);
-                    }
+                    });
                 },
 
                 get: function () {
-                    return this._children.geometry;
+                    return this._attached.geometry;
                 }
             },
 
@@ -623,11 +644,16 @@
                      * @event layer
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Layer", "layer", value);
+                    this._attach({
+                        name: "layer",
+                        type: "XEO.Layer",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.layer;
+                    return this._attached.layer;
                 }
             },
 
@@ -653,11 +679,16 @@
                      * @event lights
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Lights", "lights", value);
+                    this._attach({
+                        name: "lights",
+                        type: "XEO.Lights",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.lights;
+                    return this._attached.lights;
                 }
             },
 
@@ -683,11 +714,16 @@
                      * @event material
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Material", "material", value);
+                    this._attach({
+                        name: "material",
+                        type: "XEO.Material",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.material;
+                    return this._attached.material;
                 }
             },
 
@@ -712,11 +748,16 @@
                      * @event morphTargets
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.MorphTargets", "morphTargets", value);
+                    this._attach({
+                        name: "morphTargets",
+                        type: "XEO.MorphTargets",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.morphTargets;
+                    return this._attached.morphTargets;
                 }
             },
 
@@ -742,11 +783,16 @@
                      * @event reflect
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Reflect", "reflect", value);
+                    this._attach({
+                        name: "reflect",
+                        type: "XEO.Reflect",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.reflect;
+                    return this._attached.reflect;
                 }
             },
 
@@ -771,11 +817,16 @@
                      * @event shader
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Shader", "shader", value);
+                    this._attach({
+                        name: "shader",
+                        type: "XEO.Shader",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.shader;
+                    return this._attached.shader;
                 }
             },
 
@@ -801,11 +852,16 @@
                      * @event shaderParams
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.ShaderParams", "shaderParams", value);
+                    this._attach({
+                        name: "shaderParams",
+                        type: "XEO.ShaderParams",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.shaderParams;
+                    return this._attached.shaderParams;
                 }
             },
 
@@ -831,11 +887,16 @@
                      * @event stage
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Stage", "stage", value);
+                    this._attach({
+                        name: "stage",
+                        type: "XEO.Stage",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.stage;
+                    return this._attached.stage;
                 }
             },
 
@@ -863,15 +924,6 @@
 
                     this._setWorldBoundaryDirty();
 
-                    // Unsubscribe from old Transform's events
-
-                    var oldTransform = this._children.transform;
-
-                    if (oldTransform && !XEO._isSameComponent(oldTransform, value)) {
-                        oldTransform.off(this._onTransformUpdated);
-                        oldTransform.off(this._onTransformDestroyed);
-                    }
-
                     /**
                      * Fired whenever this Entity's {{#crossLink "Entity/transform:property"}}{{/crossLink}}
                      * property changes.
@@ -879,42 +931,49 @@
                      * @event transform
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Transform", "transform", value);
+                    this._attach({
+                        name: "transform",
+                        type: "XEO.Transform",
+                        component: value,
+                        sceneDefault: true,
+                        on: {
+                            updated: {
 
-                    // Subscribe to new Transform's events
+                                callback: function () {
 
-                    var newTransform = this._children.transform;
-
-                    if (newTransform) {
-
-                        // World-space boundary is dirty when Transform's
-                        // matrix is updated or Transform is destroyed.
-
-                        var self = this;
-
-                        this._onTransformUpdated = newTransform.on("updated",
-                            function () {
-                                if (self._transformDirty) {
-                                    return;
-                                }
-                                self._transformDirty = true;
-                                XEO.scheduleTask(function () {
-                                    if (!self._transformDirty) {
+                                    if (this._transformDirty) {
                                         return;
                                     }
-                                    newTransform._buildLeafMatrix();
 
-                                    self._setWorldBoundaryDirty();
-                                    self._transformDirty = false;
-                                });
-                            });
+                                    this._transformDirty = true;
 
-                        this._onTransformDestroyed = newTransform.on("destroyed", this._setWorldBoundaryDirty, this);
-                    }
+                                    XEO.scheduleTask(function () {
+
+                                            if (!this._transformDirty) {
+                                                return;
+                                            }
+
+                                            this._attached.transform._buildLeafMatrix();
+
+                                            this._setWorldBoundaryDirty();
+
+                                            this._transformDirty = false;
+                                        },
+                                        this);
+                                },
+                                scope: this
+                            },
+
+                            destroyed: {
+                                callback: this._setWorldBoundaryDirty,
+                                scope: this
+                            }
+                        }
+                    });
                 },
 
                 get: function () {
-                    return this._children.transform;
+                    return this._attached.transform;
                 }
             },
 
@@ -944,11 +1003,16 @@
                      * @event billboard
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Billboard", "billboard", value);
+                    this._attach({
+                        name: "billboard",
+                        type: "XEO.Billboard",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.billboard;
+                    return this._attached.billboard;
                 }
             },
 
@@ -975,11 +1039,16 @@
                      * @event viewport
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Viewport", "viewport", value);
+                    this._attach({
+                        name: "viewport",
+                        type: "XEO.Viewport",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.viewport;
+                    return this._attached.viewport;
                 }
             },
 
@@ -1010,11 +1079,16 @@
                      * @event stationary
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Stationary", "stationary", value);
+                    this._attach({
+                        name: "stationary",
+                        type: "XEO.Stationary",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.stationary;
+                    return this._attached.stationary;
                 }
             },
 
@@ -1041,7 +1115,7 @@
             localBoundary: {
 
                 get: function () {
-                    return this._children.geometry.localBoundary;
+                    return this._attached.geometry.localBoundary;
                 }
             },
 
@@ -1101,7 +1175,7 @@
 
                             // Faster and less precise than getPositions:
                             getOBB: function () {
-                                var geometry = self._children.geometry;
+                                var geometry = self._attached.geometry;
                                 if (geometry) {
                                     var boundary = geometry.localBoundary;
                                     return boundary.obb;
@@ -1109,12 +1183,12 @@
                             },
 
                             //getPositions: function () {
-                            //    return self._children.geometry.positions;
+                            //    return self._attached.geometry.positions;
                             //},
 
                             getMatrix: function () {
 
-                                var transform = self._children.transform;
+                                var transform = self._attached.transform;
 
                                 if (self._transformDirty) {
                                     transform._buildLeafMatrix();
@@ -1192,7 +1266,7 @@
                             },
 
                             getMatrix: function () {
-                                return self._children.camera.view.matrix;
+                                return self._attached.camera.view.matrix;
                             }
                         });
 
@@ -1263,7 +1337,7 @@
                             },
 
                             getMatrix: function () {
-                                return self._children.camera.project.matrix;
+                                return self._attached.camera.project.matrix;
                             }
                         });
 
@@ -1364,37 +1438,37 @@
 
         // Returns true if there is enough on this Entity to render something.
         _valid: function () {
-            var geometry = this._children.geometry;
+            var geometry = this._attached.geometry;
             return geometry && geometry.positions && geometry.indices;
 
         },
 
         _compile: function () {
 
-            var children = this._children;
+            var attached = this._attached;
 
-            children.camera._compile();
-            children.clips._compile();
-            children.colorTarget._compile();
-            children.colorBuf._compile();
-            children.depthTarget._compile();
-            children.depthBuf._compile();
-            children.visibility._compile();
-            children.cull._compile();
-            children.modes._compile();
-            children.geometry._compile();
-            children.layer._compile();
-            children.lights._compile();
-            children.material._compile();
-            //children.morphTargets._compile();
-            children.reflect._compile();
-            children.shader._compile();
-            children.shaderParams._compile();
-            children.stage._compile();
-            children.transform._compile();
-            children.billboard._compile();
-            children.stationary._compile();
-            children.viewport._compile();
+            attached.camera._compile();
+            attached.clips._compile();
+            attached.colorTarget._compile();
+            attached.colorBuf._compile();
+            attached.depthTarget._compile();
+            attached.depthBuf._compile();
+            attached.visibility._compile();
+            attached.cull._compile();
+            attached.modes._compile();
+            attached.geometry._compile();
+            attached.layer._compile();
+            attached.lights._compile();
+            attached.material._compile();
+            //attached.morphTargets._compile();
+            attached.reflect._compile();
+            attached.shader._compile();
+            attached.shaderParams._compile();
+            attached.stage._compile();
+            attached.transform._compile();
+            attached.billboard._compile();
+            attached.stationary._compile();
+            attached.viewport._compile();
 
             // (Re)build this Entity in the renderer; for each Entity in teh scene graph,
             // there is an "object" in the renderer, that has the same ID as the entity
@@ -1425,45 +1499,34 @@
 
         _getJSON: function () {
 
-            var children = this._children;
+            var attached = this._attached;
 
             return {
-                camera: children.camera.id,
-                clips: children.clips.id,
-                colorTarget: children.colorTarget.id,
-                colorBuf: children.colorBuf.id,
-                depthTarget: children.depthTarget.id,
-                depthBuf: children.depthBuf.id,
-                visibility: children.visibility.id,
-                cull: children.cull.id,
-                modes: children.modes.id,
-                geometry: children.geometry.id,
-                layer: children.layer.id,
-                lights: children.lights.id,
-                material: children.material.id,
-                reflect: children.reflect.id,
-                shader: children.shader.id,
-                shaderParams: children.shaderParams.id,
-                stage: children.stage.id,
-                transform: children.transform.id,
-                billboard: children.billboard.id,
-                stationary: children.stationary.id,
-                viewport: children.viewport.id
+                camera: attached.camera.id,
+                clips: attached.clips.id,
+                colorTarget: attached.colorTarget.id,
+                colorBuf: attached.colorBuf.id,
+                depthTarget: attached.depthTarget.id,
+                depthBuf: attached.depthBuf.id,
+                visibility: attached.visibility.id,
+                cull: attached.cull.id,
+                modes: attached.modes.id,
+                geometry: attached.geometry.id,
+                layer: attached.layer.id,
+                lights: attached.lights.id,
+                material: attached.material.id,
+                reflect: attached.reflect.id,
+                shader: attached.shader.id,
+                shaderParams: attached.shaderParams.id,
+                stage: attached.stage.id,
+                transform: attached.transform.id,
+                billboard: attached.billboard.id,
+                stationary: attached.stationary.id,
+                viewport: attached.viewport.id
             };
         },
 
         _destroy: function () {
-
-            if (this._children.transform) {
-                this._children.transform.off(this._onTransformUpdated);
-                this._children.transform.off(this._onTransformDestroyed);
-            }
-
-            if (this._children.geometry) {
-                this._children.geometry.off(this._onGeometryDirty);
-                this._children.geometry.off(this._onGeometryPositions);
-                this._children.geometry.off(this._onGeometryDestroyed);
-            }
 
             if (this._worldBoundary) {
                 this._worldBoundary.destroy();

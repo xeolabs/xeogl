@@ -125,41 +125,34 @@
 
                 set: function (value) {
 
-                    // Unsubscribe from old Collection's events
+                    var self = this;
 
-                    var oldCollection = this._children.collection;
-
-                    if (oldCollection && XEO._isSameComponent(oldCollection, value)) {
-
-                        oldCollection.off(this._onAdded);
-                        oldCollection.off(this._onRemoved);
-
-                        oldCollection.iterate(this._unbind, this);
-                    }
-
-                    /**
-                     * Fired whenever this CollectionBoundary's {{#crossLink "CollectionBoundary/collection:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event collection
-                     * @param value The property's new value
-                     */
-                    var collection = this._setChild("XEO.Collection", "collection", value); // Converts value from ID to instance if necessary
-
-                    if (collection) {
-
-                        this._onAdded = collection.on("added", this._added, this);
-                        this._onRemoved = collection.on("removed", this._removed, this);
-
-                        collection.iterate(this._bind, this);
-
-                        this._setAABBDirty();
-                    }
+                    this._attach({
+                        name: "collection",
+                        type: "XEO.Collection",
+                        component: value, // Converts value from ID to instance if necessary
+                        on: {
+                            added: function (component) {
+                                self._added(component);
+                            },
+                            removed: function (component) {
+                                self._removed(component);
+                            }
+                        },
+                        onAttached: function (collection) {
+                            collection.iterate(self._bind, self);
+                            self._setAABBDirty();
+                        },
+                        onDetached: function (collection) {
+                            collection.iterate(self._unbind, self);
+                        }
+                    });
 
                     this._setAABBDirty();
                 },
 
                 get: function () {
-                    return this._children.collection;
+                    return this._attached.collection;
                 }
             },
 

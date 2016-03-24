@@ -117,59 +117,34 @@
 
                 set: function (value) {
 
-                    // Unsubscribe from old boundary's events
+                    var geometryDirty = false;
+                    var self = this;
 
-                    var oldBoundary = this._children.boundary;
-
-                    if (oldBoundary) {
-
-                        if ((!value || (value.id !== undefined ? value.id : value) !== oldBoundary.id)) {
-                            oldBoundary.off(this._onBoundaryUpdated);
-                            oldBoundary.off(this._onBoundaryDestroyed);
-                        }
-                    }
-
-                    /**
-                     * Fired whenever this BoundaryGeometry's  {{#crossLink "BoundaryGeometry/boundary:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event boundary
-                     * @param value The property's new value
-                     */
-                    this._setChild("XEO.Boundary3D", "boundary", value);
-
-                    var boundary = this._children.boundary;
-
-                    if (boundary) {
-
-                        var self = this;
-                        var geometryDirty = false;
-
-                        // Whenever the new boundary fires a change event,
-                        // schedule a geometry rebuild for the next 'tick'.
-
-                        this._onBoundaryUpdated = boundary.on("updated",
-                            function () {
+                    this._attach({
+                        name: "boundary",
+                        type: "XEO.Boundary3D",
+                        component: value,
+                        sceneDefault: false,
+                        on: {
+                            updated: function () {
                                 if (geometryDirty) {
                                     return;
                                 }
                                 geometryDirty = true;
                                 XEO.scheduleTask(function () {
-                                        self._setPositionsFromOBB(boundary.obb);
-                                        geometryDirty = false;
-                                    });
-                            });
-
-                        this._onBoundaryDestroyed = boundary.on("destroyed",
-                            function () {
-                                self.boundary = null; // Unsubscribes from old boundary's events
-                            });
-
-                        this._setPositionsFromOBB(boundary.obb);
-                    }
+                                    self._setPositionsFromOBB(self._attached.boundary.obb);
+                                    geometryDirty = false;
+                                });
+                            }
+                        },
+                        onAttached: function () {
+                            self._setPositionsFromOBB(self._attached.boundary.obb);
+                        }
+                    });
                 },
 
                 get: function () {
-                    return this._children.boundary;
+                    return this._attached.boundary;
                 }
             },
 
@@ -189,7 +164,7 @@
                         return;
                     }
 
-                    if (this._children.boundary) {
+                    if (this._attached.boundary) {
                         this.boundary = null;
                     }
 
@@ -211,7 +186,7 @@
                         return;
                     }
 
-                    if (this._children.boundary) {
+                    if (this._attached.boundary) {
                         this.boundary = null;
                     }
 
@@ -250,8 +225,8 @@
 
             var json = {};
 
-            if (this._children.boundary) {
-                json.boundary = this._children.boundary.id;
+            if (this._attached.boundary) {
+                json.boundary = this._attached.boundary.id;
 
             } else if (json.positions) {
                 json.positions = this.positions;
@@ -262,9 +237,9 @@
 
         _destroy: function () {
 
-            if (this._children.boundary) {
-                this._children.boundary.off(this._onBoundaryUpdated);
-                this._children.boundary.off(this._onBoundaryDestroyed);
+            if (this._attached.boundary) {
+                this._attached.boundary.off(this._onBoundaryUpdated);
+                this._attached.boundary.off(this._onBoundaryDestroyed);
             }
 
             this._super();

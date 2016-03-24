@@ -240,13 +240,20 @@
                      * @event transform
                      * @param value The property's new value
                      */
-                    var useDefault = false;
-
-                    this._setChild("XEO.Transform", "transform", value, useDefault, this._transformUpdated, this);
+                    this._attach({
+                        name: "transform",
+                        type: "XEO.Transform",
+                        component: value,
+                        sceneDefault: false,
+                        onAttached: {
+                            callback: this._transformUpdated,
+                            scope: this
+                        }
+                    });
                 },
 
                 get: function () {
-                    return this._children.transform;
+                    return this._attached.transform;
                 }
             }
         },
@@ -275,8 +282,8 @@
                 src: this._src
             };
 
-            if (this._children.transform) {
-                json.transform = this._children.transform.id;
+            if (this._attached.transform) {
+                json.transform = this._attached.transform.id;
             }
 
             return json;

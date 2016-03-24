@@ -75,7 +75,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
      */
     _update: function () {
 
-        var path = this._children.path;
+        var path = this._attached.path;
 
         if (!path) {
             return;
@@ -126,38 +126,27 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
             set: function (value) {
 
-                // Unsubscribe from old Curves's events
-
-                var oldPath = this._children.path;
-
-                if (oldPath && (!value || (value.id !== undefined ? value.id : value) !== oldPath.id)) {
-                    oldPath.off(this._onPathCurves);
-                }
-
                 /**
                  * Fired whenever this CameraPaths's {{#crossLink "CameraPath/path:property"}}{{/crossLink}} property changes.
                  * @event path
                  * @param value The property's new value
                  */
-                this._setChild("XEO.Path", "path", value);
-
-                var newPath = this._children.path;
-
-                if (newPath) {
-
-                    // Subscribe to new Path's curves
-
-                    var self = this;
-
-                    this._onPathCurves = newPath.on("curves",
-                        function () {
-                            self._scheduleUpdate();
-                        });
-                }
+                this._attach({
+                    name: "path",
+                    type: "XEO.Path",
+                    component: value,
+                    sceneDefault: false,
+                    on: {
+                        curves: {
+                            callback: this._scheduleUpdate,
+                            scope: this
+                        }
+                    }
+                });
             },
 
             get: function () {
-                return this._children.path;
+                return this._attached.path;
             }
         },
 
@@ -195,19 +184,10 @@ XEO.PathGeometry = XEO.Geometry.extend({
             divisions: this._divisions
         };
 
-        if (this._children.path) {
-            json.path = this._children.path.id;
+        if (this._attached.path) {
+            json.path = this._attached.path.id;
         }
 
         return json;
-    },
-
-    _destroy: function () {
-
-        if (this._children.path) {
-            this._children.path.off(this._onPathCurves);
-        }
-
-        this._super();
     }
 });

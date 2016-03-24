@@ -286,14 +286,11 @@
              */
             this.destroyed = false;
 
-            // Child components keyed to arbitrary names
-            this._children = {};
+            /// Attached components with names.
+            this._attached = {};
 
-            // Subscriptions for child component destructions
-            this._childDestroySubs = {};
-
-            // Subscriptions to child components needing recompilation
-            this._childDirtySubs = {};
+            // Attached components keyed to IDs
+            this._attachments = {};
 
             // Pub/sub
             this._handleMap = new XEO.utils.Map(); // Subscription handle pool
@@ -637,157 +634,196 @@
          * When component not given, attaches the scene's default instance for the given name (if any).
          * Publishes the new child component on this component, keyed to the given name.
          *
-         * @param {String} [expectedType] Optional expected type of base type of the child; when supplied, will
+         * @param {*} params
+         * @param {String} params.name component name
+         * @param {Component} [params.component] The component
+         * @param {String} [params.type] Optional expected type of base type of the child; when supplied, will
          * cause an exception if the given child is not the same type or a subtype of this.
-         * @param {String} name component name
-         * @param {Component} child The component
-         * @param {Boolean} [useDefault=true]
-         * @param {Function} [onAdded] Optional callback called before event is fired
-         * @param {Function} [onAddedScope] Optional scope for callback
+         * @param {Boolean} [params.sceneDefault=false]
+         * @param {Function} [params.onAttached] Optional callback called before event is fired
+         * * @param {Function} [params.onAttached.callback] Callback function
+         * @param {Function} [params.onAttached.scope] Optional scope for callback
+         * @param {{String:Function}} [params.on] Callbacks to subscribe to properties on component
+         * @param {Boolean} [params.recompiles=true] When true, fires "dirty" events on this component
          * @private
          */
-        _setChild: function (expectedType, name, child, useDefault, onAdded, onAddedScope) {
+        _attach: function (params) {
 
-            if (!child && useDefault !== false) {
+            var name = params.name;
 
-                // No child given, fall back on default component class for the given name
-
-                child = this.scene[name];
-
-                //if (!child) {
-                //    this.error("No default component for name '" + name + "'");
-                //    return;
-                //}
-
-            } else {
-
-                // Child ID or instance given
-
-                // Both numeric and string IDs are supported
-
-                if (child && XEO._isNumeric(child) || XEO._isString(child)) {
-
-                    // Child ID given
-
-                    var id = child;
-
-                    child = this.scene.components[id];
-
-                    if (!child) {
-
-                        // Quote string IDs in errors
-
-                        this.error("Component not found: " + XEO._inQuotes(id));
-                        return;
-                    }
-                }
-            }
-
-            if (child) {
-
-                if (child.scene.id !== this.scene.id) {
-                    this.error("Not in same scene: " + child.type + " " + XEO._inQuotes(child.id));
-                    return;
-                }
-
-                if (expectedType) {
-
-                    if (!child.isType(expectedType)) {
-                        this.error("Expected a " + expectedType + " type or subtype: " + child.type + " " + XEO._inQuotes(child.id));
-                        return;
-                    }
-                }
-            }
-
-            var oldChild = this._children[name];
-
-            if (oldChild) {
-
-                // Child of given name already attached
-
-                if (child && oldChild.id === child.id) {
-
-                    // Reject attempt to reattach same child
-                    return;
-                }
-
-                // Unsubscribe from old child's destruction
-
-                oldChild.off(this._childDestroySubs[name]);
-                oldChild.off(this._childDirtySubs[name]);
-            }
-
-            if (child) {
-
-                // Set and publish the new child on this component
-
-                this._children[name] = child;
-
-                // Bind destruct listener to new child to remove it
-                // from this component when destroyed
-
-                this._childDestroySubs[name] = child.on("destroyed",
-                    function () {
-                        this._childDestroyed(name, child);
-                    }, this);
-
-                this._childDirtySubs[name] = child.on("dirty", this._childDirty, this);
-
-            } else {
-                delete this._children[name];
-            }
-
-            if (onAdded) {
-
-                // Fire optional callback so caller can do stuff
-                // before the change event is fired below
-
-                if (onAddedScope) {
-                    onAdded.call(onAddedScope, child);
-                } else {
-                    onAdded(child);
-                }
-            }
-
-            this.fire("dirty", this);
-
-            this.fire(name, child);
-
-            return child;
-        },
-
-        // Callbacks as members to reduce memory churn
-
-        /**
-         * @private
-         */
-        _childDestroyed: function (name, child) {
-
-            // Child destroyed
-            delete this._children[name];
-
-            // Try to fall back on default child
-            var defaultComponent = this.scene[name];
-
-            if (!defaultComponent || child.id === defaultComponent.id) {
-
-                // Old child was the default,
-                // so publish null child and bail
-
-                this.fire(name, null);
-
+            if (!name) {
+                this.error("Component 'name' expected");
                 return;
             }
 
-            // Set default child
-            this._setChild(null, name, defaultComponent);
-        },
+            var component = params.component;
+            var sceneDefault = params.sceneDefault;
+            var type = params.type;
+            var on = params.on;
+            var recompiles = params.recompiles !== false;
 
-        /**
-         * @private
-         */
-        _childDirty: function () {
-            this.fire("dirty", this);
+            if (component && XEO._isNumeric(component) || XEO._isString(component)) {
+
+                // Component ID given
+                // Both numeric and string IDs are supported
+
+                var id = component;
+
+                component = this.scene.components[id];
+
+                if (!component) {
+
+                    // Quote string IDs in errors
+
+                    this.error("Component not found: " + XEO._inQuotes(id));
+                    return;
+                }
+            }
+
+            if (!component && sceneDefault === true) {
+
+                // Using a default scene component
+
+                component = this.scene[name];
+
+                if (!component) {
+                    this.error("Scene has no default component for '" + name + "'");
+                    return null;
+                }
+
+            }
+
+            if (component) {
+
+                if (component.scene.id !== this.scene.id) {
+                    this.error("Not in same scene: " + component.type + " " + XEO._inQuotes(component.id));
+                    return;
+                }
+
+                if (type) {
+
+                    if (!component.isType(type)) {
+                        this.error("Expected a " + type + " type or subtype: " + component.type + " " + XEO._inQuotes(component.id));
+                        return;
+                    }
+                }
+            }
+
+            var oldComponent = this._attached[name];
+            var subs;
+            var i;
+            var len;
+
+            if (oldComponent) {
+
+                if (oldComponent && oldComponent.id === component.id) {
+
+                    // Reject attempt to reattach same component
+                    return;
+                }
+
+                var oldAttachment = this._attachments[oldComponent.id];
+
+                // Unsubscribe from events on old component
+
+                subs = oldAttachment.subs;
+
+                for (i = 0, len = subs.length; i < len; i++) {
+                    oldComponent.off(subs[i]);
+                }
+
+                delete this._attached[name];
+                delete this._attachments[oldComponent.id];
+
+                var onDetached = oldAttachment.params.onDetached;
+                if (onDetached) {
+                    if (XEO._isFunction(onDetached)) {
+                        onDetached(component);
+                    } else {
+                        onDetached.scope ? onDetached.callback.call(onDetached.scope, component) : onDetached.callback(component);
+                    }
+                }
+            }
+
+            if (component) {
+
+                // Set and publish the new component on this component
+
+                var attachment = {
+                    params: params,
+                    component: component,
+                    subs: []
+                };
+
+                attachment.subs.push(
+                    component.on("destroyed",
+                        function () {
+                            attachment.params.component = null;
+                            this._attach(attachment.params);
+                        },
+                        this));
+
+                if (recompiles) {
+                    attachment.subs.push(
+                        component.on("dirty",
+                            function () {
+                                this.fire("dirty", this);
+                            },
+                            this));
+                }
+
+                this._attached[name] = component;
+                this._attachments[component.id] = attachment;
+
+                // Bind destruct listener to new component to remove it
+                // from this component when destroyed
+
+                var onAttached = params.onAttached;
+                if (onAttached) {
+                    if (XEO._isFunction(onAttached)) {
+                        onAttached(component);
+                    } else {
+                        onAttached.scope ? onAttached.callback.call(onAttached.scope, component) : onAttached.callback(component);
+                    }
+                }
+
+                if (on) {
+
+                    var event;
+                    var handler;
+                    var callback;
+                    var scope;
+
+                    for (event in on) {
+                        if (on.hasOwnProperty(event)) {
+
+                            handler = on[event];
+
+                            if (XEO._isFunction(handler)) {
+                                callback = handler;
+                                scope = null;
+                            } else {
+                                callback = handler.callback;
+                                scope = handler.scope;
+                            }
+
+                            if (!callback) {
+                                continue;
+                            }
+
+                            attachment.subs.push(component.on(event, callback, scope));
+                        }
+                    }
+                }
+            }
+
+            if (recompiles) {
+                this.fire("dirty", this); // FIXME: May trigger spurous entity recompilations unless able to limit with param?
+            }
+
+            this.fire(name, component); // Component can be null
+
+            return component;
         },
 
         /**
@@ -930,8 +966,7 @@
          * @protected
          */
         _compile: function () {
-        }
-        ,
+        },
 
         _props: {
 
@@ -994,8 +1029,7 @@
                     return "new " + this.type + "(" + str + ");";
                 }
             }
-        }
-        ,
+        },
 
         /**
          * Destroys this component.
@@ -1013,21 +1047,32 @@
 
             // Unsubscribe from child components
 
+            var id;
+            var attachment;
             var component;
+            var subs;
+            var i;
+            var len;
 
-            for (var name in this._children) {
-                if (this._children.hasOwnProperty(name)) {
+            for (id in this._attachments) {
+                if (this._attachments.hasOwnProperty(id)) {
 
-                    component = this._children[name];
+                    attachment = this._attachments[id];
+                    component = attachment.component;
 
-                    component.off(this._childDestroySubs[name]);
-                    component.off(this._childDirtySubs[name]);
+                    // Unsubscribe from properties on the child
+
+                    subs = attachment.subs;
+
+                    for (i = 0, len = subs.length; i < len; i++) {
+                        component.off(subs[i]);
+                    }
                 }
             }
 
             // Release components created with #create
 
-            for (var id in this._sharedComponents) {
+            for (id in this._sharedComponents) {
                 if (this._sharedComponents.hasOwnProperty(id)) {
 
                     component = this._sharedComponents[id];
@@ -1050,8 +1095,7 @@
              */
 
             this.fire("destroyed", this.destroyed = true);
-        }
-        ,
+        },
 
         /**
          * Protected template method, implemented by sub-classes
@@ -1061,8 +1105,6 @@
          */
         _destroy: function () {
         }
-    })
-    ;
-
+    });
 })
 ();
