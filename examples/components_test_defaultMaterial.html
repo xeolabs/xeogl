@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeoengine.min.js"></script>
+
+    <script src="js/debug/debug.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org">xeoEngine</a> - testing connect and disconnect
+    of a <a href="../docs/classes/PhongMaterial.html" target="_docs">PhongMaterial</a>
+    on an <a href="../docs/classes/Entity.html" target="_docs">Entity</a>
+</div>
+
+<script>
+
+    var entity = new XEO.Entity({
+        geometry: new XEO.SphereGeometry({
+            radius: 1.5,
+            heightSegments: 60,
+            widthSegments: 60
+        })
+    });
+
+    entity.scene.material.diffuse = [0,1,0];
+
+    var material = new XEO.PhongMaterial({
+        diffuseMap: new XEO.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+        })
+    });
+
+    entity.scene.view.eye = [0, 0, 5];
+
+    var toggle = false;
+
+    setInterval(function () {
+        entity.material = toggle ? material : null;
+        toggle = !toggle;
+    }, 500);
+
+    // Orbit the eye position about the look position.
+
+    entity.scene.on("tick",
+            function () {
+
+                var view = entity.camera.view;
+
+                view.rotateEyeY(0.5);
+                view.rotateEyeX(0.3);
+            });
+
+    new XEO.CameraControl();
+
+</script>
+</body>
+</html>
