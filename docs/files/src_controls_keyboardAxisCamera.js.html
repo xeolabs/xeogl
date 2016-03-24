@@ -306,15 +306,20 @@
                      * @event camera
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;XEO.Camera&quot;, &quot;camera&quot;, value);
+                    var camera = this._attach({
+                        name: &quot;camera&quot;,
+                        type: &quot;XEO.Camera&quot;,
+                        component: value,
+                        sceneDefault: true
+                    });
 
                     // Update animation
 
-                    this._cameraFly.camera = this._children.camera;
+                    this._cameraFly.camera = camera;
                 },
 
                 get: function () {
-                    return this._children.camera;
+                    return this._attached.camera;
                 }
             },
 
@@ -347,7 +352,7 @@
                         this._onKeyDown = input.on(&quot;keydown&quot;,
                             function (keyCode) {
 
-                                if (!self._children.camera) {
+                                if (!self._attached.camera) {
                                     return;
                                 }
 
@@ -482,8 +487,8 @@
                 active: this._active
             };
 
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
+            if (this._attached.camera) {
+                json.camera = this._attached.camera.id;
             }
 
             return json;

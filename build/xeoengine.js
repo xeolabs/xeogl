@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-03-22
+ * Built on 2016-03-25
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -447,6 +447,16 @@
             var id2 = (XEO.prototype._isNumeric(c2) || XEO.prototype._isString(c2)) ? "" + c2 : c2.id;
 
             return id1 === id2;
+        },
+
+        /**
+         * Tests if the given value is a function
+         * @param value
+         * @returns {boolean}
+         * @private
+         */
+        _isFunction: function (value) {
+            return (typeof value === "function");
         },
 
         /** Returns a shallow copy
@@ -9741,14 +9751,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              */
             this.destroyed = false;
 
-            // Child components keyed to arbitrary names
-            this._children = {};
+            /// Attached components with names.
+            this._attached = {};
 
-            // Subscriptions for child component destructions
-            this._childDestroySubs = {};
-
-            // Subscriptions to child components needing recompilation
-            this._childDirtySubs = {};
+            // Attached components keyed to IDs
+            this._attachments = {};
 
             // Pub/sub
             this._handleMap = new XEO.utils.Map(); // Subscription handle pool
@@ -10092,157 +10099,196 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          * When component not given, attaches the scene's default instance for the given name (if any).
          * Publishes the new child component on this component, keyed to the given name.
          *
-         * @param {String} [expectedType] Optional expected type of base type of the child; when supplied, will
+         * @param {*} params
+         * @param {String} params.name component name
+         * @param {Component} [params.component] The component
+         * @param {String} [params.type] Optional expected type of base type of the child; when supplied, will
          * cause an exception if the given child is not the same type or a subtype of this.
-         * @param {String} name component name
-         * @param {Component} child The component
-         * @param {Boolean} [useDefault=true]
-         * @param {Function} [onAdded] Optional callback called before event is fired
-         * @param {Function} [onAddedScope] Optional scope for callback
+         * @param {Boolean} [params.sceneDefault=false]
+         * @param {Function} [params.onAttached] Optional callback called before event is fired
+         * * @param {Function} [params.onAttached.callback] Callback function
+         * @param {Function} [params.onAttached.scope] Optional scope for callback
+         * @param {{String:Function}} [params.on] Callbacks to subscribe to properties on component
+         * @param {Boolean} [params.recompiles=true] When true, fires "dirty" events on this component
          * @private
          */
-        _setChild: function (expectedType, name, child, useDefault, onAdded, onAddedScope) {
+        _attach: function (params) {
 
-            if (!child && useDefault !== false) {
+            var name = params.name;
 
-                // No child given, fall back on default component class for the given name
-
-                child = this.scene[name];
-
-                //if (!child) {
-                //    this.error("No default component for name '" + name + "'");
-                //    return;
-                //}
-
-            } else {
-
-                // Child ID or instance given
-
-                // Both numeric and string IDs are supported
-
-                if (child && XEO._isNumeric(child) || XEO._isString(child)) {
-
-                    // Child ID given
-
-                    var id = child;
-
-                    child = this.scene.components[id];
-
-                    if (!child) {
-
-                        // Quote string IDs in errors
-
-                        this.error("Component not found: " + XEO._inQuotes(id));
-                        return;
-                    }
-                }
-            }
-
-            if (child) {
-
-                if (child.scene.id !== this.scene.id) {
-                    this.error("Not in same scene: " + child.type + " " + XEO._inQuotes(child.id));
-                    return;
-                }
-
-                if (expectedType) {
-
-                    if (!child.isType(expectedType)) {
-                        this.error("Expected a " + expectedType + " type or subtype: " + child.type + " " + XEO._inQuotes(child.id));
-                        return;
-                    }
-                }
-            }
-
-            var oldChild = this._children[name];
-
-            if (oldChild) {
-
-                // Child of given name already attached
-
-                if (child && oldChild.id === child.id) {
-
-                    // Reject attempt to reattach same child
-                    return;
-                }
-
-                // Unsubscribe from old child's destruction
-
-                oldChild.off(this._childDestroySubs[name]);
-                oldChild.off(this._childDirtySubs[name]);
-            }
-
-            if (child) {
-
-                // Set and publish the new child on this component
-
-                this._children[name] = child;
-
-                // Bind destruct listener to new child to remove it
-                // from this component when destroyed
-
-                this._childDestroySubs[name] = child.on("destroyed",
-                    function () {
-                        this._childDestroyed(name, child);
-                    }, this);
-
-                this._childDirtySubs[name] = child.on("dirty", this._childDirty, this);
-
-            } else {
-                delete this._children[name];
-            }
-
-            if (onAdded) {
-
-                // Fire optional callback so caller can do stuff
-                // before the change event is fired below
-
-                if (onAddedScope) {
-                    onAdded.call(onAddedScope, child);
-                } else {
-                    onAdded(child);
-                }
-            }
-
-            this.fire("dirty", this);
-
-            this.fire(name, child);
-
-            return child;
-        },
-
-        // Callbacks as members to reduce memory churn
-
-        /**
-         * @private
-         */
-        _childDestroyed: function (name, child) {
-
-            // Child destroyed
-            delete this._children[name];
-
-            // Try to fall back on default child
-            var defaultComponent = this.scene[name];
-
-            if (!defaultComponent || child.id === defaultComponent.id) {
-
-                // Old child was the default,
-                // so publish null child and bail
-
-                this.fire(name, null);
-
+            if (!name) {
+                this.error("Component 'name' expected");
                 return;
             }
 
-            // Set default child
-            this._setChild(null, name, defaultComponent);
-        },
+            var component = params.component;
+            var sceneDefault = params.sceneDefault;
+            var type = params.type;
+            var on = params.on;
+            var recompiles = params.recompiles !== false;
 
-        /**
-         * @private
-         */
-        _childDirty: function () {
-            this.fire("dirty", this);
+            if (component && XEO._isNumeric(component) || XEO._isString(component)) {
+
+                // Component ID given
+                // Both numeric and string IDs are supported
+
+                var id = component;
+
+                component = this.scene.components[id];
+
+                if (!component) {
+
+                    // Quote string IDs in errors
+
+                    this.error("Component not found: " + XEO._inQuotes(id));
+                    return;
+                }
+            }
+
+            if (!component && sceneDefault === true) {
+
+                // Using a default scene component
+
+                component = this.scene[name];
+
+                if (!component) {
+                    this.error("Scene has no default component for '" + name + "'");
+                    return null;
+                }
+
+            }
+
+            if (component) {
+
+                if (component.scene.id !== this.scene.id) {
+                    this.error("Not in same scene: " + component.type + " " + XEO._inQuotes(component.id));
+                    return;
+                }
+
+                if (type) {
+
+                    if (!component.isType(type)) {
+                        this.error("Expected a " + type + " type or subtype: " + component.type + " " + XEO._inQuotes(component.id));
+                        return;
+                    }
+                }
+            }
+
+            var oldComponent = this._attached[name];
+            var subs;
+            var i;
+            var len;
+
+            if (oldComponent) {
+
+                if (oldComponent && oldComponent.id === component.id) {
+
+                    // Reject attempt to reattach same component
+                    return;
+                }
+
+                var oldAttachment = this._attachments[oldComponent.id];
+
+                // Unsubscribe from events on old component
+
+                subs = oldAttachment.subs;
+
+                for (i = 0, len = subs.length; i < len; i++) {
+                    oldComponent.off(subs[i]);
+                }
+
+                delete this._attached[name];
+                delete this._attachments[oldComponent.id];
+
+                var onDetached = oldAttachment.params.onDetached;
+                if (onDetached) {
+                    if (XEO._isFunction(onDetached)) {
+                        onDetached(component);
+                    } else {
+                        onDetached.scope ? onDetached.callback.call(onDetached.scope, component) : onDetached.callback(component);
+                    }
+                }
+            }
+
+            if (component) {
+
+                // Set and publish the new component on this component
+
+                var attachment = {
+                    params: params,
+                    component: component,
+                    subs: []
+                };
+
+                attachment.subs.push(
+                    component.on("destroyed",
+                        function () {
+                            attachment.params.component = null;
+                            this._attach(attachment.params);
+                        },
+                        this));
+
+                if (recompiles) {
+                    attachment.subs.push(
+                        component.on("dirty",
+                            function () {
+                                this.fire("dirty", this);
+                            },
+                            this));
+                }
+
+                this._attached[name] = component;
+                this._attachments[component.id] = attachment;
+
+                // Bind destruct listener to new component to remove it
+                // from this component when destroyed
+
+                var onAttached = params.onAttached;
+                if (onAttached) {
+                    if (XEO._isFunction(onAttached)) {
+                        onAttached(component);
+                    } else {
+                        onAttached.scope ? onAttached.callback.call(onAttached.scope, component) : onAttached.callback(component);
+                    }
+                }
+
+                if (on) {
+
+                    var event;
+                    var handler;
+                    var callback;
+                    var scope;
+
+                    for (event in on) {
+                        if (on.hasOwnProperty(event)) {
+
+                            handler = on[event];
+
+                            if (XEO._isFunction(handler)) {
+                                callback = handler;
+                                scope = null;
+                            } else {
+                                callback = handler.callback;
+                                scope = handler.scope;
+                            }
+
+                            if (!callback) {
+                                continue;
+                            }
+
+                            attachment.subs.push(component.on(event, callback, scope));
+                        }
+                    }
+                }
+            }
+
+            if (recompiles) {
+                this.fire("dirty", this); // FIXME: May trigger spurous entity recompilations unless able to limit with param?
+            }
+
+            this.fire(name, component); // Component can be null
+
+            return component;
         },
 
         /**
@@ -10385,8 +10431,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          * @protected
          */
         _compile: function () {
-        }
-        ,
+        },
 
         _props: {
 
@@ -10449,8 +10494,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     return "new " + this.type + "(" + str + ");";
                 }
             }
-        }
-        ,
+        },
 
         /**
          * Destroys this component.
@@ -10468,21 +10512,32 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             // Unsubscribe from child components
 
+            var id;
+            var attachment;
             var component;
+            var subs;
+            var i;
+            var len;
 
-            for (var name in this._children) {
-                if (this._children.hasOwnProperty(name)) {
+            for (id in this._attachments) {
+                if (this._attachments.hasOwnProperty(id)) {
 
-                    component = this._children[name];
+                    attachment = this._attachments[id];
+                    component = attachment.component;
 
-                    component.off(this._childDestroySubs[name]);
-                    component.off(this._childDirtySubs[name]);
+                    // Unsubscribe from properties on the child
+
+                    subs = attachment.subs;
+
+                    for (i = 0, len = subs.length; i < len; i++) {
+                        component.off(subs[i]);
+                    }
                 }
             }
 
             // Release components created with #create
 
-            for (var id in this._sharedComponents) {
+            for (id in this._sharedComponents) {
                 if (this._sharedComponents.hasOwnProperty(id)) {
 
                     component = this._sharedComponents[id];
@@ -10505,8 +10560,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              */
 
             this.fire("destroyed", this.destroyed = true);
-        }
-        ,
+        },
 
         /**
          * Protected template method, implemented by sub-classes
@@ -10516,9 +10570,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          */
         _destroy: function () {
         }
-    })
-    ;
-
+    });
 })
 ();
 ;/**
@@ -12584,7 +12636,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 this.stop();
             }
 
-            var camera = this._children.camera;
+            var camera = this._attached.camera;
 
             if (!camera) {
                 if (callback) {
@@ -12767,7 +12819,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             t = this.easing ? this._ease(t, 0, 1, 1) : t;
 
-            var view = this._children.camera.view;
+            var view = this._attached.camera.view;
 
             view.eye = XEO.math.lerpVec3(t, 0, 1, this._eye1, this._eye2, tempVec3);
             view.look = XEO.math.lerpVec3(t, 0, 1, this._look1, this._look2, tempVec3b);
@@ -12831,13 +12883,18 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Camera", "camera", value);
+                    this._attach({
+                        name: "camera",
+                        type: "XEO.Camera",
+                        component: value,
+                        sceneDefault: true
+                    });
 
                     this.stop();
                 },
 
                 get: function () {
-                    return this._children.camera;
+                    return this._attached.camera;
                 }
             },
 
@@ -12860,8 +12917,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             var json = {};
 
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
+            if (this._attached.camera) {
+                json.camera = this._attached.camera.id;
             }
 
             return json;
@@ -13014,13 +13071,20 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Camera", "camera", value);
-
-                    this._update();
+                    this._attach({
+                        name: "camera",
+                        type: "XEO.Camera",
+                        component: value,
+                        sceneDefault: true,
+                        onAttached: {
+                            callback: this._update,
+                            scope: this
+                        }
+                    });
                 },
 
                 get: function () {
-                    return this._children.camera;
+                    return this._attached.camera;
                 }
             },
 
@@ -13036,41 +13100,35 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 set: function (value) {
 
-                    // Unsubscribe from old Curves's events
-
-                    var oldPath = this._children.path;
-
-                    if (oldPath && (!value || (value.id !== undefined ? value.id : value) !== oldPath.id)) {
-                        oldPath.off(this._onPathT);
-                    }
-
                     /**
                      * Fired whenever this CameraPaths's {{#crossLink "CameraPath/path:property"}}{{/crossLink}} property changes.
                      * @event path
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Path", "path", value);
-
-                    var newPath = this._children.path;
-
-                    if (newPath) {
-
-                        // Subscribe to new Path's events
-
-                        this._onPathT = newPath.on("t", this._update, this);
-                    }
+                    this._attach({
+                        name: "path",
+                        type: "XEO.Path",
+                        component: value,
+                        sceneDefault: false,
+                        on: {
+                            t: {
+                                callback: this._update,
+                                scope: this
+                            }
+                        }
+                    });
                 },
 
                 get: function () {
-                    return this._children.path;
+                    return this._attached.path;
                 }
             }
         },
 
         _update: function () {
 
-            var camera = this._children.camera;
-            var path = this._children.path;
+            var camera = this._attached.camera;
+            var path = this._attached.path;
 
             if (!camera || !path) {
                 return;
@@ -13094,28 +13152,20 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 freeRotate: this._freeRotate
             };
 
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
+            if (this._attached.camera) {
+                json.camera = this._attached.camera.id;
             }
 
-            if (this._children.path) {
-                json.path = this._children.path.id;
+            if (this._attached.path) {
+                json.path = this._attached.path.id;
             }
 
             return json;
-        },
-
-        _destroy: function () {
-            if (this._children.path) {
-                this._children.path.off(this._onPathT);
-            }
         }
     });
 
 })();
-;
-
-/**
+;/**
  A **Camera** defines viewing and projection transforms for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  <ul>
@@ -13221,38 +13271,30 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 set: function (value) {
 
-                    // Unsubscribe from old projection's events
-
-                    var oldProject = this._children.project;
-
-                    if (oldProject) {
-                        oldProject.off(this._onProjectMatrix);
-                    }
-                    
                     /**
                      * Fired whenever this Camera's {{#crossLink "Camera/project:property"}}{{/crossLink}} property changes.
+                     *
                      * @event project
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Projection", "project", value);
-
-                    var newProject = this._children.project;
-
-                    if (newProject) {
-
-                        // Subscribe to new projection's events
-
-                        var self = this;
-                        
-                        this._onProjectMatrix = newProject.on("matrix",
-                            function () {
-                                self.fire("projectMatrix");
-                            });
-                    }
+                    this._attach({
+                        name: "project",
+                        type: "XEO.Projection",
+                        component: value,
+                        sceneDefault: true,
+                        on: {
+                            matrix: {
+                                callback: function () {
+                                    this.fire("projectMatrix");
+                                },
+                                scope: this
+                            }
+                        }
+                    });
                 },
 
                 get: function () {
-                    return this._children.project;
+                    return this._attached.project;
                 }
             },
 
@@ -13272,61 +13314,44 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 set: function (value) {
 
-                    // Unsubscribe from old view transform's events
-
-                    var oldView = this._children.project;
-
-                    if (oldView) {
-                        oldView.off(this._onViewMatrix);
-                    }
-
                     /**
                      * Fired whenever this Camera's {{#crossLink "Camera/view:property"}}{{/crossLink}} property changes.
                      *
                      * @event view
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Lookat", "view", value); // TODO: need marker interface for view transform components
-
-                    var newView = this._children.view;
-
-                    if (newView) {
-
-                        // Subscribe to new projection's events
-
-                        var self = this;
-
-                        this._onViewMatrix = newView.on("matrix",
-                            function () {
-                                self.fire("viewMatrix");
-                            });
-                    }
+                    this._attach({
+                        name: "view",
+                        type: "XEO.Lookat",
+                        component: value,
+                        sceneDefault: true,
+                        on: {
+                            matrix: {
+                                callback: function () {
+                                    this.fire("viewMatrix");
+                                },
+                                scope: this
+                            }
+                        }
+                    });
                 },
 
                 get: function () {
-                    return this._children.view;
+                    return this._attached.view;
                 }
             }
         },
 
         _compile: function () {
-            this._children.project._compile();
-            this._children.view._compile();
+            this._attached.project._compile();
+            this._attached.view._compile();
         },
 
         _getJSON: function () {
-
-            var json = {};
-
-            if (this._children.project) {
-                json.project = this._children.project.id;
+            return { // Will always have the Scene's defaults
+                project: this._attached.project.id,
+                view: this._attached.view.id
             }
-
-            if (this._children.view) {
-                json.view = this._children.view.id;
-            }
-
-            return json;
         }
     });
 
@@ -16372,19 +16397,19 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             var scene = this.scene;
 
             // Shows a bounding box around each Entity we fly to
-            this._boundaryEntity = new XEO.Entity(scene, {
-                geometry: new XEO.BoundaryGeometry(scene),
-                material: new XEO.PhongMaterial(scene, {
+            this._boundaryEntity = this.create(XEO.Entity, {
+                geometry: this.create(XEO.BoundaryGeometry),
+                material: this.create(XEO.PhongMaterial, {
                     diffuse: [0, 0, 0],
                     ambient: [0, 0, 0],
                     specular: [0, 0, 0],
                     emissive: [1.0, 1.0, 0.6],
                     lineWidth: 4
                 }),
-                visibility: new XEO.Visibility(scene, {
+                visibility: this.create(XEO.Visibility, {
                     visible: false
                 }),
-                modes: new XEO.Modes(scene, {
+                modes: this.create(XEO.Modes, {
 
                     // Does not contribute to the size of any enclosing boundaries
                     // that might be calculated by xeoEngine, eg. like that returned by XEO.Scene#worldBoundary
@@ -16399,7 +16424,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * @final
              * @type KeyboardAxisCamera
              */
-            this.keyboardAxis = new XEO.KeyboardAxisCamera(scene, {
+            this.keyboardAxis = this.create(XEO.KeyboardAxisCamera, {
                 camera: cfg.camera
             });
 
@@ -16410,7 +16435,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * @final
              * @type KeyboardRotateCamera
              */
-            this.keyboardRotate = new XEO.KeyboardRotateCamera(scene, {
+            this.keyboardRotate = this.create(KeyboardRotateCamera, {
                 camera: cfg.camera
             });
 
@@ -16421,7 +16446,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * @final
              * @type MouseRotateCamera
              */
-            this.mouseRotate = new XEO.MouseRotateCamera(scene, {
+            this.mouseRotate = this.create(XEO.MouseRotateCamera, {
                 camera: cfg.camera
             });
 
@@ -16432,7 +16457,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * @final
              * @type KeyboardPanCamera
              */
-            this.keyboardPan = new XEO.KeyboardPanCamera(scene, {
+            this.keyboardPan = this.create(XEO.KeyboardPanCamera, {
                 camera: cfg.camera
             });
 
@@ -16443,7 +16468,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * @final
              * @type MousePanCamera
              */
-            this.mousePan = new XEO.MousePanCamera(scene, {
+            this.mousePan = this.create(XEO.MousePanCamera, {
                 camera: cfg.camera
             });
 
@@ -16454,7 +16479,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * @final
              * @type KeyboardZoomCamera
              */
-            this.keyboardZoom = new XEO.KeyboardZoomCamera(scene, {
+            this.keyboardZoom = this.create(XEO.KeyboardZoomCamera, {
                 camera: cfg.camera
             });
 
@@ -16465,7 +16490,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * @final
              * @type MouseZoomCamera
              */
-            this.mouseZoom = new XEO.MouseZoomCamera(scene, {
+            this.mouseZoom = this.create(XEO.MouseZoomCamera, {
                 camera: cfg.camera
             });
 
@@ -16476,7 +16501,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * @final
              * @type MousePickEntity
              */
-            this.mousePickEntity = new XEO.MousePickEntity(scene, {
+            this.mousePickEntity = this.create(XEO.MousePickEntity, {
                 rayPick: true
             });
 
@@ -16494,7 +16519,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * @final
              * @type CameraFlight
              */
-            this.cameraFlight = new XEO.CameraFlight(scene, {
+            this.cameraFlight = this.create(XEO.CameraFlight, {
                 camera: cfg.camera,
                 duration: 0.5
             });
@@ -16511,7 +16536,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             // Fly camera to each picked entity
             // Don't change distance between look and eye
 
-          //  var view = this.cameraFlight.camera.view;
+            //  var view = this.cameraFlight.camera.view;
 
             var pos;
 
@@ -16528,24 +16553,24 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 //
                 //var input = this.scene.input;
 
-              //  if (input.keyDown[input.KEY_SHIFT] && e.entity) {
+                //  if (input.keyDown[input.KEY_SHIFT] && e.entity) {
 
-                    // var aabb = e.entity.worldBoundary.aabb;
+                // var aabb = e.entity.worldBoundary.aabb;
 
-                    this._boundaryEntity.geometry.obb = e.entity.worldBoundary.obb;
-                    this._boundaryEntity.visibility.visible = true;
+                this._boundaryEntity.geometry.obb = e.entity.worldBoundary.obb;
+                this._boundaryEntity.visibility.visible = true;
 
-                    var center = e.entity.worldBoundary.center;
+                var center = e.entity.worldBoundary.center;
 
-                    this.cameraFlight.flyTo({
-                            aabb: e.entity.worldBoundary.aabb,
-                            oXffset: [
-                                pos[0] - center[0],
-                                pos[1] - center[1],
-                                pos[2] - center[2]
-                            ]
-                        },
-                        this._hideEntityBoundary, this);
+                this.cameraFlight.flyTo({
+                        aabb: e.entity.worldBoundary.aabb,
+                        oXffset: [
+                            pos[0] - center[0],
+                            pos[1] - center[1],
+                            pos[2] - center[2]
+                        ]
+                    },
+                    this._hideEntityBoundary, this);
 
                 //} else {
                 //
@@ -16597,15 +16622,12 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @param value The property's new value
                      */
                     this.fire('firstPerson', this._firstPerson);
-                }
-
-                ,
+                },
 
                 get: function () {
                     return this._firstPerson;
                 }
-            }
-            ,
+            },
 
             /**
              * The {{#crossLink "Camera"}}{{/crossLink}} being controlled by this CameraControl.
@@ -16628,11 +16650,18 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Camera", "camera", value);
+                    this._attach({
+                        name: "camera",
+                        type: "XEO.Camera",
+                        component: value,
+                        sceneDefault: true,
+                        onAdded: this._transformUpdated,
+                        onAddedScope: this
+                    });
 
                     // Update camera on child components
 
-                    var camera = this._children.camera;
+                    var camera = this._attached.camera;
 
                     this.keyboardAxis.camera = camera;
                     this.keyboardRotate.camera = camera;
@@ -16642,15 +16671,12 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     this.keyboardZoom.camera = camera;
                     this.mouseZoom.camera = camera;
                     this.cameraFlight.camera = camera;
-                }
-
-                ,
+                },
 
                 get: function () {
-                    return this._children.camera;
+                    return this._attached.camera;
                 }
-            }
-            ,
+            },
 
             /**
              * Flag which indicates whether this CameraControl is active or not.
@@ -16694,8 +16720,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     return this._active;
                 }
             }
-        }
-        ,
+        },
 
         _getJSON: function () {
 
@@ -16704,30 +16729,15 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 active: this._active
             };
 
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
+            if (this._attached.camera) {
+                json.camera = this._attached.camera.id;
             }
 
             return json;
-        }
-        ,
+        },
 
         _destroy: function () {
-
             this.active = false;
-
-            // FIXME: Does not recursively destroy child components
-            this._boundaryEntity.destroy();
-
-            this.keyboardAxis.destroy();
-            this.keyboardRotate.destroy();
-            this.mouseRotate.destroy();
-            this.keyboardPan.destroy();
-            this.mousePan.destroy();
-            this.keyboardZoom.destroy();
-            this.mouseZoom.destroy();
-            this.mousePickEntity.destroy();
-            this.cameraFlight.destroy();
         }
     });
 
@@ -16855,15 +16865,20 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Camera", "camera", value);
+                    var camera = this._attach({
+                        name: "camera",
+                        type: "XEO.Camera",
+                        component: value,
+                        sceneDefault: true
+                    });
 
                     // Update animation
 
-                    this._cameraFly.camera = this._children.camera;
+                    this._cameraFly.camera = camera;
                 },
 
                 get: function () {
-                    return this._children.camera;
+                    return this._attached.camera;
                 }
             },
 
@@ -16896,7 +16911,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         this._onKeyDown = input.on("keydown",
                             function (keyCode) {
 
-                                if (!self._children.camera) {
+                                if (!self._attached.camera) {
                                     return;
                                 }
 
@@ -17031,8 +17046,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 active: this._active
             };
 
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
+            if (this._attached.camera) {
+                json.camera = this._attached.camera.id;
             }
 
             return json;
@@ -17135,11 +17150,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         _init: function (cfg) {
 
             // Event handles
-            
+
             this._onTick = null;
 
             // Init properties
-            
+
             this.camera = cfg.camera;
             this.active = cfg.active !== false;
             this.sensitivity = cfg.sensitivity;
@@ -17169,11 +17184,17 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Camera", "camera", value);
+
+                    this._attach({
+                        name: "camera",
+                        type: "XEO.Camera",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.camera;
+                    return this._attached.camera;
                 }
             },
 
@@ -17267,8 +17288,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         this._onTick = this.scene.on("tick",
                             function (params) {
 
-                                var camera = self._children.camera;
-                                
+                                var camera = self._attached.camera;
+
                                 if (!camera) {
                                     return;
                                 }
@@ -17351,8 +17372,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 active: this._active
             };
 
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
+            if (this._attached.camera) {
+                json.camera = this._attached.camera.id;
             }
 
             return json;
@@ -17480,11 +17501,17 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Camera", "camera", value);
+
+                    this._attach({
+                        name: "camera",
+                        type: "XEO.Camera",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.camera;
+                    return this._attached.camera;
                 }
             },
 
@@ -17542,7 +17569,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         this._onTick = this.scene.on("tick",
                             function (params) {
 
-                                var camera = self._children.camera;
+                                var camera = self._attached.camera;
 
                                 if (!camera) {
                                     return;
@@ -17625,8 +17652,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 active: this._active
             };
 
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
+            if (this._attached.camera) {
+                json.camera = this._attached.camera.id;
             }
 
             return json;
@@ -17747,11 +17774,17 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Camera", "camera", value);
+
+                    this._attach({
+                        name: "camera",
+                        type: "XEO.Camera",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.camera;
+                    return this._attached.camera;
                 }
             },
 
@@ -17809,7 +17842,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         this._onTick = this.scene.on("tick",
                             function (params) {
 
-                                var camera = self._children.camera;
+                                var camera = self._attached.camera;
 
                                 if (!camera) {
                                     return;
@@ -17872,8 +17905,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 active: this._active
             };
 
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
+            if (this._attached.camera) {
+                json.camera = this._attached.camera.id;
             }
 
             return json;
@@ -18011,11 +18044,17 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Camera", "camera", value);
+
+                    this._attach({
+                        name: "camera",
+                        type: "XEO.Camera",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.camera;
+                    return this._attached.camera;
                 }
             },
 
@@ -18115,7 +18154,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         this._onTick = this.scene.on("tick",
                             function () {
 
-                                var camera = this._children.camera;
+                                var camera = this._attached.camera;
 
                                 if (!camera) {
                                     return;
@@ -18261,8 +18300,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 active: this._active
             };
 
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
+            if (this._attached.camera) {
+                json.camera = this._attached.camera.id;
             }
 
             return json;
@@ -18394,11 +18433,17 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Camera", "camera", value);
+
+                    this._attach({
+                        name: "camera",
+                        type: "XEO.Camera",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.camera;
+                    return this._attached.camera;
                 }
             },
 
@@ -18462,7 +18507,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         this._onTick = this.scene.on("tick",
                             function () {
 
-                                var camera = self._children.camera;
+                                var camera = self._attached.camera;
 
                                 if (!camera) {
                                     return;
@@ -18543,8 +18588,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 active: this._active
             };
 
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
+            if (this._attached.camera) {
+                json.camera = this._attached.camera.id;
             }
 
             return json;
@@ -18926,11 +18971,17 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Camera", "camera", value);
+
+                    this._attach({
+                        name: "camera",
+                        type: "XEO.Camera",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.camera;
+                    return this._attached.camera;
                 }
             },
 
@@ -19009,7 +19060,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         this._onTick = this.scene.on("tick",
                             function () {
 
-                                var camera = self._children.camera;
+                                var camera = self._attached.camera;
 
                                 if (!camera) {
                                     return;
@@ -19093,8 +19144,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 active: this._active
             };
 
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
+            if (this._attached.camera) {
+                json.camera = this._attached.camera.id;
             }
 
             return json;
@@ -22755,59 +22806,34 @@ visibility.destroy();
 
                 set: function (value) {
 
-                    // Unsubscribe from old boundary's events
+                    var geometryDirty = false;
+                    var self = this;
 
-                    var oldBoundary = this._children.boundary;
-
-                    if (oldBoundary) {
-
-                        if ((!value || (value.id !== undefined ? value.id : value) !== oldBoundary.id)) {
-                            oldBoundary.off(this._onBoundaryUpdated);
-                            oldBoundary.off(this._onBoundaryDestroyed);
-                        }
-                    }
-
-                    /**
-                     * Fired whenever this BoundaryGeometry's  {{#crossLink "BoundaryGeometry/boundary:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event boundary
-                     * @param value The property's new value
-                     */
-                    this._setChild("XEO.Boundary3D", "boundary", value);
-
-                    var boundary = this._children.boundary;
-
-                    if (boundary) {
-
-                        var self = this;
-                        var geometryDirty = false;
-
-                        // Whenever the new boundary fires a change event,
-                        // schedule a geometry rebuild for the next 'tick'.
-
-                        this._onBoundaryUpdated = boundary.on("updated",
-                            function () {
+                    this._attach({
+                        name: "boundary",
+                        type: "XEO.Boundary3D",
+                        component: value,
+                        sceneDefault: false,
+                        on: {
+                            updated: function () {
                                 if (geometryDirty) {
                                     return;
                                 }
                                 geometryDirty = true;
                                 XEO.scheduleTask(function () {
-                                        self._setPositionsFromOBB(boundary.obb);
-                                        geometryDirty = false;
-                                    });
-                            });
-
-                        this._onBoundaryDestroyed = boundary.on("destroyed",
-                            function () {
-                                self.boundary = null; // Unsubscribes from old boundary's events
-                            });
-
-                        this._setPositionsFromOBB(boundary.obb);
-                    }
+                                    self._setPositionsFromOBB(self._attached.boundary.obb);
+                                    geometryDirty = false;
+                                });
+                            }
+                        },
+                        onAttached: function () {
+                            self._setPositionsFromOBB(self._attached.boundary.obb);
+                        }
+                    });
                 },
 
                 get: function () {
-                    return this._children.boundary;
+                    return this._attached.boundary;
                 }
             },
 
@@ -22827,7 +22853,7 @@ visibility.destroy();
                         return;
                     }
 
-                    if (this._children.boundary) {
+                    if (this._attached.boundary) {
                         this.boundary = null;
                     }
 
@@ -22849,7 +22875,7 @@ visibility.destroy();
                         return;
                     }
 
-                    if (this._children.boundary) {
+                    if (this._attached.boundary) {
                         this.boundary = null;
                     }
 
@@ -22888,8 +22914,8 @@ visibility.destroy();
 
             var json = {};
 
-            if (this._children.boundary) {
-                json.boundary = this._children.boundary.id;
+            if (this._attached.boundary) {
+                json.boundary = this._attached.boundary.id;
 
             } else if (json.positions) {
                 json.positions = this.positions;
@@ -22900,9 +22926,9 @@ visibility.destroy();
 
         _destroy: function () {
 
-            if (this._children.boundary) {
-                this._children.boundary.off(this._onBoundaryUpdated);
-                this._children.boundary.off(this._onBoundaryDestroyed);
+            if (this._attached.boundary) {
+                this._attached.boundary.off(this._onBoundaryUpdated);
+                this._attached.boundary.off(this._onBoundaryDestroyed);
             }
 
             this._super();
@@ -23760,7 +23786,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
      */
     _update: function () {
 
-        var path = this._children.path;
+        var path = this._attached.path;
 
         if (!path) {
             return;
@@ -23811,38 +23837,27 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
             set: function (value) {
 
-                // Unsubscribe from old Curves's events
-
-                var oldPath = this._children.path;
-
-                if (oldPath && (!value || (value.id !== undefined ? value.id : value) !== oldPath.id)) {
-                    oldPath.off(this._onPathCurves);
-                }
-
                 /**
                  * Fired whenever this CameraPaths's {{#crossLink "CameraPath/path:property"}}{{/crossLink}} property changes.
                  * @event path
                  * @param value The property's new value
                  */
-                this._setChild("XEO.Path", "path", value);
-
-                var newPath = this._children.path;
-
-                if (newPath) {
-
-                    // Subscribe to new Path's curves
-
-                    var self = this;
-
-                    this._onPathCurves = newPath.on("curves",
-                        function () {
-                            self._scheduleUpdate();
-                        });
-                }
+                this._attach({
+                    name: "path",
+                    type: "XEO.Path",
+                    component: value,
+                    sceneDefault: false,
+                    on: {
+                        curves: {
+                            callback: this._scheduleUpdate,
+                            scope: this
+                        }
+                    }
+                });
             },
 
             get: function () {
-                return this._children.path;
+                return this._attached.path;
             }
         },
 
@@ -23880,20 +23895,11 @@ XEO.PathGeometry = XEO.Geometry.extend({
             divisions: this._divisions
         };
 
-        if (this._children.path) {
-            json.path = this._children.path.id;
+        if (this._attached.path) {
+            json.path = this._attached.path.id;
         }
 
         return json;
-    },
-
-    _destroy: function () {
-
-        if (this._children.path) {
-            this._children.path.off(this._onPathCurves);
-        }
-
-        this._super();
     }
 });;/**
  A **CylinderGeometry** defines cylindrical geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
@@ -29567,13 +29573,20 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event transform
                      * @param value The property's new value
                      */
-                    var useDefault = false;
-
-                    this._setChild("XEO.Transform", "transform", value, useDefault, this._transformUpdated, this);
+                    this._attach({
+                        name: "transform",
+                        type: "XEO.Transform",
+                        component: value,
+                        sceneDefault: false,
+                        onAttached: {
+                            callback: this._transformUpdated,
+                            scope: this
+                        }
+                    });
                 },
 
                 get: function () {
-                    return this._children.transform;
+                    return this._attached.transform;
                 }
             }
         },
@@ -29602,8 +29615,8 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 src: this._src
             };
 
-            if (this._children.transform) {
-                json.transform = this._children.transform.id;
+            if (this._attached.transform) {
+                json.transform = this._attached.transform.id;
             }
 
             return json;
@@ -29786,7 +29799,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 opacity: 1.0,
                 shininess: 30.0,
                 reflectivity: 1.0,
-                
+
                 lineWidth: 1.0,
                 pointSize: 1.0,
 
@@ -29809,7 +29822,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
             this._hashDirty = true;
 
-            this.on("dirty", function() {
+            this.on("dirty", function () {
 
                 // This PhongMaterial is flagged dirty when a
                 // child component fires "dirty", which always
@@ -29826,7 +29839,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             this.opacity = cfg.opacity;
             this.shininess = cfg.shininess;
             this.reflectivity = cfg.reflectivity;
-            
+
             this.lineWidth = cfg.lineWidth;
             this.pointSize = cfg.pointSize;
 
@@ -30112,7 +30125,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                     return this._state.pointSize;
                 }
             },
-            
+
             /**
              Scalar in range 0-1 that controls how much {{#crossLink "CubeMap"}}CubeMap{{/crossLink}} is reflected by this PhongMaterial.
 
@@ -30169,11 +30182,11 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event normalMap
                      @param value Number The property's new value
                      */
-                    this._setComponent("XEO.Texture", "normalMap", texture);
+                    this._attachComponent("XEO.Texture", "normalMap", texture);
                 },
 
                 get: function () {
-                    return this._children["normalMap"];
+                    return this._attached.normalMap;
                 }
             },
 
@@ -30198,14 +30211,14 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event ambientMap
                      @param value Number The property's new value
                      */
-                    this._setComponent("XEO.Texture", "ambientMap", texture);
+                    this._attachComponent("XEO.Texture", "ambientMap", texture);
                 },
 
                 get: function () {
-                    return this._children["ambientMap"];
+                    return this._attached.ambientMap;
                 }
             },
-            
+
             /**
              A diffuse {{#crossLink "Texture"}}{{/crossLink}} attached to this PhongMaterial.
 
@@ -30227,11 +30240,11 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event diffuseMap
                      @param value Number The property's new value
                      */
-                    this._setComponent("XEO.Texture", "diffuseMap", texture);
+                    this._attachComponent("XEO.Texture", "diffuseMap", texture);
                 },
 
                 get: function () {
-                    return this._children["diffuseMap"];
+                    return this._attached.diffuseMap;
                 }
             },
 
@@ -30256,11 +30269,11 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event specularMap
                      @param value Number The property's new value
                      */
-                    this._setComponent("XEO.Texture", "specularMap", texture);
+                    this._attachComponent("XEO.Texture", "specularMap", texture);
                 },
 
                 get: function () {
-                    return this._children["specularMap"];
+                    return this._attached.specularMap;
                 }
             },
 
@@ -30285,11 +30298,11 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event emissiveMap
                      @param value Number The property's new value
                      */
-                    this._setComponent("XEO.Texture", "emissiveMap", texture);
+                    this._attachComponent("XEO.Texture", "emissiveMap", texture);
                 },
 
                 get: function () {
-                    return this._children["emissiveMap"];
+                    return this._attached.emissiveMap;
                 }
             },
 
@@ -30314,11 +30327,11 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event opacityMap
                      @param value Number The property's new value
                      */
-                    this._setComponent("XEO.Texture", "opacityMap", texture);
+                    this._attachComponent("XEO.Texture", "opacityMap", texture);
                 },
 
                 get: function () {
-                    return this._children["opacityMap"];
+                    return this._attached.opacityMap;
                 }
             },
 
@@ -30343,11 +30356,11 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event reflectivityMap
                      @param value Number The property's new value
                      */
-                    this._setComponent("XEO.Texture", "reflectivityMap", texture);
+                    this._attachComponent("XEO.Texture", "reflectivityMap", texture);
                 },
 
                 get: function () {
-                    return this._children["reflectivityMap"];
+                    return this._attached.reflectivityMap;
                 }
             },
 
@@ -30370,11 +30383,11 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event reflection
                      @param value {Reflect} The property's new value
                      */
-                    this._setComponent("XEO.Reflect", "reflection", cubeMap);
+                    this._attachComponent("XEO.Reflect", "reflection", cubeMap);
                 },
 
                 get: function () {
-                    return this._children["reflection"];
+                    return this._attached.reflection;
                 }
             },
 
@@ -30399,11 +30412,11 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event diffuseFresnel
                      @param value Number The property's new value
                      */
-                    this._setComponent("XEO.Fresnel", "diffuseFresnel", fresnel);
+                    this._attachComponent("XEO.Fresnel", "diffuseFresnel", fresnel);
                 },
 
                 get: function () {
-                    return this._children["diffuseFresnel"];
+                    return this._attached.diffuseFresnel;
                 }
             },
 
@@ -30428,11 +30441,11 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event specularFresnel
                      @param value Number The property's new value
                      */
-                    this._setComponent("XEO.Fresnel", "specularFresnel", fresnel);
+                    this._attachComponent("XEO.Fresnel", "specularFresnel", fresnel);
                 },
 
                 get: function () {
-                    return this._children["specularFresnel"];
+                    return this._attached.specularFresnel;
                 }
             },
 
@@ -30457,11 +30470,11 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event emissiveFresnel
                      @param value Number The property's new value
                      */
-                    this._setComponent("XEO.Fresnel", "emissiveFresnel", fresnel);
+                    this._attachComponent("XEO.Fresnel", "emissiveFresnel", fresnel);
                 },
 
                 get: function () {
-                    return this._children["emissiveFresnel"];
+                    return this._attached.emissiveFresnel;
                 }
             },
 
@@ -30486,11 +30499,11 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event opacityFresnel
                      @param value Number The property's new value
                      */
-                    this._setComponent("XEO.Fresnel", "opacityFresnel", fresnel);
+                    this._attachComponent("XEO.Fresnel", "opacityFresnel", fresnel);
                 },
 
                 get: function () {
-                    return this._children["opacityFresnel"];
+                    return this._attached.opacityFresnel;
                 }
             },
 
@@ -30515,18 +30528,32 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      @event reflectivityFresnel
                      @param value Number The property's new value
                      */
-                    this._setComponent("XEO.Fresnel", "reflectivityFresnel", fresnel);
+                    this._attachComponent("XEO.Fresnel", "reflectivityFresnel", fresnel);
                 },
 
                 get: function () {
-                    return this._children["reflectivityFresnel"];
+                    return this._attached.reflectivityFresnel;
                 }
             }
         },
 
-        _setComponent: function (expectedType, name, child) {
-            child = this._setChild(expectedType, name, child, false);
-            this._state[name] = child ? child._state : null;
+        _attachComponent: function (expectedType, name, component) {
+            component = this._attach({
+                name: name,
+                type: expectedType,
+                component: component,
+                sceneDefault: false,
+                on: {
+                    destroyed: {
+                        callback: function () {
+                            this._state[name] = null;
+                            this._hashDirty = true;
+                        },
+                        scope: this
+                    }
+                }
+            });
+            this._state[name] = component ? component._state : null; // FIXME: Accessing _state breaks encapsulation
             this._hashDirty = true;
         },
 
@@ -30559,7 +30586,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                     hash.push("/mat");
                 }
             }
-            
+
             if (state.diffuseMap) {
                 hash.push("/d");
                 if (state.diffuseMap.matrix) {
@@ -30646,7 +30673,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
 
             // Lines and points
-            
+
             if (this._state.lineWidth !== 1.0) {
                 json.lineWidth = this._state.lineWidth;
             }
@@ -30657,7 +30684,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
             // Textures
 
-            var components = this._children;
+            var components = this._attached;
 
             if (components.normalMap) {
                 json.normalMap = components.normalMap.id;
@@ -30666,7 +30693,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             if (components.ambientMap) {
                 json.ambientMap = components.ambientMap.id;
             }
-            
+
             if (components.diffuseMap) {
                 json.diffuseMap = components.diffuseMap.id;
             }
@@ -30761,7 +30788,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  </ul>
 
  Note that xeoEngine will ignore the {{#crossLink "PhongMaterial"}}PhongMaterial's{{/crossLink}} {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}
-  and {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} properties, since we assigned {{#crossLink "Texture"}}Textures{{/crossLink}} to the {{#crossLink "PhongMaterial"}}PhongMaterial's{{/crossLink}} {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} and
+ and {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} properties, since we assigned {{#crossLink "Texture"}}Textures{{/crossLink}} to the {{#crossLink "PhongMaterial"}}PhongMaterial's{{/crossLink}} {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} and
  {{#crossLink "PhongMaterial/specularMap:property"}}{{/crossLink}} properties. The {{#crossLink "Texture"}}Textures'{{/crossLink}} pixel
  colors directly provide the diffuse and specular components for each fragment across the {{#crossLink "Geometry"}}{{/crossLink}} surface.
 
@@ -31227,12 +31254,18 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                     this._image = null;
                     this._src = null;
 
-                    if (this._onTargetActive) {
-                        this._target.off(this._onTargetActive);
-                        this._onTargetActive = null;
-                    }
-
-                    this._target = this._setChild(null, "renderBuf", value);
+                    this._target = this._attach({
+                        name: "renderBuf",
+                        type: null,
+                        component: value,
+                        sceneDefault: true,
+                        on: {
+                            active: {
+                                callback: this._onTargetActive,
+                                scope: this
+                            }
+                        }
+                    });
 
                     this._imageDirty = false;
                     this._srcDirty = false;
@@ -31250,7 +31283,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 },
 
                 get: function () {
-                    return this._children.target;
+                    return this._attached.target;
                 }
             },
 
@@ -32539,36 +32572,32 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                     this._setViewBoundaryDirty();
 
-                    // Unsubscribe from old Cameras's events
-
-                    var oldCamera = this._children.camera;
-
-                    if (oldCamera) {
-                        oldCamera.off(this._onCameraViewMatrix);
-                        oldCamera.off(this._onCameraProjMatrix);
-                    }
-
                     /**
                      * Fired whenever this Entity's  {{#crossLink "Entity/camera:property"}}{{/crossLink}} property changes.
                      *
                      * @event camera
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Camera", "camera", value);
-
-                    var newCamera = this._children.camera;
-
-                    if (newCamera) {
-
-                        // Subscribe to new Camera's events
-
-                        this._onCameraViewMatrix = newCamera.on("viewMatrix", this._setViewBoundaryDirty, this);
-                        this._onCameraProjMatrix = newCamera.on("projMatrix", this._setCanvasBoundaryDirty, this);
-                    }
+                    this._attach({
+                        name: "camera",
+                        type: "XEO.Camera",
+                        component: value,
+                        sceneDefault: true,
+                        on: {
+                            viewMatrix: {
+                                callback: this._setViewBoundaryDirty,
+                                scope: this
+                            },
+                            projMatrix: {
+                                callback: this._setCanvasBoundaryDirty,
+                                scope: this
+                            }
+                        }
+                    });
                 },
 
                 get: function () {
-                    return this._children.camera;
+                    return this._attached.camera;
                 }
             },
 
@@ -32593,11 +32622,16 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event clips
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Clips", "clips", value);
+                    this._attach({
+                        name: "clips",
+                        type: "XEO.Clips",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.clips;
+                    return this._attached.clips;
                 }
             },
 
@@ -32622,11 +32656,16 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event colorTarget
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.ColorTarget", "colorTarget", value);
+                    this._attach({
+                        name: "colorTarget",
+                        type: "XEO.ColorTarget",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.colorTarget;
+                    return this._attached.colorTarget;
                 }
             },
 
@@ -32652,11 +32691,16 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event colorBuf
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.ColorBuf", "colorBuf", value);
+                    this._attach({
+                        name: "colorBuf",
+                        type: "XEO.ColorBuf",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.colorBuf;
+                    return this._attached.colorBuf;
                 }
             },
 
@@ -32682,11 +32726,16 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event depthTarget
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.DepthTarget", "depthTarget", value);
+                    this._attach({
+                        name: "depthTarget",
+                        type: "XEO.DepthTarget",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.depthTarget;
+                    return this._attached.depthTarget;
                 }
             },
 
@@ -32712,11 +32761,16 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event depthBuf
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.DepthBuf", "depthBuf", value);
+                    this._attach({
+                        name: "depthBuf",
+                        type: "XEO.DepthBuf",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.depthBuf;
+                    return this._attached.depthBuf;
                 }
             },
 
@@ -32742,11 +32796,16 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event visibility
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Visibility", "visibility", value);
+                    this._attach({
+                        name: "visibility",
+                        type: "XEO.Visibility",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.visibility;
+                    return this._attached.visibility;
                 }
             },
 
@@ -32772,11 +32831,17 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event cull
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Cull", "cull", value);
+
+                    this._attach({
+                        name: "cull",
+                        type: "XEO.Cull",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.cull;
+                    return this._attached.cull;
                 }
             },
 
@@ -32802,11 +32867,16 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event modes
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Modes", "modes", value);
+                    this._attach({
+                        name: "modes",
+                        type: "XEO.Modes",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.modes;
+                    return this._attached.modes;
                 }
             },
 
@@ -32834,42 +32904,26 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                     this._setWorldBoundaryDirty();
 
-                    // Unsubscribe from old Geometry's events
-
-                    var oldGeometry = this._children.geometry;
-
-                    if (oldGeometry) {
-
-                        if (!value || (value.id !== undefined ? value.id : value) !== oldGeometry.id) {
-                            oldGeometry.off(this._onGeometryPositions);
-                            oldGeometry.off(this._onGeometryDestroyed);
+                    this._attach({
+                        name: "geometry",
+                        type: "XEO.Geometry",
+                        component: value,
+                        sceneDefault: true,
+                        on: {
+                            positions: {
+                                callback: this._setWorldBoundaryDirty,
+                                scope: this
+                            },
+                            destroyed: {
+                                callback: this._setWorldBoundaryDirty,
+                                scope: this
+                            }
                         }
-                    }
-
-                    /**
-                     * Fired whenever this Entity's  {{#crossLink "Entity/geometry:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event geometry
-                     * @param value The property's new value
-                     */
-                    this._setChild("XEO.Geometry", "geometry", value);
-
-                    var newGeometry = this._children.geometry;
-
-                    if (newGeometry) {
-
-                        // Subscribe to new Geometry's events
-
-                        // World-space boundary is dirty when new Geometry's
-                        // positions are updated or Geometry is destroyed.
-
-                        this._onGeometryPositions = newGeometry.on("positions", this._setWorldBoundaryDirty, this);
-                        this._onGeometryDestroyed = newGeometry.on("destroyed", this._setWorldBoundaryDirty, this);
-                    }
+                    });
                 },
 
                 get: function () {
-                    return this._children.geometry;
+                    return this._attached.geometry;
                 }
             },
 
@@ -32895,11 +32949,16 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event layer
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Layer", "layer", value);
+                    this._attach({
+                        name: "layer",
+                        type: "XEO.Layer",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.layer;
+                    return this._attached.layer;
                 }
             },
 
@@ -32925,11 +32984,16 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event lights
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Lights", "lights", value);
+                    this._attach({
+                        name: "lights",
+                        type: "XEO.Lights",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.lights;
+                    return this._attached.lights;
                 }
             },
 
@@ -32955,11 +33019,16 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event material
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Material", "material", value);
+                    this._attach({
+                        name: "material",
+                        type: "XEO.Material",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.material;
+                    return this._attached.material;
                 }
             },
 
@@ -32984,11 +33053,16 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event morphTargets
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.MorphTargets", "morphTargets", value);
+                    this._attach({
+                        name: "morphTargets",
+                        type: "XEO.MorphTargets",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.morphTargets;
+                    return this._attached.morphTargets;
                 }
             },
 
@@ -33014,11 +33088,16 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event reflect
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Reflect", "reflect", value);
+                    this._attach({
+                        name: "reflect",
+                        type: "XEO.Reflect",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.reflect;
+                    return this._attached.reflect;
                 }
             },
 
@@ -33043,11 +33122,16 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event shader
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Shader", "shader", value);
+                    this._attach({
+                        name: "shader",
+                        type: "XEO.Shader",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.shader;
+                    return this._attached.shader;
                 }
             },
 
@@ -33073,11 +33157,16 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event shaderParams
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.ShaderParams", "shaderParams", value);
+                    this._attach({
+                        name: "shaderParams",
+                        type: "XEO.ShaderParams",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.shaderParams;
+                    return this._attached.shaderParams;
                 }
             },
 
@@ -33103,11 +33192,16 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event stage
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Stage", "stage", value);
+                    this._attach({
+                        name: "stage",
+                        type: "XEO.Stage",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.stage;
+                    return this._attached.stage;
                 }
             },
 
@@ -33135,15 +33229,6 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                     this._setWorldBoundaryDirty();
 
-                    // Unsubscribe from old Transform's events
-
-                    var oldTransform = this._children.transform;
-
-                    if (oldTransform && !XEO._isSameComponent(oldTransform, value)) {
-                        oldTransform.off(this._onTransformUpdated);
-                        oldTransform.off(this._onTransformDestroyed);
-                    }
-
                     /**
                      * Fired whenever this Entity's {{#crossLink "Entity/transform:property"}}{{/crossLink}}
                      * property changes.
@@ -33151,42 +33236,49 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event transform
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Transform", "transform", value);
+                    this._attach({
+                        name: "transform",
+                        type: "XEO.Transform",
+                        component: value,
+                        sceneDefault: true,
+                        on: {
+                            updated: {
 
-                    // Subscribe to new Transform's events
+                                callback: function () {
 
-                    var newTransform = this._children.transform;
-
-                    if (newTransform) {
-
-                        // World-space boundary is dirty when Transform's
-                        // matrix is updated or Transform is destroyed.
-
-                        var self = this;
-
-                        this._onTransformUpdated = newTransform.on("updated",
-                            function () {
-                                if (self._transformDirty) {
-                                    return;
-                                }
-                                self._transformDirty = true;
-                                XEO.scheduleTask(function () {
-                                    if (!self._transformDirty) {
+                                    if (this._transformDirty) {
                                         return;
                                     }
-                                    newTransform._buildLeafMatrix();
 
-                                    self._setWorldBoundaryDirty();
-                                    self._transformDirty = false;
-                                });
-                            });
+                                    this._transformDirty = true;
 
-                        this._onTransformDestroyed = newTransform.on("destroyed", this._setWorldBoundaryDirty, this);
-                    }
+                                    XEO.scheduleTask(function () {
+
+                                            if (!this._transformDirty) {
+                                                return;
+                                            }
+
+                                            this._attached.transform._buildLeafMatrix();
+
+                                            this._setWorldBoundaryDirty();
+
+                                            this._transformDirty = false;
+                                        },
+                                        this);
+                                },
+                                scope: this
+                            },
+
+                            destroyed: {
+                                callback: this._setWorldBoundaryDirty,
+                                scope: this
+                            }
+                        }
+                    });
                 },
 
                 get: function () {
-                    return this._children.transform;
+                    return this._attached.transform;
                 }
             },
 
@@ -33216,11 +33308,16 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event billboard
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Billboard", "billboard", value);
+                    this._attach({
+                        name: "billboard",
+                        type: "XEO.Billboard",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.billboard;
+                    return this._attached.billboard;
                 }
             },
 
@@ -33247,11 +33344,16 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event viewport
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Viewport", "viewport", value);
+                    this._attach({
+                        name: "viewport",
+                        type: "XEO.Viewport",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.viewport;
+                    return this._attached.viewport;
                 }
             },
 
@@ -33282,11 +33384,16 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                      * @event stationary
                      * @param value The property's new value
                      */
-                    this._setChild("XEO.Stationary", "stationary", value);
+                    this._attach({
+                        name: "stationary",
+                        type: "XEO.Stationary",
+                        component: value,
+                        sceneDefault: true
+                    });
                 },
 
                 get: function () {
-                    return this._children.stationary;
+                    return this._attached.stationary;
                 }
             },
 
@@ -33313,7 +33420,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             localBoundary: {
 
                 get: function () {
-                    return this._children.geometry.localBoundary;
+                    return this._attached.geometry.localBoundary;
                 }
             },
 
@@ -33373,7 +33480,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                             // Faster and less precise than getPositions:
                             getOBB: function () {
-                                var geometry = self._children.geometry;
+                                var geometry = self._attached.geometry;
                                 if (geometry) {
                                     var boundary = geometry.localBoundary;
                                     return boundary.obb;
@@ -33381,12 +33488,12 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                             },
 
                             //getPositions: function () {
-                            //    return self._children.geometry.positions;
+                            //    return self._attached.geometry.positions;
                             //},
 
                             getMatrix: function () {
 
-                                var transform = self._children.transform;
+                                var transform = self._attached.transform;
 
                                 if (self._transformDirty) {
                                     transform._buildLeafMatrix();
@@ -33464,7 +33571,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                             },
 
                             getMatrix: function () {
-                                return self._children.camera.view.matrix;
+                                return self._attached.camera.view.matrix;
                             }
                         });
 
@@ -33535,7 +33642,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                             },
 
                             getMatrix: function () {
-                                return self._children.camera.project.matrix;
+                                return self._attached.camera.project.matrix;
                             }
                         });
 
@@ -33636,37 +33743,37 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
         // Returns true if there is enough on this Entity to render something.
         _valid: function () {
-            var geometry = this._children.geometry;
+            var geometry = this._attached.geometry;
             return geometry && geometry.positions && geometry.indices;
 
         },
 
         _compile: function () {
 
-            var children = this._children;
+            var attached = this._attached;
 
-            children.camera._compile();
-            children.clips._compile();
-            children.colorTarget._compile();
-            children.colorBuf._compile();
-            children.depthTarget._compile();
-            children.depthBuf._compile();
-            children.visibility._compile();
-            children.cull._compile();
-            children.modes._compile();
-            children.geometry._compile();
-            children.layer._compile();
-            children.lights._compile();
-            children.material._compile();
-            //children.morphTargets._compile();
-            children.reflect._compile();
-            children.shader._compile();
-            children.shaderParams._compile();
-            children.stage._compile();
-            children.transform._compile();
-            children.billboard._compile();
-            children.stationary._compile();
-            children.viewport._compile();
+            attached.camera._compile();
+            attached.clips._compile();
+            attached.colorTarget._compile();
+            attached.colorBuf._compile();
+            attached.depthTarget._compile();
+            attached.depthBuf._compile();
+            attached.visibility._compile();
+            attached.cull._compile();
+            attached.modes._compile();
+            attached.geometry._compile();
+            attached.layer._compile();
+            attached.lights._compile();
+            attached.material._compile();
+            //attached.morphTargets._compile();
+            attached.reflect._compile();
+            attached.shader._compile();
+            attached.shaderParams._compile();
+            attached.stage._compile();
+            attached.transform._compile();
+            attached.billboard._compile();
+            attached.stationary._compile();
+            attached.viewport._compile();
 
             // (Re)build this Entity in the renderer; for each Entity in teh scene graph,
             // there is an "object" in the renderer, that has the same ID as the entity
@@ -33697,45 +33804,34 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
         _getJSON: function () {
 
-            var children = this._children;
+            var attached = this._attached;
 
             return {
-                camera: children.camera.id,
-                clips: children.clips.id,
-                colorTarget: children.colorTarget.id,
-                colorBuf: children.colorBuf.id,
-                depthTarget: children.depthTarget.id,
-                depthBuf: children.depthBuf.id,
-                visibility: children.visibility.id,
-                cull: children.cull.id,
-                modes: children.modes.id,
-                geometry: children.geometry.id,
-                layer: children.layer.id,
-                lights: children.lights.id,
-                material: children.material.id,
-                reflect: children.reflect.id,
-                shader: children.shader.id,
-                shaderParams: children.shaderParams.id,
-                stage: children.stage.id,
-                transform: children.transform.id,
-                billboard: children.billboard.id,
-                stationary: children.stationary.id,
-                viewport: children.viewport.id
+                camera: attached.camera.id,
+                clips: attached.clips.id,
+                colorTarget: attached.colorTarget.id,
+                colorBuf: attached.colorBuf.id,
+                depthTarget: attached.depthTarget.id,
+                depthBuf: attached.depthBuf.id,
+                visibility: attached.visibility.id,
+                cull: attached.cull.id,
+                modes: attached.modes.id,
+                geometry: attached.geometry.id,
+                layer: attached.layer.id,
+                lights: attached.lights.id,
+                material: attached.material.id,
+                reflect: attached.reflect.id,
+                shader: attached.shader.id,
+                shaderParams: attached.shaderParams.id,
+                stage: attached.stage.id,
+                transform: attached.transform.id,
+                billboard: attached.billboard.id,
+                stationary: attached.stationary.id,
+                viewport: attached.viewport.id
             };
         },
 
         _destroy: function () {
-
-            if (this._children.transform) {
-                this._children.transform.off(this._onTransformUpdated);
-                this._children.transform.off(this._onTransformDestroyed);
-            }
-
-            if (this._children.geometry) {
-                this._children.geometry.off(this._onGeometryDirty);
-                this._children.geometry.off(this._onGeometryPositions);
-                this._children.geometry.off(this._onGeometryDestroyed);
-            }
 
             if (this._worldBoundary) {
                 this._worldBoundary.destroy();
@@ -37226,41 +37322,34 @@ myTask2.setFailed();
 
                 set: function (value) {
 
-                    // Unsubscribe from old Collection's events
+                    var self = this;
 
-                    var oldCollection = this._children.collection;
-
-                    if (oldCollection && XEO._isSameComponent(oldCollection, value)) {
-
-                        oldCollection.off(this._onAdded);
-                        oldCollection.off(this._onRemoved);
-
-                        oldCollection.iterate(this._unbind, this);
-                    }
-
-                    /**
-                     * Fired whenever this CollectionBoundary's {{#crossLink "CollectionBoundary/collection:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event collection
-                     * @param value The property's new value
-                     */
-                    var collection = this._setChild("XEO.Collection", "collection", value); // Converts value from ID to instance if necessary
-
-                    if (collection) {
-
-                        this._onAdded = collection.on("added", this._added, this);
-                        this._onRemoved = collection.on("removed", this._removed, this);
-
-                        collection.iterate(this._bind, this);
-
-                        this._setAABBDirty();
-                    }
+                    this._attach({
+                        name: "collection",
+                        type: "XEO.Collection",
+                        component: value, // Converts value from ID to instance if necessary
+                        on: {
+                            added: function (component) {
+                                self._added(component);
+                            },
+                            removed: function (component) {
+                                self._removed(component);
+                            }
+                        },
+                        onAttached: function (collection) {
+                            collection.iterate(self._bind, self);
+                            self._setAABBDirty();
+                        },
+                        onDetached: function (collection) {
+                            collection.iterate(self._unbind, self);
+                        }
+                    });
 
                     this._setAABBDirty();
                 },
 
                 get: function () {
-                    return this._children.collection;
+                    return this._attached.collection;
                 }
             },
 

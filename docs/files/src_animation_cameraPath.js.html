@@ -324,13 +324,20 @@
                      * @event camera
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;XEO.Camera&quot;, &quot;camera&quot;, value);
-
-                    this._update();
+                    this._attach({
+                        name: &quot;camera&quot;,
+                        type: &quot;XEO.Camera&quot;,
+                        component: value,
+                        sceneDefault: true,
+                        onAttached: {
+                            callback: this._update,
+                            scope: this
+                        }
+                    });
                 },
 
                 get: function () {
-                    return this._children.camera;
+                    return this._attached.camera;
                 }
             },
 
@@ -346,41 +353,35 @@
 
                 set: function (value) {
 
-                    // Unsubscribe from old Curves&#x27;s events
-
-                    var oldPath = this._children.path;
-
-                    if (oldPath &amp;&amp; (!value || (value.id !== undefined ? value.id : value) !== oldPath.id)) {
-                        oldPath.off(this._onPathT);
-                    }
-
                     /**
                      * Fired whenever this CameraPaths&#x27;s {{#crossLink &quot;CameraPath/path:property&quot;}}{{/crossLink}} property changes.
                      * @event path
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;XEO.Path&quot;, &quot;path&quot;, value);
-
-                    var newPath = this._children.path;
-
-                    if (newPath) {
-
-                        // Subscribe to new Path&#x27;s events
-
-                        this._onPathT = newPath.on(&quot;t&quot;, this._update, this);
-                    }
+                    this._attach({
+                        name: &quot;path&quot;,
+                        type: &quot;XEO.Path&quot;,
+                        component: value,
+                        sceneDefault: false,
+                        on: {
+                            t: {
+                                callback: this._update,
+                                scope: this
+                            }
+                        }
+                    });
                 },
 
                 get: function () {
-                    return this._children.path;
+                    return this._attached.path;
                 }
             }
         },
 
         _update: function () {
 
-            var camera = this._children.camera;
-            var path = this._children.path;
+            var camera = this._attached.camera;
+            var path = this._attached.path;
 
             if (!camera || !path) {
                 return;
@@ -404,21 +405,15 @@
                 freeRotate: this._freeRotate
             };
 
-            if (this._children.camera) {
-                json.camera = this._children.camera.id;
+            if (this._attached.camera) {
+                json.camera = this._attached.camera.id;
             }
 
-            if (this._children.path) {
-                json.path = this._children.path.id;
+            if (this._attached.path) {
+                json.path = this._attached.path.id;
             }
 
             return json;
-        },
-
-        _destroy: function () {
-            if (this._children.path) {
-                this._children.path.off(this._onPathT);
-            }
         }
     });
 

@@ -183,8 +183,6 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-
-
 /**
  A **Camera** defines viewing and projection transforms for attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
 
@@ -291,38 +289,30 @@
 
                 set: function (value) {
 
-                    // Unsubscribe from old projection&#x27;s events
-
-                    var oldProject = this._children.project;
-
-                    if (oldProject) {
-                        oldProject.off(this._onProjectMatrix);
-                    }
-                    
                     /**
                      * Fired whenever this Camera&#x27;s {{#crossLink &quot;Camera/project:property&quot;}}{{/crossLink}} property changes.
+                     *
                      * @event project
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;XEO.Projection&quot;, &quot;project&quot;, value);
-
-                    var newProject = this._children.project;
-
-                    if (newProject) {
-
-                        // Subscribe to new projection&#x27;s events
-
-                        var self = this;
-                        
-                        this._onProjectMatrix = newProject.on(&quot;matrix&quot;,
-                            function () {
-                                self.fire(&quot;projectMatrix&quot;);
-                            });
-                    }
+                    this._attach({
+                        name: &quot;project&quot;,
+                        type: &quot;XEO.Projection&quot;,
+                        component: value,
+                        sceneDefault: true,
+                        on: {
+                            matrix: {
+                                callback: function () {
+                                    this.fire(&quot;projectMatrix&quot;);
+                                },
+                                scope: this
+                            }
+                        }
+                    });
                 },
 
                 get: function () {
-                    return this._children.project;
+                    return this._attached.project;
                 }
             },
 
@@ -342,61 +332,44 @@
 
                 set: function (value) {
 
-                    // Unsubscribe from old view transform&#x27;s events
-
-                    var oldView = this._children.project;
-
-                    if (oldView) {
-                        oldView.off(this._onViewMatrix);
-                    }
-
                     /**
                      * Fired whenever this Camera&#x27;s {{#crossLink &quot;Camera/view:property&quot;}}{{/crossLink}} property changes.
                      *
                      * @event view
                      * @param value The property&#x27;s new value
                      */
-                    this._setChild(&quot;XEO.Lookat&quot;, &quot;view&quot;, value); // TODO: need marker interface for view transform components
-
-                    var newView = this._children.view;
-
-                    if (newView) {
-
-                        // Subscribe to new projection&#x27;s events
-
-                        var self = this;
-
-                        this._onViewMatrix = newView.on(&quot;matrix&quot;,
-                            function () {
-                                self.fire(&quot;viewMatrix&quot;);
-                            });
-                    }
+                    this._attach({
+                        name: &quot;view&quot;,
+                        type: &quot;XEO.Lookat&quot;,
+                        component: value,
+                        sceneDefault: true,
+                        on: {
+                            matrix: {
+                                callback: function () {
+                                    this.fire(&quot;viewMatrix&quot;);
+                                },
+                                scope: this
+                            }
+                        }
+                    });
                 },
 
                 get: function () {
-                    return this._children.view;
+                    return this._attached.view;
                 }
             }
         },
 
         _compile: function () {
-            this._children.project._compile();
-            this._children.view._compile();
+            this._attached.project._compile();
+            this._attached.view._compile();
         },
 
         _getJSON: function () {
-
-            var json = {};
-
-            if (this._children.project) {
-                json.project = this._children.project.id;
+            return { // Will always have the Scene&#x27;s defaults
+                project: this._attached.project.id,
+                view: this._attached.view.id
             }
-
-            if (this._children.view) {
-                json.view = this._children.view.id;
-            }
-
-            return json;
         }
     });
 

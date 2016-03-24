@@ -228,7 +228,7 @@
  &lt;/ul&gt;
 
  Note that xeoEngine will ignore the {{#crossLink &quot;PhongMaterial&quot;}}PhongMaterial&#x27;s{{/crossLink}} {{#crossLink &quot;PhongMaterial/diffuse:property&quot;}}{{/crossLink}}
-  and {{#crossLink &quot;PhongMaterial/specular:property&quot;}}{{/crossLink}} properties, since we assigned {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} to the {{#crossLink &quot;PhongMaterial&quot;}}PhongMaterial&#x27;s{{/crossLink}} {{#crossLink &quot;PhongMaterial/diffuseMap:property&quot;}}{{/crossLink}} and
+ and {{#crossLink &quot;PhongMaterial/specular:property&quot;}}{{/crossLink}} properties, since we assigned {{#crossLink &quot;Texture&quot;}}Textures{{/crossLink}} to the {{#crossLink &quot;PhongMaterial&quot;}}PhongMaterial&#x27;s{{/crossLink}} {{#crossLink &quot;PhongMaterial/diffuseMap:property&quot;}}{{/crossLink}} and
  {{#crossLink &quot;PhongMaterial/specularMap:property&quot;}}{{/crossLink}} properties. The {{#crossLink &quot;Texture&quot;}}Textures&#x27;{{/crossLink}} pixel
  colors directly provide the diffuse and specular components for each fragment across the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} surface.
 
@@ -694,12 +694,18 @@
                     this._image = null;
                     this._src = null;
 
-                    if (this._onTargetActive) {
-                        this._target.off(this._onTargetActive);
-                        this._onTargetActive = null;
-                    }
-
-                    this._target = this._setChild(null, &quot;renderBuf&quot;, value);
+                    this._target = this._attach({
+                        name: &quot;renderBuf&quot;,
+                        type: null,
+                        component: value,
+                        sceneDefault: true,
+                        on: {
+                            active: {
+                                callback: this._onTargetActive,
+                                scope: this
+                            }
+                        }
+                    });
 
                     this._imageDirty = false;
                     this._srcDirty = false;
@@ -717,7 +723,7 @@
                 },
 
                 get: function () {
-                    return this._children.target;
+                    return this._attached.target;
                 }
             },
 

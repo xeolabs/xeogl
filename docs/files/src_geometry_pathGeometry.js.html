@@ -260,7 +260,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
      */
     _update: function () {
 
-        var path = this._children.path;
+        var path = this._attached.path;
 
         if (!path) {
             return;
@@ -311,38 +311,27 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
             set: function (value) {
 
-                // Unsubscribe from old Curves&#x27;s events
-
-                var oldPath = this._children.path;
-
-                if (oldPath &amp;&amp; (!value || (value.id !== undefined ? value.id : value) !== oldPath.id)) {
-                    oldPath.off(this._onPathCurves);
-                }
-
                 /**
                  * Fired whenever this CameraPaths&#x27;s {{#crossLink &quot;CameraPath/path:property&quot;}}{{/crossLink}} property changes.
                  * @event path
                  * @param value The property&#x27;s new value
                  */
-                this._setChild(&quot;XEO.Path&quot;, &quot;path&quot;, value);
-
-                var newPath = this._children.path;
-
-                if (newPath) {
-
-                    // Subscribe to new Path&#x27;s curves
-
-                    var self = this;
-
-                    this._onPathCurves = newPath.on(&quot;curves&quot;,
-                        function () {
-                            self._scheduleUpdate();
-                        });
-                }
+                this._attach({
+                    name: &quot;path&quot;,
+                    type: &quot;XEO.Path&quot;,
+                    component: value,
+                    sceneDefault: false,
+                    on: {
+                        curves: {
+                            callback: this._scheduleUpdate,
+                            scope: this
+                        }
+                    }
+                });
             },
 
             get: function () {
-                return this._children.path;
+                return this._attached.path;
             }
         },
 
@@ -380,20 +369,11 @@ XEO.PathGeometry = XEO.Geometry.extend({
             divisions: this._divisions
         };
 
-        if (this._children.path) {
-            json.path = this._children.path.id;
+        if (this._attached.path) {
+            json.path = this._attached.path.id;
         }
 
         return json;
-    },
-
-    _destroy: function () {
-
-        if (this._children.path) {
-            this._children.path.off(this._onPathCurves);
-        }
-
-        this._super();
     }
 });
     </pre>
