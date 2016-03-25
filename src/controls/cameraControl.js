@@ -161,7 +161,7 @@
              * @final
              * @type KeyboardRotateCamera
              */
-            this.keyboardRotate = this.create(KeyboardRotateCamera, {
+            this.keyboardRotate = this.create(XEO.KeyboardRotateCamera, {
                 camera: cfg.camera
             });
 

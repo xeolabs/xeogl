@@ -716,7 +716,7 @@
 
             if (oldComponent) {
 
-                if (oldComponent && oldComponent.id === component.id) {
+                if (component && oldComponent.id === component.id) {
 
                     // Reject attempt to reattach same component
                     return;
