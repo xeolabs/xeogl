@@ -434,6 +434,109 @@
                         }
                     });
             })();
+
+            // VR
+
+            (function () {
+
+                var screenOrientation;
+
+                var lastY = null;
+                var lastX = null;
+                var lastZ = null;
+
+                var deltaX = 0;
+                var deltaY = 0;
+                var deltaZ = 0;
+
+                window.addEventListener('orientationchange',
+                    function () {
+
+                        switch (window.screen.orientation || window.screen.mozOrientation) {
+
+                            case 'landscape-primary':
+                                return 90;
+
+                            case 'landscape-secondary':
+                                return -90;
+
+                            case 'portrait-secondary':
+                                return 180;
+
+                            case 'portrait-primary':
+                                return 0;
+                        }
+                        // this returns 90 if width is greater then height
+                        // and window orientation is undefined OR 0
+                        // if (!window.orientation && window.innerWidth > window.innerHeight)
+                        //   return 90;
+                        screenOrientation = window.orientation || 0;
+                    },
+                    false);
+
+                window.addEventListener('devicemotion',
+                    function (e) {
+                        var acceleration = e.acceleration;
+                        acceleration = e.accelerationIncludingGravity;
+
+                        var rotation = e.rotationRate;
+
+                        // // Grab the refresh interval from the results
+                        var interval = e.interval;
+
+                        // call handlers
+                        var isHorizontal = screenOrientation !== 0;
+
+                        var currentZ = rotation.gamma;
+                        lastZ = lastZ || currentZ;
+                        deltaZ = currentZ;
+                        lastZ = currentZ;
+                    },
+                    false);
+
+                window.addEventListener("deviceOrient",
+                    function (e) {
+
+                        // gamma is the left-to-right tilt in degrees, where right is positive
+                        var tiltLR = e.gamma;
+
+                        // beta is the front-to-back tilt in degrees, where front is positive
+                        var tiltFB = e.beta;
+
+                        // alpha is the compass direction the device is facing in degrees
+                        var dir = e.alpha;
+
+                        // current X + Y
+                        var isHorizontal = screenOrientation !== 0;
+                        var currentY = !isHorizontal ? tiltLR : tiltFB;
+                        var currentX = !isHorizontal ? tiltFB : tiltLR;
+
+                        // initial X + Y
+                        lastY = lastY || currentY;
+                        lastX = lastX || currentX;
+
+                        // delta X + Y
+                        deltaX = currentX - lastX;
+                        deltaY = currentY - lastY;
+
+                        // update last X + Y
+                        lastX = currentX;
+                        lastY = currentY;
+
+                        //var accelerationX = isHorizontal ? acceleration.y : acceleration.x;
+                        //var accelerationY = isHorizontal ? acceleration.x : acceleration.y;
+
+                        self.fire("deviceorient", {
+                            orientation: screenOrientation,
+                            accelerationX: 1.0,
+                            accelerationY: 1.0,
+                            deltaX: deltaX,
+                            deltaY: deltaY,
+                            deltaZ: deltaZ
+                        });
+                    },
+                    false);
+            })();
         },
 
         _getClickCoordsWithinElement: function (event) {

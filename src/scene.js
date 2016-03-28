@@ -202,17 +202,6 @@
      * @event warn
      * @param {String} value The warning message
      */
-
-    /**
-     * Fired on each game loop iteration.
-     *
-     * @event tick
-     * @param {String} sceneID The ID of this Scene.
-     * @param {Number} startTime The time in seconds since 1970 that this Scene was instantiated.
-     * @param {Number} time The time in seconds since 1970 of this "tick" event.
-     * @param {Number} prevTime The time of the previous "tick" event from this Scene.
-     * @param {Number} deltaTime The time in seconds since the previous "tick" event from this Scene.
-     */
     XEO.Scene = XEO.Component.extend({
 
         type: "XEO.Scene",
@@ -297,7 +286,7 @@
             });
 
             // Redraw as canvas resized
-            this.canvas.on("size",
+            this.canvas.on("boundary",
                 function () {
                     self._renderer.imageDirty = true;
                     self._renderer.render({
@@ -441,7 +430,9 @@
             types[c.id] = c;
 
 
-            c.on("destroyed", function() { this._componentDestroyed(c); }, this);
+            c.on("destroyed", function () {
+                this._componentDestroyed(c);
+            }, this);
 
             if (c.isType("XEO.Entity")) {
 
@@ -573,7 +564,7 @@
                     return this._passes;
                 }
             },
-            
+
             /**
              * The default projection transform provided by this Scene, which is
              * a {{#crossLink "Perspective"}}Perspective{{/crossLink}}.

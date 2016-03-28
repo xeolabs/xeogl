@@ -93,8 +93,13 @@
                     }
 
                     if (!value) {
-                        var canvas = this.scene.canvas;
-                        value = [0, 0, canvas.width, canvas.height];
+
+                        var canvasBoundary = this.scene.canvas.boundary;
+
+                        var width = canvasBoundary[2];
+                        var height = canvasBoundary[3];
+
+                        value = [0, 0, width, height];
                     }
 
                     this._state.boundary = value;
@@ -142,10 +147,13 @@
                     this._autoBoundary = value;
 
                     if (this._autoBoundary) {
-                        this._onCanvasSize = this.scene.canvas.on("size",
-                            function (e) {
+                        this._onCanvasSize = this.scene.canvas.on("boundary",
+                            function (boundary) {
 
-                                this._state.boundary = [0, 0, e.width, e.height];
+                                var width = boundary[2];
+                                var height = boundary[3];
+
+                                this._state.boundary = [0, 0, width, height];
 
                                 /**
                                  Fired whenever this Viewport's {{#crossLink "Viewport/boundary:property"}}{{/crossLink}} property changes.
