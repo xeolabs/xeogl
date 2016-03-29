@@ -883,16 +883,16 @@
                 if (!this._sharedComponents[component.id]) {
                     this._sharedComponents[component.id] = component;
                 }
+
+                component.on("destroyed", function () {
+
+                    // If the component is explicitly destroyed, ie. by calling
+                    // its #destroy method, then deregister it so we don't try
+                    // to destroy it a second time when we destroy this component
+
+                    delete this._sharedComponents[component.id];
+                }, this);
             }
-
-            component.on("destroyed", function () {
-
-                // If the component is explicitly destroyed, ie. by calling
-                // its #destroy method, then deregister it so we don't try
-                // to destroy it a second time when we destroy this component
-
-                delete this._sharedComponents[component.id];
-            }, this);
 
             return component;
         },
