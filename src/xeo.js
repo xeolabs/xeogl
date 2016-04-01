@@ -22,6 +22,61 @@
         this.version = null;
 
         /**
+         * Information about available WebGL support
+         */
+        this.WEBGL_INFO = (function() {
+            var info = {
+                WEBGL: false
+            };
+
+            var canvas = document.createElement("canvas");
+
+            if (!canvas) {
+                return info;
+            }
+
+            var gl = canvas.getContext("webgl", { antialias: true }) || canvas.getContext("experimental-webgl", { antialias: true });
+
+            info.WEBGL = !!gl;
+
+            if (!info.WEBGL) {
+                return info;
+            }
+
+            info.ANTIALIAS = gl.getContextAttributes().antialias;
+
+            if (gl.getShaderPrecisionFormat) {
+                if (gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT).precision > 0) {
+                    info.FS_MAX_FLOAT_PRECISION = "highp";
+                } else if (gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.MEDIUM_FLOAT).precision > 0) {
+                    info.FS_MAX_FLOAT_PRECISION = "mediump";
+                } else {
+                    info.FS_MAX_FLOAT_PRECISION = "lowp";
+                }
+            } else {
+                info.FS_MAX_FLOAT_PRECISION = "mediump";
+            }
+
+            info.DEPTH_BUFFER_BITS = gl.getParameter(gl.DEPTH_BITS);
+            info.MAX_TEXTURE_SIZE = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+            info.MAX_CUBE_MAP_SIZE = gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE);
+            info.MAX_RENDERBUFFER_SIZE = gl.getParameter(gl.MAX_RENDERBUFFER_SIZE);
+            info.MAX_TEXTURE_UNITS =  gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+            info.MAX_VERTEX_ATTRIBS = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
+            info.MAX_VERTEX_UNIFORM_VECTORS = gl.getParameter(gl.MAX_VERTEX_UNIFORM_VECTORS);
+            info.MAX_FRAGMENT_UNIFORM_VECTORS = gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS);
+            info.MAX_VARYING_VECTORS = gl.getParameter(gl.MAX_VARYING_VECTORS);
+
+            info.SUPPORTED_EXTENSIONS = {};
+
+            gl.getSupportedExtensions().forEach(function(ext) {
+                info.SUPPORTED_EXTENSIONS[ext] = true;
+            });
+
+            return info;
+        })();
+
+        /**
          * Tracks statistics within xeoEngine, such as numbers of
          * scenes, textures, geometries etc.
          * @final
