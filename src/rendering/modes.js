@@ -120,6 +120,8 @@
                         return;
                     }
 
+                    this._state.pickable = value;
+
                     this._renderer.drawListDirty = true;
 
                     /**
@@ -274,7 +276,13 @@
 
                 set: function (value) {
 
-                    this._state.frontface = value !== "cw";
+                    value = value !== "cw";
+
+                    if (this._state.frontface === value) {
+                        return;
+                    }
+
+                    this._state.frontface = value;
 
                     this._renderer.imageDirty = true;
 
