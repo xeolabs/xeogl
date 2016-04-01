@@ -2465,8 +2465,8 @@
 
             var numIndices = indices.length;
 
-            var pickPositions = new Float32Array(numIndices * 3);
-            var pickColors = new Float32Array(numIndices * 4);
+            var pickPositions = new Float32Array(numIndices * 30); // FIXME: Why do we need to extend size like this to make large meshes pickable?
+            var pickColors = new Float32Array(numIndices * 40);
 
             var primIndex = 0;
 
