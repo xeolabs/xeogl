@@ -1073,7 +1073,6 @@
                 // Convert picked pixel color to primitive index
 
                 pix = pickBuf.read(canvasX, canvasY);
-                console.log(pix);
                 var primitiveIndex = pix[0] + (pix[1] * 256) + (pix[2] * 256 * 256) + (pix[3] * 256 * 256 * 256);
                 primitiveIndex *= 3; // Convert from triangle number to first vertex in indices
 
