@@ -1073,8 +1073,9 @@
                 // Convert picked pixel color to primitive index
 
                 pix = pickBuf.read(canvasX, canvasY);
-                var primitiveIndex = pix[0] + pix[1] * 256 + pix[2] * 65536;
-                primitiveIndex = (primitiveIndex >= 1) ? primitiveIndex - 1 : -1;
+                console.log(pix);
+                var primitiveIndex = pix[0] + (pix[1] * 256) + (pix[2] * 256 * 256) + (pix[3] * 256 * 256 * 256);
+                primitiveIndex *= 3; // Convert from triangle number to first vertex in indices
 
                 hit.primitiveIndex = primitiveIndex;
             }
@@ -1129,6 +1130,11 @@
         frameCtx.bindTexture = 0;
         frameCtx.bindArray = 0;
 
+        // The extensions needs to be re-queried in case the context was lost and has been recreated.
+        if (XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {
+            gl.getExtension("OES_element_index_uint");
+        }
+
         this.stats.frame.setUniform = 0;
         this.stats.frame.setUniformCacheHits = 0;
 
@@ -1136,7 +1142,7 @@
 
         gl.enable(gl.DEPTH_TEST);
 
-        if (this.transparent) {
+        if (this.transparent || params.pickObject || params.rayPick) {
 
             // Canvas is transparent - set clear color with zero alpha
             // to allow background to show through

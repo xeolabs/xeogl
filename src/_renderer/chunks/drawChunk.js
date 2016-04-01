@@ -54,12 +54,12 @@
         pickPrimitive: function () {
 
             var state = this.state;
-            var gl= this.program.gl;
+            var gl = this.program.gl;
 
-            var pickIndices = state.getPickIndices();
+            var pickPositions = state.getPickPositions();
 
-            if (pickIndices) {
-                gl.drawElements(state.primitive, pickIndices.numItems, pickIndices.itemType, 0);
+            if (pickPositions) {
+                gl.drawArrays(state.primitive, 0, pickPositions.numItems / 3);
             }
         }
     });

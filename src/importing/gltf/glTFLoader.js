@@ -153,7 +153,7 @@
     };
 
 
-    XEO.GLTFLoader = Object.create(glTFParser, {
+    XEO.GLTFLoader = Object.create(XEO.glTFParser, {
 
         setCollection: {
             value: function (collection) {
@@ -171,8 +171,8 @@
 
                 this.resources = new Resources();
 
-                glTFParser.handleLoadCompleted = ok;
-                glTFParser.load.call(this, userInfo, options);
+                XEO.glTFParser.handleLoadCompleted = ok;
+                XEO.glTFParser.load.call(this, userInfo, options);
             }
         },
 

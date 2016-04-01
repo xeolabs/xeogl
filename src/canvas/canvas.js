@@ -151,6 +151,8 @@
              */
             this.contextAttr = cfg.contextAttr || {};
 
+            this.contextAttr.alpha = true;
+
             if (!cfg.canvas) {
 
                 // Canvas not supplied, create one automatically
@@ -179,10 +181,7 @@
 
                 } else {
 
-                    this.error("Config 'canvasId' should be a string - "
-                        + "creating default canvas instead.");
-
-                    this._createCanvas();
+                    this.canvas = cfg.canvas;
                 }
             }
 
@@ -396,13 +395,9 @@
 
             // Default context attribute values
 
-            var contextAttr = XEO._applyIf({
-                preserveDrawingBuffer: false
-            }, this.contextAttr);
-
             for (var i = 0; !this.gl && i < this._WEBGL_CONTEXT_NAMES.length; i++) {
                 try {
-                    this.gl = this.canvas.getContext(this._WEBGL_CONTEXT_NAMES[i], contextAttr);
+                    this.gl = this.canvas.getContext(this._WEBGL_CONTEXT_NAMES[i], this.contextAttr);
                 } catch (e) { // Try with next context name
                 }
             }

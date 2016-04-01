@@ -252,13 +252,6 @@
                         self._buildPickVBOs();
                     }
                     return self._pickColors;
-                },
-
-                getPickIndices: function () {
-                    if (self._pickVBOsDirty) {
-                        self._buildPickVBOs();
-                    }
-                    return self._pickIndices;
                 }
             });
 
@@ -281,7 +274,6 @@
             this._tangents = null;
             this._pickPositions = null;
             this._pickColors = null;
-            this._pickIndices = null;
 
             // Flags for work pending
 
@@ -525,7 +517,10 @@
                     memoryStats.indices -= this._state.indices.numItems;
                     this._state.indices.destroy();
                 }
-                this._state.indices = this._indicesData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this._indicesData), this._indicesData.length, 1, usage) : null;
+
+                var IndexArrayType = XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"] ? Uint32Array : Uint16Array;
+
+                this._state.indices = this._indicesData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, new IndexArrayType(this._indicesData), this._indicesData.length, 1, usage) : null;
                 if (this._state.indices) {
                     memoryStats.indices += this._state.indices.numItems;
                 }
@@ -599,19 +594,16 @@
 
                 var arrays = XEO.math.getPickPrimitives(this._positionsData, this._indicesData);
 
-                var pickPositions = arrays.pickPositions;
-                var pickColors = arrays.pickColors;
-                var pickIndices = arrays.pickIndices;
+                var pickPositions = arrays.positions;
+                var pickColors = arrays.colors;
 
-                this._pickPositions = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(pickPositions), pickPositions.length, 3, usage);
-                this._pickColors = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(pickColors), pickColors.length, 4, usage);
-                this._pickIndices = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(pickIndices), pickIndices.length, 1, usage);
+                this._pickPositions = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickPositions, pickPositions.length, 3, usage);
+                this._pickColors = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickColors, pickColors.length, 4, usage);
 
                 var memoryStats = XEO.stats.memory;
 
                 memoryStats.positions += this._pickPositions.numItems;
                 memoryStats.colors += this._pickColors.numItems;
-                memoryStats.indices += this._pickIndices.numItems;
             }
 
             this._pickVBOsDirty = false;
@@ -631,12 +623,6 @@
                 this._pickColors.destroy();
                 memoryStats.colors -= this._pickColors.numItems;
                 this._pickColors = null;
-            }
-
-            if (this._pickIndices) {
-                this._pickIndices.destroy();
-                memoryStats.indices -= this._pickIndices.numItems;
-                this._pickIndices = null;
             }
 
             this._pickVBOsDirty = true;
@@ -1246,10 +1232,6 @@
 
             if (this._pickColors) {
                 this._pickColors.destroy();
-            }
-
-            if (this._pickIndices) {
-                this._pickIndices.destroy();
             }
 
             // Destroy boundary

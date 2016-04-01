@@ -441,7 +441,9 @@
             types[c.id] = c;
 
 
-            c.on("destroyed", function() { this._componentDestroyed(c); }, this);
+            c.on("destroyed", function () {
+                this._componentDestroyed(c);
+            }, this);
 
             if (c.isType("XEO.Entity")) {
 
@@ -573,7 +575,7 @@
                     return this._passes;
                 }
             },
-            
+
             /**
              * The default projection transform provided by this Scene, which is
              * a {{#crossLink "Perspective"}}Perspective{{/crossLink}}.
@@ -1320,9 +1322,10 @@
             var tempVec3h = XEO.math.vec3();
             var tempVec3i = XEO.math.vec3();
             var tempVec3j = XEO.math.vec3();
+            var tempVec3k = XEO.math.vec3();
 
 
-            // Given a Entity and camvas coordinates, gets a ray
+            // Given a Entity and canvas coordinates, gets a ray
             // originating at the World-space eye position that passes
             // through the perspective projection plane. The ray is
             // returned via the origin and dir arguments.
@@ -1333,7 +1336,7 @@
 
                 var canvas = entity.scene.canvas.canvas;
 
-                var modelMat = entity.transform.matrix;
+                var modelMat = entity.transform.leafMatrix;
                 var viewMat = entity.camera.view.matrix;
                 var projMat = entity.camera.project.matrix;
 
@@ -1383,7 +1386,7 @@
 
                     hit.entity = entity; // Swap string ID for XEO.Entity
 
-                    if (hit.primitiveIndex !== -1) {
+                    if (hit.primitiveIndex !== undefined && hit.primitiveIndex > -1) {
 
                         var geometry = entity.geometry;
 
@@ -1405,23 +1408,28 @@
                             var ib = indices[i + 1];
                             var ic = indices[i + 2];
 
+                            var ia3 = ia * 3;
+                            var ib3 = ib * 3;
+                            var ic3 = ic * 3;
+
+                            //
                             triangleVertices[0] = ia;
                             triangleVertices[1] = ib;
                             triangleVertices[2] = ic;
 
                             hit.indices = triangleVertices;
 
-                            a[0] = positions[(ia * 3)];
-                            a[1] = positions[(ia * 3) + 1];
-                            a[2] = positions[(ia * 3) + 2];
+                            a[0] = positions[ia3];
+                            a[1] = positions[ia3 + 1];
+                            a[2] = positions[ia3 + 2];
 
-                            b[0] = positions[(ib * 3)];
-                            b[1] = positions[(ib * 3) + 1];
-                            b[2] = positions[(ib * 3) + 2];
+                            b[0] = positions[ib3];
+                            b[1] = positions[ib3 + 1];
+                            b[2] = positions[ib3 + 2];
 
-                            c[0] = positions[(ic * 3)];
-                            c[1] = positions[(ic * 3) + 1];
-                            c[2] = positions[(ic * 3) + 2];
+                            c[0] = positions[ic3];
+                            c[1] = positions[ic3 + 1];
+                            c[2] = positions[ic3 + 2];
 
                             // Attempt to ray-pick the triangle; in World-space, fire a ray
                             // from the eye position through the mouse position
@@ -1446,7 +1454,7 @@
 
                             // Get World-space cartesian coordinates of the ray-triangle intersection
 
-                            math.transformVec4(entity.transform.matrix, tempVec4, tempVec4b);
+                            math.transformVec4(entity.transform.leafMatrix, tempVec4, tempVec4b);
 
                             worldPos[0] = tempVec4b[0];
                             worldPos[1] = tempVec4b[1];
@@ -1466,22 +1474,24 @@
 
                             if (normals) {
 
-                                na[0] = normals[(ia * 3)];
-                                na[1] = normals[(ia * 3) + 1];
-                                na[2] = normals[(ia * 3) + 2];
+                                na[0] = normals[ia3];
+                                na[1] = normals[ia3 + 1];
+                                na[2] = normals[ia3 + 2];
 
-                                nb[0] = normals[(ib * 3)];
-                                nb[1] = normals[(ib * 3) + 1];
-                                nb[2] = normals[(ib * 3) + 2];
+                                nb[0] = normals[ib3];
+                                nb[1] = normals[ib3 + 1];
+                                nb[2] = normals[ib3 + 2];
 
-                                nc[0] = normals[(ic * 3)];
-                                nc[1] = normals[(ic * 3) + 1];
-                                nc[2] = normals[(ic * 3) + 2];
+                                nc[0] = normals[ic3];
+                                nc[1] = normals[ic3 + 1];
+                                nc[2] = normals[ic3 + 2];
 
-                                hit.normal = math.addVec3(math.addVec3(
+                                var normal  = math.addVec3(math.addVec3(
                                         math.mulVec3Scalar(na, barycentric[0], tempVec3),
                                         math.mulVec3Scalar(nb, barycentric[1], tempVec3b), tempVec3c),
                                     math.mulVec3Scalar(nc, barycentric[2], tempVec3d), tempVec3e);
+
+                                hit.normal = math.transformVec3(entity.transform.leafMatrix, normal, tempVec3f);
                             }
 
                             // Get interpolated UV coordinates
@@ -1501,9 +1511,9 @@
 
                                 hit.uv = math.addVec3(
                                     math.addVec3(
-                                        math.mulVec2Scalar(uva, barycentric[0], tempVec3f),
-                                        math.mulVec2Scalar(uvb, barycentric[1], tempVec3g), tempVec3h),
-                                    math.mulVec2Scalar(uvc, barycentric[2], tempVec3i), tempVec3j);
+                                        math.mulVec2Scalar(uva, barycentric[0], tempVec3g),
+                                        math.mulVec2Scalar(uvb, barycentric[1], tempVec3h), tempVec3i),
+                                    math.mulVec2Scalar(uvc, barycentric[2], tempVec3j), tempVec3k);
                             }
                         }
                     }

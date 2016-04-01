@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeoengine.js"></script>
 
     <script src="js/geometry/heightmapGeometry.js"></script>
 
@@ -125,11 +125,12 @@
             xSize: 10,
             ySize: 3,
             zSize: 10,
-            xSegments: 80,
-            zSegments: 80
+            xSegments: 40,
+            zSegments: 40
         }),
-        transform: new XEO.Translate({
-            xyz: [0, 0, 0]
+        transform: new XEO.Rotate({
+            angle: 45,
+            xyz: [.5,.5, 0]
         }),
         material: new XEO.PhongMaterial({
             diffuseMap: new XEO.Texture({

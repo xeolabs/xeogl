@@ -346,7 +346,13 @@
 
                 set: function (value) {
 
-                    this._state.opacity = (value !== undefined && value !== null) ? value : 1.0;
+                    value = (value !== undefined && value !== null) ? value : 1.0;
+
+                    if (this._state.opacity === value) {
+                        return;
+                    }
+
+                    this._state.opacity = value;
 
                     this._renderer.imageDirty = true;
 

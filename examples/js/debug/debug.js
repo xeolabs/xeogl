@@ -252,7 +252,8 @@
                     }),
                     modes: new XEO.Modes({  // This Entity should not be pickable
                         pickable: false,
-                        transparent: true
+                        transparent: true,
+                        collidable: false
                     }),
                     material: new XEO.PhongMaterial({ // Hides the sphere while still rendering it
                         opacity: 0
@@ -362,7 +363,8 @@
                     modes: new XEO.Modes({  // This Entity should not be pickable
                         pickable: false,
                         transparent: opacity < 1.0,
-                        backfaces: false
+                        backfaces: false,
+                        collidable: false
                     }),
                     material: new XEO.PhongMaterial({ // Hides the sphere while still rendering it
                         diffuse: color,
@@ -423,7 +425,8 @@
                         shininess: 90
                     }),
                     modes: new XEO.Modes({
-                        pickable: false
+                        pickable: false,
+                        collidable: false
                     }),
                     visibility: new XEO.Visibility({  // This Entity should not be pickable
                         visible: true
@@ -466,7 +469,8 @@
                     }),
                     modes: new XEO.Modes({  // This Entity should not be pickable
                         pickable: false,
-                        transparent: true
+                        transparent: true,
+                        collidable: false
                     }),
                     material: new XEO.PhongMaterial({ // Hides the sphere while still rendering it
                         emissive: color,

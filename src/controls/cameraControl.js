@@ -259,57 +259,42 @@
 
         _entityPicked: function (e) {
 
-            // Fly camera to each picked entity
-            // Don't change distance between look and eye
-
-            //  var view = this.cameraFlight.camera.view;
-
             var pos;
 
             if (e.worldPos) {
                 pos = e.worldPos
-
-            } else if (e.entity) {
-                pos = e.entity.worldBoundary.center
             }
+
+            var aabb;
+
+            aabb = e.entity.worldBoundary.aabb;
+
+            this._boundaryEntity.geometry.aabb = aabb;
+            this._boundaryEntity.visibility.visible = true;
 
             if (pos) {
 
-                //var diff = XEO.math.subVec3(view.eye, view.look, []);
-                //
-                //var input = this.scene.input;
+                // Fly to look at point, don't change eye->look dist
 
-                //  if (input.keyDown[input.KEY_SHIFT] && e.entity) {
-
-                // var aabb = e.entity.worldBoundary.aabb;
-
-                this._boundaryEntity.geometry.obb = e.entity.worldBoundary.obb;
-                this._boundaryEntity.visibility.visible = true;
-
-                var center = e.entity.worldBoundary.center;
+                var view = this.camera.view;
+                var diff = XEO.math.subVec3(view.eye, view.look, []);
 
                 this.cameraFlight.flyTo({
-                        aabb: e.entity.worldBoundary.aabb,
-                        oXffset: [
-                            pos[0] - center[0],
-                            pos[1] - center[1],
-                            pos[2] - center[2]
-                        ]
+                        look: pos,
+                        aabb: aabb
                     },
                     this._hideEntityBoundary, this);
 
-                //} else {
-                //
-                //    this.cameraFlight.flyTo({
-                //            look: pos,
-                //            eye: [
-                //                pos[0] + diff[0],
-                //                pos[1] + diff[1],
-                //                pos[2] + diff[2]
-                //            ]
-                //        },
-                //        this._hideEntityBoundary, this);
-                //}
+                // TODO: Option to back off to fit AABB in view
+
+            } else {
+
+                // Fly to fit target boundary in view
+
+                this.cameraFlight.flyTo({
+                        aabb: aabb
+                    },
+                    this._hideEntityBoundary, this);
             }
         },
 

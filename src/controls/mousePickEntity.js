@@ -198,8 +198,7 @@
                      * @param value The property's new value
                      */
                     this.fire('active', this._active = value);
-                }
-                ,
+                },
 
                 get: function () {
                     return this._active;

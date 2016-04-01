@@ -56,7 +56,7 @@
  @module XEO
  @submodule controls
  @constructor
- @param [viewer] {Viewer} Parent {{#crossLink "Viewer"}}{{/crossLink}}.
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent viewer, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this KeyboardAxisCamera.

@@ -92,12 +92,6 @@
             if (this._aColorPickPrimitive) {
                 this._aColorPickPrimitive.bindFloatArrayBuffer(state.getPickColors());
             }
-
-            var pickIndices = state.getPickIndices();
-
-            if (pickIndices) {
-                pickIndices.bind();
-            }
         }
     });
 

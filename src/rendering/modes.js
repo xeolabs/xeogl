@@ -81,12 +81,12 @@
         _init: function (cfg) {
 
             this._state = new XEO.renderer.Modes({
-                pickable: true,
-                clippable: true,
-                transparent: false,
-                backfaces: false,
-                frontface: true, // Boolean for speed; true == "ccw", false == "cw"
-                collidable: true
+                pickable: null,
+                clippable: null,
+                transparent: null,
+                backfaces: null,
+                frontface: null, // Boolean for speed; true == "ccw", false == "cw"
+                collidable: null
             });
 
             this.pickable = cfg.pickable;
@@ -114,7 +114,11 @@
 
                 set: function (value) {
 
-                    this._state.pickable = value !== false;
+                    value = value !== false;
+
+                    if (this._state.pickable === value) {
+                        return;
+                    }
 
                     this._renderer.drawListDirty = true;
 
@@ -148,7 +152,13 @@
 
                 set: function (value) {
 
-                    this._state.clippable = value !== false;
+                    value = value !== false;
+
+                    if (this._state.clippable === value) {
+                        return;
+                    }
+
+                    this._state.clippable = value;
 
                     this._renderer.imageDirty = true;
 
@@ -184,7 +194,13 @@
 
                 set: function (value) {
 
-                    this._state.transparent = !!value;
+                    value = !!value;
+
+                    if (this._state.transparent === value) {
+                        return;
+                    }
+
+                    this._state.transparent = value;
 
                     this._renderer.stateOrderDirty = true;
 
@@ -219,6 +235,10 @@
                 set: function (value) {
 
                     value = !!value;
+
+                    if (this._state.backfaces === value) {
+                        return;
+                    }
 
                     this._state.backfaces = value;
 

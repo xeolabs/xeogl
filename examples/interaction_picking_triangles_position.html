@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeoengine.js"></script>
+
+    <script src="js/geometry/heightmapGeometry.js"></script>
+
+    <script src="js/importing/k3d.js"></script>
+    <script src="js/importing/objGeometry.js"></script>
+    <script src="js/debug/debug.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+    <ul>
+        <li>
+            ray picking demo
+        </li>
+        <li>
+            move your mouse over the objects!
+        </li>
+    </ul>
+</div>
+
+<script>
+
+    // Load glTF
+    var gearbox = new XEO.Model({
+        src: "models/gltf/gearbox/gearbox_assy.gltf"
+    });
+
+    var scene = gearbox.scene;
+
+    // Set initial camera position
+    var view = scene.camera.view;
+
+    view.eye = [184.21, 10.54, -7.03];
+    view.look = [159.20, 17.02, 3.21];
+    view.up = [-0.15, 0.97, 0.13];
+
+    // Allow user camera control
+    new XEO.CameraControl();
+
+
+    // Whenever mouse moves, attempt to pick a triangle on a Entity,
+    // then show the cartesian coordinates at the picked position within
+    // the triangle, along with the interpolated normal vector and UV coordinates
+    // at the picked position.
+
+    scene.input.on("mousemove",
+            function (coords) {
+
+                // Hide visual indicators
+
+                XEO.debug.hide("cone");
+
+                // Pick a primitive on some Entity
+
+                var hit = scene.pick({
+                    canvasPos: coords,
+                    rayPick: true
+                });
+
+                if (hit) {
+
+                    // Entity picked
+
+                    if (hit.worldPos && hit.normal) {
+                        XEO.debug
+                                .id("cone")
+                                .pos(hit.worldPos)
+                                .dir([-hit.normal[0], -hit.normal[1], -hit.normal[2]])
+                                .radius(0.3)
+                                .cone();
+                    }
+
+                } else {
+
+                    // No Triangle picked
+                }
+
+            });
+
+
+</script>
+</body>
+</html>

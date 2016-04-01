@@ -1754,42 +1754,66 @@
          * @method getAABBDiag
          * @static
          */
-        getAABBDiag: function (boundary) {
-            this.subVec3(boundary.max, boundary.min, tempVec3c);
+        getAABBDiag: function (aabb) {
+            this.subVec3(aabb.max, aabb.min, tempVec3c);
             return Math.abs(this.lenVec3(tempVec3c));
         },
 
         /**
-         * Gets the center of a boundary given as minima and maxima.
+         * Get a diagonal boundary size that is symmetrical about the given point.
+         *
+         * @method getAABBDiagPoint
+         * @static
+         */
+        getAABBDiagPoint: function (aabb, p) {
+
+            var diagVec = this.subVec3(aabb.max, aabb.min, tempVec3c);
+
+            var xneg = p[0] - aabb.min[0];
+            var xpos = aabb.max[0] - p[0];
+            var yneg = p[1] - aabb.min[1];
+            var ypos = aabb.max[1] - p[1];
+            var zneg = p[2] - aabb.min[2];
+            var zpos = aabb.max[2] - p[2];
+
+            diagVec[0] += (xneg > xpos) ? xneg : xpos;
+            diagVec[1] += (yneg > ypos) ? yneg : ypos;
+            diagVec[2] += (zneg > zpos) ? zneg : zpos;
+
+            return Math.abs(this.lenVec3(diagVec));
+        },
+
+        /**
+         * Gets the center of an AABB.
          * @method getAABBCenter
          * @static
          */
-        getAABBCenter: function (boundary, dest) {
+        getAABBCenter: function (aabb, dest) {
             var r = dest || this.vec3();
 
-            r[0] = (boundary.max[0] + boundary.min[0] ) * 0.5;
-            r[1] = (boundary.max[1] + boundary.min[1] ) * 0.5;
-            r[2] = (boundary.max[2] + boundary.min[2] ) * 0.5;
+            r[0] = (aabb.max[0] + aabb.min[0] ) * 0.5;
+            r[1] = (aabb.max[1] + aabb.min[1] ) * 0.5;
+            r[2] = (aabb.max[2] + aabb.min[2] ) * 0.5;
 
             return r;
         },
 
         /**
-         * Gets the center of a 2D boundary given as minima and maxima.
+         * Gets the center of a 2D AABB.
          * @method getAABB2Center
          * @static
          */
-        getAABB2Center: function (boundary, dest) {
+        getAABB2Center: function (aabb, dest) {
             var r = dest || this.vec2();
 
-            r[0] = (boundary.max[0] + boundary.min[0] ) / 2;
-            r[1] = (boundary.max[1] + boundary.min[1] ) / 2;
+            r[0] = (aabb.max[0] + aabb.min[0] ) / 2;
+            r[1] = (aabb.max[1] + aabb.min[1] ) / 2;
 
             return r;
         },
 
         /**
-         * Collapses a 3D axis-aligned boundary, ready to expand to fit 2D points.
+         * Collapses a 3D axis-aligned boundary, ready to expand to fit 3D points.
          * Creates new AABB if none supplied.
          *
          * @method collapseAABB3
@@ -2344,7 +2368,7 @@
         buildTangents: function (positions, indices, uv) {
 
             var math = XEO.math;
-            
+
             var tangents = new Float32Array(positions.length);
 
             // The vertex arrays needs to be calculated
@@ -2391,7 +2415,7 @@
                 for (var v = 0; v < 3; v++) {
                     var addTo = indices[location + v] * 3;
 
-                    tangents[addTo]     += tangent[0];
+                    tangents[addTo] += tangent[0];
                     tangents[addTo + 1] += tangent[1];
                     tangents[addTo + 2] += tangent[2];
                 }
@@ -2435,20 +2459,25 @@
          * @static
          * @param {Array of Number} positions One-dimensional flattened array of positions.
          * @param {Array of Number} indices One-dimensional flattened array of indices.
-         * @param {*} [pickTris] Optional object to return the arrays on.
-         * @param {Boolean} [debug] Assigns random colors to triangles when true.
          * @returns {*} Object containing the arrays, created by this method or reused from 'pickTris' parameter.
          */
-        getPickPrimitives: function (positions, indices, pickTris, debug) {
+        getPickPrimitives: function (positions, indices) {
 
-            pickTris = pickTris || {};
+            var numIndices = indices.length;
 
-            var pickPositions = [];
-            var pickColors = [];
-            var pickIndices = [];
+            var pickPositions = new Float32Array(numIndices * 3);
+            var pickColors = new Float32Array(numIndices * 4);
 
-            var index2 = 0;
             var primIndex = 0;
+
+            // Positions array index
+            var vi;
+
+            // Picking positions array index
+            var pvi;
+
+            // Picking color array index
+            var pci;
 
             // Triangle indices
 
@@ -2458,77 +2487,69 @@
             var b;
             var a;
 
-            for (var location = 0; location < indices.length; location += 3) {
+            for (var location = 0; location < numIndices; location += 3) {
+
+                pvi = location * 3;
+                pci = location * 4;
 
                 // Primitive-indexed triangle pick color
 
-                primIndex = location + 1;
-
-
-                if (debug) {
-                    r = Math.random();
-                    g = Math.random();
-                    b = Math.random();
-                    a = 1.0;
-                } else {
-                    b = (primIndex >> 16 & 0xFF) / 255;
-                    g = (primIndex >> 8 & 0xFF) / 255;
-                    r = (primIndex & 0xFF) / 255;
-                    a = 1.0;
-                }
-
+                a = (primIndex >> 24 & 0xFF) / 255.0;
+                b = (primIndex >> 16 & 0xFF) / 255.0;
+                g = (primIndex >> 8 & 0xFF) / 255.0;
+                r = (primIndex & 0xFF) / 255.0;
 
                 // A
 
-                i = indices[location + 0];
+                i = indices[location];
+                vi = i * 3;
 
-                pickPositions.push(positions[i * 3 + 0]);
-                pickPositions.push(positions[i * 3 + 1]);
-                pickPositions.push(positions[i * 3 + 2]);
+                pickPositions[pvi]     = positions[vi];
+                pickPositions[pvi + 1] = positions[vi + 1];
+                pickPositions[pvi + 2] = positions[vi + 2];
 
-                pickColors.push(r);
-                pickColors.push(g);
-                pickColors.push(b);
-                pickColors.push(a);
+                pickColors[pci]     = r;
+                pickColors[pci + 1] = g;
+                pickColors[pci + 2] = b;
+                pickColors[pci + 3] = a;
 
-                pickIndices.push(index2++);
 
                 // B
 
                 i = indices[location + 1];
+                vi = i * 3;
 
-                pickPositions.push(positions[i * 3 + 0]);
-                pickPositions.push(positions[i * 3 + 1]);
-                pickPositions.push(positions[i * 3 + 2]);
+                pickPositions[pvi + 3] = positions[vi];
+                pickPositions[pvi + 4] = positions[vi + 1];
+                pickPositions[pvi + 5] = positions[vi + 2];
 
-                pickColors.push(r);
-                pickColors.push(g);
-                pickColors.push(b);
-                pickColors.push(a);
+                pickColors[pci + 4] = r;
+                pickColors[pci + 5] = g;
+                pickColors[pci + 6] = b;
+                pickColors[pci + 7] = a;
 
-                pickIndices.push(index2++);
 
                 // C
 
                 i = indices[location + 2];
+                vi = i * 3;
 
-                pickPositions.push(positions[i * 3 + 0]);
-                pickPositions.push(positions[i * 3 + 1]);
-                pickPositions.push(positions[i * 3 + 2]);
+                pickPositions[pvi + 6] = positions[vi];
+                pickPositions[pvi + 7] = positions[vi + 1];
+                pickPositions[pvi + 8] = positions[vi + 2];
 
-                pickColors.push(r);
-                pickColors.push(g);
-                pickColors.push(b);
-                pickColors.push(a);
+                pickColors[pci + 8]  = r;
+                pickColors[pci + 9]  = g;
+                pickColors[pci + 10] = b;
+                pickColors[pci + 11] = a;
 
-                pickIndices.push(index2++);
+                primIndex++;
             }
 
-            pickTris.pickPositions = pickPositions;
-            pickTris.pickColors = pickColors;
-            pickTris.pickIndices = pickIndices;
-
-            return pickTris;
+            return {
+                positions: pickPositions,
+                colors: pickColors
+            };
         },
 
         /**
