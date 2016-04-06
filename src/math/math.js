@@ -2333,7 +2333,7 @@
                 nvecs[j2].push(n);
             }
 
-            var normals = new Array(positions.length);
+            var normals = new Float32Array(positions.length);
 
             // now go through and average out everything
             for (i = 0, len = nvecs.length; i < len; i++) {
