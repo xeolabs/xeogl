@@ -449,6 +449,16 @@
                 var deltaY = 0;
                 var deltaZ = 0;
 
+                var acceleration = XEO.math.vec3();
+                var accelerationIncludingGravity = XEO.math.vec3();
+
+                var deviceMotionEvent = {
+                    acceleration: null,
+                    accelerationIncludingGravity: accelerationIncludingGravity,
+                    rotationRate: XEO.math.vec3(),
+                    interval: 0
+                };
+
                 window.addEventListener('orientationchange',
                     function () {
 
@@ -476,21 +486,44 @@
 
                 window.addEventListener('devicemotion',
                     function (e) {
-                        var acceleration = e.acceleration;
-                        acceleration = e.accelerationIncludingGravity;
 
-                        var rotation = e.rotationRate;
+                        var accel = e.acceleration;
+                        var accelGrav = e.accelerationIncludingGravity;
+
+                        var rotationRate = e.rotationRate;
 
                         // // Grab the refresh interval from the results
-                        var interval = e.interval;
+                        deviceMotionEvent.interval = e.interval;
 
                         // call handlers
                         var isHorizontal = screenOrientation !== 0;
 
-                        var currentZ = rotation.gamma;
-                        lastZ = lastZ || currentZ;
-                        deltaZ = currentZ;
-                        lastZ = currentZ;
+                        if (accel) {
+
+                            acceleration[0] = acceleration.x;
+                            acceleration[1] = acceleration.y;
+                            acceleration[2] = acceleration.z;
+
+                            deviceMotionEvent.acceleration = acceleration;
+                        } else {
+
+                            deviceMotionEvent.acceleration = null;
+                        }
+
+                        if (accelGrav) {
+
+                            accelerationIncludingGravity[0] = accelGrav.x;
+                            accelerationIncludingGravity[1] = accelGrav.y;
+                            accelerationIncludingGravity[2] = accelGrav.z;
+
+                            deviceMotionEvent.acceleration = acceleration;
+                        }
+
+                        deviceMotionEvent.rotationRate[0] = rotationRate.alpha;
+                        deviceMotionEvent.rotationRate[1] = rotationRate.beta;
+                        deviceMotionEvent.rotationRate[2] = rotationRate.gamma;
+
+                        self.fire("devicemotion", deviceMotionEvent);
                     },
                     false);
 
