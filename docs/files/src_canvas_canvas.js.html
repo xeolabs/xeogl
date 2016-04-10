@@ -70,6 +70,7 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/GyroRotateCamera.html">GyroRotateCamera</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -336,6 +337,8 @@
              */
             this.contextAttr = cfg.contextAttr || {};
 
+            this.contextAttr.alpha = true;
+
             if (!cfg.canvas) {
 
                 // Canvas not supplied, create one automatically
@@ -364,10 +367,7 @@
 
                 } else {
 
-                    this.error(&quot;Config &#x27;canvasId&#x27; should be a string - &quot;
-                        + &quot;creating default canvas instead.&quot;);
-
-                    this._createCanvas();
+                    this.canvas = cfg.canvas;
                 }
             }
 
@@ -581,13 +581,9 @@
 
             // Default context attribute values
 
-            var contextAttr = XEO._applyIf({
-                preserveDrawingBuffer: false
-            }, this.contextAttr);
-
             for (var i = 0; !this.gl &amp;&amp; i &lt; this._WEBGL_CONTEXT_NAMES.length; i++) {
                 try {
-                    this.gl = this.canvas.getContext(this._WEBGL_CONTEXT_NAMES[i], contextAttr);
+                    this.gl = this.canvas.getContext(this._WEBGL_CONTEXT_NAMES[i], this.contextAttr);
                 } catch (e) { // Try with next context name
                 }
             }

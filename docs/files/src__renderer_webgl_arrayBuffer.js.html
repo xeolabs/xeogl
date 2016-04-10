@@ -70,6 +70,7 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/GyroRotateCamera.html">GyroRotateCamera</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -209,9 +210,9 @@
 
         this.type = type;
 
-        this.itemType = data.constructor === Uint8Array ? gl.UNSIGNED_BYTE :
-            data.constructor === Uint16Array ? gl.UNSIGNED_SHORT :
-                data.constructor === Uint32Array ? gl.UNSIGNED_INT :
+        this.itemType = data.constructor == Uint8Array   ? gl.UNSIGNED_BYTE :
+            data.constructor == Uint16Array  ? gl.UNSIGNED_SHORT :
+                data.constructor == Uint32Array  ? gl.UNSIGNED_INT :
                     gl.FLOAT;
 
         this.usage = usage;

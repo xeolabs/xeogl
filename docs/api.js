@@ -31,6 +31,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Fresnel",
         "Frustum",
         "Geometry",
+        "GyroRotateCamera",
         "Input",
         "KeyboardAxisCamera",
         "KeyboardPanCamera",

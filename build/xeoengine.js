@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-03-25
+ * Built on 2016-04-10
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -34,6 +34,61 @@
          * @type {String}
          */
         this.version = null;
+
+        /**
+         * Information about available WebGL support
+         */
+        this.WEBGL_INFO = (function() {
+            var info = {
+                WEBGL: false
+            };
+
+            var canvas = document.createElement("canvas");
+
+            if (!canvas) {
+                return info;
+            }
+
+            var gl = canvas.getContext("webgl", { antialias: true }) || canvas.getContext("experimental-webgl", { antialias: true });
+
+            info.WEBGL = !!gl;
+
+            if (!info.WEBGL) {
+                return info;
+            }
+
+            info.ANTIALIAS = gl.getContextAttributes().antialias;
+
+            if (gl.getShaderPrecisionFormat) {
+                if (gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT).precision > 0) {
+                    info.FS_MAX_FLOAT_PRECISION = "highp";
+                } else if (gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.MEDIUM_FLOAT).precision > 0) {
+                    info.FS_MAX_FLOAT_PRECISION = "mediump";
+                } else {
+                    info.FS_MAX_FLOAT_PRECISION = "lowp";
+                }
+            } else {
+                info.FS_MAX_FLOAT_PRECISION = "mediump";
+            }
+
+            info.DEPTH_BUFFER_BITS = gl.getParameter(gl.DEPTH_BITS);
+            info.MAX_TEXTURE_SIZE = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+            info.MAX_CUBE_MAP_SIZE = gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE);
+            info.MAX_RENDERBUFFER_SIZE = gl.getParameter(gl.MAX_RENDERBUFFER_SIZE);
+            info.MAX_TEXTURE_UNITS =  gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+            info.MAX_VERTEX_ATTRIBS = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
+            info.MAX_VERTEX_UNIFORM_VECTORS = gl.getParameter(gl.MAX_VERTEX_UNIFORM_VECTORS);
+            info.MAX_FRAGMENT_UNIFORM_VECTORS = gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS);
+            info.MAX_VARYING_VECTORS = gl.getParameter(gl.MAX_VARYING_VECTORS);
+
+            info.SUPPORTED_EXTENSIONS = {};
+
+            gl.getSupportedExtensions().forEach(function(ext) {
+                info.SUPPORTED_EXTENSIONS[ext] = true;
+            });
+
+            return info;
+        })();
 
         /**
          * Tracks statistics within xeoEngine, such as numbers of
@@ -1789,8 +1844,8 @@
                 // Convert picked pixel color to primitive index
 
                 pix = pickBuf.read(canvasX, canvasY);
-                var primitiveIndex = pix[0] + pix[1] * 256 + pix[2] * 65536;
-                primitiveIndex = (primitiveIndex >= 1) ? primitiveIndex - 1 : -1;
+                var primitiveIndex = pix[0] + (pix[1] * 256) + (pix[2] * 256 * 256) + (pix[3] * 256 * 256 * 256);
+                primitiveIndex *= 3; // Convert from triangle number to first vertex in indices
 
                 hit.primitiveIndex = primitiveIndex;
             }
@@ -1845,6 +1900,11 @@
         frameCtx.bindTexture = 0;
         frameCtx.bindArray = 0;
 
+        // The extensions needs to be re-queried in case the context was lost and has been recreated.
+        if (XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {
+            gl.getExtension("OES_element_index_uint");
+        }
+
         this.stats.frame.setUniform = 0;
         this.stats.frame.setUniformCacheHits = 0;
 
@@ -1852,7 +1912,7 @@
 
         gl.enable(gl.DEPTH_TEST);
 
-        if (this.transparent) {
+        if (this.transparent || params.pickObject || params.rayPick) {
 
             // Canvas is transparent - set clear color with zero alpha
             // to allow background to show through
@@ -3872,9 +3932,9 @@
 
         this.type = type;
 
-        this.itemType = data.constructor === Uint8Array ? gl.UNSIGNED_BYTE :
-            data.constructor === Uint16Array ? gl.UNSIGNED_SHORT :
-                data.constructor === Uint32Array ? gl.UNSIGNED_INT :
+        this.itemType = data.constructor == Uint8Array   ? gl.UNSIGNED_BYTE :
+            data.constructor == Uint16Array  ? gl.UNSIGNED_SHORT :
+                data.constructor == Uint32Array  ? gl.UNSIGNED_INT :
                     gl.FLOAT;
 
         this.usage = usage;
@@ -4433,7 +4493,15 @@
         this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
         this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
         this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
-        this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, width, height, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, null);
+
+        try {
+            // Do it the way the spec requires
+            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, width, height, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, null);
+        } catch (exception) {
+            // Workaround for what appears to be a Minefield bug.
+            var textureStorage = new WebGLUnsignedByteArray(width * height * 3);
+            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, width, height, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, textureStorage);
+        }
 
 
         this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, this.buffer.renderbuf);
@@ -5531,12 +5599,12 @@
         pickPrimitive: function () {
 
             var state = this.state;
-            var gl= this.program.gl;
+            var gl = this.program.gl;
 
-            var pickIndices = state.getPickIndices();
+            var pickPositions = state.getPickPositions();
 
-            if (pickIndices) {
-                gl.drawElements(state.primitive, pickIndices.numItems, pickIndices.itemType, 0);
+            if (pickPositions) {
+                gl.drawArrays(state.primitive, 0, pickPositions.numItems / 3);
             }
         }
     });
@@ -5635,12 +5703,6 @@
 
             if (this._aColorPickPrimitive) {
                 this._aColorPickPrimitive.bindFloatArrayBuffer(state.getPickColors());
-            }
-
-            var pickIndices = state.getPickIndices();
-
-            if (pickIndices) {
-                pickIndices.bind();
             }
         }
     });
@@ -8247,42 +8309,66 @@
          * @method getAABBDiag
          * @static
          */
-        getAABBDiag: function (boundary) {
-            this.subVec3(boundary.max, boundary.min, tempVec3c);
+        getAABBDiag: function (aabb) {
+            this.subVec3(aabb.max, aabb.min, tempVec3c);
             return Math.abs(this.lenVec3(tempVec3c));
         },
 
         /**
-         * Gets the center of a boundary given as minima and maxima.
+         * Get a diagonal boundary size that is symmetrical about the given point.
+         *
+         * @method getAABBDiagPoint
+         * @static
+         */
+        getAABBDiagPoint: function (aabb, p) {
+
+            var diagVec = this.subVec3(aabb.max, aabb.min, tempVec3c);
+
+            var xneg = p[0] - aabb.min[0];
+            var xpos = aabb.max[0] - p[0];
+            var yneg = p[1] - aabb.min[1];
+            var ypos = aabb.max[1] - p[1];
+            var zneg = p[2] - aabb.min[2];
+            var zpos = aabb.max[2] - p[2];
+
+            diagVec[0] += (xneg > xpos) ? xneg : xpos;
+            diagVec[1] += (yneg > ypos) ? yneg : ypos;
+            diagVec[2] += (zneg > zpos) ? zneg : zpos;
+
+            return Math.abs(this.lenVec3(diagVec));
+        },
+
+        /**
+         * Gets the center of an AABB.
          * @method getAABBCenter
          * @static
          */
-        getAABBCenter: function (boundary, dest) {
+        getAABBCenter: function (aabb, dest) {
             var r = dest || this.vec3();
 
-            r[0] = (boundary.max[0] + boundary.min[0] ) * 0.5;
-            r[1] = (boundary.max[1] + boundary.min[1] ) * 0.5;
-            r[2] = (boundary.max[2] + boundary.min[2] ) * 0.5;
+            r[0] = (aabb.max[0] + aabb.min[0] ) * 0.5;
+            r[1] = (aabb.max[1] + aabb.min[1] ) * 0.5;
+            r[2] = (aabb.max[2] + aabb.min[2] ) * 0.5;
 
             return r;
         },
 
         /**
-         * Gets the center of a 2D boundary given as minima and maxima.
+         * Gets the center of a 2D AABB.
          * @method getAABB2Center
          * @static
          */
-        getAABB2Center: function (boundary, dest) {
+        getAABB2Center: function (aabb, dest) {
             var r = dest || this.vec2();
 
-            r[0] = (boundary.max[0] + boundary.min[0] ) / 2;
-            r[1] = (boundary.max[1] + boundary.min[1] ) / 2;
+            r[0] = (aabb.max[0] + aabb.min[0] ) / 2;
+            r[1] = (aabb.max[1] + aabb.min[1] ) / 2;
 
             return r;
         },
 
         /**
-         * Collapses a 3D axis-aligned boundary, ready to expand to fit 2D points.
+         * Collapses a 3D axis-aligned boundary, ready to expand to fit 3D points.
          * Creates new AABB if none supplied.
          *
          * @method collapseAABB3
@@ -8802,7 +8888,7 @@
                 nvecs[j2].push(n);
             }
 
-            var normals = new Array(positions.length);
+            var normals = new Float32Array(positions.length);
 
             // now go through and average out everything
             for (i = 0, len = nvecs.length; i < len; i++) {
@@ -8837,7 +8923,7 @@
         buildTangents: function (positions, indices, uv) {
 
             var math = XEO.math;
-            
+
             var tangents = new Float32Array(positions.length);
 
             // The vertex arrays needs to be calculated
@@ -8884,7 +8970,7 @@
                 for (var v = 0; v < 3; v++) {
                     var addTo = indices[location + v] * 3;
 
-                    tangents[addTo]     += tangent[0];
+                    tangents[addTo] += tangent[0];
                     tangents[addTo + 1] += tangent[1];
                     tangents[addTo + 2] += tangent[2];
                 }
@@ -8928,20 +9014,25 @@
          * @static
          * @param {Array of Number} positions One-dimensional flattened array of positions.
          * @param {Array of Number} indices One-dimensional flattened array of indices.
-         * @param {*} [pickTris] Optional object to return the arrays on.
-         * @param {Boolean} [debug] Assigns random colors to triangles when true.
          * @returns {*} Object containing the arrays, created by this method or reused from 'pickTris' parameter.
          */
-        getPickPrimitives: function (positions, indices, pickTris, debug) {
+        getPickPrimitives: function (positions, indices) {
 
-            pickTris = pickTris || {};
+            var numIndices = indices.length;
 
-            var pickPositions = [];
-            var pickColors = [];
-            var pickIndices = [];
+            var pickPositions = new Float32Array(numIndices * 30); // FIXME: Why do we need to extend size like this to make large meshes pickable?
+            var pickColors = new Float32Array(numIndices * 40);
 
-            var index2 = 0;
             var primIndex = 0;
+
+            // Positions array index
+            var vi;
+
+            // Picking positions array index
+            var pvi;
+
+            // Picking color array index
+            var pci;
 
             // Triangle indices
 
@@ -8951,77 +9042,69 @@
             var b;
             var a;
 
-            for (var location = 0; location < indices.length; location += 3) {
+            for (var location = 0; location < numIndices; location += 3) {
+
+                pvi = location * 3;
+                pci = location * 4;
 
                 // Primitive-indexed triangle pick color
 
-                primIndex = location + 1;
-
-
-                if (debug) {
-                    r = Math.random();
-                    g = Math.random();
-                    b = Math.random();
-                    a = 1.0;
-                } else {
-                    b = (primIndex >> 16 & 0xFF) / 255;
-                    g = (primIndex >> 8 & 0xFF) / 255;
-                    r = (primIndex & 0xFF) / 255;
-                    a = 1.0;
-                }
-
+                a = (primIndex >> 24 & 0xFF) / 255.0;
+                b = (primIndex >> 16 & 0xFF) / 255.0;
+                g = (primIndex >> 8 & 0xFF) / 255.0;
+                r = (primIndex & 0xFF) / 255.0;
 
                 // A
 
-                i = indices[location + 0];
+                i = indices[location];
+                vi = i * 3;
 
-                pickPositions.push(positions[i * 3 + 0]);
-                pickPositions.push(positions[i * 3 + 1]);
-                pickPositions.push(positions[i * 3 + 2]);
+                pickPositions[pvi]     = positions[vi];
+                pickPositions[pvi + 1] = positions[vi + 1];
+                pickPositions[pvi + 2] = positions[vi + 2];
 
-                pickColors.push(r);
-                pickColors.push(g);
-                pickColors.push(b);
-                pickColors.push(a);
+                pickColors[pci]     = r;
+                pickColors[pci + 1] = g;
+                pickColors[pci + 2] = b;
+                pickColors[pci + 3] = a;
 
-                pickIndices.push(index2++);
 
                 // B
 
                 i = indices[location + 1];
+                vi = i * 3;
 
-                pickPositions.push(positions[i * 3 + 0]);
-                pickPositions.push(positions[i * 3 + 1]);
-                pickPositions.push(positions[i * 3 + 2]);
+                pickPositions[pvi + 3] = positions[vi];
+                pickPositions[pvi + 4] = positions[vi + 1];
+                pickPositions[pvi + 5] = positions[vi + 2];
 
-                pickColors.push(r);
-                pickColors.push(g);
-                pickColors.push(b);
-                pickColors.push(a);
+                pickColors[pci + 4] = r;
+                pickColors[pci + 5] = g;
+                pickColors[pci + 6] = b;
+                pickColors[pci + 7] = a;
 
-                pickIndices.push(index2++);
 
                 // C
 
                 i = indices[location + 2];
+                vi = i * 3;
 
-                pickPositions.push(positions[i * 3 + 0]);
-                pickPositions.push(positions[i * 3 + 1]);
-                pickPositions.push(positions[i * 3 + 2]);
+                pickPositions[pvi + 6] = positions[vi];
+                pickPositions[pvi + 7] = positions[vi + 1];
+                pickPositions[pvi + 8] = positions[vi + 2];
 
-                pickColors.push(r);
-                pickColors.push(g);
-                pickColors.push(b);
-                pickColors.push(a);
+                pickColors[pci + 8]  = r;
+                pickColors[pci + 9]  = g;
+                pickColors[pci + 10] = b;
+                pickColors[pci + 11] = a;
 
-                pickIndices.push(index2++);
+                primIndex++;
             }
 
-            pickTris.pickPositions = pickPositions;
-            pickTris.pickColors = pickColors;
-            pickTris.pickIndices = pickIndices;
-
-            return pickTris;
+            return {
+                positions: pickPositions,
+                colors: pickColors
+            };
         },
 
         /**
@@ -10342,16 +10425,16 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 if (!this._sharedComponents[component.id]) {
                     this._sharedComponents[component.id] = component;
                 }
+
+                component.on("destroyed", function () {
+
+                    // If the component is explicitly destroyed, ie. by calling
+                    // its #destroy method, then deregister it so we don't try
+                    // to destroy it a second time when we destroy this component
+
+                    delete this._sharedComponents[component.id];
+                }, this);
             }
-
-            component.on("destroyed", function () {
-
-                // If the component is explicitly destroyed, ie. by calling
-                // its #destroy method, then deregister it so we don't try
-                // to destroy it a second time when we destroy this component
-
-                delete this._sharedComponents[component.id];
-            }, this);
 
             return component;
         },
@@ -11010,7 +11093,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             types[c.id] = c;
 
 
-            c.on("destroyed", function() { this._componentDestroyed(c); }, this);
+            c.on("destroyed", function () {
+                this._componentDestroyed(c);
+            }, this);
 
             if (c.isType("XEO.Entity")) {
 
@@ -11142,7 +11227,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     return this._passes;
                 }
             },
-            
+
             /**
              * The default projection transform provided by this Scene, which is
              * a {{#crossLink "Perspective"}}Perspective{{/crossLink}}.
@@ -11889,9 +11974,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             var tempVec3h = XEO.math.vec3();
             var tempVec3i = XEO.math.vec3();
             var tempVec3j = XEO.math.vec3();
+            var tempVec3k = XEO.math.vec3();
 
 
-            // Given a Entity and camvas coordinates, gets a ray
+            // Given a Entity and canvas coordinates, gets a ray
             // originating at the World-space eye position that passes
             // through the perspective projection plane. The ray is
             // returned via the origin and dir arguments.
@@ -11902,7 +11988,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 var canvas = entity.scene.canvas.canvas;
 
-                var modelMat = entity.transform.matrix;
+                var modelMat = entity.transform.leafMatrix;
                 var viewMat = entity.camera.view.matrix;
                 var projMat = entity.camera.project.matrix;
 
@@ -11952,7 +12038,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     hit.entity = entity; // Swap string ID for XEO.Entity
 
-                    if (hit.primitiveIndex !== -1) {
+                    if (hit.primitiveIndex !== undefined && hit.primitiveIndex > -1) {
 
                         var geometry = entity.geometry;
 
@@ -11974,23 +12060,28 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                             var ib = indices[i + 1];
                             var ic = indices[i + 2];
 
+                            var ia3 = ia * 3;
+                            var ib3 = ib * 3;
+                            var ic3 = ic * 3;
+
+                            //
                             triangleVertices[0] = ia;
                             triangleVertices[1] = ib;
                             triangleVertices[2] = ic;
 
                             hit.indices = triangleVertices;
 
-                            a[0] = positions[(ia * 3)];
-                            a[1] = positions[(ia * 3) + 1];
-                            a[2] = positions[(ia * 3) + 2];
+                            a[0] = positions[ia3];
+                            a[1] = positions[ia3 + 1];
+                            a[2] = positions[ia3 + 2];
 
-                            b[0] = positions[(ib * 3)];
-                            b[1] = positions[(ib * 3) + 1];
-                            b[2] = positions[(ib * 3) + 2];
+                            b[0] = positions[ib3];
+                            b[1] = positions[ib3 + 1];
+                            b[2] = positions[ib3 + 2];
 
-                            c[0] = positions[(ic * 3)];
-                            c[1] = positions[(ic * 3) + 1];
-                            c[2] = positions[(ic * 3) + 2];
+                            c[0] = positions[ic3];
+                            c[1] = positions[ic3 + 1];
+                            c[2] = positions[ic3 + 2];
 
                             // Attempt to ray-pick the triangle; in World-space, fire a ray
                             // from the eye position through the mouse position
@@ -12015,7 +12106,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                             // Get World-space cartesian coordinates of the ray-triangle intersection
 
-                            math.transformVec4(entity.transform.matrix, tempVec4, tempVec4b);
+                            math.transformVec4(entity.transform.leafMatrix, tempVec4, tempVec4b);
 
                             worldPos[0] = tempVec4b[0];
                             worldPos[1] = tempVec4b[1];
@@ -12035,22 +12126,24 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                             if (normals) {
 
-                                na[0] = normals[(ia * 3)];
-                                na[1] = normals[(ia * 3) + 1];
-                                na[2] = normals[(ia * 3) + 2];
+                                na[0] = normals[ia3];
+                                na[1] = normals[ia3 + 1];
+                                na[2] = normals[ia3 + 2];
 
-                                nb[0] = normals[(ib * 3)];
-                                nb[1] = normals[(ib * 3) + 1];
-                                nb[2] = normals[(ib * 3) + 2];
+                                nb[0] = normals[ib3];
+                                nb[1] = normals[ib3 + 1];
+                                nb[2] = normals[ib3 + 2];
 
-                                nc[0] = normals[(ic * 3)];
-                                nc[1] = normals[(ic * 3) + 1];
-                                nc[2] = normals[(ic * 3) + 2];
+                                nc[0] = normals[ic3];
+                                nc[1] = normals[ic3 + 1];
+                                nc[2] = normals[ic3 + 2];
 
-                                hit.normal = math.addVec3(math.addVec3(
+                                var normal  = math.addVec3(math.addVec3(
                                         math.mulVec3Scalar(na, barycentric[0], tempVec3),
                                         math.mulVec3Scalar(nb, barycentric[1], tempVec3b), tempVec3c),
                                     math.mulVec3Scalar(nc, barycentric[2], tempVec3d), tempVec3e);
+
+                                hit.normal = math.transformVec3(entity.transform.leafMatrix, normal, tempVec3f);
                             }
 
                             // Get interpolated UV coordinates
@@ -12070,9 +12163,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                                 hit.uv = math.addVec3(
                                     math.addVec3(
-                                        math.mulVec2Scalar(uva, barycentric[0], tempVec3f),
-                                        math.mulVec2Scalar(uvb, barycentric[1], tempVec3g), tempVec3h),
-                                    math.mulVec2Scalar(uvc, barycentric[2], tempVec3i), tempVec3j);
+                                        math.mulVec2Scalar(uva, barycentric[0], tempVec3g),
+                                        math.mulVec2Scalar(uvb, barycentric[1], tempVec3h), tempVec3i),
+                                    math.mulVec2Scalar(uvc, barycentric[2], tempVec3j), tempVec3k);
                             }
                         }
                     }
@@ -12601,6 +12694,25 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this.duration = cfg.duration || 0.5;
 
             this.camera = cfg.camera;
+
+            // Shows a wireframe box at the given boundary
+            this._boundaryIndicator = this.create(XEO.Entity, {
+                geometry: this.create(XEO.BoundaryGeometry, {
+                    material: this.create(XEO.PhongMaterial, {
+                        diffuse: [0, 0, 0],
+                        ambient: [0, 0, 0],
+                        specular: [0, 0, 0],
+                        emissive: [1.0, 1.0, 0.0],
+                        lineWidth: 3
+                    })
+                }),
+                visibility: this.create(XEO.Visibility, {
+                    visible: false
+                }),
+                modes: this.create(XEO.Modes, {
+                    collidable: false // Effectively has no boundary
+                })
+            });
         },
 
         /**
@@ -12621,6 +12733,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          * @param [params.eye] {Array of Number} Position to fly the eye position to.
          * @param [params.look] {Array of Number} Position to fly the look position to.
          * @param [params.up] {Array of Number} Position to fly the up vector to.
+         * @param [params.stopFOV] {Number} How much of field-of-view, in degrees, that a target AABB should fill the canvas.
          * @param [callback] {Function} Callback fired on arrival
          * @param [scope] {Object} Optional scope for callback
          */
@@ -12746,7 +12859,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     return;
                 }
 
-                this._look2 = XEO.math.getAABBCenter(aabb);
+                // Show boundary
+
+                this._boundaryIndicator.geometry.aabb = aabb;
+                this._boundaryIndicator.visibility.visible = true;
+
+                var aabbCenter = XEO.math.getAABBCenter(aabb);
+
+                this._look2 = params.look || aabbCenter;
 
                 if (offset) {
                     this._look2[0] += offset[0];
@@ -12755,7 +12875,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 }
 
                 var vec = XEO.math.normalizeVec3(XEO.math.subVec3(this._eye1, this._look1, tempVec3));
-                var diag = XEO.math.getAABBDiag(aabb);
+                var diag = (params.look && false) ? XEO.math.getAABBDiagPoint(aabb, params.look) : XEO.math.getAABBDiag(aabb);
                 var sca = Math.abs((diag) / Math.tan((params.stopFOV || this._stopFOV) / 2));
 
                 this._eye2[0] = this._look2[0] + (vec[0] * sca);
@@ -12794,6 +12914,137 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             XEO.scheduleTask(this._update, this);
         },
+
+        /**
+         * Jumps this CameraFlight's {{#crossLink "Camera"}}{{/crossLink}} to the given target.
+         *
+         * <ul>
+         *     <li>When the target is a boundary, this CameraFlight will position the {{#crossLink "Camera"}}{{/crossLink}}
+         *     at where the target fills most of the canvas.</li>
+         *     <li>When the target is an explicit {{#crossLink "Camera"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````
+         *      vectors, then this CameraFlight will jump the {{#crossLink "Camera"}}{{/crossLink}} to that target.</li>
+         * @method flyTo
+         * @param params  {*|Component} Either a parameters object or a {{#crossLink "Component"}}{{/crossLink}} subtype that has a {{#crossLink "WorldBoundary"}}{{/crossLink}}.
+         * @param[params.arc=0]  {Number} Factor in range [0..1] indicating how much the
+         * {{#crossLink "Camera/eye:property"}}Camera's eye{{/crossLink}} position will
+         * swing away from its {{#crossLink "Camera/eye:property"}}look{{/crossLink}} position as it flies to the target.
+         * @param [params.component] {String|Component} ID or instance of a component to fly to.
+         * @param [params.aabb] {*}  World-space axis-aligned bounding box (AABB) target to fly to.
+         * @param [params.eye] {Array of Number} Position to fly the eye position to.
+         * @param [params.look] {Array of Number} Position to fly the look position to.
+         * @param [params.up] {Array of Number} Position to fly the up vector to.
+         * @param [params.stopFOV] {Number} How much of field-of-view, in degrees, that a target AABB should fill the canvas.
+         */
+        jumpTo: function (params) {
+
+            if (this._flying) {
+                this.stop();
+            }
+
+            var camera = this._attached.camera;
+
+            if (!camera) {
+                return;
+            }
+
+            var lookat = camera.view;
+
+            var aabb;
+            var eye;
+            var look;
+            var up;
+            var componentId;
+
+            if (params.worldBoundary) {
+
+                // Argument is a Component subtype with a worldBoundary
+
+                aabb = params.worldBoundary.aabb;
+
+            } else if (params.aabb) {
+
+                aabb = params.aabb;
+
+                // Argument is a Boundary3D
+
+            } else if (params.min !== undefined && params.max !== undefined) {
+
+                // Argument is an AABB
+
+                aabb = params;
+
+            } else if (params.eye || params.look || params.up) {
+
+                // Argument is eye, look and up positions
+
+                eye = params.eye;
+                look = params.look;
+                up = params.up;
+
+            } else {
+
+                // Argument must be an instance or ID of a Component (subtype)
+
+                var component = params;
+
+                if (XEO._isNumeric(component) || XEO._isString(component)) {
+
+                    componentId = component;
+
+                    component = this.scene.components[componentId];
+
+                    if (!component) {
+                        this.error("Component not found: " + XEO._inQuotes(componentId));
+                        return;
+                    }
+                }
+
+                var worldBoundary = component.worldBoundary;
+
+                if (!worldBoundary) {
+                    this.error("Can't jump to component " + XEO._inQuotes(componentId) + " - does not have a worldBoundary");
+                    return;
+                }
+
+                aabb = worldBoundary.aabb;
+            }
+
+            var offset = params.offset;
+
+            if (aabb) {
+
+                if (aabb.max[0] <= aabb.min[0] || aabb.max[1] <= aabb.min[1] || aabb.max[2] <= aabb.min[2]) {
+
+                    // Don't fly to an empty boundary
+                    return;
+                }
+
+                eye = lookat.eye;
+                look = XEO.math.getAABBCenter(aabb);
+
+                var vec = XEO.math.normalizeVec3(XEO.math.subVec3(eye, look, tempVec3));
+                var diag = XEO.math.getAABBDiag(aabb);
+                var sca = Math.abs((diag) / Math.tan((params.stopFOV || this._stopFOV) / 2));
+
+                lookat.eye = [look[0] + (vec[0] * sca), look[1] + (vec[1] * sca), look[2] + (vec[2] * sca)];
+                lookat.look = look;
+
+            } else if (eye || look || up) {
+
+                if (eye) {
+                    lookat.eye = eye;
+                }
+
+                if (look) {
+                    lookat.look = look;
+                }
+
+                if (up) {
+                    lookat.up = up;
+                }
+            }
+        },
+
 
         _update: function () {
 
@@ -12840,6 +13091,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             if (!this._flying) {
                 return;
             }
+
+            // Hide boundary
+            this._boundaryIndicator.visibility.visible = false;
 
             //this.scene.off(this._tick);
 
@@ -15022,6 +15276,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              */
             this.contextAttr = cfg.contextAttr || {};
 
+            this.contextAttr.alpha = true;
+
             if (!cfg.canvas) {
 
                 // Canvas not supplied, create one automatically
@@ -15050,10 +15306,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 } else {
 
-                    this.error("Config 'canvasId' should be a string - "
-                        + "creating default canvas instead.");
-
-                    this._createCanvas();
+                    this.canvas = cfg.canvas;
                 }
             }
 
@@ -15267,13 +15520,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             // Default context attribute values
 
-            var contextAttr = XEO._applyIf({
-                preserveDrawingBuffer: false
-            }, this.contextAttr);
-
             for (var i = 0; !this.gl && i < this._WEBGL_CONTEXT_NAMES.length; i++) {
                 try {
-                    this.gl = this.canvas.getContext(this._WEBGL_CONTEXT_NAMES[i], contextAttr);
+                    this.gl = this.canvas.getContext(this._WEBGL_CONTEXT_NAMES[i], this.contextAttr);
                 } catch (e) { // Try with next context name
                 }
             }
@@ -16527,57 +16776,42 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
         _entityPicked: function (e) {
 
-            // Fly camera to each picked entity
-            // Don't change distance between look and eye
-
-            //  var view = this.cameraFlight.camera.view;
-
             var pos;
 
             if (e.worldPos) {
                 pos = e.worldPos
-
-            } else if (e.entity) {
-                pos = e.entity.worldBoundary.center
             }
+
+            var aabb;
+
+            aabb = e.entity.worldBoundary.aabb;
+
+            this._boundaryEntity.geometry.aabb = aabb;
+            this._boundaryEntity.visibility.visible = true;
 
             if (pos) {
 
-                //var diff = XEO.math.subVec3(view.eye, view.look, []);
-                //
-                //var input = this.scene.input;
+                // Fly to look at point, don't change eye->look dist
 
-                //  if (input.keyDown[input.KEY_SHIFT] && e.entity) {
-
-                // var aabb = e.entity.worldBoundary.aabb;
-
-                this._boundaryEntity.geometry.obb = e.entity.worldBoundary.obb;
-                this._boundaryEntity.visibility.visible = true;
-
-                var center = e.entity.worldBoundary.center;
+                var view = this.camera.view;
+                var diff = XEO.math.subVec3(view.eye, view.look, []);
 
                 this.cameraFlight.flyTo({
-                        aabb: e.entity.worldBoundary.aabb,
-                        oXffset: [
-                            pos[0] - center[0],
-                            pos[1] - center[1],
-                            pos[2] - center[2]
-                        ]
+                        look: pos,
+                        aabb: aabb
                     },
                     this._hideEntityBoundary, this);
 
-                //} else {
-                //
-                //    this.cameraFlight.flyTo({
-                //            look: pos,
-                //            eye: [
-                //                pos[0] + diff[0],
-                //                pos[1] + diff[1],
-                //                pos[2] + diff[2]
-                //            ]
-                //        },
-                //        this._hideEntityBoundary, this);
-                //}
+                // TODO: Option to back off to fit AABB in view
+
+            } else {
+
+                // Fly to fit target boundary in view
+
+                this.cameraFlight.flyTo({
+                        aabb: aabb
+                    },
+                    this._hideEntityBoundary, this);
             }
         },
 
@@ -17114,7 +17348,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  @module XEO
  @submodule controls
  @constructor
- @param [viewer] {Viewer} Parent {{#crossLink "Viewer"}}{{/crossLink}}.
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent viewer, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this KeyboardAxisCamera.
@@ -18795,8 +19029,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      * @param value The property's new value
                      */
                     this.fire('active', this._active = value);
-                }
-                ,
+                },
 
                 get: function () {
                     return this._active;
@@ -21286,13 +21519,6 @@ visibility.destroy();
                         self._buildPickVBOs();
                     }
                     return self._pickColors;
-                },
-
-                getPickIndices: function () {
-                    if (self._pickVBOsDirty) {
-                        self._buildPickVBOs();
-                    }
-                    return self._pickIndices;
                 }
             });
 
@@ -21315,7 +21541,6 @@ visibility.destroy();
             this._tangents = null;
             this._pickPositions = null;
             this._pickColors = null;
-            this._pickIndices = null;
 
             // Flags for work pending
 
@@ -21490,7 +21715,7 @@ visibility.destroy();
                     memoryStats.positions -= this._state.positions.numItems;
                     this._state.positions.destroy();
                 }
-                this._state.positions = this._positionsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._positionsData), this._positionsData.length, 3, usage) : null;
+                this._state.positions = this._positionsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._positionsData, this._positionsData.length, 3, usage) : null;
                 if (this._state.positions) {
                     memoryStats.positions += this._state.positions.numItems;
                 }
@@ -21506,7 +21731,7 @@ visibility.destroy();
                     memoryStats.colors -= this._state.colors.numItems;
                     this._state.colors.destroy();
                 }
-                this._state.colors = this._colorsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._colorsData), this._colorsData.length, 4, usage) : null;
+                this._state.colors = this._colorsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._colorsData, this._colorsData.length, 4, usage) : null;
                 if (this._state.colors) {
                     memoryStats.colors += this._state.colors.numItems;
                 }
@@ -21525,7 +21750,7 @@ visibility.destroy();
                     this._normalsData = XEO.math.buildNormals(this._positionsData, this._indicesData);
                 }
 
-                this._state.normals = this._normalsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._normalsData), this._normalsData.length, 3, usage) : null;
+                this._state.normals = this._normalsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._normalsData, this._normalsData.length, 3, usage) : null;
                 if (this._state.normals) {
                     memoryStats.normals += this._state.normals.numItems;
                 }
@@ -21542,7 +21767,7 @@ visibility.destroy();
                     memoryStats.uvs -= this._state.uv.numItems;
                     this._state.uv.destroy();
                 }
-                this._state.uv = this._uvData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._uvData), this._uvData.length, 2, usage) : null;
+                this._state.uv = this._uvData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._uvData, this._uvData.length, 2, usage) : null;
                 if (this._state.uv) {
                     memoryStats.uvs += this._state.uv.numItems;
                 }
@@ -21559,7 +21784,8 @@ visibility.destroy();
                     memoryStats.indices -= this._state.indices.numItems;
                     this._state.indices.destroy();
                 }
-                this._state.indices = this._indicesData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this._indicesData), this._indicesData.length, 1, usage) : null;
+
+                this._state.indices = this._indicesData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, this._indicesData, this._indicesData.length, 1, usage) : null;
                 if (this._state.indices) {
                     memoryStats.indices += this._state.indices.numItems;
                 }
@@ -21604,7 +21830,7 @@ visibility.destroy();
             var usage = gl.STATIC_DRAW;
 
             this._tangents = this._tangentsData ?
-                new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(this._tangentsData), this._tangentsData.length, 3, usage) : null;
+                new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._tangentsData, this._tangentsData.length, 3, usage) : null;
 
             if (this._tangents) {
                 memoryStats.tangents += this._tangents.numItems;
@@ -21633,19 +21859,16 @@ visibility.destroy();
 
                 var arrays = XEO.math.getPickPrimitives(this._positionsData, this._indicesData);
 
-                var pickPositions = arrays.pickPositions;
-                var pickColors = arrays.pickColors;
-                var pickIndices = arrays.pickIndices;
+                var pickPositions = arrays.positions;
+                var pickColors = arrays.colors;
 
-                this._pickPositions = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(pickPositions), pickPositions.length, 3, usage);
-                this._pickColors = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(pickColors), pickColors.length, 4, usage);
-                this._pickIndices = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(pickIndices), pickIndices.length, 1, usage);
+                this._pickPositions = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickPositions, pickPositions.length, 3, usage);
+                this._pickColors = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickColors, pickColors.length, 4, usage);
 
                 var memoryStats = XEO.stats.memory;
 
                 memoryStats.positions += this._pickPositions.numItems;
                 memoryStats.colors += this._pickColors.numItems;
-                memoryStats.indices += this._pickIndices.numItems;
             }
 
             this._pickVBOsDirty = false;
@@ -21665,12 +21888,6 @@ visibility.destroy();
                 this._pickColors.destroy();
                 memoryStats.colors -= this._pickColors.numItems;
                 this._pickColors = null;
-            }
-
-            if (this._pickIndices) {
-                this._pickIndices.destroy();
-                memoryStats.indices -= this._pickIndices.numItems;
-                this._pickIndices = null;
             }
 
             this._pickVBOsDirty = true;
@@ -21788,7 +22005,7 @@ visibility.destroy();
              *
              * @property positions
              * @default null
-             * @type {Array of Number}
+             * @type Float32Array
              */
             positions: {
 
@@ -21796,6 +22013,10 @@ visibility.destroy();
 
                     // Only recompile when adding or removing this property, not when modifying
                     var dirty = (!this._positionsData !== !value);
+
+                    if (value && value.constructor != Float32Array) {
+                        value = new Float32Array(value);
+                    }
 
                     this._positionsData = value;
                     this._positionsDirty = true;
@@ -21846,7 +22067,7 @@ visibility.destroy();
              *
              * @property normals
              * @default null
-             * @type {Array of Number}
+             * @type Float32Array
              */
             normals: {
 
@@ -21854,6 +22075,10 @@ visibility.destroy();
 
                     // Only recompile when adding or removing this property, not when modifying
                     var dirty = (!this._normalsData !== !value);
+
+                    if (value && value.constructor != Float32Array) {
+                        value = new Float32Array(value);
+                    }
 
                     this._normalsData = value;
                     this._normalsDirty = true;
@@ -21892,7 +22117,7 @@ visibility.destroy();
              *
              * @property uv
              * @default null
-             * @type {Array of Number}
+             * @type Float32Array
              */
             uv: {
 
@@ -21900,6 +22125,10 @@ visibility.destroy();
 
                     // Only recompile when adding or removing this property, not when modifying
                     var dirty = (!this._uvData !== !value);
+
+                    if (value && value.constructor != Float32Array) {
+                        value = new Float32Array(value);
+                    }
 
                     this._uvData = value;
                     this._uvDirty = true;
@@ -21938,7 +22167,7 @@ visibility.destroy();
              *
              * @property colors
              * @default null
-             * @type {Array of Number}
+             * @type Float32Array
              */
             colors: {
 
@@ -21946,6 +22175,10 @@ visibility.destroy();
 
                     // Only recompile when adding or removing this property, not when modifying
                     var dirty = (!this._colorsData !== !value);
+
+                    if (value && value.constructor != Float32Array) {
+                        value = new Float32Array(value);
+                    }
 
                     this._colorsData = value;
                     this._colorsDirty = true;
@@ -21980,11 +22213,14 @@ visibility.destroy();
             /**
              * The Geometry's indices array.
              *
+             * If ````XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]```` is true, then this can be
+             * a ````Uint32Array````, otherwise it needs to be a ````Uint16Array````.
+             *
              * Fires a {{#crossLink "Geometry/indices:event"}}{{/crossLink}} event on change.
              *
              * @property indices
              * @default null
-             * @type {Array of Number}
+             * @type Uint16Array | Uint32Array
              */
             indices: {
 
@@ -21992,6 +22228,22 @@ visibility.destroy();
 
                     // Only recompile when adding or removing this property, not when modifying
                     var dirty = (!this._indicesData && !value);
+
+                    if (value) {
+
+                        var bigIndicesSupported = XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"];
+
+                        if (!bigIndicesSupported && value.constructor === Uint32Array) {
+                            this.error("This WebGL implementation does not support Uint32Array");
+                            return;
+                        }
+
+                        var IndexArrayType = bigIndicesSupported ? Uint32Array : Uint16Array;
+
+                        if (value.constructor != Uint16Array && value.constructor != Uint32Array) {
+                            value = new IndexArrayType(value);
+                        }
+                    }
 
                     this._indicesData = value;
                     this._indicesDirty = true;
@@ -22280,10 +22532,6 @@ visibility.destroy();
 
             if (this._pickColors) {
                 this._pickColors.destroy();
-            }
-
-            if (this._pickIndices) {
-                this._pickIndices.destroy();
             }
 
             // Destroy boundary
@@ -28067,78 +28315,84 @@ XEO.PathGeometry = XEO.Geometry.extend({
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /*
-    The Abstract Loader has two modes:
-        #1: [static] load all the JSON at once [as of now]
-        #2: [stream] stream and parse JSON progressively [not yet supported]
+ The Abstract Loader has two modes:
+ #1: [static] load all the JSON at once [as of now]
+ #2: [stream] stream and parse JSON progressively [not yet supported]
 
-    Whatever is the mechanism used to parse the JSON (#1 or #2),
-    The loader starts by resolving the paths to binaries and referenced json files (by replace the value of the path property with an absolute path if it was relative).
+ Whatever is the mechanism used to parse the JSON (#1 or #2),
+ The loader starts by resolving the paths to binaries and referenced json files (by replace the value of the path property with an absolute path if it was relative).
 
-    In case #1: it is guaranteed to call the concrete loader implementation methods in a order that solves the dependencies between the entries.
-    only the nodes requires an extra pass to set up the hirerarchy.
-    In case #2: the concrete implementation will have to solve the dependencies. no order is guaranteed.
+ In case #1: it is guaranteed to call the concrete loader implementation methods in a order that solves the dependencies between the entries.
+ only the nodes requires an extra pass to set up the hirerarchy.
+ In case #2: the concrete implementation will have to solve the dependencies. no order is guaranteed.
 
-    When case #1 is used the followed dependency order is:
+ When case #1 is used the followed dependency order is:
 
-    scenes -> nodes -> meshes -> materials -> techniques -> shaders
-                    -> buffers
-                    -> cameras
-                    -> lights
+ scenes -> nodes -> meshes -> materials -> techniques -> shaders
+ -> buffers
+ -> cameras
+ -> lights
 
-    The readers starts with the leafs, i.e:
-        shaders, techniques, materials, meshes, buffers, cameras, lights, nodes, scenes
+ The readers starts with the leafs, i.e:
+ shaders, techniques, materials, meshes, buffers, cameras, lights, nodes, scenes
 
-    For each called handle method called the client should return true if the next handle can be call right after returning,
-    or false if a callback on client side will notify the loader that the next handle method can be called.
+ For each called handle method called the client should return true if the next handle can be call right after returning,
+ or false if a callback on client side will notify the loader that the next handle method can be called.
 
-*/
-var global = window;
-(function (root, factory) {
-    if (typeof exports === 'object') {
-        // Node. Does not work with strict CommonJS, but
-        // only CommonJS-like enviroments that support module.exports,
-        // like Node.
-        factory(module.exports);
-    } else if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
-        define([], function () {
-            return factory(root);
-        });
-    } else {
-        // Browser globals
-        factory(root);
-    }
-}(this, function (root) {
+ */
+
+(function () {
+
     "use strict";
 
-    var categoriesDepsOrder = ["extensions", "buffers", "bufferViews", "images",  "videos", "samplers", "textures", "shaders", "programs", "techniques", "materials", "accessors", "meshes", "cameras", "lights", "skins", "nodes", "scenes", "animations", ];
+    var categoriesDepsOrder = [
+        "extensions",
+        "buffers",
+        "bufferViews",
+        "images",
+        "videos",
+        "samplers",
+        "textures",
+        "shaders",
+        "programs",
+        "techniques",
+        "materials",
+        "accessors",
+        "meshes",
+        "cameras",
+        "lights",
+        "skins",
+        "nodes",
+        "scenes",
+        "animations"
+    ];
 
-    var glTFParser = Object.create(Object.prototype, {
+    XEO.glTFParser = Object.create(Object.prototype, {
 
-        _rootDescription: { value: null, writable: true },
+        _rootDescription: {value: null, writable: true},
 
         rootDescription: {
-            set: function(value) {
+            set: function (value) {
                 this._rootDescription = value;
             },
-            get: function() {
+            get: function () {
                 return this._rootDescription;
             }
         },
 
-        baseURL: { value: null, writable: true },
+        baseURL: {value: null, writable: true},
 
         //detect absolute path following the same protocol than window.location
         _isAbsolutePath: {
-            value: function(path) {
-                var isAbsolutePathRegExp = new RegExp("^"+window.location.protocol, "i");
+            value: function (path) {
+                var isAbsolutePathRegExp = new RegExp("^" + window.location.protocol, "i");
 
                 return path.match(isAbsolutePathRegExp) ? true : false;
             }
         },
 
         resolvePathIfNeeded: {
-            value: function(path) {
+            value: function (path) {
                 if (this._isAbsolutePath(path)) {
                     return path;
                 }
@@ -28147,18 +28401,18 @@ var global = window;
                 if (isDataUriRegex.test(path)) {
                     return path;
                 }
-                
+
                 return this.baseURL + path;
             }
         },
 
         _resolvePathsForCategories: {
-            value: function(categories) {
-                categories.forEach( function(category) {
+            value: function (categories) {
+                categories.forEach(function (category) {
                     var descriptions = this.json[category];
                     if (descriptions) {
                         var descriptionKeys = Object.keys(descriptions);
-                        descriptionKeys.forEach( function(descriptionKey) {
+                        descriptionKeys.forEach(function (descriptionKey) {
                             var description = descriptions[descriptionKey];
                             description.uri = this.resolvePathIfNeeded(description.uri);
                         }, this);
@@ -28174,10 +28428,10 @@ var global = window;
 
         json: {
             enumerable: true,
-            get: function() {
+            get: function () {
                 return this._json;
             },
-            set: function(value) {
+            set: function (value) {
                 if (this._json !== value) {
                     this._json = value;
                     this._resolvePathsForCategories(["buffers", "shaders", "images", "videos"]);
@@ -28197,7 +28451,7 @@ var global = window;
                 var category = entryType;
                 entries = this.rootDescription[category];
                 if (!entries) {
-                    console.log("ERROR:CANNOT find expected category named:"+category);
+                    console.log("ERROR:CANNOT find expected category named:" + category);
                     return null;
                 }
 
@@ -28206,7 +28460,7 @@ var global = window;
         },
 
         _stepToNextCategory: {
-            value: function() {
+            value: function () {
                 this._state.categoryIndex = this.getNextCategoryIndex(this._state.categoryIndex + 1);
                 if (this._state.categoryIndex !== -1) {
                     this._state.categoryState.index = 0;
@@ -28219,7 +28473,7 @@ var global = window;
 
         _stepToNextDescription: {
             enumerable: false,
-            value: function() {
+            value: function () {
                 var categoryState = this._state.categoryState;
                 var keys = categoryState.keys;
                 if (!keys) {
@@ -28237,34 +28491,34 @@ var global = window;
         },
 
         hasCategory: {
-            value: function(category) {
+            value: function (category) {
                 return this.rootDescription[category] ? true : false;
             }
         },
 
         _handleState: {
-            value: function() {
+            value: function () {
 
                 var methodForType = {
-                    "buffers" : this.handleBuffer,
-                    "bufferViews" : this.handleBufferView,
-                    "shaders" : this.handleShader,
-                    "programs" : this.handleProgram,
-                    "techniques" : this.handleTechnique,
-                    "materials" : this.handleMaterial,
-                    "meshes" : this.handleMesh,
-                    "cameras" : this.handleCamera,
-                    "lights" : this.handleLight,
-                    "nodes" : this.handleNode,
-                    "scenes" : this.handleScene,
-                    "images" : this.handleImage,
-                    "animations" : this.handleAnimation,
-                    "accessors" : this.handleAccessor,
-                    "skins" : this.handleSkin,
-                    "samplers" : this.handleSampler,
-                    "textures" : this.handleTexture,
-                    "videos" : this.handleVideo,
-                    "extensions" : this.handleExtension
+                    "buffers": this.handleBuffer,
+                    "bufferViews": this.handleBufferView,
+                    "shaders": this.handleShader,
+                    "programs": this.handleProgram,
+                    "techniques": this.handleTechnique,
+                    "materials": this.handleMaterial,
+                    "meshes": this.handleMesh,
+                    "cameras": this.handleCamera,
+                    "lights": this.handleLight,
+                    "nodes": this.handleNode,
+                    "scenes": this.handleScene,
+                    "images": this.handleImage,
+                    "animations": this.handleAnimation,
+                    "accessors": this.handleAccessor,
+                    "skins": this.handleSkin,
+                    "samplers": this.handleSampler,
+                    "textures": this.handleTexture,
+                    "videos": this.handleVideo,
+                    "extensions": this.handleExtension
                 };
 
                 var success = true;
@@ -28287,7 +28541,7 @@ var global = window;
                     var description = this.getEntryDescription(entryID, type);
                     if (!description) {
                         if (this.handleError) {
-                            this.handleError("INCONSISTENCY ERROR: no description found for entry "+entryID);
+                            this.handleError("INCONSISTENCY ERROR: no description found for entry " + entryID);
                             success = false;
                             break;
                         }
@@ -28313,16 +28567,16 @@ var global = window;
 
         _loadJSONIfNeeded: {
             enumerable: true,
-            value: function(callback) {
+            value: function (callback) {
                 var self = this;
                 //FIXME: handle error
-                if (!this._json)  {
+                if (!this._json) {
                     var jsonPath = this._path;
                     var i = jsonPath.lastIndexOf("/");
                     this.baseURL = (i !== 0) ? jsonPath.substring(0, i + 1) : '';
                     var jsonfile = new XMLHttpRequest();
                     jsonfile.open("GET", jsonPath, true);
-                    jsonfile.onreadystatechange = function() {
+                    jsonfile.onreadystatechange = function () {
                         if (jsonfile.readyState === 4) {
                             if (jsonfile.status === 200) {
                                 self.json = JSON.parse(jsonfile.responseText);
@@ -28333,7 +28587,7 @@ var global = window;
                         }
                     };
                     jsonfile.send(null);
-               } else {
+                } else {
                     if (callback) {
                         callback(this.json);
                     }
@@ -28343,8 +28597,9 @@ var global = window;
 
         /* load JSON and assign it as description to the reader */
         _buildLoader: {
-            value: function(callback) {
+            value: function (callback) {
                 var self = this;
+
                 function JSONReady(json) {
                     self.rootDescription = json;
                     if (callback) {
@@ -28356,12 +28611,12 @@ var global = window;
             }
         },
 
-        _state: { value: null, writable: true },
+        _state: {value: null, writable: true},
 
         _getEntryType: {
-            value: function(entryID) {
+            value: function (entryID) {
                 var rootKeys = categoriesDepsOrder;
-                for (var i = 0 ;  i < rootKeys.length ; i++) {
+                for (var i = 0; i < rootKeys.length; i++) {
                     var rootValues = this.rootDescription[rootKeys[i]];
                     if (rootValues) {
                         return rootKeys[i];
@@ -28372,8 +28627,8 @@ var global = window;
         },
 
         getNextCategoryIndex: {
-            value: function(currentIndex) {
-                for (var i = currentIndex ; i < categoriesDepsOrder.length ; i++) {
+            value: function (currentIndex) {
+                for (var i = currentIndex; i < categoriesDepsOrder.length; i++) {
                     if (this.hasCategory(categoriesDepsOrder[i])) {
                         return i;
                     }
@@ -28385,15 +28640,17 @@ var global = window;
 
         load: {
             enumerable: true,
-            value: function(userInfo, options) {
+            value: function (userInfo, options) {
                 var self = this;
                 this._buildLoader(function loaderReady(reader) {
-                    var startCategory = self.getNextCategoryIndex.call(self,0);
+                    var startCategory = self.getNextCategoryIndex.call(self, 0);
                     if (startCategory !== -1) {
-                        self._state = { "userInfo" : userInfo,
-                                        "options" : options,
-                                        "categoryIndex" : startCategory,
-                                        "categoryState" : { "index" : "0" } };
+                        self._state = {
+                            "userInfo": userInfo,
+                            "options": options,
+                            "categoryIndex": startCategory,
+                            "categoryState": {"index": "0"}
+                        };
                         self._handleState();
                     }
                 });
@@ -28401,7 +28658,7 @@ var global = window;
         },
 
         initWithPath: {
-            value: function(idPrefix, path) {
+            value: function (idPrefix, path) {
                 this._idPrefix = idPrefix;
                 this._path = path;
                 this._json = null;
@@ -28410,11 +28667,11 @@ var global = window;
         },
 
         //this is meant to be global and common for all instances
-        _knownURLs: { writable: true, value: {} },
+        _knownURLs: {writable: true, value: {}},
 
         //to be invoked by subclass, so that ids can be ensured to not overlap
         loaderContext: {
-            value: function() {
+            value: function () {
                 if (typeof this._knownURLs[this._path] === "undefined") {
                     this._knownURLs[this._path] = Object.keys(this._knownURLs).length;
                 }
@@ -28423,7 +28680,7 @@ var global = window;
         },
 
         initWithJSON: {
-            value: function(json, baseURL) {
+            value: function (json, baseURL) {
                 this.json = json;
                 this.baseURL = baseURL;
                 if (!baseURL) {
@@ -28432,16 +28689,8 @@ var global = window;
                 return this;
             }
         }
-
     });
-
-    if(root) {
-        root.glTFParser = glTFParser;
-    }
-
-    return glTFParser;
-
-}));
+})();
 ;/**
  * Private xeoEngine glTF loading utilities.
  *
@@ -28890,7 +29139,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
     };
 
 
-    XEO.GLTFLoader = Object.create(glTFParser, {
+    XEO.GLTFLoader = Object.create(XEO.glTFParser, {
 
         setCollection: {
             value: function (collection) {
@@ -28908,8 +29157,8 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                 this.resources = new Resources();
 
-                glTFParser.handleLoadCompleted = ok;
-                glTFParser.load.call(this, userInfo, options);
+                XEO.glTFParser.handleLoadCompleted = ok;
+                XEO.glTFParser.load.call(this, userInfo, options);
             }
         },
 
@@ -30005,7 +30254,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                 set: function (value) {
 
-                    this._state.opacity = (value !== undefined && value !== null) ? value : 1.0;
+                    value = (value !== undefined && value !== null) ? value : 1.0;
+
+                    if (this._state.opacity === value) {
+                        return;
+                    }
+
+                    this._state.opacity = value;
 
                     this._renderer.imageDirty = true;
 
@@ -34864,12 +35119,12 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
         _init: function (cfg) {
 
             this._state = new XEO.renderer.Modes({
-                pickable: true,
-                clippable: true,
-                transparent: false,
-                backfaces: false,
-                frontface: true, // Boolean for speed; true == "ccw", false == "cw"
-                collidable: true
+                pickable: null,
+                clippable: null,
+                transparent: null,
+                backfaces: null,
+                frontface: null, // Boolean for speed; true == "ccw", false == "cw"
+                collidable: null
             });
 
             this.pickable = cfg.pickable;
@@ -34897,7 +35152,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                 set: function (value) {
 
-                    this._state.pickable = value !== false;
+                    value = value !== false;
+
+                    if (this._state.pickable === value) {
+                        return;
+                    }
+
+                    this._state.pickable = value;
 
                     this._renderer.drawListDirty = true;
 
@@ -34931,7 +35192,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                 set: function (value) {
 
-                    this._state.clippable = value !== false;
+                    value = value !== false;
+
+                    if (this._state.clippable === value) {
+                        return;
+                    }
+
+                    this._state.clippable = value;
 
                     this._renderer.imageDirty = true;
 
@@ -34967,7 +35234,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                 set: function (value) {
 
-                    this._state.transparent = !!value;
+                    value = !!value;
+
+                    if (this._state.transparent === value) {
+                        return;
+                    }
+
+                    this._state.transparent = value;
 
                     this._renderer.stateOrderDirty = true;
 
@@ -35003,6 +35276,10 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                     value = !!value;
 
+                    if (this._state.backfaces === value) {
+                        return;
+                    }
+
                     this._state.backfaces = value;
 
                     this._renderer.imageDirty = true;
@@ -35037,7 +35314,13 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                 set: function (value) {
 
-                    this._state.frontface = value !== "cw";
+                    value = value !== "cw";
+
+                    if (this._state.frontface === value) {
+                        return;
+                    }
+
+                    this._state.frontface = value;
 
                     this._renderer.imageDirty = true;
 

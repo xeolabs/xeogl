@@ -70,6 +70,7 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/GyroRotateCamera.html">GyroRotateCamera</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -531,7 +532,13 @@
 
                 set: function (value) {
 
-                    this._state.opacity = (value !== undefined &amp;&amp; value !== null) ? value : 1.0;
+                    value = (value !== undefined &amp;&amp; value !== null) ? value : 1.0;
+
+                    if (this._state.opacity === value) {
+                        return;
+                    }
+
+                    this._state.opacity = value;
 
                     this._renderer.imageDirty = true;
 

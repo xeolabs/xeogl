@@ -70,6 +70,7 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/GyroRotateCamera.html">GyroRotateCamera</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -338,7 +339,7 @@
     };
 
 
-    XEO.GLTFLoader = Object.create(glTFParser, {
+    XEO.GLTFLoader = Object.create(XEO.glTFParser, {
 
         setCollection: {
             value: function (collection) {
@@ -356,8 +357,8 @@
 
                 this.resources = new Resources();
 
-                glTFParser.handleLoadCompleted = ok;
-                glTFParser.load.call(this, userInfo, options);
+                XEO.glTFParser.handleLoadCompleted = ok;
+                XEO.glTFParser.load.call(this, userInfo, options);
             }
         },
 

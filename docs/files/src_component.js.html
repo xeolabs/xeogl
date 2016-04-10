@@ -70,6 +70,7 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/GyroRotateCamera.html">GyroRotateCamera</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -1068,16 +1069,16 @@
                 if (!this._sharedComponents[component.id]) {
                     this._sharedComponents[component.id] = component;
                 }
+
+                component.on(&quot;destroyed&quot;, function () {
+
+                    // If the component is explicitly destroyed, ie. by calling
+                    // its #destroy method, then deregister it so we don&#x27;t try
+                    // to destroy it a second time when we destroy this component
+
+                    delete this._sharedComponents[component.id];
+                }, this);
             }
-
-            component.on(&quot;destroyed&quot;, function () {
-
-                // If the component is explicitly destroyed, ie. by calling
-                // its #destroy method, then deregister it so we don&#x27;t try
-                // to destroy it a second time when we destroy this component
-
-                delete this._sharedComponents[component.id];
-            }, this);
 
             return component;
         },

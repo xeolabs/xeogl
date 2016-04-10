@@ -70,6 +70,7 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/GyroRotateCamera.html">GyroRotateCamera</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -205,6 +206,61 @@
          * @type {String}
          */
         this.version = null;
+
+        /**
+         * Information about available WebGL support
+         */
+        this.WEBGL_INFO = (function() {
+            var info = {
+                WEBGL: false
+            };
+
+            var canvas = document.createElement(&quot;canvas&quot;);
+
+            if (!canvas) {
+                return info;
+            }
+
+            var gl = canvas.getContext(&quot;webgl&quot;, { antialias: true }) || canvas.getContext(&quot;experimental-webgl&quot;, { antialias: true });
+
+            info.WEBGL = !!gl;
+
+            if (!info.WEBGL) {
+                return info;
+            }
+
+            info.ANTIALIAS = gl.getContextAttributes().antialias;
+
+            if (gl.getShaderPrecisionFormat) {
+                if (gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT).precision &gt; 0) {
+                    info.FS_MAX_FLOAT_PRECISION = &quot;highp&quot;;
+                } else if (gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.MEDIUM_FLOAT).precision &gt; 0) {
+                    info.FS_MAX_FLOAT_PRECISION = &quot;mediump&quot;;
+                } else {
+                    info.FS_MAX_FLOAT_PRECISION = &quot;lowp&quot;;
+                }
+            } else {
+                info.FS_MAX_FLOAT_PRECISION = &quot;mediump&quot;;
+            }
+
+            info.DEPTH_BUFFER_BITS = gl.getParameter(gl.DEPTH_BITS);
+            info.MAX_TEXTURE_SIZE = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+            info.MAX_CUBE_MAP_SIZE = gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE);
+            info.MAX_RENDERBUFFER_SIZE = gl.getParameter(gl.MAX_RENDERBUFFER_SIZE);
+            info.MAX_TEXTURE_UNITS =  gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+            info.MAX_VERTEX_ATTRIBS = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
+            info.MAX_VERTEX_UNIFORM_VECTORS = gl.getParameter(gl.MAX_VERTEX_UNIFORM_VECTORS);
+            info.MAX_FRAGMENT_UNIFORM_VECTORS = gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS);
+            info.MAX_VARYING_VECTORS = gl.getParameter(gl.MAX_VARYING_VECTORS);
+
+            info.SUPPORTED_EXTENSIONS = {};
+
+            gl.getSupportedExtensions().forEach(function(ext) {
+                info.SUPPORTED_EXTENSIONS[ext] = true;
+            });
+
+            return info;
+        })();
 
         /**
          * Tracks statistics within xeoEngine, such as numbers of
