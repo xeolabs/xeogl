@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>custom stereo view
+</div>
+
+<script>
+
+    // Load glTF model
+    var gearbox = new XEO.Model({
+        src: "models/gltf/gearbox/gearbox_assy.gltf"
+    });
+
+    var scene = gearbox.scene;
+
+    // Move the eye back a bit
+
+    scene.camera.view.eye = [0, 0, -10];
+
+    scene.on("tick",
+            function () {
+
+                var view = scene.camera.view;
+
+                view.rotateEyeY(0.6);
+                view.rotateEyeX(0.3);
+            });
+
+
+    // Configure Scene to render twice for each frame
+    scene.passes = 2;
+
+    // We'll rely on the Scene's Default Camera and Viewport
+    // but we need to replace the Camera's projection with Frustum
+
+    var camera = scene.camera;
+    var view = camera.view;
+    camera.project = new XEO.Frustum();
+    var frustum = camera.project;
+
+    var viewport = scene.viewport;
+    viewport.autoBoundary = false;
+    var canvas = scene.canvas;
+
+    var canvasBoundary;
+    var canvasWidth;
+    var canvasHeight;
+    var halfCanvasWidth;
+    var halfCanvasHeight;
+    var canvasAspectRatio;
+
+    var eye;
+    var look;
+    var up;
+
+    var math = XEO.math;
+    var eyeVec = math.vec3();
+    var sepVec = math.vec3();
+    var leftEye = math.vec3();
+    var leftLook = math.vec3();
+    var rightEye = math.vec3();
+    var rightLook = math.vec3();
+
+    var eyeSep = 0.2; // Eye separation
+    var focalLength = 20.0;
+    var aperture = 45;
+    var near = 0.1;
+    var DTOR = 0.0174532925;
+    var radians = DTOR * aperture / 2;
+    var wd2 = near * Math.tan(radians);
+    var ndfl = near / focalLength;
+
+    // Intercept Scene before each render
+
+    scene.on("rendering",
+            function (e) {
+
+                canvasBoundary = canvas.boundary;
+
+                var canvasWidth = canvasBoundary[2];
+                var canvasHeight = canvasBoundary[3];
+                var halfCanvasWidth = Math.round(canvasWidth / 2);
+                var halfCanvasHeight = Math.round(canvasHeight / 2);
+                var canvasAspectRatio = canvasWidth / canvasHeight;
+
+                switch (e.pass) {
+
+                    case 0:
+
+                        eye = view.eye.slice();
+                        look = view.look.slice();
+                        up = view.up.slice();
+
+                        math.subVec3(look, eye, eyeVec);
+                        math.cross3Vec3(up, eyeVec, sepVec);
+                        math.normalizeVec3(sepVec);
+                        math.mulVec3Scalar(sepVec, eyeSep / 2.0);
+
+                        // Find left and right viewpoints
+
+                        math.subVec3(eye, sepVec, leftEye);
+                        math.subVec3(look, sepVec, leftLook);
+
+                        math.addVec3(eye, sepVec, rightEye);
+                        math.addVec3(look, sepVec, rightLook);
+
+                        // Set view transform to left side
+
+                        view.eye = leftEye;
+                        view.look = leftLook;
+
+                        // Set projection frustum to left half of view space
+
+                        frustum.left = -canvasAspectRatio * wd2 - 0.5 * eyeSep * ndfl;
+                        frustum.right = canvasAspectRatio * wd2 - 0.5 * eyeSep * ndfl;
+                        frustum.top = wd2 * 2;
+                        frustum.bottom = -wd2 * 2;
+
+                        // Set viewport to left half of canvas
+
+                        viewport.boundary = [0, 0, halfCanvasWidth, canvasHeight];
+
+                        break;
+
+                    case 1:
+
+                        // Set view transform to right side
+
+                        view.eye = rightEye;
+                        view.look = rightLook;
+
+                        // Set projection frustum to left half of view space
+
+                        frustum.left = -canvasAspectRatio * wd2 + 0.5 * eyeSep * ndfl;
+                        frustum.right = canvasAspectRatio * wd2 + 0.5 * eyeSep * ndfl;
+                        frustum.top = wd2 * 2;
+                        frustum.bottom = -wd2 * 2;
+
+                        // Set viewport to right half of canvas
+
+                        viewport.boundary = [halfCanvasWidth, 0, halfCanvasWidth, canvasHeight];
+
+                        break;
+                }
+            });
+
+    // Intercept Scene after each render
+    // After the second pass we'll restore the viewpoint
+
+    scene.on("rendered",
+            function (e) {
+
+                switch (e.pass) {
+                    case 1:
+
+                        view.eye = eye;
+                        view.look = look;
+                        view.up = up;
+
+                        break;
+                }
+            });
+
+    new XEO.CameraControl();
+
+</script>
+</body>
+</html>

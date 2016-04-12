@@ -54,6 +54,17 @@
         log("mouseclicked", params);
     });
 
+    input.on("orientationchange", function (params) {
+        log("orientationchange", params);
+    });
+
+    input.on("devicemotion", function (params) {
+        log("devicemotion", params);
+    });
+
+    input.on("deviceorientation", function (params) {
+        log("deviceorientation", params);
+    });
 
     var buf = [];
 

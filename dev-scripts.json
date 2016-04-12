@@ -64,6 +64,7 @@
     "src/configs/configs.js",
     "src/controls/_module.js",
     "src/controls/cameraControl.js",
+    "src/controls/cameraController.js",
     "src/controls/keyboardAxisCamera.js",
     "src/controls/keyboardRotateCamera.js",
     "src/controls/keyboardPanCamera.js",

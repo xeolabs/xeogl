@@ -1350,8 +1350,8 @@
          * @method rotationMat4c
          * @static
          */
-        rotationMat4c: function (anglerad, x, y, z) {
-            return XEO.math.rotationMat4v(anglerad, [x, y, z]);
+        rotationMat4c: function (anglerad, x, y, z, mat) {
+            return XEO.math.rotationMat4v(anglerad, [x, y, z], mat);
         },
 
         /**

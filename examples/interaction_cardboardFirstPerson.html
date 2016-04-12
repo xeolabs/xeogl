@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeoengine.js"></script>
+
+    <script src="js/effects/stereo.js"></script>
+    <script src="js/interaction/cardboardFirstPerson.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>Google Cardboard viewing using a <a
+        href="js/effects/stereo.js"
+        target="_docs">XEO.Stereo</a> and a <a href="js/interaction/cardboardFirstPerson.js"
+                                               target="_docs">XEO.CardboardFirstPerson</a>
+</div>
+
+<script>
+
+    // Load glTF model
+    var gearbox = new XEO.Model({
+        src: "models/gltf/gearbox/gearbox_assy.gltf"
+    });
+
+    // Create stereo effect
+    new XEO.Stereo();
+
+    // Drive Camera orientation and position with VR input
+    new XEO.CardboardFirstPerson();
+
+</script>
+</body>
+</html>

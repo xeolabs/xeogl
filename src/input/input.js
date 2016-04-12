@@ -439,136 +439,144 @@
 
             (function () {
 
-                var screenOrientation;
+                var orientationAngleLookup = {
+                    'landscape-primary': 90,
+                    'landscape-secondary': -90,
+                    'portrait-secondary': 180,
+                    'portrait-primary': 0
+                };
 
-                var lastY = null;
-                var lastX = null;
-                var lastZ = null;
-
-                var deltaX = 0;
-                var deltaY = 0;
-                var deltaZ = 0;
-
+                var orientation;
+                var orientationAngle;
                 var acceleration = XEO.math.vec3();
                 var accelerationIncludingGravity = XEO.math.vec3();
 
+                var orientationChangeEvent = {
+                    orientation: null,
+                    orientationAngle: 0
+                };
+
                 var deviceMotionEvent = {
+                    orientationAngle: 0,
                     acceleration: null,
                     accelerationIncludingGravity: accelerationIncludingGravity,
                     rotationRate: XEO.math.vec3(),
                     interval: 0
                 };
 
-                window.addEventListener('orientationchange',
-                    function () {
+                var deviceOrientationEvent = {
+                    alpha: 0,
+                    beta: 0,
+                    gamma: 0,
+                    absolute: false
+                };
 
-                        switch (window.screen.orientation || window.screen.mozOrientation) {
+                if (!window.OrientationChangeEvent) {
+                    self.warn("Browser event not supported: orientationchange");
 
-                            case 'landscape-primary':
-                                return 90;
+                } else {
 
-                            case 'landscape-secondary':
-                                return -90;
+                    window.addEventListener('orientationchange',
+                        self._orientationchangedListener = function () {
 
-                            case 'portrait-secondary':
-                                return 180;
+                            orientation = window.screen.orientation || window.screen.mozOrientation || window.msOrientation || null;
+                            orientationAngle = orientation ? (orientationAngleLookup[orientation] || 0) : 0;
 
-                            case 'portrait-primary':
-                                return 0;
-                        }
-                        // this returns 90 if width is greater then height
-                        // and window orientation is undefined OR 0
-                        // if (!window.orientation && window.innerWidth > window.innerHeight)
-                        //   return 90;
-                        screenOrientation = window.orientation || 0;
-                    },
-                    false);
+                            orientationChangeEvent.orientation = orientation;
+                            orientationChangeEvent.orientationAngle = orientationAngle;
 
-                window.addEventListener('devicemotion',
-                    function (e) {
+                            /**
+                             * Fired when the orientation of the device has changed.
+                             *
+                             * @event orientationchange
+                             * @param orientation The orientation: "landscape-primary", "landscape-secondary", "portrait-secondary" or "portrait-primary"
+                             * @param orientationAngle The orientation angle in degrees: 90 for landscape-primary, -90 for landscape-secondary, 180 for portrait-secondary or 0 for portrait-primary.
+                             */
+                            self.fire("orientationchange", orientationChangeEvent);
+                        },
+                        false);
+                }
 
-                        var accel = e.acceleration;
-                        var accelGrav = e.accelerationIncludingGravity;
+                if (!window.DeviceMotionEvent) {
+                    self.warn("Browser event not supported: devicemotion");
 
-                        var rotationRate = e.rotationRate;
+                } else {
 
-                        // // Grab the refresh interval from the results
-                        deviceMotionEvent.interval = e.interval;
+                    window.addEventListener('devicemotion',
+                        self._deviceMotionListener = function (e) {
 
-                        // call handlers
-                        var isHorizontal = screenOrientation !== 0;
+                            deviceMotionEvent.interval = e.interval;
+                            deviceMotionEvent.orientationAngle = orientationAngle;
 
-                        if (accel) {
+                            var accel = e.acceleration;
 
-                            acceleration[0] = acceleration.x;
-                            acceleration[1] = acceleration.y;
-                            acceleration[2] = acceleration.z;
+                            if (accel) {
+                                acceleration[0] = accel.x;
+                                acceleration[1] = accel.y;
+                                acceleration[2] = accel.z;
+                                deviceMotionEvent.acceleration = acceleration;
+                            } else {
+                                deviceMotionEvent.acceleration = null;
+                            }
 
-                            deviceMotionEvent.acceleration = acceleration;
-                        } else {
+                            var accelGrav = e.accelerationIncludingGravity;
 
-                            deviceMotionEvent.acceleration = null;
-                        }
+                            if (accelGrav) {
+                                accelerationIncludingGravity[0] = accelGrav.x;
+                                accelerationIncludingGravity[1] = accelGrav.y;
+                                accelerationIncludingGravity[2] = accelGrav.z;
+                                deviceMotionEvent.accelerationIncludingGravity = accelerationIncludingGravity;
+                            } else {
+                                deviceMotionEvent.accelerationIncludingGravity = null;
+                            }
 
-                        if (accelGrav) {
+                            deviceMotionEvent.rotationRate = e.rotationRate;
 
-                            accelerationIncludingGravity[0] = accelGrav.x;
-                            accelerationIncludingGravity[1] = accelGrav.y;
-                            accelerationIncludingGravity[2] = accelGrav.z;
+                            /**
+                             * Fires on a regular interval and returns data about the rotation
+                             * (in degrees per second) and acceleration (in meters per second squared) of the device, at that moment in
+                             * time. Some devices do not have the hardware to exclude the effect of gravity.
+                             *
+                             * @event devicemotion
+                             * @param Float32Array acceleration The acceleration of the device, in meters per second squared, as a 3-element vector. This value has taken into account the effect of gravity and removed it from the figures. This value may not exist if the hardware doesn't know how to remove gravity from the acceleration data.
+                             * @param Float32Array accelerationIncludingGravity The acceleration of the device, in meters per second squared, as a 3-element vector. This value includes the effect of gravity, and may be the only value available on devices that don't have a gyroscope to allow them to properly remove gravity from the data.
+                             * @param, Number interval The interval, in milliseconds, at which this event is fired. The next event will be fired in approximately this amount of time.
+                             * @param  Float32Array rotationRate The rates of rotation of the device about each axis, in degrees per second.
+                             */
+                            self.fire("devicemotion", deviceMotionEvent);
+                        },
+                        false);
+                }
 
-                            deviceMotionEvent.acceleration = acceleration;
-                        }
+                if (!window.DeviceOrientationEvent) {
+                    self.warn("Browser event not supported: deviceorientation");
 
-                        deviceMotionEvent.rotationRate[0] = rotationRate.alpha;
-                        deviceMotionEvent.rotationRate[1] = rotationRate.beta;
-                        deviceMotionEvent.rotationRate[2] = rotationRate.gamma;
+                } else {
 
-                        self.fire("devicemotion", deviceMotionEvent);
-                    },
-                    false);
+                    window.addEventListener("deviceorientation",
+                        self._deviceOrientListener = function (e) {
 
-                window.addEventListener("deviceOrient",
-                    function (e) {
+                            deviceOrientationEvent.gamma = e.gamma;
+                            deviceOrientationEvent.beta = e.beta;
+                            deviceOrientationEvent.alpha = e.alpha;
+                            deviceOrientationEvent.absolute = e.absolute;
 
-                        // gamma is the left-to-right tilt in degrees, where right is positive
-                        var tiltLR = e.gamma;
-
-                        // beta is the front-to-back tilt in degrees, where front is positive
-                        var tiltFB = e.beta;
-
-                        // alpha is the compass direction the device is facing in degrees
-                        var dir = e.alpha;
-
-                        // current X + Y
-                        var isHorizontal = screenOrientation !== 0;
-                        var currentY = !isHorizontal ? tiltLR : tiltFB;
-                        var currentX = !isHorizontal ? tiltFB : tiltLR;
-
-                        // initial X + Y
-                        lastY = lastY || currentY;
-                        lastX = lastX || currentX;
-
-                        // delta X + Y
-                        deltaX = currentX - lastX;
-                        deltaY = currentY - lastY;
-
-                        // update last X + Y
-                        lastX = currentX;
-                        lastY = currentY;
-
-                        //var accelerationX = isHorizontal ? acceleration.y : acceleration.x;
-                        //var accelerationY = isHorizontal ? acceleration.x : acceleration.y;
-
-                        self.fire("deviceorient", {
-                            orientation: screenOrientation,
-                            accelerationX: 1.0,
-                            accelerationY: 1.0,
-                            deltaX: deltaX,
-                            deltaY: deltaY,
-                            deltaZ: deltaZ
-                        });
-                    },
-                    false);
+                            /**
+                             * Fired when fresh data is available from an orientation sensor about the current orientation
+                             * of the device as compared to the Earth coordinate frame. This data is gathered from a
+                             * magnetometer inside the device. See
+                             * <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Orientation_and_motion_data_explained">Orientation and motion data explained</a> for more info.
+                             *
+                             * @event deviceorientation
+                             * @param Number alpha The current orientation of the device around the Z axis in degrees; that is, how far the device is rotated around a line perpendicular to the device.
+                             * @param Number beta The current orientation of the device around the X axis in degrees; that is, how far the device is tipped forward or backward.
+                             * @param Number gamma The current orientation of the device around the Y axis in degrees; that is, how far the device is turned left or right.
+                             * @param Boolean absolute This value is true if the orientation is provided as a difference between the device coordinate frame and the Earth coordinate frame; if the device can't detect the Earth coordinate frame, this value is false.
+                             */
+                            self.fire("deviceorientation", deviceOrientationEvent);
+                        },
+                        false);
+                }
             })();
         },
 
