@@ -89,17 +89,17 @@
             var self = this;
 
             // ---------- TESTING -----------------------------------
-            var alpha = 0;
-            var beta = -90;
-            var gamma = 0;
-
-            this.scene.on("tick", function () {
-                self.scene.input.fire("deviceorientation", {
-                    alpha: alpha += 0.5,
-                    beta: beta += 0.05,
-                    gamma: gamma += 0.05
-                });
-            });
+            //var alpha = 0;
+            //var beta = -90;
+            //var gamma = 0;
+            //
+            //this.scene.on("tick", function () {
+            //    self.scene.input.fire("deviceorientation", {
+            //        alpha: alpha += 0.5,
+            //        beta: beta += 0.05,
+            //        gamma: gamma += 0.05
+            //    });
+            //});
 
             self.on("active",
                 function (active) {
