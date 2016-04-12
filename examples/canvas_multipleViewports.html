@@ -77,7 +77,7 @@
 
     var scene = XEO.scene;
 
-    scene.camera.view.eye = [0,0,1.5];
+    scene.camera.view.eye = [0, 0, 1.5];
 
     scene.on("tick",
             function () {
@@ -85,17 +85,20 @@
                 this.camera.view.rotateEyeX(0.3);
             });
 
-    scene.canvas.on("size",
+    scene.canvas.on("boundary",
             function (e) {
 
-                var width = e.width / 2;
-                var height = e.height / 2;
+                var min = e.min;
+                var max = e.max;
 
-                entity1.viewport.boundary = [0, 0, width, height];
-                entity2.viewport.boundary = [width, 0, width, height];
+                var halfWidth = (max[0] - min[0]) / 2;
+                var halfHeight = (max[1] - min[1]) / 2;
 
-                entity3.viewport.boundary = [0, height, width, height];
-                entity4.viewport.boundary = [width, height, width, height];
+                entity1.viewport.boundary = [0, 0, halfWidth, halfHeight];
+                entity2.viewport.boundary = [halfWidth, 0, halfWidth, halfHeight];
+
+                entity3.viewport.boundary = [0, halfHeight, halfWidth, halfHeight];
+                entity4.viewport.boundary = [halfWidth, halfHeight, halfWidth, halfHeight];
             });
 
 </script>

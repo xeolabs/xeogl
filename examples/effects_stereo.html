@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeoengine.js"></script>
+
+    <script src="js/effects/stereo.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>stereo view using a <a
+        href="js/effects/stereo.js"
+        target="_docs">XEO.Stereo</a>
+</div>
+
+<script>
+
+    // Load glTF model
+    var gearbox = new XEO.Model({
+        src: "models/gltf/gearbox/gearbox_assy.gltf"
+    });
+
+    var scene = gearbox.scene;
+
+    // Set initial camera position
+    var view = scene.camera.view;
+
+    view.eye = [184.21, 10.54, -7.03];
+    view.look = [159.20, 17.02, 3.21];
+    view.up = [-0.15, 0.97, 0.13];
+
+
+    // Orbit the Camera
+    scene.on("tick",
+            function () {
+
+                var view = scene.camera.view;
+
+                view.rotateEyeY(0.6);
+                view.rotateEyeX(0.3);
+            });
+
+    // XEO.Stereo with all defaults
+    var stereo = new XEO.Stereo({
+        camera: scene.camera,
+        viewport: scene.viewport,
+        eyeSep: 0.2,
+        focalDist: 20,
+        aperture: 45,
+        active: true
+    });
+
+    // Camera mouse and keyboard interaction
+    new XEO.CameraControl();
+
+</script>
+</body>
+</html>

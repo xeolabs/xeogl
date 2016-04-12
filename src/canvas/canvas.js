@@ -198,6 +198,29 @@
             this.canvas.width = this.canvas.clientWidth;
             this.canvas.height = this.canvas.clientHeight;
 
+            /**
+             * Boundary of the Canvas in absolute browser window coordinates.
+             *
+             * ### Usage:
+             *
+             * ````javascript
+             * var boundary = myScene.canvas.boundary;
+             *
+             * var xmin = boundary[0];
+             * var ymin = boundary[1];
+             * var xmax = boundary[2];
+             * var ymax = boundary[3];
+             * ````
+             *
+             * @property boundary
+             * @type {{Array of Number}}
+             * @final
+             */
+            this.boundary = [
+                this.canvas.offsetLeft, this.canvas.offsetTop,
+                this.canvas.clientWidth, this.canvas.clientHeight
+            ];
+
             this._createOverlay();
             this._resizeOverlay();
 
@@ -275,18 +298,20 @@
                             canvas.width = canvas.clientWidth;
                             canvas.height = canvas.clientHeight;
 
+                            var boundary = self.boundary;
+
+                            boundary[0] = canvas.offsetLeft;
+                            boundary[1] = canvas.offsetTop;
+                            boundary[2] = newWidth;
+                            boundary[3] = newHeight;
+
                             /**
-                             * Fired whenever the canvas has resized
-                             * @event size
-                             * @param width {Number} The new canvas width
-                             * @param height {Number} The new canvas height
-                             * @param aspect {Number} The new canvas aspect ratio
+                             * Fired whenever this Canvas's {{#crossLink "Canvas/boundary:property"}}{{/crossLink}} property changes.
+                             *
+                             * @event boundary
+                             * @param value The property's new value
                              */
-                            self.fire("size", {
-                                width: newWidth,
-                                height: newHeight,
-                                aspect: newHeight / newWidth
-                            });
+                            self.fire("boundary", boundary);
 
                             lastCanvasWidth = newWidth;
                             lastCanvasHeight = newHeight;

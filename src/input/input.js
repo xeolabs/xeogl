@@ -434,6 +434,150 @@
                         }
                     });
             })();
+
+            // VR
+
+            (function () {
+
+                var orientationAngleLookup = {
+                    'landscape-primary': 90,
+                    'landscape-secondary': -90,
+                    'portrait-secondary': 180,
+                    'portrait-primary': 0
+                };
+
+                var orientation;
+                var orientationAngle;
+                var acceleration = XEO.math.vec3();
+                var accelerationIncludingGravity = XEO.math.vec3();
+
+                var orientationChangeEvent = {
+                    orientation: null,
+                    orientationAngle: 0
+                };
+
+                var deviceMotionEvent = {
+                    orientationAngle: 0,
+                    acceleration: null,
+                    accelerationIncludingGravity: accelerationIncludingGravity,
+                    rotationRate: XEO.math.vec3(),
+                    interval: 0
+                };
+
+                var deviceOrientationEvent = {
+                    alpha: 0,
+                    beta: 0,
+                    gamma: 0,
+                    absolute: false
+                };
+
+                if (!window.OrientationChangeEvent) {
+                    self.warn("Browser event not supported: orientationchange");
+
+                } else {
+
+                    window.addEventListener('orientationchange',
+                        self._orientationchangedListener = function () {
+
+                            orientation = window.screen.orientation || window.screen.mozOrientation || window.msOrientation || null;
+                            orientationAngle = orientation ? (orientationAngleLookup[orientation] || 0) : 0;
+
+                            orientationChangeEvent.orientation = orientation;
+                            orientationChangeEvent.orientationAngle = orientationAngle;
+
+                            /**
+                             * Fired when the orientation of the device has changed.
+                             *
+                             * @event orientationchange
+                             * @param orientation The orientation: "landscape-primary", "landscape-secondary", "portrait-secondary" or "portrait-primary"
+                             * @param orientationAngle The orientation angle in degrees: 90 for landscape-primary, -90 for landscape-secondary, 180 for portrait-secondary or 0 for portrait-primary.
+                             */
+                            self.fire("orientationchange", orientationChangeEvent);
+                        },
+                        false);
+                }
+
+                if (!window.DeviceMotionEvent) {
+                    self.warn("Browser event not supported: devicemotion");
+
+                } else {
+
+                    window.addEventListener('devicemotion',
+                        self._deviceMotionListener = function (e) {
+
+                            deviceMotionEvent.interval = e.interval;
+                            deviceMotionEvent.orientationAngle = orientationAngle;
+
+                            var accel = e.acceleration;
+
+                            if (accel) {
+                                acceleration[0] = accel.x;
+                                acceleration[1] = accel.y;
+                                acceleration[2] = accel.z;
+                                deviceMotionEvent.acceleration = acceleration;
+                            } else {
+                                deviceMotionEvent.acceleration = null;
+                            }
+
+                            var accelGrav = e.accelerationIncludingGravity;
+
+                            if (accelGrav) {
+                                accelerationIncludingGravity[0] = accelGrav.x;
+                                accelerationIncludingGravity[1] = accelGrav.y;
+                                accelerationIncludingGravity[2] = accelGrav.z;
+                                deviceMotionEvent.accelerationIncludingGravity = accelerationIncludingGravity;
+                            } else {
+                                deviceMotionEvent.accelerationIncludingGravity = null;
+                            }
+
+                            deviceMotionEvent.rotationRate = e.rotationRate;
+
+                            /**
+                             * Fires on a regular interval and returns data about the rotation
+                             * (in degrees per second) and acceleration (in meters per second squared) of the device, at that moment in
+                             * time. Some devices do not have the hardware to exclude the effect of gravity.
+                             *
+                             * @event devicemotion
+                             * @param Float32Array acceleration The acceleration of the device, in meters per second squared, as a 3-element vector. This value has taken into account the effect of gravity and removed it from the figures. This value may not exist if the hardware doesn't know how to remove gravity from the acceleration data.
+                             * @param Float32Array accelerationIncludingGravity The acceleration of the device, in meters per second squared, as a 3-element vector. This value includes the effect of gravity, and may be the only value available on devices that don't have a gyroscope to allow them to properly remove gravity from the data.
+                             * @param, Number interval The interval, in milliseconds, at which this event is fired. The next event will be fired in approximately this amount of time.
+                             * @param  Float32Array rotationRate The rates of rotation of the device about each axis, in degrees per second.
+                             */
+                            self.fire("devicemotion", deviceMotionEvent);
+                        },
+                        false);
+                }
+
+                if (!window.DeviceOrientationEvent) {
+                    self.warn("Browser event not supported: deviceorientation");
+
+                } else {
+
+                    window.addEventListener("deviceorientation",
+                        self._deviceOrientListener = function (e) {
+
+                            deviceOrientationEvent.gamma = e.gamma;
+                            deviceOrientationEvent.beta = e.beta;
+                            deviceOrientationEvent.alpha = e.alpha;
+                            deviceOrientationEvent.absolute = e.absolute;
+
+                            /**
+                             * Fired when fresh data is available from an orientation sensor about the current orientation
+                             * of the device as compared to the Earth coordinate frame. This data is gathered from a
+                             * magnetometer inside the device. See
+                             * <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Orientation_and_motion_data_explained">Orientation and motion data explained</a> for more info.
+                             *
+                             * @event deviceorientation
+                             * @param Number alpha The current orientation of the device around the Z axis in degrees; that is, how far the device is rotated around a line perpendicular to the device.
+                             * @param Number beta The current orientation of the device around the X axis in degrees; that is, how far the device is tipped forward or backward.
+                             * @param Number gamma The current orientation of the device around the Y axis in degrees; that is, how far the device is turned left or right.
+                             * @param Boolean absolute This value is true if the orientation is provided as a difference between the device coordinate frame and the Earth coordinate frame; if the device can't detect the Earth coordinate frame, this value is false.
+                             */
+                            self.fire("deviceorientation", deviceOrientationEvent);
+                        },
+                        false);
+                }
+            })();
         },
 
         _getClickCoordsWithinElement: function (event) {

@@ -243,6 +243,16 @@
                         tickEvent.startTime = scene.startTime;
                         tickEvent.deltaTime = tickEvent.prevTime != null ? tickEvent.time - tickEvent.prevTime : 0;
 
+                        /**
+                         * Fired on each game loop iteration.
+                         *
+                         * @event tick
+                         * @param {String} sceneID The ID of this Scene.
+                         * @param {Number} startTime The time in seconds since 1970 that this Scene was instantiated.
+                         * @param {Number} time The time in seconds since 1970 of this "tick" event.
+                         * @param {Number} prevTime The time of the previous "tick" event from this Scene.
+                         * @param {Number} deltaTime The time in seconds since the previous "tick" event from this Scene.
+                         */
                         scene.fire("tick", tickEvent, true);
                     }
                 }
@@ -269,12 +279,26 @@
 
                             renderEvent.pass = i;
 
+                            /**
+                             * Fired when about to render a frame for a Scene.
+                             *
+                             * @event rendering
+                             * @param {String} sceneID The ID of this Scene.
+                             * @param {Number} pass Index of the pass we are about to render (see {{#crossLink "Scene/passes:property"}}{{/crossLink}}).
+                             */
                             scene.fire("rendering", renderEvent, true);
 
                             clear = (i === 0);
 
                             scene._compile(clear); // Render, maybe rebuild draw list first
 
+                            /**
+                             * Fired when we have just rendered a frame for a Scene.
+                             *
+                             * @event rendering
+                             * @param {String} sceneID The ID of this Scene.
+                             * @param {Number} pass Index of the pass we rendered (see {{#crossLink "Scene/passes:property"}}{{/crossLink}}).
+                             */
                             scene.fire("rendered", renderEvent, true);
                         }
                     }
