@@ -48,6 +48,7 @@
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraController.html">CameraController</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
@@ -70,7 +71,6 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/GyroRotateCamera.html">GyroRotateCamera</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -137,6 +137,7 @@
                                 <li><a href="..//modules/geometry.html">geometry</a></li>
                                 <li><a href="..//modules/importing.html">importing</a></li>
                                 <li><a href="..//modules/input.html">input</a></li>
+                                <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
@@ -1536,8 +1537,8 @@
          * @method rotationMat4c
          * @static
          */
-        rotationMat4c: function (anglerad, x, y, z) {
-            return XEO.math.rotationMat4v(anglerad, [x, y, z]);
+        rotationMat4c: function (anglerad, x, y, z, mat) {
+            return XEO.math.rotationMat4v(anglerad, [x, y, z], mat);
         },
 
         /**

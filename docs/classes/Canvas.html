@@ -48,6 +48,7 @@
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraController.html">CameraController</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
@@ -70,7 +71,6 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/GyroRotateCamera.html">GyroRotateCamera</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -137,6 +137,7 @@
                                 <li><a href="..//modules/geometry.html">geometry</a></li>
                                 <li><a href="..//modules/importing.html">importing</a></li>
                                 <li><a href="..//modules/input.html">input</a></li>
+                                <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
@@ -204,7 +205,7 @@
 <li>When a <a href="../classes/Scene.html" class="crosslink">Scene</a> is configured with the ID of
 an existing <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a>, then
 the Canvas will bind to that, otherwise the Canvas will automatically create its own.</li>
-<li>A Canvas will fire a <a href="../classes/Canvas.html#event_size" class="crosslink">size</a> event whenever
+<li>A Canvas will fire a Canvas/size:event event whenever
 the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a> resizes.</li>
 <li>A Canvas is responsible for obtaining a WebGL context from
 the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a>.</li>
@@ -335,6 +336,10 @@ var scene = new XEO.Scene({
 
                     <ul class="index-list properties extends">
                             <li class="index-item property">
+                                <a href="#property_boundary">boundary</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_canvas">canvas</a>
 
                             </li>
@@ -394,12 +399,12 @@ var scene = new XEO.Scene({
                     <h3>Events</h3>
 
                     <ul class="index-list events extends">
-                            <li class="index-item event inherited">
-                                <a href="#event_destroyed">destroyed</a>
+                            <li class="index-item event">
+                                <a href="#event_boundary">boundary</a>
 
                             </li>
-                            <li class="index-item event">
-                                <a href="#event_size">size</a>
+                            <li class="index-item event inherited">
+                                <a href="#event_destroyed">destroyed</a>
 
                             </li>
                             <li class="index-item event">
@@ -1163,6 +1168,40 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
+                    <div id="property_boundary" class="property item">
+                        <h3 class="name"><code>boundary</code></h3>
+                        <span class="type">Array of Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_canvas_canvas.js.html#l201"><code>src&#x2F;canvas&#x2F;canvas.js:201</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Boundary of the Canvas in absolute browser window coordinates.</p>
+                    <h3 id="usage-">Usage:</h3>
+                    <pre class="code prettyprint"><code class="lang-javascript">var boundary = myScene.canvas.boundary;
+                    
+                    var xmin = boundary[0];
+                    var ymin = boundary[1];
+                    var xmax = boundary[2];
+                    var ymax = boundary[3];
+                    </code></pre>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_canvas" class="property item">
                         <h3 class="name"><code>canvas</code></h3>
                         <span class="type">HTMLCanvasElement</span>
@@ -1421,7 +1460,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l420"><code>src&#x2F;canvas&#x2F;canvas.js:420</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l445"><code>src&#x2F;canvas&#x2F;canvas.js:445</code></a>
                             </p>
                     
                     
@@ -1531,6 +1570,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
+                    <div id="event_boundary" class="events item">
+                        <h3 class="name"><code>boundary</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_canvas_canvas.js.html#l308"><code>src&#x2F;canvas&#x2F;canvas.js:308</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Canvas&#39;s <a href="../classes/Canvas.html#property_boundary" class="crosslink">boundary</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_destroyed" class="events item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type"></span>
@@ -1556,70 +1637,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_size" class="events item">
-                        <h3 class="name"><code>size</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l278"><code>src&#x2F;canvas&#x2F;canvas.js:278</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever the canvas has resized</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">width</code>
-                                            <span class="type">Number</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The new canvas width</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name">height</code>
-                                            <span class="type">Number</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The new canvas height</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name">aspect</code>
-                                            <span class="type">Number</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The new canvas aspect ratio</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
                     <div id="event_webglContextFailed" class="events item">
                         <h3 class="name"><code>webglContextFailed</code></h3>
                         <span class="type"></span>
@@ -1631,7 +1648,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l409"><code>src&#x2F;canvas&#x2F;canvas.js:409</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l434"><code>src&#x2F;canvas&#x2F;canvas.js:434</code></a>
                             </p>
                     
                     
@@ -1657,7 +1674,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l215"><code>src&#x2F;canvas&#x2F;canvas.js:215</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l238"><code>src&#x2F;canvas&#x2F;canvas.js:238</code></a>
                             </p>
                     
                     
@@ -1682,7 +1699,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l228"><code>src&#x2F;canvas&#x2F;canvas.js:228</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l251"><code>src&#x2F;canvas&#x2F;canvas.js:251</code></a>
                             </p>
                     
                     

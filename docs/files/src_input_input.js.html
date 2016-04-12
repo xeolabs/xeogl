@@ -48,6 +48,7 @@
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraController.html">CameraController</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
@@ -70,7 +71,6 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/GyroRotateCamera.html">GyroRotateCamera</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -137,6 +137,7 @@
                                 <li><a href="..//modules/geometry.html">geometry</a></li>
                                 <li><a href="..//modules/importing.html">importing</a></li>
                                 <li><a href="..//modules/input.html">input</a></li>
+                                <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
@@ -619,6 +620,150 @@
                             self.fire(&quot;mouseclicked&quot;, params, true);
                         }
                     });
+            })();
+
+            // VR
+
+            (function () {
+
+                var orientationAngleLookup = {
+                    &#x27;landscape-primary&#x27;: 90,
+                    &#x27;landscape-secondary&#x27;: -90,
+                    &#x27;portrait-secondary&#x27;: 180,
+                    &#x27;portrait-primary&#x27;: 0
+                };
+
+                var orientation;
+                var orientationAngle;
+                var acceleration = XEO.math.vec3();
+                var accelerationIncludingGravity = XEO.math.vec3();
+
+                var orientationChangeEvent = {
+                    orientation: null,
+                    orientationAngle: 0
+                };
+
+                var deviceMotionEvent = {
+                    orientationAngle: 0,
+                    acceleration: null,
+                    accelerationIncludingGravity: accelerationIncludingGravity,
+                    rotationRate: XEO.math.vec3(),
+                    interval: 0
+                };
+
+                var deviceOrientationEvent = {
+                    alpha: 0,
+                    beta: 0,
+                    gamma: 0,
+                    absolute: false
+                };
+
+                if (!window.OrientationChangeEvent) {
+                    self.warn(&quot;Browser event not supported: orientationchange&quot;);
+
+                } else {
+
+                    window.addEventListener(&#x27;orientationchange&#x27;,
+                        self._orientationchangedListener = function () {
+
+                            orientation = window.screen.orientation || window.screen.mozOrientation || window.msOrientation || null;
+                            orientationAngle = orientation ? (orientationAngleLookup[orientation] || 0) : 0;
+
+                            orientationChangeEvent.orientation = orientation;
+                            orientationChangeEvent.orientationAngle = orientationAngle;
+
+                            /**
+                             * Fired when the orientation of the device has changed.
+                             *
+                             * @event orientationchange
+                             * @param orientation The orientation: &quot;landscape-primary&quot;, &quot;landscape-secondary&quot;, &quot;portrait-secondary&quot; or &quot;portrait-primary&quot;
+                             * @param orientationAngle The orientation angle in degrees: 90 for landscape-primary, -90 for landscape-secondary, 180 for portrait-secondary or 0 for portrait-primary.
+                             */
+                            self.fire(&quot;orientationchange&quot;, orientationChangeEvent);
+                        },
+                        false);
+                }
+
+                if (!window.DeviceMotionEvent) {
+                    self.warn(&quot;Browser event not supported: devicemotion&quot;);
+
+                } else {
+
+                    window.addEventListener(&#x27;devicemotion&#x27;,
+                        self._deviceMotionListener = function (e) {
+
+                            deviceMotionEvent.interval = e.interval;
+                            deviceMotionEvent.orientationAngle = orientationAngle;
+
+                            var accel = e.acceleration;
+
+                            if (accel) {
+                                acceleration[0] = accel.x;
+                                acceleration[1] = accel.y;
+                                acceleration[2] = accel.z;
+                                deviceMotionEvent.acceleration = acceleration;
+                            } else {
+                                deviceMotionEvent.acceleration = null;
+                            }
+
+                            var accelGrav = e.accelerationIncludingGravity;
+
+                            if (accelGrav) {
+                                accelerationIncludingGravity[0] = accelGrav.x;
+                                accelerationIncludingGravity[1] = accelGrav.y;
+                                accelerationIncludingGravity[2] = accelGrav.z;
+                                deviceMotionEvent.accelerationIncludingGravity = accelerationIncludingGravity;
+                            } else {
+                                deviceMotionEvent.accelerationIncludingGravity = null;
+                            }
+
+                            deviceMotionEvent.rotationRate = e.rotationRate;
+
+                            /**
+                             * Fires on a regular interval and returns data about the rotation
+                             * (in degrees per second) and acceleration (in meters per second squared) of the device, at that moment in
+                             * time. Some devices do not have the hardware to exclude the effect of gravity.
+                             *
+                             * @event devicemotion
+                             * @param Float32Array acceleration The acceleration of the device, in meters per second squared, as a 3-element vector. This value has taken into account the effect of gravity and removed it from the figures. This value may not exist if the hardware doesn&#x27;t know how to remove gravity from the acceleration data.
+                             * @param Float32Array accelerationIncludingGravity The acceleration of the device, in meters per second squared, as a 3-element vector. This value includes the effect of gravity, and may be the only value available on devices that don&#x27;t have a gyroscope to allow them to properly remove gravity from the data.
+                             * @param, Number interval The interval, in milliseconds, at which this event is fired. The next event will be fired in approximately this amount of time.
+                             * @param  Float32Array rotationRate The rates of rotation of the device about each axis, in degrees per second.
+                             */
+                            self.fire(&quot;devicemotion&quot;, deviceMotionEvent);
+                        },
+                        false);
+                }
+
+                if (!window.DeviceOrientationEvent) {
+                    self.warn(&quot;Browser event not supported: deviceorientation&quot;);
+
+                } else {
+
+                    window.addEventListener(&quot;deviceorientation&quot;,
+                        self._deviceOrientListener = function (e) {
+
+                            deviceOrientationEvent.gamma = e.gamma;
+                            deviceOrientationEvent.beta = e.beta;
+                            deviceOrientationEvent.alpha = e.alpha;
+                            deviceOrientationEvent.absolute = e.absolute;
+
+                            /**
+                             * Fired when fresh data is available from an orientation sensor about the current orientation
+                             * of the device as compared to the Earth coordinate frame. This data is gathered from a
+                             * magnetometer inside the device. See
+                             * &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Orientation_and_motion_data_explained&quot;&gt;Orientation and motion data explained&lt;/a&gt; for more info.
+                             *
+                             * @event deviceorientation
+                             * @param Number alpha The current orientation of the device around the Z axis in degrees; that is, how far the device is rotated around a line perpendicular to the device.
+                             * @param Number beta The current orientation of the device around the X axis in degrees; that is, how far the device is tipped forward or backward.
+                             * @param Number gamma The current orientation of the device around the Y axis in degrees; that is, how far the device is turned left or right.
+                             * @param Boolean absolute This value is true if the orientation is provided as a difference between the device coordinate frame and the Earth coordinate frame; if the device can&#x27;t detect the Earth coordinate frame, this value is false.
+                             */
+                            self.fire(&quot;deviceorientation&quot;, deviceOrientationEvent);
+                        },
+                        false);
+                }
             })();
         },
 

@@ -48,6 +48,7 @@
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraController.html">CameraController</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
@@ -70,7 +71,6 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/GyroRotateCamera.html">GyroRotateCamera</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -137,6 +137,7 @@
                                 <li><a href="..//modules/geometry.html">geometry</a></li>
                                 <li><a href="..//modules/importing.html">importing</a></li>
                                 <li><a href="..//modules/input.html">input</a></li>
+                                <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
@@ -279,8 +280,13 @@
                     }
 
                     if (!value) {
-                        var canvas = this.scene.canvas;
-                        value = [0, 0, canvas.width, canvas.height];
+
+                        var canvasBoundary = this.scene.canvas.boundary;
+
+                        var width = canvasBoundary[2];
+                        var height = canvasBoundary[3];
+
+                        value = [0, 0, width, height];
                     }
 
                     this._state.boundary = value;
@@ -328,10 +334,13 @@
                     this._autoBoundary = value;
 
                     if (this._autoBoundary) {
-                        this._onCanvasSize = this.scene.canvas.on(&quot;size&quot;,
-                            function (e) {
+                        this._onCanvasSize = this.scene.canvas.on(&quot;boundary&quot;,
+                            function (boundary) {
 
-                                this._state.boundary = [0, 0, e.width, e.height];
+                                var width = boundary[2];
+                                var height = boundary[3];
+
+                                this._state.boundary = [0, 0, width, height];
 
                                 /**
                                  Fired whenever this Viewport&#x27;s {{#crossLink &quot;Viewport/boundary:property&quot;}}{{/crossLink}} property changes.

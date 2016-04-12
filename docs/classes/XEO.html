@@ -48,6 +48,7 @@
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraController.html">CameraController</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
@@ -70,7 +71,6 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/GyroRotateCamera.html">GyroRotateCamera</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -137,6 +137,7 @@
                                 <li><a href="..//modules/geometry.html">geometry</a></li>
                                 <li><a href="..//modules/importing.html">importing</a></li>
                                 <li><a href="..//modules/input.html">input</a></li>
+                                <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
@@ -205,6 +206,7 @@
 
             <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
             <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+            <li class="api-class-tab events"><a href="#events">Events</a></li>
     </ul>
 
     <div>
@@ -254,6 +256,24 @@
                 </div>
 
 
+                <div class="index-section events">
+                    <h3>Events</h3>
+
+                    <ul class="index-list events">
+                            <li class="index-item event">
+                                <a href="#event_rendering">rendering</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_rendering">rendering</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_tick">tick</a>
+
+                            </li>
+                    </ul>
+                </div>
         </div>
 
             <div id="methods" class="api-class-tabpanel">
@@ -282,7 +302,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_xeo.js.html#l318"><code>src&#x2F;xeo.js:318</code></a>
+        <a href="../files/src_xeo.js.html#l342"><code>src&#x2F;xeo.js:342</code></a>
         </p>
 
 
@@ -332,7 +352,7 @@ This is called within the XEO.Scene constructor.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_xeo.js.html#l406"><code>src&#x2F;xeo.js:406</code></a>
+        <a href="../files/src_xeo.js.html#l430"><code>src&#x2F;xeo.js:430</code></a>
         </p>
 
 
@@ -374,7 +394,7 @@ clears the default <a href="../classes/Scene.html" class="crosslink">Scene</a>.<
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_xeo.js.html#l361"><code>src&#x2F;xeo.js:361</code></a>
+        <a href="../files/src_xeo.js.html#l385"><code>src&#x2F;xeo.js:385</code></a>
         </p>
 
 
@@ -439,7 +459,7 @@ get a chance to run during the task are left in the queue to be run next time.</
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_xeo.js.html#l293"><code>src&#x2F;xeo.js:293</code></a>
+                            <a href="../files/src_xeo.js.html#l317"><code>src&#x2F;xeo.js:317</code></a>
                             </p>
                     
                     
@@ -539,6 +559,202 @@ get a chance to run during the task are left in the queue to be run next time.</
             </div>
 
 
+            <div id="events" class="api-class-tabpanel">
+                <h2 class="off-left">Events</h2>
+
+                    <div id="event_rendering" class="events item">
+                        <h3 class="name"><code>rendering</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_xeo.js.html#l282"><code>src&#x2F;xeo.js:282</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired when about to render a frame for a Scene.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">sceneID</code>
+                                            <span class="type">String</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The ID of this Scene.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">pass</code>
+                                            <span class="type">Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Index of the pass we are about to render (see <a href="../classes/Scene.html#property_passes" class="crosslink">passes</a>).</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_rendering" class="events item">
+                        <h3 class="name"><code>rendering</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_xeo.js.html#l295"><code>src&#x2F;xeo.js:295</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired when we have just rendered a frame for a Scene.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">sceneID</code>
+                                            <span class="type">String</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The ID of this Scene.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">pass</code>
+                                            <span class="type">Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Index of the pass we rendered (see <a href="../classes/Scene.html#property_passes" class="crosslink">passes</a>).</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_tick" class="events item">
+                        <h3 class="name"><code>tick</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_xeo.js.html#l246"><code>src&#x2F;xeo.js:246</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired on each game loop iteration.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">sceneID</code>
+                                            <span class="type">String</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The ID of this Scene.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">startTime</code>
+                                            <span class="type">Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The time in seconds since 1970 that this Scene was instantiated.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">time</code>
+                                            <span class="type">Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The time in seconds since 1970 of this &quot;tick&quot; event.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">prevTime</code>
+                                            <span class="type">Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The time of the previous &quot;tick&quot; event from this Scene.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">deltaTime</code>
+                                            <span class="type">Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The time in seconds since the previous &quot;tick&quot; event from this Scene.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+            </div>
     </div>
 </div>
                     </div>

@@ -9,6 +9,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "BoxGeometry",
         "Camera",
         "CameraControl",
+        "CameraController",
         "CameraFlight",
         "CameraPath",
         "Canvas",
@@ -31,7 +32,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "Fresnel",
         "Frustum",
         "Geometry",
-        "GyroRotateCamera",
         "Input",
         "KeyboardAxisCamera",
         "KeyboardPanCamera",
@@ -98,6 +98,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "geometry",
         "importing",
         "input",
+        "interaction",
         "lighting",
         "materials",
         "math",
@@ -178,6 +179,11 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "input",
             "name": "input",
             "description": "Components for capturing user input."
+        },
+        {
+            "displayName": "interaction",
+            "name": "interaction",
+            "description": "A **CameraController** is the base class for components that control Cameras."
         },
         {
             "displayName": "lighting",

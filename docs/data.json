@@ -404,11 +404,11 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/controls/gyroRotateCamera.js": {
-            "name": "src/controls/gyroRotateCamera.js",
+        "src/controls/cameraController.js": {
+            "name": "src/controls/cameraController.js",
             "modules": {},
             "classes": {
-                "GyroRotateCamera": 1
+                "CameraController": 1
             },
             "fors": {},
             "namespaces": {}
@@ -721,6 +721,13 @@
             "classes": {
                 "Input": 1
             },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/input/test.js": {
+            "name": "src/input/test.js",
+            "modules": {},
+            "classes": {},
             "fors": {},
             "namespaces": {}
         },
@@ -1119,6 +1126,7 @@
                 "collections": 1,
                 "configs": 1,
                 "controls": 1,
+                "interaction": 1,
                 "culling": 1,
                 "curves": 1,
                 "paths": 1,
@@ -1155,7 +1163,7 @@
                 "Collection": 1,
                 "Configs": 1,
                 "CameraControl": 1,
-                "GyroRotateCamera": 1,
+                "CameraController": 1,
                 "KeyboardAxisCamera": 1,
                 "KeyboardPanCamera": 1,
                 "KeyboardRotateCamera": 1,
@@ -1358,7 +1366,6 @@
             "submodules": {},
             "classes": {
                 "CameraControl": 1,
-                "GyroRotateCamera": 1,
                 "KeyboardAxisCamera": 1,
                 "KeyboardPanCamera": 1,
                 "KeyboardRotateCamera": 1,
@@ -1376,6 +1383,21 @@
             "file": "src/controls/mouseZoomCamera.js",
             "line": 1,
             "description": "Components for controlling things with user input."
+        },
+        "interaction": {
+            "name": "interaction",
+            "submodules": {},
+            "classes": {
+                "CameraController": 1
+            },
+            "fors": {},
+            "is_submodule": 1,
+            "namespaces": {},
+            "module": "XEO",
+            "namespace": "",
+            "description": "A **CameraController** is the base class for components that control Cameras.",
+            "file": "src/controls/cameraController.js",
+            "line": 1
         },
         "culling": {
             "name": "culling",
@@ -2756,9 +2778,9 @@
             ],
             "extends": "Component"
         },
-        "GyroRotateCamera": {
-            "name": "GyroRotateCamera",
-            "shortname": "GyroRotateCamera",
+        "CameraController": {
+            "name": "CameraController",
+            "shortname": "CameraController",
             "classitems": [],
             "plugins": [],
             "extensions": [],
@@ -2766,15 +2788,15 @@
             "extension_for": [],
             "module": "XEO",
             "namespace": "",
-            "file": "src/controls/gyroRotateCamera.js",
+            "file": "src/controls/cameraController.js",
             "line": 1,
-            "description": "A **GyroRotateCamera** orbits a {{#crossLink \"Camera\"}}{{/crossLink}} about its point-of-interest using the mouse.\n\n<ul>\n<li>A GyroRotateCamera updates the {{#crossLink \"Lookat\"}}{{/crossLink}} attached to the target {{#crossLink \"Camera\"}}{{/crossLink}}.\n<li>The point-of-interest is the {{#crossLink \"Lookat\"}}Lookat's{{/crossLink}} {{#crossLink \"Lookat/look:property\"}}{{/crossLink}}.</li>\n<li>Orbiting involves rotating the {{#crossLink \"Lookat\"}}Lookat's{{/crossLink}} {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}}\nabout {{#crossLink \"Lookat/look:property\"}}{{/crossLink}}.</li>\n<li>Y-axis rotation is about the {{#crossLink \"Lookat\"}}Lookat's{{/crossLink}} {{#crossLink \"Lookat/up:property\"}}{{/crossLink}} vector.</li>\n<li>Z-axis rotation is about the {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}} -&gt; {{#crossLink \"Lookat/look:property\"}}{{/crossLink}} vector.</li>\n<li>X-axis rotation is about the vector perpendicular to the {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}}-&gt;{{#crossLink \"Lookat/look:property\"}}{{/crossLink}}\nand {{#crossLink \"Lookat/up:property\"}}{{/crossLink}} vectors.</li>\n<li>In 'first person' mode, the {{#crossLink \"Lookat\"}}Lookat's{{/crossLink}} {{#crossLink \"Lookat/look:property\"}}{{/crossLink}}\nposition will orbit the {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}} position, otherwise the {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}}\nwill orbit the {{#crossLink \"Lookat/look:property\"}}{{/crossLink}}.</li>\n</ul>\n\n## Examples\n\n<ul>\n<li>[GyroRotateCamera example](../../examples/#interaction_GyroRotateCamera)</li>\n<li>[CameraControl example](../../examples/#interaction_CameraControl)</li>\n</ul>\n\n## Usage\n\n````Javascript\nvar camera = new XEO.Camera({\n    view: new XEO.Lookat({\n        eye: [0, 0, 10],\n        look: [0, 0, 0],\n        up: [0, 1, 0]\n    }),\n    project: new XEO.Perspective({\n        fovy: 60,\n        near: 0.1,\n        far: 1000\n    })\n});\n\nvar entity = new XEO.Entity({\n    camera: camera,\n    geometry: new XEO.BoxGeometry()\n});\n\nnew XEO.GyroRotateCamera(scene, {\n\n    camera: camera,\n\n    // \"First person\" mode rotates look about eye.\n    // By default however, we orbit eye about look.\n    firstPerson: false\n});\n````",
-            "submodule": "controls",
+            "description": "A **CameraController** is the base class for components that control Cameras.",
+            "submodule": "interaction",
             "is_constructor": 1,
             "params": [
                 {
                     "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}{{/crossLink}}.",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this CameraController in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
                     "type": "Scene",
                     "optional": true
                 },
@@ -2786,39 +2808,25 @@
                     "props": [
                         {
                             "name": "id",
-                            "description": "Optional ID, unique among all components in the parent Scene, generated automatically when omitted.",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
                             "type": "String",
                             "optional": true
                         },
                         {
                             "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this GyroRotateCamera.",
+                            "description": "Optional map of user-defined metadata to attach to this CameraController.",
                             "type": "String:Object",
                             "optional": true
                         },
                         {
                             "name": "camera",
-                            "description": "ID or instance of a {{#crossLink \"Camera\"}}Camera{{/crossLink}} to control.\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GyroRotateCamera. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}}.",
+                            "description": "ID or instance of a {{#crossLink \"Camera\"}}Camera{{/crossLink}} for this CameraController.\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this CameraController. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}}.",
                             "type": "String|Camera",
                             "optional": true
                         },
                         {
-                            "name": "sensitivity",
-                            "description": "Mouse drag sensitivity factor.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "0.5"
-                        },
-                        {
-                            "name": "firstPerson",
-                            "description": "Indicates whether this GyroRotateCamera is in \"first person\" mode.",
-                            "type": "Boolean",
-                            "optional": true,
-                            "optdefault": "false"
-                        },
-                        {
                             "name": "active",
-                            "description": "Whether or not this GyroRotateCamera is active.",
+                            "description": "Whether or not this CameraController is active.",
                             "type": "Boolean",
                             "optional": true,
                             "optdefault": "true"
@@ -9104,7 +9112,19 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 215,
+            "line": 201,
+            "description": "Boundary of the Canvas in absolute browser window coordinates.\n\n### Usage:\n\n````javascript\nvar boundary = myScene.canvas.boundary;\n\nvar xmin = boundary[0];\nvar ymin = boundary[1];\nvar xmax = boundary[2];\nvar ymax = boundary[3];\n````",
+            "itemtype": "property",
+            "name": "boundary",
+            "type": "{{Array of Number}}",
+            "final": 1,
+            "class": "Canvas",
+            "module": "XEO",
+            "submodule": "canvas"
+        },
+        {
+            "file": "src/canvas/canvas.js",
+            "line": 238,
             "description": "Fired wheneber the WebGL context has been lost",
             "itemtype": "event",
             "name": "webglContextLost",
@@ -9114,7 +9134,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 228,
+            "line": 251,
             "description": "Fired whenever the WebGL context has been restored again after having previously being lost",
             "itemtype": "event",
             "name": "webglContextRestored",
@@ -9130,25 +9150,14 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 278,
-            "description": "Fired whenever the canvas has resized",
+            "line": 308,
+            "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/boundary:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
-            "name": "size",
+            "name": "boundary",
             "params": [
                 {
-                    "name": "width",
-                    "description": "The new canvas width",
-                    "type": "Number"
-                },
-                {
-                    "name": "height",
-                    "description": "The new canvas height",
-                    "type": "Number"
-                },
-                {
-                    "name": "aspect",
-                    "description": "The new canvas aspect ratio",
-                    "type": "Number"
+                    "name": "value",
+                    "description": "The property's new value"
                 }
             ],
             "class": "Canvas",
@@ -9157,14 +9166,14 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 301,
+            "line": 326,
             "class": "Canvas",
             "module": "XEO",
             "submodule": "canvas"
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 309,
+            "line": 334,
             "description": "Creates a default canvas in the DOM.",
             "access": "private",
             "tagname": "",
@@ -9174,7 +9183,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 338,
+            "line": 363,
             "description": "Creates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
             "access": "private",
             "tagname": "",
@@ -9184,7 +9193,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 370,
+            "line": 395,
             "access": "private",
             "tagname": "",
             "class": "Canvas",
@@ -9193,7 +9202,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 390,
+            "line": 415,
             "description": "Initialises the WebGL context",
             "access": "private",
             "tagname": "",
@@ -9203,7 +9212,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 409,
+            "line": 434,
             "description": "Fired whenever the canvas failed to get a WebGL context, which probably means that WebGL\nis either unsupported or has been disabled.",
             "itemtype": "event",
             "name": "webglContextFailed",
@@ -9213,7 +9222,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 420,
+            "line": 445,
             "description": "The busy {{#crossLink \"Spinner\"}}{{/crossLink}} for this Canvas.",
             "itemtype": "property",
             "name": "spinner",
@@ -9795,32 +9804,20 @@
             "submodule": "controls"
         },
         {
-            "file": "src/controls/gyroRotateCamera.js",
-            "line": 78,
-            "description": "JavaScript class name for this Component.",
-            "itemtype": "property",
-            "name": "type",
-            "type": "String",
-            "final": 1,
-            "class": "GyroRotateCamera",
-            "module": "XEO",
-            "submodule": "controls"
-        },
-        {
-            "file": "src/controls/gyroRotateCamera.js",
-            "line": 105,
-            "description": "The {{#crossLink \"Camera\"}}Camera{{/crossLink}} attached to this GyroRotateCamera.\n\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this GyroRotateCamera. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"GyroRotateCamera/camera:event\"}}{{/crossLink}} event on change.",
+            "file": "src/controls/cameraController.js",
+            "line": 35,
+            "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} attached to this CameraController.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this CameraController. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.",
             "itemtype": "property",
             "name": "camera",
             "type": "Camera",
-            "class": "GyroRotateCamera",
+            "class": "CameraController",
             "module": "XEO",
-            "submodule": "controls"
+            "submodule": "interaction"
         },
         {
-            "file": "src/controls/gyroRotateCamera.js",
-            "line": 121,
-            "description": "Fired whenever this GyroRotateCamera's {{#crossLink \"GyroRotateCamera/camera:property\"}}{{/crossLink}} property changes.",
+            "file": "src/controls/cameraController.js",
+            "line": 49,
+            "description": "Fired whenever this CameraController's {{#crossLink \"CameraController/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
             "params": [
@@ -9829,81 +9826,26 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "GyroRotateCamera",
+            "class": "CameraController",
             "module": "XEO",
-            "submodule": "controls"
+            "submodule": "interaction"
         },
         {
-            "file": "src/controls/gyroRotateCamera.js",
-            "line": 141,
-            "description": "The sensitivity of this GyroRotateCamera.\n\nFires a {{#crossLink \"GyroRotateCamera/sensitivity:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "sensitivity",
-            "type": "Number",
-            "default": "0.5",
-            "class": "GyroRotateCamera",
-            "module": "XEO",
-            "submodule": "controls"
-        },
-        {
-            "file": "src/controls/gyroRotateCamera.js",
-            "line": 156,
-            "description": "Fired whenever this GyroRotateCamera's  {{#crossLink \"GyroRotateCamera/sensitivity:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "sensitivity",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "GyroRotateCamera",
-            "module": "XEO",
-            "submodule": "controls"
-        },
-        {
-            "file": "src/controls/gyroRotateCamera.js",
-            "line": 170,
-            "description": "Flag which indicates whether this GyroRotateCamera is in \"first person\" mode.\n\nA GyroRotateCamera updates the {{#crossLink \"Lookat\"}}{{/crossLink}} attached to its\ntarget {{#crossLink \"Camera\"}}{{/crossLink}}. In 'first person' mode, the\n{{#crossLink \"Lookat\"}}Lookat's{{/crossLink}} {{#crossLink \"Lookat/look:property\"}}{{/crossLink}}\nposition orbits the {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}} position, otherwise\nthe {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}} orbits {{#crossLink \"Lookat/look:property\"}}{{/crossLink}}.</li>\n\nFires a {{#crossLink \"GyroRotateCamera/firstPerson:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "firstPerson",
-            "default": "false",
-            "type": "Boolean",
-            "class": "GyroRotateCamera",
-            "module": "XEO",
-            "submodule": "controls"
-        },
-        {
-            "file": "src/controls/gyroRotateCamera.js",
-            "line": 193,
-            "description": "Fired whenever this GyroRotateCamera's {{#crossLink \"GyroRotateCamera/firstPerson:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "firstPerson",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "GyroRotateCamera",
-            "module": "XEO",
-            "submodule": "controls"
-        },
-        {
-            "file": "src/controls/gyroRotateCamera.js",
-            "line": 206,
-            "description": "Flag which indicates whether this GyroRotateCamera is active or not.\n\nFires an {{#crossLink \"GyroRotateCamera/active:event\"}}{{/crossLink}} event on change.",
+            "file": "src/controls/cameraController.js",
+            "line": 71,
+            "description": "Flag which indicates whether this CameraController is active or not.\n\nFires an {{#crossLink \"CameraController/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
             "type": "Boolean",
-            "class": "GyroRotateCamera",
+            "default": "true",
+            "class": "CameraController",
             "module": "XEO",
-            "submodule": "controls"
+            "submodule": "interaction"
         },
         {
-            "file": "src/controls/gyroRotateCamera.js",
-            "line": 290,
-            "description": "Fired whenever this GyroRotateCamera's {{#crossLink \"GyroRotateCamera/active:property\"}}{{/crossLink}} property changes.",
+            "file": "src/controls/cameraController.js",
+            "line": 92,
+            "description": "Fired whenever this CameraController's {{#crossLink \"CameraController/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
             "params": [
@@ -9912,9 +9854,9 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "GyroRotateCamera",
+            "class": "CameraController",
             "module": "XEO",
-            "submodule": "controls"
+            "submodule": "interaction"
         },
         {
             "file": "src/controls/keyboardAxisCamera.js",
@@ -13719,7 +13661,83 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 462,
+            "line": 488,
+            "description": "Fired when the orientation of the device has changed.",
+            "itemtype": "event",
+            "name": "orientationchange",
+            "params": [
+                {
+                    "name": "orientation",
+                    "description": "The orientation: \"landscape-primary\", \"landscape-secondary\", \"portrait-secondary\" or \"portrait-primary\""
+                },
+                {
+                    "name": "orientationAngle",
+                    "description": "The orientation angle in degrees: 90 for landscape-primary, -90 for landscape-secondary, 180 for portrait-secondary or 0 for portrait-primary."
+                }
+            ],
+            "class": "Input",
+            "module": "XEO",
+            "submodule": "input"
+        },
+        {
+            "file": "src/input/input.js",
+            "line": 535,
+            "description": "Fires on a regular interval and returns data about the rotation\n(in degrees per second) and acceleration (in meters per second squared) of the device, at that moment in\ntime. Some devices do not have the hardware to exclude the effect of gravity.",
+            "itemtype": "event",
+            "name": "devicemotion",
+            "params": [
+                {
+                    "name": "Float32Array",
+                    "description": "acceleration The acceleration of the device, in meters per second squared, as a 3-element vector. This value has taken into account the effect of gravity and removed it from the figures. This value may not exist if the hardware doesn't know how to remove gravity from the acceleration data."
+                },
+                {
+                    "name": "Float32Array",
+                    "description": "accelerationIncludingGravity The acceleration of the device, in meters per second squared, as a 3-element vector. This value includes the effect of gravity, and may be the only value available on devices that don't have a gyroscope to allow them to properly remove gravity from the data."
+                },
+                {
+                    "name": ",",
+                    "description": "Number interval The interval, in milliseconds, at which this event is fired. The next event will be fired in approximately this amount of time."
+                },
+                {
+                    "name": "Float32Array",
+                    "description": "rotationRate The rates of rotation of the device about each axis, in degrees per second."
+                }
+            ],
+            "class": "Input",
+            "module": "XEO",
+            "submodule": "input"
+        },
+        {
+            "file": "src/input/input.js",
+            "line": 564,
+            "description": "Fired when fresh data is available from an orientation sensor about the current orientation\nof the device as compared to the Earth coordinate frame. This data is gathered from a\nmagnetometer inside the device. See\n<a href=\"https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Orientation_and_motion_data_explained\">Orientation and motion data explained</a> for more info.",
+            "itemtype": "event",
+            "name": "deviceorientation",
+            "params": [
+                {
+                    "name": "Number",
+                    "description": "alpha The current orientation of the device around the Z axis in degrees; that is, how far the device is rotated around a line perpendicular to the device."
+                },
+                {
+                    "name": "Number",
+                    "description": "beta The current orientation of the device around the X axis in degrees; that is, how far the device is tipped forward or backward."
+                },
+                {
+                    "name": "Number",
+                    "description": "gamma The current orientation of the device around the Y axis in degrees; that is, how far the device is turned left or right."
+                },
+                {
+                    "name": "Boolean",
+                    "description": "absolute This value is true if the orientation is provided as a difference between the device coordinate frame and the Earth coordinate frame; if the device can't detect the Earth coordinate frame, this value is false."
+                }
+            ],
+            "class": "Input",
+            "module": "XEO",
+            "submodule": "input"
+        },
+        {
+            "file": "src/input/input.js",
+            "line": 606,
             "description": "Enable or disable all input handlers",
             "params": [
                 {
@@ -13733,7 +13751,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 475,
+            "line": 619,
             "description": "Code for the BACKSPACE key.",
             "itemtype": "property",
             "name": "KEY_BACKSPACE",
@@ -13745,7 +13763,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 483,
+            "line": 627,
             "description": "Code for the TAB key.",
             "itemtype": "property",
             "name": "KEY_TAB",
@@ -13757,7 +13775,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 491,
+            "line": 635,
             "description": "Code for the ENTER key.",
             "itemtype": "property",
             "name": "KEY_ENTER",
@@ -13769,7 +13787,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 499,
+            "line": 643,
             "description": "Code for the SHIFT key.",
             "itemtype": "property",
             "name": "KEY_SHIFT",
@@ -13781,7 +13799,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 507,
+            "line": 651,
             "description": "Code for the CTRL key.",
             "itemtype": "property",
             "name": "KEY_CTRL",
@@ -13793,7 +13811,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 515,
+            "line": 659,
             "description": "Code for the ALT key.",
             "itemtype": "property",
             "name": "KEY_ALT",
@@ -13805,7 +13823,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 523,
+            "line": 667,
             "description": "Code for the PAUSE_BREAK key.",
             "itemtype": "property",
             "name": "KEY_PAUSE_BREAK",
@@ -13817,7 +13835,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 531,
+            "line": 675,
             "description": "Code for the CAPS_LOCK key.",
             "itemtype": "property",
             "name": "KEY_CAPS_LOCK",
@@ -13829,7 +13847,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 539,
+            "line": 683,
             "description": "Code for the ESCAPE key.",
             "itemtype": "property",
             "name": "KEY_ESCAPE",
@@ -13841,7 +13859,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 547,
+            "line": 691,
             "description": "Code for the PAGE_UP key.",
             "itemtype": "property",
             "name": "KEY_PAGE_UP",
@@ -13853,7 +13871,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 555,
+            "line": 699,
             "description": "Code for the PAGE_DOWN key.",
             "itemtype": "property",
             "name": "KEY_PAGE_DOWN",
@@ -13865,7 +13883,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 563,
+            "line": 707,
             "description": "Code for the END key.",
             "itemtype": "property",
             "name": "KEY_END",
@@ -13877,7 +13895,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 571,
+            "line": 715,
             "description": "Code for the HOME key.",
             "itemtype": "property",
             "name": "KEY_HOME",
@@ -13889,7 +13907,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 579,
+            "line": 723,
             "description": "Code for the LEFT_ARROW key.",
             "itemtype": "property",
             "name": "KEY_LEFT_ARROW",
@@ -13901,7 +13919,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 587,
+            "line": 731,
             "description": "Code for the UP_ARROW key.",
             "itemtype": "property",
             "name": "KEY_UP_ARROW",
@@ -13913,7 +13931,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 595,
+            "line": 739,
             "description": "Code for the RIGHT_ARROW key.",
             "itemtype": "property",
             "name": "KEY_RIGHT_ARROW",
@@ -13925,7 +13943,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 603,
+            "line": 747,
             "description": "Code for the DOWN_ARROW key.",
             "itemtype": "property",
             "name": "KEY_DOWN_ARROW",
@@ -13937,7 +13955,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 611,
+            "line": 755,
             "description": "Code for the INSERT key.",
             "itemtype": "property",
             "name": "KEY_INSERT",
@@ -13949,7 +13967,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 619,
+            "line": 763,
             "description": "Code for the DELETE key.",
             "itemtype": "property",
             "name": "KEY_DELETE",
@@ -13961,7 +13979,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 627,
+            "line": 771,
             "description": "Code for the 0 key.",
             "itemtype": "property",
             "name": "KEY_NUM_0",
@@ -13973,7 +13991,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 635,
+            "line": 779,
             "description": "Code for the 1 key.",
             "itemtype": "property",
             "name": "KEY_NUM_1",
@@ -13985,7 +14003,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 643,
+            "line": 787,
             "description": "Code for the 2 key.",
             "itemtype": "property",
             "name": "KEY_NUM_2",
@@ -13997,7 +14015,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 651,
+            "line": 795,
             "description": "Code for the 3 key.",
             "itemtype": "property",
             "name": "KEY_NUM_3",
@@ -14009,7 +14027,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 659,
+            "line": 803,
             "description": "Code for the 4 key.",
             "itemtype": "property",
             "name": "KEY_NUM_4",
@@ -14021,7 +14039,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 667,
+            "line": 811,
             "description": "Code for the 5 key.",
             "itemtype": "property",
             "name": "KEY_NUM_5",
@@ -14033,7 +14051,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 675,
+            "line": 819,
             "description": "Code for the 6 key.",
             "itemtype": "property",
             "name": "KEY_NUM_6",
@@ -14045,7 +14063,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 683,
+            "line": 827,
             "description": "Code for the 7 key.",
             "itemtype": "property",
             "name": "KEY_NUM_7",
@@ -14057,7 +14075,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 691,
+            "line": 835,
             "description": "Code for the 8 key.",
             "itemtype": "property",
             "name": "KEY_NUM_8",
@@ -14069,7 +14087,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 699,
+            "line": 843,
             "description": "Code for the 9 key.",
             "itemtype": "property",
             "name": "KEY_NUM_9",
@@ -14081,7 +14099,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 707,
+            "line": 851,
             "description": "Code for the A key.",
             "itemtype": "property",
             "name": "KEY_A",
@@ -14093,7 +14111,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 715,
+            "line": 859,
             "description": "Code for the B key.",
             "itemtype": "property",
             "name": "KEY_B",
@@ -14105,7 +14123,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 723,
+            "line": 867,
             "description": "Code for the C key.",
             "itemtype": "property",
             "name": "KEY_C",
@@ -14117,7 +14135,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 731,
+            "line": 875,
             "description": "Code for the D key.",
             "itemtype": "property",
             "name": "KEY_D",
@@ -14129,7 +14147,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 739,
+            "line": 883,
             "description": "Code for the E key.",
             "itemtype": "property",
             "name": "KEY_E",
@@ -14141,7 +14159,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 747,
+            "line": 891,
             "description": "Code for the F key.",
             "itemtype": "property",
             "name": "KEY_F",
@@ -14153,7 +14171,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 755,
+            "line": 899,
             "description": "Code for the G key.",
             "itemtype": "property",
             "name": "KEY_G",
@@ -14165,7 +14183,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 763,
+            "line": 907,
             "description": "Code for the H key.",
             "itemtype": "property",
             "name": "KEY_H",
@@ -14177,7 +14195,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 771,
+            "line": 915,
             "description": "Code for the I key.",
             "itemtype": "property",
             "name": "KEY_I",
@@ -14189,7 +14207,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 779,
+            "line": 923,
             "description": "Code for the J key.",
             "itemtype": "property",
             "name": "KEY_J",
@@ -14201,7 +14219,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 787,
+            "line": 931,
             "description": "Code for the K key.",
             "itemtype": "property",
             "name": "KEY_K",
@@ -14213,7 +14231,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 795,
+            "line": 939,
             "description": "Code for the L key.",
             "itemtype": "property",
             "name": "KEY_L",
@@ -14225,7 +14243,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 803,
+            "line": 947,
             "description": "Code for the M key.",
             "itemtype": "property",
             "name": "KEY_M",
@@ -14237,7 +14255,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 811,
+            "line": 955,
             "description": "Code for the N key.",
             "itemtype": "property",
             "name": "KEY_N",
@@ -14249,7 +14267,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 819,
+            "line": 963,
             "description": "Code for the O key.",
             "itemtype": "property",
             "name": "KEY_O",
@@ -14261,7 +14279,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 827,
+            "line": 971,
             "description": "Code for the P key.",
             "itemtype": "property",
             "name": "KEY_P",
@@ -14273,7 +14291,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 835,
+            "line": 979,
             "description": "Code for the Q key.",
             "itemtype": "property",
             "name": "KEY_Q",
@@ -14285,7 +14303,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 843,
+            "line": 987,
             "description": "Code for the R key.",
             "itemtype": "property",
             "name": "KEY_R",
@@ -14297,7 +14315,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 851,
+            "line": 995,
             "description": "Code for the S key.",
             "itemtype": "property",
             "name": "KEY_S",
@@ -14309,7 +14327,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 859,
+            "line": 1003,
             "description": "Code for the T key.",
             "itemtype": "property",
             "name": "KEY_T",
@@ -14321,7 +14339,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 867,
+            "line": 1011,
             "description": "Code for the U key.",
             "itemtype": "property",
             "name": "KEY_U",
@@ -14333,7 +14351,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 875,
+            "line": 1019,
             "description": "Code for the V key.",
             "itemtype": "property",
             "name": "KEY_V",
@@ -14345,7 +14363,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 883,
+            "line": 1027,
             "description": "Code for the W key.",
             "itemtype": "property",
             "name": "KEY_W",
@@ -14357,7 +14375,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 891,
+            "line": 1035,
             "description": "Code for the X key.",
             "itemtype": "property",
             "name": "KEY_X",
@@ -14369,7 +14387,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 899,
+            "line": 1043,
             "description": "Code for the Y key.",
             "itemtype": "property",
             "name": "KEY_Y",
@@ -14381,7 +14399,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 907,
+            "line": 1051,
             "description": "Code for the Z key.",
             "itemtype": "property",
             "name": "KEY_Z",
@@ -14393,7 +14411,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 915,
+            "line": 1059,
             "description": "Code for the LEFT_WINDOW key.",
             "itemtype": "property",
             "name": "KEY_LEFT_WINDOW",
@@ -14405,7 +14423,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 923,
+            "line": 1067,
             "description": "Code for the RIGHT_WINDOW key.",
             "itemtype": "property",
             "name": "KEY_RIGHT_WINDOW",
@@ -14417,7 +14435,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 931,
+            "line": 1075,
             "description": "Code for the SELECT key.",
             "itemtype": "property",
             "name": "KEY_SELECT",
@@ -14429,7 +14447,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 939,
+            "line": 1083,
             "description": "Code for the number pad 0 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_0",
@@ -14441,7 +14459,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 947,
+            "line": 1091,
             "description": "Code for the number pad 1 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_1",
@@ -14453,7 +14471,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 955,
+            "line": 1099,
             "description": "Code for the number pad 2 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD 2",
@@ -14465,7 +14483,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 963,
+            "line": 1107,
             "description": "Code for the number pad 3 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_3",
@@ -14477,7 +14495,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 971,
+            "line": 1115,
             "description": "Code for the number pad 4 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_4",
@@ -14489,7 +14507,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 979,
+            "line": 1123,
             "description": "Code for the number pad 5 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_5",
@@ -14501,7 +14519,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 987,
+            "line": 1131,
             "description": "Code for the number pad 6 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_6",
@@ -14513,7 +14531,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 995,
+            "line": 1139,
             "description": "Code for the number pad 7 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_7",
@@ -14525,7 +14543,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1003,
+            "line": 1147,
             "description": "Code for the number pad 8 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_8",
@@ -14537,7 +14555,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1011,
+            "line": 1155,
             "description": "Code for the number pad 9 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_9",
@@ -14549,7 +14567,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1019,
+            "line": 1163,
             "description": "Code for the MULTIPLY key.",
             "itemtype": "property",
             "name": "KEY_MULTIPLY",
@@ -14561,7 +14579,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1027,
+            "line": 1171,
             "description": "Code for the ADD key.",
             "itemtype": "property",
             "name": "KEY_ADD",
@@ -14573,7 +14591,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1035,
+            "line": 1179,
             "description": "Code for the SUBTRACT key.",
             "itemtype": "property",
             "name": "KEY_SUBTRACT",
@@ -14585,7 +14603,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1043,
+            "line": 1187,
             "description": "Code for the DECIMAL POINT key.",
             "itemtype": "property",
             "name": "KEY_DECIMAL_POINT",
@@ -14597,7 +14615,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1051,
+            "line": 1195,
             "description": "Code for the DIVIDE key.",
             "itemtype": "property",
             "name": "KEY_DIVIDE",
@@ -14609,7 +14627,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1059,
+            "line": 1203,
             "description": "Code for the F1 key.",
             "itemtype": "property",
             "name": "KEY_F1",
@@ -14621,7 +14639,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1067,
+            "line": 1211,
             "description": "Code for the F2 key.",
             "itemtype": "property",
             "name": "KEY_F2",
@@ -14633,7 +14651,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1075,
+            "line": 1219,
             "description": "Code for the F3 key.",
             "itemtype": "property",
             "name": "KEY_F3",
@@ -14645,7 +14663,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1083,
+            "line": 1227,
             "description": "Code for the F4 key.",
             "itemtype": "property",
             "name": "KEY_F4",
@@ -14657,7 +14675,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1091,
+            "line": 1235,
             "description": "Code for the F5 key.",
             "itemtype": "property",
             "name": "KEY_F5",
@@ -14669,7 +14687,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1099,
+            "line": 1243,
             "description": "Code for the F6 key.",
             "itemtype": "property",
             "name": "KEY_F6",
@@ -14681,7 +14699,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1107,
+            "line": 1251,
             "description": "Code for the F7 key.",
             "itemtype": "property",
             "name": "KEY_F7",
@@ -14693,7 +14711,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1115,
+            "line": 1259,
             "description": "Code for the F8 key.",
             "itemtype": "property",
             "name": "KEY_F8",
@@ -14705,7 +14723,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1123,
+            "line": 1267,
             "description": "Code for the F9 key.",
             "itemtype": "property",
             "name": "KEY_F9",
@@ -14717,7 +14735,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1131,
+            "line": 1275,
             "description": "Code for the F10 key.",
             "itemtype": "property",
             "name": "KEY_F10",
@@ -14729,7 +14747,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1139,
+            "line": 1283,
             "description": "Code for the F11 key.",
             "itemtype": "property",
             "name": "KEY_F11",
@@ -14741,7 +14759,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1147,
+            "line": 1291,
             "description": "Code for the F12 key.",
             "itemtype": "property",
             "name": "KEY_F12",
@@ -14753,7 +14771,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1155,
+            "line": 1299,
             "description": "Code for the NUM_LOCK key.",
             "itemtype": "property",
             "name": "KEY_NUM_LOCK",
@@ -14765,7 +14783,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1163,
+            "line": 1307,
             "description": "Code for the SCROLL_LOCK key.",
             "itemtype": "property",
             "name": "KEY_SCROLL_LOCK",
@@ -14777,7 +14795,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1171,
+            "line": 1315,
             "description": "Code for the SEMI_COLON key.",
             "itemtype": "property",
             "name": "KEY_SEMI_COLON",
@@ -14789,7 +14807,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1179,
+            "line": 1323,
             "description": "Code for the EQUAL_SIGN key.",
             "itemtype": "property",
             "name": "KEY_EQUAL_SIGN",
@@ -14801,7 +14819,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1187,
+            "line": 1331,
             "description": "Code for the COMMA key.",
             "itemtype": "property",
             "name": "KEY_COMMA",
@@ -14813,7 +14831,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1195,
+            "line": 1339,
             "description": "Code for the DASH key.",
             "itemtype": "property",
             "name": "KEY_DASH",
@@ -14825,7 +14843,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1203,
+            "line": 1347,
             "description": "Code for the PERIOD key.",
             "itemtype": "property",
             "name": "KEY_PERIOD",
@@ -14837,7 +14855,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1211,
+            "line": 1355,
             "description": "Code for the FORWARD_SLASH key.",
             "itemtype": "property",
             "name": "KEY_FORWARD_SLASH",
@@ -14849,7 +14867,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1219,
+            "line": 1363,
             "description": "Code for the GRAVE_ACCENT key.",
             "itemtype": "property",
             "name": "KEY_GRAVE_ACCENT",
@@ -14861,7 +14879,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1227,
+            "line": 1371,
             "description": "Code for the OPEN_BRACKET key.",
             "itemtype": "property",
             "name": "KEY_OPEN_BRACKET",
@@ -14873,7 +14891,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1235,
+            "line": 1379,
             "description": "Code for the BACK_SLASH key.",
             "itemtype": "property",
             "name": "KEY_BACK_SLASH",
@@ -14885,7 +14903,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1243,
+            "line": 1387,
             "description": "Code for the CLOSE_BRACKET key.",
             "itemtype": "property",
             "name": "KEY_CLOSE_BRACKET",
@@ -14897,7 +14915,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1251,
+            "line": 1395,
             "description": "Code for the SINGLE_QUOTE key.",
             "itemtype": "property",
             "name": "KEY_SINGLE_QUOTE",
@@ -14909,7 +14927,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1259,
+            "line": 1403,
             "description": "Code for the SPACE key.",
             "itemtype": "property",
             "name": "KEY_SPACE",
@@ -14918,6 +14936,22 @@
             "class": "Input",
             "module": "XEO",
             "submodule": "input"
+        },
+        {
+            "file": "src/input/test.js",
+            "line": 1,
+            "description": "DeviceOrientationControls - applies device orientation on object rotation",
+            "params": [
+                {
+                    "name": "object",
+                    "description": "- instance of THREE.Object3D",
+                    "type": "Object"
+                }
+            ],
+            "is_constructor": 1,
+            "author": "doug / http://github.com/doug\n\nW3C Device Orientation control\n(http://w3c.github.io/deviceorientation/spec-source-orientation.html)",
+            "class": "AmbientLight",
+            "module": "XEO"
         },
         {
             "file": "src/lighting/ambientLight.js",
@@ -19282,7 +19316,7 @@
         },
         {
             "file": "src/rendering/viewport.js",
-            "line": 104,
+            "line": 109,
             "description": "Fired whenever this Viewport's {{#crossLink \"Viewport/boundary:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "boundary",
@@ -19299,7 +19333,7 @@
         },
         {
             "file": "src/rendering/viewport.js",
-            "line": 118,
+            "line": 123,
             "description": "Indicates whether this Viewport's {{#crossLink \"Viewport/boundary:property\"}}{{/crossLink}} automatically\nsynchronizes with the size of the parent {{#crossLink \"Scene\"}}Scene's{{/crossLink}} {{#crossLink \"Canvas\"}}{{/crossLink}}.\n\nWhen set true, then this Viewport will fire a {{#crossLink \"Viewport/boundary/event\"}}{{/crossLink}} whenever\nthe {{#crossLink \"Canvas\"}}{{/crossLink}} resizes. Also fires that event as soon as this ````autoBoundary````\nproperty is changed.\n\nFires a {{#crossLink \"Viewport/autoBoundary:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "autoBoundary",
@@ -19311,7 +19345,7 @@
         },
         {
             "file": "src/rendering/viewport.js",
-            "line": 150,
+            "line": 158,
             "description": "Fired whenever this Viewport's {{#crossLink \"Viewport/boundary:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "boundary",
@@ -19328,7 +19362,7 @@
         },
         {
             "file": "src/rendering/viewport.js",
-            "line": 165,
+            "line": 173,
             "description": "Fired whenever this Viewport's {{#crossLink \"autoBoundary/autoBoundary:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "autoBoundary",
@@ -20521,43 +20555,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 206,
-            "description": "Fired on each game loop iteration.",
-            "itemtype": "event",
-            "name": "tick",
-            "params": [
-                {
-                    "name": "sceneID",
-                    "description": "The ID of this Scene.",
-                    "type": "String"
-                },
-                {
-                    "name": "startTime",
-                    "description": "The time in seconds since 1970 that this Scene was instantiated.",
-                    "type": "Number"
-                },
-                {
-                    "name": "time",
-                    "description": "The time in seconds since 1970 of this \"tick\" event.",
-                    "type": "Number"
-                },
-                {
-                    "name": "prevTime",
-                    "description": "The time of the previous \"tick\" event from this Scene.",
-                    "type": "Number"
-                },
-                {
-                    "name": "deltaTime",
-                    "description": "The time in seconds since the previous \"tick\" event from this Scene.",
-                    "type": "Number"
-                }
-            ],
-            "class": "Scene",
-            "module": "XEO"
-        },
-        {
-            "file": "src/scene.js",
-            "line": 226,
+            "line": 215,
             "description": "The epoch time (in milliseconds since 1970) when this Scene was instantiated.",
             "itemtype": "property",
             "name": "timeCreated",
@@ -20567,7 +20565,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 234,
+            "line": 223,
             "description": "The {{#crossLink \"Component\"}}Component{{/crossLink}}s within\nthis Scene, mapped to their IDs.\n\nWill also contain the {{#crossLink \"Entity\"}}{{/crossLink}}s\ncontained in {{#crossLink \"Entity/components:property\"}}{{/crossLink}}.",
             "itemtype": "property",
             "name": "components",
@@ -20577,7 +20575,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 246,
+            "line": 235,
             "description": "For each {{#crossLink \"Component\"}}Component{{/crossLink}} type, a map of\nIDs to instances.",
             "itemtype": "property",
             "name": "types",
@@ -20587,7 +20585,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 255,
+            "line": 244,
             "description": "The {{#crossLink \"Entity\"}}{{/crossLink}}s within\nthis Scene, mapped to their IDs.\n\nThe {{#crossLink \"Entity\"}}{{/crossLink}}s in this map\nwill also be contained in {{#crossLink \"Entity/components:property\"}}{{/crossLink}}.",
             "itemtype": "property",
             "name": "entities",
@@ -20597,7 +20595,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 279,
+            "line": 268,
             "description": "Configurations for this Scene. Set whatever properties on here\nthat will be useful to the components within the Scene.",
             "final": 1,
             "itemtype": "property",
@@ -20608,7 +20606,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 288,
+            "line": 277,
             "description": "Manages the HTML5 canvas for this Scene.",
             "final": 1,
             "itemtype": "property",
@@ -20619,7 +20617,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 319,
+            "line": 308,
             "description": "Publishes input events that occur on this Scene's canvas.",
             "final": 1,
             "itemtype": "property",
@@ -20630,7 +20628,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 330,
+            "line": 319,
             "description": "Tracks any asynchronous tasks that occur within this Scene.",
             "final": 1,
             "itemtype": "property",
@@ -20641,7 +20639,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 469,
+            "line": 458,
             "description": "Fired whenever a component has been created within this Scene.",
             "itemtype": "event",
             "name": "componentCreated",
@@ -20657,7 +20655,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 513,
+            "line": 502,
             "description": "Fired whenever a component within this Scene has been destroyed.",
             "itemtype": "event",
             "name": "componentDestroyed",
@@ -20673,7 +20671,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 535,
+            "line": 524,
             "description": "The number of times this Scene renders per frame.",
             "itemtype": "property",
             "name": "passes",
@@ -20684,7 +20682,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 565,
+            "line": 554,
             "description": "Fired whenever this Scene's {{#crossLink \"Scene/passes:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "passes",
@@ -20700,7 +20698,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 579,
+            "line": 568,
             "description": "The default projection transform provided by this Scene, which is\na {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.\n\nThis {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} has an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to\n\"default.project\", with all other properties set to their default\nvalues.\n\n{{#crossLink \"Camera\"}}Cameras{{/crossLink}} within this Scene\nare attached to this {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}\nby default.",
             "itemtype": "property",
             "name": "project",
@@ -20711,7 +20709,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 607,
+            "line": 596,
             "description": "The default viewing transform provided by this Scene, which is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.\n\nThis {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.view\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Camera\"}}Cameras{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "view",
@@ -20722,7 +20720,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 630,
+            "line": 619,
             "description": "The default {{#crossLink \"Camera\"}}Camera{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Camera\"}}Camera{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.camera\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Camera\"}}Camera{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "camera",
@@ -20733,7 +20731,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 655,
+            "line": 644,
             "description": "The default modelling {{#crossLink \"Transform\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Transform\"}}{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.transform\",\nwith all other properties initialised to their default values (ie. an identity matrix).\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Transform\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "transform",
@@ -20744,7 +20742,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 679,
+            "line": 668,
             "description": "The default {{#crossLink \"Billboard\"}}Billboard{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Billboard\"}}Billboard{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.billboard\"\nand an {{#crossLink \"Billboard/active:property\"}}{{/crossLink}} property set to false, to disable it.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Billboard\"}}Billboard{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "billboard",
@@ -20755,7 +20753,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 703,
+            "line": 692,
             "description": "The default {{#crossLink \"Stationary\"}}Stationary{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Stationary\"}}Stationary{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.stationary\"\nand an {{#crossLink \"Stationary/active:property\"}}{{/crossLink}} property set to false, to disable it.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Stationary\"}}Stationary{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "stationary",
@@ -20766,7 +20764,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 727,
+            "line": 716,
             "description": "The default {{#crossLink \"Clips\"}}Clips{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Clips\"}}Clips{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.clips\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Clips\"}}Clips{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "clips",
@@ -20777,7 +20775,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 750,
+            "line": 739,
             "description": "The default {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.colorBuf\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "colorBuf",
@@ -20788,7 +20786,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 773,
+            "line": 762,
             "description": "The default {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} provided by this Scene.\n\nThe {{#crossLink \"ColorTarget\"}}DepthTarget{{/crossLink}} is\n{{#crossLink \"ColorTarget/active:property\"}}inactive{{/crossLink}} by default and will have an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthTarget\".\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "colorTarget",
@@ -20799,7 +20797,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 797,
+            "line": 786,
             "description": "The default {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthBuf\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "depthBuf",
@@ -20810,7 +20808,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 821,
+            "line": 810,
             "description": "The default {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} provided by this Scene.\n\nThe {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} is\n{{#crossLink \"DepthTarget/active:property\"}}inactive{{/crossLink}} by default and has an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthTarget\".\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "depthTarget",
@@ -20821,7 +20819,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 845,
+            "line": 834,
             "description": "The default {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.visibility\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Visibility\"}}Visibility{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "visibility",
@@ -20832,7 +20830,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 868,
+            "line": 857,
             "description": "The default {{#crossLink \"Cull\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Cull\"}}cull{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.cull\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Cull\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "cull",
@@ -20843,7 +20841,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 891,
+            "line": 880,
             "description": "The default {{#crossLink \"Modes\"}}Modes{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Modes\"}}Modes{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.modes\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Modes\"}}Modes{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "modes",
@@ -20854,7 +20852,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 913,
+            "line": 902,
             "description": "The default geometry provided by this Scene, which is a {{#crossLink \"BoxGeometry\"}}BoxGeometry{{/crossLink}}.\n\nThis {{#crossLink \"BoxGeometry\"}}BoxGeometry{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.geometry\".\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Geometry\"}}Geometry{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "geometry",
@@ -20865,7 +20863,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 934,
+            "line": 923,
             "description": "The default {{#crossLink \"Layer\"}}Layer{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Layer\"}}Layer{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.layer\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Layer\"}}Layer{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "layer",
@@ -20876,7 +20874,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 957,
+            "line": 946,
             "description": "The default {{#crossLink \"Lights\"}}Lights{{/crossLink}} provided\nby this Scene.\n\nThis {{#crossLink \"Lights\"}}Lights{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to *````\"default.lights\"````*,\nwith all other properties initialised to their default values (ie. the default set of light sources for a {{#crossLink \"Lights\"}}Lights{{/crossLink}}).\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Lights\"}}Lights{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "lights",
@@ -20887,7 +20885,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1012,
+            "line": 1001,
             "description": "The {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} provided as the default material by this Scene.\n\nThis {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.material\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "material",
@@ -20898,7 +20896,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1035,
+            "line": 1024,
             "description": "The default {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.morphTargets\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -20909,7 +20907,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1057,
+            "line": 1046,
             "description": "The default {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} provided by this Scene,\n(which is initially an empty {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} that has no effect).\n\nThis {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.reflect\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Reflect\"}}Reflect{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "reflect",
@@ -20920,7 +20918,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1080,
+            "line": 1069,
             "description": "The default {{#crossLink \"Shader\"}}Shader{{/crossLink}} provided by this Scene\n(which is initially an empty {{#crossLink \"Shader\"}}Shader{{/crossLink}} that has no effect).\n\nThis {{#crossLink \"Shader\"}}Shader{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.shader\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Shader\"}}Shader{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "shader",
@@ -20931,7 +20929,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1103,
+            "line": 1092,
             "description": "The default {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.shaderParams\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ShaderParams\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "shaderParams",
@@ -20942,7 +20940,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1126,
+            "line": 1115,
             "description": "The default {{#crossLink \"Stage\"}}Stage{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Stage\"}}Stage{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.stage\" and\na {{#crossLink \"Stage/priority:property\"}}priority{{/crossLink}} equal to ````0````.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Stage\"}}Stage{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "stage",
@@ -20953,7 +20951,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1150,
+            "line": 1139,
             "description": "The default {{#crossLink \"Viewport\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Viewport\"}}{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.viewport\" and\n{{#crossLink \"Viewport/autoBoundary:property\"}}{{/crossLink}} set ````true````.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Viewport\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "viewport",
@@ -20964,7 +20962,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1175,
+            "line": 1164,
             "description": "The World-space 3D boundary of this Scene.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will be lazy-initialized the first time\nyou reference this property, and will persist on this Scene until you\ncall {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on the {{#crossLink \"Boundary3D\"}}{{/crossLink}}\nagain. The property will then be set to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance\nnext time you reference it.\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary3D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "worldBoundary",
@@ -20975,7 +20973,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1258,
+            "line": 1247,
             "description": "Attempts to pick an {{#crossLink \"Entity\"}}Entity{{/crossLink}} at the given Canvas-space coordinates.\n\nIgnores {{#crossLink \"Entity\"}}Entities{{/crossLink}} that are attached\nto either a {{#crossLink \"Stage\"}}Stage{{/crossLink}} with {{#crossLink \"Stage/pickable:property\"}}pickable{{/crossLink}}\nset *false* or a {{#crossLink \"Modes\"}}Modes{{/crossLink}} with {{#crossLink \"Modes/pickable:property\"}}pickable{{/crossLink}} set *false*.\n\nOn success, will fire a {{#crossLink \"Scene/picked:event\"}}{{/crossLink}} event on this Scene, along with\na separate {{#crossLink \"Entity/picked:event\"}}{{/crossLink}} event on the target {{#crossLink \"Entity\"}}Entity{{/crossLink}}.\n\n````javascript\n\npick({\n     canvasPos: [23, 131],\n     rayPick: true\n     });\n\n````",
             "itemtype": "method",
             "name": "pick",
@@ -21010,7 +21008,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1527,
+            "line": 1516,
             "description": "Resets this Scene to its default state.\n\nReferences to any components in this Scene will become invalid.",
             "itemtype": "method",
             "name": "clear",
@@ -21019,7 +21017,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1553,
+            "line": 1542,
             "description": "Convenience method for creating or reusing a Component within this Scene.\n\nYou would typically use this method to conveniently instantiate components that you'd want to\nshare (ie. \"instance\") among your {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe method is given a component type, share ID and constructor attributes, like so:\n\n````javascript\nvar material = myScene.getComponent(\"XEO.PhongMaterial\", \"myMaterial\", { diffuse: [1,0,0] });\n````\n\nThe first time you call this method for the given ````type```` and ````instanceId````, this method will create the\n{{#crossLink \"PhongMaterial\"}}{{/crossLink}}, passing the given  attributes to the component's constructor.\n\nIf you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same\ncomponent instance that it returned the first time, and will ignore the attributes:\n\n````javascript\nvar material2 = myScene.getComponent(\"XEO.PhongMaterial\", \"myMaterial\", { specular: [1,1,0] });\n````\n\nEach time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a\nreference count for the component instance. You can release the shared component instance with a call to\n{{#crossLink \"Scene/putSharedComponent:method\"}}{{/crossLink}}, and once you have released it as many\ntimes as you got it, the Scene will destroy the component.",
             "itemtype": "method",
             "name": "_getSharedComponent",
@@ -21052,7 +21050,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1649,
+            "line": 1638,
             "description": "Releases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -21066,7 +21064,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1677,
+            "line": 1666,
             "description": "Compiles and renders this Scene",
             "access": "private",
             "tagname": "",
@@ -21254,7 +21252,88 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 293,
+            "line": 246,
+            "description": "Fired on each game loop iteration.",
+            "itemtype": "event",
+            "name": "tick",
+            "params": [
+                {
+                    "name": "sceneID",
+                    "description": "The ID of this Scene.",
+                    "type": "String"
+                },
+                {
+                    "name": "startTime",
+                    "description": "The time in seconds since 1970 that this Scene was instantiated.",
+                    "type": "Number"
+                },
+                {
+                    "name": "time",
+                    "description": "The time in seconds since 1970 of this \"tick\" event.",
+                    "type": "Number"
+                },
+                {
+                    "name": "prevTime",
+                    "description": "The time of the previous \"tick\" event from this Scene.",
+                    "type": "Number"
+                },
+                {
+                    "name": "deltaTime",
+                    "description": "The time in seconds since the previous \"tick\" event from this Scene.",
+                    "type": "Number"
+                }
+            ],
+            "class": "XEO",
+            "module": "XEO",
+            "namespace": "XEO"
+        },
+        {
+            "file": "src/xeo.js",
+            "line": 282,
+            "description": "Fired when about to render a frame for a Scene.",
+            "itemtype": "event",
+            "name": "rendering",
+            "params": [
+                {
+                    "name": "sceneID",
+                    "description": "The ID of this Scene.",
+                    "type": "String"
+                },
+                {
+                    "name": "pass",
+                    "description": "Index of the pass we are about to render (see {{#crossLink \"Scene/passes:property\"}}{{/crossLink}}).",
+                    "type": "Number"
+                }
+            ],
+            "class": "XEO",
+            "module": "XEO",
+            "namespace": "XEO"
+        },
+        {
+            "file": "src/xeo.js",
+            "line": 295,
+            "description": "Fired when we have just rendered a frame for a Scene.",
+            "itemtype": "event",
+            "name": "rendering",
+            "params": [
+                {
+                    "name": "sceneID",
+                    "description": "The ID of this Scene.",
+                    "type": "String"
+                },
+                {
+                    "name": "pass",
+                    "description": "Index of the pass we rendered (see {{#crossLink \"Scene/passes:property\"}}{{/crossLink}}).",
+                    "type": "Number"
+                }
+            ],
+            "class": "XEO",
+            "module": "XEO",
+            "namespace": "XEO"
+        },
+        {
+            "file": "src/xeo.js",
+            "line": 317,
             "description": "The default {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\nComponents created without an explicit parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} will be created within this\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} by default.\n\nxeoEngine creates the default {{#crossLink \"Scene\"}}Scene{{/crossLink}} as soon as you either\nreference this property for the first time, or create your first {{#crossLink \"Entity\"}}Entity{{/crossLink}} without\na specified {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "property",
             "name": "scene",
@@ -21266,7 +21345,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 318,
+            "line": 342,
             "description": "Registers a scene on xeoEngine.\nThis is called within the XEO.Scene constructor.",
             "itemtype": "method",
             "name": "_addScene",
@@ -21285,7 +21364,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 361,
+            "line": 385,
             "description": "Schedule a task for xeoEngine to run at the next frame.\n\nInternally, this pushes the task to a FIFO queue. Within each frame interval, xeoEngine processes the queue\nfor a certain period of time, popping tasks and running them. After each frame interval, tasks that did not\nget a chance to run during the task are left in the queue to be run next time.",
             "itemtype": "method",
             "name": "schedule",
@@ -21308,7 +21387,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 406,
+            "line": 430,
             "description": "Destroys all user-created {{#crossLink \"Scene\"}}Scenes{{/crossLink}} and\nclears the default {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "clear",
@@ -21319,7 +21398,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 435,
+            "line": 459,
             "description": "Tests if the given object is an array",
             "access": "private",
             "tagname": "",
@@ -21329,7 +21408,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 443,
+            "line": 467,
             "description": "Tests if the given value is a string",
             "params": [
                 {
@@ -21349,7 +21428,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 454,
+            "line": 478,
             "description": "Tests if the given value is a number",
             "params": [
                 {
@@ -21369,7 +21448,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 464,
+            "line": 488,
             "description": "Tests if the given value is an ID",
             "params": [
                 {
@@ -21389,7 +21468,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 474,
+            "line": 498,
             "description": "Tests if the given components are the same, where the components can be either IDs or instances.",
             "params": [
                 {
@@ -21413,7 +21492,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 493,
+            "line": 517,
             "description": "Tests if the given value is a function",
             "params": [
                 {
@@ -21433,21 +21512,21 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 503,
+            "line": 527,
             "class": "XEO",
             "module": "XEO",
             "namespace": "XEO"
         },
         {
             "file": "src/xeo.js",
-            "line": 509,
+            "line": 533,
             "class": "XEO",
             "module": "XEO",
             "namespace": "XEO"
         },
         {
             "file": "src/xeo.js",
-            "line": 520,
+            "line": 544,
             "description": "Add non-null/defined properties of o to o2",
             "access": "private",
             "tagname": "",
@@ -21457,7 +21536,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 535,
+            "line": 559,
             "description": "Add properties of o to o2 where undefined or null on o2",
             "access": "private",
             "tagname": "",
@@ -21467,7 +21546,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 550,
+            "line": 574,
             "description": "Returns true if the given map is empty.",
             "params": [
                 {
@@ -21487,7 +21566,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 565,
+            "line": 589,
             "description": "Returns the given ID as a string, in quotes if the ID was a string to begin with.\n\nThis is useful for logging IDs.",
             "params": [
                 {
@@ -21674,11 +21753,11 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1258"
+            "line": " src/scene.js:1247"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1553"
+            "line": " src/scene.js:1542"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -21690,35 +21769,35 @@
         },
         {
             "message": "unknown tag: demo",
-            "line": " src/xeo.js:406"
+            "line": " src/xeo.js:430"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:443"
+            "line": " src/xeo.js:467"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:454"
+            "line": " src/xeo.js:478"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:464"
+            "line": " src/xeo.js:488"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:474"
+            "line": " src/xeo.js:498"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:493"
+            "line": " src/xeo.js:517"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:550"
+            "line": " src/xeo.js:574"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:565"
+            "line": " src/xeo.js:589"
         },
         {
             "message": "Missing item type\nA chunk of WebGL state changes to render a XEO.renderer.State.",
@@ -22218,23 +22297,23 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/canvas/canvas.js:301"
+            "line": " src/canvas/canvas.js:326"
         },
         {
             "message": "Missing item type\nCreates a default canvas in the DOM.",
-            "line": " src/canvas/canvas.js:309"
+            "line": " src/canvas/canvas.js:334"
         },
         {
             "message": "Missing item type\nCreates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
-            "line": " src/canvas/canvas.js:338"
+            "line": " src/canvas/canvas.js:363"
         },
         {
             "message": "Missing item type",
-            "line": " src/canvas/canvas.js:370"
+            "line": " src/canvas/canvas.js:395"
         },
         {
             "message": "Missing item type\nInitialises the WebGL context",
-            "line": " src/canvas/canvas.js:390"
+            "line": " src/canvas/canvas.js:415"
         },
         {
             "message": "Missing item type\nAdds a {{#crossLink \"Curve\"}}{{/crossLink}} to this Path.\n\nFires a {{#crossLink \"Path/curves:event\"}}{{/crossLink}} event on change.",
@@ -22318,7 +22397,11 @@
         },
         {
             "message": "Missing item type\nEnable or disable all input handlers",
-            "line": " src/input/input.js:462"
+            "line": " src/input/input.js:606"
+        },
+        {
+            "message": "Missing item type\nDeviceOrientationControls - applies device orientation on object rotation",
+            "line": " src/input/test.js:1"
         },
         {
             "message": "Missing item type\nLookup GL depth function enums",
@@ -22362,11 +22445,11 @@
         },
         {
             "message": "Missing item type\nReleases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
-            "line": " src/scene.js:1649"
+            "line": " src/scene.js:1638"
         },
         {
             "message": "Missing item type\nCompiles and renders this Scene",
-            "line": " src/scene.js:1677"
+            "line": " src/scene.js:1666"
         },
         {
             "message": "Missing item type\nCreates a clone of this component.\n\nThe clone will have the same properties as the original, except where\noverridden in the given optional configs.\n\nThe clone will share (by reference) the components of the original, unless overridden.\n\nFor example, if this component is an {{#crossLink \"Entity\"}}{{/crossLink}}, then the clone\nwill be attached to the **same** instances of {{#crossLink \"PhoneMaterial\"}}{{/crossLink}},\n{{#crossLink \"Camera\"}}{{/crossLink}} etc as this component, unless it supplies its own\ninstances for those via the configs.",
@@ -22382,51 +22465,51 @@
         },
         {
             "message": "Missing item type\nTests if the given object is an array",
-            "line": " src/xeo.js:435"
+            "line": " src/xeo.js:459"
         },
         {
             "message": "Missing item type\nTests if the given value is a string",
-            "line": " src/xeo.js:443"
+            "line": " src/xeo.js:467"
         },
         {
             "message": "Missing item type\nTests if the given value is a number",
-            "line": " src/xeo.js:454"
+            "line": " src/xeo.js:478"
         },
         {
             "message": "Missing item type\nTests if the given value is an ID",
-            "line": " src/xeo.js:464"
+            "line": " src/xeo.js:488"
         },
         {
             "message": "Missing item type\nTests if the given components are the same, where the components can be either IDs or instances.",
-            "line": " src/xeo.js:474"
+            "line": " src/xeo.js:498"
         },
         {
             "message": "Missing item type\nTests if the given value is a function",
-            "line": " src/xeo.js:493"
+            "line": " src/xeo.js:517"
         },
         {
             "message": "Missing item type",
-            "line": " src/xeo.js:503"
+            "line": " src/xeo.js:527"
         },
         {
             "message": "Missing item type",
-            "line": " src/xeo.js:509"
+            "line": " src/xeo.js:533"
         },
         {
             "message": "Missing item type\nAdd non-null/defined properties of o to o2",
-            "line": " src/xeo.js:520"
+            "line": " src/xeo.js:544"
         },
         {
             "message": "Missing item type\nAdd properties of o to o2 where undefined or null on o2",
-            "line": " src/xeo.js:535"
+            "line": " src/xeo.js:559"
         },
         {
             "message": "Missing item type\nReturns true if the given map is empty.",
-            "line": " src/xeo.js:550"
+            "line": " src/xeo.js:574"
         },
         {
             "message": "Missing item type\nReturns the given ID as a string, in quotes if the ID was a string to begin with.\n\nThis is useful for logging IDs.",
-            "line": " src/xeo.js:565"
+            "line": " src/xeo.js:589"
         }
     ]
 }

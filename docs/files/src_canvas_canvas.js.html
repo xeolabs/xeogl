@@ -48,6 +48,7 @@
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraController.html">CameraController</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
@@ -70,7 +71,6 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/GyroRotateCamera.html">GyroRotateCamera</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -137,6 +137,7 @@
                                 <li><a href="..//modules/geometry.html">geometry</a></li>
                                 <li><a href="..//modules/importing.html">importing</a></li>
                                 <li><a href="..//modules/input.html">input</a></li>
+                                <li><a href="..//modules/interaction.html">interaction</a></li>
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
@@ -384,6 +385,29 @@
             this.canvas.width = this.canvas.clientWidth;
             this.canvas.height = this.canvas.clientHeight;
 
+            /**
+             * Boundary of the Canvas in absolute browser window coordinates.
+             *
+             * ### Usage:
+             *
+             * &#x60;&#x60;&#x60;&#x60;javascript
+             * var boundary = myScene.canvas.boundary;
+             *
+             * var xmin = boundary[0];
+             * var ymin = boundary[1];
+             * var xmax = boundary[2];
+             * var ymax = boundary[3];
+             * &#x60;&#x60;&#x60;&#x60;
+             *
+             * @property boundary
+             * @type {{Array of Number}}
+             * @final
+             */
+            this.boundary = [
+                this.canvas.offsetLeft, this.canvas.offsetTop,
+                this.canvas.clientWidth, this.canvas.clientHeight
+            ];
+
             this._createOverlay();
             this._resizeOverlay();
 
@@ -461,18 +485,20 @@
                             canvas.width = canvas.clientWidth;
                             canvas.height = canvas.clientHeight;
 
+                            var boundary = self.boundary;
+
+                            boundary[0] = canvas.offsetLeft;
+                            boundary[1] = canvas.offsetTop;
+                            boundary[2] = newWidth;
+                            boundary[3] = newHeight;
+
                             /**
-                             * Fired whenever the canvas has resized
-                             * @event size
-                             * @param width {Number} The new canvas width
-                             * @param height {Number} The new canvas height
-                             * @param aspect {Number} The new canvas aspect ratio
+                             * Fired whenever this Canvas&#x27;s {{#crossLink &quot;Canvas/boundary:property&quot;}}{{/crossLink}} property changes.
+                             *
+                             * @event boundary
+                             * @param value The property&#x27;s new value
                              */
-                            self.fire(&quot;size&quot;, {
-                                width: newWidth,
-                                height: newHeight,
-                                aspect: newHeight / newWidth
-                            });
+                            self.fire(&quot;boundary&quot;, boundary);
 
                             lastCanvasWidth = newWidth;
                             lastCanvasHeight = newHeight;
