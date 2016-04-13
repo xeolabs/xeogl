@@ -18811,6 +18811,37 @@
             "namespace": "XEO.math"
         },
         {
+            "file": "src/math/math.js",
+            "line": 2763,
+            "description": "Initializes a quaternion from Euler angles.",
+            "params": [
+                {
+                    "name": "euler",
+                    "description": "The Euler angles.",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "order",
+                    "description": "Euler angle order: \"XYZ\", \"YXZ\", \"ZXY\" etc.",
+                    "type": "String"
+                },
+                {
+                    "name": "dest",
+                    "description": "Destination quaternion, created by default.",
+                    "type": "Float32Array",
+                    "optional": true
+                }
+            ],
+            "return": {
+                "description": "The quaternion.",
+                "type": "Float32Array"
+            },
+            "class": "XEO.math.math",
+            "module": "XEO",
+            "submodule": "math",
+            "namespace": "XEO.math"
+        },
+        {
             "file": "src/rendering/colorBuf.js",
             "line": 62,
             "description": "Indicates if blending is enabled for this ColorBuf.\n\nFires a {{#crossLink \"ColorBuf/blendEnabled:event\"}}{{/crossLink}} event on change.",
@@ -21737,6 +21768,10 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
+            "line": " src/math/math.js:2763"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
             "line": " src/reporting/tasks.js:95"
         },
         {
@@ -22402,6 +22437,10 @@
         {
             "message": "Missing item type\nDeviceOrientationControls - applies device orientation on object rotation",
             "line": " src/input/test.js:1"
+        },
+        {
+            "message": "Missing item type\nInitializes a quaternion from Euler angles.",
+            "line": " src/math/math.js:2763"
         },
         {
             "message": "Missing item type\nLookup GL depth function enums",
