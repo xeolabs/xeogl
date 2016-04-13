@@ -2760,6 +2760,75 @@
             return dest;
         },
 
+        /**
+         * Initializes a quaternion from Euler angles.
+         *
+         * @param {Float32Array} euler The Euler angles.
+         * @param {String} order Euler angle order: "XYZ", "YXZ", "ZXY" etc.
+         * @param {Float32Array} [dest] Destination quaternion, created by default.
+         * @returns {Float32Array} The quaternion.
+         */
+        eulerToQuaternion: function (euler, order, dest) {
+
+            dest = dest || XEO.math.vec4();
+
+            // http://www.mathworks.com/matlabcentral/fileexchange/
+            // 	20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/
+            //	content/SpinCalc.m
+
+            var c1 = Math.cos(euler[0] / 2);
+            var c2 = Math.cos(euler[1] / 2);
+            var c3 = Math.cos(euler[2] / 2);
+            var s1 = Math.sin(euler[0] / 2);
+            var s2 = Math.sin(euler[1] / 2);
+            var s3 = Math.sin(euler[2] / 2);
+
+            if (order === 'XYZ') {
+
+                dest[0] = s1 * c2 * c3 + c1 * s2 * s3;
+                dest[1] = c1 * s2 * c3 - s1 * c2 * s3;
+                dest[2] = c1 * c2 * s3 + s1 * s2 * c3;
+                dest[3] = c1 * c2 * c3 - s1 * s2 * s3;
+
+            } else if (order === 'YXZ') {
+
+                dest[0] = s1 * c2 * c3 + c1 * s2 * s3;
+                dest[1] = c1 * s2 * c3 - s1 * c2 * s3;
+                dest[2] = c1 * c2 * s3 - s1 * s2 * c3;
+                dest[3] = c1 * c2 * c3 + s1 * s2 * s3;
+
+            } else if (order === 'ZXY') {
+
+                dest[0] = s1 * c2 * c3 - c1 * s2 * s3;
+                dest[1] = c1 * s2 * c3 + s1 * c2 * s3;
+                dest[2] = c1 * c2 * s3 + s1 * s2 * c3;
+                dest[3] = c1 * c2 * c3 - s1 * s2 * s3;
+
+            } else if (order === 'ZYX') {
+
+                dest[0] = s1 * c2 * c3 - c1 * s2 * s3;
+                dest[1] = c1 * s2 * c3 + s1 * c2 * s3;
+                dest[2] = c1 * c2 * s3 - s1 * s2 * c3;
+                dest[3] = c1 * c2 * c3 + s1 * s2 * s3;
+
+            } else if (order === 'YZX') {
+
+                dest[0] = s1 * c2 * c3 + c1 * s2 * s3;
+                dest[1] = c1 * s2 * c3 + s1 * c2 * s3;
+                dest[2] = c1 * c2 * s3 - s1 * s2 * c3;
+                dest[3] = c1 * c2 * c3 - s1 * s2 * s3;
+
+            } else if (order === 'XZY') {
+
+                dest[0] = s1 * c2 * c3 - c1 * s2 * s3;
+                dest[1] = c1 * s2 * c3 - s1 * c2 * s3;
+                dest[2] = c1 * c2 * s3 + s1 * s2 * c3;
+                dest[3] = c1 * c2 * c3 + s1 * s2 * s3;
+            }
+
+            return dest;
+        },
+
         vec3PairToQuaternion: function (u, v, dest) {
 
             dest = dest || XEO.math.vec4();
@@ -2800,9 +2869,8 @@
             return math.normalizeQuaternion(dest);
         },
 
-        angleAxisToQuaternion: function (x, y, z, degrees, dest) {
+        angleAxisToQuaternion: function (x, y, z, angleRad, dest) {
             dest = dest || XEO.math.vec4();
-            var angleRad = (degrees / 180.0) * Math.PI;
             var halfAngle = angleRad / 2.0;
             var fsin = Math.sin(halfAngle);
             dest[0] = fsin * x;
@@ -2897,7 +2965,7 @@
                 angleAxis[0] = q[1] / s;
                 angleAxis[0] = q[2] / s;
             }
-            angleAxis[3] = angle * 57.295779579;
+            angleAxis[3] = angle; // * 57.295779579;
             return angleAxis;
         }
     };

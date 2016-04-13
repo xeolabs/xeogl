@@ -11,7 +11,10 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>custom stereo view
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>custom stereo view<br><br>
+    <ul>
+        <li>Click in the right half-space to pick objects</li>
+    </ul>
 </div>
 
 <script>
@@ -23,9 +26,12 @@
 
     var scene = gearbox.scene;
 
-    // Move the eye back a bit
+    // Set initial camera position
+    var view = scene.camera.view;
 
-    scene.camera.view.eye = [0, 0, -10];
+    view.eye = [184.21, 10.54, -7.03];
+    view.look = [159.20, 17.02, 3.21];
+    view.up = [-0.15, 0.97, 0.13];
 
     scene.on("tick",
             function () {
@@ -44,7 +50,6 @@
     // but we need to replace the Camera's projection with Frustum
 
     var camera = scene.camera;
-    var view = camera.view;
     camera.project = new XEO.Frustum();
     var frustum = camera.project;
 
