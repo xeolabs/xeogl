@@ -25,15 +25,16 @@
 
     // Load glTF model
     var gearbox = new XEO.Model({
-        src: "models/gltf/gearbox/gearbox_assy.gltf"
+//        src: "models/gltf/gearbox/gearbox_assy.gltf"
+        src: "models/gltf/buggy/buggy.gltf"
     });
 
     // Set initial camera position
     var view = gearbox.scene.camera.view;
 
-    view.eye = [184.21, 10.54, -7.03];
-    view.look = [159.20, 17.02, 3.21];
-    view.up = [-0.15, 0.97, 0.13];
+//    view.eye = [184.21, 10.54, -7.03];
+//    view.look = [159.20, 17.02, 3.21];
+//    view.up = [-0.15, 0.97, 0.13];
 
     // Create stereo effect
     new XEO.Stereo();

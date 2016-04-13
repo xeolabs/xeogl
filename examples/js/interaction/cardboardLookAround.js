@@ -79,64 +79,102 @@
             this._super(cfg);
 
             var input = this.scene.input;
-            var handle;
+
+            var onOrientationChange;
+            var onDeviceOrientation;
+
+            var orientation;
+            var orientationAngle;
+
             var math = XEO.math;
+            var euler = math.vec3();
             var tempVec3a = math.vec3();
             var tempVec3b = math.vec3();
-            var tempMat3 = math.mat4();
-            var tempMat3b = math.mat4();
+
+            var reflectQuaternion = math.identityQuaternion();
+            reflectQuaternion[0] = -Math.sqrt(0.5);
+            reflectQuaternion[3] = Math.sqrt(0.5);
+
+            var quaternion = math.identityQuaternion();
+            var orientQuaternion = math.identityQuaternion();
+            var alignQuaternion = math.identityQuaternion();
+            var orientMatrix = math.mat4();
 
             var self = this;
 
             // ---------- TESTING -----------------------------------
-            //var alpha = 0;
-            //var beta = -90;
-            //var gamma = 0;
-            //
-            //this.scene.on("tick", function () {
-            //    self.scene.input.fire("deviceorientation", {
-            //        alpha: alpha += 0.1,
-            //        beta: beta += 0.0,
-            //        gamma: gamma += 0.0
-            //    });
-            //});
+            var alpha = 0;
+            var beta = 0;
+            var gamma = 0;
+
+            this.scene.on("tick", function () {
+                self.scene.input.fire("deviceorientation", {
+                    alpha: alpha += 0.1,
+                    beta: beta += 0.1,
+                    gamma: gamma += 0.0
+                });
+            });
+            // ------------------------------------------------------
 
             self.on("active",
                 function (active) {
                     if (active) {
 
-                        handle = input.on("deviceorientation",
+                        onOrientationChange = input.on("orientationchange",
+                            function (e) {
+
+                                orientation = e.orientation;
+                                orientationAngle = e.orientationAngle;
+                            });
+
+                        onDeviceOrientation = input.on("deviceorientation",
                             function (e) {
 
                                 var lookat = self.camera.view;
 
-                                // Create rotation matrix from Z-X'-Y' angles
+                                var alpha = e.alpha ? math.DEGTORAD * e.alpha : 0; // Z
+                                var beta = e.beta ? math.DEGTORAD * e.beta : 0; // X'
+                                var gamma = e.gamma ? math.DEGTORAD * e.gamma : 0; // Y'
+                                var orient = orientationAngle ? math.DEGTORAD * orientationAngle : 0;
 
-                                math.identityMat4(tempMat3);
+                                euler[0] = beta;
+                                euler[1] = alpha;
+                                euler[2] = -gamma;
 
-                                math.mulMat4(tempMat3, math.rotationMat4c(e.gamma * math.DEGTORAD, 0, 0, 1, tempMat3b)); // Z
-                                math.mulMat4(tempMat3, math.rotationMat4c(e.alpha * math.DEGTORAD, 1, 0, 0, tempMat3b)); // X
-                                math.mulMat4(tempMat3, math.rotationMat4c(-e.beta * math.DEGTORAD, 0, 1, 0, tempMat3b)); // Y
+                                math.eulerToQuaternion(euler, "ZXY", quaternion);
+                                math.mulQuaternions(quaternion, reflectQuaternion, quaternion);
+                                math.angleAxisToQuaternion(0, 0, 1, orient, orientQuaternion);
+                                math.mulQuaternions(quaternion, orientQuaternion, quaternion);
+                                math.mulQuaternions(alignQuaternion, quaternion, quaternion);
+                                math.quaternionToMat4(quaternion, orientMatrix);
 
-                                // Rotate Camera look about eye by the matrix
+                                // Rotate Camera look about eye using the matrix
 
-                                tempVec3b[0] = 0;
-                                tempVec3b[1] = 0;
-                                tempVec3b[2] = -Math.abs(math.lenVec3(math.subVec3(lookat.look, lookat.eye, tempVec3a)));
+                                // Look
 
-                                lookat.look = math.addVec3(math.transformVec3(tempMat3, tempVec3b, tempVec3b), lookat.eye);
+                                tempVec3a[0] = 0;
+                                tempVec3a[1] = 0;
+                                tempVec3a[2] = -Math.abs(math.lenVec3(math.subVec3(lookat.look, lookat.eye, tempVec3b)));
+
+                                lookat.look = math.addVec3(math.transformVec3(orientMatrix, tempVec3a, tempVec3a), lookat.eye);
 
                                 // Up
 
-                                tempVec3b[0] = 0;
-                                tempVec3b[1] = 1;
-                                tempVec3b[2] = 0;
+                                tempVec3a[0] = 0;
+                                tempVec3a[1] = 1;
+                                tempVec3a[2] = 0;
 
-                                lookat.up = math.transformVec3(tempMat3, tempVec3b, tempVec3b);
+                                lookat.up = math.transformVec3(orientMatrix, tempVec3a, tempVec3a);
+                                
+                                if (self.autoForward) {
+                                    
+                                }
                             });
 
                     } else {
-                        input.off(handle);
+
+                        input.off(onOrientationChange);
+                        input.off(onDeviceOrientation);
                     }
                 });
         }

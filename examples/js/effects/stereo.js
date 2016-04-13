@@ -325,11 +325,6 @@
             scene.passes = 2;
 
             var canvasBoundary;
-            var canvasWidth;
-            var canvasHeight;
-            var halfCanvasWidth;
-            var halfCanvasHeight;
-            var canvasAspectRatio;
 
             var eye;
             var look;
