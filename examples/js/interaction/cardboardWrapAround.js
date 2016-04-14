@@ -80,6 +80,8 @@
 
             var input = this.scene.input;
 
+            var autoAlign = true;
+
             var onOrientationChange;
             var onDeviceOrientation;
 
@@ -103,17 +105,28 @@
             var self = this;
 
             // ---------- TESTING -----------------------------------
-            //var alpha = 0;
-            //var beta = 0;
-            //var gamma = 0;
-            //
-            //this.scene.on("tick", function () {
-            //    self.scene.input.fire("deviceorientation", {
-            //        alpha: alpha += 0.1,
-            //        beta: beta += 0.1,
-            //        gamma: gamma += 0.0
-            //    });
-            //});
+
+            var debug = false;
+
+            if (debug) {
+
+                var alpha = 0;
+                var beta = 90;
+                var gamma = 0;
+
+                window.alphaInc = 0;
+                window.betaInc = 0;
+                window.gammaInc = 0;
+
+                this.scene.on("tick", function () {
+                    self.scene.input.fire("deviceorientation", {
+                        alpha: alpha += window.alphaInc, // Z
+                        beta: beta += window.betaInc, // X
+                        gamma: gamma += window.gammaInc // Y
+                    });
+                });
+            }
+
             // ------------------------------------------------------
 
             self.on("active",
@@ -132,7 +145,7 @@
 
                                 var lookat = self.camera.view;
 
-                                var alpha = e.alpha ? math.DEGTORAD * e.alpha : 0; // Z
+                                var alpha = e.gamma ? math.DEGTORAD * e.alpha : 0; // Z
                                 var beta = e.beta ? math.DEGTORAD * e.beta : 0; // X'
                                 var gamma = e.gamma ? math.DEGTORAD * e.gamma : 0; // Y'
                                 var orient = orientationAngle ? math.DEGTORAD * orientationAngle : 0;
@@ -141,9 +154,9 @@
                                 euler[1] = alpha;
                                 euler[2] = -gamma;
 
-                                math.eulerToQuaternion(euler, "ZXY", quaternion);
+                                math.eulerToQuaternion(euler, "YXZ", quaternion);
                                 math.mulQuaternions(quaternion, reflectQuaternion, quaternion);
-                                math.angleAxisToQuaternion(0, 0, 1, orient, orientQuaternion);
+                                math.angleAxisToQuaternion(0, 0, 1, -orient, orientQuaternion);
                                 math.mulQuaternions(quaternion, orientQuaternion, quaternion);
                                 math.mulQuaternions(alignQuaternion, quaternion, quaternion);
                                 math.quaternionToMat4(quaternion, orientMatrix);
@@ -169,6 +182,11 @@
                                 if (self.autoForward) {
 
                                 }
+
+                                if (this.autoAlign && alpha !== 0) {
+                                    autoAlign = false;
+                                    self._align();
+                                }
                             });
 
                     } else {
@@ -177,6 +195,10 @@
                         input.off(onDeviceOrientation);
                     }
                 });
+        },
+
+        _align: function () {
+
         }
     });
 })();

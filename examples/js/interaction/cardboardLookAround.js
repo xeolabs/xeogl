@@ -103,17 +103,27 @@
             var self = this;
 
             // ---------- TESTING -----------------------------------
-            //var alpha = 0;
-            //var beta = 0;
-            //var gamma = 0;
-            //
-            //this.scene.on("tick", function () {
-            //    self.scene.input.fire("deviceorientation", {
-            //        alpha: alpha += 0.1,
-            //        beta: beta += 0.1,
-            //        gamma: gamma += 0.0
-            //    });
-            //});
+
+            var debug = false;
+
+            if (debug) {
+
+                var alpha = 0;
+                var beta = 90;
+                var gamma = 0;
+
+                window.alphaInc = 0;
+                window.betaInc = 0;
+                window.gammaInc = 0;
+
+                this.scene.on("tick", function () {
+                    self.scene.input.fire("deviceorientation", {
+                        alpha: alpha += window.alphaInc, // Z
+                        beta: beta += window.betaInc, // X
+                        gamma: gamma += window.gammaInc // Y
+                    });
+                });
+            }
             // ------------------------------------------------------
 
             self.on("active",
@@ -141,11 +151,11 @@
                                 euler[1] = alpha;
                                 euler[2] = -gamma;
 
-                                math.eulerToQuaternion(euler, "ZXY", quaternion);
+                                math.eulerToQuaternion(euler, "YXZ", quaternion);
                                 math.mulQuaternions(quaternion, reflectQuaternion, quaternion);
-                                math.angleAxisToQuaternion(0, 0, 1, orient, orientQuaternion);
+                                math.angleAxisToQuaternion(0, 0, 1, -orient, orientQuaternion);
                                 math.mulQuaternions(quaternion, orientQuaternion, quaternion);
-                                math.mulQuaternions(alignQuaternion, quaternion, quaternion);
+                                math.mulQuaternions(quaternion, alignQuaternion, quaternion);
                                 math.quaternionToMat4(quaternion, orientMatrix);
 
                                 // Rotate Camera look about eye using the matrix
@@ -165,9 +175,9 @@
                                 tempVec3a[2] = 0;
 
                                 lookat.up = math.transformVec3(orientMatrix, tempVec3a, tempVec3a);
-                                
+
                                 if (self.autoForward) {
-                                    
+
                                 }
                             });
 
