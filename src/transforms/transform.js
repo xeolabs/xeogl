@@ -2,7 +2,7 @@
  A **Transform** defines a modelling matrix to transform attached {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
 
  <ul>
- <li>Sub-classes of Transform are: {{#crossLink "Translate"}}{{/crossLink}},
+ <li>Sub-classes of Transform include: {{#crossLink "Translate"}}{{/crossLink}},
  {{#crossLink "Scale"}}{{/crossLink}}, {{#crossLink "Rotate"}}{{/crossLink}}, and {{#crossLink "Quaternion"}}{{/crossLink}}</li>
  <li>Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.</li>
  <li>When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}

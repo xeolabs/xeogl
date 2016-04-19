@@ -19,59 +19,60 @@
  The Entities share the same {{#crossLink "BoxGeometry"}}{{/crossLink}}.<br>
 
  ````javascript
-var quaternion = new XEO.Quaternion({
+ var quaternion = new XEO.Quaternion({
     xyzw: [0, 0, 0, 1], // Unit quaternion
 });
 
-var translate1 = new XEO.Translate({
+ var translate1 = new XEO.Translate({
    parent: quaternion,
    xyz: [-5, 0, 0] // Translate along -X axis
 });
 
-var translate2 = new XEO.Translate({
+ var translate2 = new XEO.Translate({
    parent: quaternion,
    xyz: [5, 0, 0] // Translate along +X axis
 });
 
-var scale = new XEO.Scale({
+ var scale = new XEO.Scale({
    parent: translate2,
    xyz: [1, 2, 1] // Scale x2 on Y axis
 });
 
-var geometry = new XEO.BoxGeometry();
+ var geometry = new XEO.BoxGeometry();
 
-var entity1 = new XEO.Entity(scene, {
+ var entity1 = new XEO.Entity(scene, {
    transform: translate1,
    geometry: geometry
 });
 
-var entity2 = new XEO.Entity({
+ var entity2 = new XEO.Entity({
    transform: scale,
    geometry: geometry
 });
  ````
 
-Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
+ Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
 
-Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "Entity"}}{{/crossLink}}:
+ Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "Entity"}}{{/crossLink}}:
 
-````javascript
-var scale2 = new XEO.Scale({
+ ````javascript
+ var scale2 = new XEO.Scale({
    parent: translate1,
    xyz: [1, 1, 2] // Scale x2 on Z axis
 });
 
-Entity2.transform = scale2;
+ Entity2.transform = scale2;
  ````
 
-And just for fun, we'll start spinning the Quaternion:
+ Let's spin the Quaternion:
 
-````javascript
-// Rotate 0.2 degrees about Y-axis on each frame
-scene.on("tick", function(e) {
-    quaternion.rotate([0, 1, 0, 0.2]);
-});
-````
+ ````javascript
+ // Rotate 0.2 degrees about Y-axis on each frame
+ scene.on("tick",
+ function(e) {
+        quaternion.rotate([0, 1, 0, 0.2]);
+    });
+ ````
  @class Quaternion
  @module XEO
  @submodule transforms
@@ -92,15 +93,20 @@ scene.on("tick", function(e) {
         type: "XEO.Quaternion",
 
         _init: function (cfg) {
+
             this._super(cfg);
+
             this.xyzw = cfg.xyzw;
         },
 
         _props: {
 
             /**
-             The quaternion elements
+
+             The quaternion elements.
+
              Fires an {{#crossLink "Quaternion/xyzw:event"}}{{/crossLink}} event on change.
+
              @property xyzw
              @default [0,0,0,1]
              @type {Array of Number}
@@ -108,8 +114,12 @@ scene.on("tick", function(e) {
             xyzw: {
 
                 set: function (value) {
-                    this._xyzw = value || [0, 0, 0, 1];
-//                this.matrix = XEO.math.scalingMat4v(this._xyzw);
+
+                    var math = XEO.math;
+
+                    this._xyzw = value || math.identityQuaternion();
+
+                    this.matrix = math.quaternionToMat4(this._xyzw, math.mat4());
 
                     /**
                      Fired whenever this Quaternion's {{#crossLink "Quaternion/xyzw:property"}}{{/crossLink}} property changes.
@@ -121,7 +131,7 @@ scene.on("tick", function(e) {
                 },
 
                 get: function () {
-                    return this._xyz;
+                    return this._xyzw;
                 }
             }
         },
@@ -130,15 +140,33 @@ scene.on("tick", function(e) {
          Rotates this Quaternion.
          Fires an {{#crossLink "Quaternion/xyzw:event"}}{{/crossLink}} event to notify of update to the Quaternion elements.
          @method rotate
-         @param {Array of Number} angleAxis Rotation in angle-axis form.
+         @param {Float32Array} angleAxis Rotation in angle-axis form.
          */
-        rotate: function (angleAxis) {
-            // TODO
-        },
+        rotate: (function () {
+
+            var math = XEO.math;
+            var tempAngleAxis = math.vec4();
+            var tempQuat = math.vec4();
+            var tempMat = math.mat4();
+
+            return function (angleAxis) {
+
+                // TODO: Make API work in radians so we don't have to do this?:
+
+                tempAngleAxis[0] = angleAxis[0];
+                tempAngleAxis[1] = angleAxis[1];
+                tempAngleAxis[2] = angleAxis[2];
+                tempAngleAxis[3] = angleAxis[3] * math.DEGTORAD;
+
+                math.angleAxisToQuaternion(tempAngleAxis, tempQuat);
+
+                this.xyzw = math.mulQuaternions(this._xyzw, tempQuat,  this._xyzw);
+            };
+        })(),
 
         _getJSON: function () {
             return {
-                xyzw: this.xyzw
+                xyzw: this._xyzw
             };
         }
     });
