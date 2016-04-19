@@ -68,8 +68,8 @@
          * @static
          * @returns {Float32Array}
          */
-        vec2: function () {
-            return new Float32Array(2);
+        vec2: function (values) {
+            return new Float32Array(values || 2);
         },
 
         /**
@@ -78,8 +78,8 @@
          * @static
          * @returns {Float32Array}
          */
-        vec3: function () {
-            return new Float32Array(3);
+        vec3: function (values) {
+            return new Float32Array(values || 3);
         },
 
         /**
@@ -88,8 +88,8 @@
          * @static
          * @returns {Float32Array}
          */
-        vec4: function () {
-            return new Float32Array(4);
+        vec4: function (values) {
+            return new Float32Array(values || 4);
         },
 
         /**
@@ -98,8 +98,8 @@
          * @static
          * @returns {Float32Array}
          */
-        mat3: function () {
-            return new Float32Array(9);
+        mat3: function (values) {
+            return new Float32Array(values || 9);
         },
 
         /**
@@ -108,8 +108,8 @@
          * @static
          * @returns {Float32Array}
          */
-        mat4: function () {
-            return new Float32Array(16);
+        mat4: function (values) {
+            return new Float32Array(values || 16);
         },
 
         /**
@@ -167,6 +167,18 @@
                 return uuid.join('');
             };
         }(),
+
+        /**
+         * Clamps a value to the given range.
+         * @param {Number} value Value to clamp.
+         * @param {Number} min Lower bound.
+         * @param {Number} max Upper bound.
+         * @returns {Number} Clamped result.
+         */
+        clamp: function (value, min, max) {
+            return Math.max(min, Math.min(max, value));
+
+        },
 
         /**
          * Floating-point modulus
@@ -1383,6 +1395,103 @@
          */
         scalingMat4s: function (s) {
             return XEO.math.scalingMat4c(s, s, s);
+        },
+
+        /**
+         * Gets Euler angles from a 4x4 matrix.
+         *
+         * @param {Float32Array} mat The 4x4 matrix.
+         * @param {String} order Desired Euler angle order: "XYZ", "YXZ", "ZXY" etc.
+         * @param {Float32Array} [dest] Destination Euler angles, created by default.
+         * @returns {Float32Array} The Euler angles.
+         */
+        mat4ToEuler: function (mat, order, dest) {
+
+            dest = dest || XEO.math.vec4();
+
+            var clamp = XEO.math.clamp;
+
+            // Assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
+
+            var m11 = mat[0], m12 = mat[4], m13 = mat[8];
+            var m21 = mat[1], m22 = mat[5], m23 = mat[9];
+            var m31 = mat[2], m32 = mat[6], m33 = mat[10];
+
+            if (order === 'XYZ') {
+
+                dest[1] = Math.asin(clamp(m13, -1, 1));
+
+                if (Math.abs(m13) < 0.99999) {
+                    dest[0] = Math.atan2(-m23, m33);
+                    dest[2] = Math.atan2(-m12, m11);
+                } else {
+                    dest[0] = Math.atan2(m32, m22);
+                    dest[2] = 0;
+
+                }
+
+            } else if (order === 'YXZ') {
+
+                dest[0] = Math.asin(-clamp(m23, -1, 1));
+
+                if (Math.abs(m23) < 0.99999) {
+                    dest[1] = Math.atan2(m13, m33);
+                    dest[2] = Math.atan2(m21, m22);
+                } else {
+                    dest[1] = Math.atan2(-m31, m11);
+                    dest[2] = 0;
+                }
+
+            } else if (order === 'ZXY') {
+
+                dest[0] = Math.asin(clamp(m32, -1, 1));
+
+                if (Math.abs(m32) < 0.99999) {
+                    dest[1] = Math.atan2(-m31, m33);
+                    dest[2] = Math.atan2(-m12, m22);
+                } else {
+                    dest[1] = 0;
+                    dest[2] = Math.atan2(m21, m11);
+                }
+
+            } else if (order === 'ZYX') {
+
+                dest[1] = Math.asin(-clamp(m31, -1, 1));
+
+                if (Math.abs(m31) < 0.99999) {
+                    dest[0] = Math.atan2(m32, m33);
+                    dest[2] = Math.atan2(m21, m11);
+                } else {
+                    dest[0] = 0;
+                    dest[2] = Math.atan2(-m12, m22);
+                }
+
+            } else if (order === 'YZX') {
+
+                dest[2] = Math.asin(clamp(m21, -1, 1));
+
+                if (Math.abs(m21) < 0.99999) {
+                    dest[0] = Math.atan2(-m23, m22);
+                    dest[1] = Math.atan2(-m31, m11);
+                } else {
+                    dest[0] = 0;
+                    dest[1] = Math.atan2(m13, m33);
+                }
+
+            } else if (order === 'XZY') {
+
+                dest[2] = Math.asin(-clamp(m12, -1, 1));
+
+                if (Math.abs(m12) < 0.99999) {
+                    dest[0] = Math.atan2(m32, m22);
+                    dest[1] = Math.atan2(m13, m11);
+                } else {
+                    dest[0] = Math.atan2(-m23, m33);
+                    dest[1] = 0;
+                }
+            }
+
+            return dest;
         },
 
         /**
@@ -2829,6 +2938,67 @@
             return dest;
         },
 
+        mat4ToQuaternion: function (m, dest) {
+
+            dest = dest || XEO.math.vec4();
+
+            // http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
+
+            // Assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
+
+            var m11 = m[0];
+            var m12 = m[4];
+            var m13 = m[8];
+            var m21 = m[1];
+            var m22 = m[5];
+            var m23 = m[9];
+            var m31 = m[2];
+            var m32 = m[6];
+            var m33 = m[10];
+            var s;
+
+            var trace = m11 + m22 + m33;
+
+            if (trace > 0) {
+
+                s = 0.5 / Math.sqrt(trace + 1.0 );
+
+                dest[3] = 0.25 / s;
+                dest[0] = ( m32 - m23 ) * s;
+                dest[1] = ( m13 - m31 ) * s;
+                dest[2] = ( m21 - m12 ) * s;
+
+            } else if ( m11 > m22 && m11 > m33 ) {
+
+                s = 2.0 * Math.sqrt( 1.0 + m11 - m22 - m33 );
+
+                dest[3] = ( m32 - m23 ) / s;
+                dest[0] = 0.25 * s;
+                dest[1] = ( m12 + m21 ) / s;
+                dest[2] = ( m13 + m31 ) / s;
+
+            } else if ( m22 > m33 ) {
+
+                s = 2.0 * Math.sqrt( 1.0 + m22 - m11 - m33 );
+
+                dest[3] = ( m13 - m31 ) / s;
+                dest[0] = ( m12 + m21 ) / s;
+                dest[1] = 0.25 * s;
+                dest[2] = ( m23 + m32 ) / s;
+
+            } else {
+
+                s = 2.0 * Math.sqrt( 1.0 + m33 - m11 - m22 );
+
+                dest[3] = ( m21 - m12 ) / s;
+                dest[0] = ( m13 + m31 ) / s;
+                dest[1] = ( m23 + m32 ) / s;
+                dest[2] = 0.25 * s;
+            }
+
+            return dest;
+        },
+
         vec3PairToQuaternion: function (u, v, dest) {
 
             dest = dest || XEO.math.vec4();
@@ -2869,14 +3039,25 @@
             return math.normalizeQuaternion(dest);
         },
 
-        angleAxisToQuaternion: function (x, y, z, angleRad, dest) {
+        angleAxisToQuaternion: function (angleAxis, dest) {
             dest = dest || XEO.math.vec4();
-            var halfAngle = angleRad / 2.0;
+            var halfAngle = angleAxis[3] / 2.0;
             var fsin = Math.sin(halfAngle);
-            dest[0] = fsin * x;
-            dest[1] = fsin * y;
-            dest[2] = fsin * z;
-            dest[4] = Math.cos(halfAngle);
+            dest[0] = fsin * angleAxis[0];
+            dest[1] = fsin * angleAxis[1];
+            dest[2] = fsin * angleAxis[2];
+            dest[3] = Math.cos(halfAngle);
+            return dest;
+        },
+
+        quaternionToEuler: function (euler, order, dest) {
+            dest = dest || XEO.math.vec4();
+            var halfAngle = euler[3] / 2.0;
+            var fsin = Math.sin(halfAngle);
+            dest[0] = fsin * euler[0];
+            dest[1] = fsin * euler[1];
+            dest[2] = fsin * euler[2];
+            dest[3] = Math.cos(halfAngle);
             return dest;
         },
 
@@ -2888,6 +3069,35 @@
             dest[1] = p3 * q1 + p1 * q3 + p2 * q0 - p0 * q2;
             dest[2] = p3 * q2 + p2 * q3 + p0 * q1 - p1 * q0;
             dest[3] = p3 * q3 - p0 * q0 - p1 * q1 - p2 * q2;
+            return dest;
+        },
+
+        vec3ApplyQuaternion: function (q, vec, dest) {
+
+            dest = dest || XEO.math.vec3();
+
+            var x = vec[0];
+            var y = vec[1];
+            var z = vec[2];
+
+            var qx = q[0];
+            var qy = q[1];
+            var qz = q[2];
+            var qw = q[3];
+
+            // calculate quat * vector
+
+            var ix = qw * x + qy * z - qz * y;
+            var iy = qw * y + qz * x - qx * z;
+            var iz = qw * z + qx * y - qy * x;
+            var iw = -qx * x - qy * y - qz * z;
+
+            // calculate result * inverse quat
+
+            dest[0] = ix * qw + iw * -qx + iy * -qz - iz * -qy;
+            dest[1] = iy * qw + iw * -qy + iz * -qx - ix * -qz;
+            dest[2] = iz * qw + iw * -qz + ix * -qy - iy * -qx;
+
             return dest;
         },
 
@@ -2948,6 +3158,10 @@
             dest[2] = -q[2];
             dest[3] = q[3];
             return dest;
+        },
+
+        inverseQuaternion: function (q, dest) {
+            return XEO.math.normalizeQuaternion(XEO.math.conjugateQuaternion(q, dest));
         },
 
         quaternionToAngleAxis: function (q, angleAxis) {

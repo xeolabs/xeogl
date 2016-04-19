@@ -98,85 +98,129 @@
             var quaternion = math.identityQuaternion();
             var orientQuaternion = math.identityQuaternion();
             var alignQuaternion = math.identityQuaternion();
+            var alignedQuaternion = math.identityQuaternion();
             var orientMatrix = math.mat4();
+
+            var autoAlign = true;
+
+            var zed = math.vec3([0, 0, -1]);
+            var zero = math.vec3([0, 0, 0]);
+            var inverseQuat = math.vec4();
+            var vec = math.vec3();
+            var lookatMat = math.mat4();
+            var quat = math.vec4();
+            var euler2 = math.vec3();
 
             var self = this;
 
             // ---------- TESTING -----------------------------------
-            //var alpha = 0;
-            //var beta = 0;
-            //var gamma = 0;
-            //
-            //this.scene.on("tick", function () {
-            //    self.scene.input.fire("deviceorientation", {
-            //        alpha: alpha += 0.1,
-            //        beta: beta += 0.1,
-            //        gamma: gamma += 0.0
-            //    });
-            //});
+
+            var debug = false;
+
+            if (debug) {
+
+                var alpha = 0;
+                var beta = 90;
+                var gamma = 0;
+
+                window.alphaInc = 0;
+                window.betaInc = 0;
+                window.gammaInc = 0;
+
+                this.scene.on("tick", function () {
+                    self.scene.input.fire("deviceorientation", {
+                        alpha: alpha += window.alphaInc, // Z
+                        beta: beta += window.betaInc, // X
+                        gamma: gamma += window.gammaInc // Y
+                    });
+                });
+            }
+
             // ------------------------------------------------------
 
             self.on("active",
                 function (active) {
+
                     if (active) {
 
-                        onOrientationChange = input.on("orientationchange",
-                            function (e) {
-
-                                orientation = e.orientation;
-                                orientationAngle = e.orientationAngle;
-                            });
-
-                        onDeviceOrientation = input.on("deviceorientation",
-                            function (e) {
-
-                                var lookat = self.camera.view;
-
-                                var alpha = e.alpha ? math.DEGTORAD * e.alpha : 0; // Z
-                                var beta = e.beta ? math.DEGTORAD * e.beta : 0; // X'
-                                var gamma = e.gamma ? math.DEGTORAD * e.gamma : 0; // Y'
-                                var orient = orientationAngle ? math.DEGTORAD * orientationAngle : 0;
-
-                                euler[0] = beta;
-                                euler[1] = alpha;
-                                euler[2] = -gamma;
-
-                                math.eulerToQuaternion(euler, "ZXY", quaternion);
-                                math.mulQuaternions(quaternion, reflectQuaternion, quaternion);
-                                math.angleAxisToQuaternion(0, 0, 1, orient, orientQuaternion);
-                                math.mulQuaternions(quaternion, orientQuaternion, quaternion);
-                                math.mulQuaternions(alignQuaternion, quaternion, quaternion);
-                                math.quaternionToMat4(quaternion, orientMatrix);
-
-                                // Rotate Camera look about eye using the matrix
-
-                                // Look
-
-                                tempVec3a[0] = 0;
-                                tempVec3a[1] = 0;
-                                tempVec3a[2] = -Math.abs(math.lenVec3(math.subVec3(lookat.look, lookat.eye, tempVec3b)));
-
-                                lookat.look = math.addVec3(math.transformVec3(orientMatrix, tempVec3a, tempVec3a), lookat.eye);
-
-                                // Up
-
-                                tempVec3a[0] = 0;
-                                tempVec3a[1] = 1;
-                                tempVec3a[2] = 0;
-
-                                lookat.up = math.transformVec3(orientMatrix, tempVec3a, tempVec3a);
-                                
-                                if (self.autoForward) {
-                                    
-                                }
-                            });
+                        onOrientationChange = input.on("orientationchange", orientationChange);
+                        onDeviceOrientation = input.on("deviceorientation", deviceOrientation);
 
                     } else {
-
                         input.off(onOrientationChange);
                         input.off(onDeviceOrientation);
                     }
                 });
+
+            function orientationChange(e) {
+                orientation = e.orientation;
+                orientationAngle = e.orientationAngle;
+            }
+
+            function deviceOrientation(e) {
+
+                var lookat = self.camera.view;
+
+                var alpha = e.alpha ? math.DEGTORAD * e.alpha : 0; // Z
+                var beta = e.beta ? math.DEGTORAD * e.beta : 0; // X'
+                var gamma = e.gamma ? math.DEGTORAD * e.gamma : 0; // Y'
+                var orient = orientationAngle ? math.DEGTORAD * orientationAngle : 0;
+
+                euler[0] = beta;
+                euler[1] = alpha;
+                euler[2] = -gamma;
+
+                math.eulerToQuaternion(euler, "YXZ", quaternion);
+                math.mulQuaternions(quaternion, reflectQuaternion, quaternion); // Camera looks out the back of the device, not the top
+                math.angleAxisToQuaternion([0, 0, 1, -orient], orientQuaternion); // Adjust for screen orientation
+                math.mulQuaternions(quaternion, orientQuaternion, quaternion);
+                math.mulQuaternions(alignQuaternion, quaternion, alignedQuaternion);
+                math.quaternionToMat4(alignedQuaternion, orientMatrix);
+
+                // Rotate Camera look about eye using the matrix
+
+                // Look
+
+                tempVec3a[0] = 0;
+                tempVec3a[1] = 0;
+                tempVec3a[2] = -Math.abs(math.lenVec3(math.subVec3(lookat.look, lookat.eye, tempVec3b)));
+
+                lookat.look = math.addVec3(math.transformVec3(orientMatrix, tempVec3a, tempVec3a), lookat.eye);
+
+                // Up
+
+                tempVec3a[0] = 0;
+                tempVec3a[1] = 1;
+                tempVec3a[2] = 0;
+
+                lookat.up = math.transformVec3(orientMatrix, tempVec3a, tempVec3a);
+
+                if (self.autoForward) {
+
+                }
+
+                if (autoAlign) {
+               //     autoAlign = false;
+                    align();
+                }
+            }
+
+            function align() {
+
+                var math = XEO.math;
+
+                math.inverseQuaternion(quaternion, inverseQuat);
+                math.vec3ApplyQuaternion(inverseQuat, zed, vec);
+                math.lookAtMat4v(vec, zero, self.camera.view.up, lookatMat);
+                math.mat4ToQuaternion(lookatMat, quat);
+                math.quaternionToEuler(quat, "YXZ", euler2);
+
+                euler2[0] = 0;
+                euler2[2] = 0;
+
+                math.eulerToQuaternion(euler2, alignQuaternion);
+            }
+
         }
     });
 })();
