@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeoengine.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <style>
+        body {
+            background-color: #AAA;
+            padding: 5px;
+            margin: 0;
+        }
+
+        canvas {
+            display: inline-block;
+            margin: 5px;
+            background-color: #333;
+            box-shadow: 2px 2px 2px black;
+        }
+
+        #snapshotImage {
+            display: inline-block;
+            margin: 5px;
+            background-color: #333;
+            box-shadow: 2px 2px 2px black;
+        }
+    </style>
+
+</head>
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>taking a snapshot of a <a
+        href="../docs/classes/Canvas.html"
+        target="_docs">XEO.Canvas</a> once per second
+    <br><br>
+</div>
+
+<!-- Scene canvas -->
+<canvas id="myCanvas" width="500px" height="500px"></canvas>
+
+<!-- Snapshot image -->
+<img id="snapshotImage" src="" width="500px" height="500px"/>
+
+<!-- Arrow image -->
+<img src="images/arrow.png" style="position:absolute; left: 490px; top: 200px; background: rgba(0,0,0,0);"/>
+
+<script>
+
+    // Not using the default Scene, so that we can
+    // bind our Scene to our custom canvas
+    var scene = new XEO.Scene({
+        canvas: "myCanvas"
+    });
+
+    // Torus entity
+    new XEO.Entity(scene, {
+        geometry: new XEO.TorusGeometry(scene, {
+            radius: 1.0,
+            tube: 0.3,
+            radialSegments: 32,
+            tubeSegments: 24,
+            arc: Math.PI * 2.0
+        }),
+        material: new XEO.PhongMaterial(scene, {
+            ambient: [0.9, 0.3, 0.9],
+            shininess: 30,
+            diffuseMap: new XEO.Texture(scene, {
+                src: "textures/diffuse/uvGrid2.jpg"
+            })
+        })
+    });
+
+    // Set initial camera position
+    scene.camera.view.eye = [0, 0, -4];
+
+    // Orbit the camera
+    scene.on("tick",
+            function () {
+
+                var view = scene.camera.view;
+
+                view.rotateEyeY(0.6);
+                view.rotateEyeX(0.3);
+            });
+
+    // Allow user interaction
+    new XEO.CameraControl(scene);
+
+    // Every second, grab a snapshot of the canvas on the right
+    // and show it in the image element on the left
+
+    var snapshotImage = document.getElementById("snapshotImage");
+
+    window.setInterval( // I know, yucky, but fine for demos.
+            function () {
+                snapshotImage.src = scene.canvas.getSnapshot({
+                    width: 500, // Defaults to size of canvas
+                    height: 500,
+                    format: "png" // Options are "jpeg" (default), "png" and "bmp"
+                });
+            }, 1000);
+
+</script>
+</body>
+</html>

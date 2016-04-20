@@ -1,6 +1,7 @@
 {
   "engine": [
     "src/xeo.js",
+    "src/libs/canvas2image.js",
     "src/_utils/inheritance.js",
     "src/_utils/map.js",
     "src/_renderer/renderer.js",

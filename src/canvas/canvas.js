@@ -440,6 +440,64 @@
             }
         },
 
+        /**
+         Returns a snapshot of this Canvas as a Base64-encoded image.
+
+         #### Usage:
+         ````javascript
+         imageElement.src = myScene.canvas.getSnapshot({
+             width: 500, // Defaults to size of canvas
+             height: 500,
+             format: "png" // Options are "jpeg" (default), "png" and "bmp"
+         });
+         ````
+
+         @method getSnapshot
+         @param {*} [params] Capture options.
+         @param {Number} [params.width] Desired width of result in pixels - defaults to width of canvas.
+         @param {Number} [params.height] Desired height of result in pixels - defaults to height of canvas.
+         @param {String} [params.format="jpeg"] Desired format; "jpeg", "png" or "bmp".
+         @returns {String} String-encoded image data.
+         */
+        getSnapshot: function (params) {
+
+            if (!this.canvas) {
+                this.error("Can't get snapshot - no canvas.");
+                return;
+            }
+
+            // Force-render a frame
+            this.scene.render();
+
+            params = params || {};
+
+            var width = params.width || this.canvas.width;
+            var height = params.height || this.canvas.height;
+            var format = params.format || "jpeg";
+            var image;
+
+            switch (format) {
+                case "jpeg":
+                    image = Canvas2Image.saveAsJPEG(this.canvas, true, width, height);
+                    break;
+
+                case "png":
+                    image = Canvas2Image.saveAsPNG(this.canvas, true, width, height);
+                    break;
+
+                case "bmp":
+                    image = Canvas2Image.saveAsBMP(this.canvas, true, width, height);
+                    break;
+
+                default:
+                    this.error("Unsupported snapshot format: '" + format
+                        + "' - supported types are 'jpeg', 'bmp' and 'png' - defaulting to 'jpeg'");
+                    image = Canvas2Image.saveAsJPEG(this.canvas, true, width, height);
+            }
+
+            return image.src;
+        },
+
         _props: {
 
             /**

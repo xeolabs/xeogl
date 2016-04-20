@@ -171,11 +171,6 @@
                 deltaTime: null
             };
 
-            var renderEvent = {
-                sceneId: null,
-                pass: null
-            };
-
             // Hoisted vars
 
             var taskBudget = 8; // How long we're allowed to spend on tasks in each frame
@@ -261,46 +256,10 @@
             }
 
             function render() {
-
-                var scene;
-                var passes;
-                var i;
-                var clear;
-
-                for (id in self.scenes) {
-                    if (self.scenes.hasOwnProperty(id)) {
-
-                        scene = self.scenes[id];
-                        passes = scene.passes;
-
-                        renderEvent.sceneId = id;
-
-                        for (i = 0; i < passes; i++) {
-
-                            renderEvent.pass = i;
-
-                            /**
-                             * Fired when about to render a frame for a Scene.
-                             *
-                             * @event rendering
-                             * @param {String} sceneID The ID of this Scene.
-                             * @param {Number} pass Index of the pass we are about to render (see {{#crossLink "Scene/passes:property"}}{{/crossLink}}).
-                             */
-                            scene.fire("rendering", renderEvent, true);
-
-                            clear = (i === 0);
-
-                            scene._compile(clear); // Render, maybe rebuild draw list first
-
-                            /**
-                             * Fired when we have just rendered a frame for a Scene.
-                             *
-                             * @event rendering
-                             * @param {String} sceneID The ID of this Scene.
-                             * @param {Number} pass Index of the pass we rendered (see {{#crossLink "Scene/passes:property"}}{{/crossLink}}).
-                             */
-                            scene.fire("rendered", renderEvent, true);
-                        }
+                var scenes = self.scenes;
+                for (id in scenes) {
+                    if (scenes.hasOwnProperty(id)) {
+                        scenes[id].render();
                     }
                 }
             }
