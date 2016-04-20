@@ -1078,7 +1078,9 @@
         "src/component.js": {
             "name": "src/component.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "Component": 1
+            },
             "fors": {},
             "namespaces": {}
         },
@@ -1087,15 +1089,6 @@
             "modules": {},
             "classes": {
                 "Scene": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/sceneComponent.js": {
-            "name": "src/sceneComponent.js",
-            "modules": {},
-            "classes": {
-                "Component": 1
             },
             "fors": {},
             "namespaces": {}
@@ -6224,7 +6217,7 @@
             "namespace": "",
             "file": "src/transforms/quaternion.js",
             "line": 1,
-            "description": "A **Quaternion** applies a rotation transformation to associated {{#crossLink \"Entity\"}}Entities{{/crossLink}} or {{#crossLink \"Model\"}}Models{{/crossLink}}.\n\n<ul>\n<li>Quaternion is a sub-class of {{#crossLink \"Transform\"}}{{/crossLink}}.</li>\n<li>Instances of {{#crossLink \"Transform\"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.</li>\n<li>When an {{#crossLink \"Entity\"}}{{/crossLink}} or {{#crossLink \"Model\"}}{{/crossLink}} is connected to a\nleaf {{#crossLink \"Transform\"}}{{/crossLink}} within a {{#crossLink \"Transform\"}}{{/crossLink}} hierarchy, it will be\ntransformed by each {{#crossLink \"Transform\"}}{{/crossLink}} on the path up to the root, in that order.</li>\n<li>See <a href=\"./Shader.html#inputs\">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Quaternion.png\"></img>\n\n## Usage\n\nIn this example we have two {{#crossLink \"Entity\"}}Entities{{/crossLink}} that are transformed by a hierarchy that contains\nQuaternion, {{#crossLink \"Translate\"}}{{/crossLink}} and {{#crossLink \"Scale\"}}{{/crossLink}} transforms.\nThe Entities share the same {{#crossLink \"BoxGeometry\"}}{{/crossLink}}.<br>\n\n````javascript\nvar quaternion = new XEO.Quaternion({\n   xyzw: [0, 0, 0, 1], // Unit quaternion\n});\n\nvar translate1 = new XEO.Translate({\n  parent: quaternion,\n  xyz: [-5, 0, 0] // Translate along -X axis\n});\n\nvar translate2 = new XEO.Translate({\n  parent: quaternion,\n  xyz: [5, 0, 0] // Translate along +X axis\n});\n\nvar scale = new XEO.Scale({\n  parent: translate2,\n  xyz: [1, 2, 1] // Scale x2 on Y axis\n});\n\nvar geometry = new XEO.BoxGeometry();\n\nvar entity1 = new XEO.Entity(scene, {\n  transform: translate1,\n  geometry: geometry\n});\n\nvar entity2 = new XEO.Entity({\n  transform: scale,\n  geometry: geometry\n});\n````\n\nSince everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.\n\nLet's insert a {{#crossLink \"Scale\"}}{{/crossLink}} between the first Translate and the first {{#crossLink \"Entity\"}}{{/crossLink}}:\n\n````javascript\nvar scale2 = new XEO.Scale({\n  parent: translate1,\n  xyz: [1, 1, 2] // Scale x2 on Z axis\n});\n\nEntity2.transform = scale2;\n````\n\nAnd just for fun, we'll start spinning the Quaternion:\n\n````javascript\n// Rotate 0.2 degrees about Y-axis on each frame\nscene.on(\"tick\", function(e) {\n   quaternion.rotate([0, 1, 0, 0.2]);\n});\n````",
+            "description": "A **Quaternion** applies a rotation transformation to associated {{#crossLink \"Entity\"}}Entities{{/crossLink}} or {{#crossLink \"Model\"}}Models{{/crossLink}}.\n\n<ul>\n<li>Quaternion is a sub-class of {{#crossLink \"Transform\"}}{{/crossLink}}.</li>\n<li>Instances of {{#crossLink \"Transform\"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.</li>\n<li>When an {{#crossLink \"Entity\"}}{{/crossLink}} or {{#crossLink \"Model\"}}{{/crossLink}} is connected to a\nleaf {{#crossLink \"Transform\"}}{{/crossLink}} within a {{#crossLink \"Transform\"}}{{/crossLink}} hierarchy, it will be\ntransformed by each {{#crossLink \"Transform\"}}{{/crossLink}} on the path up to the root, in that order.</li>\n<li>See <a href=\"./Shader.html#inputs\">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Quaternion.png\"></img>\n\n## Usage\n\nIn this example we have two {{#crossLink \"Entity\"}}Entities{{/crossLink}} that are transformed by a hierarchy that contains\nQuaternion, {{#crossLink \"Translate\"}}{{/crossLink}} and {{#crossLink \"Scale\"}}{{/crossLink}} transforms.\nThe Entities share the same {{#crossLink \"BoxGeometry\"}}{{/crossLink}}.<br>\n\n````javascript\nvar quaternion = new XEO.Quaternion({\n   xyzw: [0, 0, 0, 1], // Unit quaternion\n});\n\nvar translate1 = new XEO.Translate({\n  parent: quaternion,\n  xyz: [-5, 0, 0] // Translate along -X axis\n});\n\nvar translate2 = new XEO.Translate({\n  parent: quaternion,\n  xyz: [5, 0, 0] // Translate along +X axis\n});\n\nvar scale = new XEO.Scale({\n  parent: translate2,\n  xyz: [1, 2, 1] // Scale x2 on Y axis\n});\n\nvar geometry = new XEO.BoxGeometry();\n\nvar entity1 = new XEO.Entity(scene, {\n  transform: translate1,\n  geometry: geometry\n});\n\nvar entity2 = new XEO.Entity({\n  transform: scale,\n  geometry: geometry\n});\n````\n\nSince everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.\n\nLet's insert a {{#crossLink \"Scale\"}}{{/crossLink}} between the first Translate and the first {{#crossLink \"Entity\"}}{{/crossLink}}:\n\n````javascript\nvar scale2 = new XEO.Scale({\n  parent: translate1,\n  xyz: [1, 1, 2] // Scale x2 on Z axis\n});\n\nEntity2.transform = scale2;\n````\n\nLet's spin the Quaternion:\n\n````javascript\n// Rotate 0.2 degrees about Y-axis on each frame\nscene.on(\"tick\",\nfunction(e) {\n       quaternion.rotate([0, 1, 0, 0.2]);\n   });\n````",
             "submodule": "transforms",
             "is_constructor": 1,
             "params": [
@@ -6360,7 +6353,7 @@
             "namespace": "",
             "file": "src/transforms/transform.js",
             "line": 1,
-            "description": "A **Transform** defines a modelling matrix to transform attached {{#crossLink \"Entity\"}}Entities{{/crossLink}} or {{#crossLink \"Model\"}}Models{{/crossLink}}.\n\n<ul>\n<li>Sub-classes of Transform are: {{#crossLink \"Translate\"}}{{/crossLink}},\n{{#crossLink \"Scale\"}}{{/crossLink}}, {{#crossLink \"Rotate\"}}{{/crossLink}}, and {{#crossLink \"Quaternion\"}}{{/crossLink}}</li>\n<li>Instances of {{#crossLink \"Transform\"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.</li>\n<li>When an {{#crossLink \"Entity\"}}{{/crossLink}} or {{#crossLink \"Model\"}}{{/crossLink}} is connected to a leaf {{#crossLink \"Transform\"}}{{/crossLink}}\nwithin a {{#crossLink \"Transform\"}}{{/crossLink}} hierarchy, it will be transformed by each {{#crossLink \"Transform\"}}{{/crossLink}}\non the path up to the root, in that order.</li>\n<li>See <a href=\"./Shader.html#inputs\">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Transform.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Transform hierarchy](../../examples/#transforms_hierarchy)</li>\n<li>[Attaching transforms to Models, via constructor](../../examples/#importing_gltf_techniques_configTransform)</li>\n<li>[Attaching transforms to Models, via property](../../examples/#importing_gltf_techniques_attachTransform)</li>\n</ul>\n\n## Usage\n\nIn this example we'll create the table shown below, which consists of five {{#crossLink \"Entity\"}}Entities{{/crossLink}}\nthat share a {{#crossLink \"BoxGeometry\"}}{{/crossLink}} and each connect to a different leaf within a hierarchy of\n{{#crossLink \"Translate\"}}{{/crossLink}}, {{#crossLink \"Rotate\"}}{{/crossLink}} and {{#crossLink \"Scale\"}}{{/crossLink}}\ncomponents. Each {{#crossLink \"Entity\"}}{{/crossLink}} also has its own {{#crossLink \"PhongMaterial\"}}{{/crossLink}} to\ngive it a distinct color.\n\n<img src=\"../../../assets/images/transformHierarchy.png\"></img>\n\n````javascript\n// Shared Geometry\nvar boxGeometry = new XEO.BoxGeometry();\n\n// Position of entire table\nvar tablePos = new XEO.Translate({\n   xyz: [0, 6, 0]\n});\n\n// Orientation of entire table\nvar tableRotate = new XEO.Rotate({\n   xyz: [1, 1, 1],\n   angle: 0,\n   parent: tablePos\n});\n\n// Red table leg\nvar tableLeg1 = new XEO.Entity({\n   geometry: boxGeometry,\n   transform: new XEO.Scale({\n       xyz: [1, 3, 1],\n       parent: new XEO.Translate({\n           xyz: [-4, -6, -4],\n           parent: tableRotate\n       })\n   }),\n   material: new XEO.PhongMaterial({\n       diffuse: [1, 0.3, 0.3]\n   })\n});\n\n// Green table leg\nvar tableLeg2 = new XEO.Entity({\n   geometry: boxGeometry,\n   transform: new XEO.Scale({\n       xyz: [1, 3, 1],\n       parent: new XEO.Translate({\n           xyz: [4, -6, -4],\n           parent: tableRotate\n       })\n   }),\n   material: new XEO.PhongMaterial({\n       diffuse: [0.3, 1.0, 0.3]\n   })\n});\n\n// Blue table leg\nvar tableLeg3 = new XEO.Entity({\n   geometry: boxGeometry,\n   transform: new XEO.Scale({\n       xyz: [1, 3, 1],\n       parent: new XEO.Translate({\n           xyz: [4, -6, 4],\n           parent: tableRotate\n       })\n   }),\n   material: new XEO.PhongMaterial({\n       diffuse: [0.3, 0.3, 1.0]\n   })\n});\n\n// Yellow table leg\nvar tableLeg4 = new XEO.Entity({\n   geometry: boxGeometry,\n   transform: new XEO.Scale({\n       xyz: [1, 3, 1],\n       parent: new XEO.Translate({\n           xyz: [-4, -6, 4],\n           parent: tableRotate\n       })\n   }),\n   material: new XEO.PhongMaterial({\n       diffuse: [1.0, 1.0, 0.0]\n   })\n});\n\n// Purple table top\nvar tableTop = new XEO.Entity({\n   geometry: boxGeometry,\n   transform: new XEO.Scale({\n       xyz: [6, 0.5, 6],\n       parent: new XEO.Translate({\n           xyz: [0, -3, 0],\n           parent: tableRotate\n       })\n   }),\n   material: new XEO.PhongMaterial({\n       diffuse: [1.0, 0.3, 1.0]\n   })\n});\n\n// Zoom camera out a bit\n// Get the Camera from one of the Entities\ntableTop.camera.view.zoom(10);\n\n// Spin the entire table\n\nvar angle = 0;\n\nscene.on(\"tick\", function () {\n   angle += 0.5;\n   tableRotate.angle = angle;\n});\n````",
+            "description": "A **Transform** defines a modelling matrix to transform attached {{#crossLink \"Entity\"}}Entities{{/crossLink}} or {{#crossLink \"Model\"}}Models{{/crossLink}}.\n\n<ul>\n<li>Sub-classes of Transform include: {{#crossLink \"Translate\"}}{{/crossLink}},\n{{#crossLink \"Scale\"}}{{/crossLink}}, {{#crossLink \"Rotate\"}}{{/crossLink}}, and {{#crossLink \"Quaternion\"}}{{/crossLink}}</li>\n<li>Instances of {{#crossLink \"Transform\"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.</li>\n<li>When an {{#crossLink \"Entity\"}}{{/crossLink}} or {{#crossLink \"Model\"}}{{/crossLink}} is connected to a leaf {{#crossLink \"Transform\"}}{{/crossLink}}\nwithin a {{#crossLink \"Transform\"}}{{/crossLink}} hierarchy, it will be transformed by each {{#crossLink \"Transform\"}}{{/crossLink}}\non the path up to the root, in that order.</li>\n<li>See <a href=\"./Shader.html#inputs\">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Transform.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Transform hierarchy](../../examples/#transforms_hierarchy)</li>\n<li>[Attaching transforms to Models, via constructor](../../examples/#importing_gltf_techniques_configTransform)</li>\n<li>[Attaching transforms to Models, via property](../../examples/#importing_gltf_techniques_attachTransform)</li>\n</ul>\n\n## Usage\n\nIn this example we'll create the table shown below, which consists of five {{#crossLink \"Entity\"}}Entities{{/crossLink}}\nthat share a {{#crossLink \"BoxGeometry\"}}{{/crossLink}} and each connect to a different leaf within a hierarchy of\n{{#crossLink \"Translate\"}}{{/crossLink}}, {{#crossLink \"Rotate\"}}{{/crossLink}} and {{#crossLink \"Scale\"}}{{/crossLink}}\ncomponents. Each {{#crossLink \"Entity\"}}{{/crossLink}} also has its own {{#crossLink \"PhongMaterial\"}}{{/crossLink}} to\ngive it a distinct color.\n\n<img src=\"../../../assets/images/transformHierarchy.png\"></img>\n\n````javascript\n// Shared Geometry\nvar boxGeometry = new XEO.BoxGeometry();\n\n// Position of entire table\nvar tablePos = new XEO.Translate({\n   xyz: [0, 6, 0]\n});\n\n// Orientation of entire table\nvar tableRotate = new XEO.Rotate({\n   xyz: [1, 1, 1],\n   angle: 0,\n   parent: tablePos\n});\n\n// Red table leg\nvar tableLeg1 = new XEO.Entity({\n   geometry: boxGeometry,\n   transform: new XEO.Scale({\n       xyz: [1, 3, 1],\n       parent: new XEO.Translate({\n           xyz: [-4, -6, -4],\n           parent: tableRotate\n       })\n   }),\n   material: new XEO.PhongMaterial({\n       diffuse: [1, 0.3, 0.3]\n   })\n});\n\n// Green table leg\nvar tableLeg2 = new XEO.Entity({\n   geometry: boxGeometry,\n   transform: new XEO.Scale({\n       xyz: [1, 3, 1],\n       parent: new XEO.Translate({\n           xyz: [4, -6, -4],\n           parent: tableRotate\n       })\n   }),\n   material: new XEO.PhongMaterial({\n       diffuse: [0.3, 1.0, 0.3]\n   })\n});\n\n// Blue table leg\nvar tableLeg3 = new XEO.Entity({\n   geometry: boxGeometry,\n   transform: new XEO.Scale({\n       xyz: [1, 3, 1],\n       parent: new XEO.Translate({\n           xyz: [4, -6, 4],\n           parent: tableRotate\n       })\n   }),\n   material: new XEO.PhongMaterial({\n       diffuse: [0.3, 0.3, 1.0]\n   })\n});\n\n// Yellow table leg\nvar tableLeg4 = new XEO.Entity({\n   geometry: boxGeometry,\n   transform: new XEO.Scale({\n       xyz: [1, 3, 1],\n       parent: new XEO.Translate({\n           xyz: [-4, -6, 4],\n           parent: tableRotate\n       })\n   }),\n   material: new XEO.PhongMaterial({\n       diffuse: [1.0, 1.0, 0.0]\n   })\n});\n\n// Purple table top\nvar tableTop = new XEO.Entity({\n   geometry: boxGeometry,\n   transform: new XEO.Scale({\n       xyz: [6, 0.5, 6],\n       parent: new XEO.Translate({\n           xyz: [0, -3, 0],\n           parent: tableRotate\n       })\n   }),\n   material: new XEO.PhongMaterial({\n       diffuse: [1.0, 0.3, 1.0]\n   })\n});\n\n// Zoom camera out a bit\n// Get the Camera from one of the Entities\ntableTop.camera.view.zoom(10);\n\n// Spin the entire table\n\nvar angle = 0;\n\nscene.on(\"tick\", function () {\n   angle += 0.5;\n   tableRotate.angle = angle;\n});\n````",
             "submodule": "transforms",
             "is_constructor": 1,
             "params": [
@@ -6468,9 +6461,9 @@
             "extension_for": [],
             "module": "XEO",
             "namespace": "",
-            "file": "src/sceneComponent.js",
+            "file": "src/component.js",
             "line": 1,
-            "description": "**SceneComponent** is the base class for all xeoEngine components.\n## Contents\n<Ul>\n <li><a href=\"#ids\">Component IDs</a></li>\n <li><a href=\"#componentProps\">Properties</a></li>\n <li><a href=\"#metadata\">Metadata</a></li>\n <li><a href=\"#logging\">Logging</a></li>\n <li><a href=\"#destruction\">Destruction</a></li>\n </ul>\n## <a name=\"ids\">Component IDs</a>\nEvery Component has an ID that's unique within the parent {{#crossLink \"Scene\"}}{{/crossLink}}. xeoEngine generates\n the IDs automatically by default, however you can also specify them yourself. In the example below, we're creating a\n scene comprised of {{#crossLink \"Scene\"}}{{/crossLink}}, {{#crossLink \"Material\"}}{{/crossLink}}, {{#crossLink \"Geometry\"}}{{/crossLink}} and\n {{#crossLink \"Entity\"}}{{/crossLink}} components, while letting xeoEngine generate its own ID for\n the {{#crossLink \"Geometry\"}}{{/crossLink}}:\n````javascript\n // The Scene is a Component too\n var scene = new XEO.Scene({\n    id: \"myScene\"\n});\nvar material = new XEO.PhongMaterial(scene, {\n    id: \"myMaterial\"\n});\nvar geometry = new XEO.Geometry(scene, {\n    id: \"myGeometry\"\n});\n// Let xeoEngine automatically generate the ID for our Entity\n var entity = new XEO.Entity(scene, {\n    material: material,\n    geometry: geometry\n});\n ````\nWe can then find those components like this:\n````javascript\n // Find the Scene\n var theScene = XEO.scenes[\"myScene\"];\n// Find the Material\n var theMaterial = theScene.components[\"myMaterial\"];\n ````\n## <a name=\"componentProps\">Properties</a>\nAlmost every property on a xeoEngine Component fires a change event when you update it. For example, we can subscribe\n to the {{#crossLink \"PhongMaterial/diffuse:event\"}}{{/crossLink}} event that a\n {{#crossLink \"Material\"}}{{/crossLink}} fires when its {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}}\n property is updated, like so:\n````javascript\n // Bind a change callback to a property\n var handle = material.on(\"diffuse\", function(diffuse) {\n    console.log(\"Material diffuse color has changed to: [\" + diffuse[0] + \", \" + diffuse[1] + \",\" + diffuse[2] + \"]\");\n});\n// Change the property value, which fires the callback\n material.diffuse = [ 0.0, 0.5, 0.5 ];\n// Unsubscribe from the property change event\n material.off(handle);\n ````\nWe can also subscribe to changes in the way components are attached to each other, since components are properties\n of other components. For example, we can subscribe to the '{{#crossLink \"Entity/material:event\"}}{{/crossLink}}' event that a\n {{#crossLink \"Entity\"}}Entity{{/crossLink}} fires when its {{#crossLink \"Entity/material:property\"}}{{/crossLink}}\n property is set to a different {{#crossLink \"Material\"}}Material{{/crossLink}}:\n```` javascript\n // Bind a change callback to the Entity's Material\n entity1.on(\"material\", function(material) {\n    console.log(\"Entity's Material has changed to: \" + material.id);\n});\n// Now replace that Material with another\n entity1.material = new XEO.PhongMaterial({\n    id: \"myOtherMaterial\",\n    diffuse: [ 0.3, 0.3, 0.6 ]\n    //..\n});\n ````\n## <a name=\"metadata\">Metadata</a>\nYou can set optional **metadata** on your Components, which can be anything you like. These are intended\n to help manage your components within your application code or content pipeline. You could use metadata to attach\n authoring or version information, like this:\n````javascript\n // Scene with authoring metadata\n var scene = new XEO.Scene({\n    id: \"myScene\",\n    meta: {\n        title: \"My awesome 3D scene\",\n        author: \"@xeolabs\",\n        date: \"February 13 2015\"\n    }\n});\n// Material with descriptive metadata\n var material = new XEO.PhongMaterial(scene, {\n    id: \"myMaterial\",\n    diffuse: [1, 0, 0],\n    meta: {\n        description: \"Bright red color with no textures\",\n        version: \"0.1\",\n        foo: \"bar\"\n    }\n});\n ````\nAs with all properties, you can subscribe and change the metadata like this:\n````javascript\n // Subscribe to changes to the Material's metadata\n material.on(\"meta\", function(value) {\n    console.log(\"Metadata changed: \" + JSON.stringify(value));\n});\n// Change the Material's metadata, firing our change handler\n material.meta = {\n    description: \"Bright red color with no textures\",\n    version: \"0.2\",\n    foo: \"baz\"\n};\n ````\n## <a name=\"logging\">Logging</a>\nComponents have methods to log ID-prefixed messages to the JavaScript console:\n````javascript\n material.log(\"Everything is fine, situation normal.\");\n material.warn(\"Wait, whats that red light?\");\n material.error(\"Aw, snap!\");\n ````\nThe logged messages will look like this in the console:\n````text\n [LOG]   myMaterial: Everything is fine, situation normal.\n [WARN]  myMaterial: Wait, whats that red light..\n [ERROR] myMaterial: Aw, snap!\n ````\n## <a name=\"destruction\">Destruction</a>\nGet notification of destruction directly on the Components:\n````javascript\n material.on(\"destroyed\", function() {\n    this.log(\"Component was destroyed: \" + this.id);\n});\n ````\nOr get notification of destruction of any Component within its {{#crossLink \"Scene\"}}{{/crossLink}}, indiscriminately:\n````javascript\n scene.on(\"componentDestroyed\", function(component) {\n    this.log(\"Component was destroyed: \" + component.id);\n});\n ````\nThen destroy a component like this:\n````javascript\n material.destroy();\n ````\nOther Components that are linked to it will fall back on a default of some sort. For example, any\n {{#crossLink \"Entity\"}}Entities{{/crossLink}} that were linked to our {{#crossLink \"Material\"}}{{/crossLink}}\n will then automatically link to the {{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/material:property\"}}{{/crossLink}}.",
+            "description": "**Component** is the base class for all xeoEngine components.\n## Contents\n<Ul>\n <li><a href=\"#ids\">Component IDs</a></li>\n <li><a href=\"#componentProps\">Properties</a></li>\n <li><a href=\"#metadata\">Metadata</a></li>\n <li><a href=\"#logging\">Logging</a></li>\n <li><a href=\"#destruction\">Destruction</a></li>\n </ul>\n## <a name=\"ids\">Component IDs</a>\nEvery Component has an ID that's unique within the parent {{#crossLink \"Scene\"}}{{/crossLink}}. xeoEngine generates\n the IDs automatically by default, however you can also specify them yourself. In the example below, we're creating a\n scene comprised of {{#crossLink \"Scene\"}}{{/crossLink}}, {{#crossLink \"Material\"}}{{/crossLink}}, {{#crossLink \"Geometry\"}}{{/crossLink}} and\n {{#crossLink \"Entity\"}}{{/crossLink}} components, while letting xeoEngine generate its own ID for\n the {{#crossLink \"Geometry\"}}{{/crossLink}}:\n````javascript\n // The Scene is a Component too\n var scene = new XEO.Scene({\n    id: \"myScene\"\n});\nvar material = new XEO.PhongMaterial(scene, {\n    id: \"myMaterial\"\n});\nvar geometry = new XEO.Geometry(scene, {\n    id: \"myGeometry\"\n});\n// Let xeoEngine automatically generate the ID for our Entity\n var entity = new XEO.Entity(scene, {\n    material: material,\n    geometry: geometry\n});\n ````\nWe can then find those components like this:\n````javascript\n // Find the Scene\n var theScene = XEO.scenes[\"myScene\"];\n// Find the Material\n var theMaterial = theScene.components[\"myMaterial\"];\n ````\n## <a name=\"componentProps\">Properties</a>\nAlmost every property on a xeoEngine Component fires a change event when you update it. For example, we can subscribe\n to the {{#crossLink \"PhongMaterial/diffuse:event\"}}{{/crossLink}} event that a\n {{#crossLink \"Material\"}}{{/crossLink}} fires when its {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}}\n property is updated, like so:\n````javascript\n // Bind a change callback to a property\n var handle = material.on(\"diffuse\", function(diffuse) {\n    console.log(\"Material diffuse color has changed to: [\" + diffuse[0] + \", \" + diffuse[1] + \",\" + diffuse[2] + \"]\");\n});\n// Change the property value, which fires the callback\n material.diffuse = [ 0.0, 0.5, 0.5 ];\n// Unsubscribe from the property change event\n material.off(handle);\n ````\nWe can also subscribe to changes in the way components are attached to each other, since components are properties\n of other components. For example, we can subscribe to the '{{#crossLink \"Entity/material:event\"}}{{/crossLink}}' event that a\n {{#crossLink \"Entity\"}}Entity{{/crossLink}} fires when its {{#crossLink \"Entity/material:property\"}}{{/crossLink}}\n property is set to a different {{#crossLink \"Material\"}}Material{{/crossLink}}:\n```` javascript\n // Bind a change callback to the Entity's Material\n entity1.on(\"material\", function(material) {\n    console.log(\"Entity's Material has changed to: \" + material.id);\n});\n// Now replace that Material with another\n entity1.material = new XEO.PhongMaterial({\n    id: \"myOtherMaterial\",\n    diffuse: [ 0.3, 0.3, 0.6 ]\n    //..\n});\n ````\n## <a name=\"metadata\">Metadata</a>\nYou can set optional **metadata** on your Components, which can be anything you like. These are intended\n to help manage your components within your application code or content pipeline. You could use metadata to attach\n authoring or version information, like this:\n````javascript\n // Scene with authoring metadata\n var scene = new XEO.Scene({\n    id: \"myScene\",\n    meta: {\n        title: \"My awesome 3D scene\",\n        author: \"@xeolabs\",\n        date: \"February 13 2015\"\n    }\n});\n// Material with descriptive metadata\n var material = new XEO.PhongMaterial(scene, {\n    id: \"myMaterial\",\n    diffuse: [1, 0, 0],\n    meta: {\n        description: \"Bright red color with no textures\",\n        version: \"0.1\",\n        foo: \"bar\"\n    }\n});\n ````\nAs with all properties, you can subscribe and change the metadata like this:\n````javascript\n // Subscribe to changes to the Material's metadata\n material.on(\"meta\", function(value) {\n    console.log(\"Metadata changed: \" + JSON.stringify(value));\n});\n// Change the Material's metadata, firing our change handler\n material.meta = {\n    description: \"Bright red color with no textures\",\n    version: \"0.2\",\n    foo: \"baz\"\n};\n ````\n## <a name=\"logging\">Logging</a>\nComponents have methods to log ID-prefixed messages to the JavaScript console:\n````javascript\n material.log(\"Everything is fine, situation normal.\");\n material.warn(\"Wait, whats that red light?\");\n material.error(\"Aw, snap!\");\n ````\nThe logged messages will look like this in the console:\n````text\n [LOG]   myMaterial: Everything is fine, situation normal.\n [WARN]  myMaterial: Wait, whats that red light..\n [ERROR] myMaterial: Aw, snap!\n ````\n## <a name=\"destruction\">Destruction</a>\nGet notification of destruction directly on the Components:\n````javascript\n material.on(\"destroyed\", function() {\n    this.log(\"Component was destroyed: \" + this.id);\n});\n ````\nOr get notification of destruction of any Component within its {{#crossLink \"Scene\"}}{{/crossLink}}, indiscriminately:\n````javascript\n scene.on(\"componentDestroyed\", function(component) {\n    this.log(\"Component was destroyed: \" + component.id);\n});\n ````\nThen destroy a component like this:\n````javascript\n material.destroy();\n ````\nOther Components that are linked to it will fall back on a default of some sort. For example, any\n {{#crossLink \"Entity\"}}Entities{{/crossLink}} that were linked to our {{#crossLink \"Material\"}}{{/crossLink}}\n will then automatically link to the {{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/material:property\"}}{{/crossLink}}.",
             "is_constructor": 1,
             "params": [
                 {
@@ -9222,7 +9215,50 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 445,
+            "line": 443,
+            "description": "Returns a snapshot of this Canvas as a Base64-encoded image.\n\n#### Usage:\n````javascript\nimageElement.src = myScene.canvas.getSnapshot({\n    width: 500, // Defaults to size of canvas\n    height: 500,\n    format: \"png\" // Options are \"jpeg\" (default), \"png\" and \"bmp\"\n});\n````",
+            "itemtype": "method",
+            "name": "getSnapshot",
+            "params": [
+                {
+                    "name": "params",
+                    "description": "Capture options.",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "width",
+                            "description": "Desired width of result in pixels - defaults to width of canvas.",
+                            "type": "Number",
+                            "optional": true
+                        },
+                        {
+                            "name": "height",
+                            "description": "Desired height of result in pixels - defaults to height of canvas.",
+                            "type": "Number",
+                            "optional": true
+                        },
+                        {
+                            "name": "format",
+                            "description": "Desired format; \"jpeg\", \"png\" or \"bmp\".",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"jpeg\""
+                        }
+                    ]
+                }
+            ],
+            "return": {
+                "description": "String-encoded image data.",
+                "type": "String"
+            },
+            "class": "Canvas",
+            "module": "XEO",
+            "submodule": "canvas"
+        },
+        {
+            "file": "src/canvas/canvas.js",
+            "line": 503,
             "description": "The busy {{#crossLink \"Spinner\"}}{{/crossLink}} for this Canvas.",
             "itemtype": "property",
             "name": "spinner",
@@ -16651,6 +16687,36 @@
         {
             "file": "src/math/math.js",
             "line": 171,
+            "description": "Clamps a value to the given range.",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "Value to clamp.",
+                    "type": "Number"
+                },
+                {
+                    "name": "min",
+                    "description": "Lower bound.",
+                    "type": "Number"
+                },
+                {
+                    "name": "max",
+                    "description": "Upper bound.",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "Clamped result.",
+                "type": "Number"
+            },
+            "class": "XEO.math.math",
+            "module": "XEO",
+            "submodule": "math",
+            "namespace": "XEO.math"
+        },
+        {
+            "file": "src/math/math.js",
+            "line": 183,
             "description": "Floating-point modulus",
             "itemtype": "method",
             "name": "fmod",
@@ -16678,7 +16744,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 190,
+            "line": 202,
             "description": "Negates a four-element vector.",
             "itemtype": "method",
             "name": "negateVec4",
@@ -16707,7 +16773,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 209,
+            "line": 221,
             "description": "Adds one four-element vector to another.",
             "itemtype": "method",
             "name": "addVec4",
@@ -16741,7 +16807,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 229,
+            "line": 241,
             "description": "Adds a scalar value to each element of a four-element vector.",
             "itemtype": "method",
             "name": "addVec4Scalar",
@@ -16775,7 +16841,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 249,
+            "line": 261,
             "description": "Adds one three-element vector to another.",
             "itemtype": "method",
             "name": "addVec3",
@@ -16809,7 +16875,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 268,
+            "line": 280,
             "description": "Adds a scalar value to each element of a three-element vector.",
             "itemtype": "method",
             "name": "addVec4Scalar",
@@ -16843,7 +16909,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 287,
+            "line": 299,
             "description": "Subtracts one four-element vector from another.",
             "itemtype": "method",
             "name": "subVec4",
@@ -16877,7 +16943,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 307,
+            "line": 319,
             "description": "Subtracts one three-element vector from another.",
             "itemtype": "method",
             "name": "subVec3",
@@ -16911,7 +16977,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 326,
+            "line": 338,
             "description": "Subtracts one two-element vector from another.",
             "itemtype": "method",
             "name": "subVec2",
@@ -16945,7 +17011,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 344,
+            "line": 356,
             "description": "Subtracts a scalar value from each element of a four-element vector.",
             "itemtype": "method",
             "name": "subVec4Scalar",
@@ -16979,7 +17045,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 364,
+            "line": 376,
             "description": "Sets each element of a 4-element vector to a scalar value minus the value of that element.",
             "itemtype": "method",
             "name": "subScalarVec4",
@@ -17013,7 +17079,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 384,
+            "line": 396,
             "description": "Multiplies one three-element vector by another.",
             "itemtype": "method",
             "name": "mulVec3",
@@ -17047,7 +17113,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 404,
+            "line": 416,
             "description": "Multiplies each element of a four-element vector by a scalar.",
             "itemtype": "method",
             "name": "mulVec34calar",
@@ -17081,7 +17147,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 424,
+            "line": 436,
             "description": "Multiplies each element of a three-element vector by a scalar.",
             "itemtype": "method",
             "name": "mulVec3Scalar",
@@ -17115,7 +17181,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 443,
+            "line": 455,
             "description": "Multiplies each element of a two-element vector by a scalar.",
             "itemtype": "method",
             "name": "mulVec2Scalar",
@@ -17149,7 +17215,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 461,
+            "line": 473,
             "description": "Divides one three-element vector by another.",
             "itemtype": "method",
             "name": "divVec3",
@@ -17183,7 +17249,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 480,
+            "line": 492,
             "description": "Divides one four-element vector by another.",
             "itemtype": "method",
             "name": "divVec4",
@@ -17217,7 +17283,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 500,
+            "line": 512,
             "description": "Divides a scalar by a three-element vector, returning a new vector.",
             "itemtype": "method",
             "name": "divScalarVec3",
@@ -17246,7 +17312,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 519,
+            "line": 531,
             "description": "Divides a three-element vector by a scalar.",
             "itemtype": "method",
             "name": "divVec3Scalar",
@@ -17275,7 +17341,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 538,
+            "line": 550,
             "description": "Divides a four-element vector by a scalar.",
             "itemtype": "method",
             "name": "divVec4Scalar",
@@ -17304,7 +17370,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 559,
+            "line": 571,
             "description": "Divides a scalar by a four-element vector, returning a new vector.",
             "itemtype": "method",
             "name": "divScalarVec4",
@@ -17333,7 +17399,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 579,
+            "line": 591,
             "description": "Returns the dot product of two four-element vectors.",
             "itemtype": "method",
             "name": "dotVec4",
@@ -17360,7 +17426,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 591,
+            "line": 603,
             "description": "Returns the cross product of two four-element vectors.",
             "itemtype": "method",
             "name": "cross3Vec4",
@@ -17387,7 +17453,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 609,
+            "line": 621,
             "description": "Returns the cross product of two three-element vectors.",
             "itemtype": "method",
             "name": "cross3Vec3",
@@ -17414,7 +17480,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 634,
+            "line": 646,
             "description": "Returns the length of a four-element vector.",
             "itemtype": "method",
             "name": "lenVec4",
@@ -17436,7 +17502,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 645,
+            "line": 657,
             "description": "Returns the dot product of two three-element vectors.",
             "itemtype": "method",
             "name": "dotVec4",
@@ -17463,7 +17529,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 657,
+            "line": 669,
             "description": "Returns the dot product of two two-element vectors.",
             "itemtype": "method",
             "name": "dotVec4",
@@ -17490,7 +17556,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 679,
+            "line": 691,
             "description": "Returns the length of a three-element vector.",
             "itemtype": "method",
             "name": "lenVec3",
@@ -17512,7 +17578,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 690,
+            "line": 702,
             "description": "Returns the length of a two-element vector.",
             "itemtype": "method",
             "name": "lenVec2",
@@ -17534,7 +17600,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 701,
+            "line": 713,
             "itemtype": "method",
             "name": "rcpVec3",
             "static": 1,
@@ -17558,7 +17624,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 713,
+            "line": 725,
             "description": "Normalizes a four-element vector",
             "itemtype": "method",
             "name": "normalizeVec4",
@@ -17583,7 +17649,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 727,
+            "line": 739,
             "description": "Normalizes a three-element vector",
             "itemtype": "method",
             "name": "normalizeVec4",
@@ -17595,7 +17661,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 737,
+            "line": 749,
             "description": "Normalizes a two-element vector",
             "itemtype": "method",
             "name": "normalizeVec2",
@@ -17607,7 +17673,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 747,
+            "line": 759,
             "description": "Duplicates a 4x4 identity matrix.",
             "itemtype": "method",
             "name": "dupMat4",
@@ -17619,7 +17685,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 756,
+            "line": 768,
             "description": "Extracts a 3x3 matrix from a 4x4 matrix.",
             "itemtype": "method",
             "name": "mat4To3",
@@ -17631,7 +17697,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 769,
+            "line": 781,
             "description": "Returns a 4x4 matrix with each element set to the given scalar value.",
             "itemtype": "method",
             "name": "m4s",
@@ -17643,7 +17709,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 783,
+            "line": 795,
             "description": "Returns a 4x4 matrix with each element set to zero.",
             "itemtype": "method",
             "name": "setMat4ToZeroes",
@@ -17655,7 +17721,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 792,
+            "line": 804,
             "description": "Returns a 4x4 matrix with each element set to 1.0.",
             "itemtype": "method",
             "name": "setMat4ToOnes",
@@ -17667,7 +17733,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 801,
+            "line": 813,
             "description": "Returns a 4x4 matrix with each element set to 1.0.",
             "itemtype": "method",
             "name": "setMat4ToOnes",
@@ -17679,7 +17745,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 815,
+            "line": 827,
             "description": "Returns a 4x4 matrix with diagonal elements set to the given vector.",
             "itemtype": "method",
             "name": "diagonalMat4c",
@@ -17691,7 +17757,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 824,
+            "line": 836,
             "description": "Returns a 4x4 matrix with diagonal elements set to the given scalar.",
             "itemtype": "method",
             "name": "diagonalMat4s",
@@ -17703,7 +17769,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 833,
+            "line": 845,
             "description": "Returns a 4x4 identity matrix.",
             "itemtype": "method",
             "name": "identityMat4",
@@ -17715,7 +17781,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 865,
+            "line": 877,
             "description": "Tests if the given 4x4 matrix is the identity matrix.",
             "itemtype": "method",
             "name": "isIdentityMat4",
@@ -17727,7 +17793,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 880,
+            "line": 892,
             "description": "Negates the given 4x4 matrix.",
             "itemtype": "method",
             "name": "negateMat4",
@@ -17739,7 +17805,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 908,
+            "line": 920,
             "description": "Adds the given 4x4 matrices together.",
             "itemtype": "method",
             "name": "addMat4",
@@ -17751,7 +17817,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 936,
+            "line": 948,
             "description": "Adds the given scalar to each element of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "addMat4Scalar",
@@ -17763,7 +17829,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 964,
+            "line": 976,
             "description": "Adds the given scalar to each element of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "addScalarMat4",
@@ -17775,7 +17841,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 973,
+            "line": 985,
             "description": "Subtracts the second 4x4 matrix from the first.",
             "itemtype": "method",
             "name": "subMat4",
@@ -17787,7 +17853,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1001,
+            "line": 1013,
             "description": "Subtracts the given scalar from each element of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "subMat4Scalar",
@@ -17799,7 +17865,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1029,
+            "line": 1041,
             "description": "Subtracts the given scalar from each element of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "subScalarMat4",
@@ -17811,7 +17877,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1057,
+            "line": 1069,
             "description": "Multiplies the two given 4x4 matrix by each other.",
             "itemtype": "method",
             "name": "mulMat4",
@@ -17823,7 +17889,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1098,
+            "line": 1110,
             "description": "Multiplies each element of the given 4x4 matrix by the given scalar.",
             "itemtype": "method",
             "name": "mulMat4Scalar",
@@ -17835,7 +17901,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1126,
+            "line": 1138,
             "description": "Multiplies the given 4x4 matrix by the given four-element vector.",
             "itemtype": "method",
             "name": "mulMat4v4",
@@ -17847,7 +17913,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1141,
+            "line": 1153,
             "description": "Transposes the given 4x4 matrix.",
             "itemtype": "method",
             "name": "transposeMat4",
@@ -17859,7 +17925,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1187,
+            "line": 1199,
             "description": "Returns the determinant of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "determinantMat4",
@@ -17871,7 +17937,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1206,
+            "line": 1218,
             "description": "Returns the inverse of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "inverseMat4",
@@ -17883,7 +17949,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1256,
+            "line": 1268,
             "description": "Returns the trace of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "traceMat4",
@@ -17895,7 +17961,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1265,
+            "line": 1277,
             "description": "Returns 4x4 translation matrix.",
             "itemtype": "method",
             "name": "translationMat4",
@@ -17907,7 +17973,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1278,
+            "line": 1290,
             "description": "Returns 4x4 translation matrix.",
             "itemtype": "method",
             "name": "translationMat4c",
@@ -17919,7 +17985,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1287,
+            "line": 1299,
             "description": "Returns 4x4 translation matrix.",
             "itemtype": "method",
             "name": "translationMat4s",
@@ -17931,7 +17997,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1296,
+            "line": 1308,
             "description": "Returns 4x4 rotation matrix.",
             "itemtype": "method",
             "name": "rotationMat4v",
@@ -17943,7 +18009,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1348,
+            "line": 1360,
             "description": "Returns 4x4 rotation matrix.",
             "itemtype": "method",
             "name": "rotationMat4c",
@@ -17955,7 +18021,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1357,
+            "line": 1369,
             "description": "Returns 4x4 scale matrix.",
             "itemtype": "method",
             "name": "scalingMat4v",
@@ -17967,7 +18033,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1370,
+            "line": 1382,
             "description": "Returns 4x4 scale matrix.",
             "itemtype": "method",
             "name": "scalingMat4c",
@@ -17979,7 +18045,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1379,
+            "line": 1391,
             "description": "Returns 4x4 scale matrix.",
             "itemtype": "method",
             "name": "scalingMat4s",
@@ -17991,7 +18057,38 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1388,
+            "line": 1400,
+            "description": "Gets Euler angles from a 4x4 matrix.",
+            "params": [
+                {
+                    "name": "mat",
+                    "description": "The 4x4 matrix.",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "order",
+                    "description": "Desired Euler angle order: \"XYZ\", \"YXZ\", \"ZXY\" etc.",
+                    "type": "String"
+                },
+                {
+                    "name": "dest",
+                    "description": "Destination Euler angles, created by default.",
+                    "type": "Float32Array",
+                    "optional": true
+                }
+            ],
+            "return": {
+                "description": "The Euler angles.",
+                "type": "Float32Array"
+            },
+            "class": "XEO.math.math",
+            "module": "XEO",
+            "submodule": "math",
+            "namespace": "XEO.math"
+        },
+        {
+            "file": "src/math/math.js",
+            "line": 1497,
             "description": "Returns a 4x4 'lookat' viewing transform matrix.",
             "itemtype": "method",
             "name": "lookAtMat4v",
@@ -18024,7 +18121,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1483,
+            "line": 1592,
             "description": "Returns a 4x4 'lookat' viewing transform matrix.",
             "itemtype": "method",
             "name": "lookAtMat4c",
@@ -18036,7 +18133,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1492,
+            "line": 1601,
             "description": "Returns a 4x4 orthographic projection matrix.",
             "itemtype": "method",
             "name": "orthoMat4c",
@@ -18048,7 +18145,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1528,
+            "line": 1637,
             "description": "Returns a 4x4 perspective projection matrix.",
             "itemtype": "method",
             "name": "frustumMat4v",
@@ -18060,7 +18157,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1572,
+            "line": 1681,
             "description": "Returns a 4x4 perspective projection matrix.",
             "itemtype": "method",
             "name": "frustumMat4v",
@@ -18072,7 +18169,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1603,
+            "line": 1712,
             "description": "Returns a 4x4 perspective projection matrix.",
             "itemtype": "method",
             "name": "perspectiveMatrix4v",
@@ -18084,7 +18181,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1624,
+            "line": 1733,
             "description": "Transforms a three-element position by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformPoint3",
@@ -18096,7 +18193,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1641,
+            "line": 1750,
             "description": "Transforms a homogeneous coordinate by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformPoint3",
@@ -18108,7 +18205,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1658,
+            "line": 1767,
             "description": "Transforms an array of three-element positions by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformPoints3",
@@ -18120,7 +18217,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1699,
+            "line": 1808,
             "description": "Transforms a three-element vector by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformVec3",
@@ -18132,7 +18229,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1713,
+            "line": 1822,
             "description": "Transforms a four-element vector by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformVec4",
@@ -18144,7 +18241,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1728,
+            "line": 1837,
             "description": "Transforms a four-element vector by a 4x4 projection matrix.",
             "itemtype": "method",
             "name": "projectVec4",
@@ -18156,7 +18253,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1738,
+            "line": 1847,
             "description": "Linearly interpolates between two 3D vectors.",
             "itemtype": "method",
             "name": "lerpVec3",
@@ -18168,7 +18265,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1752,
+            "line": 1861,
             "description": "Gets the diagonal size of a boundary given as minima and maxima.",
             "itemtype": "method",
             "name": "getAABBDiag",
@@ -18180,7 +18277,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1762,
+            "line": 1871,
             "description": "Get a diagonal boundary size that is symmetrical about the given point.",
             "itemtype": "method",
             "name": "getAABBDiagPoint",
@@ -18192,7 +18289,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1786,
+            "line": 1895,
             "description": "Gets the center of an AABB.",
             "itemtype": "method",
             "name": "getAABBCenter",
@@ -18204,7 +18301,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1801,
+            "line": 1910,
             "description": "Gets the center of a 2D AABB.",
             "itemtype": "method",
             "name": "getAABB2Center",
@@ -18216,7 +18313,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1815,
+            "line": 1924,
             "description": "Collapses a 3D axis-aligned boundary, ready to expand to fit 3D points.\nCreates new AABB if none supplied.",
             "itemtype": "method",
             "name": "collapseAABB3",
@@ -18240,7 +18337,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1838,
+            "line": 1947,
             "description": "Converts an axis-aligned 3D boundary into an oriented boundary consisting of\nan array of eight 3D positions, one for each corner of the boundary.",
             "itemtype": "method",
             "name": "AABB3ToOBB3",
@@ -18269,7 +18366,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1927,
+            "line": 2036,
             "description": "Finds the minimum axis-aligned 3D boundary enclosing the 3D points given in a flattened,  1-dimensional array.",
             "itemtype": "method",
             "name": "positions3ToAABB3",
@@ -18298,7 +18395,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1990,
+            "line": 2099,
             "description": "Finds the minimum axis-aligned 3D boundary enclosing the given 3D points.",
             "itemtype": "method",
             "name": "points3ToAABB3",
@@ -18327,7 +18424,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2053,
+            "line": 2162,
             "description": "Expands the first axis-aligned 3D boundary to enclose the second, if required.",
             "itemtype": "method",
             "name": "expandAABB3",
@@ -18355,7 +18452,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2091,
+            "line": 2200,
             "description": "Expands an axis-aligned 3D boundary to enclose the given point, if needed.",
             "itemtype": "method",
             "name": "expandAABB3Point3",
@@ -18383,7 +18480,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2129,
+            "line": 2238,
             "description": "Collapses a 2D axis-aligned boundary, ready to expand to fit 2D points.\nCreates new AABB if none supplied.",
             "itemtype": "method",
             "name": "collapseAABB2",
@@ -18407,7 +18504,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2150,
+            "line": 2259,
             "description": "Finds the minimum 2D projected axis-aligned boundary enclosing the given 3D points.",
             "itemtype": "method",
             "name": "points3ToAABB2",
@@ -18436,7 +18533,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2209,
+            "line": 2318,
             "description": "Expands the first axis-aligned 2D boundary to enclose the second, if required.",
             "itemtype": "method",
             "name": "expandAABB3",
@@ -18464,7 +18561,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2239,
+            "line": 2348,
             "description": "Expands an axis-aligned 2D boundary to enclose the given point, if required.",
             "itemtype": "method",
             "name": "expandAABB2Point2",
@@ -18492,7 +18589,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2286,
+            "line": 2395,
             "description": "Builds normal vectors from positions and indices.",
             "itemtype": "method",
             "name": "buildNormals",
@@ -18520,7 +18617,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2358,
+            "line": 2467,
             "description": "Builds vertex tangent vectors from positions, UVs and indices",
             "itemtype": "method",
             "name": "buildTangents",
@@ -18553,7 +18650,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2427,
+            "line": 2536,
             "description": "Flattens a two-dimensional array into a one-dimensional array.",
             "itemtype": "method",
             "name": "flatten",
@@ -18575,7 +18672,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2455,
+            "line": 2564,
             "description": "Builds vertex and index arrays needed by color-indexed triangle picking.",
             "itemtype": "method",
             "name": "getPickPrimitives",
@@ -18603,7 +18700,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2555,
+            "line": 2664,
             "description": "Finds the intersection of a 3D ray with a 3D triangle.",
             "itemtype": "method",
             "name": "rayTriangleIntersect",
@@ -18652,7 +18749,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2603,
+            "line": 2712,
             "description": "Finds the intersection of a 3D ray with a plane defined by 3 points.",
             "itemtype": "method",
             "name": "rayPlaneIntersect",
@@ -18701,7 +18798,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2641,
+            "line": 2750,
             "description": "Gets barycentric coordinates from cartesian coordinates within a triangle.",
             "itemtype": "method",
             "name": "cartesianToBaryCentric",
@@ -18745,7 +18842,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2708,
+            "line": 2817,
             "description": "Returns true if the given barycentric coordinates are within their triangle.",
             "itemtype": "method",
             "name": "barycentricInsideTriangle",
@@ -18768,7 +18865,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2725,
+            "line": 2834,
             "description": "Gets cartesian coordinates from barycentric coordinates within a triangle.",
             "itemtype": "method",
             "name": "barycentricToCartesian",
@@ -18812,7 +18909,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2763,
+            "line": 2872,
             "description": "Initializes a quaternion from Euler angles.",
             "params": [
                 {
@@ -19782,8 +19879,8 @@
         },
         {
             "file": "src/transforms/quaternion.js",
-            "line": 101,
-            "description": "The quaternion elements\nFires an {{#crossLink \"Quaternion/xyzw:event\"}}{{/crossLink}} event on change.",
+            "line": 104,
+            "description": "The quaternion elements.\nFires an {{#crossLink \"Quaternion/xyzw:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "xyzw",
             "default": "[0,0,0,1]",
@@ -19794,7 +19891,7 @@
         },
         {
             "file": "src/transforms/quaternion.js",
-            "line": 114,
+            "line": 124,
             "description": "Fired whenever this Quaternion's {{#crossLink \"Quaternion/xyzw:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "xyzw",
@@ -19811,7 +19908,7 @@
         },
         {
             "file": "src/transforms/quaternion.js",
-            "line": 129,
+            "line": 139,
             "description": "Rotates this Quaternion.\nFires an {{#crossLink \"Quaternion/xyzw:event\"}}{{/crossLink}} event to notify of update to the Quaternion elements.",
             "itemtype": "method",
             "name": "rotate",
@@ -19819,7 +19916,7 @@
                 {
                     "name": "angleAxis",
                     "description": "Rotation in angle-axis form.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 }
             ],
             "class": "Quaternion",
@@ -20702,7 +20799,58 @@
         },
         {
             "file": "src/scene.js",
-            "line": 524,
+            "line": 522,
+            "description": "Renders a single frame of this Scene.\n\nThis forces a render of this Scene, even if nothing has updated since the last render.\n\nThis method is typically used when we want to synchronously take a snapshot of the canvas and need everything\nrendered right at that moment.",
+            "itemtype": "method",
+            "name": "render",
+            "class": "Scene",
+            "module": "XEO"
+        },
+        {
+            "file": "src/scene.js",
+            "line": 551,
+            "description": "Fired when about to render a frame for a Scene.",
+            "itemtype": "event",
+            "name": "rendering",
+            "params": [
+                {
+                    "name": "sceneID",
+                    "description": "The ID of this Scene.",
+                    "type": "String"
+                },
+                {
+                    "name": "pass",
+                    "description": "Index of the pass we are about to render (see {{#crossLink \"Scene/passes:property\"}}{{/crossLink}}).",
+                    "type": "Number"
+                }
+            ],
+            "class": "Scene",
+            "module": "XEO"
+        },
+        {
+            "file": "src/scene.js",
+            "line": 564,
+            "description": "Fired when we have just rendered a frame for a Scene.",
+            "itemtype": "event",
+            "name": "rendering",
+            "params": [
+                {
+                    "name": "sceneID",
+                    "description": "The ID of this Scene.",
+                    "type": "String"
+                },
+                {
+                    "name": "pass",
+                    "description": "Index of the pass we rendered (see {{#crossLink \"Scene/passes:property\"}}{{/crossLink}}).",
+                    "type": "Number"
+                }
+            ],
+            "class": "Scene",
+            "module": "XEO"
+        },
+        {
+            "file": "src/scene.js",
+            "line": 578,
             "description": "The number of times this Scene renders per frame.",
             "itemtype": "property",
             "name": "passes",
@@ -20713,7 +20861,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 554,
+            "line": 608,
             "description": "Fired whenever this Scene's {{#crossLink \"Scene/passes:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "passes",
@@ -20729,7 +20877,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 568,
+            "line": 622,
             "description": "The default projection transform provided by this Scene, which is\na {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.\n\nThis {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} has an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to\n\"default.project\", with all other properties set to their default\nvalues.\n\n{{#crossLink \"Camera\"}}Cameras{{/crossLink}} within this Scene\nare attached to this {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}\nby default.",
             "itemtype": "property",
             "name": "project",
@@ -20740,7 +20888,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 596,
+            "line": 650,
             "description": "The default viewing transform provided by this Scene, which is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.\n\nThis {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.view\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Camera\"}}Cameras{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "view",
@@ -20751,7 +20899,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 619,
+            "line": 673,
             "description": "The default {{#crossLink \"Camera\"}}Camera{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Camera\"}}Camera{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.camera\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Camera\"}}Camera{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "camera",
@@ -20762,7 +20910,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 644,
+            "line": 698,
             "description": "The default modelling {{#crossLink \"Transform\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Transform\"}}{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.transform\",\nwith all other properties initialised to their default values (ie. an identity matrix).\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Transform\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "transform",
@@ -20773,7 +20921,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 668,
+            "line": 722,
             "description": "The default {{#crossLink \"Billboard\"}}Billboard{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Billboard\"}}Billboard{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.billboard\"\nand an {{#crossLink \"Billboard/active:property\"}}{{/crossLink}} property set to false, to disable it.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Billboard\"}}Billboard{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "billboard",
@@ -20784,7 +20932,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 692,
+            "line": 746,
             "description": "The default {{#crossLink \"Stationary\"}}Stationary{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Stationary\"}}Stationary{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.stationary\"\nand an {{#crossLink \"Stationary/active:property\"}}{{/crossLink}} property set to false, to disable it.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Stationary\"}}Stationary{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "stationary",
@@ -20795,7 +20943,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 716,
+            "line": 770,
             "description": "The default {{#crossLink \"Clips\"}}Clips{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Clips\"}}Clips{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.clips\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Clips\"}}Clips{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "clips",
@@ -20806,7 +20954,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 739,
+            "line": 793,
             "description": "The default {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.colorBuf\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "colorBuf",
@@ -20817,7 +20965,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 762,
+            "line": 816,
             "description": "The default {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} provided by this Scene.\n\nThe {{#crossLink \"ColorTarget\"}}DepthTarget{{/crossLink}} is\n{{#crossLink \"ColorTarget/active:property\"}}inactive{{/crossLink}} by default and will have an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthTarget\".\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "colorTarget",
@@ -20828,7 +20976,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 786,
+            "line": 840,
             "description": "The default {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthBuf\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "depthBuf",
@@ -20839,7 +20987,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 810,
+            "line": 864,
             "description": "The default {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} provided by this Scene.\n\nThe {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} is\n{{#crossLink \"DepthTarget/active:property\"}}inactive{{/crossLink}} by default and has an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthTarget\".\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "depthTarget",
@@ -20850,7 +20998,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 834,
+            "line": 888,
             "description": "The default {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.visibility\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Visibility\"}}Visibility{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "visibility",
@@ -20861,7 +21009,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 857,
+            "line": 911,
             "description": "The default {{#crossLink \"Cull\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Cull\"}}cull{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.cull\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Cull\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "cull",
@@ -20872,7 +21020,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 880,
+            "line": 934,
             "description": "The default {{#crossLink \"Modes\"}}Modes{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Modes\"}}Modes{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.modes\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Modes\"}}Modes{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "modes",
@@ -20883,7 +21031,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 902,
+            "line": 956,
             "description": "The default geometry provided by this Scene, which is a {{#crossLink \"BoxGeometry\"}}BoxGeometry{{/crossLink}}.\n\nThis {{#crossLink \"BoxGeometry\"}}BoxGeometry{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.geometry\".\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Geometry\"}}Geometry{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "geometry",
@@ -20894,7 +21042,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 923,
+            "line": 977,
             "description": "The default {{#crossLink \"Layer\"}}Layer{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Layer\"}}Layer{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.layer\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Layer\"}}Layer{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "layer",
@@ -20905,7 +21053,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 946,
+            "line": 1000,
             "description": "The default {{#crossLink \"Lights\"}}Lights{{/crossLink}} provided\nby this Scene.\n\nThis {{#crossLink \"Lights\"}}Lights{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to *````\"default.lights\"````*,\nwith all other properties initialised to their default values (ie. the default set of light sources for a {{#crossLink \"Lights\"}}Lights{{/crossLink}}).\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Lights\"}}Lights{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "lights",
@@ -20916,7 +21064,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1001,
+            "line": 1055,
             "description": "The {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} provided as the default material by this Scene.\n\nThis {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.material\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "material",
@@ -20927,7 +21075,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1024,
+            "line": 1078,
             "description": "The default {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.morphTargets\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -20938,7 +21086,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1046,
+            "line": 1100,
             "description": "The default {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} provided by this Scene,\n(which is initially an empty {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} that has no effect).\n\nThis {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.reflect\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Reflect\"}}Reflect{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "reflect",
@@ -20949,7 +21097,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1069,
+            "line": 1123,
             "description": "The default {{#crossLink \"Shader\"}}Shader{{/crossLink}} provided by this Scene\n(which is initially an empty {{#crossLink \"Shader\"}}Shader{{/crossLink}} that has no effect).\n\nThis {{#crossLink \"Shader\"}}Shader{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.shader\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Shader\"}}Shader{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "shader",
@@ -20960,7 +21108,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1092,
+            "line": 1146,
             "description": "The default {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.shaderParams\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ShaderParams\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "shaderParams",
@@ -20971,7 +21119,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1115,
+            "line": 1169,
             "description": "The default {{#crossLink \"Stage\"}}Stage{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Stage\"}}Stage{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.stage\" and\na {{#crossLink \"Stage/priority:property\"}}priority{{/crossLink}} equal to ````0````.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Stage\"}}Stage{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "stage",
@@ -20982,7 +21130,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1139,
+            "line": 1193,
             "description": "The default {{#crossLink \"Viewport\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Viewport\"}}{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.viewport\" and\n{{#crossLink \"Viewport/autoBoundary:property\"}}{{/crossLink}} set ````true````.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Viewport\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "viewport",
@@ -20993,7 +21141,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1164,
+            "line": 1218,
             "description": "The World-space 3D boundary of this Scene.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will be lazy-initialized the first time\nyou reference this property, and will persist on this Scene until you\ncall {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on the {{#crossLink \"Boundary3D\"}}{{/crossLink}}\nagain. The property will then be set to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance\nnext time you reference it.\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary3D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "worldBoundary",
@@ -21004,7 +21152,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1247,
+            "line": 1301,
             "description": "Attempts to pick an {{#crossLink \"Entity\"}}Entity{{/crossLink}} at the given Canvas-space coordinates.\n\nIgnores {{#crossLink \"Entity\"}}Entities{{/crossLink}} that are attached\nto either a {{#crossLink \"Stage\"}}Stage{{/crossLink}} with {{#crossLink \"Stage/pickable:property\"}}pickable{{/crossLink}}\nset *false* or a {{#crossLink \"Modes\"}}Modes{{/crossLink}} with {{#crossLink \"Modes/pickable:property\"}}pickable{{/crossLink}} set *false*.\n\nOn success, will fire a {{#crossLink \"Scene/picked:event\"}}{{/crossLink}} event on this Scene, along with\na separate {{#crossLink \"Entity/picked:event\"}}{{/crossLink}} event on the target {{#crossLink \"Entity\"}}Entity{{/crossLink}}.\n\n````javascript\n\npick({\n     canvasPos: [23, 131],\n     rayPick: true\n     });\n\n````",
             "itemtype": "method",
             "name": "pick",
@@ -21039,7 +21187,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1516,
+            "line": 1570,
             "description": "Resets this Scene to its default state.\n\nReferences to any components in this Scene will become invalid.",
             "itemtype": "method",
             "name": "clear",
@@ -21048,7 +21196,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1542,
+            "line": 1596,
             "description": "Convenience method for creating or reusing a Component within this Scene.\n\nYou would typically use this method to conveniently instantiate components that you'd want to\nshare (ie. \"instance\") among your {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe method is given a component type, share ID and constructor attributes, like so:\n\n````javascript\nvar material = myScene.getComponent(\"XEO.PhongMaterial\", \"myMaterial\", { diffuse: [1,0,0] });\n````\n\nThe first time you call this method for the given ````type```` and ````instanceId````, this method will create the\n{{#crossLink \"PhongMaterial\"}}{{/crossLink}}, passing the given  attributes to the component's constructor.\n\nIf you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same\ncomponent instance that it returned the first time, and will ignore the attributes:\n\n````javascript\nvar material2 = myScene.getComponent(\"XEO.PhongMaterial\", \"myMaterial\", { specular: [1,1,0] });\n````\n\nEach time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a\nreference count for the component instance. You can release the shared component instance with a call to\n{{#crossLink \"Scene/putSharedComponent:method\"}}{{/crossLink}}, and once you have released it as many\ntimes as you got it, the Scene will destroy the component.",
             "itemtype": "method",
             "name": "_getSharedComponent",
@@ -21081,7 +21229,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1638,
+            "line": 1692,
             "description": "Releases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -21095,148 +21243,11 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1666,
+            "line": 1720,
             "description": "Compiles and renders this Scene",
             "access": "private",
             "tagname": "",
             "class": "Scene",
-            "module": "XEO"
-        },
-        {
-            "file": "src/sceneComponent.js",
-            "line": 207,
-            "description": "The parent {{#crossLink \"Scene\"}}{{/crossLink}} that contains this Component.",
-            "itemtype": "property",
-            "name": "scene",
-            "type": "{Scene}",
-            "final": 1,
-            "class": "Component",
-            "module": "XEO"
-        },
-        {
-            "file": "src/sceneComponent.js",
-            "line": 254,
-            "description": "Indicates whether this is one of the {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s built-in Components.",
-            "itemtype": "property",
-            "name": "isDefault",
-            "type": "Boolean",
-            "class": "Component",
-            "module": "XEO"
-        },
-        {
-            "file": "src/sceneComponent.js",
-            "line": 277,
-            "description": "Creates a clone of this component.\n\nThe clone will have the same properties as the original, except where\noverridden in the given optional configs.\n\nThe clone will share (by reference) the components of the original, unless overridden.\n\nFor example, if this component is an {{#crossLink \"Entity\"}}{{/crossLink}}, then the clone\nwill be attached to the **same** instances of {{#crossLink \"PhoneMaterial\"}}{{/crossLink}},\n{{#crossLink \"Camera\"}}{{/crossLink}} etc as this component, unless it supplies its own\ninstances for those via the configs.",
-            "params": [
-                {
-                    "name": "cfg",
-                    "description": "Configurations to override.",
-                    "type": "*",
-                    "optional": true
-                }
-            ],
-            "return": {
-                "description": "The shallow clone",
-                "type": "Component"
-            },
-            "class": "Component",
-            "module": "XEO"
-        },
-        {
-            "file": "src/sceneComponent.js",
-            "line": 309,
-            "description": "Adds a child component to this.\nWhen component not given, attaches the scene's default instance for the given name (if any).\nPublishes the new child component on this component, keyed to the given name.",
-            "params": [
-                {
-                    "name": "params",
-                    "description": "",
-                    "type": "*",
-                    "props": [
-                        {
-                            "name": "name",
-                            "description": "component name",
-                            "type": "String"
-                        },
-                        {
-                            "name": "component",
-                            "description": "The component",
-                            "type": "Component",
-                            "optional": true
-                        },
-                        {
-                            "name": "type",
-                            "description": "Optional expected type of base type of the child; when supplied, will\ncause an exception if the given child is not the same type or a subtype of this.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "sceneDefault",
-                            "description": "",
-                            "type": "Boolean",
-                            "optional": true,
-                            "optdefault": "false"
-                        },
-                        {
-                            "name": "onAttached.scope",
-                            "description": "Optional scope for callback",
-                            "type": "Function",
-                            "optional": true
-                        },
-                        {
-                            "name": "recompiles",
-                            "description": "When true, fires \"dirty\" events on this component",
-                            "type": "Boolean",
-                            "optional": true,
-                            "optdefault": "true"
-                        }
-                    ]
-                },
-                {
-                    "name": "[params.onAttached] Optional callback called before event is fired\n* @param {Function} [params.onAttached.callback]",
-                    "description": "Callback function",
-                    "type": "Function"
-                },
-                {
-                    "name": "}",
-                    "description": "[params.on] Callbacks to subscribe to properties on component",
-                    "type": "String:Function"
-                }
-            ],
-            "access": "private",
-            "tagname": "",
-            "class": "Component",
-            "module": "XEO"
-        },
-        {
-            "file": "src/sceneComponent.js",
-            "line": 506,
-            "description": "Convenience method for creating a Component within this Component's {{#crossLink \"Scene\"}}{{/crossLink}}.\n\nYou would typically use this method to conveniently instantiate components that you'd want to\nshare (ie. \"instance\") among your {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe method is given a component type, configuration and optional instance ID, like so:\n\n````javascript\nvar material = myComponent.create(XEO.PhongMaterial, {\n     diffuse: [1,0,0],\n     specular: [1,1,0]\n}, \"myMaterial\");\n````\n\nThe first time you call this method for the given ````type```` and ````instanceId````, this method will create the\n{{#crossLink \"PhongMaterial\"}}{{/crossLink}}, passing the given  attributes to the component's constructor.\n\nIf you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same\ncomponent instance that it returned the first time, and will ignore the configuration:\n\n````javascript\nvar material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, \"myMaterial\");\n````\n\nSo inthis example, our {{#crossLink \"PhongMaterial\"}}{{/crossLink}} will continue to have the red specular\nand diffuse color that we specified the first time.\n\nEach time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a\nreference count for the component instance. You can release the shared component instance with a call to\n{{#crossLink \"Scene/putSharedComponent:method\"}}{{/crossLink}}, and once you have released it as many\ntimes as you got it, the Scene will destroy the component.",
-            "itemtype": "method",
-            "name": "create",
-            "params": [
-                {
-                    "name": "type",
-                    "description": "Component type - either a string like \"XEO.PhongMaterial\" or the actual\nconstructor function, ie. XEO.PhongMaterial.",
-                    "type": "String"
-                },
-                {
-                    "name": "cfg",
-                    "description": "Configuration for the component instance - only used if this is the first time you are getting\nthe component, ignored when reusing an existing instance.",
-                    "type": "*",
-                    "optional": true
-                },
-                {
-                    "name": "instanceId",
-                    "description": "Identifies the shared component instance. Note that this is not used as the ID of the\ncomponent - you can specify the component ID in the ````cfg```` parameter.",
-                    "type": "String|Number",
-                    "optional": true
-                }
-            ],
-            "return": {
-                "description": "",
-                "type": "*"
-            },
-            "class": "Component",
             "module": "XEO"
         },
         {
@@ -21283,7 +21294,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 246,
+            "line": 241,
             "description": "Fired on each game loop iteration.",
             "itemtype": "event",
             "name": "tick",
@@ -21320,51 +21331,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 282,
-            "description": "Fired when about to render a frame for a Scene.",
-            "itemtype": "event",
-            "name": "rendering",
-            "params": [
-                {
-                    "name": "sceneID",
-                    "description": "The ID of this Scene.",
-                    "type": "String"
-                },
-                {
-                    "name": "pass",
-                    "description": "Index of the pass we are about to render (see {{#crossLink \"Scene/passes:property\"}}{{/crossLink}}).",
-                    "type": "Number"
-                }
-            ],
-            "class": "XEO",
-            "module": "XEO",
-            "namespace": "XEO"
-        },
-        {
-            "file": "src/xeo.js",
-            "line": 295,
-            "description": "Fired when we have just rendered a frame for a Scene.",
-            "itemtype": "event",
-            "name": "rendering",
-            "params": [
-                {
-                    "name": "sceneID",
-                    "description": "The ID of this Scene.",
-                    "type": "String"
-                },
-                {
-                    "name": "pass",
-                    "description": "Index of the pass we rendered (see {{#crossLink \"Scene/passes:property\"}}{{/crossLink}}).",
-                    "type": "Number"
-                }
-            ],
-            "class": "XEO",
-            "module": "XEO",
-            "namespace": "XEO"
-        },
-        {
-            "file": "src/xeo.js",
-            "line": 317,
+            "line": 276,
             "description": "The default {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\nComponents created without an explicit parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} will be created within this\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} by default.\n\nxeoEngine creates the default {{#crossLink \"Scene\"}}Scene{{/crossLink}} as soon as you either\nreference this property for the first time, or create your first {{#crossLink \"Entity\"}}Entity{{/crossLink}} without\na specified {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "property",
             "name": "scene",
@@ -21376,7 +21343,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 342,
+            "line": 301,
             "description": "Registers a scene on xeoEngine.\nThis is called within the XEO.Scene constructor.",
             "itemtype": "method",
             "name": "_addScene",
@@ -21395,7 +21362,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 385,
+            "line": 344,
             "description": "Schedule a task for xeoEngine to run at the next frame.\n\nInternally, this pushes the task to a FIFO queue. Within each frame interval, xeoEngine processes the queue\nfor a certain period of time, popping tasks and running them. After each frame interval, tasks that did not\nget a chance to run during the task are left in the queue to be run next time.",
             "itemtype": "method",
             "name": "schedule",
@@ -21418,7 +21385,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 430,
+            "line": 389,
             "description": "Destroys all user-created {{#crossLink \"Scene\"}}Scenes{{/crossLink}} and\nclears the default {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "clear",
@@ -21429,7 +21396,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 459,
+            "line": 418,
             "description": "Tests if the given object is an array",
             "access": "private",
             "tagname": "",
@@ -21439,7 +21406,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 467,
+            "line": 426,
             "description": "Tests if the given value is a string",
             "params": [
                 {
@@ -21459,7 +21426,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 478,
+            "line": 437,
             "description": "Tests if the given value is a number",
             "params": [
                 {
@@ -21479,7 +21446,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 488,
+            "line": 447,
             "description": "Tests if the given value is an ID",
             "params": [
                 {
@@ -21499,7 +21466,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 498,
+            "line": 457,
             "description": "Tests if the given components are the same, where the components can be either IDs or instances.",
             "params": [
                 {
@@ -21523,7 +21490,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 517,
+            "line": 476,
             "description": "Tests if the given value is a function",
             "params": [
                 {
@@ -21543,21 +21510,21 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 527,
+            "line": 486,
             "class": "XEO",
             "module": "XEO",
             "namespace": "XEO"
         },
         {
             "file": "src/xeo.js",
-            "line": 533,
+            "line": 492,
             "class": "XEO",
             "module": "XEO",
             "namespace": "XEO"
         },
         {
             "file": "src/xeo.js",
-            "line": 544,
+            "line": 503,
             "description": "Add non-null/defined properties of o to o2",
             "access": "private",
             "tagname": "",
@@ -21567,7 +21534,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 559,
+            "line": 518,
             "description": "Add properties of o to o2 where undefined or null on o2",
             "access": "private",
             "tagname": "",
@@ -21577,7 +21544,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 574,
+            "line": 533,
             "description": "Returns true if the given map is empty.",
             "params": [
                 {
@@ -21597,7 +21564,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 589,
+            "line": 548,
             "description": "Returns the given ID as a string, in quotes if the ID was a string to begin with.\n\nThis is useful for logging IDs.",
             "params": [
                 {
@@ -21621,6 +21588,10 @@
         {
             "message": "replacing incorrect tag: returns with return",
             "line": " src/_renderer/renderer.js:995"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/canvas/canvas.js:443"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -21680,95 +21651,103 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1815"
+            "line": " src/math/math.js:183"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1838"
+            "line": " src/math/math.js:1400"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1927"
+            "line": " src/math/math.js:1924"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1990"
+            "line": " src/math/math.js:1947"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2053"
+            "line": " src/math/math.js:2036"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2091"
+            "line": " src/math/math.js:2099"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2129"
+            "line": " src/math/math.js:2162"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2150"
+            "line": " src/math/math.js:2200"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2209"
+            "line": " src/math/math.js:2238"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2239"
+            "line": " src/math/math.js:2259"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2286"
+            "line": " src/math/math.js:2318"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2358"
+            "line": " src/math/math.js:2348"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2427"
+            "line": " src/math/math.js:2395"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2455"
+            "line": " src/math/math.js:2467"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2555"
+            "line": " src/math/math.js:2536"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2603"
+            "line": " src/math/math.js:2564"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2641"
+            "line": " src/math/math.js:2664"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2641"
+            "line": " src/math/math.js:2712"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2708"
+            "line": " src/math/math.js:2750"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2708"
+            "line": " src/math/math.js:2750"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2725"
+            "line": " src/math/math.js:2817"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2725"
+            "line": " src/math/math.js:2817"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2763"
+            "line": " src/math/math.js:2834"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/math/math.js:2834"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/math/math.js:2872"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -21788,51 +21767,43 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1247"
+            "line": " src/scene.js:1301"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1542"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " src/sceneComponent.js:277"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " src/sceneComponent.js:506"
+            "line": " src/scene.js:1596"
         },
         {
             "message": "unknown tag: demo",
-            "line": " src/xeo.js:430"
+            "line": " src/xeo.js:389"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:467"
+            "line": " src/xeo.js:426"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:478"
+            "line": " src/xeo.js:437"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:488"
+            "line": " src/xeo.js:447"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:498"
+            "line": " src/xeo.js:457"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:517"
+            "line": " src/xeo.js:476"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:574"
+            "line": " src/xeo.js:533"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:589"
+            "line": " src/xeo.js:548"
         },
         {
             "message": "Missing item type\nA chunk of WebGL state changes to render a XEO.renderer.State.",
@@ -22439,8 +22410,16 @@
             "line": " src/input/test.js:1"
         },
         {
+            "message": "Missing item type\nClamps a value to the given range.",
+            "line": " src/math/math.js:171"
+        },
+        {
+            "message": "Missing item type\nGets Euler angles from a 4x4 matrix.",
+            "line": " src/math/math.js:1400"
+        },
+        {
             "message": "Missing item type\nInitializes a quaternion from Euler angles.",
-            "line": " src/math/math.js:2763"
+            "line": " src/math/math.js:2872"
         },
         {
             "message": "Missing item type\nLookup GL depth function enums",
@@ -22484,19 +22463,11 @@
         },
         {
             "message": "Missing item type\nReleases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
-            "line": " src/scene.js:1638"
+            "line": " src/scene.js:1692"
         },
         {
             "message": "Missing item type\nCompiles and renders this Scene",
-            "line": " src/scene.js:1666"
-        },
-        {
-            "message": "Missing item type\nCreates a clone of this component.\n\nThe clone will have the same properties as the original, except where\noverridden in the given optional configs.\n\nThe clone will share (by reference) the components of the original, unless overridden.\n\nFor example, if this component is an {{#crossLink \"Entity\"}}{{/crossLink}}, then the clone\nwill be attached to the **same** instances of {{#crossLink \"PhoneMaterial\"}}{{/crossLink}},\n{{#crossLink \"Camera\"}}{{/crossLink}} etc as this component, unless it supplies its own\ninstances for those via the configs.",
-            "line": " src/sceneComponent.js:277"
-        },
-        {
-            "message": "Missing item type\nAdds a child component to this.\nWhen component not given, attaches the scene's default instance for the given name (if any).\nPublishes the new child component on this component, keyed to the given name.",
-            "line": " src/sceneComponent.js:309"
+            "line": " src/scene.js:1720"
         },
         {
             "message": "Missing item type\nInformation about available WebGL support",
@@ -22504,51 +22475,51 @@
         },
         {
             "message": "Missing item type\nTests if the given object is an array",
-            "line": " src/xeo.js:459"
+            "line": " src/xeo.js:418"
         },
         {
             "message": "Missing item type\nTests if the given value is a string",
-            "line": " src/xeo.js:467"
+            "line": " src/xeo.js:426"
         },
         {
             "message": "Missing item type\nTests if the given value is a number",
-            "line": " src/xeo.js:478"
+            "line": " src/xeo.js:437"
         },
         {
             "message": "Missing item type\nTests if the given value is an ID",
-            "line": " src/xeo.js:488"
+            "line": " src/xeo.js:447"
         },
         {
             "message": "Missing item type\nTests if the given components are the same, where the components can be either IDs or instances.",
-            "line": " src/xeo.js:498"
+            "line": " src/xeo.js:457"
         },
         {
             "message": "Missing item type\nTests if the given value is a function",
-            "line": " src/xeo.js:517"
+            "line": " src/xeo.js:476"
         },
         {
             "message": "Missing item type",
-            "line": " src/xeo.js:527"
+            "line": " src/xeo.js:486"
         },
         {
             "message": "Missing item type",
-            "line": " src/xeo.js:533"
+            "line": " src/xeo.js:492"
         },
         {
             "message": "Missing item type\nAdd non-null/defined properties of o to o2",
-            "line": " src/xeo.js:544"
+            "line": " src/xeo.js:503"
         },
         {
             "message": "Missing item type\nAdd properties of o to o2 where undefined or null on o2",
-            "line": " src/xeo.js:559"
+            "line": " src/xeo.js:518"
         },
         {
             "message": "Missing item type\nReturns true if the given map is empty.",
-            "line": " src/xeo.js:574"
+            "line": " src/xeo.js:533"
         },
         {
             "message": "Missing item type\nReturns the given ID as a string, in quotes if the ID was a string to begin with.\n\nThis is useful for logging IDs.",
-            "line": " src/xeo.js:589"
+            "line": " src/xeo.js:548"
         }
     ]
 }

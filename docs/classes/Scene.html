@@ -473,7 +473,7 @@ if those arrays are huge.</p>
                                 <a href="#method_clear">clear</a>
 
                             </li>
-                            <li class="index-item method inherited inherited">
+                            <li class="index-item method inherited">
                                 <a href="#method_create">create</a>
 
                             </li>
@@ -511,6 +511,10 @@ if those arrays are huge.</p>
                             </li>
                             <li class="index-item method">
                                 <a href="#method_pick">pick</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_render">render</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -588,7 +592,7 @@ if those arrays are huge.</p>
                                 <a href="#property_input">input</a>
 
                             </li>
-                            <li class="index-item property inherited inherited">
+                            <li class="index-item property inherited">
                                 <a href="#property_isDefault">isDefault</a>
 
                             </li>
@@ -632,7 +636,7 @@ if those arrays are huge.</p>
                                 <a href="#property_reflect">reflect</a>
 
                             </li>
-                            <li class="index-item property inherited inherited">
+                            <li class="index-item property inherited">
                                 <a href="#property_scene">scene</a>
 
                             </li>
@@ -729,6 +733,14 @@ if those arrays are huge.</p>
 
                             </li>
                             <li class="index-item event">
+                                <a href="#event_rendering">rendering</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_rendering">rendering</a>
+
+                            </li>
+                            <li class="index-item event">
                                 <a href="#event_warn">warn</a>
 
                             </li>
@@ -771,7 +783,7 @@ if those arrays are huge.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_scene.js.html#l1542"><code>src&#x2F;scene.js:1542</code></a>
+        <a href="../files/src_scene.js.html#l1596"><code>src&#x2F;scene.js:1596</code></a>
         </p>
 
 
@@ -867,7 +879,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_scene.js.html#l1516"><code>src&#x2F;scene.js:1516</code></a>
+        <a href="../files/src_scene.js.html#l1570"><code>src&#x2F;scene.js:1570</code></a>
         </p>
 
 
@@ -913,11 +925,8 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
 
 
     <div class="meta">
-            <p>Inherited from
-            <a href="../classes/Component.html#method_create">
-                Component
-            </a>
-            but overwritten in
+                <p>Inherited from
+                <a href="../classes/Component.html#method_create">Component</a>:
         <a href="../files/src_component.js.html#l829"><code>src&#x2F;component.js:829</code></a>
         </p>
 
@@ -1588,7 +1597,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_scene.js.html#l1247"><code>src&#x2F;scene.js:1247</code></a>
+        <a href="../files/src_scene.js.html#l1301"><code>src&#x2F;scene.js:1301</code></a>
         </p>
 
 
@@ -1662,6 +1671,41 @@ pick({
 
             </div>
         </div>
+
+
+</div>
+<div id="method_render" class="method item">
+    <h3 class="name"><code>render</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_scene.js.html#l522"><code>src&#x2F;scene.js:522</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Renders a single frame of this Scene.</p>
+<p>This forces a render of this Scene, even if nothing has updated since the last render.</p>
+<p>This method is typically used when we want to synchronously take a snapshot of the canvas and need everything
+rendered right at that moment.</p>
+
+    </div>
+
+
 
 
 </div>
@@ -1740,7 +1784,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l668"><code>src&#x2F;scene.js:668</code></a>
+                            <a href="../files/src_scene.js.html#l722"><code>src&#x2F;scene.js:722</code></a>
                             </p>
                     
                     
@@ -1770,7 +1814,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l619"><code>src&#x2F;scene.js:619</code></a>
+                            <a href="../files/src_scene.js.html#l673"><code>src&#x2F;scene.js:673</code></a>
                             </p>
                     
                     
@@ -1826,7 +1870,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l716"><code>src&#x2F;scene.js:716</code></a>
+                            <a href="../files/src_scene.js.html#l770"><code>src&#x2F;scene.js:770</code></a>
                             </p>
                     
                     
@@ -1856,7 +1900,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l739"><code>src&#x2F;scene.js:739</code></a>
+                            <a href="../files/src_scene.js.html#l793"><code>src&#x2F;scene.js:793</code></a>
                             </p>
                     
                     
@@ -1886,7 +1930,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l762"><code>src&#x2F;scene.js:762</code></a>
+                            <a href="../files/src_scene.js.html#l816"><code>src&#x2F;scene.js:816</code></a>
                             </p>
                     
                     
@@ -1972,7 +2016,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l857"><code>src&#x2F;scene.js:857</code></a>
+                            <a href="../files/src_scene.js.html#l911"><code>src&#x2F;scene.js:911</code></a>
                             </p>
                     
                     
@@ -2002,7 +2046,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l786"><code>src&#x2F;scene.js:786</code></a>
+                            <a href="../files/src_scene.js.html#l840"><code>src&#x2F;scene.js:840</code></a>
                             </p>
                     
                     
@@ -2032,7 +2076,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l810"><code>src&#x2F;scene.js:810</code></a>
+                            <a href="../files/src_scene.js.html#l864"><code>src&#x2F;scene.js:864</code></a>
                             </p>
                     
                     
@@ -2116,7 +2160,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l902"><code>src&#x2F;scene.js:902</code></a>
+                            <a href="../files/src_scene.js.html#l956"><code>src&#x2F;scene.js:956</code></a>
                             </p>
                     
                     
@@ -2194,11 +2238,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Component.html#property_isDefault">
-                                    Component
-                                </a>
-                                but overwritten in
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_isDefault">Component</a>:
                             <a href="../files/src_component.js.html#l264"><code>src&#x2F;component.js:264</code></a>
                             </p>
                     
@@ -2251,7 +2292,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l923"><code>src&#x2F;scene.js:923</code></a>
+                            <a href="../files/src_scene.js.html#l977"><code>src&#x2F;scene.js:977</code></a>
                             </p>
                     
                     
@@ -2281,7 +2322,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l946"><code>src&#x2F;scene.js:946</code></a>
+                            <a href="../files/src_scene.js.html#l1000"><code>src&#x2F;scene.js:1000</code></a>
                             </p>
                     
                     
@@ -2312,7 +2353,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l1001"><code>src&#x2F;scene.js:1001</code></a>
+                            <a href="../files/src_scene.js.html#l1055"><code>src&#x2F;scene.js:1055</code></a>
                             </p>
                     
                     
@@ -2368,7 +2409,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l880"><code>src&#x2F;scene.js:880</code></a>
+                            <a href="../files/src_scene.js.html#l934"><code>src&#x2F;scene.js:934</code></a>
                             </p>
                     
                     
@@ -2398,7 +2439,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l1024"><code>src&#x2F;scene.js:1024</code></a>
+                            <a href="../files/src_scene.js.html#l1078"><code>src&#x2F;scene.js:1078</code></a>
                             </p>
                     
                     
@@ -2427,7 +2468,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l524"><code>src&#x2F;scene.js:524</code></a>
+                            <a href="../files/src_scene.js.html#l578"><code>src&#x2F;scene.js:578</code></a>
                             </p>
                     
                     
@@ -2454,7 +2495,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l568"><code>src&#x2F;scene.js:568</code></a>
+                            <a href="../files/src_scene.js.html#l622"><code>src&#x2F;scene.js:622</code></a>
                             </p>
                     
                     
@@ -2488,7 +2529,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l1046"><code>src&#x2F;scene.js:1046</code></a>
+                            <a href="../files/src_scene.js.html#l1100"><code>src&#x2F;scene.js:1100</code></a>
                             </p>
                     
                     
@@ -2517,11 +2558,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Component.html#property_scene">
-                                    Component
-                                </a>
-                                but overwritten in
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_scene">Component</a>:
                             <a href="../files/src_component.js.html#l209"><code>src&#x2F;component.js:209</code></a>
                             </p>
                     
@@ -2548,7 +2586,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l1069"><code>src&#x2F;scene.js:1069</code></a>
+                            <a href="../files/src_scene.js.html#l1123"><code>src&#x2F;scene.js:1123</code></a>
                             </p>
                     
                     
@@ -2579,7 +2617,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l1092"><code>src&#x2F;scene.js:1092</code></a>
+                            <a href="../files/src_scene.js.html#l1146"><code>src&#x2F;scene.js:1146</code></a>
                             </p>
                     
                     
@@ -2609,7 +2647,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l1115"><code>src&#x2F;scene.js:1115</code></a>
+                            <a href="../files/src_scene.js.html#l1169"><code>src&#x2F;scene.js:1169</code></a>
                             </p>
                     
                     
@@ -2640,7 +2678,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l692"><code>src&#x2F;scene.js:692</code></a>
+                            <a href="../files/src_scene.js.html#l746"><code>src&#x2F;scene.js:746</code></a>
                             </p>
                     
                     
@@ -2782,7 +2820,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l644"><code>src&#x2F;scene.js:644</code></a>
+                            <a href="../files/src_scene.js.html#l698"><code>src&#x2F;scene.js:698</code></a>
                             </p>
                     
                     
@@ -2867,7 +2905,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l596"><code>src&#x2F;scene.js:596</code></a>
+                            <a href="../files/src_scene.js.html#l650"><code>src&#x2F;scene.js:650</code></a>
                             </p>
                     
                     
@@ -2897,7 +2935,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l1139"><code>src&#x2F;scene.js:1139</code></a>
+                            <a href="../files/src_scene.js.html#l1193"><code>src&#x2F;scene.js:1193</code></a>
                             </p>
                     
                     
@@ -2928,7 +2966,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l834"><code>src&#x2F;scene.js:834</code></a>
+                            <a href="../files/src_scene.js.html#l888"><code>src&#x2F;scene.js:888</code></a>
                             </p>
                     
                     
@@ -2958,7 +2996,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l1164"><code>src&#x2F;scene.js:1164</code></a>
+                            <a href="../files/src_scene.js.html#l1218"><code>src&#x2F;scene.js:1218</code></a>
                             </p>
                     
                     
@@ -3191,7 +3229,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_scene.js.html#l554"><code>src&#x2F;scene.js:554</code></a>
+                            <a href="../files/src_scene.js.html#l608"><code>src&#x2F;scene.js:608</code></a>
                             </p>
                     
                     
@@ -3213,6 +3251,112 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                                         <div class="param-description">
                                             <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_rendering" class="events item">
+                        <h3 class="name"><code>rendering</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_scene.js.html#l551"><code>src&#x2F;scene.js:551</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired when about to render a frame for a Scene.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">sceneID</code>
+                                            <span class="type">String</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The ID of this Scene.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">pass</code>
+                                            <span class="type">Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Index of the pass we are about to render (see <a href="../classes/Scene.html#property_passes" class="crosslink">passes</a>).</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_rendering" class="events item">
+                        <h3 class="name"><code>rendering</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_scene.js.html#l564"><code>src&#x2F;scene.js:564</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired when we have just rendered a frame for a Scene.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">sceneID</code>
+                                            <span class="type">String</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The ID of this Scene.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">pass</code>
+                                            <span class="type">Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Index of the pass we rendered (see <a href="../classes/Scene.html#property_passes" class="crosslink">passes</a>).</p>
                     
                                         </div>
                     

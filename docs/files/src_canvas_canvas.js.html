@@ -627,6 +627,64 @@
             }
         },
 
+        /**
+         Returns a snapshot of this Canvas as a Base64-encoded image.
+
+         #### Usage:
+         &#x60;&#x60;&#x60;&#x60;javascript
+         imageElement.src = myScene.canvas.getSnapshot({
+             width: 500, // Defaults to size of canvas
+             height: 500,
+             format: &quot;png&quot; // Options are &quot;jpeg&quot; (default), &quot;png&quot; and &quot;bmp&quot;
+         });
+         &#x60;&#x60;&#x60;&#x60;
+
+         @method getSnapshot
+         @param {*} [params] Capture options.
+         @param {Number} [params.width] Desired width of result in pixels - defaults to width of canvas.
+         @param {Number} [params.height] Desired height of result in pixels - defaults to height of canvas.
+         @param {String} [params.format=&quot;jpeg&quot;] Desired format; &quot;jpeg&quot;, &quot;png&quot; or &quot;bmp&quot;.
+         @returns {String} String-encoded image data.
+         */
+        getSnapshot: function (params) {
+
+            if (!this.canvas) {
+                this.error(&quot;Can&#x27;t get snapshot - no canvas.&quot;);
+                return;
+            }
+
+            // Force-render a frame
+            this.scene.render();
+
+            params = params || {};
+
+            var width = params.width || this.canvas.width;
+            var height = params.height || this.canvas.height;
+            var format = params.format || &quot;jpeg&quot;;
+            var image;
+
+            switch (format) {
+                case &quot;jpeg&quot;:
+                    image = Canvas2Image.saveAsJPEG(this.canvas, true, width, height);
+                    break;
+
+                case &quot;png&quot;:
+                    image = Canvas2Image.saveAsPNG(this.canvas, true, width, height);
+                    break;
+
+                case &quot;bmp&quot;:
+                    image = Canvas2Image.saveAsBMP(this.canvas, true, width, height);
+                    break;
+
+                default:
+                    this.error(&quot;Unsupported snapshot format: &#x27;&quot; + format
+                        + &quot;&#x27; - supported types are &#x27;jpeg&#x27;, &#x27;bmp&#x27; and &#x27;png&#x27; - defaulting to &#x27;jpeg&#x27;&quot;);
+                    image = Canvas2Image.saveAsJPEG(this.canvas, true, width, height);
+            }
+
+            return image.src;
+        },
+
         _props: {
 
             /**

@@ -186,7 +186,7 @@
 
 
         <div class="foundat">
-            Defined in: <a href="../files/src_sceneComponent.js.html#l1"><code>src&#x2F;sceneComponent.js:1</code></a>
+            Defined in: <a href="../files/src_component.js.html#l1"><code>src&#x2F;component.js:1</code></a>
         </div>
 
             Module: <a href="../modules/XEO.html">XEO</a>
@@ -195,7 +195,7 @@
 
 
 <div class="box intro">
-    <p><strong>SceneComponent</strong> is the base class for all xeoEngine components.</p>
+    <p><strong>Component</strong> is the base class for all xeoEngine components.</p>
 <h2 id="contents">Contents</h2>
 <p><Ul>
  <li><a href="#ids">Component IDs</a></li>
@@ -355,7 +355,7 @@ var geometry = new XEO.Geometry(scene, {
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_sceneComponent.js.html#l1"><code>src&#x2F;sceneComponent.js:1</code></a>
+                <a href="../files/src_component.js.html#l1"><code>src&#x2F;component.js:1</code></a>
                 </p>
         
         
@@ -460,10 +460,6 @@ var geometry = new XEO.Geometry(scene, {
 
                             </li>
                             <li class="index-item method">
-                                <a href="#method_create">create</a>
-
-                            </li>
-                            <li class="index-item method">
                                 <a href="#method_destroy">destroy</a>
 
                             </li>
@@ -519,19 +515,11 @@ var geometry = new XEO.Geometry(scene, {
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_isDefault">isDefault</a>
-
-                            </li>
-                            <li class="index-item property">
                                 <a href="#property_json">json</a>
 
                             </li>
                             <li class="index-item property">
                                 <a href="#property_metadata">metadata</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_scene">scene</a>
 
                             </li>
                             <li class="index-item property">
@@ -573,124 +561,6 @@ var geometry = new XEO.Geometry(scene, {
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
-<div id="method_create" class="method item">
-    <h3 class="name"><code>create</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>type</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[cfg]</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[instanceId]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_sceneComponent.js.html#l506"><code>src&#x2F;sceneComponent.js:506</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
-<p>You would typically use this method to conveniently instantiate components that you&#39;d want to
-share (ie. "instance") among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
-<p>The method is given a component type, configuration and optional instance ID, like so:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(XEO.PhongMaterial, {
-     diffuse: [1,0,0],
-     specular: [1,1,0]
-}, "myMaterial");
-</code></pre>
-<p>The first time you call this method for the given <code>type</code> and <code>instanceId</code>, this method will create the
-<a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, passing the given  attributes to the component&#39;s constructor.</p>
-<p>If you call this method again, specifying the same <code>type</code> and <code>instanceId</code>, the method will return the same
-component instance that it returned the first time, and will ignore the configuration:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
-</code></pre>
-<p>So inthis example, our <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> will continue to have the red specular
-and diffuse color that we specified the first time.</p>
-<p>Each time you call this method with the same <code>type</code> and <code>instanceId</code>, the Scene will internally increment a
-reference count for the component instance. You can release the shared component instance with a call to
-Scene/putSharedComponent:method, and once you have released it as many
-times as you got it, the Scene will destroy the component.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">type</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                        <p>Component type - either a string like &quot;XEO.PhongMaterial&quot; or the actual
-constructor function, ie. XEO.PhongMaterial.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[cfg]</code>
-                        <span class="type"></span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Configuration for the component instance - only used if this is the first time you are getting
-the component, ignored when reusing an existing instance.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[instanceId]</code>
-                        <span class="type">String | Number</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Identifies the shared component instance. Note that this is not used as the ID of the
-component - you can specify the component ID in the <code>cfg</code> parameter.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type"></span>:
-            </div>
-        </div>
-
-
-</div>
 <div id="method_create" class="method item">
     <h3 class="name"><code>create</code></h3>
 
@@ -1492,31 +1362,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_sceneComponent.js.html#l254"><code>src&#x2F;sceneComponent.js:254</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Indicates whether this is one of the <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s built-in Components.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_isDefault" class="property item">
-                        <h3 class="name"><code>isDefault</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
                             <a href="../files/src_component.js.html#l264"><code>src&#x2F;component.js:264</code></a>
                             </p>
                     
@@ -1595,32 +1440,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     <p>
                                     Defined in
                             <a href="../files/src_component.js.html#l209"><code>src&#x2F;component.js:209</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The parent <a href="../classes/Scene.html" class="crosslink">Scene</a> that contains this Component.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_scene" class="property item">
-                        <h3 class="name"><code>scene</code></h3>
-                        <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_sceneComponent.js.html#l207"><code>src&#x2F;sceneComponent.js:207</code></a>
                             </p>
                     
                     

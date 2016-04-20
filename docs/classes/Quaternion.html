@@ -254,11 +254,12 @@ var entity2 = new XEO.Entity({
 
 Entity2.transform = scale2;
 </code></pre>
-<p>And just for fun, we&#39;ll start spinning the Quaternion:</p>
+<p>Let&#39;s spin the Quaternion:</p>
 <pre class="code prettyprint"><code class="lang-javascript">// Rotate 0.2 degrees about Y-axis on each frame
-scene.on("tick", function(e) {
-   quaternion.rotate([0, 1, 0, 0.2]);
-});
+scene.on("tick",
+function(e) {
+       quaternion.rotate([0, 1, 0, 0.2]);
+   });
 </code></pre>
 
 </div>
@@ -390,7 +391,7 @@ scene.on("tick", function(e) {
                     <h3>Methods</h3>
 
                     <ul class="index-list methods extends">
-                            <li class="index-item method inherited inherited">
+                            <li class="index-item method inherited">
                                 <a href="#method_create">create</a>
 
                             </li>
@@ -449,7 +450,7 @@ scene.on("tick", function(e) {
                                 <a href="#property_id">id</a>
 
                             </li>
-                            <li class="index-item property inherited inherited">
+                            <li class="index-item property inherited">
                                 <a href="#property_isDefault">isDefault</a>
 
                             </li>
@@ -469,7 +470,7 @@ scene.on("tick", function(e) {
                                 <a href="#property_parent">parent</a>
 
                             </li>
-                            <li class="index-item property inherited inherited">
+                            <li class="index-item property inherited">
                                 <a href="#property_scene">scene</a>
 
                             </li>
@@ -553,11 +554,8 @@ scene.on("tick", function(e) {
 
 
     <div class="meta">
-            <p>Inherited from
-            <a href="../classes/Component.html#method_create">
-                Component
-            </a>
-            but overwritten in
+                <p>Inherited from
+                <a href="../classes/Component.html#method_create">Component</a>:
         <a href="../files/src_component.js.html#l829"><code>src&#x2F;component.js:829</code></a>
         </p>
 
@@ -1225,7 +1223,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_transforms_quaternion.js.html#l129"><code>src&#x2F;transforms&#x2F;quaternion.js:129</code></a>
+        <a href="../files/src_transforms_quaternion.js.html#l139"><code>src&#x2F;transforms&#x2F;quaternion.js:139</code></a>
         </p>
 
 
@@ -1244,7 +1242,7 @@ Fires an <a href="../classes/Quaternion.html#event_xyzw" class="crosslink">xyzw<
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">angleAxis</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -1382,11 +1380,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Component.html#property_isDefault">
-                                    Component
-                                </a>
-                                but overwritten in
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_isDefault">Component</a>:
                             <a href="../files/src_component.js.html#l264"><code>src&#x2F;component.js:264</code></a>
                             </p>
                     
@@ -1518,11 +1513,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Component.html#property_scene">
-                                    Component
-                                </a>
-                                but overwritten in
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_scene">Component</a>:
                             <a href="../files/src_component.js.html#l209"><code>src&#x2F;component.js:209</code></a>
                             </p>
                     
@@ -1638,14 +1630,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_quaternion.js.html#l101"><code>src&#x2F;transforms&#x2F;quaternion.js:101</code></a>
+                            <a href="../files/src_transforms_quaternion.js.html#l104"><code>src&#x2F;transforms&#x2F;quaternion.js:104</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The quaternion elements
+                            <p>The quaternion elements.
                     Fires an <a href="../classes/Quaternion.html#event_xyzw" class="crosslink">xyzw</a> event on change.</p>
                     
                         </div>
@@ -1807,7 +1799,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_quaternion.js.html#l114"><code>src&#x2F;transforms&#x2F;quaternion.js:114</code></a>
+                            <a href="../files/src_transforms_quaternion.js.html#l124"><code>src&#x2F;transforms&#x2F;quaternion.js:124</code></a>
                             </p>
                     
                     

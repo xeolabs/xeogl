@@ -288,7 +288,7 @@ var scene = new XEO.Scene({
                     <h3>Methods</h3>
 
                     <ul class="index-list methods extends">
-                            <li class="index-item method inherited inherited">
+                            <li class="index-item method inherited">
                                 <a href="#method_create">create</a>
 
                             </li>
@@ -302,6 +302,10 @@ var scene = new XEO.Scene({
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_fire">fire</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_getSnapshot">getSnapshot</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -359,7 +363,7 @@ var scene = new XEO.Scene({
                                 <a href="#property_id">id</a>
 
                             </li>
-                            <li class="index-item property inherited inherited">
+                            <li class="index-item property inherited">
                                 <a href="#property_isDefault">isDefault</a>
 
                             </li>
@@ -371,7 +375,7 @@ var scene = new XEO.Scene({
                                 <a href="#property_metadata">metadata</a>
 
                             </li>
-                            <li class="index-item property inherited inherited">
+                            <li class="index-item property inherited">
                                 <a href="#property_scene">scene</a>
 
                             </li>
@@ -455,11 +459,8 @@ var scene = new XEO.Scene({
 
 
     <div class="meta">
-            <p>Inherited from
-            <a href="../classes/Component.html#method_create">
-                Component
-            </a>
-            but overwritten in
+                <p>Inherited from
+                <a href="../classes/Component.html#method_create">Component</a>:
         <a href="../files/src_component.js.html#l829"><code>src&#x2F;component.js:829</code></a>
         </p>
 
@@ -724,6 +725,116 @@ any subsequent notifications on that location as they are made.</p>
             </ul>
         </div>
 
+
+
+</div>
+<div id="method_getSnapshot" class="method item">
+    <h3 class="name"><code>getSnapshot</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code class="optional">[params]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">String</span>
+        </span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_canvas_canvas.js.html#l443"><code>src&#x2F;canvas&#x2F;canvas.js:443</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Returns a snapshot of this Canvas as a Base64-encoded image.</p>
+<h4 id="usage-">Usage:</h4>
+<pre class="code prettyprint"><code class="lang-javascript">imageElement.src = myScene.canvas.getSnapshot({
+    width: 500, // Defaults to size of canvas
+    height: 500,
+    format: &quot;png&quot; // Options are &quot;jpeg&quot; (default), &quot;png&quot; and &quot;bmp&quot;
+});
+</code></pre>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name optional">[params]</code>
+                        <span class="type"></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Capture options.</p>
+
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name optional">[width]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Desired width of result in pixels - defaults to width of canvas.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[height]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Desired height of result in pixels - defaults to height of canvas.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[format=&quot;jpeg&quot;]</code>
+                                    <span class="type">String</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Desired format; &quot;jpeg&quot;, &quot;png&quot; or &quot;bmp&quot;.</p>
+
+                                </div>
+
+                            </li>
+                        </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">String</span>:
+                    <p>String-encoded image data.</p>
+
+            </div>
+        </div>
 
 
 </div>
@@ -1349,11 +1460,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Component.html#property_isDefault">
-                                    Component
-                                </a>
-                                but overwritten in
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_isDefault">Component</a>:
                             <a href="../files/src_component.js.html#l264"><code>src&#x2F;component.js:264</code></a>
                             </p>
                     
@@ -1429,11 +1537,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Component.html#property_scene">
-                                    Component
-                                </a>
-                                but overwritten in
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_scene">Component</a>:
                             <a href="../files/src_component.js.html#l209"><code>src&#x2F;component.js:209</code></a>
                             </p>
                     
@@ -1460,7 +1565,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l445"><code>src&#x2F;canvas&#x2F;canvas.js:445</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l503"><code>src&#x2F;canvas&#x2F;canvas.js:503</code></a>
                             </p>
                     
                     
