@@ -181,8 +181,12 @@
                             self.fire("keydown", e.keyCode, true);
                         }
                     }
-                }, true);
 
+                    if (self.mouseover) {
+                        e.preventDefault();
+                    }
+
+                }, true);
 
             document.addEventListener("keyup",
                 this._keyUpListener = function (e) {
@@ -367,7 +371,6 @@
             cfg.element.addEventListener("mousemove",
                 this._mouseMoveListener = function (e) {
 
-
                     if (!self.enabled) {
                         return;
                     }
@@ -385,6 +388,7 @@
 
             cfg.element.addEventListener("mousewheel",
                 this._mouseWheelListener = function (e, d) {
+
                     if (!self.enabled) {
                         return;
                     }
@@ -398,6 +402,10 @@
                      * @param delta {Number} The mouse wheel delta,
                      */
                     self.fire("mousewheel", delta, true);
+
+                    if (self.mouseover) {
+                        e.preventDefault();
+                    }
                 });
 
             // mouseclicked
