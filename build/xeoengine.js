@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-04-20
+ * Built on 2016-04-27
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -26874,8 +26874,12 @@ XEO.PathGeometry = XEO.Geometry.extend({
                             self.fire("keydown", e.keyCode, true);
                         }
                     }
-                }, true);
 
+                    if (self.mouseover) {
+                        e.preventDefault();
+                    }
+
+                }, true);
 
             document.addEventListener("keyup",
                 this._keyUpListener = function (e) {
@@ -27060,7 +27064,6 @@ XEO.PathGeometry = XEO.Geometry.extend({
             cfg.element.addEventListener("mousemove",
                 this._mouseMoveListener = function (e) {
 
-
                     if (!self.enabled) {
                         return;
                     }
@@ -27078,6 +27081,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
 
             cfg.element.addEventListener("mousewheel",
                 this._mouseWheelListener = function (e, d) {
+
                     if (!self.enabled) {
                         return;
                     }
@@ -27091,6 +27095,10 @@ XEO.PathGeometry = XEO.Geometry.extend({
                      * @param delta {Number} The mouse wheel delta,
                      */
                     self.fire("mousewheel", delta, true);
+
+                    if (self.mouseover) {
+                        e.preventDefault();
+                    }
                 });
 
             // mouseclicked

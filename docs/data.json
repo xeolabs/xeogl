@@ -13544,7 +13544,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 205,
+            "line": 209,
             "description": "Fired whenever a key is released while the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas{{/crossLink}} has input focus.",
             "itemtype": "event",
             "name": "keyup",
@@ -13561,7 +13561,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 227,
+            "line": 231,
             "description": "Fired whenever the mouse is moved into of the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas{{/crossLink}}.",
             "itemtype": "event",
             "name": "mouseover",
@@ -13578,7 +13578,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 247,
+            "line": 251,
             "description": "Fired whenever the mouse is moved out of the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas{{/crossLink}}.",
             "itemtype": "event",
             "name": "mouseout",
@@ -13595,7 +13595,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 284,
+            "line": 288,
             "description": "Fired whenever the mouse is pressed over the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas{{/crossLink}}.",
             "itemtype": "event",
             "name": "mousedown",
@@ -13612,7 +13612,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 320,
+            "line": 324,
             "description": "Fired whenever the mouse is released over the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas{{/crossLink}}.",
             "itemtype": "event",
             "name": "mouseup",
@@ -13629,7 +13629,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 358,
+            "line": 362,
             "description": "Fired whenever the mouse is double-clicked over the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas{{/crossLink}}.",
             "itemtype": "event",
             "name": "dblclick",
@@ -13646,7 +13646,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 377,
+            "line": 380,
             "description": "Fired whenever the mouse is moved over the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas{{/crossLink}}.",
             "itemtype": "event",
             "name": "mousedown",
@@ -13663,7 +13663,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 394,
+            "line": 398,
             "description": "Fired whenever the mouse wheel is moved over the parent\n{{#crossLink \"Viewer\"}}Viewer{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas{{/crossLink}}.",
             "itemtype": "event",
             "name": "mousewheel",
@@ -13680,7 +13680,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 427,
+            "line": 435,
             "description": "Fired whenever the mouse is clicked over the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas{{/crossLink}}.",
             "itemtype": "event",
             "name": "mouseclicked",
@@ -13697,7 +13697,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 488,
+            "line": 496,
             "description": "Fired when the orientation of the device has changed.",
             "itemtype": "event",
             "name": "orientationchange",
@@ -13717,7 +13717,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 535,
+            "line": 543,
             "description": "Fires on a regular interval and returns data about the rotation\n(in degrees per second) and acceleration (in meters per second squared) of the device, at that moment in\ntime. Some devices do not have the hardware to exclude the effect of gravity.",
             "itemtype": "event",
             "name": "devicemotion",
@@ -13745,7 +13745,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 564,
+            "line": 572,
             "description": "Fired when fresh data is available from an orientation sensor about the current orientation\nof the device as compared to the Earth coordinate frame. This data is gathered from a\nmagnetometer inside the device. See\n<a href=\"https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Orientation_and_motion_data_explained\">Orientation and motion data explained</a> for more info.",
             "itemtype": "event",
             "name": "deviceorientation",
@@ -13773,7 +13773,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 606,
+            "line": 614,
             "description": "Enable or disable all input handlers",
             "params": [
                 {
@@ -13787,7 +13787,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 619,
+            "line": 627,
             "description": "Code for the BACKSPACE key.",
             "itemtype": "property",
             "name": "KEY_BACKSPACE",
@@ -13799,7 +13799,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 627,
+            "line": 635,
             "description": "Code for the TAB key.",
             "itemtype": "property",
             "name": "KEY_TAB",
@@ -13811,7 +13811,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 635,
+            "line": 643,
             "description": "Code for the ENTER key.",
             "itemtype": "property",
             "name": "KEY_ENTER",
@@ -13823,7 +13823,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 643,
+            "line": 651,
             "description": "Code for the SHIFT key.",
             "itemtype": "property",
             "name": "KEY_SHIFT",
@@ -13835,7 +13835,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 651,
+            "line": 659,
             "description": "Code for the CTRL key.",
             "itemtype": "property",
             "name": "KEY_CTRL",
@@ -13847,7 +13847,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 659,
+            "line": 667,
             "description": "Code for the ALT key.",
             "itemtype": "property",
             "name": "KEY_ALT",
@@ -13859,7 +13859,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 667,
+            "line": 675,
             "description": "Code for the PAUSE_BREAK key.",
             "itemtype": "property",
             "name": "KEY_PAUSE_BREAK",
@@ -13871,7 +13871,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 675,
+            "line": 683,
             "description": "Code for the CAPS_LOCK key.",
             "itemtype": "property",
             "name": "KEY_CAPS_LOCK",
@@ -13883,7 +13883,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 683,
+            "line": 691,
             "description": "Code for the ESCAPE key.",
             "itemtype": "property",
             "name": "KEY_ESCAPE",
@@ -13895,7 +13895,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 691,
+            "line": 699,
             "description": "Code for the PAGE_UP key.",
             "itemtype": "property",
             "name": "KEY_PAGE_UP",
@@ -13907,7 +13907,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 699,
+            "line": 707,
             "description": "Code for the PAGE_DOWN key.",
             "itemtype": "property",
             "name": "KEY_PAGE_DOWN",
@@ -13919,7 +13919,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 707,
+            "line": 715,
             "description": "Code for the END key.",
             "itemtype": "property",
             "name": "KEY_END",
@@ -13931,7 +13931,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 715,
+            "line": 723,
             "description": "Code for the HOME key.",
             "itemtype": "property",
             "name": "KEY_HOME",
@@ -13943,7 +13943,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 723,
+            "line": 731,
             "description": "Code for the LEFT_ARROW key.",
             "itemtype": "property",
             "name": "KEY_LEFT_ARROW",
@@ -13955,7 +13955,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 731,
+            "line": 739,
             "description": "Code for the UP_ARROW key.",
             "itemtype": "property",
             "name": "KEY_UP_ARROW",
@@ -13967,7 +13967,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 739,
+            "line": 747,
             "description": "Code for the RIGHT_ARROW key.",
             "itemtype": "property",
             "name": "KEY_RIGHT_ARROW",
@@ -13979,7 +13979,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 747,
+            "line": 755,
             "description": "Code for the DOWN_ARROW key.",
             "itemtype": "property",
             "name": "KEY_DOWN_ARROW",
@@ -13991,7 +13991,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 755,
+            "line": 763,
             "description": "Code for the INSERT key.",
             "itemtype": "property",
             "name": "KEY_INSERT",
@@ -14003,7 +14003,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 763,
+            "line": 771,
             "description": "Code for the DELETE key.",
             "itemtype": "property",
             "name": "KEY_DELETE",
@@ -14015,7 +14015,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 771,
+            "line": 779,
             "description": "Code for the 0 key.",
             "itemtype": "property",
             "name": "KEY_NUM_0",
@@ -14027,7 +14027,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 779,
+            "line": 787,
             "description": "Code for the 1 key.",
             "itemtype": "property",
             "name": "KEY_NUM_1",
@@ -14039,7 +14039,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 787,
+            "line": 795,
             "description": "Code for the 2 key.",
             "itemtype": "property",
             "name": "KEY_NUM_2",
@@ -14051,7 +14051,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 795,
+            "line": 803,
             "description": "Code for the 3 key.",
             "itemtype": "property",
             "name": "KEY_NUM_3",
@@ -14063,7 +14063,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 803,
+            "line": 811,
             "description": "Code for the 4 key.",
             "itemtype": "property",
             "name": "KEY_NUM_4",
@@ -14075,7 +14075,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 811,
+            "line": 819,
             "description": "Code for the 5 key.",
             "itemtype": "property",
             "name": "KEY_NUM_5",
@@ -14087,7 +14087,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 819,
+            "line": 827,
             "description": "Code for the 6 key.",
             "itemtype": "property",
             "name": "KEY_NUM_6",
@@ -14099,7 +14099,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 827,
+            "line": 835,
             "description": "Code for the 7 key.",
             "itemtype": "property",
             "name": "KEY_NUM_7",
@@ -14111,7 +14111,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 835,
+            "line": 843,
             "description": "Code for the 8 key.",
             "itemtype": "property",
             "name": "KEY_NUM_8",
@@ -14123,7 +14123,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 843,
+            "line": 851,
             "description": "Code for the 9 key.",
             "itemtype": "property",
             "name": "KEY_NUM_9",
@@ -14135,7 +14135,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 851,
+            "line": 859,
             "description": "Code for the A key.",
             "itemtype": "property",
             "name": "KEY_A",
@@ -14147,7 +14147,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 859,
+            "line": 867,
             "description": "Code for the B key.",
             "itemtype": "property",
             "name": "KEY_B",
@@ -14159,7 +14159,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 867,
+            "line": 875,
             "description": "Code for the C key.",
             "itemtype": "property",
             "name": "KEY_C",
@@ -14171,7 +14171,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 875,
+            "line": 883,
             "description": "Code for the D key.",
             "itemtype": "property",
             "name": "KEY_D",
@@ -14183,7 +14183,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 883,
+            "line": 891,
             "description": "Code for the E key.",
             "itemtype": "property",
             "name": "KEY_E",
@@ -14195,7 +14195,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 891,
+            "line": 899,
             "description": "Code for the F key.",
             "itemtype": "property",
             "name": "KEY_F",
@@ -14207,7 +14207,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 899,
+            "line": 907,
             "description": "Code for the G key.",
             "itemtype": "property",
             "name": "KEY_G",
@@ -14219,7 +14219,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 907,
+            "line": 915,
             "description": "Code for the H key.",
             "itemtype": "property",
             "name": "KEY_H",
@@ -14231,7 +14231,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 915,
+            "line": 923,
             "description": "Code for the I key.",
             "itemtype": "property",
             "name": "KEY_I",
@@ -14243,7 +14243,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 923,
+            "line": 931,
             "description": "Code for the J key.",
             "itemtype": "property",
             "name": "KEY_J",
@@ -14255,7 +14255,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 931,
+            "line": 939,
             "description": "Code for the K key.",
             "itemtype": "property",
             "name": "KEY_K",
@@ -14267,7 +14267,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 939,
+            "line": 947,
             "description": "Code for the L key.",
             "itemtype": "property",
             "name": "KEY_L",
@@ -14279,7 +14279,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 947,
+            "line": 955,
             "description": "Code for the M key.",
             "itemtype": "property",
             "name": "KEY_M",
@@ -14291,7 +14291,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 955,
+            "line": 963,
             "description": "Code for the N key.",
             "itemtype": "property",
             "name": "KEY_N",
@@ -14303,7 +14303,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 963,
+            "line": 971,
             "description": "Code for the O key.",
             "itemtype": "property",
             "name": "KEY_O",
@@ -14315,7 +14315,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 971,
+            "line": 979,
             "description": "Code for the P key.",
             "itemtype": "property",
             "name": "KEY_P",
@@ -14327,7 +14327,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 979,
+            "line": 987,
             "description": "Code for the Q key.",
             "itemtype": "property",
             "name": "KEY_Q",
@@ -14339,7 +14339,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 987,
+            "line": 995,
             "description": "Code for the R key.",
             "itemtype": "property",
             "name": "KEY_R",
@@ -14351,7 +14351,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 995,
+            "line": 1003,
             "description": "Code for the S key.",
             "itemtype": "property",
             "name": "KEY_S",
@@ -14363,7 +14363,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1003,
+            "line": 1011,
             "description": "Code for the T key.",
             "itemtype": "property",
             "name": "KEY_T",
@@ -14375,7 +14375,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1011,
+            "line": 1019,
             "description": "Code for the U key.",
             "itemtype": "property",
             "name": "KEY_U",
@@ -14387,7 +14387,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1019,
+            "line": 1027,
             "description": "Code for the V key.",
             "itemtype": "property",
             "name": "KEY_V",
@@ -14399,7 +14399,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1027,
+            "line": 1035,
             "description": "Code for the W key.",
             "itemtype": "property",
             "name": "KEY_W",
@@ -14411,7 +14411,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1035,
+            "line": 1043,
             "description": "Code for the X key.",
             "itemtype": "property",
             "name": "KEY_X",
@@ -14423,7 +14423,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1043,
+            "line": 1051,
             "description": "Code for the Y key.",
             "itemtype": "property",
             "name": "KEY_Y",
@@ -14435,7 +14435,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1051,
+            "line": 1059,
             "description": "Code for the Z key.",
             "itemtype": "property",
             "name": "KEY_Z",
@@ -14447,7 +14447,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1059,
+            "line": 1067,
             "description": "Code for the LEFT_WINDOW key.",
             "itemtype": "property",
             "name": "KEY_LEFT_WINDOW",
@@ -14459,7 +14459,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1067,
+            "line": 1075,
             "description": "Code for the RIGHT_WINDOW key.",
             "itemtype": "property",
             "name": "KEY_RIGHT_WINDOW",
@@ -14471,7 +14471,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1075,
+            "line": 1083,
             "description": "Code for the SELECT key.",
             "itemtype": "property",
             "name": "KEY_SELECT",
@@ -14483,7 +14483,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1083,
+            "line": 1091,
             "description": "Code for the number pad 0 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_0",
@@ -14495,7 +14495,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1091,
+            "line": 1099,
             "description": "Code for the number pad 1 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_1",
@@ -14507,7 +14507,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1099,
+            "line": 1107,
             "description": "Code for the number pad 2 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD 2",
@@ -14519,7 +14519,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1107,
+            "line": 1115,
             "description": "Code for the number pad 3 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_3",
@@ -14531,7 +14531,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1115,
+            "line": 1123,
             "description": "Code for the number pad 4 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_4",
@@ -14543,7 +14543,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1123,
+            "line": 1131,
             "description": "Code for the number pad 5 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_5",
@@ -14555,7 +14555,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1131,
+            "line": 1139,
             "description": "Code for the number pad 6 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_6",
@@ -14567,7 +14567,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1139,
+            "line": 1147,
             "description": "Code for the number pad 7 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_7",
@@ -14579,7 +14579,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1147,
+            "line": 1155,
             "description": "Code for the number pad 8 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_8",
@@ -14591,7 +14591,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1155,
+            "line": 1163,
             "description": "Code for the number pad 9 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_9",
@@ -14603,7 +14603,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1163,
+            "line": 1171,
             "description": "Code for the MULTIPLY key.",
             "itemtype": "property",
             "name": "KEY_MULTIPLY",
@@ -14615,7 +14615,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1171,
+            "line": 1179,
             "description": "Code for the ADD key.",
             "itemtype": "property",
             "name": "KEY_ADD",
@@ -14627,7 +14627,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1179,
+            "line": 1187,
             "description": "Code for the SUBTRACT key.",
             "itemtype": "property",
             "name": "KEY_SUBTRACT",
@@ -14639,7 +14639,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1187,
+            "line": 1195,
             "description": "Code for the DECIMAL POINT key.",
             "itemtype": "property",
             "name": "KEY_DECIMAL_POINT",
@@ -14651,7 +14651,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1195,
+            "line": 1203,
             "description": "Code for the DIVIDE key.",
             "itemtype": "property",
             "name": "KEY_DIVIDE",
@@ -14663,7 +14663,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1203,
+            "line": 1211,
             "description": "Code for the F1 key.",
             "itemtype": "property",
             "name": "KEY_F1",
@@ -14675,7 +14675,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1211,
+            "line": 1219,
             "description": "Code for the F2 key.",
             "itemtype": "property",
             "name": "KEY_F2",
@@ -14687,7 +14687,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1219,
+            "line": 1227,
             "description": "Code for the F3 key.",
             "itemtype": "property",
             "name": "KEY_F3",
@@ -14699,7 +14699,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1227,
+            "line": 1235,
             "description": "Code for the F4 key.",
             "itemtype": "property",
             "name": "KEY_F4",
@@ -14711,7 +14711,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1235,
+            "line": 1243,
             "description": "Code for the F5 key.",
             "itemtype": "property",
             "name": "KEY_F5",
@@ -14723,7 +14723,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1243,
+            "line": 1251,
             "description": "Code for the F6 key.",
             "itemtype": "property",
             "name": "KEY_F6",
@@ -14735,7 +14735,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1251,
+            "line": 1259,
             "description": "Code for the F7 key.",
             "itemtype": "property",
             "name": "KEY_F7",
@@ -14747,7 +14747,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1259,
+            "line": 1267,
             "description": "Code for the F8 key.",
             "itemtype": "property",
             "name": "KEY_F8",
@@ -14759,7 +14759,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1267,
+            "line": 1275,
             "description": "Code for the F9 key.",
             "itemtype": "property",
             "name": "KEY_F9",
@@ -14771,7 +14771,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1275,
+            "line": 1283,
             "description": "Code for the F10 key.",
             "itemtype": "property",
             "name": "KEY_F10",
@@ -14783,7 +14783,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1283,
+            "line": 1291,
             "description": "Code for the F11 key.",
             "itemtype": "property",
             "name": "KEY_F11",
@@ -14795,7 +14795,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1291,
+            "line": 1299,
             "description": "Code for the F12 key.",
             "itemtype": "property",
             "name": "KEY_F12",
@@ -14807,7 +14807,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1299,
+            "line": 1307,
             "description": "Code for the NUM_LOCK key.",
             "itemtype": "property",
             "name": "KEY_NUM_LOCK",
@@ -14819,7 +14819,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1307,
+            "line": 1315,
             "description": "Code for the SCROLL_LOCK key.",
             "itemtype": "property",
             "name": "KEY_SCROLL_LOCK",
@@ -14831,7 +14831,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1315,
+            "line": 1323,
             "description": "Code for the SEMI_COLON key.",
             "itemtype": "property",
             "name": "KEY_SEMI_COLON",
@@ -14843,7 +14843,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1323,
+            "line": 1331,
             "description": "Code for the EQUAL_SIGN key.",
             "itemtype": "property",
             "name": "KEY_EQUAL_SIGN",
@@ -14855,7 +14855,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1331,
+            "line": 1339,
             "description": "Code for the COMMA key.",
             "itemtype": "property",
             "name": "KEY_COMMA",
@@ -14867,7 +14867,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1339,
+            "line": 1347,
             "description": "Code for the DASH key.",
             "itemtype": "property",
             "name": "KEY_DASH",
@@ -14879,7 +14879,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1347,
+            "line": 1355,
             "description": "Code for the PERIOD key.",
             "itemtype": "property",
             "name": "KEY_PERIOD",
@@ -14891,7 +14891,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1355,
+            "line": 1363,
             "description": "Code for the FORWARD_SLASH key.",
             "itemtype": "property",
             "name": "KEY_FORWARD_SLASH",
@@ -14903,7 +14903,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1363,
+            "line": 1371,
             "description": "Code for the GRAVE_ACCENT key.",
             "itemtype": "property",
             "name": "KEY_GRAVE_ACCENT",
@@ -14915,7 +14915,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1371,
+            "line": 1379,
             "description": "Code for the OPEN_BRACKET key.",
             "itemtype": "property",
             "name": "KEY_OPEN_BRACKET",
@@ -14927,7 +14927,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1379,
+            "line": 1387,
             "description": "Code for the BACK_SLASH key.",
             "itemtype": "property",
             "name": "KEY_BACK_SLASH",
@@ -14939,7 +14939,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1387,
+            "line": 1395,
             "description": "Code for the CLOSE_BRACKET key.",
             "itemtype": "property",
             "name": "KEY_CLOSE_BRACKET",
@@ -14951,7 +14951,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1395,
+            "line": 1403,
             "description": "Code for the SINGLE_QUOTE key.",
             "itemtype": "property",
             "name": "KEY_SINGLE_QUOTE",
@@ -14963,7 +14963,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1403,
+            "line": 1411,
             "description": "Code for the SPACE key.",
             "itemtype": "property",
             "name": "KEY_SPACE",
@@ -22403,7 +22403,7 @@
         },
         {
             "message": "Missing item type\nEnable or disable all input handlers",
-            "line": " src/input/input.js:606"
+            "line": " src/input/input.js:614"
         },
         {
             "message": "Missing item type\nDeviceOrientationControls - applies device orientation on object rotation",
