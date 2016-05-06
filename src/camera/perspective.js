@@ -74,10 +74,8 @@
             this._near = 0.1;
             this._far = 10000.0;
 
-            var canvas = this.scene.canvas;
-
             // Recompute aspect from change in canvas size
-            this._canvasResized = canvas.on("boundary", this._scheduleUpdate, this);
+            this._canvasResized = this.scene.canvas.on("boundary", this._scheduleUpdate, this);
 
             this.fovy = cfg.fovy;
             this.near = cfg.near;

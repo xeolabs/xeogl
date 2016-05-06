@@ -315,6 +315,9 @@
 
                             lastCanvasWidth = newWidth;
                             lastCanvasHeight = newHeight;
+
+                            lastWindowWidth = window.innerWidth;
+                            lastWindowHeight = window.innerHeight;
                         }
                     }
                 });

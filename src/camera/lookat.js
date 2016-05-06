@@ -328,7 +328,7 @@
                     look[1] = value[1];
                     look[2] = value[2];
 
-                    this._scheduleUpdate(0);; // Ensure matrix built on next "tick";
+                    this._scheduleUpdate(0); // Ensure matrix built on next "tick";
 
                     /**
                      * Fired whenever this Lookat's  {{#crossLink "Lookat/look:property"}}{{/crossLink}} property changes.

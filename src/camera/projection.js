@@ -83,11 +83,7 @@
 
                     value = value || XEO.math.identityMat4();
 
-                    if (!this._matrix) {
-                        this._matrix = XEO.math.mat4();
-                    }
-
-                    this._matrix.set(value);
+                    this._state.matrix.set(value);
 
                     this._renderer.imageDirty = true;
 
@@ -96,23 +92,27 @@
                      * @event matrix
                      * @param value The property's new value
                      */
-                    this.fire("matrix", this._matrix);
+                    this.fire("matrix", this._state.matrix);
                 },
 
                 get: function () {
-                    return this._matrix;
+                    return this._state.matrix;
                 }
             }
         },
 
         _compile: function () {
-            this._renderer.modelProjection = this._state;
+            this._renderer.projTransform = this._state;
         },
 
         _getJSON: function () {
             return {
-                matrix: Array.prototype.slice.call(this._matrix)
+                matrix: Array.prototype.slice.call(this._state.matrix)
             };
+        },
+
+        _destroy: function () {
+            this._state.destroy();
         }
     });
 
