@@ -1835,6 +1835,103 @@
         },
 
         /**
+         * Rotate a 3D vector around the x-axis
+         * 
+         * @method rotateVec3X
+         * @param {Float32Array} a The vec3 point to rotate
+         * @param {Float32Array} b The origin of the rotation
+         * @param {Number} c The angle of rotation
+         * @param {Float32Array} dest The receiving vec3
+         * @returns {Float32Array} dest
+         */
+        rotateVec3X: function (a, b, c, dest) {
+
+            var p = [], r = [];
+            
+            //Translate point to the origin
+            p[0] = a[0] - b[0];
+            p[1] = a[1] - b[1];
+            p[2] = a[2] - b[2];
+            
+            //perform rotation
+            r[0] = p[0];
+            r[1] = p[1] * Math.cos(c) - p[2] * Math.sin(c);
+            r[2] = p[1] * Math.sin(c) + p[2] * Math.cos(c);
+            
+            //translate to correct position
+            dest[0] = r[0] + b[0];
+            dest[1] = r[1] + b[1];
+            dest[2] = r[2] + b[2];
+            
+            return dest;
+        },
+        
+        /**
+         * Rotate a 3D vector around the y-axis
+         *
+         * @method rotateVec3Y
+         * @param {Float32Array} a The vec3 point to rotate
+         * @param {Float32Array} b The origin of the rotation
+         * @param {Number} c The angle of rotation
+         * @param {Float32Array} dest The receiving vec3
+         * @returns {Float32Array} dest
+         */
+        rotateVec3Y: function (a, b, c, dest) {
+            
+            var p = [], r = [];
+            
+            //Translate point to the origin
+            p[0] = a[0] - b[0];
+            p[1] = a[1] - b[1];
+            p[2] = a[2] - b[2];
+
+            //perform rotation
+            r[0] = p[2] * Math.sin(c) + p[0] * Math.cos(c);
+            r[1] = p[1];
+            r[2] = p[2] * Math.cos(c) - p[0] * Math.sin(c);
+
+            //translate to correct position
+            dest[0] = r[0] + b[0];
+            dest[1] = r[1] + b[1];
+            dest[2] = r[2] + b[2];
+
+            return dest;
+        },
+
+        /**
+         * Rotate a 3D vector around the z-axis
+         *
+         * @method rotateVec3Z
+         * @param {Float32Array} a The vec3 point to rotate
+         * @param {Float32Array} b The origin of the rotation
+         * @param {Number} c The angle of rotation
+         * @param {Float32Array} dest The receiving vec3
+         * 
+         * @returns {Float32Array} dest
+         */
+        rotateVec3Z: function (a, b, c, dest) {
+            
+            var p = [], r = [];
+            
+            //Translate point to the origin
+            p[0] = a[0] - b[0];
+            p[1] = a[1] - b[1];
+            p[2] = a[2] - b[2];
+
+            //perform rotation
+            r[0] = p[0] * Math.cos(c) - p[1] * Math.sin(c);
+            r[1] = p[0] * Math.sin(c) + p[1] * Math.cos(c);
+            r[2] = p[2];
+
+            //translate to correct position
+            dest[0] = r[0] + b[0];
+            dest[1] = r[1] + b[1];
+            dest[2] = r[2] + b[2];
+
+            return dest;
+        },
+
+        /**
          * Transforms a four-element vector by a 4x4 projection matrix.
          * @method projectVec4
          * @static
@@ -2613,11 +2710,11 @@
                 i = indices[location];
                 vi = i * 3;
 
-                pickPositions[pvi]     = positions[vi];
+                pickPositions[pvi] = positions[vi];
                 pickPositions[pvi + 1] = positions[vi + 1];
                 pickPositions[pvi + 2] = positions[vi + 2];
 
-                pickColors[pci]     = r;
+                pickColors[pci] = r;
                 pickColors[pci + 1] = g;
                 pickColors[pci + 2] = b;
                 pickColors[pci + 3] = a;
@@ -2647,8 +2744,8 @@
                 pickPositions[pvi + 7] = positions[vi + 1];
                 pickPositions[pvi + 8] = positions[vi + 2];
 
-                pickColors[pci + 8]  = r;
-                pickColors[pci + 9]  = g;
+                pickColors[pci + 8] = r;
+                pickColors[pci + 9] = g;
                 pickColors[pci + 10] = b;
                 pickColors[pci + 11] = a;
 
@@ -2961,25 +3058,25 @@
 
             if (trace > 0) {
 
-                s = 0.5 / Math.sqrt(trace + 1.0 );
+                s = 0.5 / Math.sqrt(trace + 1.0);
 
                 dest[3] = 0.25 / s;
                 dest[0] = ( m32 - m23 ) * s;
                 dest[1] = ( m13 - m31 ) * s;
                 dest[2] = ( m21 - m12 ) * s;
 
-            } else if ( m11 > m22 && m11 > m33 ) {
+            } else if (m11 > m22 && m11 > m33) {
 
-                s = 2.0 * Math.sqrt( 1.0 + m11 - m22 - m33 );
+                s = 2.0 * Math.sqrt(1.0 + m11 - m22 - m33);
 
                 dest[3] = ( m32 - m23 ) / s;
                 dest[0] = 0.25 * s;
                 dest[1] = ( m12 + m21 ) / s;
                 dest[2] = ( m13 + m31 ) / s;
 
-            } else if ( m22 > m33 ) {
+            } else if (m22 > m33) {
 
-                s = 2.0 * Math.sqrt( 1.0 + m22 - m11 - m33 );
+                s = 2.0 * Math.sqrt(1.0 + m22 - m11 - m33);
 
                 dest[3] = ( m13 - m31 ) / s;
                 dest[0] = ( m12 + m21 ) / s;
@@ -2988,7 +3085,7 @@
 
             } else {
 
-                s = 2.0 * Math.sqrt( 1.0 + m33 - m11 - m22 );
+                s = 2.0 * Math.sqrt(1.0 + m33 - m11 - m22);
 
                 dest[3] = ( m21 - m12 ) / s;
                 dest[0] = ( m13 + m31 ) / s;

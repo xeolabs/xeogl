@@ -1337,6 +1337,7 @@
             var triangleVertices = XEO.math.vec3();
             var position = XEO.math.vec4();
             var worldPos = XEO.math.vec4();
+            var viewPos = XEO.math.vec4();
             var barycentric = XEO.math.vec3();
 
             var na = XEO.math.vec3();
@@ -1354,6 +1355,7 @@
 
             var tempVec4 = XEO.math.vec4();
             var tempVec4b = XEO.math.vec4();
+            var tempVec4c = XEO.math.vec4();
 
             var tempVec3 = XEO.math.vec3();
             var tempVec3b = XEO.math.vec3();
@@ -1504,6 +1506,16 @@
                             worldPos[2] = tempVec4b[2];
 
                             hit.worldPos = worldPos;
+                            
+                            // Get View-space cartesian coordinates of the ray-triangle intersection
+
+                            math.transformVec4(entity.camera.view.matrix, worldPos, tempVec4c);
+
+                            viewPos[0] = tempVec4c[0];
+                            viewPos[1] = tempVec4c[1];
+                            viewPos[2] = tempVec4c[2];
+
+                            hit.viewPos = viewPos;
 
                             // Get barycentric coordinates of the ray-triangle intersection
 
