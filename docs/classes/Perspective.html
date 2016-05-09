@@ -1296,7 +1296,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_perspective.js.html#l170"><code>src&#x2F;camera&#x2F;perspective.js:170</code></a>
+                            <a href="../files/src_camera_perspective.js.html#l159"><code>src&#x2F;camera&#x2F;perspective.js:159</code></a>
                             </p>
                     
                     
@@ -1323,7 +1323,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_perspective.js.html#l105"><code>src&#x2F;camera&#x2F;perspective.js:105</code></a>
+                            <a href="../files/src_camera_perspective.js.html#l94"><code>src&#x2F;camera&#x2F;perspective.js:94</code></a>
                             </p>
                     
                     
@@ -1416,32 +1416,30 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_matrix" class="property item">
+                    <div id="property_matrix" class="property item inherited">
                         <h3 class="name"><code>matrix</code></h3>
-                        <span class="type">Float64Array</span>
+                        <span class="type">Array of Number</span>
                     
                     
                     
                     
                     
                         <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Projection.html#property_matrix">
-                                    Projection
-                                </a>
-                                but overwritten in
-                            <a href="../files/src_camera_perspective.js.html#l203"><code>src&#x2F;camera&#x2F;perspective.js:203</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Projection.html#property_matrix">Projection</a>:
+                            <a href="../files/src_camera_projection.js.html#l71"><code>src&#x2F;camera&#x2F;projection.js:71</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The elements of this Perspective&#39;s projection transform matrix.</p>
-                    <p>Fires a <a href="../classes/Perspective.html#event_matrix" class="crosslink">matrix</a> event on change.</p>
+                            <p>The Projection&#39;s matrix.</p>
+                    <p>Fires a <a href="../classes/Projection.html#event_matrix" class="crosslink">matrix</a> event on change.</p>
                     
                         </div>
                     
+                            <p><strong>Default:</strong> [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]</p>
                     
                     
                     </div>
@@ -1481,7 +1479,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_perspective.js.html#l138"><code>src&#x2F;camera&#x2F;perspective.js:138</code></a>
+                            <a href="../files/src_camera_perspective.js.html#l127"><code>src&#x2F;camera&#x2F;perspective.js:127</code></a>
                             </p>
                     
                     
@@ -1655,7 +1653,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_perspective.js.html#l189"><code>src&#x2F;camera&#x2F;perspective.js:189</code></a>
+                            <a href="../files/src_camera_perspective.js.html#l178"><code>src&#x2F;camera&#x2F;perspective.js:178</code></a>
                             </p>
                     
                     
@@ -1697,7 +1695,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_perspective.js.html#l124"><code>src&#x2F;camera&#x2F;perspective.js:124</code></a>
+                            <a href="../files/src_camera_perspective.js.html#l113"><code>src&#x2F;camera&#x2F;perspective.js:113</code></a>
                             </p>
                     
                     
@@ -1728,7 +1726,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_matrix" class="events item">
+                    <div id="event_matrix" class="events item inherited">
                         <h3 class="name"><code>matrix</code></h3>
                         <span class="type"></span>
                     
@@ -1737,19 +1735,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Projection.html#event_matrix">
-                                    Projection
-                                </a>
-                                but overwritten in
-                            <a href="../files/src_camera_perspective.js.html#l94"><code>src&#x2F;camera&#x2F;perspective.js:94</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Projection.html#event_matrix">Projection</a>:
+                            <a href="../files/src_camera_projection.js.html#l90"><code>src&#x2F;camera&#x2F;projection.js:90</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Perspective&#39;s <a href="../classes/Perspective.html#property_matrix" class="crosslink">matrix</a> property changes.</p>
+                            <p>Fired whenever this Projection&#39;s <a href="../classes/Projection.html#property_matrix" class="crosslink">matrix</a> property changes.</p>
                     
                         </div>
                     
@@ -1784,7 +1779,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_perspective.js.html#l157"><code>src&#x2F;camera&#x2F;perspective.js:157</code></a>
+                            <a href="../files/src_camera_perspective.js.html#l146"><code>src&#x2F;camera&#x2F;perspective.js:146</code></a>
                             </p>
                     
                     

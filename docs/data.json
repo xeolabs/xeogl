@@ -2113,7 +2113,7 @@
             "namespace": "",
             "file": "src/camera/frustum.js",
             "line": 1,
-            "description": "A **Frustum** defines a perspective projection as a frustum-shaped view volume.\n\n<ul>\n<li>{{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with viewing transform components, such as\n{{#crossLink \"Lookat\"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Ortho components create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Frustum.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Camera with frustum projection](../../examples/#camera_frustum)</li>\n</ul>\n\n## Usage\n\n````Javascript\nnew XEO.Entity({\n\n    camera: XEO.Camera({\n\n       view: new XEO.Lookat({\n           eye: [0, 0, -4],\n           look: [0, 0, 0],\n           up: [0, 1, 0]\n       }),\n\n       project: new XEO.Frustum(scene, {\n           left: -0.1,\n           right: 0.1,\n           bottom: -0.1,\n           top: 0.1,\n           near: 0.15,\n           far: 1000\n       })\n    }),\n\n    geometry: new XEO.BoxGeometry()\n});\n````",
+            "description": "A **Frustum** defines a perspective projection as a frustum-shaped view volume.\n\n<ul>\n<li>{{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with viewing transform components, such as\n{{#crossLink \"Lookat\"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>A Frustum lets us explicitly set the positions of the left, right, top, bottom, near and far planes, which is useful\nfor asymmetrical view volumes, such as those used for stereo viewing.</li>\n<li>An Frustum's {{#crossLink \"Frustum/near:property\"}}{{/crossLink}} and {{#crossLink \"Frustum/far:property\"}}{{/crossLink}} properties\nspecify the distances to the WebGL clipping planes.</li>\n<li>Use {{#crossLink \"Ortho\"}}{{/crossLink}} if you just want to specify the X,Y frustum extents with a single scale factor,\nie. without individually specifying the distance to each frustum plane.</li>\n<li>Use {{#crossLink \"Perspective\"}}{{/crossLink}} if you need perspective projection.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Ortho components create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Frustum.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Camera with frustum projection](../../examples/#camera_frustum)</li>\n<li>[Stereo viewing with frustum projection](../../examples/#effects_stereo)</li>\n</ul>\n\n## Usage\n\n````Javascript\nnew XEO.Entity({\n\n    camera: XEO.Camera({\n\n       view: new XEO.Lookat({\n           eye: [0, 0, -4],\n           look: [0, 0, 0],\n           up: [0, 1, 0]\n       }),\n\n       project: new XEO.Frustum(scene, {\n           left: -0.1,\n           right: 0.1,\n           bottom: -0.1,\n           top: 0.1,\n           near: 0.15,\n           far: 1000\n       })\n    }),\n\n    geometry: new XEO.BoxGeometry()\n});\n````",
             "submodule": "camera",
             "is_constructor": 1,
             "params": [
@@ -2186,7 +2186,7 @@
                     ]
                 }
             ],
-            "extends": "Component"
+            "extends": "Projection"
         },
         "Lookat": {
             "name": "Lookat",
@@ -2274,7 +2274,7 @@
             "namespace": "",
             "file": "src/camera/ortho.js",
             "line": 1,
-            "description": "An **Ortho** component defines an orthographic projection transform.\n\n<ul>\n<li>{{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with viewing transform components, such as\n{{#crossLink \"Lookat\"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>Alternatively, use {{#crossLink \"Perspective\"}}{{/crossLink}} if you need perspective projection.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Ortho components create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Ortho.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Camera with orthographic projection](../../examples/#camera_ortho)</li>\n</ul>\n\n## Usage\n\n````Javascript\nnew XEO.Entity({\n\n    camera: XEO.Camera({\n\n        view: new XEO.Lookat({\n            eye: [0, 0, -4],\n            look: [0, 0, 0],\n            up: [0, 1, 0]\n        }),\n\n        project: new XEO.Frustum(scene, {\n            left: -3.0,\n            right: 3.0,\n            bottom: -3.0,\n            top: 3.0,\n            near: 0.1,\n            far: 1000\n        })\n    }),\n\n    geometry: new XEO.BoxGeometry()\n});\n````",
+            "description": "An **Ortho** component defines an orthographic projection transform.\n\n<ul>\n<li>{{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with viewing transform components, such as\n{{#crossLink \"Lookat\"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>An Ortho works like Blender's orthographic projection, where the positions of the left, right, top and bottom planes are\nimplicitly specified with a single {{#crossLink \"Ortho/scale:property\"}}{{/crossLink}} property, which causes the frustum to be symmetrical on X and Y axis, large enough to\ncontain the number of units given by {{#crossLink \"Ortho/scale:property\"}}{{/crossLink}}.</li>\n<li>An Ortho's {{#crossLink \"Ortho/near:property\"}}{{/crossLink}} and {{#crossLink \"Ortho/far:property\"}}{{/crossLink}} properties\nspecify the distances to the WebGL clipping planes.</li>\n<li>Use {{#crossLink \"Frustum\"}}{{/crossLink}} if you need to individually specify the position of each of the frustum\nplanes, eg. for an asymmetrical view volume, such as those used for stereo viewing.</li>\n<li>Use {{#crossLink \"Perspective\"}}{{/crossLink}} if you need perspective projection.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Ortho components create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Ortho.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Camera with orthographic projection](../../examples/#camera_ortho)</li>\n</ul>\n\n## Usage\n\n````Javascript\nnew XEO.Entity({\n\n    camera: XEO.Camera({\n\n        view: new XEO.Lookat({\n            eye: [0, 0, -4],\n            look: [0, 0, 0],\n            up: [0, 1, 0]\n        }),\n\n        project: new XEO.Ortho(scene, {\n            scale: 100.0,  // Fit at least 100 units within the ortho volume X & Y extents\n            near: 0.1,\n            far: 1000\n        })\n    }),\n\n    geometry: new XEO.BoxGeometry()\n});\n````",
             "submodule": "camera",
             "is_constructor": 1,
             "params": [
@@ -2303,32 +2303,11 @@
                             "optional": true
                         },
                         {
-                            "name": "left",
-                            "description": "Position of the left plane on the View-space X-xyz.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "-1.0"
-                        },
-                        {
-                            "name": "right",
-                            "description": "Position of the right plane on the View-space X-axis.",
+                            "name": "scale",
+                            "description": "Scale factor for this Ortho's extents on X and Y axis.",
                             "type": "Number",
                             "optional": true,
                             "optdefault": "1.0"
-                        },
-                        {
-                            "name": "top",
-                            "description": "Position of the top plane on the View-space Y-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "1.0"
-                        },
-                        {
-                            "name": "bottom",
-                            "description": "Position of the bottom plane on the View-space Y-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "-1.0"
                         },
                         {
                             "name": "near",
@@ -2347,7 +2326,7 @@
                     ]
                 }
             ],
-            "extends": "Component"
+            "extends": "Projection"
         },
         "Perspective": {
             "name": "Perspective",
@@ -8304,7 +8283,7 @@
         },
         {
             "file": "src/camera/frustum.js",
-            "line": 95,
+            "line": 112,
             "description": "Position of this Frustum's left plane on the View-space X-axis.\n\nFires a {{#crossLink \"Frustum/left:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "left",
@@ -8316,7 +8295,7 @@
         },
         {
             "file": "src/camera/frustum.js",
-            "line": 112,
+            "line": 129,
             "description": "Fired whenever this Frustum's {{#crossLink \"Frustum/left:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "left",
@@ -8332,7 +8311,7 @@
         },
         {
             "file": "src/camera/frustum.js",
-            "line": 126,
+            "line": 143,
             "description": "Position of this Frustum's right plane on the View-space X-axis.\n\nFires a {{#crossLink \"Frustum/right:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "right",
@@ -8344,7 +8323,7 @@
         },
         {
             "file": "src/camera/frustum.js",
-            "line": 143,
+            "line": 160,
             "description": "Fired whenever this Frustum's {{#crossLink \"Frustum/right:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "right",
@@ -8360,7 +8339,7 @@
         },
         {
             "file": "src/camera/frustum.js",
-            "line": 157,
+            "line": 174,
             "description": "Position of this Frustum's top plane on the View-space Y-axis.\n\nFires a {{#crossLink \"Frustum/top:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "top",
@@ -8372,7 +8351,7 @@
         },
         {
             "file": "src/camera/frustum.js",
-            "line": 174,
+            "line": 191,
             "description": "Fired whenever this Frustum's   {{#crossLink \"Frustum/top:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "top",
@@ -8388,7 +8367,7 @@
         },
         {
             "file": "src/camera/frustum.js",
-            "line": 188,
+            "line": 205,
             "description": "Position of this Frustum's bottom plane on the View-space Y-axis.\n\nFires a {{#crossLink \"Frustum/bottom:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "bottom",
@@ -8400,7 +8379,7 @@
         },
         {
             "file": "src/camera/frustum.js",
-            "line": 205,
+            "line": 222,
             "description": "Fired whenever this Frustum's   {{#crossLink \"Frustum/bottom:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "bottom",
@@ -8416,7 +8395,7 @@
         },
         {
             "file": "src/camera/frustum.js",
-            "line": 219,
+            "line": 236,
             "description": "Position of this Frustum's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Frustum/near:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "near",
@@ -8428,7 +8407,7 @@
         },
         {
             "file": "src/camera/frustum.js",
-            "line": 236,
+            "line": 253,
             "description": "Fired whenever this Frustum's {{#crossLink \"Frustum/near:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "near",
@@ -8444,7 +8423,7 @@
         },
         {
             "file": "src/camera/frustum.js",
-            "line": 250,
+            "line": 267,
             "description": "Position of this Frustum's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Frustum/far:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "far",
@@ -8456,37 +8435,10 @@
         },
         {
             "file": "src/camera/frustum.js",
-            "line": 267,
+            "line": 284,
             "description": "Fired whenever this Frustum's  {{#crossLink \"Frustum/far:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "far",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/frustum.js",
-            "line": 281,
-            "description": "The elements of this Frustum's projection transform matrix.\n\nFires a {{#crossLink \"Frustum/matrix:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "matrix",
-            "type": "{Float64Array}",
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/frustum.js",
-            "line": 326,
-            "description": "Fired whenever this Frustum's  {{#crossLink \"Lookat/matrix:property\"}}{{/crossLink}} property is regenerated.",
-            "itemtype": "event",
-            "name": "matrix",
             "params": [
                 {
                     "name": "value",
@@ -8726,38 +8678,10 @@
         },
         {
             "file": "src/camera/ortho.js",
-            "line": 96,
-            "description": "Position of this Ortho's left plane on the View-space X-axis.\n\nFires a {{#crossLink \"Ortho/left:event\"}}{{/crossLink}} event on change.",
+            "line": 117,
+            "description": "Scale factor for this Ortho's extents on X and Y axis.\n\nFires a {{#crossLink \"Ortho/scale:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
-            "name": "left",
-            "default": "-1.0",
-            "type": "Number",
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/ortho.js",
-            "line": 113,
-            "description": "Fired whenever this Ortho's  {{#crossLink \"Ortho/left:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "left",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/ortho.js",
-            "line": 127,
-            "description": "Position of this Ortho's right plane on the View-space X-axis.\n\nFires a {{#crossLink \"Ortho/right:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "right",
+            "name": "scale",
             "default": "1.0",
             "type": "Number",
             "class": "Ortho",
@@ -8766,10 +8690,10 @@
         },
         {
             "file": "src/camera/ortho.js",
-            "line": 144,
-            "description": "Fired whenever this Ortho's  {{#crossLink \"Ortho/right:property\"}}{{/crossLink}} property changes.",
+            "line": 134,
+            "description": "Fired whenever this Ortho's {{#crossLink \"Ortho/scale:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
-            "name": "right",
+            "name": "scale",
             "params": [
                 {
                     "name": "value",
@@ -8782,63 +8706,7 @@
         },
         {
             "file": "src/camera/ortho.js",
-            "line": 158,
-            "description": "Position of this Ortho's top plane on the View-space Y-axis.\n\nFires a {{#crossLink \"Ortho/top:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "top",
-            "default": "1.0",
-            "type": "Number",
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/ortho.js",
-            "line": 175,
-            "description": "Fired whenever this Ortho's  {{#crossLink \"Ortho/top:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "top",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/ortho.js",
-            "line": 189,
-            "description": "Position of this Ortho's bottom plane on the View-space Y-axis.\n\nFires a {{#crossLink \"Ortho/bottom:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "bottom",
-            "default": "-1.0",
-            "type": "Number",
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/ortho.js",
-            "line": 206,
-            "description": "Fired whenever this Ortho's  {{#crossLink \"Ortho/bottom:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "bottom",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/ortho.js",
-            "line": 220,
+            "line": 148,
             "description": "Position of this Ortho's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Ortho/near:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "near",
@@ -8850,7 +8718,7 @@
         },
         {
             "file": "src/camera/ortho.js",
-            "line": 237,
+            "line": 165,
             "description": "Fired whenever this Ortho's  {{#crossLink \"Ortho/near:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "near",
@@ -8866,7 +8734,7 @@
         },
         {
             "file": "src/camera/ortho.js",
-            "line": 251,
+            "line": 179,
             "description": "Position of this Ortho's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Ortho/far:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "far",
@@ -8878,7 +8746,7 @@
         },
         {
             "file": "src/camera/ortho.js",
-            "line": 268,
+            "line": 196,
             "description": "Fired whenever this Ortho's {{#crossLink \"Ortho/far:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "far",
@@ -8893,51 +8761,8 @@
             "submodule": "camera"
         },
         {
-            "file": "src/camera/ortho.js",
-            "line": 282,
-            "description": "The elements of this Ortho's projection transform matrix.\n\nFires a {{#crossLink \"Ortho/matrix:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "matrix",
-            "type": "{Float64Array}",
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/ortho.js",
-            "line": 322,
-            "description": "Fired whenever this Frustum's  {{#crossLink \"Lookat/matrix:property\"}}{{/crossLink}} property is regenerated.",
-            "itemtype": "event",
-            "name": "matrix",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
             "file": "src/camera/perspective.js",
             "line": 94,
-            "description": "Fired whenever this Perspective's {{#crossLink \"Perspective/matrix:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "matrix",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Perspective",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/perspective.js",
-            "line": 105,
             "description": "The angle, in degrees on the Y-axis, of this Perspective's field-of-view.\n\nFires a {{#crossLink \"Perspective/fovy:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "fovy",
@@ -8949,7 +8774,7 @@
         },
         {
             "file": "src/camera/perspective.js",
-            "line": 124,
+            "line": 113,
             "description": "Fired whenever this Perspective's {{#crossLink \"Perspective/fovy:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "fovy",
@@ -8965,7 +8790,7 @@
         },
         {
             "file": "src/camera/perspective.js",
-            "line": 138,
+            "line": 127,
             "description": "Position of this Perspective's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Perspective/near:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "near",
@@ -8977,7 +8802,7 @@
         },
         {
             "file": "src/camera/perspective.js",
-            "line": 157,
+            "line": 146,
             "description": "Fired whenever this Perspective's   {{#crossLink \"Perspective/near:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "near",
@@ -8993,7 +8818,7 @@
         },
         {
             "file": "src/camera/perspective.js",
-            "line": 170,
+            "line": 159,
             "description": "Position of this Perspective's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Perspective/far:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "far",
@@ -9005,7 +8830,7 @@
         },
         {
             "file": "src/camera/perspective.js",
-            "line": 189,
+            "line": 178,
             "description": "Fired whenever this Perspective's  {{#crossLink \"Perspective/far:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "far",
@@ -9015,17 +8840,6 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "Perspective",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/perspective.js",
-            "line": 203,
-            "description": "The elements of this Perspective's projection transform matrix.\n\nFires a {{#crossLink \"Perspective/matrix:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "matrix",
-            "type": "{Float64Array}",
             "class": "Perspective",
             "module": "XEO",
             "submodule": "camera"
@@ -9044,7 +8858,7 @@
         },
         {
             "file": "src/camera/projection.js",
-            "line": 94,
+            "line": 90,
             "description": "Fired whenever this Projection's {{#crossLink \"Projection/matrix:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "matrix",
@@ -9159,14 +8973,14 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 326,
+            "line": 329,
             "class": "Canvas",
             "module": "XEO",
             "submodule": "canvas"
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 334,
+            "line": 337,
             "description": "Creates a default canvas in the DOM.",
             "access": "private",
             "tagname": "",
@@ -9176,7 +8990,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 363,
+            "line": 366,
             "description": "Creates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
             "access": "private",
             "tagname": "",
@@ -9186,7 +9000,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 395,
+            "line": 398,
             "access": "private",
             "tagname": "",
             "class": "Canvas",
@@ -9195,7 +9009,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 415,
+            "line": 418,
             "description": "Initialises the WebGL context",
             "access": "private",
             "tagname": "",
@@ -9205,7 +9019,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 434,
+            "line": 437,
             "description": "Fired whenever the canvas failed to get a WebGL context, which probably means that WebGL\nis either unsupported or has been disabled.",
             "itemtype": "event",
             "name": "webglContextFailed",
@@ -9215,7 +9029,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 443,
+            "line": 446,
             "description": "Returns a snapshot of this Canvas as a Base64-encoded image.\n\n#### Usage:\n````javascript\nimageElement.src = myScene.canvas.getSnapshot({\n    width: 500, // Defaults to size of canvas\n    height: 500,\n    format: \"png\" // Options are \"jpeg\" (default), \"png\" and \"bmp\"\n});\n````",
             "itemtype": "method",
             "name": "getSnapshot",
@@ -9258,7 +9072,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 503,
+            "line": 506,
             "description": "The busy {{#crossLink \"Spinner\"}}{{/crossLink}} for this Canvas.",
             "itemtype": "property",
             "name": "spinner",
@@ -18242,6 +18056,117 @@
         {
             "file": "src/math/math.js",
             "line": 1837,
+            "description": "Rotate a 3D vector around the x-axis",
+            "itemtype": "method",
+            "name": "rotateVec3X",
+            "params": [
+                {
+                    "name": "a",
+                    "description": "The vec3 point to rotate",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "b",
+                    "description": "The origin of the rotation",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "c",
+                    "description": "The angle of rotation",
+                    "type": "Number"
+                },
+                {
+                    "name": "dest",
+                    "description": "The receiving vec3",
+                    "type": "Float32Array"
+                }
+            ],
+            "return": {
+                "description": "dest",
+                "type": "Float32Array"
+            },
+            "class": "XEO.math.math",
+            "module": "XEO",
+            "submodule": "math",
+            "namespace": "XEO.math"
+        },
+        {
+            "file": "src/math/math.js",
+            "line": 1869,
+            "description": "Rotate a 3D vector around the y-axis",
+            "itemtype": "method",
+            "name": "rotateVec3Y",
+            "params": [
+                {
+                    "name": "a",
+                    "description": "The vec3 point to rotate",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "b",
+                    "description": "The origin of the rotation",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "c",
+                    "description": "The angle of rotation",
+                    "type": "Number"
+                },
+                {
+                    "name": "dest",
+                    "description": "The receiving vec3",
+                    "type": "Float32Array"
+                }
+            ],
+            "return": {
+                "description": "dest",
+                "type": "Float32Array"
+            },
+            "class": "XEO.math.math",
+            "module": "XEO",
+            "submodule": "math",
+            "namespace": "XEO.math"
+        },
+        {
+            "file": "src/math/math.js",
+            "line": 1901,
+            "description": "Rotate a 3D vector around the z-axis",
+            "itemtype": "method",
+            "name": "rotateVec3Z",
+            "params": [
+                {
+                    "name": "a",
+                    "description": "The vec3 point to rotate",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "b",
+                    "description": "The origin of the rotation",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "c",
+                    "description": "The angle of rotation",
+                    "type": "Number"
+                },
+                {
+                    "name": "dest",
+                    "description": "The receiving vec3",
+                    "type": "Float32Array"
+                }
+            ],
+            "return": {
+                "description": "dest",
+                "type": "Float32Array"
+            },
+            "class": "XEO.math.math",
+            "module": "XEO",
+            "submodule": "math",
+            "namespace": "XEO.math"
+        },
+        {
+            "file": "src/math/math.js",
+            "line": 1934,
             "description": "Transforms a four-element vector by a 4x4 projection matrix.",
             "itemtype": "method",
             "name": "projectVec4",
@@ -18253,7 +18178,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1847,
+            "line": 1944,
             "description": "Linearly interpolates between two 3D vectors.",
             "itemtype": "method",
             "name": "lerpVec3",
@@ -18265,7 +18190,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1861,
+            "line": 1958,
             "description": "Gets the diagonal size of a boundary given as minima and maxima.",
             "itemtype": "method",
             "name": "getAABBDiag",
@@ -18277,7 +18202,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1871,
+            "line": 1968,
             "description": "Get a diagonal boundary size that is symmetrical about the given point.",
             "itemtype": "method",
             "name": "getAABBDiagPoint",
@@ -18289,7 +18214,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1895,
+            "line": 1992,
             "description": "Gets the center of an AABB.",
             "itemtype": "method",
             "name": "getAABBCenter",
@@ -18301,7 +18226,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1910,
+            "line": 2007,
             "description": "Gets the center of a 2D AABB.",
             "itemtype": "method",
             "name": "getAABB2Center",
@@ -18313,7 +18238,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1924,
+            "line": 2021,
             "description": "Collapses a 3D axis-aligned boundary, ready to expand to fit 3D points.\nCreates new AABB if none supplied.",
             "itemtype": "method",
             "name": "collapseAABB3",
@@ -18337,7 +18262,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1947,
+            "line": 2044,
             "description": "Converts an axis-aligned 3D boundary into an oriented boundary consisting of\nan array of eight 3D positions, one for each corner of the boundary.",
             "itemtype": "method",
             "name": "AABB3ToOBB3",
@@ -18366,7 +18291,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2036,
+            "line": 2133,
             "description": "Finds the minimum axis-aligned 3D boundary enclosing the 3D points given in a flattened,  1-dimensional array.",
             "itemtype": "method",
             "name": "positions3ToAABB3",
@@ -18395,7 +18320,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2099,
+            "line": 2196,
             "description": "Finds the minimum axis-aligned 3D boundary enclosing the given 3D points.",
             "itemtype": "method",
             "name": "points3ToAABB3",
@@ -18424,7 +18349,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2162,
+            "line": 2259,
             "description": "Expands the first axis-aligned 3D boundary to enclose the second, if required.",
             "itemtype": "method",
             "name": "expandAABB3",
@@ -18452,7 +18377,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2200,
+            "line": 2297,
             "description": "Expands an axis-aligned 3D boundary to enclose the given point, if needed.",
             "itemtype": "method",
             "name": "expandAABB3Point3",
@@ -18480,7 +18405,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2238,
+            "line": 2335,
             "description": "Collapses a 2D axis-aligned boundary, ready to expand to fit 2D points.\nCreates new AABB if none supplied.",
             "itemtype": "method",
             "name": "collapseAABB2",
@@ -18504,7 +18429,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2259,
+            "line": 2356,
             "description": "Finds the minimum 2D projected axis-aligned boundary enclosing the given 3D points.",
             "itemtype": "method",
             "name": "points3ToAABB2",
@@ -18533,7 +18458,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2318,
+            "line": 2415,
             "description": "Expands the first axis-aligned 2D boundary to enclose the second, if required.",
             "itemtype": "method",
             "name": "expandAABB3",
@@ -18561,7 +18486,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2348,
+            "line": 2445,
             "description": "Expands an axis-aligned 2D boundary to enclose the given point, if required.",
             "itemtype": "method",
             "name": "expandAABB2Point2",
@@ -18589,7 +18514,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2395,
+            "line": 2492,
             "description": "Builds normal vectors from positions and indices.",
             "itemtype": "method",
             "name": "buildNormals",
@@ -18617,7 +18542,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2467,
+            "line": 2564,
             "description": "Builds vertex tangent vectors from positions, UVs and indices",
             "itemtype": "method",
             "name": "buildTangents",
@@ -18650,7 +18575,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2536,
+            "line": 2633,
             "description": "Flattens a two-dimensional array into a one-dimensional array.",
             "itemtype": "method",
             "name": "flatten",
@@ -18672,7 +18597,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2564,
+            "line": 2661,
             "description": "Builds vertex and index arrays needed by color-indexed triangle picking.",
             "itemtype": "method",
             "name": "getPickPrimitives",
@@ -18700,7 +18625,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2664,
+            "line": 2761,
             "description": "Finds the intersection of a 3D ray with a 3D triangle.",
             "itemtype": "method",
             "name": "rayTriangleIntersect",
@@ -18749,7 +18674,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2712,
+            "line": 2809,
             "description": "Finds the intersection of a 3D ray with a plane defined by 3 points.",
             "itemtype": "method",
             "name": "rayPlaneIntersect",
@@ -18798,7 +18723,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2750,
+            "line": 2847,
             "description": "Gets barycentric coordinates from cartesian coordinates within a triangle.",
             "itemtype": "method",
             "name": "cartesianToBaryCentric",
@@ -18842,7 +18767,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2817,
+            "line": 2914,
             "description": "Returns true if the given barycentric coordinates are within their triangle.",
             "itemtype": "method",
             "name": "barycentricInsideTriangle",
@@ -18865,7 +18790,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2834,
+            "line": 2931,
             "description": "Gets cartesian coordinates from barycentric coordinates within a triangle.",
             "itemtype": "method",
             "name": "barycentricToCartesian",
@@ -18909,7 +18834,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2872,
+            "line": 2969,
             "description": "Initializes a quaternion from Euler angles.",
             "params": [
                 {
@@ -21187,7 +21112,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1570,
+            "line": 1582,
             "description": "Resets this Scene to its default state.\n\nReferences to any components in this Scene will become invalid.",
             "itemtype": "method",
             "name": "clear",
@@ -21196,7 +21121,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1596,
+            "line": 1608,
             "description": "Convenience method for creating or reusing a Component within this Scene.\n\nYou would typically use this method to conveniently instantiate components that you'd want to\nshare (ie. \"instance\") among your {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe method is given a component type, share ID and constructor attributes, like so:\n\n````javascript\nvar material = myScene.getComponent(\"XEO.PhongMaterial\", \"myMaterial\", { diffuse: [1,0,0] });\n````\n\nThe first time you call this method for the given ````type```` and ````instanceId````, this method will create the\n{{#crossLink \"PhongMaterial\"}}{{/crossLink}}, passing the given  attributes to the component's constructor.\n\nIf you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same\ncomponent instance that it returned the first time, and will ignore the attributes:\n\n````javascript\nvar material2 = myScene.getComponent(\"XEO.PhongMaterial\", \"myMaterial\", { specular: [1,1,0] });\n````\n\nEach time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a\nreference count for the component instance. You can release the shared component instance with a call to\n{{#crossLink \"Scene/putSharedComponent:method\"}}{{/crossLink}}, and once you have released it as many\ntimes as you got it, the Scene will destroy the component.",
             "itemtype": "method",
             "name": "_getSharedComponent",
@@ -21229,7 +21154,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1692,
+            "line": 1704,
             "description": "Releases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -21243,7 +21168,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1720,
+            "line": 1732,
             "description": "Compiles and renders this Scene",
             "access": "private",
             "tagname": "",
@@ -21591,7 +21516,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/canvas/canvas.js:443"
+            "line": " src/canvas/canvas.js:446"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -21659,31 +21584,31 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1924"
+            "line": " src/math/math.js:1837"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1947"
+            "line": " src/math/math.js:1869"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2036"
+            "line": " src/math/math.js:1901"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2099"
+            "line": " src/math/math.js:2021"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2162"
+            "line": " src/math/math.js:2044"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2200"
+            "line": " src/math/math.js:2133"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2238"
+            "line": " src/math/math.js:2196"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -21691,23 +21616,27 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2318"
+            "line": " src/math/math.js:2297"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2348"
+            "line": " src/math/math.js:2335"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2395"
+            "line": " src/math/math.js:2356"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2467"
+            "line": " src/math/math.js:2415"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2536"
+            "line": " src/math/math.js:2445"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/math/math.js:2492"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -21715,39 +21644,47 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2664"
+            "line": " src/math/math.js:2633"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2712"
+            "line": " src/math/math.js:2661"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2750"
+            "line": " src/math/math.js:2761"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2750"
+            "line": " src/math/math.js:2809"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2817"
+            "line": " src/math/math.js:2847"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2817"
+            "line": " src/math/math.js:2847"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2834"
+            "line": " src/math/math.js:2914"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2834"
+            "line": " src/math/math.js:2914"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2872"
+            "line": " src/math/math.js:2931"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/math/math.js:2931"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/math/math.js:2969"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -21771,7 +21708,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1596"
+            "line": " src/scene.js:1608"
         },
         {
             "message": "unknown tag: demo",
@@ -22303,23 +22240,23 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/canvas/canvas.js:326"
+            "line": " src/canvas/canvas.js:329"
         },
         {
             "message": "Missing item type\nCreates a default canvas in the DOM.",
-            "line": " src/canvas/canvas.js:334"
+            "line": " src/canvas/canvas.js:337"
         },
         {
             "message": "Missing item type\nCreates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
-            "line": " src/canvas/canvas.js:363"
+            "line": " src/canvas/canvas.js:366"
         },
         {
             "message": "Missing item type",
-            "line": " src/canvas/canvas.js:395"
+            "line": " src/canvas/canvas.js:398"
         },
         {
             "message": "Missing item type\nInitialises the WebGL context",
-            "line": " src/canvas/canvas.js:415"
+            "line": " src/canvas/canvas.js:418"
         },
         {
             "message": "Missing item type\nAdds a {{#crossLink \"Curve\"}}{{/crossLink}} to this Path.\n\nFires a {{#crossLink \"Path/curves:event\"}}{{/crossLink}} event on change.",
@@ -22419,7 +22356,7 @@
         },
         {
             "message": "Missing item type\nInitializes a quaternion from Euler angles.",
-            "line": " src/math/math.js:2872"
+            "line": " src/math/math.js:2969"
         },
         {
             "message": "Missing item type\nLookup GL depth function enums",
@@ -22463,11 +22400,11 @@
         },
         {
             "message": "Missing item type\nReleases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
-            "line": " src/scene.js:1692"
+            "line": " src/scene.js:1704"
         },
         {
             "message": "Missing item type\nCompiles and renders this Scene",
-            "line": " src/scene.js:1720"
+            "line": " src/scene.js:1732"
         },
         {
             "message": "Missing item type\nInformation about available WebGL support",

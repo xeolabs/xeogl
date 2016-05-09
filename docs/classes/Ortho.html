@@ -185,7 +185,7 @@
 <div class="box meta">
 
         <div class="extends">
-            Extends <a href="../classes/Component.html" class="crosslink">Component</a>
+            Extends <a href="../classes/Projection.html" class="crosslink">Projection</a>
         </div>
 
         <div class="foundat">
@@ -203,7 +203,14 @@
 <ul>
 <li><a href="../classes/Camera.html" class="crosslink">Camera</a> components pair these with viewing transform components, such as
 <a href="../classes/Lookat.html" class="crosslink">Lookat</a>, to define viewpoints on attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</li>
-<li>Alternatively, use <a href="../classes/Perspective.html" class="crosslink">Perspective</a> if you need perspective projection.</li>
+<li>An Ortho works like Blender&#39;s orthographic projection, where the positions of the left, right, top and bottom planes are
+implicitly specified with a single <a href="../classes/Ortho.html#property_scale" class="crosslink">scale</a> property, which causes the frustum to be symmetrical on X and Y axis, large enough to
+contain the number of units given by <a href="../classes/Ortho.html#property_scale" class="crosslink">scale</a>.</li>
+<li>An Ortho&#39;s <a href="../classes/Ortho.html#property_near" class="crosslink">near</a> and <a href="../classes/Ortho.html#property_far" class="crosslink">far</a> properties
+specify the distances to the WebGL clipping planes.</li>
+<li>Use <a href="../classes/Frustum.html" class="crosslink">Frustum</a> if you need to individually specify the position of each of the frustum
+planes, eg. for an asymmetrical view volume, such as those used for stereo viewing.</li>
+<li>Use <a href="../classes/Perspective.html" class="crosslink">Perspective</a> if you need perspective projection.</li>
 <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Ortho components create within xeoEngine&#39;s shaders.</li>
 </ul>
 
@@ -224,11 +231,8 @@
             up: [0, 1, 0]
         }),
 
-        project: new XEO.Frustum(scene, {
-            left: -3.0,
-            right: 3.0,
-            bottom: -3.0,
-            top: 3.0,
+        project: new XEO.Ortho(scene, {
+            scale: 100.0,  // Fit at least 100 units within the ortho volume X &amp; Y extents
             near: 0.1,
             far: 1000
         })
@@ -330,45 +334,12 @@
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[left=-1.0]</code>
+                                            <code class="param-name optional">[scale=1.0]</code>
                                             <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Position of the left plane on the View-space X-xyz.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[right=1.0]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Position of the right plane on the View-space X-axis.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[top=1.0]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Position of the top plane on the View-space Y-axis.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[bottom=-1.0]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Position of the bottom plane on the View-space Y-axis.</p>
+                                            <p>Scale factor for this Ortho&#39;s extents on X and Y axis.</p>
         
                                         </div>
         
@@ -469,10 +440,6 @@
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
-                            <li class="index-item property">
-                                <a href="#property_bottom">bottom</a>
-
-                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_destroyed">destroyed</a>
 
@@ -493,11 +460,7 @@
                                 <a href="#property_json">json</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_left">left</a>
-
-                            </li>
-                            <li class="index-item property">
+                            <li class="index-item property inherited">
                                 <a href="#property_matrix">matrix</a>
 
                             </li>
@@ -510,7 +473,7 @@
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_right">right</a>
+                                <a href="#property_scale">scale</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -525,10 +488,6 @@
                                 <a href="#property_superTypes">superTypes</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_top">top</a>
-
-                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_type">type</a>
 
@@ -541,10 +500,6 @@
                     <h3>Events</h3>
 
                     <ul class="index-list events extends">
-                            <li class="index-item event">
-                                <a href="#event_bottom">bottom</a>
-
-                            </li>
                             <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
 
@@ -553,11 +508,7 @@
                                 <a href="#event_far">far</a>
 
                             </li>
-                            <li class="index-item event">
-                                <a href="#event_left">left</a>
-
-                            </li>
-                            <li class="index-item event">
+                            <li class="index-item event inherited">
                                 <a href="#event_matrix">matrix</a>
 
                             </li>
@@ -566,11 +517,7 @@
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_right">right</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_top">top</a>
+                                <a href="#event_scale">scale</a>
 
                             </li>
                     </ul>
@@ -1319,33 +1266,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_bottom" class="property item">
-                        <h3 class="name"><code>bottom</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_camera_ortho.js.html#l189"><code>src&#x2F;camera&#x2F;ortho.js:189</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Position of this Ortho&#39;s bottom plane on the View-space Y-axis.</p>
-                    <p>Fires a <a href="../classes/Ortho.html#event_bottom" class="crosslink">bottom</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> -1.0</p>
-                    
-                    
-                    </div>
                     <div id="property_destroyed" class="property item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type">Boolean</span>
@@ -1382,7 +1302,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_ortho.js.html#l251"><code>src&#x2F;camera&#x2F;ortho.js:251</code></a>
+                            <a href="../files/src_camera_ortho.js.html#l179"><code>src&#x2F;camera&#x2F;ortho.js:179</code></a>
                             </p>
                     
                     
@@ -1475,56 +1395,30 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_left" class="property item">
-                        <h3 class="name"><code>left</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_camera_ortho.js.html#l96"><code>src&#x2F;camera&#x2F;ortho.js:96</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Position of this Ortho&#39;s left plane on the View-space X-axis.</p>
-                    <p>Fires a <a href="../classes/Ortho.html#event_left" class="crosslink">left</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> -1.0</p>
-                    
-                    
-                    </div>
-                    <div id="property_matrix" class="property item">
+                    <div id="property_matrix" class="property item inherited">
                         <h3 class="name"><code>matrix</code></h3>
-                        <span class="type">Float64Array</span>
+                        <span class="type">Array of Number</span>
                     
                     
                     
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_camera_ortho.js.html#l282"><code>src&#x2F;camera&#x2F;ortho.js:282</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Projection.html#property_matrix">Projection</a>:
+                            <a href="../files/src_camera_projection.js.html#l71"><code>src&#x2F;camera&#x2F;projection.js:71</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The elements of this Ortho&#39;s projection transform matrix.</p>
-                    <p>Fires a <a href="../classes/Ortho.html#event_matrix" class="crosslink">matrix</a> event on change.</p>
+                            <p>The Projection&#39;s matrix.</p>
+                    <p>Fires a <a href="../classes/Projection.html#event_matrix" class="crosslink">matrix</a> event on change.</p>
                     
                         </div>
                     
+                            <p><strong>Default:</strong> [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]</p>
                     
                     
                     </div>
@@ -1564,7 +1458,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_ortho.js.html#l220"><code>src&#x2F;camera&#x2F;ortho.js:220</code></a>
+                            <a href="../files/src_camera_ortho.js.html#l148"><code>src&#x2F;camera&#x2F;ortho.js:148</code></a>
                             </p>
                     
                     
@@ -1580,8 +1474,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_right" class="property item">
-                        <h3 class="name"><code>right</code></h3>
+                    <div id="property_scale" class="property item">
+                        <h3 class="name"><code>scale</code></h3>
                         <span class="type">Number</span>
                     
                     
@@ -1591,15 +1485,15 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_ortho.js.html#l127"><code>src&#x2F;camera&#x2F;ortho.js:127</code></a>
+                            <a href="../files/src_camera_ortho.js.html#l117"><code>src&#x2F;camera&#x2F;ortho.js:117</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Position of this Ortho&#39;s right plane on the View-space X-axis.</p>
-                    <p>Fires a <a href="../classes/Ortho.html#event_right" class="crosslink">right</a> event on change.</p>
+                            <p>Scale factor for this Ortho&#39;s extents on X and Y axis.</p>
+                    <p>Fires a <a href="../classes/Ortho.html#event_scale" class="crosslink">scale</a> event on change.</p>
                     
                         </div>
                     
@@ -1694,33 +1588,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_top" class="property item">
-                        <h3 class="name"><code>top</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_camera_ortho.js.html#l158"><code>src&#x2F;camera&#x2F;ortho.js:158</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Position of this Ortho&#39;s top plane on the View-space Y-axis.</p>
-                    <p>Fires a <a href="../classes/Ortho.html#event_top" class="crosslink">top</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 1.0</p>
-                    
-                    
-                    </div>
                     <div id="property_type" class="property item inherited">
                         <h3 class="name"><code>type</code></h3>
                         <span class="type">String</span>
@@ -1756,48 +1623,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
-                    <div id="event_bottom" class="events item">
-                        <h3 class="name"><code>bottom</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_camera_ortho.js.html#l206"><code>src&#x2F;camera&#x2F;ortho.js:206</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Ortho&#39;s  <a href="../classes/Ortho.html#property_bottom" class="crosslink">bottom</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
                     <div id="event_destroyed" class="events item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type"></span>
@@ -1834,7 +1659,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_ortho.js.html#l268"><code>src&#x2F;camera&#x2F;ortho.js:268</code></a>
+                            <a href="../files/src_camera_ortho.js.html#l196"><code>src&#x2F;camera&#x2F;ortho.js:196</code></a>
                             </p>
                     
                     
@@ -1865,49 +1690,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_left" class="events item">
-                        <h3 class="name"><code>left</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_camera_ortho.js.html#l113"><code>src&#x2F;camera&#x2F;ortho.js:113</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Ortho&#39;s  <a href="../classes/Ortho.html#property_left" class="crosslink">left</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_matrix" class="events item">
+                    <div id="event_matrix" class="events item inherited">
                         <h3 class="name"><code>matrix</code></h3>
                         <span class="type"></span>
                     
@@ -1916,16 +1699,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_camera_ortho.js.html#l322"><code>src&#x2F;camera&#x2F;ortho.js:322</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Projection.html#event_matrix">Projection</a>:
+                            <a href="../files/src_camera_projection.js.html#l90"><code>src&#x2F;camera&#x2F;projection.js:90</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Frustum&#39;s  <a href="../classes/Lookat.html#property_matrix" class="crosslink">matrix</a> property is regenerated.</p>
+                            <p>Fired whenever this Projection&#39;s <a href="../classes/Projection.html#property_matrix" class="crosslink">matrix</a> property changes.</p>
                     
                         </div>
                     
@@ -1960,7 +1743,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_ortho.js.html#l237"><code>src&#x2F;camera&#x2F;ortho.js:237</code></a>
+                            <a href="../files/src_camera_ortho.js.html#l165"><code>src&#x2F;camera&#x2F;ortho.js:165</code></a>
                             </p>
                     
                     
@@ -1991,8 +1774,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_right" class="events item">
-                        <h3 class="name"><code>right</code></h3>
+                    <div id="event_scale" class="events item">
+                        <h3 class="name"><code>scale</code></h3>
                         <span class="type"></span>
                     
                     
@@ -2002,56 +1785,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_ortho.js.html#l144"><code>src&#x2F;camera&#x2F;ortho.js:144</code></a>
+                            <a href="../files/src_camera_ortho.js.html#l134"><code>src&#x2F;camera&#x2F;ortho.js:134</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Ortho&#39;s  <a href="../classes/Ortho.html#property_right" class="crosslink">right</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_top" class="events item">
-                        <h3 class="name"><code>top</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_camera_ortho.js.html#l175"><code>src&#x2F;camera&#x2F;ortho.js:175</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Ortho&#39;s  <a href="../classes/Ortho.html#property_top" class="crosslink">top</a> property changes.</p>
+                            <p>Fired whenever this Ortho&#39;s <a href="../classes/Ortho.html#property_scale" class="crosslink">scale</a> property changes.</p>
                     
                         </div>
                     
