@@ -18,7 +18,7 @@
 
 <script>
 
-    // Creating a Camera with a Frustum-based projection transform.
+    // Creating a Camera with a Frustum-based projection
 
     var lookat = new XEO.Lookat({
         eye: [0, 0, -4],
@@ -31,8 +31,8 @@
         right: 0.1,
         bottom: -0.1,
         top: 0.1,
-        near: 0.15,
-        far: 1000
+        near: 0.15, // Distance to near clipping plane
+        far: 1000 // Distance to far clipping plane
     });
 
     var camera = new XEO.Camera({

@@ -4,6 +4,13 @@
  <ul>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
  {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
+ <li>A Frustum lets us explicitly set the positions of the left, right, top, bottom, near and far planes, which is useful
+ for asymmetrical view volumes, such as those used for stereo viewing.</li>
+ <li>An Frustum's {{#crossLink "Frustum/near:property"}}{{/crossLink}} and {{#crossLink "Frustum/far:property"}}{{/crossLink}} properties
+ specify the distances to the WebGL clipping planes.</li>
+ <li>Use {{#crossLink "Ortho"}}{{/crossLink}} if you just want to specify the X,Y frustum extents with a single scale factor,
+ ie. without individually specifying the distance to each frustum plane.</li>
+ <li>Use {{#crossLink "Perspective"}}{{/crossLink}} if you need perspective projection.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Ortho components create within xeoEngine's shaders.</li>
  </ul>
 
@@ -13,6 +20,7 @@
 
  <ul>
  <li>[Camera with frustum projection](../../examples/#camera_frustum)</li>
+ <li>[Stereo viewing with frustum projection](../../examples/#effects_stereo)</li>
  </ul>
 
  ## Usage
@@ -57,7 +65,7 @@
  @param [cfg.top=1] {Number} Position of the Frustum's top plane on the View-space Y-axis.
  @param [cfg.near=0.1] {Number} Position of the Frustum's near plane on the View-space Z-axis.
  @param [cfg.far=1000] {Number} Position of the Frustum's far plane on the positive View-space Z-axis.
- @extends Component
+ @extends Projection
  */
 (function () {
 
@@ -69,9 +77,7 @@
 
         _init: function (cfg) {
 
-            this._state = new XEO.renderer.ProjTransform({
-                matrix: XEO.math.identityMat4()
-            });
+            this._super(cfg);
 
             this._left = -1.0;
             this._right = 1.0;
@@ -88,6 +94,17 @@
             this.top = cfg.top;
             this.near = cfg.near;
             this.far = cfg.far;
+        },
+
+        _update: function () {
+            this.matrix = XEO.math.frustumMat4( // Assign to XEO.Projection#matrix
+                this._left,
+                this._right,
+                this._bottom,
+                this._top,
+                this._near,
+                this._far,
+                this.__tempMat || (this.__tempMat = XEO.math.mat4()));
         },
 
         _props: {
@@ -276,63 +293,7 @@
                 get: function () {
                     return this._far;
                 }
-            },
-
-            /**
-             * The elements of this Frustum's projection transform matrix.
-             *
-             * Fires a {{#crossLink "Frustum/matrix:event"}}{{/crossLink}} event on change.
-             *
-             * @property matrix
-             * @type {Float64Array}
-             */
-            matrix: {
-
-                get: function () {
-
-                    if (this._buildScheduled) {
-
-                        // Matrix update is scheduled for next frame.
-                        // Lazy-build the matrix now, while leaving the update
-                        // scheduled. The update task will fire a "matrix" event,
-                        // without needlessly rebuilding the matrix again.
-
-                        this._build();
-
-                        this._buildScheduled = false;
-                    }
-
-                    return this._state.matrix;
-                }
             }
-        },
-
-        _build: function () {
-
-            XEO.math.frustumMat4(
-                this._left,
-                this._right,
-                this._bottom,
-                this._top,
-                this._near,
-                this._far,
-                this._state.matrix);
-        },
-
-        _update: function () {
-
-            this._renderer.imageDirty = true;
-
-            /**
-             * Fired whenever this Frustum's  {{#crossLink "Lookat/matrix:property"}}{{/crossLink}} property is regenerated.
-             * @event matrix
-             * @param value The property's new value
-             */
-            this.fire("matrix", this._state.matrix);
-        },
-
-        _compile: function () {
-            this._renderer.projTransform = this._state;
         },
 
         _getJSON: function () {
@@ -344,11 +305,6 @@
                 near: this._near,
                 far: this._far
             };
-        },
-
-        _destroy: function () {
-            this._state.destroy();
         }
     });
-
 })();

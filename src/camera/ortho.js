@@ -4,7 +4,14 @@
  <ul>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
  {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>Alternatively, use {{#crossLink "Perspective"}}{{/crossLink}} if you need perspective projection.</li>
+ <li>An Ortho works like Blender's orthographic projection, where the positions of the left, right, top and bottom planes are
+ implicitly specified with a single {{#crossLink "Ortho/scale:property"}}{{/crossLink}} property, which causes the frustum to be symmetrical on X and Y axis, large enough to
+ contain the number of units given by {{#crossLink "Ortho/scale:property"}}{{/crossLink}}.</li>
+ <li>An Ortho's {{#crossLink "Ortho/near:property"}}{{/crossLink}} and {{#crossLink "Ortho/far:property"}}{{/crossLink}} properties
+ specify the distances to the WebGL clipping planes.</li>
+ <li>Use {{#crossLink "Frustum"}}{{/crossLink}} if you need to individually specify the position of each of the frustum
+ planes, eg. for an asymmetrical view volume, such as those used for stereo viewing.</li>
+ <li>Use {{#crossLink "Perspective"}}{{/crossLink}} if you need perspective projection.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Ortho components create within xeoEngine's shaders.</li>
  </ul>
 
@@ -29,11 +36,8 @@
              up: [0, 1, 0]
          }),
 
-         project: new XEO.Frustum(scene, {
-             left: -3.0,
-             right: 3.0,
-             bottom: -3.0,
-             top: 3.0,
+         project: new XEO.Ortho(scene, {
+             scale: 100.0,  // Fit at least 100 units within the ortho volume X & Y extents
              near: 0.1,
              far: 1000
          })
@@ -52,13 +56,10 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Ortho.
- @param [cfg.left=-1.0] {Number} Position of the left plane on the View-space X-xyz.
- @param [cfg.right=1.0] {Number} Position of the right plane on the View-space X-axis.
- @param [cfg.top=1.0] {Number} Position of the top plane on the View-space Y-axis.
- @param [cfg.bottom=-1.0] {Number} Position of the bottom plane on the View-space Y-axis.
+ @param [cfg.scale=1.0] {Number} Scale factor for this Ortho's extents on X and Y axis.
  @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
  @param [cfg.far=10000] {Number} Position of the far plane on the positive View-space Z-axis.
- @extends Component
+ @extends Projection
  */
 (function () {
 
@@ -70,150 +71,77 @@
 
         _init: function (cfg) {
 
-            this._state = new XEO.renderer.ProjTransform({
-                matrix: XEO.math.identityMat4(XEO.math.mat4())
-            });
+            this._super(cfg);
 
-            // Ortho view volume
-            this._left = -1.0;
-            this._right = 1.0;
-            this._top = 1.0;
-            this._bottom = -1.0;
-            this._near = 0.1;
-            this._far = 10000.0;
-
-            // Set properties on this component
-            this.left = cfg.left;
-            this.right = cfg.right;
-            this.top = cfg.top;
-            this.bottom = cfg.bottom;
+            this.scale = cfg.scale;
             this.near = cfg.near;
             this.far = cfg.far;
+
+            this._onCanvasBoundary = this.scene.canvas.on("boundary", this._scheduleUpdate, this);
+        },
+
+        _update: function () {
+
+            var scene = this.scene;
+            var scale = this._scale;
+            var canvas = scene.canvas.canvas;
+            var canvasWidth = canvas.clientWidth;
+            var canvasHeight = canvas.clientHeight;
+            var halfSize = 0.5 * scale;
+            var aspect = canvasWidth / canvasHeight;
+
+            var left;
+            var right;
+            var top;
+            var bottom;
+
+            if (canvasWidth > canvasHeight) {
+                left = -halfSize;
+                right = halfSize;
+                top = halfSize / aspect;
+                bottom = -halfSize / aspect;
+
+            } else {
+                left = -halfSize * aspect;
+                right = halfSize * aspect;
+                top = halfSize;
+                bottom = -halfSize;
+            }
+
+            this.matrix = XEO.math.orthoMat4c( // Assign to XEO.Projection#matrix
+                left, right, bottom, top, this._near, this._far, this.__tempMat || (this.__tempMat = XEO.math.mat4()));
         },
 
         _props: {
 
             /**
-             * Position of this Ortho's left plane on the View-space X-axis.
+             * Scale factor for this Ortho's extents on X and Y axis.
              *
-             * Fires a {{#crossLink "Ortho/left:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "Ortho/scale:event"}}{{/crossLink}} event on change.
              *
-             * @property left
-             * @default -1.0
+             * @property scale
+             * @default 1.0
              * @type Number
              */
-            left: {
+            scale: {
 
                 set: function (value) {
 
-                    this._left = (value !== undefined && value !== null) ? value : -1.0;
+                    this._scale = (value !== undefined && value !== null) ? value : 1.0;
 
                     this._scheduleUpdate(0); // Ensure matrix built on next "tick"
 
                     /**
-                     * Fired whenever this Ortho's  {{#crossLink "Ortho/left:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Ortho's {{#crossLink "Ortho/scale:property"}}{{/crossLink}} property changes.
                      *
-                     * @event left
+                     * @event scale
                      * @param value The property's new value
                      */
-                    this.fire("left", this._left);
+                    this.fire("scale", this._scale);
                 },
 
                 get: function () {
-                    return this._left;
-                }
-            },
-
-            /**
-             * Position of this Ortho's right plane on the View-space X-axis.
-             *
-             * Fires a {{#crossLink "Ortho/right:event"}}{{/crossLink}} event on change.
-             *
-             * @property right
-             * @default 1.0
-             * @type Number
-             */
-            right: {
-
-                set: function (value) {
-
-                    this._right = (value !== undefined && value !== null) ? value : 1.0;
-
-                    this._scheduleUpdate();
-
-                    /**
-                     * Fired whenever this Ortho's  {{#crossLink "Ortho/right:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event right
-                     * @param value The property's new value
-                     */
-                    this.fire("right", this._right);
-                },
-
-                get: function () {
-                    return this._right;
-                }
-            },
-
-            /**
-             * Position of this Ortho's top plane on the View-space Y-axis.
-             *
-             * Fires a {{#crossLink "Ortho/top:event"}}{{/crossLink}} event on change.
-             *
-             * @property top
-             * @default 1.0
-             * @type Number
-             */
-            top: {
-
-                set: function (value) {
-
-                    this._top = (value !== undefined && value !== null) ? value : 1.0;
-
-                    this._scheduleUpdate();
-
-                    /**
-                     * Fired whenever this Ortho's  {{#crossLink "Ortho/top:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event top
-                     * @param value The property's new value
-                     */
-                    this.fire("top", this._top);
-                },
-
-                get: function () {
-                    return this._top;
-                }
-            },
-
-            /**
-             * Position of this Ortho's bottom plane on the View-space Y-axis.
-             *
-             * Fires a {{#crossLink "Ortho/bottom:event"}}{{/crossLink}} event on change.
-             *
-             * @property bottom
-             * @default -1.0
-             * @type Number
-             */
-            bottom: {
-
-                set: function (value) {
-
-                    this._bottom = (value !== undefined && value !== null) ? value : -1.0;
-
-                    this._scheduleUpdate();
-
-                    /**
-                     * Fired whenever this Ortho's  {{#crossLink "Ortho/bottom:property"}}{{/crossLink}} property changes.
-                     *
-                     * @event bottom
-                     * @param value The property's new value
-                     */
-                    this.fire("bottom", this._bottom);
-                },
-
-                get: function () {
-                    return this._bottom;
+                    return this._scale;
                 }
             },
 
@@ -230,7 +158,7 @@
 
                 set: function (value) {
 
-                    this._near = (value !== undefined && value !== null) ? value :  0.1;
+                    this._near = (value !== undefined && value !== null) ? value : 0.1;
 
                     this._scheduleUpdate();
 
@@ -261,7 +189,7 @@
 
                 set: function (value) {
 
-                    this._far = (value !== undefined && value !== null) ? value :  10000.0;
+                    this._far = (value !== undefined && value !== null) ? value : 10000.0;
 
                     this._scheduleUpdate();
 
@@ -277,73 +205,20 @@
                 get: function () {
                     return this._far;
                 }
-            },
-
-            /**
-             * The elements of this Ortho's projection transform matrix.
-             *
-             * Fires a {{#crossLink "Ortho/matrix:event"}}{{/crossLink}} event on change.
-             *
-             * @property matrix
-             * @type {Float64Array}
-             */
-            matrix: {
-
-                get: function () {
-
-                    if (this._buildScheduled) {
-
-                        // Matrix update is scheduled for next frame.
-                        // Lazy-build the matrix now, while leaving the update
-                        // scheduled. The update task will fire a "matrix" event,
-                        // without needlessly rebuilding the matrix again.
-
-                        this._build();
-
-                        this._buildScheduled = false;
-                    }
-
-                    return this._state.matrix;
-                }
             }
-        },
-
-        _build: function () {
-
-            XEO.math.orthoMat4c(this._left, this._right, this._bottom, this._top, this._near, this._far, this._state.matrix);
-
-            this._renderer.imageDirty = true;
-        },
-
-        _update: function () {
-
-            this._renderer.imageDirty = true;
-
-            /**
-             * Fired whenever this Frustum's  {{#crossLink "Lookat/matrix:property"}}{{/crossLink}} property is regenerated.
-             * @event matrix
-             * @param value The property's new value
-             */
-            this.fire("matrix", this._state.matrix);
-        },
-
-        _compile: function () {
-            this._renderer.projTransform = this._state;
         },
 
         _getJSON: function () {
             return {
-                left: this._left,
-                right: this._right,
-                top: this._top,
-                bottom: this._bottom,
+                scale: this._scale,
                 near: this._near,
                 far: this._far
             };
         },
 
         _destroy: function () {
-            this._state.destroy();
+            this._super();
+            this.scene.canvas.off(this._onCanvasBoundary);
         }
     });
 

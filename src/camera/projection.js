@@ -96,6 +96,11 @@
                 },
 
                 get: function () {
+
+                    if (this._updateScheduled) {
+                        this._update();
+                    }
+
                     return this._state.matrix;
                 }
             }

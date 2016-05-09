@@ -65,9 +65,7 @@
 
         _init: function (cfg) {
 
-            this._state = new XEO.renderer.ProjTransform({
-                matrix: XEO.math.identityMat4(XEO.math.mat4())
-            });
+            this._super(cfg);
 
             this._dirty = false;
             this._fovy = 60.0;
@@ -87,15 +85,8 @@
             var canvas = this.scene.canvas.canvas;
             var aspect = canvas.clientWidth / canvas.clientHeight;
 
-            XEO.math.perspectiveMatrix4(this._fovy * (Math.PI / 180.0), aspect, this._near, this._far, this._state.matrix);
-
-            /**
-             * Fired whenever this Perspective's {{#crossLink "Perspective/matrix:property"}}{{/crossLink}} property changes.
-             *
-             * @event matrix
-             * @param value The property's new value
-             */
-            this.fire("matrix", this._state.matrix);
+            this.matrix = XEO.math.perspectiveMatrix4( // Assign to XEO.Projection#matrix
+                this._fovy * (Math.PI / 180.0), aspect, this._near, this._far,  this.__tempMat || (this.__tempMat = XEO.math.mat4()));
         },
 
         _props: {
@@ -196,31 +187,7 @@
                 get: function () {
                     return this._far;
                 }
-            },
-
-            /**
-             * The elements of this Perspective's projection transform matrix.
-             *
-             * Fires a {{#crossLink "Perspective/matrix:event"}}{{/crossLink}} event on change.
-             *
-             * @property matrix
-             * @type {Float64Array}
-             */
-            matrix: {
-
-                get: function () {
-
-                    if (this._updateScheduled) {
-                        this._update();
-                    }
-
-                    return this._state.matrix;
-                }
             }
-        },
-
-        _compile: function () {
-            this._renderer.projTransform = this._state;
         },
 
         _getJSON: function () {
@@ -233,9 +200,9 @@
 
         _destroy: function () {
 
-            this.scene.canvas.off(this._canvasResized);
+            this._super();
 
-            this._state.destroy();
+            this.scene.canvas.off(this._canvasResized);
         }
     });
 
