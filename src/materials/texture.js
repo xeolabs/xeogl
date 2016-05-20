@@ -128,7 +128,9 @@
                 magFilter: null,
                 wrapS: null,
                 wrapT: null,
-                flipY: null
+                flipY: null,
+
+                pageTableTexture: null
             });
 
             // Data source
@@ -136,6 +138,8 @@
             this._src = null;   // URL string
             this._image = null; // HTMLImageElement
             this._target = null;// XEO.RenderTarget
+
+            this._pageTable = null; // Float32Array
 
             // Transformation
 
@@ -318,6 +322,32 @@
                 }
 
                 this._propsDirty = false;
+            }
+
+            if (this._pageTableDirty) {
+
+                if (this._image) {
+
+                    if (this._onTargetActive) {
+                        this._target.off(this._onTargetActive);
+                        this._onTargetActive = null;
+                    }
+
+                    if (state.texture && state.texture.renderBuffer) {
+
+                        // Detach from "virtual texture" provided by render target
+                        state.texture = null;
+                    }
+
+                    if (!state.texture) {
+                        state.texture = new XEO.renderer.webgl.Texture2D(gl);
+                    }
+
+                    state.texture.setImage(this._image, state);
+
+                    this._imageDirty = false;
+                    this._propsDirty = true; // May now need to regenerate mipmaps etc
+                }
             }
 
             this._renderer.imageDirty = true;
@@ -539,6 +569,36 @@
 
                 get: function () {
                     return this._attached.target;
+                }
+            },
+
+            /**
+             * Page table for sparse virtual texturing.
+             *
+             * Fires an {{#crossLink "Texture/pageTable:event"}}{{/crossLink}} event on change.
+             *
+             * @property pageTable
+             * @default null
+             * @type {Float32Array}
+             */
+            pageTable: {
+
+                set: function (value) {
+
+                    this._pageTable = value;
+
+                    this._imageDirty = true;
+
+                    /**
+                     * Fired whenever this Texture's  {{#crossLink "Texture/pageTable:property"}}{{/crossLink}} property changes.
+                     * @event pageTable
+                     * @param value {Float32Array} The property's new value
+                     */
+                    this.fire("pageTable", this._pageTable);
+                },
+
+                get: function () {
+                    return this._state._pageTable;
                 }
             },
 
@@ -959,6 +1019,10 @@
             } else if (this._image) {
                 // TODO: Image data
                 // json.src = image.src;
+            }
+
+            if (false && this._state.pageTable !== false) {
+                json.pageTable = this._state.pageTable;
             }
 
             return json;
