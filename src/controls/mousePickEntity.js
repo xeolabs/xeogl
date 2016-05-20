@@ -115,12 +115,12 @@
                         var downX;
                         var downY;
 
-                        this._onMouseOver = input.on("mouseover",
+                        this._onMouseEnter = input.on("mouseenter",
                             function () {
                                 over = true;
                             });
 
-                        this._onMouseOut = input.on("mouseout",
+                        this._onMouseLeave = input.on("mouseleave",
                             function () {
                                 over = false;
                             });
