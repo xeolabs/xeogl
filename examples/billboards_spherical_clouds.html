@@ -105,7 +105,7 @@
         positions: [20, 20, 0, -20, 20, 0, -20, -20, 0, 20, -20, 0],
         normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],
         uv: [1, 1, 0, 1, 0, 0, 1, 0],
-        indices: [2, 1, 0, 3, 2, 0] // Ensure these will be front-faces
+        indices: [0, 1, 2, 0, 2, 3] // Ensure these will be front-faces
     });
 
     var material = new XEO.PhongMaterial({
