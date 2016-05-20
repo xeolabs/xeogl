@@ -208,8 +208,8 @@
              *
              * var xmin = boundary[0];
              * var ymin = boundary[1];
-             * var xmax = boundary[2];
-             * var ymax = boundary[3];
+             * var width = boundary[2];
+             * var height = boundary[3];
              * ````
              *
              * @property boundary
