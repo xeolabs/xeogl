@@ -271,7 +271,7 @@
             if (states.billboard.active) {
 
                 add("void billboard(inout mat4 mat) {");
-                add("   mat[0][0] = -1.0;");
+                add("   mat[0][0] = 1.0;");
                 add("   mat[0][1] = 0.0;");
                 add("   mat[0][2] = 0.0;");
                 if (states.billboard.spherical) {
