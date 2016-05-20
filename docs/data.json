@@ -8920,7 +8920,7 @@
         {
             "file": "src/canvas/canvas.js",
             "line": 201,
-            "description": "Boundary of the Canvas in absolute browser window coordinates.\n\n### Usage:\n\n````javascript\nvar boundary = myScene.canvas.boundary;\n\nvar xmin = boundary[0];\nvar ymin = boundary[1];\nvar xmax = boundary[2];\nvar ymax = boundary[3];\n````",
+            "description": "Boundary of the Canvas in absolute browser window coordinates.\n\n### Usage:\n\n````javascript\nvar boundary = myScene.canvas.boundary;\n\nvar xmin = boundary[0];\nvar ymin = boundary[1];\nvar width = boundary[2];\nvar height = boundary[3];\n````",
             "itemtype": "property",
             "name": "boundary",
             "type": "{{Array of Number}}",
@@ -10396,7 +10396,7 @@
         },
         {
             "file": "src/controls/mouseRotateCamera.js",
-            "line": 362,
+            "line": 366,
             "description": "Fired whenever this MouseRotateCamera's {{#crossLink \"MouseRotateCamera/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
@@ -13378,7 +13378,7 @@
             "line": 231,
             "description": "Fired whenever the mouse is moved into of the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas{{/crossLink}}.",
             "itemtype": "event",
-            "name": "mouseover",
+            "name": "mouseenter",
             "params": [
                 {
                     "name": "value",
@@ -13395,7 +13395,7 @@
             "line": 251,
             "description": "Fired whenever the mouse is moved out of the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas{{/crossLink}}.",
             "itemtype": "event",
-            "name": "mouseout",
+            "name": "mouseleave",
             "params": [
                 {
                     "name": "value",
@@ -13426,7 +13426,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 324,
+            "line": 328,
             "description": "Fired whenever the mouse is released over the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas{{/crossLink}}.",
             "itemtype": "event",
             "name": "mouseup",
@@ -13443,7 +13443,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 362,
+            "line": 370,
             "description": "Fired whenever the mouse is double-clicked over the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas{{/crossLink}}.",
             "itemtype": "event",
             "name": "dblclick",
@@ -13460,7 +13460,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 380,
+            "line": 392,
             "description": "Fired whenever the mouse is moved over the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas{{/crossLink}}.",
             "itemtype": "event",
             "name": "mousedown",
@@ -13477,7 +13477,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 398,
+            "line": 414,
             "description": "Fired whenever the mouse wheel is moved over the parent\n{{#crossLink \"Viewer\"}}Viewer{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas{{/crossLink}}.",
             "itemtype": "event",
             "name": "mousewheel",
@@ -13494,7 +13494,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 435,
+            "line": 451,
             "description": "Fired whenever the mouse is clicked over the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s {{#crossLink \"Canvas\"}}Canvas{{/crossLink}}.",
             "itemtype": "event",
             "name": "mouseclicked",
@@ -13511,7 +13511,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 496,
+            "line": 512,
             "description": "Fired when the orientation of the device has changed.",
             "itemtype": "event",
             "name": "orientationchange",
@@ -13531,7 +13531,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 543,
+            "line": 559,
             "description": "Fires on a regular interval and returns data about the rotation\n(in degrees per second) and acceleration (in meters per second squared) of the device, at that moment in\ntime. Some devices do not have the hardware to exclude the effect of gravity.",
             "itemtype": "event",
             "name": "devicemotion",
@@ -13559,7 +13559,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 572,
+            "line": 588,
             "description": "Fired when fresh data is available from an orientation sensor about the current orientation\nof the device as compared to the Earth coordinate frame. This data is gathered from a\nmagnetometer inside the device. See\n<a href=\"https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Orientation_and_motion_data_explained\">Orientation and motion data explained</a> for more info.",
             "itemtype": "event",
             "name": "deviceorientation",
@@ -13587,7 +13587,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 614,
+            "line": 630,
             "description": "Enable or disable all input handlers",
             "params": [
                 {
@@ -13601,7 +13601,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 627,
+            "line": 643,
             "description": "Code for the BACKSPACE key.",
             "itemtype": "property",
             "name": "KEY_BACKSPACE",
@@ -13613,7 +13613,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 635,
+            "line": 651,
             "description": "Code for the TAB key.",
             "itemtype": "property",
             "name": "KEY_TAB",
@@ -13625,7 +13625,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 643,
+            "line": 659,
             "description": "Code for the ENTER key.",
             "itemtype": "property",
             "name": "KEY_ENTER",
@@ -13637,7 +13637,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 651,
+            "line": 667,
             "description": "Code for the SHIFT key.",
             "itemtype": "property",
             "name": "KEY_SHIFT",
@@ -13649,7 +13649,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 659,
+            "line": 675,
             "description": "Code for the CTRL key.",
             "itemtype": "property",
             "name": "KEY_CTRL",
@@ -13661,7 +13661,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 667,
+            "line": 683,
             "description": "Code for the ALT key.",
             "itemtype": "property",
             "name": "KEY_ALT",
@@ -13673,7 +13673,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 675,
+            "line": 691,
             "description": "Code for the PAUSE_BREAK key.",
             "itemtype": "property",
             "name": "KEY_PAUSE_BREAK",
@@ -13685,7 +13685,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 683,
+            "line": 699,
             "description": "Code for the CAPS_LOCK key.",
             "itemtype": "property",
             "name": "KEY_CAPS_LOCK",
@@ -13697,7 +13697,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 691,
+            "line": 707,
             "description": "Code for the ESCAPE key.",
             "itemtype": "property",
             "name": "KEY_ESCAPE",
@@ -13709,7 +13709,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 699,
+            "line": 715,
             "description": "Code for the PAGE_UP key.",
             "itemtype": "property",
             "name": "KEY_PAGE_UP",
@@ -13721,7 +13721,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 707,
+            "line": 723,
             "description": "Code for the PAGE_DOWN key.",
             "itemtype": "property",
             "name": "KEY_PAGE_DOWN",
@@ -13733,7 +13733,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 715,
+            "line": 731,
             "description": "Code for the END key.",
             "itemtype": "property",
             "name": "KEY_END",
@@ -13745,7 +13745,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 723,
+            "line": 739,
             "description": "Code for the HOME key.",
             "itemtype": "property",
             "name": "KEY_HOME",
@@ -13757,7 +13757,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 731,
+            "line": 747,
             "description": "Code for the LEFT_ARROW key.",
             "itemtype": "property",
             "name": "KEY_LEFT_ARROW",
@@ -13769,7 +13769,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 739,
+            "line": 755,
             "description": "Code for the UP_ARROW key.",
             "itemtype": "property",
             "name": "KEY_UP_ARROW",
@@ -13781,7 +13781,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 747,
+            "line": 763,
             "description": "Code for the RIGHT_ARROW key.",
             "itemtype": "property",
             "name": "KEY_RIGHT_ARROW",
@@ -13793,7 +13793,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 755,
+            "line": 771,
             "description": "Code for the DOWN_ARROW key.",
             "itemtype": "property",
             "name": "KEY_DOWN_ARROW",
@@ -13805,7 +13805,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 763,
+            "line": 779,
             "description": "Code for the INSERT key.",
             "itemtype": "property",
             "name": "KEY_INSERT",
@@ -13817,7 +13817,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 771,
+            "line": 787,
             "description": "Code for the DELETE key.",
             "itemtype": "property",
             "name": "KEY_DELETE",
@@ -13829,7 +13829,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 779,
+            "line": 795,
             "description": "Code for the 0 key.",
             "itemtype": "property",
             "name": "KEY_NUM_0",
@@ -13841,7 +13841,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 787,
+            "line": 803,
             "description": "Code for the 1 key.",
             "itemtype": "property",
             "name": "KEY_NUM_1",
@@ -13853,7 +13853,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 795,
+            "line": 811,
             "description": "Code for the 2 key.",
             "itemtype": "property",
             "name": "KEY_NUM_2",
@@ -13865,7 +13865,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 803,
+            "line": 819,
             "description": "Code for the 3 key.",
             "itemtype": "property",
             "name": "KEY_NUM_3",
@@ -13877,7 +13877,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 811,
+            "line": 827,
             "description": "Code for the 4 key.",
             "itemtype": "property",
             "name": "KEY_NUM_4",
@@ -13889,7 +13889,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 819,
+            "line": 835,
             "description": "Code for the 5 key.",
             "itemtype": "property",
             "name": "KEY_NUM_5",
@@ -13901,7 +13901,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 827,
+            "line": 843,
             "description": "Code for the 6 key.",
             "itemtype": "property",
             "name": "KEY_NUM_6",
@@ -13913,7 +13913,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 835,
+            "line": 851,
             "description": "Code for the 7 key.",
             "itemtype": "property",
             "name": "KEY_NUM_7",
@@ -13925,7 +13925,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 843,
+            "line": 859,
             "description": "Code for the 8 key.",
             "itemtype": "property",
             "name": "KEY_NUM_8",
@@ -13937,7 +13937,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 851,
+            "line": 867,
             "description": "Code for the 9 key.",
             "itemtype": "property",
             "name": "KEY_NUM_9",
@@ -13949,7 +13949,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 859,
+            "line": 875,
             "description": "Code for the A key.",
             "itemtype": "property",
             "name": "KEY_A",
@@ -13961,7 +13961,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 867,
+            "line": 883,
             "description": "Code for the B key.",
             "itemtype": "property",
             "name": "KEY_B",
@@ -13973,7 +13973,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 875,
+            "line": 891,
             "description": "Code for the C key.",
             "itemtype": "property",
             "name": "KEY_C",
@@ -13985,7 +13985,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 883,
+            "line": 899,
             "description": "Code for the D key.",
             "itemtype": "property",
             "name": "KEY_D",
@@ -13997,7 +13997,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 891,
+            "line": 907,
             "description": "Code for the E key.",
             "itemtype": "property",
             "name": "KEY_E",
@@ -14009,7 +14009,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 899,
+            "line": 915,
             "description": "Code for the F key.",
             "itemtype": "property",
             "name": "KEY_F",
@@ -14021,7 +14021,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 907,
+            "line": 923,
             "description": "Code for the G key.",
             "itemtype": "property",
             "name": "KEY_G",
@@ -14033,7 +14033,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 915,
+            "line": 931,
             "description": "Code for the H key.",
             "itemtype": "property",
             "name": "KEY_H",
@@ -14045,7 +14045,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 923,
+            "line": 939,
             "description": "Code for the I key.",
             "itemtype": "property",
             "name": "KEY_I",
@@ -14057,7 +14057,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 931,
+            "line": 947,
             "description": "Code for the J key.",
             "itemtype": "property",
             "name": "KEY_J",
@@ -14069,7 +14069,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 939,
+            "line": 955,
             "description": "Code for the K key.",
             "itemtype": "property",
             "name": "KEY_K",
@@ -14081,7 +14081,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 947,
+            "line": 963,
             "description": "Code for the L key.",
             "itemtype": "property",
             "name": "KEY_L",
@@ -14093,7 +14093,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 955,
+            "line": 971,
             "description": "Code for the M key.",
             "itemtype": "property",
             "name": "KEY_M",
@@ -14105,7 +14105,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 963,
+            "line": 979,
             "description": "Code for the N key.",
             "itemtype": "property",
             "name": "KEY_N",
@@ -14117,7 +14117,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 971,
+            "line": 987,
             "description": "Code for the O key.",
             "itemtype": "property",
             "name": "KEY_O",
@@ -14129,7 +14129,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 979,
+            "line": 995,
             "description": "Code for the P key.",
             "itemtype": "property",
             "name": "KEY_P",
@@ -14141,7 +14141,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 987,
+            "line": 1003,
             "description": "Code for the Q key.",
             "itemtype": "property",
             "name": "KEY_Q",
@@ -14153,7 +14153,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 995,
+            "line": 1011,
             "description": "Code for the R key.",
             "itemtype": "property",
             "name": "KEY_R",
@@ -14165,7 +14165,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1003,
+            "line": 1019,
             "description": "Code for the S key.",
             "itemtype": "property",
             "name": "KEY_S",
@@ -14177,7 +14177,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1011,
+            "line": 1027,
             "description": "Code for the T key.",
             "itemtype": "property",
             "name": "KEY_T",
@@ -14189,7 +14189,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1019,
+            "line": 1035,
             "description": "Code for the U key.",
             "itemtype": "property",
             "name": "KEY_U",
@@ -14201,7 +14201,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1027,
+            "line": 1043,
             "description": "Code for the V key.",
             "itemtype": "property",
             "name": "KEY_V",
@@ -14213,7 +14213,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1035,
+            "line": 1051,
             "description": "Code for the W key.",
             "itemtype": "property",
             "name": "KEY_W",
@@ -14225,7 +14225,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1043,
+            "line": 1059,
             "description": "Code for the X key.",
             "itemtype": "property",
             "name": "KEY_X",
@@ -14237,7 +14237,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1051,
+            "line": 1067,
             "description": "Code for the Y key.",
             "itemtype": "property",
             "name": "KEY_Y",
@@ -14249,7 +14249,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1059,
+            "line": 1075,
             "description": "Code for the Z key.",
             "itemtype": "property",
             "name": "KEY_Z",
@@ -14261,7 +14261,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1067,
+            "line": 1083,
             "description": "Code for the LEFT_WINDOW key.",
             "itemtype": "property",
             "name": "KEY_LEFT_WINDOW",
@@ -14273,7 +14273,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1075,
+            "line": 1091,
             "description": "Code for the RIGHT_WINDOW key.",
             "itemtype": "property",
             "name": "KEY_RIGHT_WINDOW",
@@ -14285,7 +14285,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1083,
+            "line": 1099,
             "description": "Code for the SELECT key.",
             "itemtype": "property",
             "name": "KEY_SELECT",
@@ -14297,7 +14297,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1091,
+            "line": 1107,
             "description": "Code for the number pad 0 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_0",
@@ -14309,7 +14309,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1099,
+            "line": 1115,
             "description": "Code for the number pad 1 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_1",
@@ -14321,7 +14321,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1107,
+            "line": 1123,
             "description": "Code for the number pad 2 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD 2",
@@ -14333,7 +14333,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1115,
+            "line": 1131,
             "description": "Code for the number pad 3 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_3",
@@ -14345,7 +14345,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1123,
+            "line": 1139,
             "description": "Code for the number pad 4 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_4",
@@ -14357,7 +14357,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1131,
+            "line": 1147,
             "description": "Code for the number pad 5 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_5",
@@ -14369,7 +14369,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1139,
+            "line": 1155,
             "description": "Code for the number pad 6 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_6",
@@ -14381,7 +14381,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1147,
+            "line": 1163,
             "description": "Code for the number pad 7 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_7",
@@ -14393,7 +14393,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1155,
+            "line": 1171,
             "description": "Code for the number pad 8 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_8",
@@ -14405,7 +14405,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1163,
+            "line": 1179,
             "description": "Code for the number pad 9 key.",
             "itemtype": "property",
             "name": "KEY_NUMPAD_9",
@@ -14417,7 +14417,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1171,
+            "line": 1187,
             "description": "Code for the MULTIPLY key.",
             "itemtype": "property",
             "name": "KEY_MULTIPLY",
@@ -14429,7 +14429,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1179,
+            "line": 1195,
             "description": "Code for the ADD key.",
             "itemtype": "property",
             "name": "KEY_ADD",
@@ -14441,7 +14441,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1187,
+            "line": 1203,
             "description": "Code for the SUBTRACT key.",
             "itemtype": "property",
             "name": "KEY_SUBTRACT",
@@ -14453,7 +14453,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1195,
+            "line": 1211,
             "description": "Code for the DECIMAL POINT key.",
             "itemtype": "property",
             "name": "KEY_DECIMAL_POINT",
@@ -14465,7 +14465,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1203,
+            "line": 1219,
             "description": "Code for the DIVIDE key.",
             "itemtype": "property",
             "name": "KEY_DIVIDE",
@@ -14477,7 +14477,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1211,
+            "line": 1227,
             "description": "Code for the F1 key.",
             "itemtype": "property",
             "name": "KEY_F1",
@@ -14489,7 +14489,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1219,
+            "line": 1235,
             "description": "Code for the F2 key.",
             "itemtype": "property",
             "name": "KEY_F2",
@@ -14501,7 +14501,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1227,
+            "line": 1243,
             "description": "Code for the F3 key.",
             "itemtype": "property",
             "name": "KEY_F3",
@@ -14513,7 +14513,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1235,
+            "line": 1251,
             "description": "Code for the F4 key.",
             "itemtype": "property",
             "name": "KEY_F4",
@@ -14525,7 +14525,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1243,
+            "line": 1259,
             "description": "Code for the F5 key.",
             "itemtype": "property",
             "name": "KEY_F5",
@@ -14537,7 +14537,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1251,
+            "line": 1267,
             "description": "Code for the F6 key.",
             "itemtype": "property",
             "name": "KEY_F6",
@@ -14549,7 +14549,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1259,
+            "line": 1275,
             "description": "Code for the F7 key.",
             "itemtype": "property",
             "name": "KEY_F7",
@@ -14561,7 +14561,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1267,
+            "line": 1283,
             "description": "Code for the F8 key.",
             "itemtype": "property",
             "name": "KEY_F8",
@@ -14573,7 +14573,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1275,
+            "line": 1291,
             "description": "Code for the F9 key.",
             "itemtype": "property",
             "name": "KEY_F9",
@@ -14585,7 +14585,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1283,
+            "line": 1299,
             "description": "Code for the F10 key.",
             "itemtype": "property",
             "name": "KEY_F10",
@@ -14597,7 +14597,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1291,
+            "line": 1307,
             "description": "Code for the F11 key.",
             "itemtype": "property",
             "name": "KEY_F11",
@@ -14609,7 +14609,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1299,
+            "line": 1315,
             "description": "Code for the F12 key.",
             "itemtype": "property",
             "name": "KEY_F12",
@@ -14621,7 +14621,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1307,
+            "line": 1323,
             "description": "Code for the NUM_LOCK key.",
             "itemtype": "property",
             "name": "KEY_NUM_LOCK",
@@ -14633,7 +14633,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1315,
+            "line": 1331,
             "description": "Code for the SCROLL_LOCK key.",
             "itemtype": "property",
             "name": "KEY_SCROLL_LOCK",
@@ -14645,7 +14645,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1323,
+            "line": 1339,
             "description": "Code for the SEMI_COLON key.",
             "itemtype": "property",
             "name": "KEY_SEMI_COLON",
@@ -14657,7 +14657,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1331,
+            "line": 1347,
             "description": "Code for the EQUAL_SIGN key.",
             "itemtype": "property",
             "name": "KEY_EQUAL_SIGN",
@@ -14669,7 +14669,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1339,
+            "line": 1355,
             "description": "Code for the COMMA key.",
             "itemtype": "property",
             "name": "KEY_COMMA",
@@ -14681,7 +14681,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1347,
+            "line": 1363,
             "description": "Code for the DASH key.",
             "itemtype": "property",
             "name": "KEY_DASH",
@@ -14693,7 +14693,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1355,
+            "line": 1371,
             "description": "Code for the PERIOD key.",
             "itemtype": "property",
             "name": "KEY_PERIOD",
@@ -14705,7 +14705,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1363,
+            "line": 1379,
             "description": "Code for the FORWARD_SLASH key.",
             "itemtype": "property",
             "name": "KEY_FORWARD_SLASH",
@@ -14717,7 +14717,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1371,
+            "line": 1387,
             "description": "Code for the GRAVE_ACCENT key.",
             "itemtype": "property",
             "name": "KEY_GRAVE_ACCENT",
@@ -14729,7 +14729,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1379,
+            "line": 1395,
             "description": "Code for the OPEN_BRACKET key.",
             "itemtype": "property",
             "name": "KEY_OPEN_BRACKET",
@@ -14741,7 +14741,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1387,
+            "line": 1403,
             "description": "Code for the BACK_SLASH key.",
             "itemtype": "property",
             "name": "KEY_BACK_SLASH",
@@ -14753,7 +14753,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1395,
+            "line": 1411,
             "description": "Code for the CLOSE_BRACKET key.",
             "itemtype": "property",
             "name": "KEY_CLOSE_BRACKET",
@@ -14765,7 +14765,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1403,
+            "line": 1419,
             "description": "Code for the SINGLE_QUOTE key.",
             "itemtype": "property",
             "name": "KEY_SINGLE_QUOTE",
@@ -14777,7 +14777,7 @@
         },
         {
             "file": "src/input/input.js",
-            "line": 1411,
+            "line": 1427,
             "description": "Code for the SPACE key.",
             "itemtype": "property",
             "name": "KEY_SPACE",
@@ -16008,7 +16008,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 361,
+            "line": 391,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/image:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "image",
@@ -16025,7 +16025,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 368,
+            "line": 398,
             "description": "Fired whenever this Texture has loaded the\nimage file that its {{#crossLink \"Texture/src:property\"}}{{/crossLink}} property currently points to.",
             "itemtype": "event",
             "name": "loaded",
@@ -16042,7 +16042,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 406,
+            "line": 436,
             "description": "Indicates an HTML DOM Image object to source this Texture from.\n\nAlternatively, you could indicate the source via either of properties\n{{#crossLink \"Texture/src:property\"}}{{/crossLink}} or {{#crossLink \"Texture/target:property\"}}{{/crossLink}}.\n\nFires an {{#crossLink \"Texture/image:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Texture/src:property\"}}{{/crossLink}} and\n{{#crossLink \"Texture/target:property\"}}{{/crossLink}} properties to null.",
             "itemtype": "property",
             "name": "image",
@@ -16054,7 +16054,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 434,
+            "line": 464,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/image:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "image",
@@ -16071,7 +16071,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 447,
+            "line": 477,
             "description": "Indicates a path to an image file to source this Texture from.\n\nAlternatively, you could indicate the source via either of properties\n{{#crossLink \"Texture/image:property\"}}{{/crossLink}} or {{#crossLink \"Texture/target:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"Texture/src:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Texture/image:property\"}}{{/crossLink}} and\n{{#crossLink \"Texture/target:property\"}}{{/crossLink}} properties to null.",
             "itemtype": "property",
             "name": "src",
@@ -16083,7 +16083,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 475,
+            "line": 505,
             "description": "Fired whenever this Texture's {{#crossLink \"Texture/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -16100,7 +16100,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 489,
+            "line": 519,
             "description": "Instance or ID of a {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} or\n{{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} to source this Texture from.\n\nAlternatively, you could indicate the source via either of properties\n{{#crossLink \"Texture/src:property\"}}{{/crossLink}} or {{#crossLink \"Texture/image:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"Texture/target:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Texture/src:property\"}}{{/crossLink}} and\n{{#crossLink \"Texture/image:property\"}}{{/crossLink}} properties to null.",
             "itemtype": "property",
             "name": "target",
@@ -16112,7 +16112,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 531,
+            "line": 561,
             "description": "Fired whenever this Texture's   {{#crossLink \"Texture/target:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "target",
@@ -16129,7 +16129,36 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 545,
+            "line": 575,
+            "description": "Page table for sparse virtual texturing.\n\nFires an {{#crossLink \"Texture/pageTable:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "pageTable",
+            "default": "null",
+            "type": "{Float32Array}",
+            "class": "Texture",
+            "module": "XEO",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/texture.js",
+            "line": 592,
+            "description": "Fired whenever this Texture's  {{#crossLink \"Texture/pageTable:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "pageTable",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Float32Array"
+                }
+            ],
+            "class": "Texture",
+            "module": "XEO",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/texture.js",
+            "line": 605,
             "description": "2D translation vector that will be added to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/translate:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "translate",
@@ -16141,7 +16170,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 565,
+            "line": 625,
             "description": "Fired whenever this Texture's   {{#crossLink \"Texture/translate:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "translate",
@@ -16158,7 +16187,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 578,
+            "line": 638,
             "description": "2D scaling vector that will be applied to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/scale:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "scale",
@@ -16170,7 +16199,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 598,
+            "line": 658,
             "description": "Fired whenever this Texture's   {{#crossLink \"Texture/scale:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "scale",
@@ -16187,7 +16216,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 611,
+            "line": 671,
             "description": "Rotation, in degrees, that will be applied to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/rotate:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "rotate",
@@ -16199,7 +16228,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 635,
+            "line": 695,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/rotate:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "rotate",
@@ -16216,7 +16245,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 648,
+            "line": 708,
             "description": "How this Texture is sampled when a texel covers less than one pixel.\n\nOptions are:\n\n<ul>\n    <li>**\"nearest\"** - Uses the value of the texture element that is nearest\n    (in Manhattan distance) to the center of the pixel being textured.</li>\n\n    <li>**\"linear\"** - Uses the weighted average of the four texture elements that are\n    closest to the center of the pixel being textured.</li>\n\n    <li>**\"nearestMipmapNearest\"** - Chooses the mipmap that most closely matches the\n    size of the pixel being textured and uses the \"nearest\" criterion (the texture\n    element nearest to the center of the pixel) to produce a texture value.</li>\n\n    <li>**\"linearMipmapNearest\"** - Chooses the mipmap that most closely matches the size of\n    the pixel being textured and uses the \"linear\" criterion (a weighted average of the\n    four texture elements that are closest to the center of the pixel) to produce a\n    texture value.</li>\n\n    <li>**\"nearestMipmapLinear\"** - Chooses the two mipmaps that most closely\n    match the size of the pixel being textured and uses the \"nearest\" criterion\n    (the texture element nearest to the center of the pixel) to produce a texture\n    value from each mipmap. The final texture value is a weighted average of those two\n    values.</li>\n\n    <li>**\"linearMipmapLinear\"** - **(default)** - Chooses the two mipmaps that most closely match the size\n    of the pixel being textured and uses the \"linear\" criterion (a weighted average\n    of the four texture elements that are closest to the center of the pixel) to\n    produce a texture value from each mipmap. The final texture value is a weighted\n    average of those two values.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/minFilter:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "minFilter",
@@ -16228,7 +16257,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 712,
+            "line": 772,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/minFilter:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "minFilter",
@@ -16245,7 +16274,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 725,
+            "line": 785,
             "description": "How this Texture is sampled when a texel covers more than one pixel.\n\nOptions are:\n\n<ul>\n    <li>**\"nearest\"** - Uses the value of the texture element that is nearest\n    (in Manhattan distance) to the center of the pixel being textured.</li>\n    <li>**\"linear\"** - **(default)** - Uses the weighted average of the four texture elements that are\n    closest to the center of the pixel being textured.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/magFilter:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "magFilter",
@@ -16257,7 +16286,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 762,
+            "line": 822,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/magFilter:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "magFilter",
@@ -16274,7 +16303,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 775,
+            "line": 835,
             "description": "Wrap parameter for this Texture's *S* coordinate.\n\nOptions are:\n\n<ul>\n    <li>**\"clampToEdge\"** -  causes *S* coordinates to be clamped to the size of the texture.</li>\n    <li>**\"mirroredRepeat\"** - causes the *S* coordinate to be set to the fractional part of the texture coordinate\n    if the integer part of *S* is even; if the integer part of *S* is odd, then the *S* texture coordinate is\n    set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *S*.</li>\n    <li>**\"repeat\"** - **(default)** - causes the integer part of the *S* coordinate to be ignored; xeoEngine uses only the\n    fractional part, thereby creating a repeating pattern.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/wrapS:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "wrapS",
@@ -16286,7 +16315,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 814,
+            "line": 874,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/wrapS:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "wrapS",
@@ -16303,7 +16332,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 827,
+            "line": 887,
             "description": "Wrap parameter for this Texture's *T* coordinate.\n\nOptions are:\n\n<ul>\n    <li>**\"clampToEdge\"** -  Causes *T* coordinates to be clamped to the size of the texture.</li>\n    <li>**\"mirroredRepeat\"** - Causes the *T* coordinate to be set to the fractional part of the texture coordinate\n    if the integer part of *T* is even; if the integer part of *T* is odd, then the *T* texture coordinate is\n    set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *T*.</li>\n    <li>**\"repeat\"** - **(default)** - Causes the integer part of the *T* coordinate to be ignored; xeoEngine uses only the\n    fractional part, thereby creating a repeating pattern.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/wrapT:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "wrapT",
@@ -16315,7 +16344,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 866,
+            "line": 926,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/wrapT:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "wrapT",
@@ -16332,7 +16361,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 879,
+            "line": 939,
             "description": "Flips this Texture's source data along its vertical axis when true.\n\nFires a {{#crossLink \"Texture/flipY:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "flipY",
@@ -16344,7 +16373,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 903,
+            "line": 963,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/flipY:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "flipY",
@@ -22340,7 +22369,7 @@
         },
         {
             "message": "Missing item type\nEnable or disable all input handlers",
-            "line": " src/input/input.js:614"
+            "line": " src/input/input.js:630"
         },
         {
             "message": "Missing item type\nDeviceOrientationControls - applies device orientation on object rotation",

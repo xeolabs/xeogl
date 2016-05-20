@@ -418,10 +418,10 @@
                     /**
                      * Fired whenever the mouse is moved into of the parent
                      * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}}.
-                     * @event mouseover
+                     * @event mouseenter
                      * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}},
                      */
-                    self.fire(&quot;mouseover&quot;, coords, true);
+                    self.fire(&quot;mouseenter&quot;, coords, true);
                 });
 
             cfg.element.addEventListener(&quot;mouseleave&quot;,
@@ -438,14 +438,14 @@
                     /**
                      * Fired whenever the mouse is moved out of the parent
                      * {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}}.
-                     * @event mouseout
+                     * @event mouseleave
                      * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}},
                      */
-                    self.fire(&quot;mouseout&quot;, coords, true);
+                    self.fire(&quot;mouseleave&quot;, coords, true);
                 });
 
 
-            cfg.element.addEventListener(&quot;mousedown&quot;,
+            document.addEventListener(&quot;mousedown&quot;,
                 this._mouseDownListener = function (e) {
 
                     if (!self.enabled) {
@@ -479,9 +479,13 @@
                      * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}},
                      */
                     self.fire(&quot;mousedown&quot;, coords, true);
+
+                    if (self.mouseover) {
+                        e.preventDefault();
+                    }
                 });
 
-            cfg.element.addEventListener(&quot;mouseup&quot;,
+            document.addEventListener(&quot;mouseup&quot;,
                 this._mouseUpListener = function (e) {
 
                     if (!self.enabled) {
@@ -515,9 +519,13 @@
                      * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}},
                      */
                     self.fire(&quot;mouseup&quot;, coords, true);
-                });
 
-            cfg.element.addEventListener(&quot;dblclick&quot;,
+                    if (self.mouseover) {
+                        e.preventDefault();
+                    }
+                }, true);
+
+            document.addEventListener(&quot;dblclick&quot;,
                 this._dblClickListener = function (e) {
 
                     if (!self.enabled) {
@@ -553,9 +561,13 @@
                      * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}},
                      */
                     self.fire(&quot;dblclick&quot;, coords, true);
+
+                    if (self.mouseover) {
+                        e.preventDefault();
+                    }
                 });
 
-            cfg.element.addEventListener(&quot;mousemove&quot;,
+            document.addEventListener(&quot;mousemove&quot;,
                 this._mouseMoveListener = function (e) {
 
                     if (!self.enabled) {
@@ -571,6 +583,10 @@
                      * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink &quot;Canvas&quot;}}Canvas{{/crossLink}},
                      */
                     self.fire(&quot;mousemove&quot;, coords, true);
+
+                    if (self.mouseover) {
+                        e.preventDefault();
+                    }
                 });
 
             cfg.element.addEventListener(&quot;mousewheel&quot;,

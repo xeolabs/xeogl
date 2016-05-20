@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-05-09
+ * Built on 2016-05-20
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -3344,7 +3344,7 @@ var Canvas2Image = (function () {
             if (states.billboard.active) {
 
                 add("void billboard(inout mat4 mat) {");
-                add("   mat[0][0] = -1.0;");
+                add("   mat[0][0] = 1.0;");
                 add("   mat[0][1] = 0.0;");
                 add("   mat[0][2] = 0.0;");
                 if (states.billboard.spherical) {
@@ -15764,8 +15764,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              *
              * var xmin = boundary[0];
              * var ymin = boundary[1];
-             * var xmax = boundary[2];
-             * var ymax = boundary[3];
+             * var width = boundary[2];
+             * var height = boundary[3];
              * ````
              *
              * @property boundary
@@ -19066,6 +19066,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         this._onMouseDown = input.on("mousedown",
                             function (e) {
 
+                                if (!input.mouseover) {
+                                    return;
+                                }
+
                                 xDelta = 0;
                                 yDelta = 0;
 
@@ -19098,7 +19102,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                                 yDelta = 0;
                             });
 
-                        this._onMouseOver = input.on("mouseover",
+                        this._onMouseEnter = input.on("mouseenter",
                             function () {
 
                                 over = true;
@@ -19107,7 +19111,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                                 yDelta = 0;
                             });
 
-                        this._onMouseOut = input.on("mouseout",
+                        this._onMouseLeave = input.on("mouseleave",
                             function () {
 
                                 over = false;
@@ -19143,8 +19147,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         input.off(this._onMouseDown);
                         input.off(this._onMouseUp);
                         input.off(this._onMouseMove);
-                        input.off(this._onMouseOver);
-                        input.off(this._onMouseOut);
+                        input.off(this._onMouseEnter);
+                        input.off(this._onMouseLeave);
                     }
 
                     /**
@@ -19586,12 +19590,12 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         var downX;
                         var downY;
 
-                        this._onMouseOver = input.on("mouseover",
+                        this._onMouseEnter = input.on("mouseenter",
                             function () {
                                 over = true;
                             });
 
-                        this._onMouseOut = input.on("mouseout",
+                        this._onMouseLeave = input.on("mouseleave",
                             function () {
                                 over = false;
                             });
@@ -26837,10 +26841,10 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     /**
                      * Fired whenever the mouse is moved into of the parent
                      * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
-                     * @event mouseover
+                     * @event mouseenter
                      * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
                      */
-                    self.fire("mouseover", coords, true);
+                    self.fire("mouseenter", coords, true);
                 });
 
             cfg.element.addEventListener("mouseleave",
@@ -26857,14 +26861,14 @@ XEO.PathGeometry = XEO.Geometry.extend({
                     /**
                      * Fired whenever the mouse is moved out of the parent
                      * {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
-                     * @event mouseout
+                     * @event mouseleave
                      * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
                      */
-                    self.fire("mouseout", coords, true);
+                    self.fire("mouseleave", coords, true);
                 });
 
 
-            cfg.element.addEventListener("mousedown",
+            document.addEventListener("mousedown",
                 this._mouseDownListener = function (e) {
 
                     if (!self.enabled) {
@@ -26898,9 +26902,13 @@ XEO.PathGeometry = XEO.Geometry.extend({
                      * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
                      */
                     self.fire("mousedown", coords, true);
+
+                    if (self.mouseover) {
+                        e.preventDefault();
+                    }
                 });
 
-            cfg.element.addEventListener("mouseup",
+            document.addEventListener("mouseup",
                 this._mouseUpListener = function (e) {
 
                     if (!self.enabled) {
@@ -26934,9 +26942,13 @@ XEO.PathGeometry = XEO.Geometry.extend({
                      * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
                      */
                     self.fire("mouseup", coords, true);
-                });
 
-            cfg.element.addEventListener("dblclick",
+                    if (self.mouseover) {
+                        e.preventDefault();
+                    }
+                }, true);
+
+            document.addEventListener("dblclick",
                 this._dblClickListener = function (e) {
 
                     if (!self.enabled) {
@@ -26972,9 +26984,13 @@ XEO.PathGeometry = XEO.Geometry.extend({
                      * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
                      */
                     self.fire("dblclick", coords, true);
+
+                    if (self.mouseover) {
+                        e.preventDefault();
+                    }
                 });
 
-            cfg.element.addEventListener("mousemove",
+            document.addEventListener("mousemove",
                 this._mouseMoveListener = function (e) {
 
                     if (!self.enabled) {
@@ -26990,6 +27006,10 @@ XEO.PathGeometry = XEO.Geometry.extend({
                      * @param value {[Number, Number]} The mouse coordinates within the {{#crossLink "Canvas"}}Canvas{{/crossLink}},
                      */
                     self.fire("mousemove", coords, true);
+
+                    if (self.mouseover) {
+                        e.preventDefault();
+                    }
                 });
 
             cfg.element.addEventListener("mousewheel",
@@ -31914,7 +31934,9 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 magFilter: null,
                 wrapS: null,
                 wrapT: null,
-                flipY: null
+                flipY: null,
+
+                pageTableTexture: null
             });
 
             // Data source
@@ -31922,6 +31944,8 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             this._src = null;   // URL string
             this._image = null; // HTMLImageElement
             this._target = null;// XEO.RenderTarget
+
+            this._pageTable = null; // Float32Array
 
             // Transformation
 
@@ -32104,6 +32128,32 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                 }
 
                 this._propsDirty = false;
+            }
+
+            if (this._pageTableDirty) {
+
+                if (this._image) {
+
+                    if (this._onTargetActive) {
+                        this._target.off(this._onTargetActive);
+                        this._onTargetActive = null;
+                    }
+
+                    if (state.texture && state.texture.renderBuffer) {
+
+                        // Detach from "virtual texture" provided by render target
+                        state.texture = null;
+                    }
+
+                    if (!state.texture) {
+                        state.texture = new XEO.renderer.webgl.Texture2D(gl);
+                    }
+
+                    state.texture.setImage(this._image, state);
+
+                    this._imageDirty = false;
+                    this._propsDirty = true; // May now need to regenerate mipmaps etc
+                }
             }
 
             this._renderer.imageDirty = true;
@@ -32325,6 +32375,36 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                 get: function () {
                     return this._attached.target;
+                }
+            },
+
+            /**
+             * Page table for sparse virtual texturing.
+             *
+             * Fires an {{#crossLink "Texture/pageTable:event"}}{{/crossLink}} event on change.
+             *
+             * @property pageTable
+             * @default null
+             * @type {Float32Array}
+             */
+            pageTable: {
+
+                set: function (value) {
+
+                    this._pageTable = value;
+
+                    this._imageDirty = true;
+
+                    /**
+                     * Fired whenever this Texture's  {{#crossLink "Texture/pageTable:property"}}{{/crossLink}} property changes.
+                     * @event pageTable
+                     * @param value {Float32Array} The property's new value
+                     */
+                    this.fire("pageTable", this._pageTable);
+                },
+
+                get: function () {
+                    return this._state._pageTable;
                 }
             },
 
@@ -32745,6 +32825,10 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             } else if (this._image) {
                 // TODO: Image data
                 // json.src = image.src;
+            }
+
+            if (false && this._state.pageTable !== false) {
+                json.pageTable = this._state.pageTable;
             }
 
             return json;

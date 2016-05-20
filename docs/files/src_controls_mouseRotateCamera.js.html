@@ -465,6 +465,10 @@
                         this._onMouseDown = input.on(&quot;mousedown&quot;,
                             function (e) {
 
+                                if (!input.mouseover) {
+                                    return;
+                                }
+
                                 xDelta = 0;
                                 yDelta = 0;
 
@@ -497,7 +501,7 @@
                                 yDelta = 0;
                             });
 
-                        this._onMouseOver = input.on(&quot;mouseover&quot;,
+                        this._onMouseEnter = input.on(&quot;mouseenter&quot;,
                             function () {
 
                                 over = true;
@@ -506,7 +510,7 @@
                                 yDelta = 0;
                             });
 
-                        this._onMouseOut = input.on(&quot;mouseout&quot;,
+                        this._onMouseLeave = input.on(&quot;mouseleave&quot;,
                             function () {
 
                                 over = false;
@@ -542,8 +546,8 @@
                         input.off(this._onMouseDown);
                         input.off(this._onMouseUp);
                         input.off(this._onMouseMove);
-                        input.off(this._onMouseOver);
-                        input.off(this._onMouseOut);
+                        input.off(this._onMouseEnter);
+                        input.off(this._onMouseLeave);
                     }
 
                     /**
