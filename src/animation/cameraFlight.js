@@ -538,16 +538,17 @@
             return -c * t * (t - 2) + b;
         },
 
+        /**
+         * Stops an earlier flyTo, fires arrival callback.
+         * @method stop
+         */
         stop: function () {
 
             if (!this._flying) {
                 return;
             }
 
-            // Hide boundary
             this._boundaryIndicator.visibility.visible = false;
-
-            //this.scene.off(this._tick);
 
             this._flying = false;
 
@@ -568,6 +569,30 @@
             }
 
             this.fire("stopped", true, true);
+        },
+
+        /**
+         * Cancels an earlier flyTo without calling the arrival callback.
+         * @method cancel
+         */
+        cancel: function () {
+
+            if (!this._flying) {
+                return;
+            }
+
+            this._boundaryIndicator.visibility.visible = false;
+
+            this._flying = false;
+
+            this._time1 = null;
+            this._time2 = null;
+
+            if (this._callback) {
+                this._callback = null;
+            }
+
+            this.fire("canceled", true, true);
         },
 
         _props: {

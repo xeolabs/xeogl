@@ -640,9 +640,12 @@
          * @param {String} [params.type] Optional expected type of base type of the child; when supplied, will
          * cause an exception if the given child is not the same type or a subtype of this.
          * @param {Boolean} [params.sceneDefault=false]
-         * @param {Function} [params.onAttached] Optional callback called before event is fired
-         * * @param {Function} [params.onAttached.callback] Callback function
+         * @param {Function} [params.onAttached] Optional callback called when component attached
+         * @param {Function} [params.onAttached.callback] Callback function
          * @param {Function} [params.onAttached.scope] Optional scope for callback
+         * @param {Function} [params.onDetached] Optional callback called when component is detached
+         * @param {Function} [params.onDetached.callback] Callback function
+         * @param {Function} [params.onDetached.scope] Optional scope for callback
          * @param {{String:Function}} [params.on] Callbacks to subscribe to properties on component
          * @param {Boolean} [params.recompiles=true] When true, fires "dirty" events on this component
          * @private

@@ -248,6 +248,10 @@
 
                                     if (targeting) {
                                         camera.view.zoom(progress);
+
+                                        if (camera.project.isType("XEO.Ortho")) {
+
+                                        }
                                     }
                                 }
                             });
