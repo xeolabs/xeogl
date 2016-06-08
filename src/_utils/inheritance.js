@@ -8,7 +8,9 @@
 
     var initializing = false;
 
-    var fnTest = /xyz/.test(function () { xyz; }) ? /\b_super\b/ : /.*/;
+    var fnTest = /xyz/.test(function () {
+        xyz;
+    }) ? /\b_super\b/ : /.*/;
 
     // The base Class implementation (does nothing)
     this.Class = function () {
@@ -79,12 +81,13 @@
                 })(name, prop[name]) : prop[name];
         }
 
-        if (prop.type) {
-
-            // Create array of type names to indicate inheritance chain,
-            // to support "isType" queries on components
-            prototype.superTypes = _super.superTypes ? _super.superTypes.concat(_super.type) : [];
+        if (!prop.type) {
+            prop.type = _super.type + "_" + createUUID();
         }
+
+        // Create array of type names to indicate inheritance chain,
+        // to support "isType" queries on components
+        prototype.superTypes = _super.superTypes ? _super.superTypes.concat(_super.type) : [];
 
         // The dummy class constructor
         function Class() {
@@ -105,5 +108,35 @@
 
         return Class;
     };
+
+    /**
+     * Returns a new UUID.
+     * @method createUUID
+     * @static
+     * @return string The new UUID
+     */
+    var createUUID = (function () {
+        // http://www.broofa.com/Tools/Math.uuid.htm
+        var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+        var uuid = new Array(36);
+        var rnd = 0, r;
+        return function () {
+            for (var i = 0; i < 36; i++) {
+                if (i === 8 || i === 13 || i === 18 || i === 23) {
+                    uuid[i] = '-';
+                } else if (i === 14) {
+                    uuid[i] = '4';
+                } else {
+                    if (rnd <= 0x02) {
+                        rnd = 0x2000000 + ( Math.random() * 0x1000000 ) | 0;
+                    }
+                    r = rnd & 0xf;
+                    rnd = rnd >> 4;
+                    uuid[i] = chars[( i === 19 ) ? ( r & 0x3 ) | 0x8 : r];
+                }
+            }
+            return uuid.join('');
+        };
+    })();
 })();
 
