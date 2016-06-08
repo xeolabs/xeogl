@@ -1843,6 +1843,7 @@
          * @param {Number} c The angle of rotation
          * @param {Float32Array} dest The receiving vec3
          * @returns {Float32Array} dest
+         * @static
          */
         rotateVec3X: function (a, b, c, dest) {
 
@@ -1875,6 +1876,7 @@
          * @param {Number} c The angle of rotation
          * @param {Float32Array} dest The receiving vec3
          * @returns {Float32Array} dest
+         * @static
          */
         rotateVec3Y: function (a, b, c, dest) {
             
@@ -1906,8 +1908,8 @@
          * @param {Float32Array} b The origin of the rotation
          * @param {Number} c The angle of rotation
          * @param {Float32Array} dest The receiving vec3
-         * 
          * @returns {Float32Array} dest
+         * @static
          */
         rotateVec3Z: function (a, b, c, dest) {
             
@@ -1933,12 +1935,19 @@
 
         /**
          * Transforms a four-element vector by a 4x4 projection matrix.
+         *
          * @method projectVec4
+         * @param {Float32Array} p 3D View-space coordinate
+         * @param {Float32Array} q 2D Projected coordinate
+         * @returns {Float32Array} 2D Projected coordinate
          * @static
          */
-        projectVec4: function (v) {
-            var f = 1.0 / v[3];
-            return [v[0] * f, v[1] * f, v[2] * f, 1.0];
+        projectVec4: function (p, q) {
+            var f = 1.0 / p[3];
+            q = q || XEO.math.vec2();
+            q[0] = v[0] * f;
+            q[1] = v[1] * f;
+            return q;
         },
 
         /**

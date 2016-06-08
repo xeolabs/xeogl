@@ -385,7 +385,7 @@
                             .radius(0.3)
                             .cone();
 
-                    if (hit.barycentric) {
+                    if (hit.bary) {
 
                         var ia = hit.indices[0];
                         var ib = hit.indices[1];
@@ -395,13 +395,13 @@
                         var uvb = [uvs[(ib * 2)], uvs[(ib * 2) + 1]];
                         var uvc = [uvs[(ic * 2)], uvs[(ic * 2) + 1]];
 
-                        var barycentric = hit.barycentric;
+                        var bary = hit.bary;
 
                         var uv = XEO.math.addVec3(
                                 XEO.math.addVec3(
-                                        XEO.math.mulVec2Scalar(uva, barycentric[0], tempVec3a),
-                                        XEO.math.mulVec2Scalar(uvb, barycentric[1], tempVec3b), tempVec3c),
-                                XEO.math.mulVec2Scalar(uvc, barycentric[2], tempVec3d), tempVec3e);
+                                        XEO.math.mulVec2Scalar(uva, bary[0], tempVec3a),
+                                        XEO.math.mulVec2Scalar(uvb, bary[1], tempVec3b), tempVec3c),
+                                XEO.math.mulVec2Scalar(uvc, bary[2], tempVec3d), tempVec3e);
 
                         showUVPos(uv);
                         

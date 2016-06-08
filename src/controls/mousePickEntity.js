@@ -41,7 +41,7 @@
  mousePickEntity.on("pick", function(e) {
     var entity = e.entity;
     var canvasPos = e.canvasPos;
-    var primitiveIndex = e.primitiveIndex;
+    var primIndex = e.primIndex;
  });
 
  // Handle nothing picked

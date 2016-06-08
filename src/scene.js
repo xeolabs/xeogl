@@ -1338,7 +1338,7 @@
             var position = XEO.math.vec4();
             var worldPos = XEO.math.vec4();
             var viewPos = XEO.math.vec4();
-            var barycentric = XEO.math.vec3();
+            var bary = XEO.math.vec3();
 
             var na = XEO.math.vec3();
             var nb = XEO.math.vec3();
@@ -1431,7 +1431,7 @@
 
                     hit.entity = entity; // Swap string ID for XEO.Entity
 
-                    if (hit.primitiveIndex !== undefined && hit.primitiveIndex > -1) {
+                    if (hit.primIndex !== undefined && hit.primIndex > -1) {
 
                         var geometry = entity.geometry;
 
@@ -1444,7 +1444,7 @@
 
                             // Get the World-space positions of the triangle's vertices
 
-                            var i = hit.primitiveIndex; // Indicates the first triangle index in the indices array
+                            var i = hit.primIndex; // Indicates the first triangle index in the indices array
 
                             var indices = geometry.indices;
                             var positions = geometry.positions;
@@ -1519,9 +1519,9 @@
 
                             // Get barycentric coordinates of the ray-triangle intersection
 
-                            math.cartesianToBarycentric2(position, a, b, c, barycentric);
+                            math.cartesianToBarycentric2(position, a, b, c, bary);
 
-                            hit.barycentric = barycentric;
+                            hit.bary = bary;
 
                             // Get interpolated normal vector
 
@@ -1542,9 +1542,9 @@
                                 nc[2] = normals[ic3 + 2];
 
                                 var normal = math.addVec3(math.addVec3(
-                                        math.mulVec3Scalar(na, barycentric[0], tempVec3),
-                                        math.mulVec3Scalar(nb, barycentric[1], tempVec3b), tempVec3c),
-                                    math.mulVec3Scalar(nc, barycentric[2], tempVec3d), tempVec3e);
+                                        math.mulVec3Scalar(na, bary[0], tempVec3),
+                                        math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
+                                    math.mulVec3Scalar(nc, bary[2], tempVec3d), tempVec3e);
 
                                 hit.normal = math.transformVec3(entity.transform.leafMatrix, normal, tempVec3f);
                             }
@@ -1566,9 +1566,9 @@
 
                                 hit.uv = math.addVec3(
                                     math.addVec3(
-                                        math.mulVec2Scalar(uva, barycentric[0], tempVec3g),
-                                        math.mulVec2Scalar(uvb, barycentric[1], tempVec3h), tempVec3i),
-                                    math.mulVec2Scalar(uvc, barycentric[2], tempVec3j), tempVec3k);
+                                        math.mulVec2Scalar(uva, bary[0], tempVec3g),
+                                        math.mulVec2Scalar(uvb, bary[1], tempVec3h), tempVec3i),
+                                    math.mulVec2Scalar(uvc, bary[2], tempVec3j), tempVec3k);
                             }
                         }
                     }
