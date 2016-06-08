@@ -123,6 +123,10 @@
         this._pickObjectChunkList = [];  // State chunk list to render scene to pick buffer
         this._pickObjectChunkListLen = 0;
 
+        // Tracks the index of the first chunk in the transparency pass. The first run of chunks
+        // in the list are for opaque objects, while the remainder are for transparent objects.
+        // This supports a mode in which we only render the opaque chunks.
+        this._drawChunkListTransparentIndex = -1;
 
         // The frame context holds state shared across a single render of the
         // draw list, along with any results of the render, such as pick hits
@@ -622,7 +626,8 @@
 
         if (this.imageDirty || params.force) {
             this._doDrawList({                  // Render the draw list
-                clear: (params.clear !== false) // Clear buffers by default
+                clear: (params.clear !== false), // Clear buffers by default
+                opaqueOnly: params.opaqueOnly
             });
             this.stats.frame.frameCount++;
             this.imageDirty = false;
@@ -903,8 +908,14 @@
 
                         // Don't reapply repeated chunks
 
-                        this._drawChunkList[this._drawChunkListLen++] = chunk;
+                        this._drawChunkList[this._drawChunkListLen] = chunk;
                         this._lastDrawChunkId[i] = chunk.id;
+
+                        if (chunk.state && chunk.state.transparent && this._drawChunkListTransparentIndex < 0) {
+                            this._drawChunkListTransparentIndex = this._drawChunkListLen;
+                        }
+
+                        this._drawChunkListLen++
                     }
                 }
 
@@ -1073,10 +1084,10 @@
                 // Convert picked pixel color to primitive index
 
                 pix = pickBuf.read(canvasX, canvasY);
-                var primitiveIndex = pix[0] + (pix[1] * 256) + (pix[2] * 256 * 256) + (pix[3] * 256 * 256 * 256);
-                primitiveIndex *= 3; // Convert from triangle number to first vertex in indices
+                var primIndex = pix[0] + (pix[1] * 256) + (pix[2] * 256 * 256) + (pix[3] * 256 * 256 * 256);
+                primIndex *= 3; // Convert from triangle number to first vertex in indices
 
-                hit.primitiveIndex = primitiveIndex;
+                hit.primIndex = primIndex;
             }
         }
 
@@ -1092,6 +1103,7 @@
      * @param {Boolean} params.pickObject
      * @param {Boolean} params.rayPick
      * @param {Boolean} params.object
+     * @param {Boolean} params.opaqueOnly
      * @private
      */
     XEO.renderer.Renderer.prototype._doDrawList = function (params) {
@@ -1195,7 +1207,11 @@
 
             var startTime = (new Date()).getTime();
 
-            for (i = 0, len = this._drawChunkListLen; i < len; i++) {
+
+            // Option to only render opaque objects
+            len = (params.opaqueOnly && this._drawChunkListTransparentIndex >= 0 ? this._drawChunkListTransparentIndex : this._drawChunkListLen);
+
+            for (i = 0; i < len; i++) {
                 this._drawChunkList[i].draw(frameCtx);
             }
 
@@ -1222,6 +1238,53 @@
         }
 
         this.stats.frame.drawChunks = this._drawChunkListLen;
+    };
+
+    /**
+     * Reads the colors of some pixels in the last rendered frame.
+     *
+     * @param {Float32Array} pixels
+     * @param {Float32Array} colors
+     * @param {Number} len
+     * @param {Boolean} opaqueOnly
+     */
+    XEO.renderer.Renderer.prototype.readPixels = function (pixels, colors, len, opaqueOnly) {
+
+        if (!this._readPixelBuf) {
+            this._readPixelBuf = new XEO.renderer.webgl.RenderBuffer({
+                gl: this._canvas.gl,
+                canvas: this._canvas.canvas
+            });
+        }
+
+        this._readPixelBuf.bind();
+
+        this._readPixelBuf.clear();
+
+        this.render({
+            force: true,
+            opaqueOnly: opaqueOnly
+        });
+
+        var color;
+        var i;
+        var j;
+        var k;
+
+        for (i = 0; i < len; i++) {
+
+            j = i * 2;
+            k = i * 4;
+
+            color = this._readPixelBuf.read(pixels[j], pixels[j + 1]);
+
+            colors[k] = color[0];
+            colors[k + 1] = color[1];
+            colors[k + 2] = color[2];
+            colors[k + 3] = color[3];
+        }
+
+        this._readPixelBuf.unbind();
     };
 
     /**

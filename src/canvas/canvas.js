@@ -501,6 +501,32 @@
             return image.src;
         },
 
+        /**
+         Reads colors of pixels from the last rendered frame.
+
+         <p>Call this method like this:</p>
+
+         ````JavaScript
+
+         // Ignore transparent pixels (default is false)
+         var opaqueOnly = true;
+
+         var colors = new Float32Array(8);
+
+         myCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);
+         ````
+
+         Then the r,g,b components of the colors will be set to the colors at those pixels.
+
+         @param {Float32Array} pixels
+         @param {Float32Array} colors
+         @param {Number} size
+         @param {Boolean} opaqueOnly
+         */
+        readPixels: function (pixels, colors, size, opaqueOnly) {
+            return this.scene._renderer.readPixels(pixels, colors, size, opaqueOnly);
+        },
+
         _props: {
 
             /**
