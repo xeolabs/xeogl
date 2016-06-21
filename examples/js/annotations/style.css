@@ -1,13 +1,14 @@
 .label {
   position: absolute;
-  width: 250px;
-  height: 70px;
+  display:inline-block;
+  max-width: 250px;
+  min-height: 1.5em;
   padding: 10px;
   background: #FFFFFF;
   -webkit-border-radius: 11px;
   -moz-border-radius: 11px;
   border-radius: 11px;
-  border: #7F7F7F solid 3px;
+  border: #5b5b5b solid 3px;
   left:40px;
 }
 
@@ -15,11 +16,11 @@
   content: '';
   position: absolute;
   border-style: solid;
-  border-width: 15px 28px 15px 0;
+  border-width: 12px 25px 12px 0;
   border-color: transparent #FFFFFF;
   display: block;
   width: 0;
-  left: -27px;
+  left: -25px;
   top: 10px;
 }
 
@@ -27,10 +28,10 @@
   content: '';
   position: absolute;
   border-style: solid;
-  border-width: 17px 30px 17px 0;
-  border-color: transparent #7F7F7F;
+  border-width: 14px 27px 14px 0;
+  border-color: transparent #5b5b5b;
   display: block;
   width: 0;
-  left: -32px;
-  top: 9px;
+  left: -30px;
+  top: 8px;
 }

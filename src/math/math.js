@@ -65,6 +65,7 @@
         /**
          * Returns a new, uninitialized two-element vector.
          * @method vec2
+         * @param [values] Initial values.
          * @static
          * @returns {Float32Array}
          */
@@ -75,6 +76,7 @@
         /**
          * Returns a new, uninitialized three-element vector.
          * @method vec3
+         * @param [values] Initial values.
          * @static
          * @returns {Float32Array}
          */
@@ -85,6 +87,7 @@
         /**
          * Returns a new, uninitialized four-element vector.
          * @method vec4
+         * @param [values] Initial values.
          * @static
          * @returns {Float32Array}
          */
@@ -95,6 +98,7 @@
         /**
          * Returns a new, uninitialized 3x3 matrix.
          * @method mat3
+         * @param [values] Initial values.
          * @static
          * @returns {Float32Array}
          */
@@ -105,6 +109,7 @@
         /**
          * Returns a new, uninitialized 4x4 matrix.
          * @method mat4
+         * @param [values] Initial values.
          * @static
          * @returns {Float32Array}
          */

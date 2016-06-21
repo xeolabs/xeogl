@@ -43,13 +43,6 @@
     var cameraControl = new XEO.CameraControl();
     cameraControl.mousePickEntity.active = false;
 
-    //   Slowly orbit camera about model
-    scene.on("tick",
-            function () {
-//                view.rotateEyeY(0.3);
-//                view.rotateEyeX(0.1);
-            });
-
     gearbox.on("loaded",
             function () {
 
@@ -111,10 +104,8 @@
                     primIndex: 3405,
                     bary: [0.11, 0.35, 0.52],
                     title: "Spacer",
-                    desc: "This is a big green spacer. Spacers are things that create space between other things.",
-                    visible: true
+                    desc: "This is a big green spacer. Spacers are things that create space between other things."
                 });
-
 
                 // Create Annotations on Entities as they are picked
 
@@ -134,8 +125,8 @@
                                 entity: hit.entity.id, // Picked entity
                                 primIndex: hit.primIndex, // Picked triangle in Entity's Geometry
                                 bary: hit.bary, // Picked barycentric coordinates within the triangle
-                                title: "My title",
-                                desc: "Here's another annotation!",
+                                title: "New annotation!",
+                                desc: "Here's a new annotation!",
                                 visible: true
                             };
 

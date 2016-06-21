@@ -198,8 +198,6 @@
                 })
             };
 
-            this.open = annotation;
-
             this._listDirty = true;
 
             this.fire("annotationCreated", annotation);

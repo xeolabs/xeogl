@@ -96,7 +96,7 @@
                 lights: this.create(XEO.Lights, {}, "lights"),
 
                 geometry: this.create(XEO.SphereGeometry, {
-                        radius: 0.05,
+                        radius: 0.07,
                         heightSegments: 6,
                         widthSegments: 6
                     },
@@ -135,6 +135,7 @@
             var style = this._labelElement.style;
             style.position = "absolute";
             style.font = "bold 14px arial,serif";
+            style["z-index"] = "2000001"; // In front of xeoEnine's overlay
 
             body.appendChild(this._labelElement);
 
@@ -589,11 +590,11 @@
             labelElement.style.left = 25+(pinCanvasPos[0] - offsetX) + "px";
             labelElement.style.top = (pinCanvasPos[1] - offsetY) -20 + "px";
 
-            // Label Z-index
+            // Pin Z-index
 
-            var zIndex = 1000005 + Math.floor(this._pin.viewBoundary.center[2]);
+            var zIndex = 1000005 + Math.floor(this._pin.viewBoundary.center[2] * 10);
 
-            labelElement.style["z-index"] = zIndex;
+            //labelElement.style["z-index"] = zIndex;
             pinElement.style["z-index"] = zIndex + 1;
         },
 
