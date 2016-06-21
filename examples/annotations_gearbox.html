@@ -9,6 +9,8 @@
 
     <script src="../build/xeoengine.js"></script>
 
+    <link href="js/annotations/style.css" rel="stylesheet"/>
+    <script src="js/annotations/annotationManager.js"></script>
     <script src="js/annotations/annotation.js"></script>
 
 
@@ -51,42 +53,66 @@
     gearbox.on("loaded",
             function () {
 
+                var manager = new XEO.AnnotationManager({
+                    occlusionCull: true // Hide annotations when their pins are occluded 
+                });
+
+                // For efficiency, hide annotations
+                // while camera is moving.
+
+                scene.camera.view.on("matrix",
+                        (function () {
+                            var t;
+                            return function () {
+                                manager.visible = false;
+                                clearTimeout(t);
+                                t = setTimeout(function () {
+                                            manager.visible = true;
+                                        },
+                                        200)
+                            };
+                        })());
+
                 // Create some initial annotations on the Model's Entities
 
                 new XEO.Annotation({
+                    manager: manager,
+                    entity: "6#n274017_gear_53t-node_1.entity.0",
+                    primIndex: 3081,
+                    bary: [0.11, 0.79, 0.08],
+                    title: "A big grey gear",
+                    desc: "This is a big grey gear. There's a couple of big grey gears in this gearbox. They're both quite big and grey.",
+                    visible: true
+                });
+
+                new XEO.Annotation({
+                    manager: manager,
                     entity: "6#n273303_shaft-node.entity.0",
                     primIndex: 14289,
                     bary: [0.45, 0.74, -0.19],
                     visible: true,
-                    title: "My title",
-                    desc: "This bit here is quite interesting."
+                    title: "Gearbox shaft",
+                    desc: "This is the end of one of the gearbox's shafts."
                 });
 
                 new XEO.Annotation({
+                    manager: manager,
                     entity: "6#n273303_shaft-node.entity.0",
                     primIndex: 14249,
                     bary: [0.45, 0.74, -0.19],
                     visible: true,
-                    title: "My title",
-                    desc: "This part is rather special."
+                    title: "Gearbox shaft",
+                    desc: "This is the other end of one of the gearbox's shafts."
                 });
 
                 new XEO.Annotation({
-                    "entity": "6#n274233_spacer-node.entity.0",
-                    "primIndex": 3405,
-                    "bary": [0.11, 0.35, 0.52],
-                    "title": "My title",
-                    "desc": "You might like this part as well.",
-                    "visible": true
-                });
-
-                new XEO.Annotation({
-                    "entity": "6#n274017_gear_53t-node_1.entity.0",
-                    "primIndex": 3081,
-                    "bary": [0.11, 0.79, 0.08],
-                    "title": "My title",
-                    "desc": "Personally, this is my favourite part of the gearbox.",
-                    "visible": true
+                    manager: manager,
+                    entity: "6#n274233_spacer-node.entity.0",
+                    primIndex: 3405,
+                    bary: [0.11, 0.35, 0.52],
+                    title: "Spacer",
+                    desc: "This is a big green spacer. Spacers are things that create space between other things.",
+                    visible: true
                 });
 
 
@@ -104,6 +130,7 @@
                             // Create Annotation
 
                             var cfg = {
+                                manager: manager,
                                 entity: hit.entity.id, // Picked entity
                                 primIndex: hit.primIndex, // Picked triangle in Entity's Geometry
                                 bary: hit.bary, // Picked barycentric coordinates within the triangle
@@ -118,7 +145,7 @@
 
                             console.log("new XEO.Annotation(" + JSON.stringify(cfg, floatArrayAsJSON) + ");");
                         });
-                                 
+
                 function floatArrayAsJSON(k, v) {
                     if (v instanceof  Float32Array) {
                         return Array.apply([], v);

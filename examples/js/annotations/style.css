@@ -1,0 +1,36 @@
+.label {
+  position: absolute;
+  width: 250px;
+  height: 70px;
+  padding: 10px;
+  background: #FFFFFF;
+  -webkit-border-radius: 11px;
+  -moz-border-radius: 11px;
+  border-radius: 11px;
+  border: #7F7F7F solid 3px;
+  left:40px;
+}
+
+.label:after {
+  content: '';
+  position: absolute;
+  border-style: solid;
+  border-width: 15px 28px 15px 0;
+  border-color: transparent #FFFFFF;
+  display: block;
+  width: 0;
+  left: -27px;
+  top: 10px;
+}
+
+.label:before {
+  content: '';
+  position: absolute;
+  border-style: solid;
+  border-width: 17px 30px 17px 0;
+  border-color: transparent #7F7F7F;
+  display: block;
+  width: 0;
+  left: -32px;
+  top: 9px;
+}
