@@ -2,17 +2,6 @@
 
     "use strict";
 
-    const PIN_COLOR = XEO.math.vec4([1.0, 1.0, 0.0]);
-
-
-    // Converts XEO color to CSS
-    function cssColor(color) {
-        return "rgb(" +
-            Math.floor(color[0] * 255) + "," +
-            Math.floor(color[1] * 255) + "," +
-            Math.floor(color[2] * 255) + ")";
-    }
-
     /**
      An **Annotation** is a label that's attached to an {{#crossLink "Entity"}}{{/crossLink}}.
 
@@ -20,25 +9,38 @@
 
      ````javascript
 
-     new XEO.Annotation({
-        entity: "6#n273303_shaft-node.entity.0",
-        primIndex: 14289,
-        bary: [0.45, 0.74, -0.19],
-        visible: true,
-        title: "My first annotation",
-        desc: "Description of first annotation"
-    });
+     // Create an annotation manager
 
-     new XEO.Annotation({
-        entity: "6#n273303_shaft-node.entity.0",
-        primIndex: 14249,
-        bary: [0.45, 0.74, -0.19],
+     var manager = new XEO.AnnotationManager({
+         occlusionCull: true // Hide annotations when their pins are occluded
+     });
+
+     // Create a couple of annotations
+
+     var a1 = new XEO.Annotation({
+        manager: manager,
+        entity: "6#n274017_gear_53t-node_1.entity.0",
+        primIndex: 3081,
+        bary: [0.11, 0.79, 0.08],
+        title: "A big grey gear",
+        desc: "This is a big grey gear. There's a couple of big grey gears in this gearbox. They're both quite big and grey.",
         visible: true,
-        title: "My second annotation",
-        desc: "Description of second annotation"
-    });
+        open: true
+     });
+
+     var a2 = new XEO.Annotation({
+         manager: manager,
+         entity: "6#n273303_shaft-node.entity.0",
+         primIndex: 14289,
+         bary: [0.45, 0.74, -0.19],
+         visible: true,
+         title: "Gearbox shaft",
+         desc: "This is the end of one of the gearbox's shafts.",
+         visible: true,
+         open: false
+     });
+
      ````
-
      @class Annotation
      @module XEO
      @submodule annotations
@@ -60,7 +62,6 @@
             this.manager = cfg.manager;
 
             this._initScene(cfg);
-
             this._initHTML(cfg);
 
             // Lazy-evaluation flags
@@ -92,26 +93,23 @@
             // We also use its boundary to track the position of the Annotation
 
             this._pin = this.create(XEO.Entity, {
-
                 lights: this.create(XEO.Lights, {}, "lights"),
 
-                geometry: this.create(XEO.SphereGeometry, {
-                        radius: 0.07,
-                        heightSegments: 6,
-                        widthSegments: 6
+                geometry: this.create(XEO.Geometry, {
+                        primitive: "points",
+                        positions:[0,0,0],
+                        indices: [0]
                     },
                     "pinGeometry"),
-
                 visibility: this.create(XEO.Visibility, {
                     visible: true
                 }),
-
                 material: this.create(XEO.PhongMaterial, {
-                        emissive: PIN_COLOR,
-                        pointSize: 6
+                        emissive: [1.0, 1.0, 0.0],
+                        diffuse: [0,0,0],
+                        pointSize: 3
                     },
                     "pinMaterial"),
-
                 transform: this.create(XEO.Translate, {
                     xyz: [0, 0, 0]
                 })
@@ -121,16 +119,11 @@
         _initHTML: function (cfg) {
 
             var body = document.getElementsByTagName("body")[0];
-
-            var fillColor = [1, 1, 1];
-            var color = [0, 0, 0];
-            var opacity = 0.8;
-            var lineWidth = 1;
             var text = cfg.desc;
 
             this._labelElement = document.createElement('div');
 
-            this._labelElement.className="label";
+            this._labelElement.className = "label";
 
             var style = this._labelElement.style;
             style.position = "absolute";
@@ -184,7 +177,6 @@
              * @type XEO.Entity
              */
             entity: {
-
                 set: function (value) {
 
                     /**
@@ -223,11 +215,8 @@
              * @type Number
              */
             primIndex: {
-
                 set: function (value) {
-
                     this._primIndex = value || 0;
-
                     this._setLocalPosDirty();
 
                     /**
@@ -254,11 +243,8 @@
              * @type Float32Array
              */
             bary: {
-
                 set: function (value) {
-
                     this._bary = value || XEO.math.vec3([.3, .3, .3]);
-
                     this._setLocalPosDirty();
 
                     /**
@@ -284,9 +270,7 @@
              * @type Number
              */
             number: {
-
                 set: function (value) {
-
                     this._number = (value === undefined || value === null) ? -1 : value;
 
                     /**
@@ -312,11 +296,8 @@
              * @type String
              */
             title: {
-
                 set: function (value) {
-
                     this._title = (value === undefined || value === null) ? "" : value;
-
                     this._titleElement.innerText = this._title;
                 },
 
@@ -336,11 +317,8 @@
              * @type String
              */
             desc: {
-
                 set: function (value) {
-
                     this._desc = (value === undefined || value === null) ? "" : value;
-
                     this._descElement.innerText = this._desc;
                 },
 
@@ -369,7 +347,6 @@
              * @type {Boundary3D}
              * @final
              */
-
             viewBoundary: {
                 get: function () {
                     return this._pin.viewBoundary;
@@ -401,19 +378,15 @@
             open: {
 
                 set: function (value) {
-
                     value = !!value;
-
                     if (this._open === value) {
                         return;
                     }
-
                     this._open = value;
-
                     this._labelElement.style.visibility = value && this._visible ? "visible" : "hidden";
 
                     /**
-                     Fired whenever this Visibility's {{#crossLink "Visibility/open:property"}}{{/crossLink}} property changes.
+                     Fired whenever this Annotation's {{#crossLink "Annotation/open:property"}}{{/crossLink}} property changes.
 
                      @event open
                      @param value {Boolean} The property's new value
@@ -436,22 +409,17 @@
              @type Boolean
              */
             visible: {
-
                 set: function (value) {
-
                     value = value !== false;
-
                     if (this._visible === value) {
                         return;
                     }
-
                     this._visible = value;
-
                     this._pinElement.style.visibility = value ? "visible" : "hidden";
                     this._labelElement.style.visibility = value && this._open ? "visible" : "hidden";
 
                     /**
-                     Fired whenever this Visibility's {{#crossLink "Visibility/visible:property"}}{{/crossLink}} property changes.
+                     Fired whenever this Annotation's {{#crossLink "Annotation/visible:property"}}{{/crossLink}} property changes.
 
                      @event visible
                      @param value {Boolean} The property's new value
@@ -495,11 +463,13 @@
         // Callback for _scheduleUpdate
         _update: (function () {
 
-            var a = XEO.math.vec3();
-            var b = XEO.math.vec3();
-            var c = XEO.math.vec3();
-            var localPos = XEO.math.vec3();
-            var worldPos = XEO.math.vec3();
+            var math = XEO.math;
+            var a = math.vec3();
+            var b = math.vec3();
+            var c = math.vec3();
+            var localPos = math.vec3();
+            var worldPos = math.vec3();
+            var normal = math.vec3();
 
             return function () {
 
@@ -544,7 +514,11 @@
                     c[1] = positions[ic3 + 1];
                     c[2] = positions[ic3 + 2];
 
-                    XEO.math.barycentricToCartesian2(this._bary, a, b, c, localPos);
+                    math.barycentricToCartesian2(this._bary, a, b, c, localPos);
+
+                    math.triangleNormal(a, b, c, normal);
+                    math.mulVec3Scalar(normal, 0.05, normal);
+                    math.addVec3(localPos, normal, localPos);
 
                     this._localPosDirty = false;
                     this._worldPosDirty = true;
@@ -555,11 +529,8 @@
                     // Transform the Local position into World space
 
                     var transform = entity.transform;
-
-                    var pinWorldPos = transform ? XEO.math.transformPoint3(transform.leafMatrix, localPos, worldPos) : localPos;
-
+                    var pinWorldPos = transform ? math.transformPoint3(transform.leafMatrix, localPos, worldPos) : localPos;
                     this._pin.transform.xyz = pinWorldPos;
-
                     this._worldPosDirty = false;
                 }
             };
@@ -585,10 +556,10 @@
             var offsetY = pinCanvasPos[1] < halfCanvasHeight ? 13 : 40;
 
             offsetX = -10;
-            offsetY = 10;
+            offsetY = 8;
 
-            labelElement.style.left = 25+(pinCanvasPos[0] - offsetX) + "px";
-            labelElement.style.top = (pinCanvasPos[1] - offsetY) -20 + "px";
+            labelElement.style.left = 25 + (pinCanvasPos[0] - offsetX) + "px";
+            labelElement.style.top = (pinCanvasPos[1] - offsetY) - 20 + "px";
 
             // Pin Z-index
 
@@ -599,7 +570,6 @@
         },
 
         _getJSON: function () {
-
             var json = {
                 number: this.number,
                 title: this.title,
@@ -609,11 +579,9 @@
                 visible: this.visible,
                 open: this.open
             };
-
             if (this._attached.entity) {
                 json.entity = this._attached.entity.id;
             }
-
             return json;
         },
 

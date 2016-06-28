@@ -11,15 +11,11 @@
     XEO.AnnotationManager = XEO.Component.extend({
 
         _init: function (cfg) {
-
             this.annotations = {};
-
             this._listDirty = true;
-
             this._cameraFlight = this.create(XEO.CameraFlight, {
                 duration: 1.0
             });
-
             this.visible = cfg.visible;
         },
 
@@ -35,25 +31,16 @@
              * @type Boolean
              */
             visible: {
-
                 set: function (value) {
-
                     value = value !== false;
-
                     if (this._visible !== value) {
-
                         this._visible = value;
-
                         if (this._visible) {
                             this._onRendered = this.scene.on("rendered", this._update, this);
-
                         } else {
-
                             // All Annotations currently invisible
-
                             this.scene.off(this._onRendered);
                             this._update();
-
                         }
 
                         this.fire("visible", this._visible);
@@ -66,21 +53,15 @@
             },
 
             open: {
-
                 set: function (value) {
-
                     if (this._open !== value) {
-
                         if (this._open) {
                             this._open.open = false;
                         }
-
                         this._open = value;
-
                         if (this._open) {
                             this._open.open = true;
                         }
-
                         this.fire("open", this._open);
                     }
                 },
@@ -105,27 +86,21 @@
                 var annotation;
 
                 if (this._listDirty) { // Lazy-build Annotation list
-
                     listLen = 0;
-
                     for (var id in this.annotations) {
                         if (this.annotations.hasOwnProperty(id)) {
                             list[listLen++] = this.annotations[id];
                         }
                     }
-
                     this._listDirty = false;
                 }
 
                 if (!this._visible) {
-
                     // All Annotations currently invisible
-
                     for (i = 0; i < listLen; i++) {
                         annotation = list[i];
                         annotation.visible = false;
                     }
-
                     return;
                 }
 
@@ -183,32 +158,23 @@
         })(),
 
         addAnnotation: function (annotation) {
-
             this.annotations[annotation.id] = annotation;
-
             var self = this;
-
             annotation._pinElement.onmouseenter = function () {
                 self.open = annotation;
             };
-
             annotation._pinElement.onclick = function () {
                 self._cameraFlight.flyTo({
                     aabb: annotation.entity.worldBoundary.aabb
                 })
             };
-
             this._listDirty = true;
-
             this.fire("annotationCreated", annotation);
         },
 
         removeAnnotation: function (annotation) {
-
             delete this.annotations[annotation.id];
-
             this._listDirty = true;
-
             this.fire("annotationDestroyed", annotation);
         }
     });

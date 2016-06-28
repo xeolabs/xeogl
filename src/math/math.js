@@ -1841,7 +1841,7 @@
 
         /**
          * Rotate a 3D vector around the x-axis
-         * 
+         *
          * @method rotateVec3X
          * @param {Float32Array} a The vec3 point to rotate
          * @param {Float32Array} b The origin of the rotation
@@ -1853,25 +1853,25 @@
         rotateVec3X: function (a, b, c, dest) {
 
             var p = [], r = [];
-            
+
             //Translate point to the origin
             p[0] = a[0] - b[0];
             p[1] = a[1] - b[1];
             p[2] = a[2] - b[2];
-            
+
             //perform rotation
             r[0] = p[0];
             r[1] = p[1] * Math.cos(c) - p[2] * Math.sin(c);
             r[2] = p[1] * Math.sin(c) + p[2] * Math.cos(c);
-            
+
             //translate to correct position
             dest[0] = r[0] + b[0];
             dest[1] = r[1] + b[1];
             dest[2] = r[2] + b[2];
-            
+
             return dest;
         },
-        
+
         /**
          * Rotate a 3D vector around the y-axis
          *
@@ -1884,9 +1884,9 @@
          * @static
          */
         rotateVec3Y: function (a, b, c, dest) {
-            
+
             var p = [], r = [];
-            
+
             //Translate point to the origin
             p[0] = a[0] - b[0];
             p[1] = a[1] - b[1];
@@ -1917,9 +1917,9 @@
          * @static
          */
         rotateVec3Z: function (a, b, c, dest) {
-            
+
             var p = [], r = [];
-            
+
             //Translate point to the origin
             p[0] = a[0] - b[0];
             p[1] = a[1] - b[1];
@@ -2501,6 +2501,46 @@
             aabb2.max[1] = canvasHeight - Math.floor(ymin * canvasHeight);
 
             return aabb;
+        },
+
+        /**
+         * Calculates the normal vector of a triangle
+         *
+         * @method triangleNormal
+         * @param a
+         * @param b
+         * @param c
+         * @param normal
+         * @returns {*}
+         */
+        triangleNormal: function (a, b, c, normal) {
+
+            normal = normal || XEO.math.vec3();
+
+            var p1x = b[0] - a[0];
+            var p1y = b[1] - a[1];
+            var p1z = b[2] - a[2];
+
+            var p2x = c[0] - a[0];
+            var p2y = c[1] - a[1];
+            var p2z = c[2] - a[2];
+
+            var p3x = p1y * p2z - p1z * p2y;
+            var p3y = p1z * p2x - p1x * p2z;
+            var p3z = p1x * p2y - p1y * p2x;
+
+            var mag = Math.sqrt(p3x * p3x + p3y * p3y + p3z * p3z);
+            if (mag === 0) {
+                normal[0] = 0;
+                normal[1] = 0;
+                normal[2] = 0;
+            } else {
+                normal[0] = p3x / mag;
+                normal[1] = p3y / mag;
+                normal[2] = p3z / mag;
+            }
+
+            return normal
         },
 
         /**
