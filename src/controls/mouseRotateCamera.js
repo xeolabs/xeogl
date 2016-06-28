@@ -231,50 +231,6 @@
                         var over = false;
                         var angle;
 
-                        this._onTick = this.scene.on("tick",
-                            function () {
-
-                                var camera = this._attached.camera;
-
-                                if (!camera) {
-                                    return;
-                                }
-
-                                if (!over) {
-                                    return;
-                                }
-
-                                if (!down) {
-                                    return;
-                                }
-
-                                if (xDelta !== 0) {
-
-                                    angle = -xDelta * this._sensitivity;
-
-                                    if (this._firstPerson) {
-                                        camera.view.rotateLookY(angle);
-                                    } else {
-                                        camera.view.rotateEyeY(angle);
-                                    }
-
-                                    xDelta = 0;
-                                }
-
-                                if (yDelta !== 0) {
-
-                                    angle = yDelta * this._sensitivity;
-
-                                    if (this._firstPerson) {
-                                        camera.view.rotateLookX(-angle);
-                                    } else {
-                                        camera.view.rotateEyeX(angle);
-                                    }
-
-                                    yDelta = 0;
-                                }
-                            }, this);
-
                         this._onMouseDown = input.on("mousedown",
                             function (e) {
 
@@ -336,6 +292,9 @@
                         this._onMouseMove = input.on("mousemove",
                             function (e) {
 
+                                // Apply mouse drags as soon as we get them, so that we can correctly
+                                // apply the rotations.
+
                                 if (!over) {
                                     return;
                                 }
@@ -344,11 +303,47 @@
                                     return;
                                 }
 
-                                xDelta += (e[0] - lastX) * this._sensitivity;
-                                yDelta += (e[1] - lastY) * this._sensitivity;
+                                var xDelta = (e[0] - lastX) * this._sensitivity;
+                                var yDelta = (e[1] - lastY) * this._sensitivity;
 
                                 lastX = e[0];
                                 lastY = e[1];
+
+                                var camera = this._attached.camera;
+
+                                if (!camera) {
+                                    return;
+                                }
+
+                                if (!over) {
+                                    return;
+                                }
+
+                                if (!down) {
+                                    return;
+                                }
+
+                                if (xDelta !== 0) {
+
+                                    angle = -xDelta * this._sensitivity;
+
+                                    if (this._firstPerson) {
+                                        camera.view.rotateLookY(angle);
+                                    } else {
+                                        camera.view.rotateEyeY(angle);
+                                    }
+                                }
+
+                                if (yDelta !== 0) {
+
+                                    angle = yDelta * this._sensitivity;
+
+                                    if (this._firstPerson) {
+                                        camera.view.rotateLookX(-angle);
+                                    } else {
+                                        camera.view.rotateEyeX(angle);
+                                    }
+                                }
 
                             }, this);
 
