@@ -124,10 +124,10 @@
                     canvasY = canvasPos[1];
 
                     if (!this._visible
-                        || (canvasX + 5) < 0
-                        || (canvasY + 5) < 0
-                        || (canvasX - 5) > canvasWidth
-                        || (canvasY - 5 ) > canvasHeight) {
+                        || (canvasX + 10) < 0
+                        || (canvasY + 10) < 0
+                        || (canvasX - 10) > canvasWidth
+                        || (canvasY - 10) > canvasHeight) {
 
                         annotation.visible = false;
 

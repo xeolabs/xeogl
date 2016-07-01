@@ -545,8 +545,8 @@
 
             var pinCanvasPos = this._pin.canvasBoundary.center;
 
-            pinElement.style.left = pinCanvasPos[0] - 5 + "px";
-            pinElement.style.top = pinCanvasPos[1] - 5 + "px";
+            pinElement.style.left = pinCanvasPos[0] -2 + "px";
+            pinElement.style.top = pinCanvasPos[1] - 2 + "px";
 
             var boundary = this.scene.canvas.boundary;
             var halfCanvasWidth = boundary[2] / 2;
@@ -558,8 +558,8 @@
             offsetX = -10;
             offsetY = 8;
 
-            labelElement.style.left = 25 + (pinCanvasPos[0] - offsetX) + "px";
-            labelElement.style.top = (pinCanvasPos[1] - offsetY) - 20 + "px";
+            labelElement.style.left = 28 + (pinCanvasPos[0] - offsetX) + "px";
+            labelElement.style.top = (pinCanvasPos[1] - offsetY) - 19 + "px";
 
             // Pin Z-index
 
