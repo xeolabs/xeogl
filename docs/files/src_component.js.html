@@ -81,6 +81,7 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/MegaTexture.html">MegaTexture</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
@@ -95,6 +96,7 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Position3D.html">Position3D</a></li>
                                 <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
@@ -827,9 +829,12 @@
          * @param {String} [params.type] Optional expected type of base type of the child; when supplied, will
          * cause an exception if the given child is not the same type or a subtype of this.
          * @param {Boolean} [params.sceneDefault=false]
-         * @param {Function} [params.onAttached] Optional callback called before event is fired
-         * * @param {Function} [params.onAttached.callback] Callback function
+         * @param {Function} [params.onAttached] Optional callback called when component attached
+         * @param {Function} [params.onAttached.callback] Callback function
          * @param {Function} [params.onAttached.scope] Optional scope for callback
+         * @param {Function} [params.onDetached] Optional callback called when component is detached
+         * @param {Function} [params.onDetached.callback] Callback function
+         * @param {Function} [params.onDetached.scope] Optional scope for callback
          * @param {{String:Function}} [params.on] Callbacks to subscribe to properties on component
          * @param {Boolean} [params.recompiles=true] When true, fires &quot;dirty&quot; events on this component
          * @private

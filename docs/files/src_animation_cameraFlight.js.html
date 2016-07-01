@@ -81,6 +81,7 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/MegaTexture.html">MegaTexture</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
@@ -95,6 +96,7 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Position3D.html">Position3D</a></li>
                                 <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
@@ -725,16 +727,17 @@
             return -c * t * (t - 2) + b;
         },
 
+        /**
+         * Stops an earlier flyTo, fires arrival callback.
+         * @method stop
+         */
         stop: function () {
 
             if (!this._flying) {
                 return;
             }
 
-            // Hide boundary
             this._boundaryIndicator.visibility.visible = false;
-
-            //this.scene.off(this._tick);
 
             this._flying = false;
 
@@ -755,6 +758,30 @@
             }
 
             this.fire(&quot;stopped&quot;, true, true);
+        },
+
+        /**
+         * Cancels an earlier flyTo without calling the arrival callback.
+         * @method cancel
+         */
+        cancel: function () {
+
+            if (!this._flying) {
+                return;
+            }
+
+            this._boundaryIndicator.visibility.visible = false;
+
+            this._flying = false;
+
+            this._time1 = null;
+            this._time2 = null;
+
+            if (this._callback) {
+                this._callback = null;
+            }
+
+            this.fire(&quot;canceled&quot;, true, true);
         },
 
         _props: {

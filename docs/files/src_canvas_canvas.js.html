@@ -81,6 +81,7 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/MegaTexture.html">MegaTexture</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
@@ -95,6 +96,7 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Position3D.html">Position3D</a></li>
                                 <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
@@ -686,6 +688,32 @@
             }
 
             return image.src;
+        },
+
+        /**
+         Reads colors of pixels from the last rendered frame.
+
+         &lt;p&gt;Call this method like this:&lt;/p&gt;
+
+         &#x60;&#x60;&#x60;&#x60;JavaScript
+
+         // Ignore transparent pixels (default is false)
+         var opaqueOnly = true;
+
+         var colors = new Float32Array(8);
+
+         myCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);
+         &#x60;&#x60;&#x60;&#x60;
+
+         Then the r,g,b components of the colors will be set to the colors at those pixels.
+
+         @param {Float32Array} pixels
+         @param {Float32Array} colors
+         @param {Number} size
+         @param {Boolean} opaqueOnly
+         */
+        readPixels: function (pixels, colors, size, opaqueOnly) {
+            return this.scene._renderer.readPixels(pixels, colors, size, opaqueOnly);
         },
 
         _props: {

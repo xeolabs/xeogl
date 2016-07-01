@@ -63,6 +63,20 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/_renderer/webgl/megatexture/cache.js": {
+            "name": "src/_renderer/webgl/megatexture/cache.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/_renderer/webgl/megatexture/testMegaTexture.js": {
+            "name": "src/_renderer/webgl/megatexture/testMegaTexture.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
         "src/_renderer/webgl/arrayBuffer.js": {
             "name": "src/_renderer/webgl/arrayBuffer.js",
             "modules": {},
@@ -154,6 +168,13 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/_utils/inheritance.js": {
+            "name": "src/_utils/inheritance.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
         "src/_utils/map.js": {
             "name": "src/_utils/map.js",
             "modules": {},
@@ -229,6 +250,15 @@
             "modules": {},
             "classes": {
                 "CollectionBoundary": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/boundaries/position3d.js": {
+            "name": "src/boundaries/position3d.js",
+            "modules": {},
+            "classes": {
+                "Position3D": 1
             },
             "fors": {},
             "namespaces": {}
@@ -803,6 +833,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/materials/megaTexture.js": {
+            "name": "src/materials/megaTexture.js",
+            "modules": {},
+            "classes": {
+                "MegaTexture": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "src/materials/phongMaterial.js": {
             "name": "src/materials/phongMaterial.js",
             "modules": {},
@@ -1143,6 +1182,7 @@
                 "Boundary2D": 1,
                 "Boundary3D": 1,
                 "CollectionBoundary": 1,
+                "Position3D": 1,
                 "Camera": 1,
                 "Frustum": 1,
                 "Lookat": 1,
@@ -1190,6 +1230,7 @@
                 "PointLight": 1,
                 "Fresnel": 1,
                 "Material": 1,
+                "MegaTexture": 1,
                 "PhongMaterial": 1,
                 "Reflect": 1,
                 "Texture": 1,
@@ -1261,14 +1302,15 @@
             "classes": {
                 "Boundary2D": 1,
                 "Boundary3D": 1,
-                "CollectionBoundary": 1
+                "CollectionBoundary": 1,
+                "Position3D": 1
             },
             "fors": {},
             "is_submodule": 1,
             "namespaces": {},
             "module": "XEO",
             "namespace": "",
-            "file": "src/boundaries/collectionBoundary.js",
+            "file": "src/boundaries/position3d.js",
             "line": 1,
             "description": "Components to support spatial queries (eg. collisions etc)."
         },
@@ -1533,6 +1575,7 @@
             "classes": {
                 "Fresnel": 1,
                 "Material": 1,
+                "MegaTexture": 1,
                 "PhongMaterial": 1,
                 "Reflect": 1,
                 "Texture": 1
@@ -2038,6 +2081,93 @@
                             "type": "Collection",
                             "optional": true,
                             "optdefault": "null"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component"
+        },
+        "Position3D": {
+            "name": "Position3D",
+            "shortname": "Position3D",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/boundaries/position3d.js",
+            "line": 1,
+            "description": "A **Position3D** provides the axis-aligned and object-aligned extents of its owner component.\n\nA Position3D provides spatial info in these properties:\n\n<ul>\n<li>{{#crossLink \"Position3D/obb:property\"}}{{/crossLink}} - an object-aligned bounding box (OBB), as an array of eight corner vertex positions</li>\n<li>{{#crossLink \"Position3D/aabb:property\"}}{{/crossLink}} - an axis-aligned bounding box (AABB), as minimum and maximum corner vertex positions</li>\n<li>{{#crossLink \"Position3D/center:property\"}}{{/crossLink}} - center coordinate</li>\n</ul>\n\nAs shown in the diagram below, the following xeoEngine components have Position3Ds:\n* A {{#crossLink \"Scene/worldBoundary:property\"}}Scene's worldBoundary{{/crossLink}} provides the **World**-space boundary of all its {{#crossLink \"Entity\"}}Entities{{/crossLink}}\n* A {{#crossLink \"Geometry/localBoundary:property\"}}Geometry's localBoundary{{/crossLink}} provides the **Local**-space boundary of its {{#crossLink \"Geometry/positions:property\"}}positions{{/crossLink}}\n* An {{#crossLink \"Entity/localBoundary:property\"}}Entity's localBoundary{{/crossLink}} (also) provides the **Local**-space boundary of its {{#crossLink \"Geometry\"}}{{/crossLink}}\n* An {{#crossLink \"Entity/worldBoundary:property\"}}Entity's worldBoundary {{/crossLink}} provides the **World**-space boundary of\nits {{#crossLink \"Geometry\"}}Geometry's{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} after\ntheir transformation by the {{#crossLink \"Entity/transform:property\"}}Entity's Modelling transform{{/crossLink}}.\n* An {{#crossLink \"Entity/viewBoundary:property\"}}Entity's viewBoundary{{/crossLink}} provides the **View**-space boundary of\nits {{#crossLink \"Geometry\"}}Geometry's{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} after\ntheir transformation by both the {{#crossLink \"Entity/transform:property\"}}Entity's Modelling transform{{/crossLink}} **and** {{#crossLink \"Camera/view:property\"}}Viewing transform{{/crossLink}}.\n* A {{#crossLink \"CollectionBoundary/worldBoundary:property\"}}CollectionBoundary's worldBoundary{{/crossLink}} provides the **World**-space boundary of all the {{#crossLink \"Entity\"}}Entities{{/crossLink}} contained within its {{#crossLink \"Collection\"}}Collection{{/crossLink}}.\n\nThe diagram also shows an {{#crossLink \"Entity/canvasBoundary:property\"}}Entity's canvasBoundary{{/crossLink}}, which is a {{#crossLink \"Boundary2D\"}}{{/crossLink}} that provides the **Canvas**-space boundary of the {{#crossLink \"Geometry\"}}Geometry's{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} after\ntheir transformation by the {{#crossLink \"Entity/transform:property\"}}Entity's Modelling transform{{/crossLink}}, {{#crossLink \"Camera/view:property\"}}Viewing transform{{/crossLink}}\nand {{#crossLink \"Camera/project:property\"}}Projection transform{{/crossLink}}.\n\n<br><br>\n<img src=\"../../../assets/images/Position3D.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Entity World-space boundary](../../examples/#boundaries_Entity_worldBoundary)</li>\n<li>[Entity View-space boundary](../../examples/#boundaries_Entity_viewBoundary)</li>\n<li>[Entity Canvas-space boundary](../../examples/#boundaries_Entity_canvasBoundary)</li>\n<li>[Flying camera to Entity World-space boundaries](../../examples/#boundaries_flyToBoundary)</li>\n<li>[Visualizing a CollectionBoundary](../../examples/#boundaries_CollectionBoundary)</li>\n<li>[Visualizing a CollectionBoundary hierarchy](../../examples/#boundaries_CollectionBoundary_hierarchy)</li>\n</ul>\n\n## Usage\n\nIn the example below we'll get the World-space Position3D of an {{#crossLink \"Entity\"}}{{/crossLink}}, subscribe to updates on the Position3D,\nthen animate the {{#crossLink \"Entity\"}}Entity's{{/crossLink}} modelling transform, which gives our callback a running update\nof the moving Position3D extents.\n\n```` javascript\n// Entity With a Geometry and Transform\n\nvar entity = new XEO.Entity({\n       geometry: new XEO.BoxGeometry(),\n       transform: new XEO.Translate({\n           xyz: [-5, 0, 0]\n       })\n });\n\n// Subscribe to updates to the Position3D\n\nvar worldBoundary = entity.worldBoundary;\n\nworldBoundary.on(\"updated\", function() {\n       obb = worldBoundary.obb;\n       aabb = worldBoundary.aabb;\n       center = worldBoundary.center;\n\n       //...\n   });\n\n// Animate the modelling transform;\n// on each tick, this will update the Position3D and fire our\n// callback, which enables us to track the changing boundary.\n\nvar x = 0;\n\nentity.scene.on(\"tick\", function() {\n   translate.xyz: [x, 0, 0];\n   x += 0.5;\n});\n````",
+            "submodule": "boundaries",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Position3D within xeoEngine's default {{#crossLink \"XEO/scene:property\"}}scene{{/crossLink}} by default.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Position3D.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "obb",
+                            "description": "Optional initial 3D object-aligned bounding volume (OBB).",
+                            "type": "Array of Number",
+                            "optional": true
+                        },
+                        {
+                            "name": "aabb",
+                            "description": "Optional initial 3D axis-aligned bounding volume (AABB).",
+                            "type": "Array of Number",
+                            "optional": true
+                        },
+                        {
+                            "name": "center",
+                            "description": "Optional initial 3D center",
+                            "type": "Array of Number",
+                            "optional": true
+                        },
+                        {
+                            "name": "getDirty",
+                            "description": "Optional callback to check if parent component has new OBB, positions or transform matrix.",
+                            "type": "Function",
+                            "optional": true
+                        },
+                        {
+                            "name": "getOBB",
+                            "description": "Optional callback to get new OBB from parent.",
+                            "type": "Function",
+                            "optional": true
+                        },
+                        {
+                            "name": "getMatrix",
+                            "description": "Optional callback to get new transform matrix from parent.",
+                            "type": "Function",
+                            "optional": true
+                        },
+                        {
+                            "name": "getPositions",
+                            "description": "Optional callback to get new positions from parent.",
+                            "type": "Function",
+                            "optional": true
                         }
                     ]
                 }
@@ -3145,7 +3275,7 @@
             "namespace": "",
             "file": "src/controls/mousePickEntity.js",
             "line": 1,
-            "description": "A **MousePickEntity** picks {{#crossLink \"Entity\"}}Entities{{/crossLink}} with mouse clicks.\n\n## Examples\n\n<ul>\n<li>[MousePickEntity example](../../examples/#interaction_MousePickEntity)</li>\n<li>[CameraControl example](../../examples/#interaction_CameraControl)</li>\n</ul>\n\n## Usage\n\n````Javascript\n// Create some Entities\n\nvar entity1 = new XEO.Entity({\n   id: \"entity1\",\n   transform: new XEO.Translate(scene, { xyz: [-5, 0, 0] })\n});\n\nvar entity2 = new XEO.Entity({\n   id: \"entity2\",\n   transform: new XEO.Translate(scene, { xyz: [0, 0, 0] })\n});\n\nvar entity3 = new XEO.Entity({\n   id: \"entity3\",\n   transform: new XEO.Translate(scene, { xyz: [5, 0, 0] })\n});\n\n// Create a MousePickEntity\nvar mousePickEntity = new XEO.MousePickEntity({\n\n   // We want the 3D World-space coordinates\n   // of each location we pick\n\n   rayPick: true\n});\n\n// Handle picked Entities\nmousePickEntity.on(\"pick\", function(e) {\n   var entity = e.entity;\n   var canvasPos = e.canvasPos;\n   var primitiveIndex = e.primitiveIndex;\n});\n\n// Handle nothing picked\nmousePickEntity.on(\"nopick\", function(e) {\n   var canvasPos = e.canvasPos;\n});\n````",
+            "description": "A **MousePickEntity** picks {{#crossLink \"Entity\"}}Entities{{/crossLink}} with mouse clicks.\n\n## Examples\n\n<ul>\n<li>[MousePickEntity example](../../examples/#interaction_MousePickEntity)</li>\n<li>[CameraControl example](../../examples/#interaction_CameraControl)</li>\n</ul>\n\n## Usage\n\n````Javascript\n// Create some Entities\n\nvar entity1 = new XEO.Entity({\n   id: \"entity1\",\n   transform: new XEO.Translate(scene, { xyz: [-5, 0, 0] })\n});\n\nvar entity2 = new XEO.Entity({\n   id: \"entity2\",\n   transform: new XEO.Translate(scene, { xyz: [0, 0, 0] })\n});\n\nvar entity3 = new XEO.Entity({\n   id: \"entity3\",\n   transform: new XEO.Translate(scene, { xyz: [5, 0, 0] })\n});\n\n// Create a MousePickEntity\nvar mousePickEntity = new XEO.MousePickEntity({\n\n   // We want the 3D World-space coordinates\n   // of each location we pick\n\n   rayPick: true\n});\n\n// Handle picked Entities\nmousePickEntity.on(\"pick\", function(e) {\n   var entity = e.entity;\n   var canvasPos = e.canvasPos;\n   var primIndex = e.primIndex;\n});\n\n// Handle nothing picked\nmousePickEntity.on(\"nopick\", function(e) {\n   var canvasPos = e.canvasPos;\n});\n````",
             "submodule": "controls",
             "is_constructor": 1,
             "params": [
@@ -4989,6 +5119,51 @@
             "is_constructor": 1,
             "extends": "Component"
         },
+        "MegaTexture": {
+            "name": "MegaTexture",
+            "shortname": "MegaTexture",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/materials/megaTexture.js",
+            "line": 1,
+            "description": "A **MegaTexture**\n\n## Overview\n\nTODO\n\n## Usage\n\nThe example below has:\n<ul>\n<li>three Reflects,</li>\n<li>a {{#crossLink \"PhongMaterial\"}}{{/crossLink}} which applies the {{#crossLink \"MegaTexture\"}}{{/crossLink}}s as diffuse, normal and specular maps,</li>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing an {{#crossLink \"AmbientLight\"}}{{/crossLink}} and a {{#crossLink \"PointLight\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that has the default box shape, and\n<li>an {{#crossLink \"Entity\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n```` javascript\nvar megaTexture = new XEO.MegaTexture({\n   //...\n});\n\nnew XEO.Entity({\n\n   material: new XEO.PhongMaterial({\n\n       diffuseMap: new XEO.Texture({\n           megaTexture: megaTexture,\n           src: \"diffuseMap.jpg\",\n       }),\n\n       specularMap: new XEO.Fresnel({\n           megaTexture: megaTexture,\n           src: \"diffuseMap.jpg\"\n       })\n   }),\n\n   geometry: new XEO.TorusGeometry()\n});\n````",
+            "submodule": "materials",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this MegaTexture in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID for this MegaTexture, unique among all components in the parent scene, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this MegaTexture.",
+                            "type": "String:Object",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component"
+        },
         "PhongMaterial": {
             "name": "PhongMaterial",
             "shortname": "PhongMaterial",
@@ -6688,6 +6863,61 @@
             "class": "CameraFlight"
         },
         {
+            "file": "src/_renderer/webgl/megatexture/cache.js",
+            "line": 77,
+            "description": "Processes completed tiles.",
+            "itemtype": "method",
+            "name": "processCompletedTiles",
+            "params": [
+                {
+                    "name": "renderFrameNumber",
+                    "description": ""
+                },
+                {
+                    "name": "loader",
+                    "description": ""
+                }
+            ],
+            "class": "CameraFlight"
+        },
+        {
+            "file": "src/_renderer/webgl/megatexture/cache.js",
+            "line": 245,
+            "description": "Removes a tile from this cache.",
+            "params": [
+                {
+                    "name": "tileRef",
+                    "description": "Reference to the tile to remove.",
+                    "type": "TileRef"
+                }
+            ],
+            "class": "CameraFlight"
+        },
+        {
+            "file": "src/_renderer/webgl/megatexture/testMegaTexture.js",
+            "line": 9,
+            "description": "Returns texture data for a tile.",
+            "params": [
+                {
+                    "name": "level",
+                    "description": ""
+                },
+                {
+                    "name": "tileX",
+                    "description": ""
+                },
+                {
+                    "name": "tileY",
+                    "description": ""
+                }
+            ],
+            "return": {
+                "description": "}",
+                "type": "Width: *, height: *, canvas: Element"
+            },
+            "class": "CameraFlight"
+        },
+        {
             "file": "src/_renderer/webgl/arrayBuffer.js",
             "line": 5,
             "description": "Buffer for vertices and indices",
@@ -7332,7 +7562,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 136,
+            "line": 140,
             "description": "Visibility render state.",
             "itemtype": "property",
             "name": "visibility",
@@ -7341,7 +7571,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 143,
+            "line": 147,
             "description": "Culling render state.",
             "itemtype": "property",
             "name": "cull",
@@ -7350,7 +7580,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 150,
+            "line": 154,
             "description": "Modes render state.",
             "itemtype": "property",
             "name": "modes",
@@ -7359,7 +7589,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 157,
+            "line": 161,
             "description": "Render state for an effects layer.",
             "itemtype": "property",
             "name": "layer",
@@ -7368,7 +7598,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 164,
+            "line": 168,
             "description": "Render state for an effects pipeline stage.",
             "itemtype": "property",
             "name": "stage",
@@ -7377,7 +7607,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 171,
+            "line": 175,
             "description": "Depth buffer render state.",
             "itemtype": "property",
             "name": "depthBuf",
@@ -7386,7 +7616,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 178,
+            "line": 182,
             "description": "Color buffer render state.",
             "itemtype": "property",
             "name": "colorBuf",
@@ -7395,7 +7625,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 185,
+            "line": 189,
             "description": "Lights render state.",
             "itemtype": "property",
             "name": "lights",
@@ -7404,7 +7634,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 192,
+            "line": 196,
             "description": "Material render state.",
             "itemtype": "property",
             "name": "material",
@@ -7413,7 +7643,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 199,
+            "line": 203,
             "description": "Environmental reflection render state.",
             "itemtype": "property",
             "name": "reflection",
@@ -7422,7 +7652,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 206,
+            "line": 210,
             "description": "Modelling transform render state.",
             "itemtype": "property",
             "name": "modelTransform",
@@ -7431,7 +7661,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 213,
+            "line": 217,
             "description": "View transform render state.",
             "itemtype": "property",
             "name": "viewTransform",
@@ -7440,7 +7670,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 220,
+            "line": 224,
             "description": "Projection transform render state.",
             "itemtype": "property",
             "name": "projTransform",
@@ -7449,7 +7679,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 227,
+            "line": 231,
             "description": "Billboard render state.",
             "itemtype": "property",
             "name": "billboard",
@@ -7458,7 +7688,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 234,
+            "line": 238,
             "description": "Stationary render state.",
             "itemtype": "property",
             "name": "stationary",
@@ -7467,7 +7697,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 241,
+            "line": 245,
             "description": "Color target render state.",
             "itemtype": "property",
             "name": "colorTarget",
@@ -7476,7 +7706,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 248,
+            "line": 252,
             "description": "Depth target render state.",
             "itemtype": "property",
             "name": "depthTarget",
@@ -7485,7 +7715,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 255,
+            "line": 259,
             "description": "Cross-section planes render state.",
             "itemtype": "property",
             "name": "clips",
@@ -7494,7 +7724,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 262,
+            "line": 266,
             "description": "Morph targets render state.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -7503,7 +7733,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 269,
+            "line": 273,
             "description": "Custom shader render state.",
             "itemtype": "property",
             "name": "shader",
@@ -7512,7 +7742,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 276,
+            "line": 280,
             "description": "Render state providing custom shader params.",
             "itemtype": "property",
             "name": "shaderParams",
@@ -7521,7 +7751,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 283,
+            "line": 287,
             "description": "Geometry render state.",
             "itemtype": "property",
             "name": "geometry",
@@ -7530,7 +7760,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 290,
+            "line": 294,
             "description": "Viewport render state.",
             "itemtype": "property",
             "name": "viewport",
@@ -7539,48 +7769,48 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 300,
+            "line": 304,
             "description": "Flags the object list as needing to be rebuilt from renderer objects\non the next call to {@link #render} or {@link #pick}. Setting this\nwill cause the rendering pipeline to be executed from stage #2\n(see class comment), causing object list rebuild, state order\ndetermination, state sort, draw list construction and image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 310,
+            "line": 314,
             "description": "Flags the object list as needing state orders to be (re)computed on the\nnext call to {@link #render} or {@link #pick}. Setting this will cause\nthe rendering pipeline to be executed from stage #3 (see class comment),\ncausing state order determination, state sort, draw list construction\nand image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 320,
+            "line": 324,
             "description": "Flags the object list as needing to be state-sorted on the next call\nto {@link #render} or {@link #pick}.Setting this will cause the\nrendering pipeline to be executed from stage #4 (see class comment),\ncausing state sort, draw list construction and image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 329,
+            "line": 333,
             "description": "Flags the draw list as needing to be rebuilt from the object list on\nthe next call to {@link #render} or {@link #pick}.  Setting this will\ncause the rendering pipeline to be executed from stage #5\n(see class comment), causing draw list construction and image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 338,
+            "line": 342,
             "description": "Flags the image as needing to be redrawn from the draw list on the\nnext call to {@link #render} or {@link #pick}. Setting this will\ncause the rendering pipeline to be executed from stage #6\n(see class comment), causing the image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 348,
+            "line": 352,
             "description": "Reallocates WebGL resources for objects within this renderer.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 372,
+            "line": 376,
             "description": "Internally creates (or updates) a {@link XEO.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link XEO.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
             "params": [
                 {
@@ -7593,12 +7823,12 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 498,
+            "line": 502,
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 556,
+            "line": 560,
             "description": "Removes an object from this Renderer",
             "params": [
                 {
@@ -7611,43 +7841,43 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 593,
+            "line": 597,
             "description": "Renders a new frame, if neccessary.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 632,
+            "line": 637,
             "description": "Builds the object list from the object map",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 644,
+            "line": 649,
             "description": "Generates object state sort keys",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 665,
+            "line": 670,
             "description": "State-sorts the object list",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 675,
+            "line": 680,
             "description": "Logs the object list",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 688,
+            "line": 693,
             "description": "Builds the draw list, which is the list of draw state-chunks to apply to WebGL\nto render the visible objects in the object list for the next frame.\nPreserves the state sort order of the object list among the draw chunks.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 873,
+            "line": 878,
             "description": "Appends an object to the draw and pick lists.",
             "params": [
                 {
@@ -7665,7 +7895,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 936,
+            "line": 947,
             "description": "Logs the contents of the draw list to the console.",
             "access": "private",
             "tagname": "",
@@ -7673,7 +7903,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 966,
+            "line": 977,
             "description": "Logs the contents of the pick list to the console.",
             "access": "private",
             "tagname": "",
@@ -7681,7 +7911,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 995,
+            "line": 1006,
             "description": "Attempts to pick an object at the given canvas coordinates.",
             "params": [
                 {
@@ -7698,7 +7928,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1088,
+            "line": 1099,
             "params": [
                 {
                     "name": "params",
@@ -7724,6 +7954,11 @@
                             "name": "object",
                             "description": "",
                             "type": "Boolean"
+                        },
+                        {
+                            "name": "opaqueOnly",
+                            "description": "",
+                            "type": "Boolean"
                         }
                     ]
                 }
@@ -7734,7 +7969,35 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1227,
+            "line": 1243,
+            "description": "Reads the colors of some pixels in the last rendered frame.",
+            "params": [
+                {
+                    "name": "pixels",
+                    "description": "",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "colors",
+                    "description": "",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "len",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "opaqueOnly",
+                    "description": "",
+                    "type": "Boolean"
+                }
+            ],
+            "class": "CameraFlight"
+        },
+        {
+            "file": "src/_renderer/renderer.js",
+            "line": 1290,
             "description": "Destroys this Renderer.",
             "class": "CameraFlight"
         },
@@ -7743,6 +8006,19 @@
             "line": 1,
             "description": "Renderer states",
             "class": "CameraFlight"
+        },
+        {
+            "file": "src/_utils/inheritance.js",
+            "line": 112,
+            "description": "Returns a new UUID.",
+            "itemtype": "method",
+            "name": "createUUID",
+            "static": 1,
+            "return": {
+                "description": "string The new UUID"
+            },
+            "class": "CameraFlight",
+            "module": "XEO"
         },
         {
             "file": "src/_utils/map.js",
@@ -7922,7 +8198,27 @@
         },
         {
             "file": "src/animation/cameraFlight.js",
-            "line": 579,
+            "line": 541,
+            "description": "Stops an earlier flyTo, fires arrival callback.",
+            "itemtype": "method",
+            "name": "stop",
+            "class": "CameraFlight",
+            "module": "XEO",
+            "submodule": "animation"
+        },
+        {
+            "file": "src/animation/cameraFlight.js",
+            "line": 574,
+            "description": "Cancels an earlier flyTo without calling the arrival callback.",
+            "itemtype": "method",
+            "name": "cancel",
+            "class": "CameraFlight",
+            "module": "XEO",
+            "submodule": "animation"
+        },
+        {
+            "file": "src/animation/cameraFlight.js",
+            "line": 604,
             "description": "Fired whenever this CameraFlight's {{#crossLink \"CameraFlight/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
@@ -8224,6 +8520,52 @@
             "type": "Boundary3D",
             "final": 1,
             "class": "CollectionBoundary",
+            "module": "XEO",
+            "submodule": "boundaries"
+        },
+        {
+            "file": "src/boundaries/position3d.js",
+            "line": 100,
+            "description": "Fired whenever this Position3D's {{#crossLink \"Position3D/obb:property\"}}{{/crossLink}},\n{{#crossLink \"Position3D/aabb:property\"}}{{/crossLink}} or {{#crossLink \"Position3D/center:property\"}}{{/crossLink}}.\nproperties change.",
+            "itemtype": "event",
+            "name": "updated",
+            "class": "Position3D",
+            "module": "XEO",
+            "submodule": "boundaries"
+        },
+        {
+            "file": "src/boundaries/position3d.js",
+            "line": 134,
+            "description": "3D World-space position.",
+            "itemtype": "property",
+            "name": "worldPos",
+            "final": 1,
+            "type": "{*}",
+            "class": "Position3D",
+            "module": "XEO",
+            "submodule": "boundaries"
+        },
+        {
+            "file": "src/boundaries/position3d.js",
+            "line": 153,
+            "description": "3D View-space position.",
+            "itemtype": "property",
+            "name": "viewPos",
+            "final": 1,
+            "type": "{Float32Array}",
+            "class": "Position3D",
+            "module": "XEO",
+            "submodule": "boundaries"
+        },
+        {
+            "file": "src/boundaries/position3d.js",
+            "line": 172,
+            "description": "2D Canvas-space position.",
+            "itemtype": "property",
+            "name": "canvasPos",
+            "final": 1,
+            "type": "{Float32Array}",
+            "class": "Position3D",
             "module": "XEO",
             "submodule": "boundaries"
         },
@@ -9072,7 +9414,37 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 506,
+            "line": 504,
+            "description": "Reads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
+            "params": [
+                {
+                    "name": "pixels",
+                    "description": "",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "colors",
+                    "description": "",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "size",
+                    "description": "",
+                    "type": "Number"
+                },
+                {
+                    "name": "opaqueOnly",
+                    "description": "",
+                    "type": "Boolean"
+                }
+            ],
+            "class": "Canvas",
+            "module": "XEO",
+            "submodule": "canvas"
+        },
+        {
+            "file": "src/canvas/canvas.js",
+            "line": 532,
             "description": "The busy {{#crossLink \"Spinner\"}}{{/crossLink}} for this Canvas.",
             "itemtype": "property",
             "name": "spinner",
@@ -10396,7 +10768,7 @@
         },
         {
             "file": "src/controls/mouseRotateCamera.js",
-            "line": 366,
+            "line": 361,
             "description": "Fired whenever this MouseRotateCamera's {{#crossLink \"MouseRotateCamera/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
@@ -10490,7 +10862,7 @@
         },
         {
             "file": "src/controls/mouseZoomCamera.js",
-            "line": 263,
+            "line": 267,
             "description": "Fired whenever this MouseZoomCamera's {{#crossLink \"MouseZoomCamera/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
@@ -16406,6 +16778,13 @@
             "description": "Returns a new, uninitialized two-element vector.",
             "itemtype": "method",
             "name": "vec2",
+            "params": [
+                {
+                    "name": "values",
+                    "description": "Initial values.",
+                    "optional": true
+                }
+            ],
             "static": 1,
             "return": {
                 "description": "",
@@ -16418,10 +16797,17 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 75,
+            "line": 76,
             "description": "Returns a new, uninitialized three-element vector.",
             "itemtype": "method",
             "name": "vec3",
+            "params": [
+                {
+                    "name": "values",
+                    "description": "Initial values.",
+                    "optional": true
+                }
+            ],
             "static": 1,
             "return": {
                 "description": "",
@@ -16434,10 +16820,17 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 85,
+            "line": 87,
             "description": "Returns a new, uninitialized four-element vector.",
             "itemtype": "method",
             "name": "vec4",
+            "params": [
+                {
+                    "name": "values",
+                    "description": "Initial values.",
+                    "optional": true
+                }
+            ],
             "static": 1,
             "return": {
                 "description": "",
@@ -16450,10 +16843,17 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 95,
+            "line": 98,
             "description": "Returns a new, uninitialized 3x3 matrix.",
             "itemtype": "method",
             "name": "mat3",
+            "params": [
+                {
+                    "name": "values",
+                    "description": "Initial values.",
+                    "optional": true
+                }
+            ],
             "static": 1,
             "return": {
                 "description": "",
@@ -16466,10 +16866,17 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 105,
+            "line": 109,
             "description": "Returns a new, uninitialized 4x4 matrix.",
             "itemtype": "method",
             "name": "mat4",
+            "params": [
+                {
+                    "name": "values",
+                    "description": "Initial values.",
+                    "optional": true
+                }
+            ],
             "static": 1,
             "return": {
                 "description": "",
@@ -16482,7 +16889,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 115,
+            "line": 120,
             "description": "Returns a new, uninitialized 3D axis-aligned bounding box.",
             "itemtype": "method",
             "name": "AABB3",
@@ -16498,7 +16905,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 128,
+            "line": 133,
             "description": "Returns a new, uninitialized 2D axis-aligned bounding box.",
             "itemtype": "method",
             "name": "AABB2",
@@ -16514,7 +16921,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 141,
+            "line": 146,
             "description": "Returns a new UUID.",
             "itemtype": "method",
             "name": "createUUID",
@@ -16529,7 +16936,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 171,
+            "line": 176,
             "description": "Clamps a value to the given range.",
             "params": [
                 {
@@ -16559,7 +16966,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 183,
+            "line": 188,
             "description": "Floating-point modulus",
             "itemtype": "method",
             "name": "fmod",
@@ -16587,7 +16994,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 202,
+            "line": 207,
             "description": "Negates a four-element vector.",
             "itemtype": "method",
             "name": "negateVec4",
@@ -16616,7 +17023,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 221,
+            "line": 226,
             "description": "Adds one four-element vector to another.",
             "itemtype": "method",
             "name": "addVec4",
@@ -16650,7 +17057,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 241,
+            "line": 246,
             "description": "Adds a scalar value to each element of a four-element vector.",
             "itemtype": "method",
             "name": "addVec4Scalar",
@@ -16684,7 +17091,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 261,
+            "line": 266,
             "description": "Adds one three-element vector to another.",
             "itemtype": "method",
             "name": "addVec3",
@@ -16718,7 +17125,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 280,
+            "line": 285,
             "description": "Adds a scalar value to each element of a three-element vector.",
             "itemtype": "method",
             "name": "addVec4Scalar",
@@ -16752,7 +17159,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 299,
+            "line": 304,
             "description": "Subtracts one four-element vector from another.",
             "itemtype": "method",
             "name": "subVec4",
@@ -16786,7 +17193,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 319,
+            "line": 324,
             "description": "Subtracts one three-element vector from another.",
             "itemtype": "method",
             "name": "subVec3",
@@ -16820,7 +17227,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 338,
+            "line": 343,
             "description": "Subtracts one two-element vector from another.",
             "itemtype": "method",
             "name": "subVec2",
@@ -16854,7 +17261,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 356,
+            "line": 361,
             "description": "Subtracts a scalar value from each element of a four-element vector.",
             "itemtype": "method",
             "name": "subVec4Scalar",
@@ -16888,7 +17295,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 376,
+            "line": 381,
             "description": "Sets each element of a 4-element vector to a scalar value minus the value of that element.",
             "itemtype": "method",
             "name": "subScalarVec4",
@@ -16922,7 +17329,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 396,
+            "line": 401,
             "description": "Multiplies one three-element vector by another.",
             "itemtype": "method",
             "name": "mulVec3",
@@ -16956,7 +17363,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 416,
+            "line": 421,
             "description": "Multiplies each element of a four-element vector by a scalar.",
             "itemtype": "method",
             "name": "mulVec34calar",
@@ -16990,7 +17397,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 436,
+            "line": 441,
             "description": "Multiplies each element of a three-element vector by a scalar.",
             "itemtype": "method",
             "name": "mulVec3Scalar",
@@ -17024,7 +17431,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 455,
+            "line": 460,
             "description": "Multiplies each element of a two-element vector by a scalar.",
             "itemtype": "method",
             "name": "mulVec2Scalar",
@@ -17058,7 +17465,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 473,
+            "line": 478,
             "description": "Divides one three-element vector by another.",
             "itemtype": "method",
             "name": "divVec3",
@@ -17092,7 +17499,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 492,
+            "line": 497,
             "description": "Divides one four-element vector by another.",
             "itemtype": "method",
             "name": "divVec4",
@@ -17126,7 +17533,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 512,
+            "line": 517,
             "description": "Divides a scalar by a three-element vector, returning a new vector.",
             "itemtype": "method",
             "name": "divScalarVec3",
@@ -17155,7 +17562,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 531,
+            "line": 536,
             "description": "Divides a three-element vector by a scalar.",
             "itemtype": "method",
             "name": "divVec3Scalar",
@@ -17184,7 +17591,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 550,
+            "line": 555,
             "description": "Divides a four-element vector by a scalar.",
             "itemtype": "method",
             "name": "divVec4Scalar",
@@ -17213,7 +17620,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 571,
+            "line": 576,
             "description": "Divides a scalar by a four-element vector, returning a new vector.",
             "itemtype": "method",
             "name": "divScalarVec4",
@@ -17242,7 +17649,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 591,
+            "line": 596,
             "description": "Returns the dot product of two four-element vectors.",
             "itemtype": "method",
             "name": "dotVec4",
@@ -17269,7 +17676,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 603,
+            "line": 608,
             "description": "Returns the cross product of two four-element vectors.",
             "itemtype": "method",
             "name": "cross3Vec4",
@@ -17296,7 +17703,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 621,
+            "line": 626,
             "description": "Returns the cross product of two three-element vectors.",
             "itemtype": "method",
             "name": "cross3Vec3",
@@ -17323,7 +17730,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 646,
+            "line": 651,
             "description": "Returns the length of a four-element vector.",
             "itemtype": "method",
             "name": "lenVec4",
@@ -17345,7 +17752,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 657,
+            "line": 662,
             "description": "Returns the dot product of two three-element vectors.",
             "itemtype": "method",
             "name": "dotVec4",
@@ -17372,7 +17779,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 669,
+            "line": 674,
             "description": "Returns the dot product of two two-element vectors.",
             "itemtype": "method",
             "name": "dotVec4",
@@ -17399,7 +17806,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 691,
+            "line": 696,
             "description": "Returns the length of a three-element vector.",
             "itemtype": "method",
             "name": "lenVec3",
@@ -17421,7 +17828,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 702,
+            "line": 707,
             "description": "Returns the length of a two-element vector.",
             "itemtype": "method",
             "name": "lenVec2",
@@ -17443,7 +17850,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 713,
+            "line": 718,
             "itemtype": "method",
             "name": "rcpVec3",
             "static": 1,
@@ -17467,7 +17874,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 725,
+            "line": 730,
             "description": "Normalizes a four-element vector",
             "itemtype": "method",
             "name": "normalizeVec4",
@@ -17492,7 +17899,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 739,
+            "line": 744,
             "description": "Normalizes a three-element vector",
             "itemtype": "method",
             "name": "normalizeVec4",
@@ -17504,7 +17911,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 749,
+            "line": 754,
             "description": "Normalizes a two-element vector",
             "itemtype": "method",
             "name": "normalizeVec2",
@@ -17516,7 +17923,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 759,
+            "line": 764,
             "description": "Duplicates a 4x4 identity matrix.",
             "itemtype": "method",
             "name": "dupMat4",
@@ -17528,7 +17935,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 768,
+            "line": 773,
             "description": "Extracts a 3x3 matrix from a 4x4 matrix.",
             "itemtype": "method",
             "name": "mat4To3",
@@ -17540,7 +17947,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 781,
+            "line": 786,
             "description": "Returns a 4x4 matrix with each element set to the given scalar value.",
             "itemtype": "method",
             "name": "m4s",
@@ -17552,7 +17959,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 795,
+            "line": 800,
             "description": "Returns a 4x4 matrix with each element set to zero.",
             "itemtype": "method",
             "name": "setMat4ToZeroes",
@@ -17564,7 +17971,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 804,
+            "line": 809,
             "description": "Returns a 4x4 matrix with each element set to 1.0.",
             "itemtype": "method",
             "name": "setMat4ToOnes",
@@ -17576,7 +17983,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 813,
+            "line": 818,
             "description": "Returns a 4x4 matrix with each element set to 1.0.",
             "itemtype": "method",
             "name": "setMat4ToOnes",
@@ -17588,7 +17995,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 827,
+            "line": 832,
             "description": "Returns a 4x4 matrix with diagonal elements set to the given vector.",
             "itemtype": "method",
             "name": "diagonalMat4c",
@@ -17600,7 +18007,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 836,
+            "line": 841,
             "description": "Returns a 4x4 matrix with diagonal elements set to the given scalar.",
             "itemtype": "method",
             "name": "diagonalMat4s",
@@ -17612,7 +18019,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 845,
+            "line": 850,
             "description": "Returns a 4x4 identity matrix.",
             "itemtype": "method",
             "name": "identityMat4",
@@ -17624,7 +18031,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 877,
+            "line": 882,
             "description": "Tests if the given 4x4 matrix is the identity matrix.",
             "itemtype": "method",
             "name": "isIdentityMat4",
@@ -17636,7 +18043,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 892,
+            "line": 897,
             "description": "Negates the given 4x4 matrix.",
             "itemtype": "method",
             "name": "negateMat4",
@@ -17648,7 +18055,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 920,
+            "line": 925,
             "description": "Adds the given 4x4 matrices together.",
             "itemtype": "method",
             "name": "addMat4",
@@ -17660,7 +18067,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 948,
+            "line": 953,
             "description": "Adds the given scalar to each element of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "addMat4Scalar",
@@ -17672,7 +18079,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 976,
+            "line": 981,
             "description": "Adds the given scalar to each element of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "addScalarMat4",
@@ -17684,7 +18091,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 985,
+            "line": 990,
             "description": "Subtracts the second 4x4 matrix from the first.",
             "itemtype": "method",
             "name": "subMat4",
@@ -17696,7 +18103,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1013,
+            "line": 1018,
             "description": "Subtracts the given scalar from each element of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "subMat4Scalar",
@@ -17708,7 +18115,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1041,
+            "line": 1046,
             "description": "Subtracts the given scalar from each element of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "subScalarMat4",
@@ -17720,7 +18127,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1069,
+            "line": 1074,
             "description": "Multiplies the two given 4x4 matrix by each other.",
             "itemtype": "method",
             "name": "mulMat4",
@@ -17732,7 +18139,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1110,
+            "line": 1115,
             "description": "Multiplies each element of the given 4x4 matrix by the given scalar.",
             "itemtype": "method",
             "name": "mulMat4Scalar",
@@ -17744,7 +18151,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1138,
+            "line": 1143,
             "description": "Multiplies the given 4x4 matrix by the given four-element vector.",
             "itemtype": "method",
             "name": "mulMat4v4",
@@ -17756,7 +18163,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1153,
+            "line": 1158,
             "description": "Transposes the given 4x4 matrix.",
             "itemtype": "method",
             "name": "transposeMat4",
@@ -17768,7 +18175,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1199,
+            "line": 1204,
             "description": "Returns the determinant of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "determinantMat4",
@@ -17780,7 +18187,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1218,
+            "line": 1223,
             "description": "Returns the inverse of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "inverseMat4",
@@ -17792,7 +18199,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1268,
+            "line": 1273,
             "description": "Returns the trace of the given 4x4 matrix.",
             "itemtype": "method",
             "name": "traceMat4",
@@ -17804,7 +18211,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1277,
+            "line": 1282,
             "description": "Returns 4x4 translation matrix.",
             "itemtype": "method",
             "name": "translationMat4",
@@ -17816,7 +18223,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1290,
+            "line": 1295,
             "description": "Returns 4x4 translation matrix.",
             "itemtype": "method",
             "name": "translationMat4c",
@@ -17828,7 +18235,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1299,
+            "line": 1304,
             "description": "Returns 4x4 translation matrix.",
             "itemtype": "method",
             "name": "translationMat4s",
@@ -17840,7 +18247,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1308,
+            "line": 1313,
             "description": "Returns 4x4 rotation matrix.",
             "itemtype": "method",
             "name": "rotationMat4v",
@@ -17852,7 +18259,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1360,
+            "line": 1365,
             "description": "Returns 4x4 rotation matrix.",
             "itemtype": "method",
             "name": "rotationMat4c",
@@ -17864,7 +18271,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1369,
+            "line": 1374,
             "description": "Returns 4x4 scale matrix.",
             "itemtype": "method",
             "name": "scalingMat4v",
@@ -17876,7 +18283,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1382,
+            "line": 1387,
             "description": "Returns 4x4 scale matrix.",
             "itemtype": "method",
             "name": "scalingMat4c",
@@ -17888,7 +18295,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1391,
+            "line": 1396,
             "description": "Returns 4x4 scale matrix.",
             "itemtype": "method",
             "name": "scalingMat4s",
@@ -17900,7 +18307,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1400,
+            "line": 1405,
             "description": "Gets Euler angles from a 4x4 matrix.",
             "params": [
                 {
@@ -17931,7 +18338,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1497,
+            "line": 1502,
             "description": "Returns a 4x4 'lookat' viewing transform matrix.",
             "itemtype": "method",
             "name": "lookAtMat4v",
@@ -17964,7 +18371,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1592,
+            "line": 1597,
             "description": "Returns a 4x4 'lookat' viewing transform matrix.",
             "itemtype": "method",
             "name": "lookAtMat4c",
@@ -17976,7 +18383,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1601,
+            "line": 1606,
             "description": "Returns a 4x4 orthographic projection matrix.",
             "itemtype": "method",
             "name": "orthoMat4c",
@@ -17988,7 +18395,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1637,
+            "line": 1642,
             "description": "Returns a 4x4 perspective projection matrix.",
             "itemtype": "method",
             "name": "frustumMat4v",
@@ -18000,7 +18407,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1681,
+            "line": 1686,
             "description": "Returns a 4x4 perspective projection matrix.",
             "itemtype": "method",
             "name": "frustumMat4v",
@@ -18012,7 +18419,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1712,
+            "line": 1717,
             "description": "Returns a 4x4 perspective projection matrix.",
             "itemtype": "method",
             "name": "perspectiveMatrix4v",
@@ -18024,7 +18431,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1733,
+            "line": 1738,
             "description": "Transforms a three-element position by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformPoint3",
@@ -18036,7 +18443,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1750,
+            "line": 1755,
             "description": "Transforms a homogeneous coordinate by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformPoint3",
@@ -18048,7 +18455,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1767,
+            "line": 1772,
             "description": "Transforms an array of three-element positions by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformPoints3",
@@ -18060,7 +18467,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1808,
+            "line": 1813,
             "description": "Transforms a three-element vector by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformVec3",
@@ -18072,7 +18479,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1822,
+            "line": 1827,
             "description": "Transforms a four-element vector by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformVec4",
@@ -18084,7 +18491,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1837,
+            "line": 1842,
             "description": "Rotate a 3D vector around the x-axis",
             "itemtype": "method",
             "name": "rotateVec3X",
@@ -18114,6 +18521,7 @@
                 "description": "dest",
                 "type": "Float32Array"
             },
+            "static": 1,
             "class": "XEO.math.math",
             "module": "XEO",
             "submodule": "math",
@@ -18121,7 +18529,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1869,
+            "line": 1875,
             "description": "Rotate a 3D vector around the y-axis",
             "itemtype": "method",
             "name": "rotateVec3Y",
@@ -18151,6 +18559,7 @@
                 "description": "dest",
                 "type": "Float32Array"
             },
+            "static": 1,
             "class": "XEO.math.math",
             "module": "XEO",
             "submodule": "math",
@@ -18158,7 +18567,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1901,
+            "line": 1908,
             "description": "Rotate a 3D vector around the z-axis",
             "itemtype": "method",
             "name": "rotateVec3Z",
@@ -18188,17 +18597,6 @@
                 "description": "dest",
                 "type": "Float32Array"
             },
-            "class": "XEO.math.math",
-            "module": "XEO",
-            "submodule": "math",
-            "namespace": "XEO.math"
-        },
-        {
-            "file": "src/math/math.js",
-            "line": 1934,
-            "description": "Transforms a four-element vector by a 4x4 projection matrix.",
-            "itemtype": "method",
-            "name": "projectVec4",
             "static": 1,
             "class": "XEO.math.math",
             "module": "XEO",
@@ -18207,7 +18605,35 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1944,
+            "line": 1941,
+            "description": "Transforms a four-element vector by a 4x4 projection matrix.",
+            "itemtype": "method",
+            "name": "projectVec4",
+            "params": [
+                {
+                    "name": "p",
+                    "description": "3D View-space coordinate",
+                    "type": "Float32Array"
+                },
+                {
+                    "name": "q",
+                    "description": "2D Projected coordinate",
+                    "type": "Float32Array"
+                }
+            ],
+            "return": {
+                "description": "2D Projected coordinate",
+                "type": "Float32Array"
+            },
+            "static": 1,
+            "class": "XEO.math.math",
+            "module": "XEO",
+            "submodule": "math",
+            "namespace": "XEO.math"
+        },
+        {
+            "file": "src/math/math.js",
+            "line": 1958,
             "description": "Linearly interpolates between two 3D vectors.",
             "itemtype": "method",
             "name": "lerpVec3",
@@ -18219,7 +18645,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1958,
+            "line": 1972,
             "description": "Gets the diagonal size of a boundary given as minima and maxima.",
             "itemtype": "method",
             "name": "getAABBDiag",
@@ -18231,7 +18657,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1968,
+            "line": 1982,
             "description": "Get a diagonal boundary size that is symmetrical about the given point.",
             "itemtype": "method",
             "name": "getAABBDiagPoint",
@@ -18243,7 +18669,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1992,
+            "line": 2006,
             "description": "Gets the center of an AABB.",
             "itemtype": "method",
             "name": "getAABBCenter",
@@ -18255,7 +18681,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2007,
+            "line": 2021,
             "description": "Gets the center of a 2D AABB.",
             "itemtype": "method",
             "name": "getAABB2Center",
@@ -18267,7 +18693,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2021,
+            "line": 2035,
             "description": "Collapses a 3D axis-aligned boundary, ready to expand to fit 3D points.\nCreates new AABB if none supplied.",
             "itemtype": "method",
             "name": "collapseAABB3",
@@ -18291,7 +18717,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2044,
+            "line": 2058,
             "description": "Converts an axis-aligned 3D boundary into an oriented boundary consisting of\nan array of eight 3D positions, one for each corner of the boundary.",
             "itemtype": "method",
             "name": "AABB3ToOBB3",
@@ -18320,7 +18746,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2133,
+            "line": 2147,
             "description": "Finds the minimum axis-aligned 3D boundary enclosing the 3D points given in a flattened,  1-dimensional array.",
             "itemtype": "method",
             "name": "positions3ToAABB3",
@@ -18349,7 +18775,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2196,
+            "line": 2210,
             "description": "Finds the minimum axis-aligned 3D boundary enclosing the given 3D points.",
             "itemtype": "method",
             "name": "points3ToAABB3",
@@ -18378,7 +18804,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2259,
+            "line": 2273,
             "description": "Expands the first axis-aligned 3D boundary to enclose the second, if required.",
             "itemtype": "method",
             "name": "expandAABB3",
@@ -18406,7 +18832,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2297,
+            "line": 2311,
             "description": "Expands an axis-aligned 3D boundary to enclose the given point, if needed.",
             "itemtype": "method",
             "name": "expandAABB3Point3",
@@ -18434,7 +18860,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2335,
+            "line": 2349,
             "description": "Collapses a 2D axis-aligned boundary, ready to expand to fit 2D points.\nCreates new AABB if none supplied.",
             "itemtype": "method",
             "name": "collapseAABB2",
@@ -18458,7 +18884,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2356,
+            "line": 2370,
             "description": "Finds the minimum 2D projected axis-aligned boundary enclosing the given 3D points.",
             "itemtype": "method",
             "name": "points3ToAABB2",
@@ -18487,7 +18913,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2415,
+            "line": 2429,
             "description": "Expands the first axis-aligned 2D boundary to enclose the second, if required.",
             "itemtype": "method",
             "name": "expandAABB3",
@@ -18515,7 +18941,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2445,
+            "line": 2459,
             "description": "Expands an axis-aligned 2D boundary to enclose the given point, if required.",
             "itemtype": "method",
             "name": "expandAABB2Point2",
@@ -18543,7 +18969,40 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2492,
+            "line": 2506,
+            "description": "Calculates the normal vector of a triangle",
+            "itemtype": "method",
+            "name": "triangleNormal",
+            "params": [
+                {
+                    "name": "a",
+                    "description": ""
+                },
+                {
+                    "name": "b",
+                    "description": ""
+                },
+                {
+                    "name": "c",
+                    "description": ""
+                },
+                {
+                    "name": "normal",
+                    "description": ""
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "*"
+            },
+            "class": "XEO.math.math",
+            "module": "XEO",
+            "submodule": "math",
+            "namespace": "XEO.math"
+        },
+        {
+            "file": "src/math/math.js",
+            "line": 2546,
             "description": "Builds normal vectors from positions and indices.",
             "itemtype": "method",
             "name": "buildNormals",
@@ -18571,7 +19030,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2564,
+            "line": 2618,
             "description": "Builds vertex tangent vectors from positions, UVs and indices",
             "itemtype": "method",
             "name": "buildTangents",
@@ -18604,7 +19063,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2633,
+            "line": 2687,
             "description": "Flattens a two-dimensional array into a one-dimensional array.",
             "itemtype": "method",
             "name": "flatten",
@@ -18626,7 +19085,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2661,
+            "line": 2715,
             "description": "Builds vertex and index arrays needed by color-indexed triangle picking.",
             "itemtype": "method",
             "name": "getPickPrimitives",
@@ -18654,7 +19113,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2761,
+            "line": 2815,
             "description": "Finds the intersection of a 3D ray with a 3D triangle.",
             "itemtype": "method",
             "name": "rayTriangleIntersect",
@@ -18703,7 +19162,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2809,
+            "line": 2863,
             "description": "Finds the intersection of a 3D ray with a plane defined by 3 points.",
             "itemtype": "method",
             "name": "rayPlaneIntersect",
@@ -18752,7 +19211,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2847,
+            "line": 2901,
             "description": "Gets barycentric coordinates from cartesian coordinates within a triangle.",
             "itemtype": "method",
             "name": "cartesianToBaryCentric",
@@ -18796,7 +19255,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2914,
+            "line": 2968,
             "description": "Returns true if the given barycentric coordinates are within their triangle.",
             "itemtype": "method",
             "name": "barycentricInsideTriangle",
@@ -18819,7 +19278,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2931,
+            "line": 2985,
             "description": "Gets cartesian coordinates from barycentric coordinates within a triangle.",
             "itemtype": "method",
             "name": "barycentricToCartesian",
@@ -18863,7 +19322,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2969,
+            "line": 3023,
             "description": "Initializes a quaternion from Euler angles.",
             "params": [
                 {
@@ -20412,10 +20871,44 @@
                             "optdefault": "false"
                         },
                         {
-                            "name": "onAttached.scope",
-                            "description": "Optional scope for callback",
+                            "name": "onAttached",
+                            "description": "Optional callback called when component attached",
                             "type": "Function",
-                            "optional": true
+                            "optional": true,
+                            "props": [
+                                {
+                                    "name": "callback",
+                                    "description": "Callback function",
+                                    "type": "Function",
+                                    "optional": true
+                                },
+                                {
+                                    "name": "scope",
+                                    "description": "Optional scope for callback",
+                                    "type": "Function",
+                                    "optional": true
+                                }
+                            ]
+                        },
+                        {
+                            "name": "onDetached",
+                            "description": "Optional callback called when component is detached",
+                            "type": "Function",
+                            "optional": true,
+                            "props": [
+                                {
+                                    "name": "callback",
+                                    "description": "Callback function",
+                                    "type": "Function",
+                                    "optional": true
+                                },
+                                {
+                                    "name": "scope",
+                                    "description": "Optional scope for callback",
+                                    "type": "Function",
+                                    "optional": true
+                                }
+                            ]
                         },
                         {
                             "name": "recompiles",
@@ -20425,11 +20918,6 @@
                             "optdefault": "true"
                         }
                     ]
-                },
-                {
-                    "name": "[params.onAttached] Optional callback called before event is fired\n* @param {Function} [params.onAttached.callback]",
-                    "description": "Callback function",
-                    "type": "Function"
                 },
                 {
                     "name": "}",
@@ -20444,7 +20932,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 829,
+            "line": 832,
             "description": "Convenience method for creating a Component within this Component's {{#crossLink \"Scene\"}}{{/crossLink}}.\n\nYou would typically use this method to conveniently instantiate components that you'd want to\nshare (ie. \"instance\") among your {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe method is given a component type, configuration and optional instance ID, like so:\n\n````javascript\nvar material = myComponent.create(XEO.PhongMaterial, {\n     diffuse: [1,0,0],\n     specular: [1,1,0]\n}, \"myMaterial\");\n````\n\nThe first time you call this method for the given ````type```` and ````instanceId````, this method will create the\n{{#crossLink \"PhongMaterial\"}}{{/crossLink}}, passing the given  attributes to the component's constructor.\n\nIf you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same\ncomponent instance that it returned the first time, and will ignore the configuration:\n\n````javascript\nvar material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, \"myMaterial\");\n````\n\nSo inthis example, our {{#crossLink \"PhongMaterial\"}}{{/crossLink}} will continue to have the red specular\nand diffuse color that we specified the first time.\n\nEach time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a\nreference count for the component instance. You can release the shared component instance with a call to\n{{#crossLink \"Scene/putSharedComponent:method\"}}{{/crossLink}}, and once you have released it as many\ntimes as you got it, the Scene will destroy the component.",
             "itemtype": "method",
             "name": "create",
@@ -20476,7 +20964,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 900,
+            "line": 903,
             "description": "Protected method, called by sub-classes to queue a call to _update().",
             "access": "protected",
             "tagname": "",
@@ -20494,7 +20982,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 920,
+            "line": 923,
             "access": "private",
             "tagname": "",
             "class": "Component",
@@ -20502,7 +20990,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 945,
+            "line": 948,
             "description": "Optional virtual template method, normally implemented\nby sub-classes to generate some data before _update gets\ncallled",
             "access": "protected",
             "tagname": "",
@@ -20511,7 +20999,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 954,
+            "line": 957,
             "description": "Protected virtual template method, optionally implemented\nby sub-classes to perform a scheduled task.",
             "access": "protected",
             "tagname": "",
@@ -20520,7 +21008,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 962,
+            "line": 965,
             "description": "Protected template method, implemented by sub-classes to compile\ntheir state into their Scene's XEO.renderer.Renderer.",
             "access": "protected",
             "tagname": "",
@@ -20529,7 +21017,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 973,
+            "line": 976,
             "description": "JSON object containing the state of this Component.",
             "itemtype": "property",
             "name": "json",
@@ -20540,7 +21028,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1001,
+            "line": 1004,
             "description": "String containing the serialized JSON state of this Component.",
             "itemtype": "property",
             "name": "string",
@@ -20551,7 +21039,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1016,
+            "line": 1019,
             "description": "Experimental: string containing a JavaScript expression that would instantiate this Component.",
             "itemtype": "property",
             "name": "string",
@@ -20562,7 +21050,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1034,
+            "line": 1037,
             "description": "Destroys this component.\n\nFires a {{#crossLink \"Component/destroyed:event\"}}{{/crossLink}} event on this Component.\n\nAutomatically disassociates this component from other components, causing them to fall back on any\ndefaults that this component overrode on them.\n\nTODO: describe effect with respect to #create",
             "itemtype": "method",
             "name": "destroy",
@@ -20571,7 +21059,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1092,
+            "line": 1095,
             "description": "Fired when this Component is destroyed.",
             "itemtype": "event",
             "name": "destroyed",
@@ -20580,7 +21068,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1100,
+            "line": 1103,
             "description": "Protected template method, implemented by sub-classes\nto clean up just before the component is destroyed.",
             "access": "protected",
             "tagname": "",
@@ -21541,7 +22029,11 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/_renderer/renderer.js:995"
+            "line": " src/_renderer/webgl/megatexture/testMegaTexture.js:9"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/_renderer/renderer.js:1006"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -21577,143 +22069,151 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:75"
+            "line": " src/math/math.js:76"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:85"
+            "line": " src/math/math.js:87"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:95"
+            "line": " src/math/math.js:98"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:105"
+            "line": " src/math/math.js:109"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:115"
+            "line": " src/math/math.js:120"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:128"
+            "line": " src/math/math.js:133"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:171"
+            "line": " src/math/math.js:176"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:183"
+            "line": " src/math/math.js:188"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1400"
+            "line": " src/math/math.js:1405"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1837"
+            "line": " src/math/math.js:1842"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1869"
+            "line": " src/math/math.js:1875"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1901"
+            "line": " src/math/math.js:1908"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2021"
+            "line": " src/math/math.js:1941"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2044"
+            "line": " src/math/math.js:2035"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2133"
+            "line": " src/math/math.js:2058"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2196"
+            "line": " src/math/math.js:2147"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2259"
+            "line": " src/math/math.js:2210"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2297"
+            "line": " src/math/math.js:2273"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2335"
+            "line": " src/math/math.js:2311"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2356"
+            "line": " src/math/math.js:2349"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2415"
+            "line": " src/math/math.js:2370"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2445"
+            "line": " src/math/math.js:2429"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2492"
+            "line": " src/math/math.js:2459"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2564"
+            "line": " src/math/math.js:2506"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2633"
+            "line": " src/math/math.js:2546"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2661"
+            "line": " src/math/math.js:2618"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2761"
+            "line": " src/math/math.js:2687"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2809"
+            "line": " src/math/math.js:2715"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2847"
+            "line": " src/math/math.js:2815"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2847"
+            "line": " src/math/math.js:2863"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2914"
+            "line": " src/math/math.js:2901"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2914"
+            "line": " src/math/math.js:2901"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2931"
+            "line": " src/math/math.js:2968"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2931"
+            "line": " src/math/math.js:2968"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2969"
+            "line": " src/math/math.js:2985"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/math/math.js:2985"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/math/math.js:3023"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -21729,7 +22229,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/component.js:829"
+            "line": " src/component.js:832"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -21826,6 +22326,14 @@
         {
             "message": "Missing item type",
             "line": " src/_renderer/chunks/viewportChunk.js:5"
+        },
+        {
+            "message": "Missing item type\nRemoves a tile from this cache.",
+            "line": " src/_renderer/webgl/megatexture/cache.js:245"
+        },
+        {
+            "message": "Missing item type\nReturns texture data for a tile.",
+            "line": " src/_renderer/webgl/megatexture/testMegaTexture.js:9"
         },
         {
             "message": "Missing item type\nBuffer for vertices and indices",
@@ -22137,87 +22645,91 @@
         },
         {
             "message": "Missing item type\nFlags the object list as needing to be rebuilt from renderer objects\non the next call to {@link #render} or {@link #pick}. Setting this\nwill cause the rendering pipeline to be executed from stage #2\n(see class comment), causing object list rebuild, state order\ndetermination, state sort, draw list construction and image render.",
-            "line": " src/_renderer/renderer.js:300"
+            "line": " src/_renderer/renderer.js:304"
         },
         {
             "message": "Missing item type\nFlags the object list as needing state orders to be (re)computed on the\nnext call to {@link #render} or {@link #pick}. Setting this will cause\nthe rendering pipeline to be executed from stage #3 (see class comment),\ncausing state order determination, state sort, draw list construction\nand image render.",
-            "line": " src/_renderer/renderer.js:310"
+            "line": " src/_renderer/renderer.js:314"
         },
         {
             "message": "Missing item type\nFlags the object list as needing to be state-sorted on the next call\nto {@link #render} or {@link #pick}.Setting this will cause the\nrendering pipeline to be executed from stage #4 (see class comment),\ncausing state sort, draw list construction and image render.",
-            "line": " src/_renderer/renderer.js:320"
+            "line": " src/_renderer/renderer.js:324"
         },
         {
             "message": "Missing item type\nFlags the draw list as needing to be rebuilt from the object list on\nthe next call to {@link #render} or {@link #pick}.  Setting this will\ncause the rendering pipeline to be executed from stage #5\n(see class comment), causing draw list construction and image render.",
-            "line": " src/_renderer/renderer.js:329"
+            "line": " src/_renderer/renderer.js:333"
         },
         {
             "message": "Missing item type\nFlags the image as needing to be redrawn from the draw list on the\nnext call to {@link #render} or {@link #pick}. Setting this will\ncause the rendering pipeline to be executed from stage #6\n(see class comment), causing the image render.",
-            "line": " src/_renderer/renderer.js:338"
+            "line": " src/_renderer/renderer.js:342"
         },
         {
             "message": "Missing item type\nReallocates WebGL resources for objects within this renderer.",
-            "line": " src/_renderer/renderer.js:348"
+            "line": " src/_renderer/renderer.js:352"
         },
         {
             "message": "Missing item type\nInternally creates (or updates) a {@link XEO.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link XEO.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
-            "line": " src/_renderer/renderer.js:372"
+            "line": " src/_renderer/renderer.js:376"
         },
         {
             "message": "Missing item type",
-            "line": " src/_renderer/renderer.js:498"
+            "line": " src/_renderer/renderer.js:502"
         },
         {
             "message": "Missing item type\nRemoves an object from this Renderer",
-            "line": " src/_renderer/renderer.js:556"
+            "line": " src/_renderer/renderer.js:560"
         },
         {
             "message": "Missing item type\nRenders a new frame, if neccessary.",
-            "line": " src/_renderer/renderer.js:593"
+            "line": " src/_renderer/renderer.js:597"
         },
         {
             "message": "Missing item type\nBuilds the object list from the object map",
-            "line": " src/_renderer/renderer.js:632"
+            "line": " src/_renderer/renderer.js:637"
         },
         {
             "message": "Missing item type\nGenerates object state sort keys",
-            "line": " src/_renderer/renderer.js:644"
+            "line": " src/_renderer/renderer.js:649"
         },
         {
             "message": "Missing item type\nState-sorts the object list",
-            "line": " src/_renderer/renderer.js:665"
+            "line": " src/_renderer/renderer.js:670"
         },
         {
             "message": "Missing item type\nLogs the object list",
-            "line": " src/_renderer/renderer.js:675"
+            "line": " src/_renderer/renderer.js:680"
         },
         {
             "message": "Missing item type\nBuilds the draw list, which is the list of draw state-chunks to apply to WebGL\nto render the visible objects in the object list for the next frame.\nPreserves the state sort order of the object list among the draw chunks.",
-            "line": " src/_renderer/renderer.js:688"
+            "line": " src/_renderer/renderer.js:693"
         },
         {
             "message": "Missing item type\nAppends an object to the draw and pick lists.",
-            "line": " src/_renderer/renderer.js:873"
+            "line": " src/_renderer/renderer.js:878"
         },
         {
             "message": "Missing item type\nLogs the contents of the draw list to the console.",
-            "line": " src/_renderer/renderer.js:936"
+            "line": " src/_renderer/renderer.js:947"
         },
         {
             "message": "Missing item type\nLogs the contents of the pick list to the console.",
-            "line": " src/_renderer/renderer.js:966"
+            "line": " src/_renderer/renderer.js:977"
         },
         {
             "message": "Missing item type\nAttempts to pick an object at the given canvas coordinates.",
-            "line": " src/_renderer/renderer.js:995"
+            "line": " src/_renderer/renderer.js:1006"
         },
         {
             "message": "Missing item type",
-            "line": " src/_renderer/renderer.js:1088"
+            "line": " src/_renderer/renderer.js:1099"
+        },
+        {
+            "message": "Missing item type\nReads the colors of some pixels in the last rendered frame.",
+            "line": " src/_renderer/renderer.js:1243"
         },
         {
             "message": "Missing item type\nDestroys this Renderer.",
-            "line": " src/_renderer/renderer.js:1227"
+            "line": " src/_renderer/renderer.js:1290"
         },
         {
             "message": "Missing item type\nRenderer states",
@@ -22286,6 +22798,10 @@
         {
             "message": "Missing item type\nInitialises the WebGL context",
             "line": " src/canvas/canvas.js:418"
+        },
+        {
+            "message": "Missing item type\nReads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
+            "line": " src/canvas/canvas.js:504"
         },
         {
             "message": "Missing item type\nAdds a {{#crossLink \"Curve\"}}{{/crossLink}} to this Path.\n\nFires a {{#crossLink \"Path/curves:event\"}}{{/crossLink}} event on change.",
@@ -22377,15 +22893,15 @@
         },
         {
             "message": "Missing item type\nClamps a value to the given range.",
-            "line": " src/math/math.js:171"
+            "line": " src/math/math.js:176"
         },
         {
             "message": "Missing item type\nGets Euler angles from a 4x4 matrix.",
-            "line": " src/math/math.js:1400"
+            "line": " src/math/math.js:1405"
         },
         {
             "message": "Missing item type\nInitializes a quaternion from Euler angles.",
-            "line": " src/math/math.js:2969"
+            "line": " src/math/math.js:3023"
         },
         {
             "message": "Missing item type\nLookup GL depth function enums",
@@ -22405,27 +22921,27 @@
         },
         {
             "message": "Missing item type\nProtected method, called by sub-classes to queue a call to _update().",
-            "line": " src/component.js:900"
+            "line": " src/component.js:903"
         },
         {
             "message": "Missing item type",
-            "line": " src/component.js:920"
+            "line": " src/component.js:923"
         },
         {
             "message": "Missing item type\nOptional virtual template method, normally implemented\nby sub-classes to generate some data before _update gets\ncallled",
-            "line": " src/component.js:945"
+            "line": " src/component.js:948"
         },
         {
             "message": "Missing item type\nProtected virtual template method, optionally implemented\nby sub-classes to perform a scheduled task.",
-            "line": " src/component.js:954"
+            "line": " src/component.js:957"
         },
         {
             "message": "Missing item type\nProtected template method, implemented by sub-classes to compile\ntheir state into their Scene's XEO.renderer.Renderer.",
-            "line": " src/component.js:962"
+            "line": " src/component.js:965"
         },
         {
             "message": "Missing item type\nProtected template method, implemented by sub-classes\nto clean up just before the component is destroyed.",
-            "line": " src/component.js:1100"
+            "line": " src/component.js:1103"
         },
         {
             "message": "Missing item type\nReleases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",

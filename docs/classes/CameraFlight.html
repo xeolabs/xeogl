@@ -81,6 +81,7 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/MegaTexture.html">MegaTexture</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
@@ -95,6 +96,7 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/Position3D.html">Position3D</a></li>
                                 <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
@@ -397,9 +399,18 @@ cameraFlight.flyTo(aabb);
                     <h3>Methods</h3>
 
                     <ul class="index-list methods extends">
+                            <li class="index-item method">
+                                <a href="#method_cancel">cancel</a>
+
+                            </li>
                             <li class="index-item method inherited">
                                 <a href="#method_create">create</a>
 
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_createUUID">createUUID</a>
+
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_destroy">destroy</a>
@@ -439,6 +450,14 @@ cameraFlight.flyTo(aabb);
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_once">once</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_processCompletedTiles">processCompletedTiles</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_stop">stop</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -603,6 +622,38 @@ cameraFlight.flyTo(aabb);
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
+<div id="method_cancel" class="method item">
+    <h3 class="name"><code>cancel</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_animation_cameraFlight.js.html#l574"><code>src&#x2F;animation&#x2F;cameraFlight.js:574</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Cancels an earlier flyTo without calling the arrival callback.</p>
+
+    </div>
+
+
+
+
+</div>
 <div id="method_create" class="method item inherited">
     <h3 class="name"><code>create</code></h3>
 
@@ -634,7 +685,7 @@ cameraFlight.flyTo(aabb);
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_create">Component</a>:
-        <a href="../files/src_component.js.html#l829"><code>src&#x2F;component.js:829</code></a>
+        <a href="../files/src_component.js.html#l832"><code>src&#x2F;component.js:832</code></a>
         </p>
 
 
@@ -721,6 +772,51 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
 
 
 </div>
+<div id="method_createUUID" class="method item">
+    <h3 class="name"><code>createUUID</code></h3>
+
+        <span class="paren">()</span>
+
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+
+    <div class="meta">
+                    <p>Provided by the <a href="../modules/XEO.html">XEO</a> module.</p>
+                <p>
+                Defined in
+        <a href="../files/src__utils_inheritance.js.html#l112"><code>src&#x2F;_utils&#x2F;inheritance.js:112</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Returns a new UUID.</p>
+
+    </div>
+
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                    <p>string The new UUID</p>
+
+            </div>
+        </div>
+
+
+</div>
 <div id="method_destroy" class="method item inherited">
     <h3 class="name"><code>destroy</code></h3>
 
@@ -737,7 +833,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l1034"><code>src&#x2F;component.js:1034</code></a>
+        <a href="../files/src_component.js.html#l1037"><code>src&#x2F;component.js:1037</code></a>
         </p>
 
 
@@ -909,6 +1005,147 @@ any subsequent notifications on that location as they are made.</p>
                 <li class="arg">
                         <code>params</code>
                 </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_animation_cameraFlight.js.html#l370"><code>src&#x2F;animation&#x2F;cameraFlight.js:370</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Jumps this CameraFlight&#39;s <a href="../classes/Camera.html" class="crosslink">Camera</a> to the given target.</p>
+<p><ul>
+    <li>When the target is a boundary, this CameraFlight will position the <a href="../classes/Camera.html" class="crosslink">Camera</a>
+    at where the target fills most of the canvas.</li>
+    <li>When the target is an explicit <a href="../classes/Camera.html" class="crosslink">Camera</a> position, given as <code>eye</code>, <code>look</code> and <code>up</code>
+     vectors, then this CameraFlight will jump the <a href="../classes/Camera.html" class="crosslink">Camera</a> to that target.</li></p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">params</code>
+                        <span class="type"> | <a href="../classes/Component.html" class="crosslink">Component</a></span>
+
+
+                    <div class="param-description">
+                        <p>Either a parameters object or a <a href="../classes/Component.html" class="crosslink">Component</a> subtype that has a WorldBoundary.</p>
+
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name optional">[arc=0]   Factor in range [0..1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>indicating how much the
+Camera/eye:property position will
+swing away from its Camera/eye:property position as it flies to the target.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[component]</code>
+                                    <span class="type">String | <a href="../classes/Component.html" class="crosslink">Component</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>ID or instance of a component to fly to.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[aabb]</code>
+                                    <span class="type"></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>World-space axis-aligned bounding box (AABB) target to fly to.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[eye]</code>
+                                    <span class="type">Array of Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Position to fly the eye position to.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[look]</code>
+                                    <span class="type">Array of Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Position to fly the look position to.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[up]</code>
+                                    <span class="type">Array of Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Position to fly the up vector to.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[stopFOV]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>How much of field-of-view, in degrees, that a target AABB should fill the canvas.</p>
+
+                                </div>
+
+                            </li>
+                        </ul>
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_flyTo" class="method item">
+    <h3 class="name"><code>flyTo</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>params</code>
+                </li>
                 <li class="arg">
                         <code class="optional">[callback]</code>
                 </li>
@@ -1065,147 +1302,6 @@ swing away from its Camera/eye:property position as it flies to the target.</p>
 
                     </div>
 
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_flyTo" class="method item">
-    <h3 class="name"><code>flyTo</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>params</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_animation_cameraFlight.js.html#l370"><code>src&#x2F;animation&#x2F;cameraFlight.js:370</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Jumps this CameraFlight&#39;s <a href="../classes/Camera.html" class="crosslink">Camera</a> to the given target.</p>
-<p><ul>
-    <li>When the target is a boundary, this CameraFlight will position the <a href="../classes/Camera.html" class="crosslink">Camera</a>
-    at where the target fills most of the canvas.</li>
-    <li>When the target is an explicit <a href="../classes/Camera.html" class="crosslink">Camera</a> position, given as <code>eye</code>, <code>look</code> and <code>up</code>
-     vectors, then this CameraFlight will jump the <a href="../classes/Camera.html" class="crosslink">Camera</a> to that target.</li></p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">params</code>
-                        <span class="type"> | <a href="../classes/Component.html" class="crosslink">Component</a></span>
-
-
-                    <div class="param-description">
-                        <p>Either a parameters object or a <a href="../classes/Component.html" class="crosslink">Component</a> subtype that has a WorldBoundary.</p>
-
-                    </div>
-
-                        <ul class="params-list">
-                            <li class="param">
-                                    <code class="param-name optional">[arc=0]   Factor in range [0..1]</code>
-                                    <span class="type">Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>indicating how much the
-Camera/eye:property position will
-swing away from its Camera/eye:property position as it flies to the target.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name optional">[component]</code>
-                                    <span class="type">String | <a href="../classes/Component.html" class="crosslink">Component</a></span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>ID or instance of a component to fly to.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name optional">[aabb]</code>
-                                    <span class="type"></span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>World-space axis-aligned bounding box (AABB) target to fly to.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name optional">[eye]</code>
-                                    <span class="type">Array of Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>Position to fly the eye position to.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name optional">[look]</code>
-                                    <span class="type">Array of Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>Position to fly the look position to.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name optional">[up]</code>
-                                    <span class="type">Array of Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>Position to fly the up vector to.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name optional">[stopFOV]</code>
-                                    <span class="type">Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>How much of field-of-view, in degrees, that a target AABB should fill the canvas.</p>
-
-                                </div>
-
-                            </li>
-                        </ul>
                 </li>
             </ul>
         </div>
@@ -1591,6 +1687,105 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 </div>
+<div id="method_processCompletedTiles" class="method item">
+    <h3 class="name"><code>processCompletedTiles</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>renderFrameNumber</code>
+                </li>
+                <li class="arg">
+                        <code>loader</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src__renderer_webgl_megatexture_cache.js.html#l77"><code>src&#x2F;_renderer&#x2F;webgl&#x2F;megatexture&#x2F;cache.js:77</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Processes completed tiles.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">renderFrameNumber</code>
+                        <span class="type">Object</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">loader</code>
+                        <span class="type">Object</span>
+
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_stop" class="method item">
+    <h3 class="name"><code>stop</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_animation_cameraFlight.js.html#l541"><code>src&#x2F;animation&#x2F;cameraFlight.js:541</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Stops an earlier flyTo, fires arrival callback.</p>
+
+    </div>
+
+
+
+
+</div>
 <div id="method_warn" class="method item inherited">
     <h3 class="name"><code>warn</code></h3>
 
@@ -1665,7 +1860,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l227"><code>src&#x2F;_renderer&#x2F;renderer.js:227</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l231"><code>src&#x2F;_renderer&#x2F;renderer.js:231</code></a>
                             </p>
                     
                     
@@ -1690,7 +1885,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l255"><code>src&#x2F;_renderer&#x2F;renderer.js:255</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l259"><code>src&#x2F;_renderer&#x2F;renderer.js:259</code></a>
                             </p>
                     
                     
@@ -1715,7 +1910,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l178"><code>src&#x2F;_renderer&#x2F;renderer.js:178</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l182"><code>src&#x2F;_renderer&#x2F;renderer.js:182</code></a>
                             </p>
                     
                     
@@ -1740,7 +1935,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l241"><code>src&#x2F;_renderer&#x2F;renderer.js:241</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l245"><code>src&#x2F;_renderer&#x2F;renderer.js:245</code></a>
                             </p>
                     
                     
@@ -1765,7 +1960,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l143"><code>src&#x2F;_renderer&#x2F;renderer.js:143</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l147"><code>src&#x2F;_renderer&#x2F;renderer.js:147</code></a>
                             </p>
                     
                     
@@ -1790,7 +1985,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l171"><code>src&#x2F;_renderer&#x2F;renderer.js:171</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l175"><code>src&#x2F;_renderer&#x2F;renderer.js:175</code></a>
                             </p>
                     
                     
@@ -1815,7 +2010,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l248"><code>src&#x2F;_renderer&#x2F;renderer.js:248</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l252"><code>src&#x2F;_renderer&#x2F;renderer.js:252</code></a>
                             </p>
                     
                     
@@ -1865,7 +2060,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l283"><code>src&#x2F;_renderer&#x2F;renderer.js:283</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l287"><code>src&#x2F;_renderer&#x2F;renderer.js:287</code></a>
                             </p>
                     
                     
@@ -1942,7 +2137,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l973"><code>src&#x2F;component.js:973</code></a>
+                            <a href="../files/src_component.js.html#l976"><code>src&#x2F;component.js:976</code></a>
                             </p>
                     
                     
@@ -1967,7 +2162,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l157"><code>src&#x2F;_renderer&#x2F;renderer.js:157</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l161"><code>src&#x2F;_renderer&#x2F;renderer.js:161</code></a>
                             </p>
                     
                     
@@ -1992,7 +2187,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l185"><code>src&#x2F;_renderer&#x2F;renderer.js:185</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l189"><code>src&#x2F;_renderer&#x2F;renderer.js:189</code></a>
                             </p>
                     
                     
@@ -2017,7 +2212,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l192"><code>src&#x2F;_renderer&#x2F;renderer.js:192</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l196"><code>src&#x2F;_renderer&#x2F;renderer.js:196</code></a>
                             </p>
                     
                     
@@ -2067,7 +2262,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l206"><code>src&#x2F;_renderer&#x2F;renderer.js:206</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l210"><code>src&#x2F;_renderer&#x2F;renderer.js:210</code></a>
                             </p>
                     
                     
@@ -2092,7 +2287,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l150"><code>src&#x2F;_renderer&#x2F;renderer.js:150</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l154"><code>src&#x2F;_renderer&#x2F;renderer.js:154</code></a>
                             </p>
                     
                     
@@ -2117,7 +2312,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l262"><code>src&#x2F;_renderer&#x2F;renderer.js:262</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l266"><code>src&#x2F;_renderer&#x2F;renderer.js:266</code></a>
                             </p>
                     
                     
@@ -2142,7 +2337,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l220"><code>src&#x2F;_renderer&#x2F;renderer.js:220</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l224"><code>src&#x2F;_renderer&#x2F;renderer.js:224</code></a>
                             </p>
                     
                     
@@ -2167,7 +2362,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l199"><code>src&#x2F;_renderer&#x2F;renderer.js:199</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l203"><code>src&#x2F;_renderer&#x2F;renderer.js:203</code></a>
                             </p>
                     
                     
@@ -2218,7 +2413,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l269"><code>src&#x2F;_renderer&#x2F;renderer.js:269</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l273"><code>src&#x2F;_renderer&#x2F;renderer.js:273</code></a>
                             </p>
                     
                     
@@ -2243,7 +2438,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l276"><code>src&#x2F;_renderer&#x2F;renderer.js:276</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l280"><code>src&#x2F;_renderer&#x2F;renderer.js:280</code></a>
                             </p>
                     
                     
@@ -2268,7 +2463,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l164"><code>src&#x2F;_renderer&#x2F;renderer.js:164</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l168"><code>src&#x2F;_renderer&#x2F;renderer.js:168</code></a>
                             </p>
                     
                     
@@ -2293,7 +2488,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l234"><code>src&#x2F;_renderer&#x2F;renderer.js:234</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l238"><code>src&#x2F;_renderer&#x2F;renderer.js:238</code></a>
                             </p>
                     
                     
@@ -2322,7 +2517,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l1001"><code>src&#x2F;component.js:1001</code></a>
+                            <a href="../files/src_component.js.html#l1004"><code>src&#x2F;component.js:1004</code></a>
                             </p>
                     
                     
@@ -2408,7 +2603,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l290"><code>src&#x2F;_renderer&#x2F;renderer.js:290</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l294"><code>src&#x2F;_renderer&#x2F;renderer.js:294</code></a>
                             </p>
                     
                     
@@ -2433,7 +2628,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l213"><code>src&#x2F;_renderer&#x2F;renderer.js:213</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l217"><code>src&#x2F;_renderer&#x2F;renderer.js:217</code></a>
                             </p>
                     
                     
@@ -2458,7 +2653,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src__renderer_renderer.js.html#l136"><code>src&#x2F;_renderer&#x2F;renderer.js:136</code></a>
+                            <a href="../files/src__renderer_renderer.js.html#l140"><code>src&#x2F;_renderer&#x2F;renderer.js:140</code></a>
                             </p>
                     
                     
@@ -2489,7 +2684,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_animation_cameraFlight.js.html#l579"><code>src&#x2F;animation&#x2F;cameraFlight.js:579</code></a>
+                            <a href="../files/src_animation_cameraFlight.js.html#l604"><code>src&#x2F;animation&#x2F;cameraFlight.js:604</code></a>
                             </p>
                     
                     
@@ -2532,7 +2727,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1092"><code>src&#x2F;component.js:1092</code></a>
+                            <a href="../files/src_component.js.html#l1095"><code>src&#x2F;component.js:1095</code></a>
                             </p>
                     
                     

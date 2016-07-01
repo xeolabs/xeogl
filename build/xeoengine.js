@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-05-20
+ * Built on 2016-07-01
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -802,7 +802,9 @@ var Canvas2Image = (function () {
 
     var initializing = false;
 
-    var fnTest = /xyz/.test(function () { xyz; }) ? /\b_super\b/ : /.*/;
+    var fnTest = /xyz/.test(function () {
+        xyz;
+    }) ? /\b_super\b/ : /.*/;
 
     // The base Class implementation (does nothing)
     this.Class = function () {
@@ -873,12 +875,13 @@ var Canvas2Image = (function () {
                 })(name, prop[name]) : prop[name];
         }
 
-        if (prop.type) {
-
-            // Create array of type names to indicate inheritance chain,
-            // to support "isType" queries on components
-            prototype.superTypes = _super.superTypes ? _super.superTypes.concat(_super.type) : [];
+        if (!prop.type) {
+            prop.type = _super.type + "_" + createUUID();
         }
+
+        // Create array of type names to indicate inheritance chain,
+        // to support "isType" queries on components
+        prototype.superTypes = _super.superTypes ? _super.superTypes.concat(_super.type) : [];
 
         // The dummy class constructor
         function Class() {
@@ -899,6 +902,36 @@ var Canvas2Image = (function () {
 
         return Class;
     };
+
+    /**
+     * Returns a new UUID.
+     * @method createUUID
+     * @static
+     * @return string The new UUID
+     */
+    var createUUID = (function () {
+        // http://www.broofa.com/Tools/Math.uuid.htm
+        var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+        var uuid = new Array(36);
+        var rnd = 0, r;
+        return function () {
+            for (var i = 0; i < 36; i++) {
+                if (i === 8 || i === 13 || i === 18 || i === 23) {
+                    uuid[i] = '-';
+                } else if (i === 14) {
+                    uuid[i] = '4';
+                } else {
+                    if (rnd <= 0x02) {
+                        rnd = 0x2000000 + ( Math.random() * 0x1000000 ) | 0;
+                    }
+                    r = rnd & 0xf;
+                    rnd = rnd >> 4;
+                    uuid[i] = chars[( i === 19 ) ? ( r & 0x3 ) | 0x8 : r];
+                }
+            }
+            return uuid.join('');
+        };
+    })();
 })();
 
 ;(function () {
@@ -1089,6 +1122,10 @@ var Canvas2Image = (function () {
         this._pickObjectChunkList = [];  // State chunk list to render scene to pick buffer
         this._pickObjectChunkListLen = 0;
 
+        // Tracks the index of the first chunk in the transparency pass. The first run of chunks
+        // in the list are for opaque objects, while the remainder are for transparent objects.
+        // This supports a mode in which we only render the opaque chunks.
+        this._drawChunkListTransparentIndex = -1;
 
         // The frame context holds state shared across a single render of the
         // draw list, along with any results of the render, such as pick hits
@@ -1588,7 +1625,8 @@ var Canvas2Image = (function () {
 
         if (this.imageDirty || params.force) {
             this._doDrawList({                  // Render the draw list
-                clear: (params.clear !== false) // Clear buffers by default
+                clear: (params.clear !== false), // Clear buffers by default
+                opaqueOnly: params.opaqueOnly
             });
             this.stats.frame.frameCount++;
             this.imageDirty = false;
@@ -1869,8 +1907,14 @@ var Canvas2Image = (function () {
 
                         // Don't reapply repeated chunks
 
-                        this._drawChunkList[this._drawChunkListLen++] = chunk;
+                        this._drawChunkList[this._drawChunkListLen] = chunk;
                         this._lastDrawChunkId[i] = chunk.id;
+
+                        if (chunk.state && chunk.state.transparent && this._drawChunkListTransparentIndex < 0) {
+                            this._drawChunkListTransparentIndex = this._drawChunkListLen;
+                        }
+
+                        this._drawChunkListLen++
                     }
                 }
 
@@ -2039,10 +2083,10 @@ var Canvas2Image = (function () {
                 // Convert picked pixel color to primitive index
 
                 pix = pickBuf.read(canvasX, canvasY);
-                var primitiveIndex = pix[0] + (pix[1] * 256) + (pix[2] * 256 * 256) + (pix[3] * 256 * 256 * 256);
-                primitiveIndex *= 3; // Convert from triangle number to first vertex in indices
+                var primIndex = pix[0] + (pix[1] * 256) + (pix[2] * 256 * 256) + (pix[3] * 256 * 256 * 256);
+                primIndex *= 3; // Convert from triangle number to first vertex in indices
 
-                hit.primitiveIndex = primitiveIndex;
+                hit.primIndex = primIndex;
             }
         }
 
@@ -2058,6 +2102,7 @@ var Canvas2Image = (function () {
      * @param {Boolean} params.pickObject
      * @param {Boolean} params.rayPick
      * @param {Boolean} params.object
+     * @param {Boolean} params.opaqueOnly
      * @private
      */
     XEO.renderer.Renderer.prototype._doDrawList = function (params) {
@@ -2161,7 +2206,11 @@ var Canvas2Image = (function () {
 
             var startTime = (new Date()).getTime();
 
-            for (i = 0, len = this._drawChunkListLen; i < len; i++) {
+
+            // Option to only render opaque objects
+            len = (params.opaqueOnly && this._drawChunkListTransparentIndex >= 0 ? this._drawChunkListTransparentIndex : this._drawChunkListLen);
+
+            for (i = 0; i < len; i++) {
                 this._drawChunkList[i].draw(frameCtx);
             }
 
@@ -2188,6 +2237,53 @@ var Canvas2Image = (function () {
         }
 
         this.stats.frame.drawChunks = this._drawChunkListLen;
+    };
+
+    /**
+     * Reads the colors of some pixels in the last rendered frame.
+     *
+     * @param {Float32Array} pixels
+     * @param {Float32Array} colors
+     * @param {Number} len
+     * @param {Boolean} opaqueOnly
+     */
+    XEO.renderer.Renderer.prototype.readPixels = function (pixels, colors, len, opaqueOnly) {
+
+        if (!this._readPixelBuf) {
+            this._readPixelBuf = new XEO.renderer.webgl.RenderBuffer({
+                gl: this._canvas.gl,
+                canvas: this._canvas.canvas
+            });
+        }
+
+        this._readPixelBuf.bind();
+
+        this._readPixelBuf.clear();
+
+        this.render({
+            force: true,
+            opaqueOnly: opaqueOnly
+        });
+
+        var color;
+        var i;
+        var j;
+        var k;
+
+        for (i = 0; i < len; i++) {
+
+            j = i * 2;
+            k = i * 4;
+
+            color = this._readPixelBuf.read(pixels[j], pixels[j + 1]);
+
+            colors[k] = color[0];
+            colors[k + 1] = color[1];
+            colors[k + 2] = color[2];
+            colors[k + 3] = color[3];
+        }
+
+        this._readPixelBuf.unbind();
     };
 
     /**
@@ -6815,6 +6911,7 @@ var Canvas2Image = (function () {
         /**
          * Returns a new, uninitialized two-element vector.
          * @method vec2
+         * @param [values] Initial values.
          * @static
          * @returns {Float32Array}
          */
@@ -6825,6 +6922,7 @@ var Canvas2Image = (function () {
         /**
          * Returns a new, uninitialized three-element vector.
          * @method vec3
+         * @param [values] Initial values.
          * @static
          * @returns {Float32Array}
          */
@@ -6835,6 +6933,7 @@ var Canvas2Image = (function () {
         /**
          * Returns a new, uninitialized four-element vector.
          * @method vec4
+         * @param [values] Initial values.
          * @static
          * @returns {Float32Array}
          */
@@ -6845,6 +6944,7 @@ var Canvas2Image = (function () {
         /**
          * Returns a new, uninitialized 3x3 matrix.
          * @method mat3
+         * @param [values] Initial values.
          * @static
          * @returns {Float32Array}
          */
@@ -6855,6 +6955,7 @@ var Canvas2Image = (function () {
         /**
          * Returns a new, uninitialized 4x4 matrix.
          * @method mat4
+         * @param [values] Initial values.
          * @static
          * @returns {Float32Array}
          */
@@ -8586,36 +8687,37 @@ var Canvas2Image = (function () {
 
         /**
          * Rotate a 3D vector around the x-axis
-         * 
+         *
          * @method rotateVec3X
          * @param {Float32Array} a The vec3 point to rotate
          * @param {Float32Array} b The origin of the rotation
          * @param {Number} c The angle of rotation
          * @param {Float32Array} dest The receiving vec3
          * @returns {Float32Array} dest
+         * @static
          */
         rotateVec3X: function (a, b, c, dest) {
 
             var p = [], r = [];
-            
+
             //Translate point to the origin
             p[0] = a[0] - b[0];
             p[1] = a[1] - b[1];
             p[2] = a[2] - b[2];
-            
+
             //perform rotation
             r[0] = p[0];
             r[1] = p[1] * Math.cos(c) - p[2] * Math.sin(c);
             r[2] = p[1] * Math.sin(c) + p[2] * Math.cos(c);
-            
+
             //translate to correct position
             dest[0] = r[0] + b[0];
             dest[1] = r[1] + b[1];
             dest[2] = r[2] + b[2];
-            
+
             return dest;
         },
-        
+
         /**
          * Rotate a 3D vector around the y-axis
          *
@@ -8625,11 +8727,12 @@ var Canvas2Image = (function () {
          * @param {Number} c The angle of rotation
          * @param {Float32Array} dest The receiving vec3
          * @returns {Float32Array} dest
+         * @static
          */
         rotateVec3Y: function (a, b, c, dest) {
-            
+
             var p = [], r = [];
-            
+
             //Translate point to the origin
             p[0] = a[0] - b[0];
             p[1] = a[1] - b[1];
@@ -8656,13 +8759,13 @@ var Canvas2Image = (function () {
          * @param {Float32Array} b The origin of the rotation
          * @param {Number} c The angle of rotation
          * @param {Float32Array} dest The receiving vec3
-         * 
          * @returns {Float32Array} dest
+         * @static
          */
         rotateVec3Z: function (a, b, c, dest) {
-            
+
             var p = [], r = [];
-            
+
             //Translate point to the origin
             p[0] = a[0] - b[0];
             p[1] = a[1] - b[1];
@@ -8683,12 +8786,19 @@ var Canvas2Image = (function () {
 
         /**
          * Transforms a four-element vector by a 4x4 projection matrix.
+         *
          * @method projectVec4
+         * @param {Float32Array} p 3D View-space coordinate
+         * @param {Float32Array} q 2D Projected coordinate
+         * @returns {Float32Array} 2D Projected coordinate
          * @static
          */
-        projectVec4: function (v) {
-            var f = 1.0 / v[3];
-            return [v[0] * f, v[1] * f, v[2] * f, 1.0];
+        projectVec4: function (p, q) {
+            var f = 1.0 / p[3];
+            q = q || XEO.math.vec2();
+            q[0] = v[0] * f;
+            q[1] = v[1] * f;
+            return q;
         },
 
         /**
@@ -9237,6 +9347,46 @@ var Canvas2Image = (function () {
             aabb2.max[1] = canvasHeight - Math.floor(ymin * canvasHeight);
 
             return aabb;
+        },
+
+        /**
+         * Calculates the normal vector of a triangle
+         *
+         * @method triangleNormal
+         * @param a
+         * @param b
+         * @param c
+         * @param normal
+         * @returns {*}
+         */
+        triangleNormal: function (a, b, c, normal) {
+
+            normal = normal || XEO.math.vec3();
+
+            var p1x = b[0] - a[0];
+            var p1y = b[1] - a[1];
+            var p1z = b[2] - a[2];
+
+            var p2x = c[0] - a[0];
+            var p2y = c[1] - a[1];
+            var p2z = c[2] - a[2];
+
+            var p3x = p1y * p2z - p1z * p2y;
+            var p3y = p1z * p2x - p1x * p2z;
+            var p3z = p1x * p2y - p1y * p2x;
+
+            var mag = Math.sqrt(p3x * p3x + p3y * p3y + p3z * p3z);
+            if (mag === 0) {
+                normal[0] = 0;
+                normal[1] = 0;
+                normal[2] = 0;
+            } else {
+                normal[0] = p3x / mag;
+                normal[1] = p3y / mag;
+                normal[2] = p3z / mag;
+            }
+
+            return normal
         },
 
         /**
@@ -10756,9 +10906,12 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          * @param {String} [params.type] Optional expected type of base type of the child; when supplied, will
          * cause an exception if the given child is not the same type or a subtype of this.
          * @param {Boolean} [params.sceneDefault=false]
-         * @param {Function} [params.onAttached] Optional callback called before event is fired
-         * * @param {Function} [params.onAttached.callback] Callback function
+         * @param {Function} [params.onAttached] Optional callback called when component attached
+         * @param {Function} [params.onAttached.callback] Callback function
          * @param {Function} [params.onAttached.scope] Optional scope for callback
+         * @param {Function} [params.onDetached] Optional callback called when component is detached
+         * @param {Function} [params.onDetached.callback] Callback function
+         * @param {Function} [params.onDetached.scope] Optional scope for callback
          * @param {{String:Function}} [params.on] Callbacks to subscribe to properties on component
          * @param {Boolean} [params.recompiles=true] When true, fires "dirty" events on this component
          * @private
@@ -12564,7 +12717,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             var position = XEO.math.vec4();
             var worldPos = XEO.math.vec4();
             var viewPos = XEO.math.vec4();
-            var barycentric = XEO.math.vec3();
+            var bary = XEO.math.vec3();
 
             var na = XEO.math.vec3();
             var nb = XEO.math.vec3();
@@ -12657,7 +12810,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     hit.entity = entity; // Swap string ID for XEO.Entity
 
-                    if (hit.primitiveIndex !== undefined && hit.primitiveIndex > -1) {
+                    if (hit.primIndex !== undefined && hit.primIndex > -1) {
 
                         var geometry = entity.geometry;
 
@@ -12670,7 +12823,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                             // Get the World-space positions of the triangle's vertices
 
-                            var i = hit.primitiveIndex; // Indicates the first triangle index in the indices array
+                            var i = hit.primIndex; // Indicates the first triangle index in the indices array
 
                             var indices = geometry.indices;
                             var positions = geometry.positions;
@@ -12745,9 +12898,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                             // Get barycentric coordinates of the ray-triangle intersection
 
-                            math.cartesianToBarycentric2(position, a, b, c, barycentric);
+                            math.cartesianToBarycentric2(position, a, b, c, bary);
 
-                            hit.barycentric = barycentric;
+                            hit.bary = bary;
 
                             // Get interpolated normal vector
 
@@ -12768,9 +12921,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                                 nc[2] = normals[ic3 + 2];
 
                                 var normal = math.addVec3(math.addVec3(
-                                        math.mulVec3Scalar(na, barycentric[0], tempVec3),
-                                        math.mulVec3Scalar(nb, barycentric[1], tempVec3b), tempVec3c),
-                                    math.mulVec3Scalar(nc, barycentric[2], tempVec3d), tempVec3e);
+                                        math.mulVec3Scalar(na, bary[0], tempVec3),
+                                        math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
+                                    math.mulVec3Scalar(nc, bary[2], tempVec3d), tempVec3e);
 
                                 hit.normal = math.transformVec3(entity.transform.leafMatrix, normal, tempVec3f);
                             }
@@ -12792,9 +12945,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                                 hit.uv = math.addVec3(
                                     math.addVec3(
-                                        math.mulVec2Scalar(uva, barycentric[0], tempVec3g),
-                                        math.mulVec2Scalar(uvb, barycentric[1], tempVec3h), tempVec3i),
-                                    math.mulVec2Scalar(uvc, barycentric[2], tempVec3j), tempVec3k);
+                                        math.mulVec2Scalar(uva, bary[0], tempVec3g),
+                                        math.mulVec2Scalar(uvb, bary[1], tempVec3h), tempVec3i),
+                                    math.mulVec2Scalar(uvc, bary[2], tempVec3j), tempVec3k);
                             }
                         }
                     }
@@ -13716,16 +13869,17 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             return -c * t * (t - 2) + b;
         },
 
+        /**
+         * Stops an earlier flyTo, fires arrival callback.
+         * @method stop
+         */
         stop: function () {
 
             if (!this._flying) {
                 return;
             }
 
-            // Hide boundary
             this._boundaryIndicator.visibility.visible = false;
-
-            //this.scene.off(this._tick);
 
             this._flying = false;
 
@@ -13746,6 +13900,30 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             }
 
             this.fire("stopped", true, true);
+        },
+
+        /**
+         * Cancels an earlier flyTo without calling the arrival callback.
+         * @method cancel
+         */
+        cancel: function () {
+
+            if (!this._flying) {
+                return;
+            }
+
+            this._boundaryIndicator.visibility.visible = false;
+
+            this._flying = false;
+
+            this._time1 = null;
+            this._time2 = null;
+
+            if (this._callback) {
+                this._callback = null;
+            }
+
+            this.fire("canceled", true, true);
         },
 
         _props: {
@@ -16055,6 +16233,32 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             }
 
             return image.src;
+        },
+
+        /**
+         Reads colors of pixels from the last rendered frame.
+
+         <p>Call this method like this:</p>
+
+         ````JavaScript
+
+         // Ignore transparent pixels (default is false)
+         var opaqueOnly = true;
+
+         var colors = new Float32Array(8);
+
+         myCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);
+         ````
+
+         Then the r,g,b components of the colors will be set to the colors at those pixels.
+
+         @param {Float32Array} pixels
+         @param {Float32Array} colors
+         @param {Number} size
+         @param {Boolean} opaqueOnly
+         */
+        readPixels: function (pixels, colors, size, opaqueOnly) {
+            return this.scene._renderer.readPixels(pixels, colors, size, opaqueOnly);
         },
 
         _props: {
@@ -19019,50 +19223,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         var over = false;
                         var angle;
 
-                        this._onTick = this.scene.on("tick",
-                            function () {
-
-                                var camera = this._attached.camera;
-
-                                if (!camera) {
-                                    return;
-                                }
-
-                                if (!over) {
-                                    return;
-                                }
-
-                                if (!down) {
-                                    return;
-                                }
-
-                                if (xDelta !== 0) {
-
-                                    angle = -xDelta * this._sensitivity;
-
-                                    if (this._firstPerson) {
-                                        camera.view.rotateLookY(angle);
-                                    } else {
-                                        camera.view.rotateEyeY(angle);
-                                    }
-
-                                    xDelta = 0;
-                                }
-
-                                if (yDelta !== 0) {
-
-                                    angle = yDelta * this._sensitivity;
-
-                                    if (this._firstPerson) {
-                                        camera.view.rotateLookX(-angle);
-                                    } else {
-                                        camera.view.rotateEyeX(angle);
-                                    }
-
-                                    yDelta = 0;
-                                }
-                            }, this);
-
                         this._onMouseDown = input.on("mousedown",
                             function (e) {
 
@@ -19124,6 +19284,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         this._onMouseMove = input.on("mousemove",
                             function (e) {
 
+                                // Apply mouse drags as soon as we get them, so that we can correctly
+                                // apply the rotations.
+
                                 if (!over) {
                                     return;
                                 }
@@ -19132,11 +19295,47 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                                     return;
                                 }
 
-                                xDelta += (e[0] - lastX) * this._sensitivity;
-                                yDelta += (e[1] - lastY) * this._sensitivity;
+                                var xDelta = (e[0] - lastX) * this._sensitivity;
+                                var yDelta = (e[1] - lastY) * this._sensitivity;
 
                                 lastX = e[0];
                                 lastY = e[1];
+
+                                var camera = this._attached.camera;
+
+                                if (!camera) {
+                                    return;
+                                }
+
+                                if (!over) {
+                                    return;
+                                }
+
+                                if (!down) {
+                                    return;
+                                }
+
+                                if (xDelta !== 0) {
+
+                                    angle = -xDelta * this._sensitivity;
+
+                                    if (this._firstPerson) {
+                                        camera.view.rotateLookY(angle);
+                                    } else {
+                                        camera.view.rotateEyeY(angle);
+                                    }
+                                }
+
+                                if (yDelta !== 0) {
+
+                                    angle = yDelta * this._sensitivity;
+
+                                    if (this._firstPerson) {
+                                        camera.view.rotateLookX(-angle);
+                                    } else {
+                                        camera.view.rotateEyeX(angle);
+                                    }
+                                }
 
                             }, this);
 
@@ -19516,7 +19715,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  mousePickEntity.on("pick", function(e) {
     var entity = e.entity;
     var canvasPos = e.canvasPos;
-    var primitiveIndex = e.primitiveIndex;
+    var primIndex = e.primIndex;
  });
 
  // Handle nothing picked
@@ -19982,6 +20181,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                                     if (targeting) {
                                         camera.view.zoom(progress);
+
+                                        if (camera.project.isType("XEO.Ortho")) {
+
+                                        }
                                     }
                                 }
                             });
