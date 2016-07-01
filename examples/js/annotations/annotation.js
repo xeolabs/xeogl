@@ -558,7 +558,7 @@
             offsetX = -10;
             offsetY = 8;
 
-            labelElement.style.left = 28 + (pinCanvasPos[0] - offsetX) + "px";
+            labelElement.style.left = 27 + (pinCanvasPos[0] - offsetX) + "px";
             labelElement.style.top = (pinCanvasPos[1] - offsetY) - 19 + "px";
 
             // Pin Z-index
