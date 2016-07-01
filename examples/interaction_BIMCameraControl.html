@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeoengine.js"></script>
+    <script src="js/controls/bimCameraControl.js"></script>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br><a
+        href="js/controls/bimCameraControl.js" target="_docs">XEO.BIMCameraControl</a>
+</div>
+
+<script>
+
+    // Create a prototype Entity with all defaults.
+
+    var entity = new XEO.Entity({
+        geometry: new XEO.TorusGeometry({
+            radius: 1.0,
+            tube: 0.3,
+            radialSegments: 32,
+            tubeSegments: 24,
+            arc: Math.PI * 2.0
+        })
+    });
+
+    // Make a bunch of clones of the Entity,
+    // each at a random position.
+
+    for (var i = 0; i < 200; i++) {
+
+        var color = [
+            0.4 + Math.random() * 0.6,
+            0.4 + Math.random() * 0.6,
+            0.4 + Math.random() * 0.6
+        ];
+
+        entity.clone({
+            transform: new XEO.Rotate({
+                xyz: [
+                    Math.random(),
+                    Math.random(),
+                    Math.random()
+                ],
+                angle: Math.random() * 360,
+                parent: new XEO.Translate({
+                    xyz: [
+                        Math.random() * 20 - 10,
+                        Math.random() * 20 - 10,
+                        Math.random() * 20 - 10
+                    ]
+                })
+            }),
+            material: new XEO.PhongMaterial({
+                diffuse: color,
+                specular: color
+            })
+        });
+    }
+
+    var control = new XEO.BIMCameraControl({
+        camera: XEO.scene.camera
+    });
+
+    XEO.scene.camera.view.look =[0,0,0];
+    XEO.scene.camera.view.eye =[10,0,0];
+    XEO.scene.camera.view.up =[0,0,1];
+
+</script>
+</body>
+</html>
