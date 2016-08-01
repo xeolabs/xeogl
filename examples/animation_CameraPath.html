@@ -586,50 +586,53 @@
         cameraPath: cameraPath
     });
 
+    gearbox.on("loaded", function () {
+        cameraPathPlayer.play();
+    });
+
     new XEO.AxisHelper({
         lookat: scene.camera.view,
         visible: true,
         size: [200, 200]
     });
 
-    cameraPathPlayer.play();
 
-/*
+    /*
 
-    var input = scene.input;
-    var frame = 0;
+     var input = scene.input;
+     var frame = 0;
 
-    input.on("keydown",
-            function (keyCode) {
-                switch (keyCode) {
+     input.on("keydown",
+     function (keyCode) {
+     switch (keyCode) {
 
-                    case input.KEY_P:
-                        cameraPathPlayer.play();
-                        break;
+     case input.KEY_P:
+     cameraPathPlayer.play();
+     break;
 
-                    case input.KEY_N:
-                        if (frame === 0) {
-                            break;
-                        }
-                        frame = frame - 1;
-                        cameraPathPlayer.playToFrame(frame);
-                        break;
+     case input.KEY_N:
+     if (frame === 0) {
+     break;
+     }
+     frame = frame - 1;
+     cameraPathPlayer.playToFrame(frame);
+     break;
 
-                    case input.KEY_M:
-                        if (frame > cameraPathPlayer.cameraPath.frames.length) {
-                            break;
-                        }
-                        frame = frame + 1;
-                        cameraPathPlayer.playToFrame(frame);
-                        break;
+     case input.KEY_M:
+     if (frame > cameraPathPlayer.cameraPath.frames.length) {
+     break;
+     }
+     frame = frame + 1;
+     cameraPathPlayer.playToFrame(frame);
+     break;
 
-                    case input.KEY_ESCAPE:
-                        cameraPathPlayer.stop();
-                        break;
-                }
-            });
+     case input.KEY_ESCAPE:
+     cameraPathPlayer.stop();
+     break;
+     }
+     });
 
-*/
+     */
 
 </script>
 </body>
