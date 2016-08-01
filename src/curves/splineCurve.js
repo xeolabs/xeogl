@@ -2,11 +2,11 @@
  A **SplineCurve** is a {{#crossLink "Curve"}}{{/crossLink}} along which a 3D position can be animated.
 
  <ul>
-    <li>As shown in the diagram below, a SplineCurve is defined by three or more control points.</li>
-    <li>You can sample a {{#crossLink "SplineCurve/point:property"}}{{/crossLink}} and a {{#crossLink "Curve/tangent:property"}}{{/crossLink}}
+ <li>As shown in the diagram below, a SplineCurve is defined by three or more control points.</li>
+ <li>You can sample a {{#crossLink "SplineCurve/point:property"}}{{/crossLink}} and a {{#crossLink "Curve/tangent:property"}}{{/crossLink}}
  vector on a SplineCurve for any given value of {{#crossLink "SplineCurve/t:property"}}{{/crossLink}} in the range [0..1].</li>
-    <li>When you set {{#crossLink "SplineCurve/t:property"}}{{/crossLink}} on a SplineCurve, its {{#crossLink "SplineCurve/point:property"}}{{/crossLink}} and {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties will update accordingly.</li>
-    <li>To build a complex path, you can combine an unlimited combination of SplineCurves,
+ <li>When you set {{#crossLink "SplineCurve/t:property"}}{{/crossLink}} on a SplineCurve, its {{#crossLink "SplineCurve/point:property"}}{{/crossLink}} and {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties will update accordingly.</li>
+ <li>To build a complex path, you can combine an unlimited combination of SplineCurves,
  {{#crossLink "CubicBezierCurve"}}CubicBezierCurves{{/crossLink}} and {{#crossLink "QuadraticBezierCurve"}}QuadraticBezierCurves{{/crossLink}}
  into a {{#crossLink "Path"}}{{/crossLink}}.</li>
  </ul>
@@ -133,7 +133,7 @@
 
              @property points
              @default []
-             @type Array(Number)
+             @type Float32Array
              */
             points: {
 
@@ -196,7 +196,7 @@
             point: {
 
                 get: function () {
-                   return this.getPoint(this._t);
+                    return this.getPoint(this._t);
                 }
             }
         },
@@ -207,11 +207,17 @@
          * @param {Number} t Position to get point at.
          * @returns {{Array of Number}}
          */
-        getPoint: function(t) {
+        getPoint: function (t) {
 
             var math = XEO.math;
 
             var points = this.points;
+
+            if (points.length < 3) {
+                this.error("Can't sample point from SplineCurve - not enough points on curve - returning [0,0,0].");
+                return;
+            }
+
             var point = ( points.length - 1 ) * t;
 
             var intPoint = Math.floor(point);
@@ -233,10 +239,7 @@
 
         _getJSON: function () {
             return {
-                v0: this._v0,
-                v1: this._v1,
-                v2: this._v2,
-                v3: this._v3,
+                points: points,
                 t: this._t
             };
         }

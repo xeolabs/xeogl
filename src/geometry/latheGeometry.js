@@ -169,7 +169,7 @@
 
              @property points
              @default []
-             @type Array(Number)
+             @type Float32Array
              */
             points: {
 

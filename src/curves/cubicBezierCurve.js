@@ -138,7 +138,7 @@
 
              @property v0
              @default [0.0, 0.0, 0.0]
-             @type Array(Number)
+             @type Float32Array
              */
             v0: {
 
@@ -150,7 +150,7 @@
                      * @event v0
                      * @param value The property's new value
                      */
-                    this.fire("v0", this._v0 = value || [0, 0, 0]);
+                    this.fire("v0", this._v0 = value || XEO.math.vec3([0, 0, 0]));
                 },
 
                 get: function () {
@@ -165,7 +165,7 @@
 
              @property v1
              @default [0.0, 0.0, 0.0]
-             @type Array(Number)
+             @type Float32Array
              */
             v1: {
 
@@ -177,7 +177,7 @@
                      * @event v1
                      * @param value The property's new value
                      */
-                    this.fire("v1", this._v1 = value || [0, 0, 0]);
+                    this.fire("v1", this._v1 = value || XEO.math.vec3([0, 0, 0]));
                 },
 
                 get: function () {
@@ -192,7 +192,7 @@
 
              @property v2
              @default [0.0, 0.0, 0.0]
-             @type Array(Number)
+             @type Float32Array
              */
             v2: {
 
@@ -204,7 +204,7 @@
                      * @event v2
                      * @param value The property's new value
                      */
-                    this.fire("v2", this._v2 = value || [0, 0, 0]);
+                    this.fire("v2", this._v2 = value || XEO.math.vec3([0, 0, 0]));
                 },
 
                 get: function () {
@@ -219,7 +219,7 @@
 
              @property v3
              @default [0.0, 0.0, 0.0]
-             @type Array(Number)
+             @type Float32Array
              */
             v3: {
 
@@ -231,7 +231,7 @@
                      * @event v3
                      * @param value The property's new value
                      */
-                    this.fire("v3", this._v3 = value || [0, 0, 0]);
+                    this.fire("v3", this._v3 = value || XEO.math.vec3([0, 0, 0]));
                 },
 
                 get: function () {

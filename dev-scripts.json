@@ -49,7 +49,6 @@
     "src/animation/_module.js",
     "src/animation/morphTargets.js",
     "src/animation/cameraFlight.js",
-    "src/animation/cameraPath.js",
     "src/camera/camera.js",
     "src/camera/projection.js",
     "src/camera/frustum.js",

@@ -227,6 +227,8 @@
                 tangents: null,
                 indices: null,
 
+                hash: "",
+
                 // Getters for VBOs that are only created on demand
 
                 // Tangents for normal mapping

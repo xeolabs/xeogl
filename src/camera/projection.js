@@ -81,9 +81,7 @@
 
                 set: function (value) {
 
-                    value = value || XEO.math.identityMat4();
-
-                    this._state.matrix.set(value);
+                    this._state.matrix.set(value || XEO.math.identityMat4());
 
                     this._renderer.imageDirty = true;
 

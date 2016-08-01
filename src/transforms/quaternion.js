@@ -88,6 +88,7 @@
 (function () {
 
     "use strict";
+
     XEO.Quaternion = XEO.Transform.extend({
 
         type: "XEO.Quaternion",
@@ -109,7 +110,7 @@
 
              @property xyzw
              @default [0,0,0,1]
-             @type {Array of Number}
+             @type {Float32Array}
              */
             xyzw: {
 
@@ -117,15 +118,15 @@
 
                     var math = XEO.math;
 
-                    this._xyzw = value || math.identityQuaternion();
+                    (this._xyzw = this._xyzw || new math.vec4()).set(value || math.identityQuaternion());
 
-                    this.matrix = math.quaternionToMat4(this._xyzw, math.mat4());
+                    this.matrix = math.quaternionToMat4(this._xyzw, this._matrix || (this._matrix = XEO.math.identityMat4()));
 
                     /**
                      Fired whenever this Quaternion's {{#crossLink "Quaternion/xyzw:property"}}{{/crossLink}} property changes.
 
                      @event xyzw
-                     @param value {Array of Number} The property's new value
+                     @param value {Float32Array} The property's new value
                      */
                     this.fire("xyzw", this._xyzw);
                 },
@@ -147,7 +148,6 @@
             var math = XEO.math;
             var tempAngleAxis = math.vec4();
             var tempQuat = math.vec4();
-            var tempMat = math.mat4();
 
             return function (angleAxis) {
 

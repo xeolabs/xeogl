@@ -497,7 +497,6 @@
             }
         },
 
-
         _update: function () {
 
             if (!this._flying) {

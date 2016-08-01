@@ -65,7 +65,7 @@
 
             this._state = {
                 type: "ambient",
-                color: [0.7, 0.7, 0.7],
+                color: XEO.math.vec3([0.7, 0.7, 0.7]),
                 intensity: 1.0
             };
 
@@ -82,13 +82,13 @@
 
              @property color
              @default [0.7, 0.7, 0.8]
-             @type Array(Number)
+             @type Float32Array
              */
             color: {
 
                 set: function (value) {
 
-                    this._state.color = value || [ 0.7, 0.7, 0.8 ];
+                    this._state.color.set(value ||  [ 0.7, 0.7, 0.8 ]);
 
                     this._renderer.imageDirty = true;
 

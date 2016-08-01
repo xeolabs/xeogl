@@ -82,6 +82,14 @@
  @class Rotate
  @module XEO
  @submodule transforms
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Rotate in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Rotate.
+ @param [cfg.xyz=[0,1,0]] {Float32Array} Axis of rotation.
+ @param [cfg.angle=0] {Number} Angle of rotation in degrees.
  @extends Transform
  */
 (function () {
@@ -109,25 +117,13 @@
              *
              * @property xyz
              * @default [0,1,0]
-             * @type {Array of Number}
+             * @type {Float32Array}
              */
             xyz: {
 
                 set: function (value) {
 
-                    value = value || [0, 1, 0];
-
-                    if (this._xyz) {
-                        if (this._xyz[0] === value[0] && this._xyz[1] === value[1] && this._xyz[2] === value[2]) {
-                            return;
-                        } else {
-                            this._xyz[0] = value[0];
-                            this._xyz[1] = value[1];
-                            this._xyz[2] = value[2];
-                        }
-                    } else {
-                        this._xyz = value;
-                    }
+                    (this._xyz = this._xyz || new XEO.math.vec3()).set(value || [0, 1, 0]);
 
                     this._buildMatrix();
 
@@ -135,7 +131,7 @@
                      Fired whenever this Rotate's {{#crossLink "Rotate/xyz:property"}}{{/crossLink}} property changes.
 
                      @event xyz
-                     @param value {Array of Number} The property's new value
+                     @param value {Float32Array} The property's new value
                      */
                     this.fire("xyz", this._xyz);
                 },
@@ -166,7 +162,7 @@
                      Fired whenever this Rotate's {{#crossLink "Rotate/angle:property"}}{{/crossLink}} property changes.
 
                      @event angle
-                     @param value {Array of Number} The property's new value
+                     @param value {Number} The property's new value
                      */
                     this.fire("angle", this._angle);
                 },

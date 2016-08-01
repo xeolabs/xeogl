@@ -166,13 +166,13 @@
 
              @property dir
              @default [1.0, 1.0, 1.0]
-             @type Array(Number)
+             @type Float32Array
              */
             dir: {
 
                 set: function (value) {
 
-                    this._state.dir =  value || [1, 0, 0];
+                    this._state.dir =  value || XEO.math.vec3([1, 0, 0]);
 
                     this._renderer.imageDirty = true;
 
@@ -180,7 +180,7 @@
                      Fired whenever this Clip's {{#crossLink "Clip/dir:property"}}{{/crossLink}} property changes.
 
                      @event dir
-                     @param  value  {Array(Number)} The property's new value
+                     @param  value  {Float32Array} The property's new value
                      */
                     this.fire("dir", this._state.dir);
                 },

@@ -82,7 +82,6 @@
          * @final
          * @property stats
          * @type {*}
-         * @final
          */
         this.stats = {
             build: {

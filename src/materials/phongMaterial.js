@@ -126,10 +126,10 @@
 
                 type: "phongMaterial",
 
-                ambient: [0.7, 0.7, 0.8],
-                diffuse: [1.0, 1.0, 1.0],
-                specular: [1.0, 1.0, 1.0],
-                emissive: [0.0, 0.0, 0.0],
+                ambient: XEO.math.vec3([1.0, 1.0, 1.0]),
+                diffuse: XEO.math.vec3([1.0, 1.0, 1.0]),
+                specular: XEO.math.vec3([1.0, 1.0, 1.0]),
+                emissive: XEO.math.vec3([0.0, 0.0, 0.0]),
 
                 opacity: 1.0,
                 shininess: 30.0,
@@ -202,13 +202,13 @@
 
              @property ambient
              @default [1.0, 1.0, 1.0]
-             @type Array(Number)
+             @type Float32Array
              */
             ambient: {
 
                 set: function (value) {
 
-                    this._state.ambient = value || [1.0, 1.0, 1.0];
+                    this._state.ambient.set(value || [1.0, 1.0, 1.0]);
 
                     this._renderer.imageDirty = true;
 
@@ -216,7 +216,7 @@
                      * Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}} property changes.
                      *
                      * @event ambient
-                     * @param value {Array(Number)} The property's new value
+                     * @param value {Float32Array} The property's new value
                      */
                     this.fire("ambient", this._state.ambient);
                 },
@@ -235,13 +235,13 @@
 
              @property diffuse
              @default [1.0, 1.0, 1.0]
-             @type Array(Number)
+             @type Float32Array
              */
             diffuse: {
 
                 set: function (value) {
 
-                    this._state.diffuse = value || [1.0, 1.0, 1.0];
+                    this._state.diffuse.set(value || [1.0, 1.0, 1.0]);
 
                     this._renderer.imageDirty = true;
 
@@ -249,7 +249,7 @@
                      * Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} property changes.
                      *
                      * @event diffuse
-                     * @param value {Array(Number)} The property's new value
+                     * @param value {Float32Array} The property's new value
                      */
                     this.fire("diffuse", this._state.diffuse);
                 },
@@ -268,13 +268,13 @@
 
              @property specular
              @default [1.0, 1.0, 1.0]
-             @type Array(Number)
+             @type Float32Array
              */
             specular: {
 
                 set: function (value) {
 
-                    this._state.specular = value || [1.0, 1.0, 1.0];
+                    this._state.specular.set(value || [1.0, 1.0, 1.0]);
 
                     this._renderer.imageDirty = true;
 
@@ -282,7 +282,7 @@
                      Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} property changes.
 
                      @event specular
-                     @param value {Array(Number)} The property's new value
+                     @param value {Float32Array} The property's new value
                      */
                     this.fire("specular", this._state.specular);
                 },
@@ -301,13 +301,13 @@
 
              @property emissive
              @default [0.0, 0.0, 0.0]
-             @type Array(Number)
+             @type Float32Array
              */
             emissive: {
 
                 set: function (value) {
 
-                    this._state.emissive = value || [0.0, 0.0, 0.0];
+                    this._state.emissive.set(value || [0.0, 0.0, 0.0]);
 
                     this._renderer.imageDirty = true;
 
@@ -315,7 +315,7 @@
                      Fired whenever this PhongMaterial's {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}} property changes.
 
                      @event emissive
-                     @param value {Array(Number)} The property's new value
+                     @param value {Float32Array} The property's new value
                      */
                     this.fire("emissive", this._state.emissive);
                 },

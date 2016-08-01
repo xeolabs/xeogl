@@ -73,8 +73,8 @@
         _init: function (cfg) {
 
             this._state = new XEO.renderer.Fresnel({
-                edgeColor: [0, 0, 0],
-                centerColor: [1, 1, 1],
+                edgeColor: XEO.math.vec3([0, 0, 0]),
+                centerColor: XEO.math.vec3([1, 1, 1]),
                 edgeBias: 0,
                 centerBias: 1,
                 power: 1
@@ -96,13 +96,13 @@
 
              @property edgeColor
              @default [0.0, 0.0, 0.0]
-             @type Array(Number)
+             @type Float32Array
              */
             edgeColor: {
 
                 set: function (value) {
 
-                    this._state.edgeColor = value || [0.0, 0.0, 0.0];
+                    this._state.edgeColor.set(value || [0.0, 0.0, 0.0]);
 
                     this._renderer.imageDirty = true;
 
@@ -127,13 +127,13 @@
 
              @property centerColor
              @default [1.0, 1.0, 1.0]
-             @type Array(Number)
+             @type Float32Array
              */
             centerColor: {
 
                 set: function (value) {
 
-                    this._state.centerColor = value || [1.0, 1.0, 1.0];
+                    this._state.centerColor.set(value || [1.0, 1.0, 1.0]);
 
                     this._renderer.imageDirty = true;
 

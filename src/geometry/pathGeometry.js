@@ -133,7 +133,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                  */
                 this._attach({
                     name: "path",
-                    type: "XEO.Path",
+                    type: "XEO.Curve",
                     component: value,
                     sceneDefault: false,
                     on: {

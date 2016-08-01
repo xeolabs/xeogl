@@ -82,6 +82,13 @@
  @class Scale
  @module XEO
  @submodule transforms
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Scale in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Scale.
+ @param [cfg.xyz=[1,1,1]] {Float32Array} Scale factors.
  @extends Transform
  */
 (function () {
@@ -106,25 +113,13 @@
              * Fires an {{#crossLink "Scale/xyz:event"}}{{/crossLink}} event on change.
              * @property xyz
              * @default [1,1,1]
-             * @type {Array of Number}
+             * @type {Float32Array}
              */
             xyz: {
 
                 set: function (value) {
 
-                    value = value || [1, 1, 1];
-
-                    if (this._xyz) {
-                        if (this._xyz[0] === value[0] && this._xyz[1] === value[1] && this._xyz[2] === value[2]) {
-                            return;
-                        } else {
-                            this._xyz[0] = value[0];
-                            this._xyz[1] = value[1];
-                            this._xyz[2] = value[2];
-                        }
-                    } else {
-                        this._xyz = value;
-                    }
+                    (this._xyz = this._xyz || new XEO.math.vec3()).set(value || [1, 1, 1]);
 
                     this.matrix = XEO.math.scalingMat4v(this._xyz, this._matrix || (this._matrix = XEO.math.identityMat4()));
 
@@ -132,7 +127,7 @@
                      Fired whenever this Scale's {{#crossLink "Scale/xyz:property"}}{{/crossLink}} property changes.
 
                      @event xyz
-                     @param value {Array of Number} The property's new value
+                     @param value {Float32Array} The property's new value
                      */
                     this.fire("xyz", this._xyz);
                 },
@@ -145,7 +140,7 @@
 
         _getJSON: function () {
             return {
-                xyz: this.xyz
+                xyz: this._xyz
             };
         }
     });

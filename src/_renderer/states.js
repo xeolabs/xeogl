@@ -430,7 +430,7 @@
 
      @constructor
      @param cfg {*} Configs
-     @param cfg.boundary {Array of Number} Canvas-space viewport extents.
+     @param cfg.boundary {Float32Array} Canvas-space viewport extents.
      @extends renderer.State
      */
     XEO.renderer.Viewport = XEO.renderer.State.extend({

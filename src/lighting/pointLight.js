@@ -62,8 +62,8 @@
  @param [cfg] {*} The PointLight configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this PointLight.
- @param [cfg.pos=[ 1.0, 1.0, 1.0 ]] {Array(Number)} Position, in either World or View space, depending on the value of the **space** parameter.
- @param [cfg.color=[0.7, 0.7, 0.8 ]] {Array(Number)} Color of this PointLight.
+ @param [cfg.pos=[ 1.0, 1.0, 1.0 ]] {Float32Array} Position, in either World or View space, depending on the value of the **space** parameter.
+ @param [cfg.color=[0.7, 0.7, 0.8 ]] {Float32Array} Color of this PointLight.
  @param [cfg.intensity=1.0] {Number} Intensity of this PointLight.
  @param [cfg.constantAttenuation=0] {Number} Constant attenuation factor.
  @param [cfg.linearAttenuation=0] {Number} Linear attenuation factor.
@@ -82,9 +82,9 @@
 
             this._state = {
                 type: "point",
-                pos: [1.0, 1.0, 1.0],
-                color: [0.7, 0.7, 0.8],
-                intensity:   1.0,
+                pos: XEO.math.vec3([1.0, 1.0, 1.0]),
+                color: XEO.math.vec3([0.7, 0.7, 0.8]),
+                intensity: 1.0,
 
                 // Packaging constant, linear and quadratic attenuation terms
                 // into an array for easy insertion into shaders as a vec3
@@ -118,7 +118,7 @@
 
                 set: function (value) {
 
-                    this._state.pos = value || [ 1.0, 1.0, 1.0 ];
+                    this._state.pos.set(value || [1.0, 1.0, 1.0]);
 
                     this._renderer.imageDirty = true;
 
@@ -142,13 +142,13 @@
 
              @property color
              @default [0.7, 0.7, 0.8]
-             @type Array(Number)
+             @type Float32Array
              */
             color: {
 
                 set: function (value) {
 
-                    this._state.color = value || [ 0.7, 0.7, 0.8 ];
+                    this._state.color.set(value || [0.7, 0.7, 0.8]);
 
                     this._renderer.imageDirty = true;
 
@@ -178,7 +178,7 @@
 
                 set: function (value) {
 
-                    value = value !== undefined ? value :  1.0;
+                    value = value !== undefined ? value : 1.0;
 
                     this._state.intensity = value;
 
@@ -272,7 +272,7 @@
 
                 set: function (value) {
 
-                    this._state.attenuation[2] =  value || 0.0;
+                    this._state.attenuation[2] = value || 0.0;
 
                     this._renderer.imageDirty = true;
 

@@ -369,7 +369,7 @@
 
                     var u = 1 - diff / curve.length;
 
-                    return curve._getPointAt(u);
+                    return curve.getPointAt(u);
                 }
                 i++;
             }

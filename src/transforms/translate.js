@@ -91,7 +91,7 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Translate.
- @param [cfg.xyzw=[0,0,0]] {Array(Number)} The translation vector
+ @param [cfg.xyz=[0,0,0]] {Float32Array} The translation vector
  @extends Transform
  */
 (function () {
@@ -116,32 +116,20 @@
              * Fires an {{#crossLink "Translate/xyz:event"}}{{/crossLink}} event on change.
              * @property xyz
              * @default [0,0,0]
-             * @type {Array of Number}
+             * @type {Float32Array}
              */
             xyz: {
 
                 set: function (value) {
 
-                    value = value || [0, 0, 0];
-
-                    if (this._xyz) {
-                        if (this._xyz[0] === value[0] && this._xyz[1] === value[1] && this._xyz[2] === value[2]) {
-                            return;
-                        } else {
-                            this._xyz[0] = value[0];
-                            this._xyz[1] = value[1];
-                            this._xyz[2] = value[2];
-                        }
-                    } else {
-                        this._xyz = value;
-                    }
+                    (this._xyz = this._xyz || new XEO.math.vec3()).set(value || [0, 0, 0]);
 
                     this.matrix = XEO.math.translationMat4v(this._xyz, this._matrix || (this._matrix = XEO.math.identityMat4()));
 
                     /**
                      Fired whenever this Translate's {{#crossLink "Translate/xyz:property"}}{{/crossLink}} property changes.
                      @event xyz
-                     @param value {Array of Number} The property's new value
+                     @param value {Float32Array} The property's new value
                      */
                     this.fire("xyz", this._xyz);
                 },
@@ -154,7 +142,7 @@
 
         _getJSON: function () {
             return {
-                xyz: this.xyz
+                xyz: this._xyz
             };
         }
     });

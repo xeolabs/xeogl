@@ -143,9 +143,9 @@
         },
 
 
-        _getPointAt: function (u) {
+        getPointAt: function (u) {
 
-            var t = this._getUToTMapping(u);
+            var t = this.getUToTMapping(u);
 
             return this.getPoint(t);
 
@@ -182,7 +182,7 @@
             var d, pts = [];
 
             for (d = 0; d <= divisions; d++) {
-                pts.push(this._getPointAt(d / divisions));
+                pts.push(this.getPointAt(d / divisions));
             }
 
             return pts;
@@ -235,7 +235,7 @@
 
         // Given u ( 0 .. 1 ), get a t to find p. This gives you points which are equi distance
 
-        _getUToTMapping: function (u, distance) {
+        getUToTMapping: function (u, distance) {
 
             var arcLengths = this._getLengths();
 

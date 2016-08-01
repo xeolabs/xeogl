@@ -143,9 +143,9 @@
 
             // Transformation
 
-            this._translate = [0, 0];
-            this._scale = [1, 1];
-            this._rotate = [0, 0];
+            this._translate = XEO.math.vec2([0, 0]);
+            this._scale = XEO.math.vec2([1, 1]);
+            this._rotate = XEO.math.vec2([0, 0]);
 
             // Dirty flags, processed in _buildTexture()
 
@@ -615,9 +615,7 @@
 
                 set: function (value) {
 
-                    value = value || [0, 0];
-
-                    this._translate = value;
+                    this._translate.set(value || [0, 0]);
                     this._matrixDirty = true;
 
                     this._scheduleUpdate();
@@ -648,9 +646,7 @@
 
                 set: function (value) {
 
-                    value = value || [1, 1];
-
-                    this._scale = value;
+                    this._scale.set(value || [1, 1]);
                     this._matrixDirty = true;
 
                     this._scheduleUpdate();
