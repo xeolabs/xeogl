@@ -133,6 +133,7 @@
                     // Ensure that Camera has a Frustum projection
 
                     if (camera.project.type !== "XEO.Frustum") {
+                        this.warn("Replacing camera's projection with a XEO.Frustum (needed for stereo)");
                         camera.project = camera.project.create(XEO.Frustum);
                     }
                 },
