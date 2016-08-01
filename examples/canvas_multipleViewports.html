@@ -25,7 +25,6 @@
                 src: "textures/diffuse/uvGrid2.jpg"
             })
         }),
-
         viewport: new XEO.Viewport({
             boundary: [0, 0, 500, 400],
             autoBoundary: false
@@ -40,7 +39,6 @@
                 src: "textures/diffuse/uvGrid2.jpg"
             })
         }),
-
         viewport: new XEO.Viewport({
             boundary: [510, 0, 500, 400],
             autoBoundary: false
@@ -54,7 +52,6 @@
                 src: "textures/diffuse/uvGrid2.jpg"
             })
         }),
-
         viewport: new XEO.Viewport({
             boundary: [0, 500, 510, 400],
             autoBoundary: false
@@ -68,7 +65,6 @@
                 src: "textures/diffuse/uvGrid2.jpg"
             })
         }),
-
         viewport: new XEO.Viewport({
             boundary: [200, 500, 510, 400],
             autoBoundary: false
@@ -88,8 +84,8 @@
     scene.canvas.on("boundary",
             function (e) {
 
-                var min = e.min;
-                var max = e.max;
+                var min = [e[0], e[1]];
+                var max = [e[2], e[3]];
 
                 var halfWidth = (max[0] - min[0]) / 2;
                 var halfHeight = (max[1] - min[1]) / 2;
