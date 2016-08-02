@@ -312,7 +312,7 @@
             var self = this;
 
             this._destroyedSubs[component.id] = component.on("destroyed",
-                function (component) {
+                function () {
                     self._remove(component);
                 });
 
