@@ -148,7 +148,7 @@
                                 var alpha = e.gamma ? math.DEGTORAD * e.alpha : 0; // Z
                                 var beta = e.beta ? math.DEGTORAD * e.beta : 0; // X'
                                 var gamma = e.gamma ? math.DEGTORAD * e.gamma : 0; // Y'
-                                var orient = orientationAngle ? math.DEGTORAD * orientationAngle : 0;
+                                var orient = math.DEGTORAD * window.orientation ;
 
                                 euler[0] = beta;
                                 euler[1] = alpha;
@@ -165,9 +165,11 @@
 
                                 // Eye
 
+                                var lenEyeLook = Math.abs(math.lenVec3(math.subVec3(lookat.look, lookat.eye, tempVec3b)));
+
                                 tempVec3a[0] = 0;
                                 tempVec3a[1] = 0;
-                                tempVec3a[2] = Math.abs(math.lenVec3(math.subVec3(lookat.eye, lookat.look, tempVec3b)));
+                                tempVec3a[2] = lenEyeLook;
 
                                 lookat.eye = math.addVec3(math.transformVec3(orientMatrix, tempVec3a, tempVec3a), lookat.look);
 

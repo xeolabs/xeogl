@@ -164,11 +164,11 @@
                 var alpha = e.alpha ? math.DEGTORAD * e.alpha : 0; // Z
                 var beta = e.beta ? math.DEGTORAD * e.beta : 0; // X'
                 var gamma = e.gamma ? math.DEGTORAD * e.gamma : 0; // Y'
-                var orient = orientationAngle ? math.DEGTORAD * orientationAngle : 0;
+                var orient = math.DEGTORAD * window.orientation;
 
                 euler[0] = beta;
                 euler[1] = alpha;
-                euler[2] = -gamma;
+                euler[2] = gamma;
 
                 math.eulerToQuaternion(euler, "YXZ", quaternion);
                 math.mulQuaternions(quaternion, reflectQuaternion, quaternion); // Camera looks out the back of the device, not the top
