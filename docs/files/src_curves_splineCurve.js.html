@@ -97,7 +97,6 @@
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Position3D.html">Position3D</a></li>
-                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -191,11 +190,11 @@
  A **SplineCurve** is a {{#crossLink &quot;Curve&quot;}}{{/crossLink}} along which a 3D position can be animated.
 
  &lt;ul&gt;
-    &lt;li&gt;As shown in the diagram below, a SplineCurve is defined by three or more control points.&lt;/li&gt;
-    &lt;li&gt;You can sample a {{#crossLink &quot;SplineCurve/point:property&quot;}}{{/crossLink}} and a {{#crossLink &quot;Curve/tangent:property&quot;}}{{/crossLink}}
+ &lt;li&gt;As shown in the diagram below, a SplineCurve is defined by three or more control points.&lt;/li&gt;
+ &lt;li&gt;You can sample a {{#crossLink &quot;SplineCurve/point:property&quot;}}{{/crossLink}} and a {{#crossLink &quot;Curve/tangent:property&quot;}}{{/crossLink}}
  vector on a SplineCurve for any given value of {{#crossLink &quot;SplineCurve/t:property&quot;}}{{/crossLink}} in the range [0..1].&lt;/li&gt;
-    &lt;li&gt;When you set {{#crossLink &quot;SplineCurve/t:property&quot;}}{{/crossLink}} on a SplineCurve, its {{#crossLink &quot;SplineCurve/point:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Curve/tangent:property&quot;}}{{/crossLink}} properties will update accordingly.&lt;/li&gt;
-    &lt;li&gt;To build a complex path, you can combine an unlimited combination of SplineCurves,
+ &lt;li&gt;When you set {{#crossLink &quot;SplineCurve/t:property&quot;}}{{/crossLink}} on a SplineCurve, its {{#crossLink &quot;SplineCurve/point:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Curve/tangent:property&quot;}}{{/crossLink}} properties will update accordingly.&lt;/li&gt;
+ &lt;li&gt;To build a complex path, you can combine an unlimited combination of SplineCurves,
  {{#crossLink &quot;CubicBezierCurve&quot;}}CubicBezierCurves{{/crossLink}} and {{#crossLink &quot;QuadraticBezierCurve&quot;}}QuadraticBezierCurves{{/crossLink}}
  into a {{#crossLink &quot;Path&quot;}}{{/crossLink}}.&lt;/li&gt;
  &lt;/ul&gt;
@@ -322,7 +321,7 @@
 
              @property points
              @default []
-             @type Array(Number)
+             @type Float32Array
              */
             points: {
 
@@ -385,7 +384,7 @@
             point: {
 
                 get: function () {
-                   return this.getPoint(this._t);
+                    return this.getPoint(this._t);
                 }
             }
         },
@@ -396,11 +395,17 @@
          * @param {Number} t Position to get point at.
          * @returns {{Array of Number}}
          */
-        getPoint: function(t) {
+        getPoint: function (t) {
 
             var math = XEO.math;
 
             var points = this.points;
+
+            if (points.length &lt; 3) {
+                this.error(&quot;Can&#x27;t sample point from SplineCurve - not enough points on curve - returning [0,0,0].&quot;);
+                return;
+            }
+
             var point = ( points.length - 1 ) * t;
 
             var intPoint = Math.floor(point);
@@ -422,10 +427,7 @@
 
         _getJSON: function () {
             return {
-                v0: this._v0,
-                v1: this._v1,
-                v2: this._v2,
-                v3: this._v3,
+                points: points,
                 t: this._t
             };
         }

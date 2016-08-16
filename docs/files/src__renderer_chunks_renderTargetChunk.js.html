@@ -97,7 +97,6 @@
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Position3D.html">Position3D</a></li>
-                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -213,6 +212,11 @@
                 gl.flush();
                 frameCtx.renderBuf.unbind();
                 frameCtx.renderBuf = null;
+
+                // Renderer hook to bind a custom output framebuffer
+                if (frameCtx.bindOutputFramebuffer) {
+                        frameCtx.bindOutputFramebuffer(frameCtx.pass);
+                }
             }
 
             // Set depthMode false and bail if no render buffer for this chunk

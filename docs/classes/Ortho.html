@@ -97,7 +97,6 @@
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Position3D.html">Position3D</a></li>
-                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -187,14 +186,14 @@
 <div class="box meta">
 
         <div class="extends">
-            Extends <a href="../classes/Projection.html" class="crosslink">Projection</a>
+            Extends <a href="../classes/Transform.html" class="crosslink">Transform</a>
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_camera_ortho.js.html#l1"><code>src&#x2F;camera&#x2F;ortho.js:1</code></a>
+            Defined in: <a href="../files/src_transforms_ortho.js.html#l1"><code>src&#x2F;transforms&#x2F;ortho.js:1</code></a>
         </div>
 
-            Module: <a href="../modules/camera.html">camera</a><br>
+            Module: <a href="../modules/transforms.html">transforms</a><br>
             Parent Module: <a href="../modules/XEO.html">XEO</a>
 
 </div>
@@ -273,7 +272,7 @@ planes, eg. for an asymmetrical view volume, such as those used for stereo viewi
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_camera_ortho.js.html#l1"><code>src&#x2F;camera&#x2F;ortho.js:1</code></a>
+                <a href="../files/src_transforms_ortho.js.html#l1"><code>src&#x2F;transforms&#x2F;ortho.js:1</code></a>
                 </p>
         
         
@@ -331,6 +330,17 @@ planes, eg. for an asymmetrical view volume, such as those used for stereo viewi
         
                                         <div class="param-description">
                                             <p>Optional map of user-defined metadata to attach to this Ortho.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[parent]</code>
+                                            <span class="type">String | <a href="../classes/Transform.html" class="crosslink">Transform</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>ID or instance of a parent <a href="../classes/Transform.html" class="crosslink">Transform</a> within the same <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
         
                                         </div>
         
@@ -462,7 +472,7 @@ planes, eg. for an asymmetrical view volume, such as those used for stereo viewi
                                 <a href="#property_json">json</a>
 
                             </li>
-                            <li class="index-item property inherited">
+                            <li class="index-item property inherited inherited">
                                 <a href="#property_matrix">matrix</a>
 
                             </li>
@@ -472,6 +482,10 @@ planes, eg. for an asymmetrical view volume, such as those used for stereo viewi
                             </li>
                             <li class="index-item property">
                                 <a href="#property_near">near</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_parent">parent</a>
 
                             </li>
                             <li class="index-item property">
@@ -518,8 +532,16 @@ planes, eg. for an asymmetrical view volume, such as those used for stereo viewi
                                 <a href="#event_near">near</a>
 
                             </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_parent">parent</a>
+
+                            </li>
                             <li class="index-item event">
                                 <a href="#event_scale">scale</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_updated">updated</a>
 
                             </li>
                     </ul>
@@ -1304,7 +1326,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_ortho.js.html#l179"><code>src&#x2F;camera&#x2F;ortho.js:179</code></a>
+                            <a href="../files/src_transforms_ortho.js.html#l180"><code>src&#x2F;transforms&#x2F;ortho.js:180</code></a>
                             </p>
                     
                     
@@ -1399,24 +1421,27 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     </div>
                     <div id="property_matrix" class="property item inherited">
                         <h3 class="name"><code>matrix</code></h3>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
                     
                     
                     
                     
                     
                         <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Projection.html#property_matrix">Projection</a>:
-                            <a href="../files/src_camera_projection.js.html#l71"><code>src&#x2F;camera&#x2F;projection.js:71</code></a>
+                                <p>Inherited from
+                                <a href="../classes/Transform.html#property_matrix">
+                                    Transform
+                                </a>
+                                but overwritten in
+                            <a href="../files/src_transforms_transform.js.html#l323"><code>src&#x2F;transforms&#x2F;transform.js:323</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The Projection&#39;s matrix.</p>
-                    <p>Fires a <a href="../classes/Projection.html#event_matrix" class="crosslink">matrix</a> event on change.</p>
+                            <p>The Transform&#39;s local matrix.</p>
+                    <p>Fires a <a href="../classes/Transform.html#event_matrix" class="crosslink">matrix</a> event on change.</p>
                     
                         </div>
                     
@@ -1460,7 +1485,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_ortho.js.html#l148"><code>src&#x2F;camera&#x2F;ortho.js:148</code></a>
+                            <a href="../files/src_transforms_ortho.js.html#l149"><code>src&#x2F;transforms&#x2F;ortho.js:149</code></a>
                             </p>
                     
                     
@@ -1476,6 +1501,32 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_parent" class="property item inherited">
+                        <h3 class="name"><code>parent</code></h3>
+                        <span class="type"><a href="../classes/Transform.html" class="crosslink">Transform</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Transform.html#property_parent">Transform</a>:
+                            <a href="../files/src_transforms_transform.js.html#l267"><code>src&#x2F;transforms&#x2F;transform.js:267</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The parent Transform.</p>
+                    <p>Fires a <a href="../classes/Transform.html#event_parent" class="crosslink">parent</a> event on change.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_scale" class="property item">
                         <h3 class="name"><code>scale</code></h3>
                         <span class="type">Number</span>
@@ -1487,7 +1538,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_ortho.js.html#l117"><code>src&#x2F;camera&#x2F;ortho.js:117</code></a>
+                            <a href="../files/src_transforms_ortho.js.html#l118"><code>src&#x2F;transforms&#x2F;ortho.js:118</code></a>
                             </p>
                     
                     
@@ -1661,7 +1712,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_ortho.js.html#l196"><code>src&#x2F;camera&#x2F;ortho.js:196</code></a>
+                            <a href="../files/src_transforms_ortho.js.html#l197"><code>src&#x2F;transforms&#x2F;ortho.js:197</code></a>
                             </p>
                     
                     
@@ -1702,15 +1753,15 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="meta">
                                     <p>Inherited from
-                                    <a href="../classes/Projection.html#event_matrix">Projection</a>:
-                            <a href="../files/src_camera_projection.js.html#l90"><code>src&#x2F;camera&#x2F;projection.js:90</code></a>
+                                    <a href="../classes/Transform.html#event_matrix">Transform</a>:
+                            <a href="../files/src_transforms_transform.js.html#l340"><code>src&#x2F;transforms&#x2F;transform.js:340</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Projection&#39;s <a href="../classes/Projection.html#property_matrix" class="crosslink">matrix</a> property changes.</p>
+                            <p>Fired whenever this Transform&#39;s <a href="../classes/Transform.html#property_matrix" class="crosslink">matrix</a> property changes.</p>
                     
                         </div>
                     
@@ -1745,7 +1796,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_ortho.js.html#l165"><code>src&#x2F;camera&#x2F;ortho.js:165</code></a>
+                            <a href="../files/src_transforms_ortho.js.html#l166"><code>src&#x2F;transforms&#x2F;ortho.js:166</code></a>
                             </p>
                     
                     
@@ -1753,6 +1804,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this Ortho&#39;s  <a href="../classes/Ortho.html#property_near" class="crosslink">near</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_parent" class="events item inherited">
+                        <h3 class="name"><code>parent</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Transform.html#event_parent">Transform</a>:
+                            <a href="../files/src_transforms_transform.js.html#l303"><code>src&#x2F;transforms&#x2F;transform.js:303</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Transform&#39;s <a href="../classes/Transform.html#property_parent" class="crosslink">parent</a> property changes.</p>
                     
                         </div>
                     
@@ -1787,7 +1880,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_ortho.js.html#l134"><code>src&#x2F;camera&#x2F;ortho.js:134</code></a>
+                            <a href="../files/src_transforms_ortho.js.html#l135"><code>src&#x2F;transforms&#x2F;ortho.js:135</code></a>
                             </p>
                     
                     
@@ -1815,6 +1908,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     </li>
                                 </ul>
                             </div>
+                    
+                    
+                    </div>
+                    <div id="event_updated" class="events item inherited">
+                        <h3 class="name"><code>updated</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Transform.html#event_updated">Transform</a>:
+                            <a href="../files/src_transforms_transform.js.html#l203"><code>src&#x2F;transforms&#x2F;transform.js:203</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Transform&#39;s Transform/leafMatrix:property property changes.</p>
+                    <p>This event does not carry the updated property value. Instead, subscribers will need to read
+                    that property again to get its updated value (which may be lazy-computed then).</p>
+                    
+                        </div>
+                    
                     
                     
                     </div>

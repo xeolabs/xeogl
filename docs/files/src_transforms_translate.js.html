@@ -97,7 +97,6 @@
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Position3D.html">Position3D</a></li>
-                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -280,7 +279,8 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Translate.
- @param [cfg.xyzw=[0,0,0]] {Array(Number)} The translation vector
+ @param [cfg.parent] {String|Transform} ID or instance of a parent {{#crossLink &quot;Transform&quot;}}{{/crossLink}} within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
+ @param [cfg.xyz=[0,0,0]] {Float32Array} The translation vector
  @extends Transform
  */
 (function () {
@@ -298,6 +298,10 @@
             this.xyz = cfg.xyz;
         },
 
+        _build: function () {
+            this.matrix = XEO.math.translationMat4v(this._xyz, this._matrix);
+        },
+
         _props: {
 
             /**
@@ -305,32 +309,20 @@
              * Fires an {{#crossLink &quot;Translate/xyz:event&quot;}}{{/crossLink}} event on change.
              * @property xyz
              * @default [0,0,0]
-             * @type {Array of Number}
+             * @type {Float32Array}
              */
             xyz: {
 
                 set: function (value) {
 
-                    value = value || [0, 0, 0];
+                    (this._xyz = this._xyz || new XEO.math.vec3()).set(value || [0, 0, 0]);
 
-                    if (this._xyz) {
-                        if (this._xyz[0] === value[0] &amp;&amp; this._xyz[1] === value[1] &amp;&amp; this._xyz[2] === value[2]) {
-                            return;
-                        } else {
-                            this._xyz[0] = value[0];
-                            this._xyz[1] = value[1];
-                            this._xyz[2] = value[2];
-                        }
-                    } else {
-                        this._xyz = value;
-                    }
-
-                    this.matrix = XEO.math.translationMat4v(this._xyz, this._matrix || (this._matrix = XEO.math.identityMat4()));
+                    this._scheduleUpdate();
 
                     /**
                      Fired whenever this Translate&#x27;s {{#crossLink &quot;Translate/xyz:property&quot;}}{{/crossLink}} property changes.
                      @event xyz
-                     @param value {Array of Number} The property&#x27;s new value
+                     @param value {Float32Array} The property&#x27;s new value
                      */
                     this.fire(&quot;xyz&quot;, this._xyz);
                 },
@@ -342,9 +334,13 @@
         },
 
         _getJSON: function () {
-            return {
-                xyz: this.xyz
+            var json = {
+                xyz: this._xyz
             };
+            if (this._parent) {
+                json.parent = this._parent.id;
+            }
+            return json;
         }
     });
 

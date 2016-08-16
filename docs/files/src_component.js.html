@@ -97,7 +97,6 @@
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Position3D.html">Position3D</a></li>
-                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -672,7 +671,7 @@
             };
             this._handleEvents[handle] = event;
             var value = this._events[event];
-            if (value) { // A publication exists, notify callback immediately
+            if (value !== undefined) { // A publication exists, notify callback immediately
                 callback.call(scope || this, value);
             }
             return handle;
@@ -1137,7 +1136,7 @@
         /**
          * Optional virtual template method, normally implemented
          * by sub-classes to generate some data before _update gets
-         * callled
+         * called
          *
          * @protected
          */

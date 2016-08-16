@@ -97,7 +97,6 @@
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Position3D.html">Position3D</a></li>
-                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -271,6 +270,15 @@
  @class Rotate
  @module XEO
  @submodule transforms
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Rotate in the default
+ {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Rotate.
+ @param [cfg.parent] {String|Transform} ID or instance of a parent {{#crossLink &quot;Transform&quot;}}{{/crossLink}} within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
+ @param [cfg.xyz=[0,1,0]] {Float32Array} Axis of rotation.
+ @param [cfg.angle=0] {Number} Angle of rotation in degrees.
  @extends Transform
  */
 (function () {
@@ -289,6 +297,10 @@
             this.angle = cfg.angle;
         },
 
+        _build: function () {
+            this.matrix = XEO.math.rotationMat4v(this._angle * XEO.math.DEGTORAD, this._xyz, this._matrix);
+        },
+
         _props: {
 
             /**
@@ -298,33 +310,21 @@
              *
              * @property xyz
              * @default [0,1,0]
-             * @type {Array of Number}
+             * @type {Float32Array}
              */
             xyz: {
 
                 set: function (value) {
 
-                    value = value || [0, 1, 0];
+                    (this._xyz = this._xyz || new XEO.math.vec3()).set(value || [0, 1, 0]);
 
-                    if (this._xyz) {
-                        if (this._xyz[0] === value[0] &amp;&amp; this._xyz[1] === value[1] &amp;&amp; this._xyz[2] === value[2]) {
-                            return;
-                        } else {
-                            this._xyz[0] = value[0];
-                            this._xyz[1] = value[1];
-                            this._xyz[2] = value[2];
-                        }
-                    } else {
-                        this._xyz = value;
-                    }
-
-                    this._buildMatrix();
+                    this._scheduleUpdate();
 
                     /**
                      Fired whenever this Rotate&#x27;s {{#crossLink &quot;Rotate/xyz:property&quot;}}{{/crossLink}} property changes.
 
                      @event xyz
-                     @param value {Array of Number} The property&#x27;s new value
+                     @param value {Float32Array} The property&#x27;s new value
                      */
                     this.fire(&quot;xyz&quot;, this._xyz);
                 },
@@ -349,13 +349,13 @@
 
                     this._angle = value || 0;
 
-                    this._buildMatrix();
+                    this._scheduleUpdate();
 
                     /**
                      Fired whenever this Rotate&#x27;s {{#crossLink &quot;Rotate/angle:property&quot;}}{{/crossLink}} property changes.
 
                      @event angle
-                     @param value {Array of Number} The property&#x27;s new value
+                     @param value {Number} The property&#x27;s new value
                      */
                     this.fire(&quot;angle&quot;, this._angle);
                 },
@@ -366,30 +366,15 @@
             }
         },
 
-        _buildMatrix: function () {
-
-            if (this._xyz !== null &amp;&amp; this._angle !== null) {
-
-                // Both axis and angle have been set, so update the matrix.
-
-                // Only do the update if both axis and angle have been set.
-
-                // The update will be done once after both the axis and angle are set in the constructor,
-                // and then subsequently every time that either the axis or angle is updated.
-                //
-                // This is wasteful for the case where both the axis and the angle are continually updated,
-                // but that will be rarely be the case, where ormally it would just be the angle that is
-                // continually updated.
-
-                this.matrix = XEO.math.rotationMat4v(this._angle * XEO.math.DEGTORAD, this._xyz, this._matrix || (this._matrix = XEO.math.identityMat4()));
-            }
-        },
-
         _getJSON: function () {
-            return {
+            var json = {
                 xyz: this._xyz,
                 angle: this._angle
             };
+            if (this._parent) {
+                json.parent = this._parent.id;
+            }
+            return json;
         }
     });
 

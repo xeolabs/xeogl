@@ -281,51 +281,6 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/camera/frustum.js": {
-            "name": "src/camera/frustum.js",
-            "modules": {},
-            "classes": {
-                "Frustum": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/camera/lookat.js": {
-            "name": "src/camera/lookat.js",
-            "modules": {},
-            "classes": {
-                "Lookat": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/camera/ortho.js": {
-            "name": "src/camera/ortho.js",
-            "modules": {},
-            "classes": {
-                "Ortho": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/camera/perspective.js": {
-            "name": "src/camera/perspective.js",
-            "modules": {},
-            "classes": {
-                "Perspective": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/camera/projection.js": {
-            "name": "src/camera/projection.js",
-            "modules": {},
-            "classes": {
-                "Projection": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
         "src/canvas/_module.js": {
             "name": "src/canvas/_module.js",
             "modules": {
@@ -1060,6 +1015,42 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/transforms/frustum.js": {
+            "name": "src/transforms/frustum.js",
+            "modules": {},
+            "classes": {
+                "Frustum": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/transforms/lookat.js": {
+            "name": "src/transforms/lookat.js",
+            "modules": {},
+            "classes": {
+                "Lookat": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/transforms/ortho.js": {
+            "name": "src/transforms/ortho.js",
+            "modules": {},
+            "classes": {
+                "Ortho": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/transforms/perspective.js": {
+            "name": "src/transforms/perspective.js",
+            "modules": {},
+            "classes": {
+                "Perspective": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "src/transforms/quaternion.js": {
             "name": "src/transforms/quaternion.js",
             "modules": {},
@@ -1184,11 +1175,6 @@
                 "CollectionBoundary": 1,
                 "Position3D": 1,
                 "Camera": 1,
-                "Frustum": 1,
-                "Lookat": 1,
-                "Ortho": 1,
-                "Perspective": 1,
-                "Projection": 1,
                 "Canvas": 1,
                 "Spinner": 1,
                 "Clip": 1,
@@ -1249,6 +1235,10 @@
                 "ShaderParams": 1,
                 "Skybox": 1,
                 "Billboard": 1,
+                "Frustum": 1,
+                "Lookat": 1,
+                "Ortho": 1,
+                "Perspective": 1,
                 "Quaternion": 1,
                 "Rotate": 1,
                 "Scale": 1,
@@ -1318,19 +1308,14 @@
             "name": "camera",
             "submodules": {},
             "classes": {
-                "Camera": 1,
-                "Frustum": 1,
-                "Lookat": 1,
-                "Ortho": 1,
-                "Perspective": 1,
-                "Projection": 1
+                "Camera": 1
             },
             "fors": {},
             "is_submodule": 1,
             "namespaces": {},
             "module": "XEO",
             "namespace": "",
-            "file": "src/camera/projection.js",
+            "file": "src/camera/camera.js",
             "line": 1,
             "description": "Camera components."
         },
@@ -1681,6 +1666,10 @@
             "submodules": {},
             "classes": {
                 "Billboard": 1,
+                "Frustum": 1,
+                "Lookat": 1,
+                "Ortho": 1,
+                "Perspective": 1,
                 "Quaternion": 1,
                 "Rotate": 1,
                 "Scale": 1,
@@ -2186,7 +2175,7 @@
             "namespace": "",
             "file": "src/camera/camera.js",
             "line": 1,
-            "description": "A **Camera** defines viewing and projection transforms for attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n<ul>\n<li> A Camera is composed of a viewing transform and a {{#crossLink \"Projection\"}}{{/crossLink}}.</li>\n<li>The viewing transform is usually a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}. Having the viewing transform as a\nseparate component from the Camera allows us to switch the Camera between multiple, existing viewpoints by simply re-attaching it to\ndifferent viewing transform components (ie. {{#crossLink \"Lookat\"}}Lookats{{/crossLink}}).</li>\n<li>The {{#crossLink \"Projection\"}}{{/crossLink}} may be an {{#crossLink \"Ortho\"}}Ortho{{/crossLink}}, {{#crossLink \"Frustum\"}}Frustum{{/crossLink}}\nor {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}. Likewise, having the projection transform as a\nseparate component from the Camera allows us to switch the Camera between multiple, existing projections by simply re-attaching it to\ndifferent projection components.</li>\n<li> By default, each Camera is composed of its parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/view:property\"}}{{/crossLink}} transform,\n(which is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}) and default\n{{#crossLink \"Scene/project:property\"}}{{/crossLink}} transform (which is a {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}).\nYou would override those with your own transform components as necessary.</li>\n\n</ul>\n\n<img src=\"../../../assets/images/Camera.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Perspective Camera](../../examples/#camera_perspective)</li>\n</ul>\n\n## Usage\n\nThe example below defines an {{#crossLink \"Entity\"}}{{/crossLink}} that has a Camera with\na {{#crossLink \"Lookat\"}}{{/crossLink}} view transform and a {{#crossLink \"Perspective\"}}{{/crossLink}} projection transform.\n\n```` javascript\nvar entity = new XEO.Entity({\n    camera: new XEO.Camera({\n        view: new XEO.Lookat({\n            eye: [0, 0, 10],\n            look: [0, 0, 0],\n            up: [0, 1, 0]\n        }),\n        project: new XEO.Lookat({\n            fovy: 60,\n            near: 0.1,\n            far: 1000\n        })\n    }),\n    geometry: new XEO.BoxGeometry()\n});\n\nentity.scene.on(\"tick\", function () {\n    camera.view.rotateEyeY(0.5);\n    camera.view.rotateEyeX(0.3);\n});\n````",
+            "description": "A **Camera** defines viewing and projection transforms for attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n<ul>\n<li> A Camera is composed of a viewing and projection {{#crossLink \"Transform\"}}{{/crossLink}}.</li>\n<li>The viewing transform is usually a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}. Having the viewing transform as a\nseparate component from the Camera allows us to switch the Camera between multiple, existing viewpoints by simply re-attaching it to\ndifferent viewing transform components (ie. {{#crossLink \"Lookat\"}}Lookats{{/crossLink}}).</li>\n<li> By default, each Camera has its parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/view:property\"}}{{/crossLink}} transform,\n(which is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}) and default\n{{#crossLink \"Scene/project:property\"}}{{/crossLink}} transform (which is a {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}).\nYou would override those with your own transform components as necessary.</li>\n\n</ul>\n\n<img src=\"../../../assets/images/Camera.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Perspective Camera](../../examples/#camera_perspective)</li>\n</ul>\n\n## Usage\n\nThe example below defines an {{#crossLink \"Entity\"}}{{/crossLink}} that has a Camera with\na {{#crossLink \"Lookat\"}}{{/crossLink}} view transform and a {{#crossLink \"Perspective\"}}{{/crossLink}} projection transform.\n\n```` javascript\nvar entity = new XEO.Entity({\n    camera: new XEO.Camera({\n        view: new XEO.Lookat({\n            eye: [0, 0, 10],\n            look: [0, 0, 0],\n            up: [0, 1, 0]\n        }),\n        project: new XEO.Lookat({\n            fovy: 60,\n            near: 0.1,\n            far: 1000\n        })\n    }),\n    geometry: new XEO.BoxGeometry()\n});\n\nentity.scene.on(\"tick\", function () {\n    camera.view.rotateEyeY(0.5);\n    camera.view.rotateEyeX(0.3);\n});\n````",
             "submodule": "camera",
             "is_constructor": 1,
             "params": [
@@ -2217,359 +2206,14 @@
                         {
                             "name": "view",
                             "description": "ID or instance of a view transform within the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/view:property\"}}{{/crossLink}} transform,\nwhich is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.",
-                            "type": "String|XEO.Lookat",
+                            "type": "String|XEO.Transform",
                             "optional": true
                         },
                         {
                             "name": "project",
                             "description": "ID or instance of a projection transform\nwithin the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Scene/project:property\"}}{{/crossLink}} transform,\nwhich is a {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.",
-                            "type": "String|XEO.Projection",
+                            "type": "String|XEO.Transform",
                             "optional": true
-                        }
-                    ]
-                }
-            ],
-            "extends": "Component"
-        },
-        "Frustum": {
-            "name": "Frustum",
-            "shortname": "Frustum",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/camera/frustum.js",
-            "line": 1,
-            "description": "A **Frustum** defines a perspective projection as a frustum-shaped view volume.\n\n<ul>\n<li>{{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with viewing transform components, such as\n{{#crossLink \"Lookat\"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>A Frustum lets us explicitly set the positions of the left, right, top, bottom, near and far planes, which is useful\nfor asymmetrical view volumes, such as those used for stereo viewing.</li>\n<li>An Frustum's {{#crossLink \"Frustum/near:property\"}}{{/crossLink}} and {{#crossLink \"Frustum/far:property\"}}{{/crossLink}} properties\nspecify the distances to the WebGL clipping planes.</li>\n<li>Use {{#crossLink \"Ortho\"}}{{/crossLink}} if you just want to specify the X,Y frustum extents with a single scale factor,\nie. without individually specifying the distance to each frustum plane.</li>\n<li>Use {{#crossLink \"Perspective\"}}{{/crossLink}} if you need perspective projection.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Ortho components create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Frustum.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Camera with frustum projection](../../examples/#camera_frustum)</li>\n<li>[Stereo viewing with frustum projection](../../examples/#effects_stereo)</li>\n</ul>\n\n## Usage\n\n````Javascript\nnew XEO.Entity({\n\n    camera: XEO.Camera({\n\n       view: new XEO.Lookat({\n           eye: [0, 0, -4],\n           look: [0, 0, 0],\n           up: [0, 1, 0]\n       }),\n\n       project: new XEO.Frustum(scene, {\n           left: -0.1,\n           right: 0.1,\n           bottom: -0.1,\n           top: 0.1,\n           near: 0.15,\n           far: 1000\n       })\n    }),\n\n    geometry: new XEO.BoxGeometry()\n});\n````",
-            "submodule": "camera",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this Frustum within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "Configs",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this Frustum.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "left",
-                            "description": "Position of the Frustum's left plane on the View-space X-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "-1"
-                        },
-                        {
-                            "name": "right",
-                            "description": "Position of the Frustum's right plane on the View-space X-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "1"
-                        },
-                        {
-                            "name": "bottom",
-                            "description": "Position of the Frustum's bottom plane on the View-space Y-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "-1"
-                        },
-                        {
-                            "name": "top",
-                            "description": "Position of the Frustum's top plane on the View-space Y-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "1"
-                        },
-                        {
-                            "name": "near",
-                            "description": "Position of the Frustum's near plane on the View-space Z-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "0.1"
-                        },
-                        {
-                            "name": "far",
-                            "description": "Position of the Frustum's far plane on the positive View-space Z-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "1000"
-                        }
-                    ]
-                }
-            ],
-            "extends": "Projection"
-        },
-        "Lookat": {
-            "name": "Lookat",
-            "shortname": "Lookat",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/camera/lookat.js",
-            "line": 1,
-            "description": "A **Lookat** defines a viewing transform as an {{#crossLink \"Lookat/eye:property\"}}eye{{/crossLink}} position, a\n{{#crossLink \"Lookat/look:property\"}}look{{/crossLink}} position and an {{#crossLink \"Lookat/up:property\"}}up{{/crossLink}}\nvector.\n\n<ul>\n<li>{{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with projection transforms such as\n{{#crossLink \"Perspective\"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Lookat components create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Lookat.png\"></img>\n\n## Usage\n\n````Javascript\nnew XEO.Entity({\n\n    camera: XEO.Camera({\n\n       view: new XEO.Lookat({\n           eye: [0, 0, 4],\n           look: [0, 0, 0],\n           up: [0, 1, 0]\n       }),\n\n       project: new XEO.Perspective({\n           fovy: 60,\n           near: 0.1,\n           far: 1000\n       })\n    }),\n\n    geometry: new XEO.BoxGeometry()\n});\n````",
-            "submodule": "camera",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Lookat in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "Configs",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this Lookat.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "eye",
-                            "description": "Eye position.",
-                            "type": "Array of Number",
-                            "optional": true,
-                            "optdefault": "[0,0,10]"
-                        },
-                        {
-                            "name": "look",
-                            "description": "The position of the point-of-interest we're looking at.",
-                            "type": "Array of Number",
-                            "optional": true,
-                            "optdefault": "[0,0,0]"
-                        },
-                        {
-                            "name": "up",
-                            "description": "The \"up\" vector.",
-                            "type": "Array of Number",
-                            "optional": true,
-                            "optdefault": "[0,1,0]"
-                        },
-                        {
-                            "name": "gimbalLockY",
-                            "description": "Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.",
-                            "type": "Boolean",
-                            "optional": true,
-                            "optdefault": "false"
-                        }
-                    ]
-                }
-            ],
-            "extends": "Component",
-            "author": "xeolabs / http://xeolabs.com/"
-        },
-        "Ortho": {
-            "name": "Ortho",
-            "shortname": "Ortho",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/camera/ortho.js",
-            "line": 1,
-            "description": "An **Ortho** component defines an orthographic projection transform.\n\n<ul>\n<li>{{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with viewing transform components, such as\n{{#crossLink \"Lookat\"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>An Ortho works like Blender's orthographic projection, where the positions of the left, right, top and bottom planes are\nimplicitly specified with a single {{#crossLink \"Ortho/scale:property\"}}{{/crossLink}} property, which causes the frustum to be symmetrical on X and Y axis, large enough to\ncontain the number of units given by {{#crossLink \"Ortho/scale:property\"}}{{/crossLink}}.</li>\n<li>An Ortho's {{#crossLink \"Ortho/near:property\"}}{{/crossLink}} and {{#crossLink \"Ortho/far:property\"}}{{/crossLink}} properties\nspecify the distances to the WebGL clipping planes.</li>\n<li>Use {{#crossLink \"Frustum\"}}{{/crossLink}} if you need to individually specify the position of each of the frustum\nplanes, eg. for an asymmetrical view volume, such as those used for stereo viewing.</li>\n<li>Use {{#crossLink \"Perspective\"}}{{/crossLink}} if you need perspective projection.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Ortho components create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Ortho.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Camera with orthographic projection](../../examples/#camera_ortho)</li>\n</ul>\n\n## Usage\n\n````Javascript\nnew XEO.Entity({\n\n    camera: XEO.Camera({\n\n        view: new XEO.Lookat({\n            eye: [0, 0, -4],\n            look: [0, 0, 0],\n            up: [0, 1, 0]\n        }),\n\n        project: new XEO.Ortho(scene, {\n            scale: 100.0,  // Fit at least 100 units within the ortho volume X & Y extents\n            near: 0.1,\n            far: 1000\n        })\n    }),\n\n    geometry: new XEO.BoxGeometry()\n});\n````",
-            "submodule": "camera",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this Ortho within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "Configs",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this Ortho.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "scale",
-                            "description": "Scale factor for this Ortho's extents on X and Y axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "1.0"
-                        },
-                        {
-                            "name": "near",
-                            "description": "Position of the near plane on the View-space Z-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "0.1"
-                        },
-                        {
-                            "name": "far",
-                            "description": "Position of the far plane on the positive View-space Z-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "10000"
-                        }
-                    ]
-                }
-            ],
-            "extends": "Projection"
-        },
-        "Perspective": {
-            "name": "Perspective",
-            "shortname": "Perspective",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/camera/perspective.js",
-            "line": 1,
-            "description": "A **Perspective** component defines a perspective projection transform.\n\n<ul>\n\n<li>{{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with viewing transform components, such as\n{{#crossLink \"Lookat\"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>Alternatively, use {{#crossLink \"Ortho\"}}{{/crossLink}} if you need a orthographic projection.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Perspective components create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Perspective.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Camera with perspective projection](../../examples/#camera_perspective)</li>\n</ul>\n\n## Usage\n\n````Javascript\nnew XEO.Entity({\n\n    camera: XEO.Camera({\n\n       view: new XEO.Lookat({\n           eye: [0, 0, -4],\n           look: [0, 0, 0],\n           up: [0, 1, 0]\n       }),\n\n       project: new XEO.Perspective({\n           fovy: 60,\n           near: 0.1,\n           far: 1000\n       })\n    }),\n\n    perspective: new XEO.BoxGeometry()\n});\n````",
-            "submodule": "camera",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this Perspective within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "Configs",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this Perspective.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "fovy",
-                            "description": "Field-of-view angle, in degrees, on Y-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "60.0"
-                        },
-                        {
-                            "name": "near",
-                            "description": "Position of the near plane on the View-space Z-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "0.1"
-                        },
-                        {
-                            "name": "far",
-                            "description": "Position of the far plane on the View-space Z-axis.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "10000"
-                        }
-                    ]
-                }
-            ],
-            "extends": "Projection"
-        },
-        "Projection": {
-            "name": "Projection",
-            "shortname": "Projection",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "XEO",
-            "namespace": "",
-            "file": "src/camera/projection.js",
-            "line": 1,
-            "description": "A **Projection** component defines a projection transformation as a 4x4 matrix.\n\n<ul>\n<li>Projection is the base class for (at least) the {{#crossLink \"Perspective\"}}{{/crossLink}} and {{#crossLink \"Ortho\"}}{{/crossLink}} components.</li>\n<li>{{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair Projections with {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} components.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Projection components create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Projection.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Camera with perspective projection](../../examples/#camera_perspective)</li>\n</ul>\n\n## Usage\n\n````Javascript\nnew XEO.Entity({\n\n    camera: XEO.Camera({\n\n        view: new XEO.Lookat({\n            eye: [0, 0, -4],\n            look: [0, 0, 0],\n            up: [0, 1, 0]\n        }),\n\n        project: new XEO.Projection({\n            matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]\n        })\n    }),\n\n    geometry: new XEO.BoxGeometry()\n});\n````",
-            "submodule": "camera",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this Projection within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "Configs",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this Projection.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "matrix",
-                            "description": "One-dimensional, sixteen element array of elements for the Transform, an identity matrix by default.",
-                            "type": "Array of Number",
-                            "optional": true,
-                            "optdefault": "[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]"
                         }
                     ]
                 }
@@ -3828,7 +3472,7 @@
             "namespace": "",
             "file": "src/curves/splineCurve.js",
             "line": 1,
-            "description": "A **SplineCurve** is a {{#crossLink \"Curve\"}}{{/crossLink}} along which a 3D position can be animated.\n\n<ul>\n   <li>As shown in the diagram below, a SplineCurve is defined by three or more control points.</li>\n   <li>You can sample a {{#crossLink \"SplineCurve/point:property\"}}{{/crossLink}} and a {{#crossLink \"Curve/tangent:property\"}}{{/crossLink}}\nvector on a SplineCurve for any given value of {{#crossLink \"SplineCurve/t:property\"}}{{/crossLink}} in the range [0..1].</li>\n   <li>When you set {{#crossLink \"SplineCurve/t:property\"}}{{/crossLink}} on a SplineCurve, its {{#crossLink \"SplineCurve/point:property\"}}{{/crossLink}} and {{#crossLink \"Curve/tangent:property\"}}{{/crossLink}} properties will update accordingly.</li>\n   <li>To build a complex path, you can combine an unlimited combination of SplineCurves,\n{{#crossLink \"CubicBezierCurve\"}}CubicBezierCurves{{/crossLink}} and {{#crossLink \"QuadraticBezierCurve\"}}QuadraticBezierCurves{{/crossLink}}\ninto a {{#crossLink \"Path\"}}{{/crossLink}}.</li>\n</ul>\n\n<img style=\"border:1px solid; background: white;\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Quadratic_spline_six_segments.svg/200px-Quadratic_spline_six_segments.svg.png\"/><br>\n*<a href=\"https://en.wikipedia.org/wiki/Spline_(mathematics)\">Spline Curve from Wikipedia</a>*\n\n## Examples\n\n<ul>\n<li>[Simple SplineCurve example](../../examples/#curves_SplineCurve)</li>\n<li>[Moving a PointLight along a SplineCurve](../../examples/#lights_point_world)</li>\n<li>[Path example](../../examples/#curves_Path)</li>\n</ul>\n\n## Usage\n\n#### Animation along a SplineCurve\n\nLet's create a SplineCurve, subscribe to updates on its {{#crossLink \"SplineCurve/point:property\"}}{{/crossLink}},\n{{#crossLink \"Curve/tangent:property\"}}{{/crossLink}} and {{#crossLink \"Curve/t:property\"}}{{/crossLink}} properties,\nthen vary its {{#crossLink \"SplineCurve/t:property\"}}{{/crossLink}}\nproperty over time:\n\n````javascript\nvar curve = new XEO.SplineCurve({\n    points: [\n        [-10, 0, 0],\n        [-5, 15, 0],\n        [20, 15, 0],\n        [10, 0, 0]\n    ]\n});\n\ncurve.on(\"point\", function(point) {\n    this.log(\"curve.point=\" + JSON.stringify(point));\n});\n\ncurve.on(\"tangent\", function(tangent) {\n    this.log(\"curve.tangent=\" + JSON.stringify(tangent));\n});\n\ncurve.on(\"t\", function(t) {\n    this.log(\"curve.t=\" + t);\n});\n\ncurve.scene.on(\"tick\", function(e) {\n    curve.t = (e.time - e.startTime) * 0.01;\n});\n````\n\n#### Randomly sampling points\n\nUse SplineCurve's {{#crossLink \"SplineCurve/getPoint:method\"}}{{/crossLink}} and\n{{#crossLink \"Curve/getTangent:method\"}}{{/crossLink}} methods to sample the point and vector\nat a given **t**:\n\n````javascript\ncurve.scene.on(\"tick\", function(e) {\n\n    var t = (e.time - e.startTime) * 0.01;\n\n    var point = curve.getPoint(t);\n    var tangent = curve.getTangent(t);\n\n    this.log(\"t=\" + t + \", point=\" + JSON.stringify(point) + \", tangent=\" + JSON.stringify(tangent));\n});\n````\n\n#### Sampling multiple points\n\nUse SplineCurve's {{#crossLink \"Curve/getPoints:method\"}}{{/crossLink}} method to sample a list of equidistant points\nalong it. In the snippet below, we'll build a {{#crossLink \"Geometry\"}}{{/crossLink}} that renders a line along the\ncurve.  Note that we need to flatten the points array for consumption by the {{#crossLink \"Geometry\"}}{{/crossLink}}.\n\n````javascript\nvar geometry = new XEO.Geometry({\n    positions: XEO.math.flatten(curve.getPoints(50))\n});\n````",
+            "description": "A **SplineCurve** is a {{#crossLink \"Curve\"}}{{/crossLink}} along which a 3D position can be animated.\n\n<ul>\n<li>As shown in the diagram below, a SplineCurve is defined by three or more control points.</li>\n<li>You can sample a {{#crossLink \"SplineCurve/point:property\"}}{{/crossLink}} and a {{#crossLink \"Curve/tangent:property\"}}{{/crossLink}}\nvector on a SplineCurve for any given value of {{#crossLink \"SplineCurve/t:property\"}}{{/crossLink}} in the range [0..1].</li>\n<li>When you set {{#crossLink \"SplineCurve/t:property\"}}{{/crossLink}} on a SplineCurve, its {{#crossLink \"SplineCurve/point:property\"}}{{/crossLink}} and {{#crossLink \"Curve/tangent:property\"}}{{/crossLink}} properties will update accordingly.</li>\n<li>To build a complex path, you can combine an unlimited combination of SplineCurves,\n{{#crossLink \"CubicBezierCurve\"}}CubicBezierCurves{{/crossLink}} and {{#crossLink \"QuadraticBezierCurve\"}}QuadraticBezierCurves{{/crossLink}}\ninto a {{#crossLink \"Path\"}}{{/crossLink}}.</li>\n</ul>\n\n<img style=\"border:1px solid; background: white;\" src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Quadratic_spline_six_segments.svg/200px-Quadratic_spline_six_segments.svg.png\"/><br>\n*<a href=\"https://en.wikipedia.org/wiki/Spline_(mathematics)\">Spline Curve from Wikipedia</a>*\n\n## Examples\n\n<ul>\n<li>[Simple SplineCurve example](../../examples/#curves_SplineCurve)</li>\n<li>[Moving a PointLight along a SplineCurve](../../examples/#lights_point_world)</li>\n<li>[Path example](../../examples/#curves_Path)</li>\n</ul>\n\n## Usage\n\n#### Animation along a SplineCurve\n\nLet's create a SplineCurve, subscribe to updates on its {{#crossLink \"SplineCurve/point:property\"}}{{/crossLink}},\n{{#crossLink \"Curve/tangent:property\"}}{{/crossLink}} and {{#crossLink \"Curve/t:property\"}}{{/crossLink}} properties,\nthen vary its {{#crossLink \"SplineCurve/t:property\"}}{{/crossLink}}\nproperty over time:\n\n````javascript\nvar curve = new XEO.SplineCurve({\n    points: [\n        [-10, 0, 0],\n        [-5, 15, 0],\n        [20, 15, 0],\n        [10, 0, 0]\n    ]\n});\n\ncurve.on(\"point\", function(point) {\n    this.log(\"curve.point=\" + JSON.stringify(point));\n});\n\ncurve.on(\"tangent\", function(tangent) {\n    this.log(\"curve.tangent=\" + JSON.stringify(tangent));\n});\n\ncurve.on(\"t\", function(t) {\n    this.log(\"curve.t=\" + t);\n});\n\ncurve.scene.on(\"tick\", function(e) {\n    curve.t = (e.time - e.startTime) * 0.01;\n});\n````\n\n#### Randomly sampling points\n\nUse SplineCurve's {{#crossLink \"SplineCurve/getPoint:method\"}}{{/crossLink}} and\n{{#crossLink \"Curve/getTangent:method\"}}{{/crossLink}} methods to sample the point and vector\nat a given **t**:\n\n````javascript\ncurve.scene.on(\"tick\", function(e) {\n\n    var t = (e.time - e.startTime) * 0.01;\n\n    var point = curve.getPoint(t);\n    var tangent = curve.getTangent(t);\n\n    this.log(\"t=\" + t + \", point=\" + JSON.stringify(point) + \", tangent=\" + JSON.stringify(tangent));\n});\n````\n\n#### Sampling multiple points\n\nUse SplineCurve's {{#crossLink \"Curve/getPoints:method\"}}{{/crossLink}} method to sample a list of equidistant points\nalong it. In the snippet below, we'll build a {{#crossLink \"Geometry\"}}{{/crossLink}} that renders a line along the\ncurve.  Note that we need to flatten the points array for consumption by the {{#crossLink \"Geometry\"}}{{/crossLink}}.\n\n````javascript\nvar geometry = new XEO.Geometry({\n    positions: XEO.math.flatten(curve.getPoints(50))\n});\n````",
             "submodule": "curves",
             "is_constructor": 1,
             "params": [
@@ -4847,14 +4491,14 @@
                         {
                             "name": "dir",
                             "description": "A unit vector indicating the direction that the light is shining,\ngiven in either World or View space, depending on the value of the **space** parameter.",
-                            "type": "Array(Number)",
+                            "type": "Float32Array",
                             "optional": true,
                             "optdefault": "[1.0, 1.0, 1.0]"
                         },
                         {
                             "name": "color",
                             "description": "The color of this DirLight.",
-                            "type": "Array(Number)",
+                            "type": "Float32Array",
                             "optional": true,
                             "optdefault": "[0.7, 0.7, 0.8 ]"
                         },
@@ -4972,14 +4616,14 @@
                         {
                             "name": "pos",
                             "description": "Position, in either World or View space, depending on the value of the **space** parameter.",
-                            "type": "Array(Number)",
+                            "type": "Float32Array",
                             "optional": true,
                             "optdefault": "[ 1.0, 1.0, 1.0 ]"
                         },
                         {
                             "name": "color",
                             "description": "Color of this PointLight.",
-                            "type": "Array(Number)",
+                            "type": "Float32Array",
                             "optional": true,
                             "optdefault": "[0.7, 0.7, 0.8 ]"
                         },
@@ -6359,6 +6003,317 @@
             ],
             "extends": "Component"
         },
+        "Frustum": {
+            "name": "Frustum",
+            "shortname": "Frustum",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/transforms/frustum.js",
+            "line": 1,
+            "description": "A **Frustum** defines a perspective projection as a frustum-shaped view volume.\n\n<ul>\n<li>{{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with viewing transform components, such as\n{{#crossLink \"Lookat\"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>A Frustum lets us explicitly set the positions of the left, right, top, bottom, near and far planes, which is useful\nfor asymmetrical view volumes, such as those used for stereo viewing.</li>\n<li>An Frustum's {{#crossLink \"Frustum/near:property\"}}{{/crossLink}} and {{#crossLink \"Frustum/far:property\"}}{{/crossLink}} properties\nspecify the distances to the WebGL clipping planes.</li>\n<li>Use {{#crossLink \"Ortho\"}}{{/crossLink}} if you just want to specify the X,Y frustum extents with a single scale factor,\nie. without individually specifying the distance to each frustum plane.</li>\n<li>Use {{#crossLink \"Perspective\"}}{{/crossLink}} if you need perspective projection.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Ortho components create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Frustum.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Camera with frustum projection](../../examples/#camera_frustum)</li>\n<li>[Stereo viewing with frustum projection](../../examples/#effects_stereo)</li>\n</ul>\n\n## Usage\n\n````Javascript\nnew XEO.Entity({\n\n    camera: XEO.Camera({\n\n       view: new XEO.Lookat({\n           eye: [0, 0, -4],\n           look: [0, 0, 0],\n           up: [0, 1, 0]\n       }),\n\n       project: new XEO.Frustum(scene, {\n           left: -0.1,\n           right: 0.1,\n           bottom: -0.1,\n           top: 0.1,\n           near: 0.15,\n           far: 1000\n       })\n    }),\n\n    geometry: new XEO.BoxGeometry()\n});\n````",
+            "submodule": "transforms",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this Frustum within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Frustum.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "left",
+                            "description": "Position of the Frustum's left plane on the View-space X-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "-1"
+                        },
+                        {
+                            "name": "right",
+                            "description": "Position of the Frustum's right plane on the View-space X-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1"
+                        },
+                        {
+                            "name": "bottom",
+                            "description": "Position of the Frustum's bottom plane on the View-space Y-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "-1"
+                        },
+                        {
+                            "name": "top",
+                            "description": "Position of the Frustum's top plane on the View-space Y-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1"
+                        },
+                        {
+                            "name": "near",
+                            "description": "Position of the Frustum's near plane on the View-space Z-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0.1"
+                        },
+                        {
+                            "name": "far",
+                            "description": "Position of the Frustum's far plane on the positive View-space Z-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1000"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Transform"
+        },
+        "Lookat": {
+            "name": "Lookat",
+            "shortname": "Lookat",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/transforms/lookat.js",
+            "line": 1,
+            "description": "A **Lookat** defines a viewing transform as an {{#crossLink \"Lookat/eye:property\"}}eye{{/crossLink}} position, a\n{{#crossLink \"Lookat/look:property\"}}look{{/crossLink}} position and an {{#crossLink \"Lookat/up:property\"}}up{{/crossLink}}\nvector.\n\n<ul>\n<li>{{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with projection transforms such as\n{{#crossLink \"Perspective\"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Lookat components create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Lookat.png\"></img>\n\n## Usage\n\n````Javascript\nnew XEO.Entity({\n\n    camera: XEO.Camera({\n\n       view: new XEO.Lookat({\n           eye: [0, 0, 4],\n           look: [0, 0, 0],\n           up: [0, 1, 0]\n       }),\n\n       project: new XEO.Perspective({\n           fovy: 60,\n           near: 0.1,\n           far: 1000\n       })\n    }),\n\n    geometry: new XEO.BoxGeometry()\n});\n````",
+            "submodule": "transforms",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Lookat in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Lookat.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "parent",
+                            "description": "ID or instance of a parent {{#crossLink \"Transform\"}}{{/crossLink}} within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
+                            "type": "String|Transform",
+                            "optional": true
+                        },
+                        {
+                            "name": "eye",
+                            "description": "Eye position.",
+                            "type": "Array of Number",
+                            "optional": true,
+                            "optdefault": "[0,0,10]"
+                        },
+                        {
+                            "name": "look",
+                            "description": "The position of the point-of-interest we're looking at.",
+                            "type": "Array of Number",
+                            "optional": true,
+                            "optdefault": "[0,0,0]"
+                        },
+                        {
+                            "name": "up",
+                            "description": "The \"up\" vector.",
+                            "type": "Array of Number",
+                            "optional": true,
+                            "optdefault": "[0,1,0]"
+                        },
+                        {
+                            "name": "gimbalLockY",
+                            "description": "Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Transform",
+            "author": "xeolabs / http://xeolabs.com/"
+        },
+        "Ortho": {
+            "name": "Ortho",
+            "shortname": "Ortho",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/transforms/ortho.js",
+            "line": 1,
+            "description": "An **Ortho** component defines an orthographic projection transform.\n\n<ul>\n<li>{{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with viewing transform components, such as\n{{#crossLink \"Lookat\"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>An Ortho works like Blender's orthographic projection, where the positions of the left, right, top and bottom planes are\nimplicitly specified with a single {{#crossLink \"Ortho/scale:property\"}}{{/crossLink}} property, which causes the frustum to be symmetrical on X and Y axis, large enough to\ncontain the number of units given by {{#crossLink \"Ortho/scale:property\"}}{{/crossLink}}.</li>\n<li>An Ortho's {{#crossLink \"Ortho/near:property\"}}{{/crossLink}} and {{#crossLink \"Ortho/far:property\"}}{{/crossLink}} properties\nspecify the distances to the WebGL clipping planes.</li>\n<li>Use {{#crossLink \"Frustum\"}}{{/crossLink}} if you need to individually specify the position of each of the frustum\nplanes, eg. for an asymmetrical view volume, such as those used for stereo viewing.</li>\n<li>Use {{#crossLink \"Perspective\"}}{{/crossLink}} if you need perspective projection.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Ortho components create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Ortho.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Camera with orthographic projection](../../examples/#camera_ortho)</li>\n</ul>\n\n## Usage\n\n````Javascript\nnew XEO.Entity({\n\n    camera: XEO.Camera({\n\n        view: new XEO.Lookat({\n            eye: [0, 0, -4],\n            look: [0, 0, 0],\n            up: [0, 1, 0]\n        }),\n\n        project: new XEO.Ortho(scene, {\n            scale: 100.0,  // Fit at least 100 units within the ortho volume X & Y extents\n            near: 0.1,\n            far: 1000\n        })\n    }),\n\n    geometry: new XEO.BoxGeometry()\n});\n````",
+            "submodule": "transforms",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this Ortho within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Ortho.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "parent",
+                            "description": "ID or instance of a parent {{#crossLink \"Transform\"}}{{/crossLink}} within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
+                            "type": "String|Transform",
+                            "optional": true
+                        },
+                        {
+                            "name": "scale",
+                            "description": "Scale factor for this Ortho's extents on X and Y axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1.0"
+                        },
+                        {
+                            "name": "near",
+                            "description": "Position of the near plane on the View-space Z-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0.1"
+                        },
+                        {
+                            "name": "far",
+                            "description": "Position of the far plane on the positive View-space Z-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "10000"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Transform"
+        },
+        "Perspective": {
+            "name": "Perspective",
+            "shortname": "Perspective",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/transforms/perspective.js",
+            "line": 1,
+            "description": "A **Perspective** component defines a perspective projection transform.\n\n<ul>\n\n<li>{{#crossLink \"Camera\"}}Camera{{/crossLink}} components pair these with viewing transform components, such as\n{{#crossLink \"Lookat\"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>Alternatively, use {{#crossLink \"Ortho\"}}{{/crossLink}} if you need a orthographic projection.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Perspective components create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Perspective.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Camera with perspective projection](../../examples/#camera_perspective)</li>\n</ul>\n\n## Usage\n\n````Javascript\nnew XEO.Entity({\n\n    camera: XEO.Camera({\n\n       view: new XEO.Lookat({\n           eye: [0, 0, -4],\n           look: [0, 0, 0],\n           up: [0, 1, 0]\n       }),\n\n       project: new XEO.Perspective({\n           fovy: 60,\n           near: 0.1,\n           far: 1000\n       })\n    }),\n\n    perspective: new XEO.BoxGeometry()\n});\n````",
+            "submodule": "transforms",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this Perspective within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Perspective.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "parent",
+                            "description": "ID or instance of a parent {{#crossLink \"Transform\"}}{{/crossLink}} within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
+                            "type": "String|Transform",
+                            "optional": true
+                        },
+                        {
+                            "name": "fovy",
+                            "description": "Field-of-view angle, in degrees, on Y-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "60.0"
+                        },
+                        {
+                            "name": "near",
+                            "description": "Position of the near plane on the View-space Z-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0.1"
+                        },
+                        {
+                            "name": "far",
+                            "description": "Position of the far plane on the View-space Z-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "10000"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Transform"
+        },
         "Quaternion": {
             "name": "Quaternion",
             "shortname": "Quaternion",
@@ -6400,6 +6355,12 @@
                             "optional": true
                         },
                         {
+                            "name": "parent",
+                            "description": "ID or instance of a parent {{#crossLink \"Transform\"}}{{/crossLink}} within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
+                            "type": "String|Transform",
+                            "optional": true
+                        },
+                        {
                             "name": "xyzw",
                             "description": "The initial Quaternion elements.",
                             "type": "Array(Number)",
@@ -6425,6 +6386,55 @@
             "line": 1,
             "description": "A **Rotate** rotates associated {{#crossLink \"Entity\"}}Entities{{/crossLink}} or {{#crossLink \"Model\"}}Models{{/crossLink}} about an axis vector.\n\n<ul>\n<li>Rotate is a sub-class of {{#crossLink \"Transform\"}}{{/crossLink}}</li>\n<li>Instances of {{#crossLink \"Transform\"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.</li>\n<li>When an {{#crossLink \"Entity\"}}{{/crossLink}} or {{#crossLink \"Model\"}}{{/crossLink}} is connected to a leaf {{#crossLink \"Transform\"}}{{/crossLink}}\nwithin a {{#crossLink \"Transform\"}}{{/crossLink}} hierarchy, it will be transformed by each {{#crossLink \"Transform\"}}{{/crossLink}}\non the path up to the root, in that order.</li>\n<li>See <a href=\"./Shader.html#inputs\">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Rotate.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Transform hierarchy](../../examples/#transforms_hierarchy)</li>\n</ul>\n\n## Usage\n\nIn this example we have two {{#crossLink \"Entity\"}}Entities{{/crossLink}} that are transformed by a hierarchy that contains\nRotate, {{#crossLink \"Translate\"}}{{/crossLink}} and {{#crossLink \"Scale\"}}{{/crossLink}} transforms.\nThe Entities share the same {{#crossLink \"BoxGeometry\"}}{{/crossLink}}.<br>\n\n````javascript\nvar rotate = new XEO.Rotate({\n   xyz: [0, 1, 0], // Rotate 30 degrees about Y axis\n   angle: 30\n});\n\nvar translate1 = new XEO.Translate({\n   parent: rotate,\n   xyz: [-5, 0, 0] // Translate along -X axis\n});\n\nvar translate2 = new XEO.Translate({\n   parent: rotate,\n   xyz: [5, 0, 0] // Translate along +X axis\n});\n\nvar scale = new XEO.Scale({\n   parent: translate2,\n   xyz: [1, 2, 1] // Scale x2 on Y axis\n});\n\nvar geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box\n\nvar Entity1 = new XEO.Entity({\n   transform: translate1,\n   geometry: geometry\n});\n\nvar Entity2 = new XEO.Entity({\n   transform: scale,\n   geometry: geometry\n});\n````\n\nSince everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.\n\nLet's insert a {{#crossLink \"Scale\"}}{{/crossLink}} between the first Translate and the first {{#crossLink \"Entity\"}}{{/crossLink}}:\n\n````javascript\nvar scale2 = new XEO.Scale({\n   parent: translate1,\n   xyz: [1, 1, 2] // Scale x2 on Z axis\n});\n\nEntity2.transform = scale2;\n````\n\nLet's start spinning the {{#crossLink \"Rotate\"}}{{/crossLink}}:\n\n````javascript\n// Rotate 0.2 degrees on each frame\nscene.on(\"tick\", function(e) {\n   rotate.angle += 0.2;\n});\n````",
             "submodule": "transforms",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Rotate in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Rotate.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "parent",
+                            "description": "ID or instance of a parent {{#crossLink \"Transform\"}}{{/crossLink}} within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
+                            "type": "String|Transform",
+                            "optional": true
+                        },
+                        {
+                            "name": "xyz",
+                            "description": "Axis of rotation.",
+                            "type": "Float32Array",
+                            "optional": true,
+                            "optdefault": "[0,1,0]"
+                        },
+                        {
+                            "name": "angle",
+                            "description": "Angle of rotation in degrees.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0"
+                        }
+                    ]
+                }
+            ],
             "extends": "Transform"
         },
         "Scale": {
@@ -6441,6 +6451,48 @@
             "line": 1,
             "description": "A **Scale** applies a scaling transformation to associated {{#crossLink \"Entity\"}}Entities{{/crossLink}} or {{#crossLink \"Model\"}}Models{{/crossLink}}.\n\n<ul>\n<li>Scale is a sub-class of {{#crossLink \"Transform\"}}{{/crossLink}}</li>\n<li>Instances of {{#crossLink \"Transform\"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.</li>\n<li>When an {{#crossLink \"Entity\"}}{{/crossLink}} or {{#crossLink \"Model\"}}{{/crossLink}} is connected to a leaf {{#crossLink \"Transform\"}}{{/crossLink}}\nwithin a {{#crossLink \"Transform\"}}{{/crossLink}} hierarchy, it will be transformed by each {{#crossLink \"Transform\"}}{{/crossLink}}\non the path up to the root, in that order.</li>\n<li>See <a href=\"./Shader.html#inputs\">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Scale.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Transform hierarchy](../../examples/#transforms_hierarchy)</li>\n</ul>\n\n## Usage\n\nIn this example we have two {{#crossLink \"Entity\"}}Entities{{/crossLink}} that are transformed by a hierarchy that contains\n{{#crossLink \"Rotate\"}}{{/crossLink}}, {{#crossLink \"Translate\"}}{{/crossLink}} and Scale transforms.\nThe Entities share the same {{#crossLink \"BoxGeometry\"}}{{/crossLink}}.<br>\n\n````javascript\nvar rotate = new XEO.Rotate({\n   xyz: [0, 1, 0], // Rotate 30 degrees about Y axis\n   angle: 30\n});\n\nvar translate1 = new XEO.Translate({\n   parent: rotate,\n   xyz: [-5, 0, 0] // Translate along -X axis\n});\n\nvar translate2 = new XEO.Translate({\n   parent: rotate,\n   xyz: [5, 0, 0] // Translate along +X axis\n});\n\nvar scale = new XEO.Scale({\n   parent: translate2,\n   xyz: [1, 2, 1] // Scale x2 on Y axis\n});\n\nvar geometry = new XEO.BoxGeometry();\n\nvar entity1 = new XEO.Entity({\n   transform: translate1,\n   geometry: geometry\n});\n\nvar entity2 = new XEO.Entity({\n   transform: scale,\n   geometry: geometry\n});\n````\n\nSince everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.\n\nLet's insert a {{#crossLink \"Scale\"}}{{/crossLink}} between the first Translate and the first {{#crossLink \"Entity\"}}{{/crossLink}}:\n\n````javascript\nvar scale2 = new XEO.Scale({\n   parent: translate1,\n   xyz: [1, 1, 2] // Scale x2 on Z axis\n});\n\nentity2.transform = scale2;\n````\n\nAnd just for fun, we'll start spinning the {{#crossLink \"Rotate\"}}{{/crossLink}}:\n\n````javascript\n// Rotate 0.2 degrees on each frame\nscene.on(\"tick\", function(e) {\n   rotate.angle += 0.2;\n});\n````",
             "submodule": "transforms",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Scale in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Scale.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "parent",
+                            "description": "ID or instance of a parent {{#crossLink \"Transform\"}}{{/crossLink}} within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
+                            "type": "String|Transform",
+                            "optional": true
+                        },
+                        {
+                            "name": "xyz",
+                            "description": "Scale factors.",
+                            "type": "Float32Array",
+                            "optional": true,
+                            "optdefault": "[1,1,1]"
+                        }
+                    ]
+                }
+            ],
             "extends": "Transform"
         },
         "Stationary": {
@@ -6544,7 +6596,7 @@
                         {
                             "name": "matrix",
                             "description": "One-dimensional, sixteen element array of elements for the Transform, an identity matrix by default.",
-                            "type": "Array of Number",
+                            "type": "Float32Array",
                             "optional": true,
                             "optdefault": "[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]"
                         }
@@ -6594,9 +6646,15 @@
                             "optional": true
                         },
                         {
-                            "name": "xyzw",
+                            "name": "parent",
+                            "description": "ID or instance of a parent {{#crossLink \"Transform\"}}{{/crossLink}} within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
+                            "type": "String|Transform",
+                            "optional": true
+                        },
+                        {
+                            "name": "xyz",
                             "description": "The translation vector",
-                            "type": "Array(Number)",
+                            "type": "Float32Array",
                             "optional": true,
                             "optdefault": "[0,0,0]"
                         }
@@ -7562,7 +7620,19 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 140,
+            "line": 102,
+            "description": "Optional callback to fire when renderer wants to\nbind an output framebuffer.\n\nWhen this is missing, the renderer will implicitly bind\nWebGL's default framebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });",
+            "class": "CameraFlight"
+        },
+        {
+            "file": "src/_renderer/renderer.js",
+            "line": 116,
+            "description": "Optional callback to fire when renderer wants to\nunbind any output drawing framebuffer that was\npreviously bound with #bindOutputFramebuffer.\n\nCallback takes no parameters.",
+            "class": "CameraFlight"
+        },
+        {
+            "file": "src/_renderer/renderer.js",
+            "line": 181,
             "description": "Visibility render state.",
             "itemtype": "property",
             "name": "visibility",
@@ -7571,7 +7641,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 147,
+            "line": 188,
             "description": "Culling render state.",
             "itemtype": "property",
             "name": "cull",
@@ -7580,7 +7650,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 154,
+            "line": 195,
             "description": "Modes render state.",
             "itemtype": "property",
             "name": "modes",
@@ -7589,7 +7659,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 161,
+            "line": 202,
             "description": "Render state for an effects layer.",
             "itemtype": "property",
             "name": "layer",
@@ -7598,7 +7668,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 168,
+            "line": 209,
             "description": "Render state for an effects pipeline stage.",
             "itemtype": "property",
             "name": "stage",
@@ -7607,7 +7677,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 175,
+            "line": 216,
             "description": "Depth buffer render state.",
             "itemtype": "property",
             "name": "depthBuf",
@@ -7616,7 +7686,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 182,
+            "line": 223,
             "description": "Color buffer render state.",
             "itemtype": "property",
             "name": "colorBuf",
@@ -7625,7 +7695,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 189,
+            "line": 230,
             "description": "Lights render state.",
             "itemtype": "property",
             "name": "lights",
@@ -7634,7 +7704,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 196,
+            "line": 237,
             "description": "Material render state.",
             "itemtype": "property",
             "name": "material",
@@ -7643,7 +7713,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 203,
+            "line": 244,
             "description": "Environmental reflection render state.",
             "itemtype": "property",
             "name": "reflection",
@@ -7652,34 +7722,34 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 210,
+            "line": 251,
             "description": "Modelling transform render state.",
             "itemtype": "property",
             "name": "modelTransform",
-            "type": "{renderer.ModelTransform}",
+            "type": "{renderer.Transform}",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 217,
+            "line": 258,
             "description": "View transform render state.",
             "itemtype": "property",
             "name": "viewTransform",
-            "type": "{renderer.ViewTransform}",
+            "type": "{renderer.Transform}",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 224,
+            "line": 265,
             "description": "Projection transform render state.",
             "itemtype": "property",
             "name": "projTransform",
-            "type": "{renderer.ProjTransform}",
+            "type": "{renderer.Transform}",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 231,
+            "line": 272,
             "description": "Billboard render state.",
             "itemtype": "property",
             "name": "billboard",
@@ -7688,7 +7758,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 238,
+            "line": 279,
             "description": "Stationary render state.",
             "itemtype": "property",
             "name": "stationary",
@@ -7697,7 +7767,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 245,
+            "line": 286,
             "description": "Color target render state.",
             "itemtype": "property",
             "name": "colorTarget",
@@ -7706,7 +7776,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 252,
+            "line": 293,
             "description": "Depth target render state.",
             "itemtype": "property",
             "name": "depthTarget",
@@ -7715,7 +7785,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 259,
+            "line": 300,
             "description": "Cross-section planes render state.",
             "itemtype": "property",
             "name": "clips",
@@ -7724,7 +7794,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 266,
+            "line": 307,
             "description": "Morph targets render state.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -7733,7 +7803,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 273,
+            "line": 314,
             "description": "Custom shader render state.",
             "itemtype": "property",
             "name": "shader",
@@ -7742,7 +7812,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 280,
+            "line": 321,
             "description": "Render state providing custom shader params.",
             "itemtype": "property",
             "name": "shaderParams",
@@ -7751,7 +7821,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 287,
+            "line": 328,
             "description": "Geometry render state.",
             "itemtype": "property",
             "name": "geometry",
@@ -7760,7 +7830,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 294,
+            "line": 335,
             "description": "Viewport render state.",
             "itemtype": "property",
             "name": "viewport",
@@ -7769,48 +7839,48 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 304,
+            "line": 345,
             "description": "Flags the object list as needing to be rebuilt from renderer objects\non the next call to {@link #render} or {@link #pick}. Setting this\nwill cause the rendering pipeline to be executed from stage #2\n(see class comment), causing object list rebuild, state order\ndetermination, state sort, draw list construction and image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 314,
+            "line": 355,
             "description": "Flags the object list as needing state orders to be (re)computed on the\nnext call to {@link #render} or {@link #pick}. Setting this will cause\nthe rendering pipeline to be executed from stage #3 (see class comment),\ncausing state order determination, state sort, draw list construction\nand image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 324,
+            "line": 365,
             "description": "Flags the object list as needing to be state-sorted on the next call\nto {@link #render} or {@link #pick}.Setting this will cause the\nrendering pipeline to be executed from stage #4 (see class comment),\ncausing state sort, draw list construction and image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 333,
+            "line": 374,
             "description": "Flags the draw list as needing to be rebuilt from the object list on\nthe next call to {@link #render} or {@link #pick}.  Setting this will\ncause the rendering pipeline to be executed from stage #5\n(see class comment), causing draw list construction and image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 342,
+            "line": 383,
             "description": "Flags the image as needing to be redrawn from the draw list on the\nnext call to {@link #render} or {@link #pick}. Setting this will\ncause the rendering pipeline to be executed from stage #6\n(see class comment), causing the image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 352,
+            "line": 393,
             "description": "Reallocates WebGL resources for objects within this renderer.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 376,
+            "line": 417,
             "description": "Internally creates (or updates) a {@link XEO.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link XEO.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
             "params": [
                 {
@@ -7823,12 +7893,12 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 502,
+            "line": 543,
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 560,
+            "line": 601,
             "description": "Removes an object from this Renderer",
             "params": [
                 {
@@ -7841,43 +7911,43 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 597,
+            "line": 637,
             "description": "Renders a new frame, if neccessary.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 637,
+            "line": 678,
             "description": "Builds the object list from the object map",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 649,
+            "line": 690,
             "description": "Generates object state sort keys",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 670,
+            "line": 711,
             "description": "State-sorts the object list",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 680,
+            "line": 721,
             "description": "Logs the object list",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 693,
+            "line": 734,
             "description": "Builds the draw list, which is the list of draw state-chunks to apply to WebGL\nto render the visible objects in the object list for the next frame.\nPreserves the state sort order of the object list among the draw chunks.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 878,
+            "line": 919,
             "description": "Appends an object to the draw and pick lists.",
             "params": [
                 {
@@ -7895,7 +7965,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 947,
+            "line": 988,
             "description": "Logs the contents of the draw list to the console.",
             "access": "private",
             "tagname": "",
@@ -7903,7 +7973,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 977,
+            "line": 1018,
             "description": "Logs the contents of the pick list to the console.",
             "access": "private",
             "tagname": "",
@@ -7911,7 +7981,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1006,
+            "line": 1047,
             "description": "Attempts to pick an object at the given canvas coordinates.",
             "params": [
                 {
@@ -7928,7 +7998,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1099,
+            "line": 1140,
             "params": [
                 {
                     "name": "params",
@@ -7969,7 +8039,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1243,
+            "line": 1293,
             "description": "Reads the colors of some pixels in the last rendered frame.",
             "params": [
                 {
@@ -7997,7 +8067,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1290,
+            "line": 1340,
             "description": "Destroys this Renderer.",
             "class": "CameraFlight"
         },
@@ -8198,7 +8268,7 @@
         },
         {
             "file": "src/animation/cameraFlight.js",
-            "line": 541,
+            "line": 540,
             "description": "Stops an earlier flyTo, fires arrival callback.",
             "itemtype": "method",
             "name": "stop",
@@ -8208,7 +8278,7 @@
         },
         {
             "file": "src/animation/cameraFlight.js",
-            "line": 574,
+            "line": 573,
             "description": "Cancels an earlier flyTo without calling the arrival callback.",
             "itemtype": "method",
             "name": "cancel",
@@ -8218,7 +8288,7 @@
         },
         {
             "file": "src/animation/cameraFlight.js",
-            "line": 604,
+            "line": 603,
             "description": "Fired whenever this CameraFlight's {{#crossLink \"CameraFlight/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
@@ -8571,18 +8641,18 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 91,
-            "description": "The projection transform component for this Camera.\n\nWhen set to a null or undefined value, will default to the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s\ndefault {{#crossLink \"Scene/project:property\"}}project{{/crossLink}}, which is\na {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.\n\nFires a {{#crossLink \"Camera/project:event\"}}{{/crossLink}} event on change.",
+            "line": 86,
+            "description": "The projection transform for this Camera.\n\nWhen set to a null or undefined value, will default to the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s\ndefault {{#crossLink \"Scene/project:property\"}}project{{/crossLink}}, which is\na {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.\n\nFires a {{#crossLink \"Camera/project:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "project",
-            "type": "Projection",
+            "type": "Transform",
             "class": "Camera",
             "module": "XEO",
             "submodule": "camera"
         },
         {
             "file": "src/camera/camera.js",
-            "line": 107,
+            "line": 102,
             "description": "Fired whenever this Camera's {{#crossLink \"Camera/project:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "project",
@@ -8598,18 +8668,18 @@
         },
         {
             "file": "src/camera/camera.js",
-            "line": 134,
-            "description": "The viewing transform for this Camera.\n\nWhen set to a null or undefined value, will default to the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s\ndefault {{#crossLink \"Scene/view:property\"}}view{{/crossLink}}, which is\na {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.\n\nFires a {{#crossLink \"Camera/view:event\"}}{{/crossLink}} event on change.",
+            "line": 129,
+            "description": "The viewing transform for this Camera.\n\nWhen set to a null or undefined value, will default to the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s\ndefault {{#crossLink \"Scene/view:property\"}}view{{/crossLink}}, which is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.\n\nFires a {{#crossLink \"Camera/view:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "view",
-            "type": "Lookat",
+            "type": "Transform",
             "class": "Camera",
             "module": "XEO",
             "submodule": "camera"
         },
         {
             "file": "src/camera/camera.js",
-            "line": 150,
+            "line": 144,
             "description": "Fired whenever this Camera's {{#crossLink \"Camera/view:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "view",
@@ -8620,597 +8690,6 @@
                 }
             ],
             "class": "Camera",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/frustum.js",
-            "line": 112,
-            "description": "Position of this Frustum's left plane on the View-space X-axis.\n\nFires a {{#crossLink \"Frustum/left:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "left",
-            "default": "-1.0",
-            "type": "Number",
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/frustum.js",
-            "line": 129,
-            "description": "Fired whenever this Frustum's {{#crossLink \"Frustum/left:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "left",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/frustum.js",
-            "line": 143,
-            "description": "Position of this Frustum's right plane on the View-space X-axis.\n\nFires a {{#crossLink \"Frustum/right:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "right",
-            "default": "1.0",
-            "type": "Number",
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/frustum.js",
-            "line": 160,
-            "description": "Fired whenever this Frustum's {{#crossLink \"Frustum/right:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "right",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/frustum.js",
-            "line": 174,
-            "description": "Position of this Frustum's top plane on the View-space Y-axis.\n\nFires a {{#crossLink \"Frustum/top:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "top",
-            "default": "1.0",
-            "type": "Number",
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/frustum.js",
-            "line": 191,
-            "description": "Fired whenever this Frustum's   {{#crossLink \"Frustum/top:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "top",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/frustum.js",
-            "line": 205,
-            "description": "Position of this Frustum's bottom plane on the View-space Y-axis.\n\nFires a {{#crossLink \"Frustum/bottom:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "bottom",
-            "default": "-1.0",
-            "type": "Number",
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/frustum.js",
-            "line": 222,
-            "description": "Fired whenever this Frustum's   {{#crossLink \"Frustum/bottom:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "bottom",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/frustum.js",
-            "line": 236,
-            "description": "Position of this Frustum's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Frustum/near:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "near",
-            "default": "0.1",
-            "type": "Number",
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/frustum.js",
-            "line": 253,
-            "description": "Fired whenever this Frustum's {{#crossLink \"Frustum/near:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "near",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/frustum.js",
-            "line": 267,
-            "description": "Position of this Frustum's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Frustum/far:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "far",
-            "default": "10000.0",
-            "type": "Number",
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/frustum.js",
-            "line": 284,
-            "description": "Fired whenever this Frustum's  {{#crossLink \"Frustum/far:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "far",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Frustum",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/lookat.js",
-            "line": 83,
-            "description": "Rotate 'eye' about 'look', around the 'up' vector",
-            "params": [
-                {
-                    "name": "angle",
-                    "description": "Angle of rotation in degrees",
-                    "type": "Number"
-                }
-            ],
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/lookat.js",
-            "line": 106,
-            "description": "Rotate 'eye' about 'look' around the X-axis",
-            "params": [
-                {
-                    "name": "angle",
-                    "description": "Angle of rotation in degrees",
-                    "type": "Number"
-                }
-            ],
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/lookat.js",
-            "line": 130,
-            "description": "Rotate 'look' about 'eye', around the 'up' vector\n\n<p>Applies constraints added with {@link #addConstraint}.</p>",
-            "params": [
-                {
-                    "name": "angle",
-                    "description": "Angle of rotation in degrees",
-                    "type": "Number"
-                }
-            ],
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/lookat.js",
-            "line": 150,
-            "description": "Rotate 'eye' about 'look' around the X-axis",
-            "params": [
-                {
-                    "name": "angle",
-                    "description": "Angle of rotation in degrees",
-                    "type": "Number"
-                }
-            ],
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/lookat.js",
-            "line": 174,
-            "description": "Pans the camera along X and Y axis.",
-            "params": [
-                {
-                    "name": "pan",
-                    "description": "The pan vector"
-                }
-            ],
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/lookat.js",
-            "line": 226,
-            "description": "Increments/decrements zoom factor, ie. distance between eye and look.",
-            "params": [
-                {
-                    "name": "delta",
-                    "description": ""
-                }
-            ],
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/lookat.js",
-            "line": 243,
-            "description": "Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.\n\nFires a {{#crossLink \"Lookat/gimbalLockY:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "gimbalLockY",
-            "default": "false",
-            "type": "Boolean",
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/lookat.js",
-            "line": 259,
-            "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/gimbalLockY:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "gimbalLockY",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/lookat.js",
-            "line": 273,
-            "description": "Position of this Lookat's eye.\n\nFires an {{#crossLink \"Lookat/eye:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "eye",
-            "default": "[0,0,10]",
-            "type": "Array(Number)",
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/lookat.js",
-            "line": 296,
-            "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "eye",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/lookat.js",
-            "line": 310,
-            "description": "Position of this Lookat's point-of-interest.\n\nFires a {{#crossLink \"Lookat/look:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "look",
-            "default": "[0,0,0]",
-            "type": "Array(Number)",
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/lookat.js",
-            "line": 333,
-            "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/look:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "look",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/lookat.js",
-            "line": 347,
-            "description": "Direction of the \"up\" vector.\nFires an {{#crossLink \"Lookat/up:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "up",
-            "default": "[0,1,0]",
-            "type": "Array(Number)",
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/lookat.js",
-            "line": 368,
-            "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/up:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "up",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/lookat.js",
-            "line": 382,
-            "description": "The elements of this Lookat's view transform matrix.\n\nFires a {{#crossLink \"Lookat/matrix:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "matrix",
-            "type": "{Float64Array}",
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/lookat.js",
-            "line": 426,
-            "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/matrix:property\"}}{{/crossLink}} property is updated.",
-            "itemtype": "event",
-            "name": "matrix",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Lookat",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/ortho.js",
-            "line": 117,
-            "description": "Scale factor for this Ortho's extents on X and Y axis.\n\nFires a {{#crossLink \"Ortho/scale:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "scale",
-            "default": "1.0",
-            "type": "Number",
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/ortho.js",
-            "line": 134,
-            "description": "Fired whenever this Ortho's {{#crossLink \"Ortho/scale:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "scale",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/ortho.js",
-            "line": 148,
-            "description": "Position of this Ortho's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Ortho/near:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "near",
-            "default": "0.1",
-            "type": "Number",
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/ortho.js",
-            "line": 165,
-            "description": "Fired whenever this Ortho's  {{#crossLink \"Ortho/near:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "near",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/ortho.js",
-            "line": 179,
-            "description": "Position of this Ortho's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Ortho/far:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "far",
-            "default": "10000.0",
-            "type": "Number",
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/ortho.js",
-            "line": 196,
-            "description": "Fired whenever this Ortho's {{#crossLink \"Ortho/far:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "far",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Ortho",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/perspective.js",
-            "line": 94,
-            "description": "The angle, in degrees on the Y-axis, of this Perspective's field-of-view.\n\nFires a {{#crossLink \"Perspective/fovy:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "fovy",
-            "default": "60.0",
-            "type": "Number",
-            "class": "Perspective",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/perspective.js",
-            "line": 113,
-            "description": "Fired whenever this Perspective's {{#crossLink \"Perspective/fovy:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "fovy",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Perspective",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/perspective.js",
-            "line": 127,
-            "description": "Position of this Perspective's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Perspective/near:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "near",
-            "default": "0.1",
-            "type": "Number",
-            "class": "Perspective",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/perspective.js",
-            "line": 146,
-            "description": "Fired whenever this Perspective's   {{#crossLink \"Perspective/near:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "near",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Perspective",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/perspective.js",
-            "line": 159,
-            "description": "Position of this Perspective's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Perspective/far:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "far",
-            "default": "10000.0",
-            "type": "Number",
-            "class": "Perspective",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/perspective.js",
-            "line": 178,
-            "description": "Fired whenever this Perspective's  {{#crossLink \"Perspective/far:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "far",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Perspective",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/projection.js",
-            "line": 71,
-            "description": "The Projection's matrix.\n\nFires a {{#crossLink \"Projection/matrix:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "matrix",
-            "default": "[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]",
-            "type": "{Array of Number}",
-            "class": "Projection",
-            "module": "XEO",
-            "submodule": "camera"
-        },
-        {
-            "file": "src/camera/projection.js",
-            "line": 90,
-            "description": "Fired whenever this Projection's {{#crossLink \"Projection/matrix:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "matrix",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Projection",
             "module": "XEO",
             "submodule": "camera"
         },
@@ -9274,7 +8753,7 @@
         {
             "file": "src/canvas/canvas.js",
             "line": 238,
-            "description": "Fired wheneber the WebGL context has been lost",
+            "description": "Fired whenever the WebGL context has been lost",
             "itemtype": "event",
             "name": "webglContextLost",
             "class": "Canvas",
@@ -9351,7 +8830,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 418,
+            "line": 428,
             "description": "Initialises the WebGL context",
             "access": "private",
             "tagname": "",
@@ -9361,7 +8840,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 437,
+            "line": 447,
             "description": "Fired whenever the canvas failed to get a WebGL context, which probably means that WebGL\nis either unsupported or has been disabled.",
             "itemtype": "event",
             "name": "webglContextFailed",
@@ -9371,7 +8850,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 446,
+            "line": 456,
             "description": "Returns a snapshot of this Canvas as a Base64-encoded image.\n\n#### Usage:\n````javascript\nimageElement.src = myScene.canvas.getSnapshot({\n    width: 500, // Defaults to size of canvas\n    height: 500,\n    format: \"png\" // Options are \"jpeg\" (default), \"png\" and \"bmp\"\n});\n````",
             "itemtype": "method",
             "name": "getSnapshot",
@@ -9414,7 +8893,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 504,
+            "line": 514,
             "description": "Reads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
             "params": [
                 {
@@ -9444,7 +8923,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 532,
+            "line": 542,
             "description": "The busy {{#crossLink \"Spinner\"}}{{/crossLink}} for this Canvas.",
             "itemtype": "property",
             "name": "spinner",
@@ -9546,7 +9025,7 @@
             "itemtype": "property",
             "name": "dir",
             "default": "[1.0, 1.0, 1.0]",
-            "type": "Array(Number)",
+            "type": "Float32Array",
             "class": "Clip",
             "module": "XEO",
             "submodule": "clipping"
@@ -9561,7 +9040,7 @@
                 {
                     "name": "value",
                     "description": "The property's new value",
-                    "type": "Array(Number)"
+                    "type": "Float32Array"
                 }
             ],
             "class": "Clip",
@@ -10953,7 +10432,7 @@
             "itemtype": "property",
             "name": "v0",
             "default": "[0.0, 0.0, 0.0]",
-            "type": "Array(Number)",
+            "type": "Float32Array",
             "class": "CubicBezierCurve",
             "module": "XEO",
             "submodule": "curves"
@@ -10981,7 +10460,7 @@
             "itemtype": "property",
             "name": "v1",
             "default": "[0.0, 0.0, 0.0]",
-            "type": "Array(Number)",
+            "type": "Float32Array",
             "class": "CubicBezierCurve",
             "module": "XEO",
             "submodule": "curves"
@@ -11009,7 +10488,7 @@
             "itemtype": "property",
             "name": "v2",
             "default": "[0.0, 0.0, 0.0]",
-            "type": "Array(Number)",
+            "type": "Float32Array",
             "class": "CubicBezierCurve",
             "module": "XEO",
             "submodule": "curves"
@@ -11037,7 +10516,7 @@
             "itemtype": "property",
             "name": "v3",
             "default": "[0.0, 0.0, 0.0]",
-            "type": "Array(Number)",
+            "type": "Float32Array",
             "class": "CubicBezierCurve",
             "module": "XEO",
             "submodule": "curves"
@@ -11365,7 +10844,7 @@
             "itemtype": "property",
             "name": "v0",
             "default": "[0.0, 0.0, 0.0]",
-            "type": "Array(Number)",
+            "type": "Float32Array",
             "class": "QuadraticBezierCurve",
             "module": "XEO",
             "submodule": "curves"
@@ -11393,7 +10872,7 @@
             "itemtype": "property",
             "name": "v1",
             "default": "[0.0, 0.0, 0.0]",
-            "type": "Array(Number)",
+            "type": "Float32Array",
             "class": "QuadraticBezierCurve",
             "module": "XEO",
             "submodule": "curves"
@@ -11421,7 +10900,7 @@
             "itemtype": "property",
             "name": "v2",
             "default": "[0.0, 0.0, 0.0]",
-            "type": "Array(Number)",
+            "type": "Float32Array",
             "class": "QuadraticBezierCurve",
             "module": "XEO",
             "submodule": "curves"
@@ -11521,7 +11000,7 @@
             "itemtype": "property",
             "name": "points",
             "default": "[]",
-            "type": "Array(Number)",
+            "type": "Float32Array",
             "class": "SplineCurve",
             "module": "XEO",
             "submodule": "curves"
@@ -12624,7 +12103,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 341,
+            "line": 343,
             "description": "Protected method, called by sub-classes to queue a call to _update(), to rebuild geometry data arrays.",
             "access": "protected",
             "tagname": "",
@@ -12634,7 +12113,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 371,
+            "line": 373,
             "description": "Protected virtual template method, implemented by sub-classes to generate geometry data arrays.",
             "access": "protected",
             "tagname": "",
@@ -12644,7 +12123,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 632,
+            "line": 634,
             "description": "The Geometry's usage type.\n\nValid types are: 'static', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.\n\nFires a {{#crossLink \"Geometry/usage:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "usage",
@@ -12656,7 +12135,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 663,
+            "line": 665,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/usage:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "usage",
@@ -12673,7 +12152,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 677,
+            "line": 679,
             "description": "The Geometry's primitive type.\n\nValid types are: 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.\n\nFires a {{#crossLink \"Geometry/primitive:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "primitive",
@@ -12685,7 +12164,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 717,
+            "line": 719,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/primitive:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "primitive",
@@ -12702,7 +12181,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 731,
+            "line": 733,
             "description": "The Geometry's positions array.\n\nThis property is a one-dimensional array - use  {{#crossLink \"XEO.math/flatten:method\"}}{{/crossLink}} to\nconvert two-dimensional arrays for assignment to this property.\n\nFires a {{#crossLink \"Geometry/positions:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "positions",
@@ -12714,7 +12193,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 764,
+            "line": 766,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "positions",
@@ -12730,7 +12209,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 771,
+            "line": 773,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/localBoundary:property\"}}{{/crossLink}} property changes.\n\nNote that this event does not carry the value of the property. In order to avoid needlessly\ncalculating unused values for this property, it will be lazy-calculated next time it's referenced\non this Geometry.",
             "itemtype": "event",
             "name": "positions",
@@ -12746,7 +12225,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 796,
+            "line": 798,
             "description": "The Geometry's normal vectors array.\n\nFires a {{#crossLink \"Geometry/normals:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "normals",
@@ -12758,7 +12237,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 826,
+            "line": 828,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/ normals:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "normals",
@@ -12774,7 +12253,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 846,
+            "line": 848,
             "description": "The Geometry's UV coordinate array.\n\nFires a {{#crossLink \"Geometry/uv:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "uv",
@@ -12786,7 +12265,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 876,
+            "line": 878,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/uv:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "uv",
@@ -12802,7 +12281,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 896,
+            "line": 898,
             "description": "The Geometry's vertex colors array.\n\nFires a {{#crossLink \"Geometry/colors:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "colors",
@@ -12814,7 +12293,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 926,
+            "line": 928,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/colors:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "colors",
@@ -12830,7 +12309,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 946,
+            "line": 948,
             "description": "The Geometry's indices array.\n\nIf ````XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS[\"OES_element_index_uint\"]```` is true, then this can be\na ````Uint32Array````, otherwise it needs to be a ````Uint16Array````.\n\nFires a {{#crossLink \"Geometry/indices:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "indices",
@@ -12842,7 +12321,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 991,
+            "line": 993,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/indices:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "indices",
@@ -12858,7 +12337,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 1011,
+            "line": 1013,
             "description": "Local-space 3D boundary enclosing the {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} of this Geometry.\n\nThe a {{#crossLink \"Boundary3D\"}}{{/crossLink}} is lazy-instantiated the first time that this\nproperty is referenced. If {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} is then called on it,\nthen this property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime it's referenced.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will fire an {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}}\nevent whenever this Geometry's {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} are updated.",
             "itemtype": "property",
             "name": "localBoundary",
@@ -12870,7 +12349,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 1069,
+            "line": 1071,
             "description": "Set true to make this Geometry automatically generate {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}} from\n{{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} and {{#crossLink \"Geometry/indices:property\"}}{{/crossLink}}.\n\nWhen true, causes this Geometry to auto-generate its {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}} on the\nnext {{#crossLink \"Scene\"}}{{/crossLink}} {{#crossLink \"Scene/tick:event\"}}{{/crossLink}} event.\n\nFires an {{#crossLink \"Geometry/autoNormals:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "autoNormals",
@@ -12882,7 +12361,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 1098,
+            "line": 1100,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/autoNormals:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "autoNormals",
@@ -12914,7 +12393,7 @@
             "itemtype": "property",
             "name": "points",
             "default": "[]",
-            "type": "Array(Number)",
+            "type": "Float32Array",
             "class": "LatheGeometry",
             "module": "XEO",
             "submodule": "geometry"
@@ -15182,7 +14661,7 @@
             "itemtype": "property",
             "name": "color",
             "default": "[0.7, 0.7, 0.8]",
-            "type": "Array(Number)",
+            "type": "Float32Array",
             "class": "AmbientLight",
             "module": "XEO",
             "submodule": "lighting"
@@ -15238,14 +14717,14 @@
             "itemtype": "property",
             "name": "dir",
             "default": "[1.0, 1.0, 1.0]",
-            "type": "Array(Number)",
+            "type": "Float32Array",
             "class": "DirLight",
             "module": "XEO",
             "submodule": "lighting"
         },
         {
             "file": "src/lighting/dirLight.js",
-            "line": 122,
+            "line": 116,
             "description": "Fired whenever this DirLight's  {{#crossLink \"DirLight/dir:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "dir",
@@ -15261,19 +14740,19 @@
         },
         {
             "file": "src/lighting/dirLight.js",
-            "line": 135,
+            "line": 129,
             "description": "The color of this DirLight.\n\nFires a {{#crossLink \"DirLight/color:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "color",
             "default": "[0.7, 0.7, 0.8]",
-            "type": "Array(Number)",
+            "type": "Float32Array",
             "class": "DirLight",
             "module": "XEO",
             "submodule": "lighting"
         },
         {
             "file": "src/lighting/dirLight.js",
-            "line": 158,
+            "line": 146,
             "description": "Fired whenever this DirLight's  {{#crossLink \"DirLight/color:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "color",
@@ -15289,7 +14768,7 @@
         },
         {
             "file": "src/lighting/dirLight.js",
-            "line": 171,
+            "line": 159,
             "description": "The intensity of this DirLight.\n\nFires a {{#crossLink \"DirLight/intensity:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "intensity",
@@ -15301,7 +14780,7 @@
         },
         {
             "file": "src/lighting/dirLight.js",
-            "line": 190,
+            "line": 178,
             "description": "Fired whenever this DirLight's  {{#crossLink \"DirLight/intensity:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "intensity",
@@ -15317,7 +14796,7 @@
         },
         {
             "file": "src/lighting/dirLight.js",
-            "line": 203,
+            "line": 191,
             "description": "Specifies which coordinate space this DirLight is in.\n\nSupported values are:\n\n<ul>\n<li>\"view\" - View space, aligned within the view volume as if fixed to the viewer's head</li>\n<li>\"world\" - World space, fixed within the world, moving within the view volume with respect to camera</li>\n</ul>\n\nFires a {{#crossLink \"DirLight/space:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "space",
@@ -15329,7 +14808,7 @@
         },
         {
             "file": "src/lighting/dirLight.js",
-            "line": 227,
+            "line": 215,
             "description": "Fired whenever this DirLight's {{#crossLink \"DirLight/space:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "space",
@@ -15390,7 +14869,7 @@
             "itemtype": "property",
             "name": "color",
             "default": "[0.7, 0.7, 0.8]",
-            "type": "Array(Number)",
+            "type": "Float32Array",
             "class": "PointLight",
             "module": "XEO",
             "submodule": "lighting"
@@ -15558,7 +15037,7 @@
             "itemtype": "property",
             "name": "edgeColor",
             "default": "[0.0, 0.0, 0.0]",
-            "type": "Array(Number)",
+            "type": "Float32Array",
             "class": "Fresnel",
             "module": "XEO",
             "submodule": "materials"
@@ -15586,7 +15065,7 @@
             "itemtype": "property",
             "name": "centerColor",
             "default": "[1.0, 1.0, 1.0]",
-            "type": "Array(Number)",
+            "type": "Float32Array",
             "class": "Fresnel",
             "module": "XEO",
             "submodule": "materials"
@@ -15698,7 +15177,7 @@
             "itemtype": "property",
             "name": "ambient",
             "default": "[1.0, 1.0, 1.0]",
-            "type": "Array(Number)",
+            "type": "Float32Array",
             "class": "PhongMaterial",
             "module": "XEO",
             "submodule": "materials"
@@ -15713,7 +15192,7 @@
                 {
                     "name": "value",
                     "description": "The property's new value",
-                    "type": "Array(Number)"
+                    "type": "Float32Array"
                 }
             ],
             "class": "PhongMaterial",
@@ -15727,7 +15206,7 @@
             "itemtype": "property",
             "name": "diffuse",
             "default": "[1.0, 1.0, 1.0]",
-            "type": "Array(Number)",
+            "type": "Float32Array",
             "class": "PhongMaterial",
             "module": "XEO",
             "submodule": "materials"
@@ -15742,7 +15221,7 @@
                 {
                     "name": "value",
                     "description": "The property's new value",
-                    "type": "Array(Number)"
+                    "type": "Float32Array"
                 }
             ],
             "class": "PhongMaterial",
@@ -15756,7 +15235,7 @@
             "itemtype": "property",
             "name": "specular",
             "default": "[1.0, 1.0, 1.0]",
-            "type": "Array(Number)",
+            "type": "Float32Array",
             "class": "PhongMaterial",
             "module": "XEO",
             "submodule": "materials"
@@ -15771,7 +15250,7 @@
                 {
                     "name": "value",
                     "description": "The property's new value",
-                    "type": "Array(Number)"
+                    "type": "Float32Array"
                 }
             ],
             "class": "PhongMaterial",
@@ -15785,7 +15264,7 @@
             "itemtype": "property",
             "name": "emissive",
             "default": "[0.0, 0.0, 0.0]",
-            "type": "Array(Number)",
+            "type": "Float32Array",
             "class": "PhongMaterial",
             "module": "XEO",
             "submodule": "materials"
@@ -15800,7 +15279,7 @@
                 {
                     "name": "value",
                     "description": "The property's new value",
-                    "type": "Array(Number)"
+                    "type": "Float32Array"
                 }
             ],
             "class": "PhongMaterial",
@@ -16542,7 +16021,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 625,
+            "line": 623,
             "description": "Fired whenever this Texture's   {{#crossLink \"Texture/translate:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "translate",
@@ -16559,7 +16038,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 638,
+            "line": 636,
             "description": "2D scaling vector that will be applied to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/scale:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "scale",
@@ -16571,7 +16050,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 658,
+            "line": 654,
             "description": "Fired whenever this Texture's   {{#crossLink \"Texture/scale:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "scale",
@@ -16588,7 +16067,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 671,
+            "line": 667,
             "description": "Rotation, in degrees, that will be applied to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/rotate:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "rotate",
@@ -16600,7 +16079,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 695,
+            "line": 691,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/rotate:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "rotate",
@@ -16617,7 +16096,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 708,
+            "line": 704,
             "description": "How this Texture is sampled when a texel covers less than one pixel.\n\nOptions are:\n\n<ul>\n    <li>**\"nearest\"** - Uses the value of the texture element that is nearest\n    (in Manhattan distance) to the center of the pixel being textured.</li>\n\n    <li>**\"linear\"** - Uses the weighted average of the four texture elements that are\n    closest to the center of the pixel being textured.</li>\n\n    <li>**\"nearestMipmapNearest\"** - Chooses the mipmap that most closely matches the\n    size of the pixel being textured and uses the \"nearest\" criterion (the texture\n    element nearest to the center of the pixel) to produce a texture value.</li>\n\n    <li>**\"linearMipmapNearest\"** - Chooses the mipmap that most closely matches the size of\n    the pixel being textured and uses the \"linear\" criterion (a weighted average of the\n    four texture elements that are closest to the center of the pixel) to produce a\n    texture value.</li>\n\n    <li>**\"nearestMipmapLinear\"** - Chooses the two mipmaps that most closely\n    match the size of the pixel being textured and uses the \"nearest\" criterion\n    (the texture element nearest to the center of the pixel) to produce a texture\n    value from each mipmap. The final texture value is a weighted average of those two\n    values.</li>\n\n    <li>**\"linearMipmapLinear\"** - **(default)** - Chooses the two mipmaps that most closely match the size\n    of the pixel being textured and uses the \"linear\" criterion (a weighted average\n    of the four texture elements that are closest to the center of the pixel) to\n    produce a texture value from each mipmap. The final texture value is a weighted\n    average of those two values.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/minFilter:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "minFilter",
@@ -16629,7 +16108,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 772,
+            "line": 768,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/minFilter:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "minFilter",
@@ -16646,7 +16125,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 785,
+            "line": 781,
             "description": "How this Texture is sampled when a texel covers more than one pixel.\n\nOptions are:\n\n<ul>\n    <li>**\"nearest\"** - Uses the value of the texture element that is nearest\n    (in Manhattan distance) to the center of the pixel being textured.</li>\n    <li>**\"linear\"** - **(default)** - Uses the weighted average of the four texture elements that are\n    closest to the center of the pixel being textured.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/magFilter:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "magFilter",
@@ -16658,7 +16137,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 822,
+            "line": 818,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/magFilter:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "magFilter",
@@ -16675,7 +16154,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 835,
+            "line": 831,
             "description": "Wrap parameter for this Texture's *S* coordinate.\n\nOptions are:\n\n<ul>\n    <li>**\"clampToEdge\"** -  causes *S* coordinates to be clamped to the size of the texture.</li>\n    <li>**\"mirroredRepeat\"** - causes the *S* coordinate to be set to the fractional part of the texture coordinate\n    if the integer part of *S* is even; if the integer part of *S* is odd, then the *S* texture coordinate is\n    set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *S*.</li>\n    <li>**\"repeat\"** - **(default)** - causes the integer part of the *S* coordinate to be ignored; xeoEngine uses only the\n    fractional part, thereby creating a repeating pattern.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/wrapS:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "wrapS",
@@ -16687,7 +16166,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 874,
+            "line": 870,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/wrapS:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "wrapS",
@@ -16704,7 +16183,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 887,
+            "line": 883,
             "description": "Wrap parameter for this Texture's *T* coordinate.\n\nOptions are:\n\n<ul>\n    <li>**\"clampToEdge\"** -  Causes *T* coordinates to be clamped to the size of the texture.</li>\n    <li>**\"mirroredRepeat\"** - Causes the *T* coordinate to be set to the fractional part of the texture coordinate\n    if the integer part of *T* is even; if the integer part of *T* is odd, then the *T* texture coordinate is\n    set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *T*.</li>\n    <li>**\"repeat\"** - **(default)** - Causes the integer part of the *T* coordinate to be ignored; xeoEngine uses only the\n    fractional part, thereby creating a repeating pattern.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/wrapT:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "wrapT",
@@ -16716,7 +16195,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 926,
+            "line": 922,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/wrapT:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "wrapT",
@@ -16733,7 +16212,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 939,
+            "line": 935,
             "description": "Flips this Texture's source data along its vertical axis when true.\n\nFires a {{#crossLink \"Texture/flipY:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "flipY",
@@ -16745,7 +16224,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 963,
+            "line": 959,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/flipY:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "flipY",
@@ -20291,20 +19770,556 @@
             "submodule": "transforms"
         },
         {
+            "file": "src/transforms/frustum.js",
+            "line": 112,
+            "description": "Position of this Frustum's left plane on the View-space X-axis.\n\nFires a {{#crossLink \"Frustum/left:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "left",
+            "default": "-1.0",
+            "type": "Number",
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/frustum.js",
+            "line": 129,
+            "description": "Fired whenever this Frustum's {{#crossLink \"Frustum/left:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "left",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/frustum.js",
+            "line": 143,
+            "description": "Position of this Frustum's right plane on the View-space X-axis.\n\nFires a {{#crossLink \"Frustum/right:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "right",
+            "default": "1.0",
+            "type": "Number",
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/frustum.js",
+            "line": 160,
+            "description": "Fired whenever this Frustum's {{#crossLink \"Frustum/right:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "right",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/frustum.js",
+            "line": 174,
+            "description": "Position of this Frustum's top plane on the View-space Y-axis.\n\nFires a {{#crossLink \"Frustum/top:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "top",
+            "default": "1.0",
+            "type": "Number",
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/frustum.js",
+            "line": 191,
+            "description": "Fired whenever this Frustum's   {{#crossLink \"Frustum/top:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "top",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/frustum.js",
+            "line": 205,
+            "description": "Position of this Frustum's bottom plane on the View-space Y-axis.\n\nFires a {{#crossLink \"Frustum/bottom:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "bottom",
+            "default": "-1.0",
+            "type": "Number",
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/frustum.js",
+            "line": 222,
+            "description": "Fired whenever this Frustum's   {{#crossLink \"Frustum/bottom:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "bottom",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/frustum.js",
+            "line": 236,
+            "description": "Position of this Frustum's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Frustum/near:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "near",
+            "default": "0.1",
+            "type": "Number",
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/frustum.js",
+            "line": 253,
+            "description": "Fired whenever this Frustum's {{#crossLink \"Frustum/near:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "near",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/frustum.js",
+            "line": 267,
+            "description": "Position of this Frustum's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Frustum/far:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "far",
+            "default": "10000.0",
+            "type": "Number",
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/frustum.js",
+            "line": 284,
+            "description": "Fired whenever this Frustum's  {{#crossLink \"Frustum/far:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "far",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Frustum",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/lookat.js",
+            "line": 88,
+            "description": "Rotate 'eye' about 'look', around the 'up' vector",
+            "params": [
+                {
+                    "name": "angle",
+                    "description": "Angle of rotation in degrees",
+                    "type": "Number"
+                }
+            ],
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/lookat.js",
+            "line": 111,
+            "description": "Rotate 'eye' about 'look' around the X-axis",
+            "params": [
+                {
+                    "name": "angle",
+                    "description": "Angle of rotation in degrees",
+                    "type": "Number"
+                }
+            ],
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/lookat.js",
+            "line": 135,
+            "description": "Rotate 'look' about 'eye', around the 'up' vector\n\n<p>Applies constraints added with {@link #addConstraint}.</p>",
+            "params": [
+                {
+                    "name": "angle",
+                    "description": "Angle of rotation in degrees",
+                    "type": "Number"
+                }
+            ],
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/lookat.js",
+            "line": 155,
+            "description": "Rotate 'eye' about 'look' around the X-axis",
+            "params": [
+                {
+                    "name": "angle",
+                    "description": "Angle of rotation in degrees",
+                    "type": "Number"
+                }
+            ],
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/lookat.js",
+            "line": 179,
+            "description": "Pans the camera along X and Y axis.",
+            "params": [
+                {
+                    "name": "pan",
+                    "description": "The pan vector"
+                }
+            ],
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/lookat.js",
+            "line": 231,
+            "description": "Increments/decrements zoom factor, ie. distance between eye and look.",
+            "params": [
+                {
+                    "name": "delta",
+                    "description": ""
+                }
+            ],
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/lookat.js",
+            "line": 248,
+            "description": "Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.\n\nFires a {{#crossLink \"Lookat/gimbalLockY:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "gimbalLockY",
+            "default": "false",
+            "type": "Boolean",
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/lookat.js",
+            "line": 265,
+            "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/gimbalLockY:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "gimbalLockY",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/lookat.js",
+            "line": 279,
+            "description": "Position of this Lookat's eye.\n\nFires an {{#crossLink \"Lookat/eye:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "eye",
+            "default": "[0,0,10]",
+            "type": "Float32Array",
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/lookat.js",
+            "line": 296,
+            "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "eye",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/lookat.js",
+            "line": 310,
+            "description": "Position of this Lookat's point-of-interest.\n\nFires a {{#crossLink \"Lookat/look:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "look",
+            "default": "[0,0,0]",
+            "type": "Float32Array",
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/lookat.js",
+            "line": 327,
+            "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/look:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "look",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/lookat.js",
+            "line": 341,
+            "description": "Direction of the \"up\" vector.\nFires an {{#crossLink \"Lookat/up:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "up",
+            "default": "[0,1,0]",
+            "type": "Float32Array",
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/lookat.js",
+            "line": 356,
+            "description": "Fired whenever this Lookat's  {{#crossLink \"Lookat/up:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "up",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Lookat",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/ortho.js",
+            "line": 118,
+            "description": "Scale factor for this Ortho's extents on X and Y axis.\n\nFires a {{#crossLink \"Ortho/scale:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "scale",
+            "default": "1.0",
+            "type": "Number",
+            "class": "Ortho",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/ortho.js",
+            "line": 135,
+            "description": "Fired whenever this Ortho's {{#crossLink \"Ortho/scale:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "scale",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Ortho",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/ortho.js",
+            "line": 149,
+            "description": "Position of this Ortho's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Ortho/near:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "near",
+            "default": "0.1",
+            "type": "Number",
+            "class": "Ortho",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/ortho.js",
+            "line": 166,
+            "description": "Fired whenever this Ortho's  {{#crossLink \"Ortho/near:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "near",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Ortho",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/ortho.js",
+            "line": 180,
+            "description": "Position of this Ortho's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Ortho/far:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "far",
+            "default": "10000.0",
+            "type": "Number",
+            "class": "Ortho",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/ortho.js",
+            "line": 197,
+            "description": "Fired whenever this Ortho's {{#crossLink \"Ortho/far:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "far",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Ortho",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/perspective.js",
+            "line": 94,
+            "description": "The angle, in degrees on the Y-axis, of this Perspective's field-of-view.\n\nFires a {{#crossLink \"Perspective/fovy:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "fovy",
+            "default": "60.0",
+            "type": "Number",
+            "class": "Perspective",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/perspective.js",
+            "line": 113,
+            "description": "Fired whenever this Perspective's {{#crossLink \"Perspective/fovy:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "fovy",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Perspective",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/perspective.js",
+            "line": 127,
+            "description": "Position of this Perspective's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Perspective/near:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "near",
+            "default": "0.1",
+            "type": "Number",
+            "class": "Perspective",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/perspective.js",
+            "line": 146,
+            "description": "Fired whenever this Perspective's   {{#crossLink \"Perspective/near:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "near",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Perspective",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/perspective.js",
+            "line": 159,
+            "description": "Position of this Perspective's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"Perspective/far:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "far",
+            "default": "10000.0",
+            "type": "Number",
+            "class": "Perspective",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/perspective.js",
+            "line": 178,
+            "description": "Fired whenever this Perspective's  {{#crossLink \"Perspective/far:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "far",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Perspective",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
             "file": "src/transforms/quaternion.js",
-            "line": 104,
+            "line": 106,
             "description": "The quaternion elements.\nFires an {{#crossLink \"Quaternion/xyzw:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "xyzw",
             "default": "[0,0,0,1]",
-            "type": "{Array of Number}",
+            "type": "{Float32Array}",
             "class": "Quaternion",
             "module": "XEO",
             "submodule": "transforms"
         },
         {
             "file": "src/transforms/quaternion.js",
-            "line": 124,
+            "line": 126,
             "description": "Fired whenever this Quaternion's {{#crossLink \"Quaternion/xyzw:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "xyzw",
@@ -20312,7 +20327,7 @@
                 {
                     "name": "value",
                     "description": "The property's new value",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 }
             ],
             "class": "Quaternion",
@@ -20321,7 +20336,7 @@
         },
         {
             "file": "src/transforms/quaternion.js",
-            "line": 139,
+            "line": 141,
             "description": "Rotates this Quaternion.\nFires an {{#crossLink \"Quaternion/xyzw:event\"}}{{/crossLink}} event to notify of update to the Quaternion elements.",
             "itemtype": "method",
             "name": "rotate",
@@ -20338,19 +20353,19 @@
         },
         {
             "file": "src/transforms/rotate.js",
-            "line": 105,
+            "line": 118,
             "description": "Vector indicating the axis of rotation.\n\nFires an {{#crossLink \"Rotate/xyz:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "xyz",
             "default": "[0,1,0]",
-            "type": "{Array of Number}",
+            "type": "{Float32Array}",
             "class": "Rotate",
             "module": "XEO",
             "submodule": "transforms"
         },
         {
             "file": "src/transforms/rotate.js",
-            "line": 134,
+            "line": 135,
             "description": "Fired whenever this Rotate's {{#crossLink \"Rotate/xyz:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "xyz",
@@ -20358,7 +20373,7 @@
                 {
                     "name": "value",
                     "description": "The property's new value",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 }
             ],
             "class": "Rotate",
@@ -20367,7 +20382,7 @@
         },
         {
             "file": "src/transforms/rotate.js",
-            "line": 148,
+            "line": 149,
             "description": "Angle of rotation in degrees.\n\nFires an {{#crossLink \"Rotate/angle:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "angle",
@@ -20379,7 +20394,7 @@
         },
         {
             "file": "src/transforms/rotate.js",
-            "line": 165,
+            "line": 166,
             "description": "Fired whenever this Rotate's {{#crossLink \"Rotate/angle:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "angle",
@@ -20387,7 +20402,7 @@
                 {
                     "name": "value",
                     "description": "The property's new value",
-                    "type": "Array of Number"
+                    "type": "Number"
                 }
             ],
             "class": "Rotate",
@@ -20396,12 +20411,12 @@
         },
         {
             "file": "src/transforms/scale.js",
-            "line": 104,
+            "line": 116,
             "description": "Vector indicating a scale factor for each axis.\nFires an {{#crossLink \"Scale/xyz:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "xyz",
             "default": "[1,1,1]",
-            "type": "{Array of Number}",
+            "type": "{Float32Array}",
             "class": "Scale",
             "module": "XEO",
             "submodule": "transforms"
@@ -20416,7 +20431,7 @@
                 {
                     "name": "value",
                     "description": "The property's new value",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 }
             ],
             "class": "Scale",
@@ -20452,7 +20467,17 @@
         },
         {
             "file": "src/transforms/transform.js",
-            "line": 182,
+            "line": 203,
+            "description": "Fired whenever this Transform's {{#crossLink \"Transform/leafMatrix:property\"}}{{/crossLink}} property changes.\n\nThis event does not carry the updated property value. Instead, subscribers will need to read\nthat property again to get its updated value (which may be lazy-computed then).",
+            "itemtype": "event",
+            "name": "updated",
+            "class": "Transform",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/transform.js",
+            "line": 267,
             "description": "The parent Transform.\n\nFires a {{#crossLink \"Transform/parent:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "parent",
@@ -20463,7 +20488,7 @@
         },
         {
             "file": "src/transforms/transform.js",
-            "line": 218,
+            "line": 303,
             "description": "Fired whenever this Transform's {{#crossLink \"Transform/parent:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "parent",
@@ -20479,19 +20504,19 @@
         },
         {
             "file": "src/transforms/transform.js",
-            "line": 239,
+            "line": 323,
             "description": "The Transform's local matrix.\n\nFires a {{#crossLink \"Transform/matrix:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "matrix",
             "default": "[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]",
-            "type": "{Array of Number}",
+            "type": "{Float32Array}",
             "class": "Transform",
             "module": "XEO",
             "submodule": "transforms"
         },
         {
             "file": "src/transforms/transform.js",
-            "line": 262,
+            "line": 340,
             "description": "Fired whenever this Transform's {{#crossLink \"Transform/matrix:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "matrix",
@@ -20507,41 +20532,31 @@
         },
         {
             "file": "src/transforms/transform.js",
-            "line": 278,
+            "line": 360,
             "description": "Returns the product of all {{#crossLink \"Transform/matrix:property\"}}{{/crossLink}}'s on Transforms\non the path via {{#crossLink \"Transform/parent:property\"}}{{/crossLink}} up to the root.\n\nThe value of this property will have a fresh value after each\n{{#crossLink \"Transform/updated:property\"}}{{/crossLink}} event, which is fired whenever any Transform\non the path receives an update for its {{#crossLink \"Transform/matrix:property\"}}{{/crossLink}} or\n{{#crossLink \"Transform/matrix:property\"}}{{/crossLink}} property.",
             "itemtype": "property",
             "name": "matrix",
             "default": "[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]",
-            "type": "{Array of Number}",
-            "class": "Transform",
-            "module": "XEO",
-            "submodule": "transforms"
-        },
-        {
-            "file": "src/transforms/transform.js",
-            "line": 308,
-            "description": "Fired whenever this Transform's {{#crossLink \"Transform/leafMatrix:property\"}}{{/crossLink}} property changes.\n\nThis event does not carry the updated property value. Instead, subscribers will need to read\nthat property again to get its updated value (which may be lazy-computed then).",
-            "itemtype": "event",
-            "name": "updated",
+            "type": "{Float32Array}",
             "class": "Transform",
             "module": "XEO",
             "submodule": "transforms"
         },
         {
             "file": "src/transforms/translate.js",
-            "line": 114,
+            "line": 119,
             "description": "Vector indicating a translation amount for each axis.\nFires an {{#crossLink \"Translate/xyz:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "xyz",
             "default": "[0,0,0]",
-            "type": "{Array of Number}",
+            "type": "{Float32Array}",
             "class": "Translate",
             "module": "XEO",
             "submodule": "transforms"
         },
         {
             "file": "src/transforms/translate.js",
-            "line": 141,
+            "line": 134,
             "description": "Fired whenever this Translate's {{#crossLink \"Translate/xyz:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "xyz",
@@ -20549,7 +20564,7 @@
                 {
                     "name": "value",
                     "description": "The property's new value",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 }
             ],
             "class": "Translate",
@@ -20991,7 +21006,7 @@
         {
             "file": "src/component.js",
             "line": 948,
-            "description": "Optional virtual template method, normally implemented\nby sub-classes to generate some data before _update gets\ncallled",
+            "description": "Optional virtual template method, normally implemented\nby sub-classes to generate some data before _update gets\ncalled",
             "access": "protected",
             "tagname": "",
             "class": "Component",
@@ -21725,7 +21740,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 141,
+            "line": 140,
             "description": "Existing {{#crossLink \"Scene\"}}Scene{{/crossLink}}s , mapped to their IDs",
             "itemtype": "property",
             "name": "scenes",
@@ -21736,7 +21751,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 241,
+            "line": 240,
             "description": "Fired on each game loop iteration.",
             "itemtype": "event",
             "name": "tick",
@@ -21773,7 +21788,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 276,
+            "line": 275,
             "description": "The default {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\nComponents created without an explicit parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} will be created within this\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} by default.\n\nxeoEngine creates the default {{#crossLink \"Scene\"}}Scene{{/crossLink}} as soon as you either\nreference this property for the first time, or create your first {{#crossLink \"Entity\"}}Entity{{/crossLink}} without\na specified {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "property",
             "name": "scene",
@@ -21785,7 +21800,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 301,
+            "line": 300,
             "description": "Registers a scene on xeoEngine.\nThis is called within the XEO.Scene constructor.",
             "itemtype": "method",
             "name": "_addScene",
@@ -21804,7 +21819,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 344,
+            "line": 343,
             "description": "Schedule a task for xeoEngine to run at the next frame.\n\nInternally, this pushes the task to a FIFO queue. Within each frame interval, xeoEngine processes the queue\nfor a certain period of time, popping tasks and running them. After each frame interval, tasks that did not\nget a chance to run during the task are left in the queue to be run next time.",
             "itemtype": "method",
             "name": "schedule",
@@ -21827,7 +21842,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 389,
+            "line": 388,
             "description": "Destroys all user-created {{#crossLink \"Scene\"}}Scenes{{/crossLink}} and\nclears the default {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "clear",
@@ -21838,7 +21853,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 418,
+            "line": 417,
             "description": "Tests if the given object is an array",
             "access": "private",
             "tagname": "",
@@ -21848,7 +21863,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 426,
+            "line": 425,
             "description": "Tests if the given value is a string",
             "params": [
                 {
@@ -21868,7 +21883,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 437,
+            "line": 436,
             "description": "Tests if the given value is a number",
             "params": [
                 {
@@ -21888,7 +21903,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 447,
+            "line": 446,
             "description": "Tests if the given value is an ID",
             "params": [
                 {
@@ -21908,7 +21923,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 457,
+            "line": 456,
             "description": "Tests if the given components are the same, where the components can be either IDs or instances.",
             "params": [
                 {
@@ -21932,7 +21947,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 476,
+            "line": 475,
             "description": "Tests if the given value is a function",
             "params": [
                 {
@@ -21952,21 +21967,21 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 486,
+            "line": 485,
             "class": "XEO",
             "module": "XEO",
             "namespace": "XEO"
         },
         {
             "file": "src/xeo.js",
-            "line": 492,
+            "line": 491,
             "class": "XEO",
             "module": "XEO",
             "namespace": "XEO"
         },
         {
             "file": "src/xeo.js",
-            "line": 503,
+            "line": 502,
             "description": "Add non-null/defined properties of o to o2",
             "access": "private",
             "tagname": "",
@@ -21976,7 +21991,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 518,
+            "line": 517,
             "description": "Add properties of o to o2 where undefined or null on o2",
             "access": "private",
             "tagname": "",
@@ -21986,7 +22001,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 533,
+            "line": 532,
             "description": "Returns true if the given map is empty.",
             "params": [
                 {
@@ -22006,7 +22021,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 548,
+            "line": 547,
             "description": "Returns the given ID as a string, in quotes if the ID was a string to begin with.\n\nThis is useful for logging IDs.",
             "params": [
                 {
@@ -22033,11 +22048,11 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/_renderer/renderer.js:1006"
+            "line": " src/_renderer/renderer.js:1047"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/canvas/canvas.js:446"
+            "line": " src/canvas/canvas.js:456"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -22241,35 +22256,35 @@
         },
         {
             "message": "unknown tag: demo",
-            "line": " src/xeo.js:389"
+            "line": " src/xeo.js:388"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:426"
+            "line": " src/xeo.js:425"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:437"
+            "line": " src/xeo.js:436"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:447"
+            "line": " src/xeo.js:446"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:457"
+            "line": " src/xeo.js:456"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:476"
+            "line": " src/xeo.js:475"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:533"
+            "line": " src/xeo.js:532"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:548"
+            "line": " src/xeo.js:547"
         },
         {
             "message": "Missing item type\nA chunk of WebGL state changes to render a XEO.renderer.State.",
@@ -22644,92 +22659,100 @@
             "line": " src/_renderer/renderer.js:96"
         },
         {
+            "message": "Missing item type\nOptional callback to fire when renderer wants to\nbind an output framebuffer.\n\nWhen this is missing, the renderer will implicitly bind\nWebGL's default framebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });",
+            "line": " src/_renderer/renderer.js:102"
+        },
+        {
+            "message": "Missing item type\nOptional callback to fire when renderer wants to\nunbind any output drawing framebuffer that was\npreviously bound with #bindOutputFramebuffer.\n\nCallback takes no parameters.",
+            "line": " src/_renderer/renderer.js:116"
+        },
+        {
             "message": "Missing item type\nFlags the object list as needing to be rebuilt from renderer objects\non the next call to {@link #render} or {@link #pick}. Setting this\nwill cause the rendering pipeline to be executed from stage #2\n(see class comment), causing object list rebuild, state order\ndetermination, state sort, draw list construction and image render.",
-            "line": " src/_renderer/renderer.js:304"
+            "line": " src/_renderer/renderer.js:345"
         },
         {
             "message": "Missing item type\nFlags the object list as needing state orders to be (re)computed on the\nnext call to {@link #render} or {@link #pick}. Setting this will cause\nthe rendering pipeline to be executed from stage #3 (see class comment),\ncausing state order determination, state sort, draw list construction\nand image render.",
-            "line": " src/_renderer/renderer.js:314"
+            "line": " src/_renderer/renderer.js:355"
         },
         {
             "message": "Missing item type\nFlags the object list as needing to be state-sorted on the next call\nto {@link #render} or {@link #pick}.Setting this will cause the\nrendering pipeline to be executed from stage #4 (see class comment),\ncausing state sort, draw list construction and image render.",
-            "line": " src/_renderer/renderer.js:324"
+            "line": " src/_renderer/renderer.js:365"
         },
         {
             "message": "Missing item type\nFlags the draw list as needing to be rebuilt from the object list on\nthe next call to {@link #render} or {@link #pick}.  Setting this will\ncause the rendering pipeline to be executed from stage #5\n(see class comment), causing draw list construction and image render.",
-            "line": " src/_renderer/renderer.js:333"
+            "line": " src/_renderer/renderer.js:374"
         },
         {
             "message": "Missing item type\nFlags the image as needing to be redrawn from the draw list on the\nnext call to {@link #render} or {@link #pick}. Setting this will\ncause the rendering pipeline to be executed from stage #6\n(see class comment), causing the image render.",
-            "line": " src/_renderer/renderer.js:342"
+            "line": " src/_renderer/renderer.js:383"
         },
         {
             "message": "Missing item type\nReallocates WebGL resources for objects within this renderer.",
-            "line": " src/_renderer/renderer.js:352"
+            "line": " src/_renderer/renderer.js:393"
         },
         {
             "message": "Missing item type\nInternally creates (or updates) a {@link XEO.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link XEO.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
-            "line": " src/_renderer/renderer.js:376"
+            "line": " src/_renderer/renderer.js:417"
         },
         {
             "message": "Missing item type",
-            "line": " src/_renderer/renderer.js:502"
+            "line": " src/_renderer/renderer.js:543"
         },
         {
             "message": "Missing item type\nRemoves an object from this Renderer",
-            "line": " src/_renderer/renderer.js:560"
+            "line": " src/_renderer/renderer.js:601"
         },
         {
             "message": "Missing item type\nRenders a new frame, if neccessary.",
-            "line": " src/_renderer/renderer.js:597"
-        },
-        {
-            "message": "Missing item type\nBuilds the object list from the object map",
             "line": " src/_renderer/renderer.js:637"
         },
         {
+            "message": "Missing item type\nBuilds the object list from the object map",
+            "line": " src/_renderer/renderer.js:678"
+        },
+        {
             "message": "Missing item type\nGenerates object state sort keys",
-            "line": " src/_renderer/renderer.js:649"
+            "line": " src/_renderer/renderer.js:690"
         },
         {
             "message": "Missing item type\nState-sorts the object list",
-            "line": " src/_renderer/renderer.js:670"
+            "line": " src/_renderer/renderer.js:711"
         },
         {
             "message": "Missing item type\nLogs the object list",
-            "line": " src/_renderer/renderer.js:680"
+            "line": " src/_renderer/renderer.js:721"
         },
         {
             "message": "Missing item type\nBuilds the draw list, which is the list of draw state-chunks to apply to WebGL\nto render the visible objects in the object list for the next frame.\nPreserves the state sort order of the object list among the draw chunks.",
-            "line": " src/_renderer/renderer.js:693"
+            "line": " src/_renderer/renderer.js:734"
         },
         {
             "message": "Missing item type\nAppends an object to the draw and pick lists.",
-            "line": " src/_renderer/renderer.js:878"
+            "line": " src/_renderer/renderer.js:919"
         },
         {
             "message": "Missing item type\nLogs the contents of the draw list to the console.",
-            "line": " src/_renderer/renderer.js:947"
+            "line": " src/_renderer/renderer.js:988"
         },
         {
             "message": "Missing item type\nLogs the contents of the pick list to the console.",
-            "line": " src/_renderer/renderer.js:977"
+            "line": " src/_renderer/renderer.js:1018"
         },
         {
             "message": "Missing item type\nAttempts to pick an object at the given canvas coordinates.",
-            "line": " src/_renderer/renderer.js:1006"
+            "line": " src/_renderer/renderer.js:1047"
         },
         {
             "message": "Missing item type",
-            "line": " src/_renderer/renderer.js:1099"
+            "line": " src/_renderer/renderer.js:1140"
         },
         {
             "message": "Missing item type\nReads the colors of some pixels in the last rendered frame.",
-            "line": " src/_renderer/renderer.js:1243"
+            "line": " src/_renderer/renderer.js:1293"
         },
         {
             "message": "Missing item type\nDestroys this Renderer.",
-            "line": " src/_renderer/renderer.js:1290"
+            "line": " src/_renderer/renderer.js:1340"
         },
         {
             "message": "Missing item type\nRenderer states",
@@ -22750,30 +22773,6 @@
         {
             "message": "Missing item type\nRemoves the item of the given ID from the map and returns it",
             "line": " src/_utils/map.js:53"
-        },
-        {
-            "message": "Missing item type\nRotate 'eye' about 'look', around the 'up' vector",
-            "line": " src/camera/lookat.js:83"
-        },
-        {
-            "message": "Missing item type\nRotate 'eye' about 'look' around the X-axis",
-            "line": " src/camera/lookat.js:106"
-        },
-        {
-            "message": "Missing item type\nRotate 'look' about 'eye', around the 'up' vector\n\n<p>Applies constraints added with {@link #addConstraint}.</p>",
-            "line": " src/camera/lookat.js:130"
-        },
-        {
-            "message": "Missing item type\nRotate 'eye' about 'look' around the X-axis",
-            "line": " src/camera/lookat.js:150"
-        },
-        {
-            "message": "Missing item type\nPans the camera along X and Y axis.",
-            "line": " src/camera/lookat.js:174"
-        },
-        {
-            "message": "Missing item type\nIncrements/decrements zoom factor, ie. distance between eye and look.",
-            "line": " src/camera/lookat.js:226"
         },
         {
             "message": "Missing item type\nAttributes for the WebGL context",
@@ -22797,11 +22796,11 @@
         },
         {
             "message": "Missing item type\nInitialises the WebGL context",
-            "line": " src/canvas/canvas.js:418"
+            "line": " src/canvas/canvas.js:428"
         },
         {
             "message": "Missing item type\nReads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
-            "line": " src/canvas/canvas.js:504"
+            "line": " src/canvas/canvas.js:514"
         },
         {
             "message": "Missing item type\nAdds a {{#crossLink \"Curve\"}}{{/crossLink}} to this Path.\n\nFires a {{#crossLink \"Path/curves:event\"}}{{/crossLink}} event on change.",
@@ -22821,11 +22820,11 @@
         },
         {
             "message": "Missing item type\nProtected method, called by sub-classes to queue a call to _update(), to rebuild geometry data arrays.",
-            "line": " src/geometry/geometry.js:341"
+            "line": " src/geometry/geometry.js:343"
         },
         {
             "message": "Missing item type\nProtected virtual template method, implemented by sub-classes to generate geometry data arrays.",
-            "line": " src/geometry/geometry.js:371"
+            "line": " src/geometry/geometry.js:373"
         },
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",
@@ -22908,6 +22907,30 @@
             "line": " src/rendering/depthBuf.js:181"
         },
         {
+            "message": "Missing item type\nRotate 'eye' about 'look', around the 'up' vector",
+            "line": " src/transforms/lookat.js:88"
+        },
+        {
+            "message": "Missing item type\nRotate 'eye' about 'look' around the X-axis",
+            "line": " src/transforms/lookat.js:111"
+        },
+        {
+            "message": "Missing item type\nRotate 'look' about 'eye', around the 'up' vector\n\n<p>Applies constraints added with {@link #addConstraint}.</p>",
+            "line": " src/transforms/lookat.js:135"
+        },
+        {
+            "message": "Missing item type\nRotate 'eye' about 'look' around the X-axis",
+            "line": " src/transforms/lookat.js:155"
+        },
+        {
+            "message": "Missing item type\nPans the camera along X and Y axis.",
+            "line": " src/transforms/lookat.js:179"
+        },
+        {
+            "message": "Missing item type\nIncrements/decrements zoom factor, ie. distance between eye and look.",
+            "line": " src/transforms/lookat.js:231"
+        },
+        {
             "message": "Missing item type\nInitializes this component",
             "line": " src/component.js:413"
         },
@@ -22928,7 +22951,7 @@
             "line": " src/component.js:923"
         },
         {
-            "message": "Missing item type\nOptional virtual template method, normally implemented\nby sub-classes to generate some data before _update gets\ncallled",
+            "message": "Missing item type\nOptional virtual template method, normally implemented\nby sub-classes to generate some data before _update gets\ncalled",
             "line": " src/component.js:948"
         },
         {
@@ -22957,51 +22980,51 @@
         },
         {
             "message": "Missing item type\nTests if the given object is an array",
-            "line": " src/xeo.js:418"
+            "line": " src/xeo.js:417"
         },
         {
             "message": "Missing item type\nTests if the given value is a string",
-            "line": " src/xeo.js:426"
+            "line": " src/xeo.js:425"
         },
         {
             "message": "Missing item type\nTests if the given value is a number",
-            "line": " src/xeo.js:437"
+            "line": " src/xeo.js:436"
         },
         {
             "message": "Missing item type\nTests if the given value is an ID",
-            "line": " src/xeo.js:447"
+            "line": " src/xeo.js:446"
         },
         {
             "message": "Missing item type\nTests if the given components are the same, where the components can be either IDs or instances.",
-            "line": " src/xeo.js:457"
+            "line": " src/xeo.js:456"
         },
         {
             "message": "Missing item type\nTests if the given value is a function",
-            "line": " src/xeo.js:476"
+            "line": " src/xeo.js:475"
         },
         {
             "message": "Missing item type",
-            "line": " src/xeo.js:486"
+            "line": " src/xeo.js:485"
         },
         {
             "message": "Missing item type",
-            "line": " src/xeo.js:492"
+            "line": " src/xeo.js:491"
         },
         {
             "message": "Missing item type\nAdd non-null/defined properties of o to o2",
-            "line": " src/xeo.js:503"
+            "line": " src/xeo.js:502"
         },
         {
             "message": "Missing item type\nAdd properties of o to o2 where undefined or null on o2",
-            "line": " src/xeo.js:518"
+            "line": " src/xeo.js:517"
         },
         {
             "message": "Missing item type\nReturns true if the given map is empty.",
-            "line": " src/xeo.js:533"
+            "line": " src/xeo.js:532"
         },
         {
             "message": "Missing item type\nReturns the given ID as a string, in quotes if the ID was a string to begin with.\n\nThis is useful for logging IDs.",
-            "line": " src/xeo.js:548"
+            "line": " src/xeo.js:547"
         }
     ]
 }

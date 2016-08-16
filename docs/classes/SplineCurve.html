@@ -97,7 +97,6 @@
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Position3D.html">Position3D</a></li>
-                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -203,11 +202,11 @@
 <div class="box intro">
     <p>A <strong>SplineCurve</strong> is a <a href="../classes/Curve.html" class="crosslink">Curve</a> along which a 3D position can be animated.</p>
 <ul>
-   <li>As shown in the diagram below, a SplineCurve is defined by three or more control points.</li>
-   <li>You can sample a <a href="../classes/SplineCurve.html#property_point" class="crosslink">point</a> and a <a href="../classes/Curve.html#property_tangent" class="crosslink">tangent</a>
+<li>As shown in the diagram below, a SplineCurve is defined by three or more control points.</li>
+<li>You can sample a <a href="../classes/SplineCurve.html#property_point" class="crosslink">point</a> and a <a href="../classes/Curve.html#property_tangent" class="crosslink">tangent</a>
 vector on a SplineCurve for any given value of <a href="../classes/SplineCurve.html#property_t" class="crosslink">t</a> in the range [0..1].</li>
-   <li>When you set <a href="../classes/SplineCurve.html#property_t" class="crosslink">t</a> on a SplineCurve, its <a href="../classes/SplineCurve.html#property_point" class="crosslink">point</a> and <a href="../classes/Curve.html#property_tangent" class="crosslink">tangent</a> properties will update accordingly.</li>
-   <li>To build a complex path, you can combine an unlimited combination of SplineCurves,
+<li>When you set <a href="../classes/SplineCurve.html#property_t" class="crosslink">t</a> on a SplineCurve, its <a href="../classes/SplineCurve.html#property_point" class="crosslink">point</a> and <a href="../classes/Curve.html#property_tangent" class="crosslink">tangent</a> properties will update accordingly.</li>
+<li>To build a complex path, you can combine an unlimited combination of SplineCurves,
 <a href="../classes/CubicBezierCurve.html" class="crosslink">CubicBezierCurves</a> and <a href="../classes/QuadraticBezierCurve.html" class="crosslink">QuadraticBezierCurves</a>
 into a <a href="../classes/Path.html" class="crosslink">Path</a>.</li>
 </ul>
@@ -1675,7 +1674,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     </div>
                     <div id="property_points" class="property item">
                         <h3 class="name"><code>points</code></h3>
-                        <span class="type">Array(Number)</span>
+                        <span class="type">Float32Array</span>
                     
                     
                     

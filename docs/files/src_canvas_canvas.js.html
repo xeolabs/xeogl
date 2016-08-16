@@ -97,7 +97,6 @@
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Position3D.html">Position3D</a></li>
-                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -425,7 +424,7 @@
                 function () {
 
                     /**
-                     * Fired wheneber the WebGL context has been lost
+                     * Fired whenever the WebGL context has been lost
                      * @event webglContextLost
                      */
                     self.fire(&quot;webglContextLost&quot;);
@@ -597,12 +596,22 @@
             var overlay = this.overlay;
             var overlayStyle = overlay.style;
 
-            overlayStyle[&quot;left&quot;] = canvas.offsetLeft + &quot;px&quot;;
-            overlayStyle[&quot;top&quot;] = canvas.offsetTop + &quot;px&quot;;
+            var xy = this._getElementXY(canvas);
+            overlayStyle[&quot;left&quot;] = xy.x + &quot;px&quot;;
+            overlayStyle[&quot;top&quot;] = xy.y + &quot;px&quot;;
             overlayStyle[&quot;width&quot;] = canvas.clientWidth + &quot;px&quot;;
             overlayStyle[&quot;height&quot;] = canvas.clientHeight + &quot;px&quot;;
         },
 
+        _getElementXY: function (e) {
+            var x = 0, y = 0;
+            while (e) {
+                x += e.offsetLeft;
+                y += e.offsetTop;
+                e = e.offsetParent;
+            }
+            return {x: x, y: y};
+        },
 
         /**
          * Initialises the WebGL context

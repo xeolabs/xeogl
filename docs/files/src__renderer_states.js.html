@@ -97,7 +97,6 @@
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Position3D.html">Position3D</a></li>
-                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -396,46 +395,16 @@
 
     /**
 
-     Modelling transform state.
+     Transform state.
 
-     renderer.ModelTransform
+     renderer.Transform
      @module XEO
      
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.ModelTransform = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-    /**
-
-     Viewing transform state.
-
-     renderer.ViewTransform
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    XEO.renderer.ViewTransform = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-    /**
-
-     Projection transform state.
-
-     renderer.ProjTransform
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    XEO.renderer.ProjTransform = XEO.renderer.State.extend({
+    XEO.renderer.Transform = XEO.renderer.State.extend({
         _ids: new XEO.utils.Map({})
     });
 
@@ -619,7 +588,7 @@
 
      @constructor
      @param cfg {*} Configs
-     @param cfg.boundary {Array of Number} Canvas-space viewport extents.
+     @param cfg.boundary {Float32Array} Canvas-space viewport extents.
      @extends renderer.State
      */
     XEO.renderer.Viewport = XEO.renderer.State.extend({

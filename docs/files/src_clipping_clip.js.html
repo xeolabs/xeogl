@@ -97,7 +97,6 @@
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Position3D.html">Position3D</a></li>
-                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -355,13 +354,13 @@
 
              @property dir
              @default [1.0, 1.0, 1.0]
-             @type Array(Number)
+             @type Float32Array
              */
             dir: {
 
                 set: function (value) {
 
-                    this._state.dir =  value || [1, 0, 0];
+                    this._state.dir =  value || XEO.math.vec3([1, 0, 0]);
 
                     this._renderer.imageDirty = true;
 
@@ -369,7 +368,7 @@
                      Fired whenever this Clip&#x27;s {{#crossLink &quot;Clip/dir:property&quot;}}{{/crossLink}} property changes.
 
                      @event dir
-                     @param  value  {Array(Number)} The property&#x27;s new value
+                     @param  value  {Float32Array} The property&#x27;s new value
                      */
                     this.fire(&quot;dir&quot;, this._state.dir);
                 },

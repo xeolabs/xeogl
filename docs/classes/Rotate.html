@@ -97,7 +97,6 @@
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Position3D.html">Position3D</a></li>
-                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -271,6 +270,137 @@ scene.on("tick", function(e) {
 
 </div>
 
+    <div class="constructor">
+        <h2>Constructor</h2>
+        <div id="method_Rotate" class="method item">
+            <h3 class="name"><code>Rotate</code></h3>
+        
+                <div class="args">
+                    <span class="paren">(</span><ul class="args-list inline commas">
+                        <li class="arg">
+                                <code class="optional">[scene]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[cfg]</code>
+                        </li>
+                    </ul><span class="paren">)</span>
+                </div>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+            <div class="meta">
+                        <p>
+                        Defined in
+                <a href="../files/src_transforms_rotate.js.html#l1"><code>src&#x2F;transforms&#x2F;rotate.js:1</code></a>
+                </p>
+        
+        
+        
+            </div>
+        
+            <div class="description">
+                
+            </div>
+        
+                <div class="params">
+                    <h4>Parameters:</h4>
+        
+                    <ul class="params-list">
+                        <li class="param">
+                                <code class="param-name optional">[scene]</code>
+                                <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this Rotate in the default
+        <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
+        
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[cfg]</code>
+                                <span class="type"></span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>Configs</p>
+        
+                            </div>
+        
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name optional">[id]</code>
+                                            <span class="type">String</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Optional ID, unique among all components in the parent scene, generated automatically when omitted.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[meta]</code>
+                                            <span class="type">String:Object</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Optional map of user-defined metadata to attach to this Rotate.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[parent]</code>
+                                            <span class="type">String | <a href="../classes/Transform.html" class="crosslink">Transform</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>ID or instance of a parent <a href="../classes/Transform.html" class="crosslink">Transform</a> within the same <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[xyz=[0,1,0]]</code>
+                                            <span class="type">Float32Array</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Axis of rotation.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[angle=0]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Angle of rotation in degrees.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                </ul>
+                        </li>
+                    </ul>
+                </div>
+        
+        
+        
+        </div>
+    </div>
 
 <div id="classdocs" class="tabview">
     <ul class="api-class-tabs">
@@ -1177,7 +1307,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_rotate.js.html#l148"><code>src&#x2F;transforms&#x2F;rotate.js:148</code></a>
+                            <a href="../files/src_transforms_rotate.js.html#l149"><code>src&#x2F;transforms&#x2F;rotate.js:149</code></a>
                             </p>
                     
                     
@@ -1297,7 +1427,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     </div>
                     <div id="property_matrix" class="property item inherited">
                         <h3 class="name"><code>matrix</code></h3>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
                     
                     
                     
@@ -1309,7 +1439,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Transform
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_transforms_transform.js.html#l239"><code>src&#x2F;transforms&#x2F;transform.js:239</code></a>
+                            <a href="../files/src_transforms_transform.js.html#l323"><code>src&#x2F;transforms&#x2F;transform.js:323</code></a>
                             </p>
                     
                     
@@ -1361,7 +1491,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Transform.html#property_parent">Transform</a>:
-                            <a href="../files/src_transforms_transform.js.html#l182"><code>src&#x2F;transforms&#x2F;transform.js:182</code></a>
+                            <a href="../files/src_transforms_transform.js.html#l267"><code>src&#x2F;transforms&#x2F;transform.js:267</code></a>
                             </p>
                     
                     
@@ -1494,7 +1624,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     </div>
                     <div id="property_xyz" class="property item">
                         <h3 class="name"><code>xyz</code></h3>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
                     
                     
                     
@@ -1503,7 +1633,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_rotate.js.html#l105"><code>src&#x2F;transforms&#x2F;rotate.js:105</code></a>
+                            <a href="../files/src_transforms_rotate.js.html#l118"><code>src&#x2F;transforms&#x2F;rotate.js:118</code></a>
                             </p>
                     
                     
@@ -1536,7 +1666,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_rotate.js.html#l165"><code>src&#x2F;transforms&#x2F;rotate.js:165</code></a>
+                            <a href="../files/src_transforms_rotate.js.html#l166"><code>src&#x2F;transforms&#x2F;rotate.js:166</code></a>
                             </p>
                     
                     
@@ -1553,7 +1683,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                 <ul class="params-list">
                                     <li class="param">
                                             <code class="param-name">value</code>
-                                            <span class="type">Array of Number</span>
+                                            <span class="type">Number</span>
                     
                     
                                         <div class="param-description">
@@ -1603,7 +1733,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Transform.html#event_matrix">Transform</a>:
-                            <a href="../files/src_transforms_transform.js.html#l262"><code>src&#x2F;transforms&#x2F;transform.js:262</code></a>
+                            <a href="../files/src_transforms_transform.js.html#l340"><code>src&#x2F;transforms&#x2F;transform.js:340</code></a>
                             </p>
                     
                     
@@ -1645,7 +1775,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Transform.html#event_parent">Transform</a>:
-                            <a href="../files/src_transforms_transform.js.html#l218"><code>src&#x2F;transforms&#x2F;transform.js:218</code></a>
+                            <a href="../files/src_transforms_transform.js.html#l303"><code>src&#x2F;transforms&#x2F;transform.js:303</code></a>
                             </p>
                     
                     
@@ -1687,7 +1817,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Transform.html#event_updated">Transform</a>:
-                            <a href="../files/src_transforms_transform.js.html#l308"><code>src&#x2F;transforms&#x2F;transform.js:308</code></a>
+                            <a href="../files/src_transforms_transform.js.html#l203"><code>src&#x2F;transforms&#x2F;transform.js:203</code></a>
                             </p>
                     
                     
@@ -1714,7 +1844,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_rotate.js.html#l134"><code>src&#x2F;transforms&#x2F;rotate.js:134</code></a>
+                            <a href="../files/src_transforms_rotate.js.html#l135"><code>src&#x2F;transforms&#x2F;rotate.js:135</code></a>
                             </p>
                     
                     
@@ -1731,7 +1861,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                 <ul class="params-list">
                                     <li class="param">
                                             <code class="param-name">value</code>
-                                            <span class="type">Array of Number</span>
+                                            <span class="type">Float32Array</span>
                     
                     
                                         <div class="param-description">

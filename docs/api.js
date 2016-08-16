@@ -58,7 +58,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "PlaneGeometry",
         "PointLight",
         "Position3D",
-        "Projection",
         "QuadraticBezierCurve",
         "Quaternion",
         "Reflect",

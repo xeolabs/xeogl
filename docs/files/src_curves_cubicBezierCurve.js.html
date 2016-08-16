@@ -97,7 +97,6 @@
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Position3D.html">Position3D</a></li>
-                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -327,7 +326,7 @@
 
              @property v0
              @default [0.0, 0.0, 0.0]
-             @type Array(Number)
+             @type Float32Array
              */
             v0: {
 
@@ -339,7 +338,7 @@
                      * @event v0
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;v0&quot;, this._v0 = value || [0, 0, 0]);
+                    this.fire(&quot;v0&quot;, this._v0 = value || XEO.math.vec3([0, 0, 0]));
                 },
 
                 get: function () {
@@ -354,7 +353,7 @@
 
              @property v1
              @default [0.0, 0.0, 0.0]
-             @type Array(Number)
+             @type Float32Array
              */
             v1: {
 
@@ -366,7 +365,7 @@
                      * @event v1
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;v1&quot;, this._v1 = value || [0, 0, 0]);
+                    this.fire(&quot;v1&quot;, this._v1 = value || XEO.math.vec3([0, 0, 0]));
                 },
 
                 get: function () {
@@ -381,7 +380,7 @@
 
              @property v2
              @default [0.0, 0.0, 0.0]
-             @type Array(Number)
+             @type Float32Array
              */
             v2: {
 
@@ -393,7 +392,7 @@
                      * @event v2
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;v2&quot;, this._v2 = value || [0, 0, 0]);
+                    this.fire(&quot;v2&quot;, this._v2 = value || XEO.math.vec3([0, 0, 0]));
                 },
 
                 get: function () {
@@ -408,7 +407,7 @@
 
              @property v3
              @default [0.0, 0.0, 0.0]
-             @type Array(Number)
+             @type Float32Array
              */
             v3: {
 
@@ -420,7 +419,7 @@
                      * @event v3
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&quot;v3&quot;, this._v3 = value || [0, 0, 0]);
+                    this.fire(&quot;v3&quot;, this._v3 = value || XEO.math.vec3([0, 0, 0]));
                 },
 
                 get: function () {

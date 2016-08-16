@@ -97,7 +97,6 @@
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Position3D.html">Position3D</a></li>
-                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -332,9 +331,9 @@
         },
 
 
-        _getPointAt: function (u) {
+        getPointAt: function (u) {
 
-            var t = this._getUToTMapping(u);
+            var t = this.getUToTMapping(u);
 
             return this.getPoint(t);
 
@@ -371,7 +370,7 @@
             var d, pts = [];
 
             for (d = 0; d &lt;= divisions; d++) {
-                pts.push(this._getPointAt(d / divisions));
+                pts.push(this.getPointAt(d / divisions));
             }
 
             return pts;
@@ -424,7 +423,7 @@
 
         // Given u ( 0 .. 1 ), get a t to find p. This gives you points which are equi distance
 
-        _getUToTMapping: function (u, distance) {
+        getUToTMapping: function (u, distance) {
 
             var arcLengths = this._getLengths();
 

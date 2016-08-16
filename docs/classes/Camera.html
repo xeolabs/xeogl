@@ -97,7 +97,6 @@
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Position3D.html">Position3D</a></li>
-                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -203,15 +202,11 @@
 <div class="box intro">
     <p>A <strong>Camera</strong> defines viewing and projection transforms for attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
 <ul>
-<li> A Camera is composed of a viewing transform and a <a href="../classes/Projection.html" class="crosslink">Projection</a>.</li>
+<li> A Camera is composed of a viewing and projection <a href="../classes/Transform.html" class="crosslink">Transform</a>.</li>
 <li>The viewing transform is usually a <a href="../classes/Lookat.html" class="crosslink">Lookat</a>. Having the viewing transform as a
 separate component from the Camera allows us to switch the Camera between multiple, existing viewpoints by simply re-attaching it to
 different viewing transform components (ie. <a href="../classes/Lookat.html" class="crosslink">Lookats</a>).</li>
-<li>The <a href="../classes/Projection.html" class="crosslink">Projection</a> may be an <a href="../classes/Ortho.html" class="crosslink">Ortho</a>, <a href="../classes/Frustum.html" class="crosslink">Frustum</a>
-or <a href="../classes/Perspective.html" class="crosslink">Perspective</a>. Likewise, having the projection transform as a
-separate component from the Camera allows us to switch the Camera between multiple, existing projections by simply re-attaching it to
-different projection components.</li>
-<li> By default, each Camera is composed of its parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_view" class="crosslink">view</a> transform,
+<li> By default, each Camera has its parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_view" class="crosslink">view</a> transform,
 (which is a <a href="../classes/Lookat.html" class="crosslink">Lookat</a>) and default
 <a href="../classes/Scene.html#property_project" class="crosslink">project</a> transform (which is a <a href="../classes/Perspective.html" class="crosslink">Perspective</a>).
 You would override those with your own transform components as necessary.</li>
@@ -343,7 +338,7 @@ entity.scene.on("tick", function () {
                                     </li>
                                     <li class="param">
                                             <code class="param-name optional">[view]</code>
-                                            <span class="type">String | XEO.Lookat</span>
+                                            <span class="type">String | XEO.Transform</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
@@ -356,7 +351,7 @@ entity.scene.on("tick", function () {
                                     </li>
                                     <li class="param">
                                             <code class="param-name optional">[project]</code>
-                                            <span class="type">String | XEO.Projection</span>
+                                            <span class="type">String | XEO.Transform</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
@@ -1381,7 +1376,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     </div>
                     <div id="property_project" class="property item">
                         <h3 class="name"><code>project</code></h3>
-                        <span class="type"><a href="../classes/Projection.html" class="crosslink">Projection</a></span>
+                        <span class="type"><a href="../classes/Transform.html" class="crosslink">Transform</a></span>
                     
                     
                     
@@ -1390,14 +1385,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l91"><code>src&#x2F;camera&#x2F;camera.js:91</code></a>
+                            <a href="../files/src_camera_camera.js.html#l86"><code>src&#x2F;camera&#x2F;camera.js:86</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The projection transform component for this Camera.</p>
+                            <p>The projection transform for this Camera.</p>
                     <p>When set to a null or undefined value, will default to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s
                     default <a href="../classes/Scene.html#property_project" class="crosslink">project</a>, which is
                     a <a href="../classes/Perspective.html" class="crosslink">Perspective</a>.</p>
@@ -1526,7 +1521,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     </div>
                     <div id="property_view" class="property item">
                         <h3 class="name"><code>view</code></h3>
-                        <span class="type"><a href="../classes/Lookat.html" class="crosslink">Lookat</a></span>
+                        <span class="type"><a href="../classes/Transform.html" class="crosslink">Transform</a></span>
                     
                     
                     
@@ -1535,7 +1530,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l134"><code>src&#x2F;camera&#x2F;camera.js:134</code></a>
+                            <a href="../files/src_camera_camera.js.html#l129"><code>src&#x2F;camera&#x2F;camera.js:129</code></a>
                             </p>
                     
                     
@@ -1544,8 +1539,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="description">
                             <p>The viewing transform for this Camera.</p>
                     <p>When set to a null or undefined value, will default to the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s
-                    default <a href="../classes/Scene.html#property_view" class="crosslink">view</a>, which is
-                    a <a href="../classes/Lookat.html" class="crosslink">Lookat</a>.</p>
+                    default <a href="../classes/Scene.html#property_view" class="crosslink">view</a>, which is a <a href="../classes/Lookat.html" class="crosslink">Lookat</a>.</p>
                     <p>Fires a <a href="../classes/Camera.html#event_view" class="crosslink">view</a> event on change.</p>
                     
                         </div>
@@ -1595,7 +1589,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l107"><code>src&#x2F;camera&#x2F;camera.js:107</code></a>
+                            <a href="../files/src_camera_camera.js.html#l102"><code>src&#x2F;camera&#x2F;camera.js:102</code></a>
                             </p>
                     
                     
@@ -1637,7 +1631,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_camera.js.html#l150"><code>src&#x2F;camera&#x2F;camera.js:150</code></a>
+                            <a href="../files/src_camera_camera.js.html#l144"><code>src&#x2F;camera&#x2F;camera.js:144</code></a>
                             </p>
                     
                     

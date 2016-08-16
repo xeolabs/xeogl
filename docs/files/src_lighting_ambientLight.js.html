@@ -97,7 +97,6 @@
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Position3D.html">Position3D</a></li>
-                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -254,7 +253,7 @@
 
             this._state = {
                 type: &quot;ambient&quot;,
-                color: [0.7, 0.7, 0.7],
+                color: XEO.math.vec3([0.7, 0.7, 0.7]),
                 intensity: 1.0
             };
 
@@ -271,13 +270,13 @@
 
              @property color
              @default [0.7, 0.7, 0.8]
-             @type Array(Number)
+             @type Float32Array
              */
             color: {
 
                 set: function (value) {
 
-                    this._state.color = value || [ 0.7, 0.7, 0.8 ];
+                    this._state.color.set(value ||  [ 0.7, 0.7, 0.8 ]);
 
                     this._renderer.imageDirty = true;
 

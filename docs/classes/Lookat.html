@@ -97,7 +97,6 @@
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Position3D.html">Position3D</a></li>
-                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -187,14 +186,14 @@
 <div class="box meta">
 
         <div class="extends">
-            Extends <a href="../classes/Component.html" class="crosslink">Component</a>
+            Extends <a href="../classes/Transform.html" class="crosslink">Transform</a>
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_camera_lookat.js.html#l1"><code>src&#x2F;camera&#x2F;lookat.js:1</code></a>
+            Defined in: <a href="../files/src_transforms_lookat.js.html#l1"><code>src&#x2F;transforms&#x2F;lookat.js:1</code></a>
         </div>
 
-            Module: <a href="../modules/camera.html">camera</a><br>
+            Module: <a href="../modules/transforms.html">transforms</a><br>
             Parent Module: <a href="../modules/XEO.html">XEO</a>
 
 </div>
@@ -262,7 +261,7 @@ vector.</p>
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_camera_lookat.js.html#l1"><code>src&#x2F;camera&#x2F;lookat.js:1</code></a>
+                <a href="../files/src_transforms_lookat.js.html#l1"><code>src&#x2F;transforms&#x2F;lookat.js:1</code></a>
                 </p>
         
         
@@ -320,6 +319,17 @@ vector.</p>
         
                                         <div class="param-description">
                                             <p>Optional map of user-defined metadata to attach to this Lookat.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[parent]</code>
+                                            <span class="type">String | <a href="../classes/Transform.html" class="crosslink">Transform</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>ID or instance of a parent <a href="../classes/Transform.html" class="crosslink">Transform</a> within the same <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
         
                                         </div>
         
@@ -470,12 +480,16 @@ vector.</p>
                                 <a href="#property_look">look</a>
 
                             </li>
-                            <li class="index-item property">
+                            <li class="index-item property inherited inherited">
                                 <a href="#property_matrix">matrix</a>
 
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_metadata">metadata</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_parent">parent</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -522,12 +536,20 @@ vector.</p>
                                 <a href="#event_look">look</a>
 
                             </li>
-                            <li class="index-item event">
+                            <li class="index-item event inherited">
                                 <a href="#event_matrix">matrix</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_parent">parent</a>
 
                             </li>
                             <li class="index-item event">
                                 <a href="#event_up">up</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_updated">updated</a>
 
                             </li>
                     </ul>
@@ -1303,7 +1325,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     </div>
                     <div id="property_eye" class="property item">
                         <h3 class="name"><code>eye</code></h3>
-                        <span class="type">Array(Number)</span>
+                        <span class="type">Float32Array</span>
                     
                     
                     
@@ -1312,7 +1334,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_lookat.js.html#l273"><code>src&#x2F;camera&#x2F;lookat.js:273</code></a>
+                            <a href="../files/src_transforms_lookat.js.html#l279"><code>src&#x2F;transforms&#x2F;lookat.js:279</code></a>
                             </p>
                     
                     
@@ -1339,7 +1361,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_lookat.js.html#l243"><code>src&#x2F;camera&#x2F;lookat.js:243</code></a>
+                            <a href="../files/src_transforms_lookat.js.html#l248"><code>src&#x2F;transforms&#x2F;lookat.js:248</code></a>
                             </p>
                     
                     
@@ -1434,7 +1456,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     </div>
                     <div id="property_look" class="property item">
                         <h3 class="name"><code>look</code></h3>
-                        <span class="type">Array(Number)</span>
+                        <span class="type">Float32Array</span>
                     
                     
                     
@@ -1443,7 +1465,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_lookat.js.html#l310"><code>src&#x2F;camera&#x2F;lookat.js:310</code></a>
+                            <a href="../files/src_transforms_lookat.js.html#l310"><code>src&#x2F;transforms&#x2F;lookat.js:310</code></a>
                             </p>
                     
                     
@@ -1459,29 +1481,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_matrix" class="property item">
+                    <div id="property_matrix" class="property item inherited">
                         <h3 class="name"><code>matrix</code></h3>
-                        <span class="type">Float64Array</span>
+                        <span class="type">Float32Array</span>
                     
                     
                     
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_camera_lookat.js.html#l382"><code>src&#x2F;camera&#x2F;lookat.js:382</code></a>
+                                <p>Inherited from
+                                <a href="../classes/Transform.html#property_matrix">
+                                    Transform
+                                </a>
+                                but overwritten in
+                            <a href="../files/src_transforms_transform.js.html#l323"><code>src&#x2F;transforms&#x2F;transform.js:323</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The elements of this Lookat&#39;s view transform matrix.</p>
-                    <p>Fires a <a href="../classes/Lookat.html#event_matrix" class="crosslink">matrix</a> event on change.</p>
+                            <p>The Transform&#39;s local matrix.</p>
+                    <p>Fires a <a href="../classes/Transform.html#event_matrix" class="crosslink">matrix</a> event on change.</p>
                     
                         </div>
                     
+                            <p><strong>Default:</strong> [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]</p>
                     
                     
                     </div>
@@ -1504,6 +1530,32 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Arbitrary, user-defined metadata on this component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_parent" class="property item inherited">
+                        <h3 class="name"><code>parent</code></h3>
+                        <span class="type"><a href="../classes/Transform.html" class="crosslink">Transform</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Transform.html#property_parent">Transform</a>:
+                            <a href="../files/src_transforms_transform.js.html#l267"><code>src&#x2F;transforms&#x2F;transform.js:267</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The parent Transform.</p>
+                    <p>Fires a <a href="../classes/Transform.html#event_parent" class="crosslink">parent</a> event on change.</p>
                     
                         </div>
                     
@@ -1628,7 +1680,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     </div>
                     <div id="property_up" class="property item">
                         <h3 class="name"><code>up</code></h3>
-                        <span class="type">Array(Number)</span>
+                        <span class="type">Float32Array</span>
                     
                     
                     
@@ -1637,7 +1689,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_lookat.js.html#l347"><code>src&#x2F;camera&#x2F;lookat.js:347</code></a>
+                            <a href="../files/src_transforms_lookat.js.html#l341"><code>src&#x2F;transforms&#x2F;lookat.js:341</code></a>
                             </p>
                     
                     
@@ -1695,7 +1747,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_lookat.js.html#l296"><code>src&#x2F;camera&#x2F;lookat.js:296</code></a>
+                            <a href="../files/src_transforms_lookat.js.html#l296"><code>src&#x2F;transforms&#x2F;lookat.js:296</code></a>
                             </p>
                     
                     
@@ -1737,7 +1789,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_lookat.js.html#l259"><code>src&#x2F;camera&#x2F;lookat.js:259</code></a>
+                            <a href="../files/src_transforms_lookat.js.html#l265"><code>src&#x2F;transforms&#x2F;lookat.js:265</code></a>
                             </p>
                     
                     
@@ -1779,7 +1831,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_lookat.js.html#l333"><code>src&#x2F;camera&#x2F;lookat.js:333</code></a>
+                            <a href="../files/src_transforms_lookat.js.html#l327"><code>src&#x2F;transforms&#x2F;lookat.js:327</code></a>
                             </p>
                     
                     
@@ -1810,7 +1862,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_matrix" class="events item">
+                    <div id="event_matrix" class="events item inherited">
                         <h3 class="name"><code>matrix</code></h3>
                         <span class="type"></span>
                     
@@ -1819,16 +1871,58 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_camera_lookat.js.html#l426"><code>src&#x2F;camera&#x2F;lookat.js:426</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Transform.html#event_matrix">Transform</a>:
+                            <a href="../files/src_transforms_transform.js.html#l340"><code>src&#x2F;transforms&#x2F;transform.js:340</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Lookat&#39;s  <a href="../classes/Lookat.html#property_matrix" class="crosslink">matrix</a> property is updated.</p>
+                            <p>Fired whenever this Transform&#39;s <a href="../classes/Transform.html#property_matrix" class="crosslink">matrix</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_parent" class="events item inherited">
+                        <h3 class="name"><code>parent</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Transform.html#event_parent">Transform</a>:
+                            <a href="../files/src_transforms_transform.js.html#l303"><code>src&#x2F;transforms&#x2F;transform.js:303</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Transform&#39;s <a href="../classes/Transform.html#property_parent" class="crosslink">parent</a> property changes.</p>
                     
                         </div>
                     
@@ -1863,7 +1957,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_camera_lookat.js.html#l368"><code>src&#x2F;camera&#x2F;lookat.js:368</code></a>
+                            <a href="../files/src_transforms_lookat.js.html#l356"><code>src&#x2F;transforms&#x2F;lookat.js:356</code></a>
                             </p>
                     
                     
@@ -1891,6 +1985,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     </li>
                                 </ul>
                             </div>
+                    
+                    
+                    </div>
+                    <div id="event_updated" class="events item inherited">
+                        <h3 class="name"><code>updated</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Transform.html#event_updated">Transform</a>:
+                            <a href="../files/src_transforms_transform.js.html#l203"><code>src&#x2F;transforms&#x2F;transform.js:203</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Transform&#39;s Transform/leafMatrix:property property changes.</p>
+                    <p>This event does not carry the updated property value. Instead, subscribers will need to read
+                    that property again to get its updated value (which may be lazy-computed then).</p>
+                    
+                        </div>
+                    
                     
                     
                     </div>

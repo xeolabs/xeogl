@@ -97,7 +97,6 @@
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Position3D.html">Position3D</a></li>
-                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -3445,10 +3444,10 @@
 
             dest = XEO.math.identityMat4(dest);
 
-            var q0 = q[0];
-            var q1 = q[1];
-            var q2 = q[2];
-            var q3 = q[3];
+            var q0 = q[0];  //x
+            var q1 = q[1];  //y
+            var q2 = q[2];  //z
+            var q3 = q[3];  //w
 
             var tx = 2.0 * q0;
             var ty = 2.0 * q1;
@@ -3467,15 +3466,16 @@
             var tzz = tz * q2;
 
             dest[0] = 1.0 - (tyy + tzz);
-            dest[1] = txy - twz;
-            dest[2] = txz + twy;
+            dest[1] = txy + twz;
+            dest[2] = txz - twy;
 
-            dest[4] = txy + twz;
+            dest[4] = txy - twz;
             dest[5] = 1.0 - (txx + tzz);
-            dest[6] = tyz - twx;
+            dest[6] = tyz + twx;
 
-            dest[8] = txz - twy;
-            dest[9] = tyz + twx;
+            dest[8] = txz + twy;
+            dest[9] = tyz - twx;
+
             dest[10] = 1.0 - (txx + tyy);
 
             return dest;

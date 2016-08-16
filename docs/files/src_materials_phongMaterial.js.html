@@ -97,7 +97,6 @@
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/Position3D.html">Position3D</a></li>
-                                <li><a href="../classes/Projection.html">Projection</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -315,10 +314,10 @@
 
                 type: &quot;phongMaterial&quot;,
 
-                ambient: [0.7, 0.7, 0.8],
-                diffuse: [1.0, 1.0, 1.0],
-                specular: [1.0, 1.0, 1.0],
-                emissive: [0.0, 0.0, 0.0],
+                ambient: XEO.math.vec3([1.0, 1.0, 1.0]),
+                diffuse: XEO.math.vec3([1.0, 1.0, 1.0]),
+                specular: XEO.math.vec3([1.0, 1.0, 1.0]),
+                emissive: XEO.math.vec3([0.0, 0.0, 0.0]),
 
                 opacity: 1.0,
                 shininess: 30.0,
@@ -391,13 +390,13 @@
 
              @property ambient
              @default [1.0, 1.0, 1.0]
-             @type Array(Number)
+             @type Float32Array
              */
             ambient: {
 
                 set: function (value) {
 
-                    this._state.ambient = value || [1.0, 1.0, 1.0];
+                    this._state.ambient.set(value || [1.0, 1.0, 1.0]);
 
                     this._renderer.imageDirty = true;
 
@@ -405,7 +404,7 @@
                      * Fired whenever this PhongMaterial&#x27;s {{#crossLink &quot;PhongMaterial/ambient:property&quot;}}{{/crossLink}} property changes.
                      *
                      * @event ambient
-                     * @param value {Array(Number)} The property&#x27;s new value
+                     * @param value {Float32Array} The property&#x27;s new value
                      */
                     this.fire(&quot;ambient&quot;, this._state.ambient);
                 },
@@ -424,13 +423,13 @@
 
              @property diffuse
              @default [1.0, 1.0, 1.0]
-             @type Array(Number)
+             @type Float32Array
              */
             diffuse: {
 
                 set: function (value) {
 
-                    this._state.diffuse = value || [1.0, 1.0, 1.0];
+                    this._state.diffuse.set(value || [1.0, 1.0, 1.0]);
 
                     this._renderer.imageDirty = true;
 
@@ -438,7 +437,7 @@
                      * Fired whenever this PhongMaterial&#x27;s {{#crossLink &quot;PhongMaterial/diffuse:property&quot;}}{{/crossLink}} property changes.
                      *
                      * @event diffuse
-                     * @param value {Array(Number)} The property&#x27;s new value
+                     * @param value {Float32Array} The property&#x27;s new value
                      */
                     this.fire(&quot;diffuse&quot;, this._state.diffuse);
                 },
@@ -457,13 +456,13 @@
 
              @property specular
              @default [1.0, 1.0, 1.0]
-             @type Array(Number)
+             @type Float32Array
              */
             specular: {
 
                 set: function (value) {
 
-                    this._state.specular = value || [1.0, 1.0, 1.0];
+                    this._state.specular.set(value || [1.0, 1.0, 1.0]);
 
                     this._renderer.imageDirty = true;
 
@@ -471,7 +470,7 @@
                      Fired whenever this PhongMaterial&#x27;s {{#crossLink &quot;PhongMaterial/specular:property&quot;}}{{/crossLink}} property changes.
 
                      @event specular
-                     @param value {Array(Number)} The property&#x27;s new value
+                     @param value {Float32Array} The property&#x27;s new value
                      */
                     this.fire(&quot;specular&quot;, this._state.specular);
                 },
@@ -490,13 +489,13 @@
 
              @property emissive
              @default [0.0, 0.0, 0.0]
-             @type Array(Number)
+             @type Float32Array
              */
             emissive: {
 
                 set: function (value) {
 
-                    this._state.emissive = value || [0.0, 0.0, 0.0];
+                    this._state.emissive.set(value || [0.0, 0.0, 0.0]);
 
                     this._renderer.imageDirty = true;
 
@@ -504,7 +503,7 @@
                      Fired whenever this PhongMaterial&#x27;s {{#crossLink &quot;PhongMaterial/emissive:property&quot;}}{{/crossLink}} property changes.
 
                      @event emissive
-                     @param value {Array(Number)} The property&#x27;s new value
+                     @param value {Float32Array} The property&#x27;s new value
                      */
                     this.fire(&quot;emissive&quot;, this._state.emissive);
                 },
