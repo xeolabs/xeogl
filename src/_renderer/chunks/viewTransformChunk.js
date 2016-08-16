@@ -15,22 +15,22 @@
 
         draw: function () {
             if (this._uViewMatrixDraw) {
-                this._uViewMatrixDraw.setValue(this.state.matrix);
+                this._uViewMatrixDraw.setValue(this.state.getMatrix());
             }
             if (this._uViewNormalMatrixDraw) {
-                this._uViewNormalMatrixDraw.setValue(this.state.normalMatrix);
+                this._uViewNormalMatrixDraw.setValue(this.state.getNormalMatrix());
             }
         },
 
         pickObject: function () {
             if (this._uViewMatrixPickObject) {
-                this._uViewMatrixPickObject.setValue(this.state.matrix);
+                this._uViewMatrixPickObject.setValue(this.state.getMatrix());
             }
         },
 
         pickPrimitive: function () {
             if (this._uViewMatrixPickPrimitive) {
-                this._uViewMatrixPickPrimitive.setValue(this.state.matrix);
+                this._uViewMatrixPickPrimitive.setValue(this.state.getMatrix());
             }
         }
     });

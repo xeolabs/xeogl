@@ -2,15 +2,11 @@
  A **Camera** defines viewing and projection transforms for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  <ul>
- <li> A Camera is composed of a viewing transform and a {{#crossLink "Projection"}}{{/crossLink}}.</li>
+ <li> A Camera is composed of a viewing and projection {{#crossLink "Transform"}}{{/crossLink}}.</li>
  <li>The viewing transform is usually a {{#crossLink "Lookat"}}Lookat{{/crossLink}}. Having the viewing transform as a
  separate component from the Camera allows us to switch the Camera between multiple, existing viewpoints by simply re-attaching it to
  different viewing transform components (ie. {{#crossLink "Lookat"}}Lookats{{/crossLink}}).</li>
- <li>The {{#crossLink "Projection"}}{{/crossLink}} may be an {{#crossLink "Ortho"}}Ortho{{/crossLink}}, {{#crossLink "Frustum"}}Frustum{{/crossLink}}
- or {{#crossLink "Perspective"}}Perspective{{/crossLink}}. Likewise, having the projection transform as a
- separate component from the Camera allows us to switch the Camera between multiple, existing projections by simply re-attaching it to
- different projection components.</li>
- <li> By default, each Camera is composed of its parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}} transform,
+ <li> By default, each Camera has its parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}} transform,
  (which is a {{#crossLink "Lookat"}}Lookat{{/crossLink}}) and default
  {{#crossLink "Scene/project:property"}}{{/crossLink}} transform (which is a {{#crossLink "Perspective"}}Perspective{{/crossLink}}).
  You would override those with your own transform components as necessary.</li>
@@ -62,10 +58,10 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  You only need to supply an ID if you need to be able to find the Camera by ID within its parent {{#crossLink "Scene"}}Scene{{/crossLink}} later.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Camera.
- @param [cfg.view] {String|XEO.Lookat} ID or instance of a view transform within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}. Defaults to the
+ @param [cfg.view] {String|XEO.Transform} ID or instance of a view transform within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}} transform,
  which is a {{#crossLink "Lookat"}}Lookat{{/crossLink}}.
- @param [cfg.project] {String|XEO.Projection} ID or instance of a projection transform
+ @param [cfg.project] {String|XEO.Transform} ID or instance of a projection transform
  within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}. Defaults to the parent
  {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/project:property"}}{{/crossLink}} transform,
  which is a {{#crossLink "Perspective"}}Perspective{{/crossLink}}.
@@ -82,14 +78,13 @@
         _init: function (cfg) {
 
             this.project = cfg.project;
-
             this.view = cfg.view;
         },
 
         _props: {
 
             /**
-             * The projection transform component for this Camera.
+             * The projection transform for this Camera.
              *
              * When set to a null or undefined value, will default to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s
              * default {{#crossLink "Scene/project:property"}}project{{/crossLink}}, which is
@@ -98,7 +93,7 @@
              * Fires a {{#crossLink "Camera/project:event"}}{{/crossLink}} event on change.
              *
              * @property project
-             * @type Projection
+             * @type Transform
              */
             project: {
 
@@ -112,7 +107,7 @@
                      */
                     this._attach({
                         name: "project",
-                        type: "XEO.Projection",
+                        type: "XEO.Transform",
                         component: value,
                         sceneDefault: true,
                         on: {
@@ -135,13 +130,12 @@
              * The viewing transform for this Camera.
              *
              * When set to a null or undefined value, will default to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s
-             * default {{#crossLink "Scene/view:property"}}view{{/crossLink}}, which is
-             * a {{#crossLink "Lookat"}}Lookat{{/crossLink}}.
+             * default {{#crossLink "Scene/view:property"}}view{{/crossLink}}, which is a {{#crossLink "Lookat"}}Lookat{{/crossLink}}.
              *
              * Fires a {{#crossLink "Camera/view:event"}}{{/crossLink}} event on change.
              *
              * @property view
-             * @type Lookat
+             * @type Transform
              */
             view: {
 
@@ -155,7 +149,7 @@
                      */
                     this._attach({
                         name: "view",
-                        type: "XEO.Lookat",
+                        type: "XEO.Transform",
                         component: value,
                         sceneDefault: true,
                         on: {
@@ -176,8 +170,8 @@
         },
 
         _compile: function () {
-            this._attached.project._compile();
-            this._attached.view._compile();
+            this._renderer.projTransform = this._attached.project._state;
+            this._renderer.viewTransform = this._attached.view._state;
         },
 
         _getJSON: function () {

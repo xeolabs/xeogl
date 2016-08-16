@@ -43,23 +43,24 @@
 
  @class Perspective
  @module XEO
- @submodule camera
+ @submodule transforms
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Perspective within the
  default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Perspective.
+ @param [cfg.parent] {String|Transform} ID or instance of a parent {{#crossLink "Transform"}}{{/crossLink}} within the same {{#crossLink "Scene"}}Scene{{/crossLink}}.
  @param [cfg.fovy=60.0] {Number} Field-of-view angle, in degrees, on Y-axis.
  @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
  @param [cfg.far=10000] {Number} Position of the far plane on the View-space Z-axis.
- @extends Projection
+ @extends Transform
  */
 (function () {
 
     "use strict";
 
-    XEO.Perspective = XEO.Projection.extend({
+    XEO.Perspective = XEO.Transform.extend({
 
         type: "XEO.Perspective",
 
@@ -80,13 +81,12 @@
             this.far = cfg.far;
         },
 
-        _update: function () {
+        _build: function () {
 
             var canvas = this.scene.canvas.canvas;
             var aspect = canvas.clientWidth / canvas.clientHeight;
 
-            this.matrix = XEO.math.perspectiveMatrix4( // Assign to XEO.Projection#matrix
-                this._fovy * (Math.PI / 180.0), aspect, this._near, this._far,  this.__tempMat || (this.__tempMat = XEO.math.mat4()));
+            this.matrix = XEO.math.perspectiveMatrix4(this._fovy * (Math.PI / 180.0), aspect, this._near, this._far, this._matrix);
         },
 
         _props: {
@@ -191,11 +191,15 @@
         },
 
         _getJSON: function () {
-            return {
+            var json = {
                 fovy: this._fovy,
                 near: this._near,
                 far: this._far
             };
+            if (this._parent) {
+                json.parent = this._parent.id;
+            }
+            return json;
         },
 
         _destroy: function () {

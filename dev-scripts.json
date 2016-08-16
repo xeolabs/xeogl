@@ -50,11 +50,6 @@
     "src/animation/morphTargets.js",
     "src/animation/cameraFlight.js",
     "src/camera/camera.js",
-    "src/camera/projection.js",
-    "src/camera/frustum.js",
-    "src/camera/lookat.js",
-    "src/camera/ortho.js",
-    "src/camera/perspective.js",
     "src/canvas/canvas.js",
     "src/canvas/spinner.js",
     "src/clipping/_module.js",
@@ -142,6 +137,10 @@
     "src/transforms/scale.js",
     "src/transforms/translate.js",
     "src/transforms/billboard.js",
-    "src/transforms/stationary.js"
+    "src/transforms/stationary.js",
+    "src/transforms/frustum.js",
+    "src/transforms/lookat.js",
+    "src/transforms/ortho.js",
+    "src/transforms/perspective.js"
   ]
 }

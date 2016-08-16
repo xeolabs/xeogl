@@ -99,6 +99,29 @@
          */
         this.transparent = cfg.transparent === true;
 
+        /**
+         * Optional callback to fire when renderer wants to
+         * bind an output framebuffer.
+         *
+         * When this is missing, the renderer will implicitly bind
+         * WebGL's default framebuffer.
+         *
+         * The callback takes one parameter, which is the index of the current
+         * rendering pass in which the buffer is to be bound.
+         *
+         * Use like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });
+         */
+        this.bindOutputFramebuffer = null;
+
+        /**
+         * Optional callback to fire when renderer wants to
+         * unbind any output drawing framebuffer that was
+         * previously bound with #bindOutputFramebuffer.
+         *
+         * Callback takes no parameters.
+         */
+        this.unbindOutputFramebuffer = null;
+
         // The objects in the render
         this.objects = {};
 
@@ -132,7 +155,25 @@
         // draw list, along with any results of the render, such as pick hits
         this._frameCtx = {
             pickObjects: [], // Pick names of objects hit during pick render
-            canvas: this._canvas
+            canvas: this._canvas,
+            renderTarget: null,
+            renderBuf: null,
+            depthbufEnabled: null,
+            clearDepth: null,
+            depthFunc: null,
+            blendEnabled: false,
+            backfaces: true,
+            frontface: true, // true = "ccw" else "cw"
+            pickIndex: 0, // Indexes this._pickObjects
+            textureUnit: 0,
+            transparent: false, // True while rendering transparency bin
+            ambientColor: null,
+            drawElements: 0,
+            useProgram: 0,
+            bindTexture: 0,
+            bindArray: null,
+            pass: null,
+            bindOutputFramebuffer: null
         };
 
         //----------------- Render states --------------------------------------
@@ -210,21 +251,21 @@
         /**
          Modelling transform render state.
          @property modelTransform
-         @type {renderer.ModelTransform}
+         @type {renderer.Transform}
          */
         this.modelTransform = null;
 
         /**
          View transform render state.
          @property viewTransform
-         @type {renderer.ViewTransform}
+         @type {renderer.Transform}
          */
         this.viewTransform = null;
 
         /**
          Projection transform render state.
          @property projTransform
-         @type {renderer.ProjTransform}
+         @type {renderer.Transform}
          */
         this.projTransform = null;
 
@@ -465,7 +506,7 @@
         // Build sequence of draw chunks on the object
 
         // The order of some of these is important because some chunks will set
-        // state on this._framectx to be consumed by other chunks downstream.
+        // state on this._frameCtx to be consumed by other chunks downstream.
 
         this._setChunk(object, 0, "program", object.program); // Must be first
         this._setChunk(object, 1, "modelTransform", this.modelTransform);
@@ -593,7 +634,6 @@
         this.objectListDirty = true;
     };
 
-
     /**
      * Renders a new frame, if neccessary.
      */
@@ -627,7 +667,8 @@
         if (this.imageDirty || params.force) {
             this._doDrawList({                  // Render the draw list
                 clear: (params.clear !== false), // Clear buffers by default
-                opaqueOnly: params.opaqueOnly
+                opaqueOnly: params.opaqueOnly,
+                pass: params.pass
             });
             this.stats.frame.frameCount++;
             this.imageDirty = false;
@@ -1140,6 +1181,8 @@
         frameCtx.useProgram = 0;
         frameCtx.bindTexture = 0;
         frameCtx.bindArray = 0;
+        frameCtx.pass = params.pass;
+        frameCtx.bindOutputFramebuffer = this.bindOutputFramebuffer;
 
         // The extensions needs to be re-queried in case the context was lost and has been recreated.
         if (XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {
@@ -1207,6 +1250,9 @@
 
             var startTime = (new Date()).getTime();
 
+            if (this.bindOutputFramebuffer) {
+                this.bindOutputFramebuffer(params.pass);
+            }
 
             // Option to only render opaque objects
             len = (params.opaqueOnly && this._drawChunkListTransparentIndex >= 0 ? this._drawChunkListTransparentIndex : this._drawChunkListLen);
@@ -1228,6 +1274,10 @@
 
         if (frameCtx.renderBuf) {
             frameCtx.renderBuf.unbind();
+        }
+
+        if (this.unbindOutputFramebuffer) {
+            this.unbindOutputFramebuffer();
         }
 
         var numTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);

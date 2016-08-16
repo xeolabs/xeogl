@@ -483,7 +483,7 @@
             };
             this._handleEvents[handle] = event;
             var value = this._events[event];
-            if (value) { // A publication exists, notify callback immediately
+            if (value !== undefined) { // A publication exists, notify callback immediately
                 callback.call(scope || this, value);
             }
             return handle;
@@ -948,7 +948,7 @@
         /**
          * Optional virtual template method, normally implemented
          * by sub-classes to generate some data before _update gets
-         * callled
+         * called
          *
          * @protected
          */

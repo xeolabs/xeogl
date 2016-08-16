@@ -88,6 +88,7 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Scale.
+ @param [cfg.parent] {String|Transform} ID or instance of a parent {{#crossLink "Transform"}}{{/crossLink}} within the same {{#crossLink "Scene"}}Scene{{/crossLink}}.
  @param [cfg.xyz=[1,1,1]] {Float32Array} Scale factors.
  @extends Transform
  */
@@ -106,6 +107,10 @@
             this.xyz = cfg.xyz;
         },
 
+        _build: function () {
+            this.matrix = XEO.math.scalingMat4v(this._xyz, this._matrix);
+        },
+
         _props: {
 
             /**
@@ -121,7 +126,7 @@
 
                     (this._xyz = this._xyz || new XEO.math.vec3()).set(value || [1, 1, 1]);
 
-                    this.matrix = XEO.math.scalingMat4v(this._xyz, this._matrix || (this._matrix = XEO.math.identityMat4()));
+                    this._scheduleUpdate();
 
                     /**
                      Fired whenever this Scale's {{#crossLink "Scale/xyz:property"}}{{/crossLink}} property changes.
@@ -139,9 +144,13 @@
         },
 
         _getJSON: function () {
-            return {
+            var json = {
                 xyz: this._xyz
             };
+            if (this._parent) {
+                json.parent = this._parent.id;
+            }
+            return json;
         }
     });
 

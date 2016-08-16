@@ -82,6 +82,7 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Quaternion.
+ @param [cfg.parent] {String|Transform} ID or instance of a parent {{#crossLink "Transform"}}{{/crossLink}} within the same {{#crossLink "Scene"}}Scene{{/crossLink}}.
  @param [cfg.xyzw=[0,0,0,1]] {Array(Number)} The initial Quaternion elements.
  @extends Transform
  */
@@ -160,14 +161,18 @@
 
                 math.angleAxisToQuaternion(tempAngleAxis, tempQuat);
 
-                this.xyzw = math.mulQuaternions(this._xyzw, tempQuat,  this._xyzw);
+                this.xyzw = math.mulQuaternions(this._xyzw, tempQuat, this._xyzw);
             };
         })(),
 
         _getJSON: function () {
-            return {
+            var json = {
                 xyzw: this._xyzw
             };
+            if (this._parent) {
+                json.parent = this._parent.id;
+            }
+            return json;
         }
     });
 })();

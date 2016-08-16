@@ -207,46 +207,16 @@
 
     /**
 
-     Modelling transform state.
+     Transform state.
 
-     renderer.ModelTransform
+     renderer.Transform
      @module XEO
      
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.ModelTransform = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-    /**
-
-     Viewing transform state.
-
-     renderer.ViewTransform
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    XEO.renderer.ViewTransform = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-    /**
-
-     Projection transform state.
-
-     renderer.ProjTransform
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    XEO.renderer.ProjTransform = XEO.renderer.State.extend({
+    XEO.renderer.Transform = XEO.renderer.State.extend({
         _ids: new XEO.utils.Map({})
     });
 

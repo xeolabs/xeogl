@@ -49,23 +49,24 @@
 
  @class Ortho
  @module XEO
- @submodule camera
+ @submodule transforms
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Ortho within the
  default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Ortho.
+ @param [cfg.parent] {String|Transform} ID or instance of a parent {{#crossLink "Transform"}}{{/crossLink}} within the same {{#crossLink "Scene"}}Scene{{/crossLink}}.
  @param [cfg.scale=1.0] {Number} Scale factor for this Ortho's extents on X and Y axis.
  @param [cfg.near=0.1] {Number} Position of the near plane on the View-space Z-axis.
  @param [cfg.far=10000] {Number} Position of the far plane on the positive View-space Z-axis.
- @extends Projection
+ @extends Transform
  */
 (function () {
 
     "use strict";
 
-    XEO.Ortho = XEO.Projection.extend({
+    XEO.Ortho = XEO.Transform.extend({
 
         type: "XEO.Ortho",
 
@@ -80,7 +81,7 @@
             this._onCanvasBoundary = this.scene.canvas.on("boundary", this._scheduleUpdate, this);
         },
 
-        _update: function () {
+        _build: function () {
 
             var scene = this.scene;
             var scale = this._scale;
@@ -209,11 +210,15 @@
         },
 
         _getJSON: function () {
-            return {
+            var json = {
                 scale: this._scale,
                 near: this._near,
                 far: this._far
             };
+            if (this._parent) {
+                json.parent = this._parent.id;
+            }
+            return json;
         },
 
         _destroy: function () {

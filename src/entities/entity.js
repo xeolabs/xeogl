@@ -1465,7 +1465,7 @@
             attached.shader._compile();
             attached.shaderParams._compile();
             attached.stage._compile();
-            attached.transform._compile();
+            this._renderer.modelTransform = attached.transform._state;
             attached.billboard._compile();
             attached.stationary._compile();
             attached.viewport._compile();

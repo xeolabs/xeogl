@@ -52,7 +52,7 @@
 
  @class Frustum
  @module XEO
- @submodule camera
+ @submodule transforms
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Frustum within the
  default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
@@ -65,13 +65,13 @@
  @param [cfg.top=1] {Number} Position of the Frustum's top plane on the View-space Y-axis.
  @param [cfg.near=0.1] {Number} Position of the Frustum's near plane on the View-space Z-axis.
  @param [cfg.far=1000] {Number} Position of the Frustum's far plane on the positive View-space Z-axis.
- @extends Projection
+ @extends Transform
  */
 (function () {
 
     "use strict";
 
-    XEO.Frustum = XEO.Projection.extend({
+    XEO.Frustum = XEO.Transform.extend({
 
         type: "XEO.Frustum",
 
@@ -96,15 +96,15 @@
             this.far = cfg.far;
         },
 
-        _update: function () {
-            this.matrix = XEO.math.frustumMat4( // Assign to XEO.Projection#matrix
+        _build: function () {
+            this.matrix = XEO.math.frustumMat4(
                 this._left,
                 this._right,
                 this._bottom,
                 this._top,
                 this._near,
                 this._far,
-                this.__tempMat || (this.__tempMat = XEO.math.mat4()));
+                this._matrix);
         },
 
         _props: {
@@ -297,7 +297,7 @@
         },
 
         _getJSON: function () {
-            return {
+            var json = {
                 left: this._left,
                 right: this._right,
                 top: this._top,
@@ -305,6 +305,10 @@
                 near: this._near,
                 far: this._far
             };
+            if (this._parent) {
+                json.parent = this._parent.id;
+            }
+            return json;
         }
     });
 })();

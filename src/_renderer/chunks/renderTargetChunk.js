@@ -24,6 +24,11 @@
                 gl.flush();
                 frameCtx.renderBuf.unbind();
                 frameCtx.renderBuf = null;
+
+                // Renderer hook to bind a custom output framebuffer
+                if (frameCtx.bindOutputFramebuffer) {
+                        frameCtx.bindOutputFramebuffer(frameCtx.pass);
+                }
             }
 
             // Set depthMode false and bail if no render buffer for this chunk

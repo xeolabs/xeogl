@@ -147,7 +147,7 @@
  You only need to supply an ID if you need to be able to find the Transform by ID within the {{#crossLink "Scene"}}Scene{{/crossLink}}.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Transform.
  @param [cfg.parent] {String|Transform} ID or instance of a parent Transform within the same {{#crossLink "Scene"}}Scene{{/crossLink}}.
- @param [cfg.matrix=[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]] {Array of Number} One-dimensional, sixteen element array of elements for the Transform, an identity matrix by default.
+ @param [cfg.matrix=[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]] {Float32Array} One-dimensional, sixteen element array of elements for the Transform, an identity matrix by default.
  @extends Component
  */
 (function () {
@@ -160,21 +160,106 @@
 
         _init: function (cfg) {
 
-            this._leafMatrixDirty = false;
-
             this._onParentUpdated = null;
             this._onParentDestroyed = null;
 
-            var mat = XEO.math.identityMat4(XEO.math.mat4());
-            var invMat = XEO.math.inverseMat4(mat, XEO.math.mat4());
+            this._matrix = XEO.math.identityMat4(XEO.math.mat4());
+            this._leafMatrix = XEO.math.mat4();
+            this._leafNormalMatrix = XEO.math.mat4();
 
-            this._state = new XEO.renderer.ModelTransform({
-                matrix: mat,
-                normalMatrix: invMat
+            this._leafMatrixDirty = true;
+            this._leafNormalMatrixDirty = true;
+
+            var self = this;
+
+            this._state = new XEO.renderer.Transform({
+
+                // Lazy-generate leaf matrices as we render because it's only
+                // at this point that we actually know that we need them.
+
+                getMatrix: function () {
+                    if (self._leafMatrixDirty) { // TODO: Or schedule matrix rebuild to task queue if not urgent?
+                        self._buildLeafMatrix();
+                    }
+                    return self._leafMatrix;
+                },
+
+                getNormalMatrix: function () {
+                    if (self._leafNormalMatrixDirty) {
+                        self._buildLeafNormalMatrix();
+                    }
+                    return self._leafNormalMatrix;
+                }
             });
 
             this.parent = cfg.parent;
             this.matrix = cfg.matrix;
+        },
+
+        _parentUpdated: function () {
+
+            this._leafMatrixDirty = true;
+
+            /**
+             * Fired whenever this Transform's {{#crossLink "Transform/leafMatrix:property"}}{{/crossLink}} property changes.
+             *
+             * This event does not carry the updated property value. Instead, subscribers will need to read
+             * that property again to get its updated value (which may be lazy-computed then).
+             *
+             * @event updated
+             */
+            this.fire("updated", true);
+        },
+
+        // This is called if necessary when reading "leafMatrix", to update that property.
+        // It's also called by Entity when the Transform is the leaf to which the
+        // Entity is attached, in response to an "updated" event from the Transform.
+
+        _buildLeafMatrix: function () {
+
+            if (!this._leafMatrixDirty) {
+                return;
+            }
+
+            if (this._build && this._buildScheduled) {
+                this._build();
+                this._buildScheduled = false;
+            }
+
+            if (!this._parent) {
+
+                // No parent Transform
+
+                for (var i = 0, len = this._matrix.length; i < len; i++) {
+                    this._leafMatrix[i] = this._matrix[i];
+                }
+
+            } else {
+
+                // Multiply parent's leaf matrix by this matrix,
+                // store result in this leaf matrix
+
+                XEO.math.mulMat4(this._parent.leafMatrix, this._matrix, this._leafMatrix);
+            }
+
+            this._renderer.imageDirty = true;
+
+            this._leafMatrixDirty = false;
+            this._leafNormalMatrixDirty = true;
+        },
+
+        _buildLeafNormalMatrix: function () {
+
+            if (this._leafMatrixDirty) {
+                this._buildLeafMatrix();
+            }
+
+            XEO.math.inverseMat4(this._leafMatrix, this._leafNormalMatrix);
+            XEO.math.transposeMat4(this._leafNormalMatrix);
+
+            this._renderer.imageDirty = true;
+
+            this._leafNormalMatrixDirty = false;
         },
 
         _props: {
@@ -228,8 +313,7 @@
                     }
 
                     this._parentUpdated();
-                }
-                ,
+                },
 
                 get: function () {
                     return this._parent;
@@ -243,19 +327,13 @@
              *
              * @property matrix
              * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-             * @type {Array of Number}
+             * @type {Float32Array}
              */
             matrix: {
 
                 set: function (value) {
 
-                    value = value || XEO.math.identityMat4();
-
-                    if (!this._matrix) {
-                        this._matrix = XEO.math.mat4();
-                    }
-
-                    this._matrix.set(value);
+                    this._matrix.set(value || XEO.math.identityMat4());
 
                     this._leafMatrixDirty = true;
 
@@ -270,10 +348,14 @@
                 },
 
                 get: function () {
+
+                    if (this._updateScheduled) {
+                        this._doUpdate();
+                    }
+
                     return this._matrix;
                 }
             },
-
 
             /**
              * Returns the product of all {{#crossLink "Transform/matrix:property"}}{{/crossLink}}'s on Transforms
@@ -286,7 +368,7 @@
              *
              * @property matrix
              * @default [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-             * @type {Array of Number}
+             * @type {Float32Array}
              */
             leafMatrix: {
 
@@ -296,83 +378,19 @@
                         this._buildLeafMatrix();
                     }
 
-                    return this._state.matrix;
+                    return this._leafMatrix;
                 }
             }
-        },
-
-        _parentUpdated: function () {
-
-            this._leafMatrixDirty = true;
-
-            /**
-             * Fired whenever this Transform's {{#crossLink "Transform/leafMatrix:property"}}{{/crossLink}} property changes.
-             *
-             * This event does not carry the updated property value. Instead, subscribers will need to read
-             * that property again to get its updated value (which may be lazy-computed then).
-             *
-             * @event updated
-             */
-            this.fire("updated", true);
-        },
-
-        // This is called if necessary when reading "leafMatrix", to update that property.
-        // It's also called by Entity when the Transform is the leaf to which the
-        // Entity is attached, in response to an "updated" event from the Transform.
-
-        _buildLeafMatrix: function () {
-
-            if (!this._leafMatrixDirty) {
-                return;
-            }
-
-            this._state.matrix = this._state.matrix || XEO.math.identityMat4();
-
-            if (!this._parent) {
-
-                // No parent Transform;
-                // copy matrix property into the render state's matrix
-
-                var m1 = this._matrix;
-                var m2 = this._state.matrix;
-
-                for (var i = 0, len = m1.length; i < len; i++) {
-                    m2[i] = m1[i];
-                }
-
-            } else {
-
-                // Multiply parent's leaf matrix by this matrix,
-                // store result in the render state's matrix
-
-                XEO.math.mulMat4(this._parent.leafMatrix, this._matrix, this._state.matrix);
-            }
-
-            // Create normal matrix from inverse
-            // of the state's matrix
-
-            // TODO: only compute normal matrix on leaf!
-
-            if (!this._state.normalMatrix) {
-                this._state.normalMatrix = XEO.math.identityMat4();
-            }
-
-            XEO.math.inverseMat4(this._state.matrix, this._state.normalMatrix);
-            XEO.math.transposeMat4(this._state.normalMatrix);
-
-            this._renderer.imageDirty = true; //  TODO : Where should this go?
-
-            this._leafMatrixDirty = false;
-        },
-
-        _compile: function () {
-            this._renderer.modelTransform = this._state;
         },
 
         _getJSON: function () {
-            return {
+            var json = {
                 matrix: Array.prototype.slice.call(this._matrix)
             };
+            if (this._parent) {
+                json.parent = this._parent.id;
+            }
+            return json;
         },
 
         _destroy: function () {

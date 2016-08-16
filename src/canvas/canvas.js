@@ -236,7 +236,7 @@
                 function () {
 
                     /**
-                     * Fired wheneber the WebGL context has been lost
+                     * Fired whenever the WebGL context has been lost
                      * @event webglContextLost
                      */
                     self.fire("webglContextLost");

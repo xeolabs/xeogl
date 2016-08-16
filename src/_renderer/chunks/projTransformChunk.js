@@ -14,19 +14,19 @@
 
         draw: function () {
             if (this._uProjMatrixDraw) {
-                this._uProjMatrixDraw.setValue(this.state.matrix);
+                this._uProjMatrixDraw.setValue(this.state.getMatrix());
             }
         },
 
         pickObject: function () {
             if (this._uProjMatrixPickObject) {
-                this._uProjMatrixPickObject.setValue(this.state.matrix);
+                this._uProjMatrixPickObject.setValue(this.state.getMatrix());
             }
         },
 
         pickPrimitive: function () {
             if (this._uProjMatrixPickPrimitive) {
-                this._uProjMatrixPickPrimitive.setValue(this.state.matrix);
+                this._uProjMatrixPickPrimitive.setValue(this.state.getMatrix());
             }
         }
     });

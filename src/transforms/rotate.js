@@ -88,6 +88,7 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Rotate.
+ @param [cfg.parent] {String|Transform} ID or instance of a parent {{#crossLink "Transform"}}{{/crossLink}} within the same {{#crossLink "Scene"}}Scene{{/crossLink}}.
  @param [cfg.xyz=[0,1,0]] {Float32Array} Axis of rotation.
  @param [cfg.angle=0] {Number} Angle of rotation in degrees.
  @extends Transform
@@ -108,6 +109,10 @@
             this.angle = cfg.angle;
         },
 
+        _build: function () {
+            this.matrix = XEO.math.rotationMat4v(this._angle * XEO.math.DEGTORAD, this._xyz, this._matrix);
+        },
+
         _props: {
 
             /**
@@ -125,7 +130,7 @@
 
                     (this._xyz = this._xyz || new XEO.math.vec3()).set(value || [0, 1, 0]);
 
-                    this._buildMatrix();
+                    this._scheduleUpdate();
 
                     /**
                      Fired whenever this Rotate's {{#crossLink "Rotate/xyz:property"}}{{/crossLink}} property changes.
@@ -156,7 +161,7 @@
 
                     this._angle = value || 0;
 
-                    this._buildMatrix();
+                    this._scheduleUpdate();
 
                     /**
                      Fired whenever this Rotate's {{#crossLink "Rotate/angle:property"}}{{/crossLink}} property changes.
@@ -173,30 +178,15 @@
             }
         },
 
-        _buildMatrix: function () {
-
-            if (this._xyz !== null && this._angle !== null) {
-
-                // Both axis and angle have been set, so update the matrix.
-
-                // Only do the update if both axis and angle have been set.
-
-                // The update will be done once after both the axis and angle are set in the constructor,
-                // and then subsequently every time that either the axis or angle is updated.
-                //
-                // This is wasteful for the case where both the axis and the angle are continually updated,
-                // but that will be rarely be the case, where ormally it would just be the angle that is
-                // continually updated.
-
-                this.matrix = XEO.math.rotationMat4v(this._angle * XEO.math.DEGTORAD, this._xyz, this._matrix || (this._matrix = XEO.math.identityMat4()));
-            }
-        },
-
         _getJSON: function () {
-            return {
+            var json = {
                 xyz: this._xyz,
                 angle: this._angle
             };
+            if (this._parent) {
+                json.parent = this._parent.id;
+            }
+            return json;
         }
     });
 

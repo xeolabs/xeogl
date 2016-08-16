@@ -289,7 +289,7 @@
             this.canvas.on("boundary",
                 function () {
                     self._renderer.imageDirty = true;
-                    self._renderer.render({
+                    self._renderer.render({ // FIXME: What about stereo views?
                         force: true,
                         clear: true
                     });
@@ -541,12 +541,12 @@
                 renderEvent.sceneId = this.id;
 
                 var passes = this._passes;
-                var i;
+                var pass;
                 var clear;
 
-                for (i = 0; i < passes; i++) {
+                for (pass = 0; pass < passes; pass++) {
 
-                    renderEvent.pass = i;
+                    renderEvent.pass = pass;
 
                     /**
                      * Fired when about to render a frame for a Scene.
@@ -557,9 +557,9 @@
                      */
                     this.fire("rendering", renderEvent, true);
 
-                    clear = (i === 0);
+                    clear = (pass === 0);
 
-                    this._compile(clear, true); // Render, maybe rebuild draw list first
+                    this._compile(pass, clear, true); // Render, maybe rebuild draw list first
 
                     /**
                      * Fired when we have just rendered a frame for a Scene.
@@ -1733,7 +1733,7 @@
          * Compiles and renders this Scene
          * @private
          */
-        _compile: function (clear, forceRender) {
+        _compile: function (pass, clear, forceRender) {
 
             // Compile dirty entities into this._renderer
 
@@ -1772,6 +1772,7 @@
             // Only renders if there was a state update
 
             this._renderer.render({
+                pass:pass,
                 clear: clear !== false, // Clear buffers?
                 force: forceRender // Render frame even if no state updates?
             });
