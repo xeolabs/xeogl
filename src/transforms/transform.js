@@ -1,10 +1,13 @@
 /**
- A **Transform** defines a modelling matrix to transform attached {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
+ A **Transform** is a modelling, viewing or projection transformation.
 
  <ul>
  <li>Sub-classes of Transform include: {{#crossLink "Translate"}}{{/crossLink}},
- {{#crossLink "Scale"}}{{/crossLink}}, {{#crossLink "Rotate"}}{{/crossLink}}, and {{#crossLink "Quaternion"}}{{/crossLink}}</li>
+ {{#crossLink "Scale"}}{{/crossLink}}, {{#crossLink "Rotate"}}{{/crossLink}}, {{#crossLink "Quaternion"}}{{/crossLink}},
+ {{#crossLink "Lookat"}}{{/crossLink}}, {{#crossLink "Perspective"}}{{/crossLink}}, {{#crossLink "Frustum"}}{{/crossLink}}
+ and {{#crossLink "Ortho"}}{{/crossLink}}.</li>
  <li>Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.</li>
+
  <li>When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
  within a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, it will be transformed by each {{#crossLink "Transform"}}{{/crossLink}}
  on the path up to the root, in that order.</li>
@@ -16,12 +19,13 @@
  ## Examples
 
  <ul>
- <li>[Transform hierarchy](../../examples/#transforms_hierarchy)</li>
+ <li>[Modelling transform hierarchy](../../examples/#transforms_model_hierarchy)</li>
  <li>[Attaching transforms to Models, via constructor](../../examples/#importing_gltf_techniques_configTransform)</li>
  <li>[Attaching transforms to Models, via property](../../examples/#importing_gltf_techniques_attachTransform)</li>
  </ul>
 
  ## Usage
+
 
  In this example we'll create the table shown below, which consists of five {{#crossLink "Entity"}}Entities{{/crossLink}}
  that share a {{#crossLink "BoxGeometry"}}{{/crossLink}} and each connect to a different leaf within a hierarchy of
@@ -336,6 +340,8 @@
                     this._matrix.set(value || XEO.math.identityMat4());
 
                     this._leafMatrixDirty = true;
+
+                    this._renderer.imageDirty = true;
 
                     /**
                      * Fired whenever this Transform's {{#crossLink "Transform/matrix:property"}}{{/crossLink}} property changes.

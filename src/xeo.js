@@ -24,7 +24,7 @@
         /**
          * Information about available WebGL support
          */
-        this.WEBGL_INFO = (function() {
+        this.WEBGL_INFO = (function () {
             var info = {
                 WEBGL: false
             };
@@ -35,7 +35,7 @@
                 return info;
             }
 
-            var gl = canvas.getContext("webgl", { antialias: true }) || canvas.getContext("experimental-webgl", { antialias: true });
+            var gl = canvas.getContext("webgl", {antialias: true}) || canvas.getContext("experimental-webgl", {antialias: true});
 
             info.WEBGL = !!gl;
 
@@ -61,7 +61,7 @@
             info.MAX_TEXTURE_SIZE = gl.getParameter(gl.MAX_TEXTURE_SIZE);
             info.MAX_CUBE_MAP_SIZE = gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE);
             info.MAX_RENDERBUFFER_SIZE = gl.getParameter(gl.MAX_RENDERBUFFER_SIZE);
-            info.MAX_TEXTURE_UNITS =  gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+            info.MAX_TEXTURE_UNITS = gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
             info.MAX_VERTEX_ATTRIBS = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
             info.MAX_VERTEX_UNIFORM_VECTORS = gl.getParameter(gl.MAX_VERTEX_UNIFORM_VECTORS);
             info.MAX_FRAGMENT_UNIFORM_VECTORS = gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS);
@@ -69,7 +69,7 @@
 
             info.SUPPORTED_EXTENSIONS = {};
 
-            gl.getSupportedExtensions().forEach(function(ext) {
+            gl.getSupportedExtensions().forEach(function (ext) {
                 info.SUPPORTED_EXTENSIONS[ext] = true;
             });
 
@@ -125,7 +125,9 @@
                 bindTexture: 0,
                 bindArray: 0,
                 drawElements: 0,
-                drawChunks: 0
+                drawChunks: 0,
+                tasksRun: 0,
+                tasksScheduled: 0
             }
         };
 
@@ -172,7 +174,7 @@
 
             // Hoisted vars
 
-            var taskBudget = 8; // How long we're allowed to spend on tasks in each frame
+            var taskBudget = 15; // Millisecs we're allowed to spend on tasks in each frame
             var frameTime;
             var lastFrameTime = 0;
             var elapsedFrameTime;
@@ -219,7 +221,12 @@
                 // Process as many enqueued tasks as we can
                 // within the per-frame task budget
 
-                self._runScheduledTasks(updateTime + taskBudget);
+                var tasksRun = self._runScheduledTasks(updateTime + taskBudget);
+                var tasksScheduled = self._taskQueue.length;
+
+                self.stats.frame.tasksRun = tasksRun;
+                self.stats.frame.tasksScheduled = tasksScheduled;
+                self.stats.frame.tasksBudget = taskBudget;
 
                 tickEvent.time = updateTime;
 
@@ -372,6 +379,7 @@
             var taskQueue = this._taskQueue;
             var callback;
             var scope;
+            var tasksRun = 0;
 
             while (taskQueue.length > 0 && time < until) {
                 callback = taskQueue.shift();
@@ -382,7 +390,10 @@
                     callback();
                 }
                 time = (new Date()).getTime();
+                tasksRun++;
             }
+
+            return tasksRun;
         },
 
         /**

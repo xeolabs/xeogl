@@ -906,12 +906,8 @@
          * @param {Number} [priority=1]
          */
         _scheduleUpdate: function (priority) {
-
             if (!this._updateScheduled) {
-
                 this._updateScheduled = true;
-                this._buildScheduled = true;
-
                 if (priority === 0) {
                     XEO.deferTask(this._doUpdate, this);
                 } else {
@@ -924,35 +920,13 @@
          * @private
          */
         _doUpdate: function () {
-
             if (this._updateScheduled) {
-
-                if (this._buildScheduled) {
-
-                    if (this._build) {
-                        this._build();
-                    }
-
-                    this._buildScheduled = false;
-                }
-
                 if (this._update) {
                     this._update();
                 }
-
                 this._updateScheduled = false;
             }
-        }
-        ,
-
-        /**
-         * Optional virtual template method, normally implemented
-         * by sub-classes to generate some data before _update gets
-         * called
-         *
-         * @protected
-         */
-        _build: null,
+        },
 
         /**
          * Protected virtual template method, optionally implemented

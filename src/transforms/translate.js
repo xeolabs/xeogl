@@ -15,7 +15,7 @@
  ## Examples
 
  <ul>
- <li>[Transform hierarchy](../../examples/#transforms_hierarchy)</li>
+ <li>Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)</li>
  </ul>
 
  ## Usage
@@ -110,7 +110,7 @@
             this.xyz = cfg.xyz;
         },
 
-        _build: function () {
+        _update: function () {
             this.matrix = XEO.math.translationMat4v(this._xyz, this._matrix);
         },
 

@@ -2,7 +2,7 @@
  A **Perspective** component defines a perspective projection transform.
 
  <ul>
-
+ <li>Perspective is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
  {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>Alternatively, use {{#crossLink "Ortho"}}{{/crossLink}} if you need a orthographic projection.</li>
@@ -14,7 +14,7 @@
  ## Examples
 
  <ul>
- <li>[Camera with perspective projection](../../examples/#camera_perspective)</li>
+ <li>[Camera with perspective projection](../../examples/#transforms_project_perspective)</li>
  </ul>
 
  ## Usage
@@ -81,12 +81,12 @@
             this.far = cfg.far;
         },
 
-        _build: function () {
+        _update: function () {
 
             var canvas = this.scene.canvas.canvas;
             var aspect = canvas.clientWidth / canvas.clientHeight;
 
-            this.matrix = XEO.math.perspectiveMatrix4(this._fovy * (Math.PI / 180.0), aspect, this._near, this._far, this._matrix);
+            this.matrix = XEO.math.pespectiveMat4(this._fovy * (Math.PI / 180.0), aspect, this._near, this._far, this._matrix);
         },
 
         _props: {

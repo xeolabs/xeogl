@@ -4,12 +4,19 @@
  vector.
 
  <ul>
+ <li>Lookat is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with projection transforms such as
  {{#crossLink "Perspective"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Lookat components create within xeoEngine's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/Lookat.png"></img>
+
+ ## Examples
+
+ <ul>
+ <li>[Camera with Lookat and Perspective](../../examples/#transforms_project_perspective)</li>
+ </ul>
 
  ## Usage
 
@@ -81,7 +88,7 @@
             this.gimbalLockY = cfg.gimbalLockY;
         },
 
-        _build: function () {
+        _update: function () {
             this.matrix = XEO.math.lookAtMat4v(this._eye, this._look, this._up, this._matrix);
         },
 

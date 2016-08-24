@@ -12,6 +12,10 @@
 
  <img src="../../../assets/images/Quaternion.png"></img>
 
+ <ul>
+ <li>Viewing transform hierarchy](../../examples/#transforms_view_hierarchy)</li>
+ </ul>
+
  ## Usage
 
  In this example we have two {{#crossLink "Entity"}}Entities{{/crossLink}} that are transformed by a hierarchy that contains

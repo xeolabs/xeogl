@@ -257,11 +257,6 @@
                 }
             });
 
-            this._updateScheduled = false;
-            this._vboUpdateScheduled = false;
-
-            this._hashDirty = true;
-
             // Typed arrays
 
             this._positionsData = null;
@@ -279,7 +274,9 @@
 
             // Flags for work pending
 
-            this._vboUpdateScheduled = false;
+            this._updateScheduled = false;
+            this._geometryUpdateScheduled = false;
+            this._hashDirty = true;
             this._positionsDirty = true;
             this._colorsDirty = true;
             this._normalsDirty = true;
@@ -335,7 +332,7 @@
 
             this.usage = cfg.usage;
 
-            this._webglContextRestored = this.scene.canvas.on("webglContextRestored", this._scheduleVBOUpdate, this);
+            this._webglContextRestored = this.scene.canvas.on("webglContextRestored", this._scheduleGeometryUpdate, this);
 
             XEO.stats.memory.meshes++;
         },
@@ -356,52 +353,40 @@
 
             if (this._updateScheduled) {
 
-                this._vboUpdateScheduled = true; // Prevents needless scheduling within _update()
+                this._geometryUpdateScheduled = true; // Prevents needless scheduling within _update()
 
-                if (this._update) {
+                if (this._update) { // Template method from XEO.Component
                     this._update();
                 }
 
                 this._updateScheduled = false;
             }
 
-            if (this._vboUpdateScheduled) {
-                this._doVBOUpdate();
+            if (this._geometryUpdateScheduled) {
+                this._updateGeometry();
             }
         },
 
-        /**
-         * Protected virtual template method, implemented by sub-classes to generate geometry data arrays.
-         *
-         * @protected
-         */
-        _update: null,
-
-        _scheduleVBOUpdate: function () {
-
-            if (!this._vboUpdateScheduled) {
-
-                this._vboUpdateScheduled = true;
-
-                // Build VBOs for renderer; no other components in the scene
-                // will be waiting them, so OK to schedule that for next tick.
-                XEO.scheduleTask(this._doVBOUpdate, this);
+        _scheduleGeometryUpdate: function () {
+            if (!this._geometryUpdateScheduled) {
+                this._geometryUpdateScheduled = true;
+                XEO.scheduleTask(this._updateGeometry, this);
             }
         },
 
-        _doVBOUpdate: function () {
+        _updateGeometry: function () {
 
             if (this._updateScheduled) {
 
                 if (this._update) {
-                    this._vboUpdateScheduled = true; // Prevents needless scheduling within _update()
+                    this._geometryUpdateScheduled = true; // Prevents needless scheduling within _update()
                     this._update();
                 }
 
                 this._updateScheduled = false;
-                this._vboUpdateScheduled = true;
+                this._geometryUpdateScheduled = true;
 
-            } else if (!this._vboUpdateScheduled) {
+            } else if (!this._geometryUpdateScheduled) {
                 return;
             }
 
@@ -532,7 +517,7 @@
                 this._pickVBOsDirty = true;
             }
 
-            this._vboUpdateScheduled = false;
+            this._geometryUpdateScheduled = false;
 
             this._setBoundaryDirty();
         },
@@ -543,7 +528,7 @@
                 return;
             }
 
-            if (this._updateScheduled || this._vboUpdateScheduled) {
+            if (this._updateScheduled || this._geometryUpdateScheduled) {
                 this._doUpdate();
             }
 
@@ -580,7 +565,7 @@
                 return;
             }
 
-            if (this._updateScheduled || this._vboUpdateScheduled) {
+            if (this._updateScheduled || this._geometryUpdateScheduled) {
                 this._doUpdate();
             }
 
@@ -658,7 +643,7 @@
 
                     this._state.usageName = value;
 
-                    this._scheduleVBOUpdate();
+                    this._scheduleGeometryUpdate();
 
                     this.fire("dirty", true);
 
@@ -710,7 +695,7 @@
 
                     this._state.primitiveName = value;
 
-                    this._scheduleVBOUpdate();
+                    this._scheduleGeometryUpdate();
 
                     this._hashDirty = true;
 
@@ -756,7 +741,7 @@
                     this._positionsData = value;
                     this._positionsDirty = true;
 
-                    this._scheduleVBOUpdate();
+                    this._scheduleGeometryUpdate();
 
                     if (dirty) {
                         this._hashDirty = true;
@@ -818,7 +803,7 @@
                     this._normalsData = value;
                     this._normalsDirty = true;
 
-                    this._scheduleVBOUpdate();
+                    this._scheduleGeometryUpdate();
 
                     if (dirty) {
                         this._hashDirty = true;
@@ -868,7 +853,7 @@
                     this._uvData = value;
                     this._uvDirty = true;
 
-                    this._scheduleVBOUpdate();
+                    this._scheduleGeometryUpdate();
 
                     if (dirty) {
                         this._hashDirty = true;
@@ -918,7 +903,7 @@
                     this._colorsData = value;
                     this._colorsDirty = true;
 
-                    this._scheduleVBOUpdate();
+                    this._scheduleGeometryUpdate();
 
                     if (dirty) {
                         this._hashDirty = true;
@@ -983,7 +968,7 @@
                     this._indicesData = value;
                     this._indicesDirty = true;
 
-                    this._scheduleVBOUpdate();
+                    this._scheduleGeometryUpdate();
 
                     if (dirty) {
                         this._hashDirty = true;
@@ -1050,7 +1035,7 @@
 
                             getPositions: function () {
 
-                                if (self._updateScheduled) {
+                                if (self._updateScheduled || self._geometryUpdateScheduled) {
                                     self._doUpdate();
                                 }
 
@@ -1095,7 +1080,7 @@
 
                     this._normalsDirty = true;
 
-                    this._scheduleVBOUpdate();
+                    this._scheduleGeometryUpdate();
 
                     /**
                      * Fired whenever this Geometry's {{#crossLink "Geometry/autoNormals:property"}}{{/crossLink}} property changes.
@@ -1110,49 +1095,6 @@
                     return this._autoNormals;
                 }
             }
-            //,
-            //
-            ///**
-            // * Set true to make this Geometry automatically generate {{#crossLink "Geometry/tangents:property"}}{{/crossLink}} from
-            // * {{#crossLink "Geometry/uv:property"}}{{/crossLink}} and {{#crossLink "Geometry/normals:property"}}{{/crossLink}}.
-            // *
-            // * This Geomatry will auto-generate its {{#crossLink "Geometry/tangents:property"}}{{/crossLink}} on the
-            // * next {{#crossLink "Scene"}}{{/crossLink}} {{#crossLink "Scene/tick:event"}}{{/crossLink}} event.
-            // *
-            // * Fires a {{#crossLink "Geometry/autoTangents:event"}}{{/crossLink}} event on change.
-            // *
-            // * @property autoTangents
-            // * @default  false
-            // * @type Boolean
-            // */
-            //autoTangents: {
-            //
-            //    set: function (value) {
-            //
-            //        value = !!value;
-            //
-            //        if (this._autoTangents === value) {
-            //            return;
-            //        }
-            //
-            //        this._autoTangents = value;
-            //
-            //        /**
-            //         * Fired whenever this Geometry's {{#crossLink "Geometry/autoTangents:property"}}{{/crossLink}} property changes.
-            //         * @event autoTangents
-            //         * @type Boolean
-            //         * @param value The property's new value
-            //         */
-            //        this.fire("autoTangents", this._primitive);
-            //
-            //        this._scheduleVBOUpdate();
-            //    },
-            //
-            //    get: function () {
-            //        return this._autoTangents;
-            //    }
-            //}
-
         },
 
         _setBoundaryDirty: function () {
@@ -1170,7 +1112,7 @@
 
         _compile: function () {
 
-            if (this._updateScheduled || this._vboUpdateScheduled) {
+            if (this._updateScheduled || this._geometryUpdateScheduled) {
                 this._doUpdate();
             }
 
@@ -1215,8 +1157,8 @@
 
         _getJSON: function () {
 
-            if (this._updateScheduled) {
-                this._update();
+            if (this._updateScheduled || this._geometryUpdateScheduled) {
+                this._doUpdate();
             }
 
             return {

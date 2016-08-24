@@ -947,19 +947,7 @@
 
                                     this._transformDirty = true;
 
-                                    XEO.scheduleTask(function () {
-
-                                            if (!this._transformDirty) {
-                                                return;
-                                            }
-
-                                            this._attached.transform._buildLeafMatrix();
-
-                                            this._setWorldBoundaryDirty();
-
-                                            this._transformDirty = false;
-                                        },
-                                        this);
+                                    XEO.scheduleTask(this._transformUpdated, this);
                                 },
                                 scope: this
                             },
@@ -1413,6 +1401,16 @@
 
         // Callbacks as members, to avoid GC churn
 
+        _transformUpdated: function () {
+            if (!this._transformDirty) {
+                return;
+            }
+            this._attached.transform._buildLeafMatrix();
+            this._setWorldBoundaryDirty();
+            this._transformDirty = false;
+        },
+
+
         _setWorldBoundaryDirty: function () {
             this._worldBoundaryDirty = true;
             if (this._worldBoundary) {
@@ -1439,11 +1437,15 @@
         // Returns true if there is enough on this Entity to render something.
         _valid: function () {
             var geometry = this._attached.geometry;
-            return geometry && geometry.positions && geometry.indices;
+            return !this.destroyed && geometry && geometry.positions && geometry.indices;
 
         },
 
         _compile: function () {
+
+            if (!this._valid()) {
+                return;
+            }
 
             var attached = this._attached;
 

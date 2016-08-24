@@ -149,6 +149,20 @@
  {{#crossLink "XEO"}}XEO{{/crossLink}} entity's {{#crossLink "XEO/scene:property"}}scene{{/crossLink}} property. Expect to
  see the HTML canvas for the default Scene magically appear in the page when you do that.
 
+ ## <a name="webgl2">WebGL 2</a>
+
+ By default, our Scene will attempt to use WebGL 2. If that's not supported then it will fall back on WebGL 1, if available.
+ You can force the Scene to use WebGL 1 by supplying this property to teh Scene's constructor:
+
+ ````javascript
+ var scene = new XEO.Scene({
+     webgl2: false // Default is true
+ });
+
+ // We can then check this property on the Canvas to see if WebGL 2 is supported:
+ var gotWebGL2 = scene.canvas.webgl2; // True if we have WebGL 2
+ ````
+
  ## <a name="savingAndLoading">Saving and Loading Scenes</a>
 
  The entire runtime state of a Scene can be serialized and deserialized to and from JSON. This means you can create a
@@ -163,12 +177,11 @@
       json: json
   });
 
- ````
-
  ***Note:*** this will save your {{#crossLink "Geometry"}}Geometry{{/crossLink}}s' array properties
  ({{#crossLink "Geometry/positions:property"}}positions{{/crossLink}}, {{#crossLink "Geometry/normals:property"}}normals{{/crossLink}},
  {{#crossLink "Geometry/indices:property"}}indices{{/crossLink}} etc) as JSON arrays, which may stress your browser
  if those arrays are huge.
+
 
  @class Scene
  @module XEO
@@ -177,6 +190,8 @@
  @param [cfg.id] {String} Optional ID, unique among all Scenes in xeoEngine, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Scene.
  @param [cfg.canvasId] {String} ID of existing HTML5 canvas in the DOM - creates a full-page canvas automatically if this is omitted
+ @param [cfg.webgl2=true] {Boolean} Set this false when we **don't** want to use WebGL 2 for our Scene; the Scene will fall
+ back on WebGL 1 if not available. This property will be deprecated when WebGL 2 is supported everywhere.
  @param [cfg.components] {Array(Object)} JSON array containing parameters for {{#crossLink "Component"}}Component{{/crossLink}} subtypes to immediately create within the Scene.
  @param [cfg.passes=1] The number of times this Scene renders per frame.
  @extends Component
@@ -282,6 +297,8 @@
              */
             this.canvas = new XEO.Canvas(this, {
                 canvas: cfg.canvas, // Can be canvas ID, canvas element, or null
+                transparent: cfg.transparent,
+                webgl2: cfg.webgl2 !== false,
                 contextAttr: cfg.contextAttr || {}
             });
 
@@ -315,15 +332,6 @@
             this.input = new XEO.Input(this, {
                 element: this.canvas.overlay
             });
-
-            /**
-             * Tracks any asynchronous tasks that occur within this Scene.
-             * @final
-             * @property tasks
-             * @type {Tasks}
-             * @final
-             */
-            this.tasks = new XEO.Tasks(this);
 
             // Register Scene on engine
             // Do this BEFORE we add components below
@@ -514,8 +522,16 @@
             // Whenever the Entity signals dirty,
             // schedule its recompilation into the renderer
 
+            var self = this;
+
             if (!this._dirtyEntities[entity.id]) {
+
                 this._dirtyEntities[entity.id] = entity;
+
+                XEO.scheduleTask(function() {
+                    entity._compile();
+                    delete self._dirtyEntities[entity.id];
+                });
             }
         },
 
@@ -559,7 +575,10 @@
 
                     clear = (pass === 0);
 
-                    this._compile(pass, clear, true); // Render, maybe rebuild draw list first
+                    this._renderer.render({
+                        pass: pass,
+                        clear: clear !== false
+                    });
 
                     /**
                      * Fired when we have just rendered a frame for a Scene.
@@ -1506,7 +1525,7 @@
                             worldPos[2] = tempVec4b[2];
 
                             hit.worldPos = worldPos;
-                            
+
                             // Get View-space cartesian coordinates of the ray-triangle intersection
 
                             math.transformVec4(entity.camera.view.matrix, worldPos, tempVec4c);
@@ -1727,55 +1746,6 @@
             }
 
             component.destroy();
-        },
-
-        /**
-         * Compiles and renders this Scene
-         * @private
-         */
-        _compile: function (pass, clear, forceRender) {
-
-            // Compile dirty entities into this._renderer
-
-            var countCompiledEntities = 0;
-
-            //var time1 = Date.now();
-            var entity;
-
-            for (var id in this._dirtyEntities) {
-                if (this._dirtyEntities.hasOwnProperty(id)) {
-
-                    entity = this._dirtyEntities[id];
-
-                    if (entity._valid()) {
-
-                        entity._compile();
-
-                        delete this._dirtyEntities[id];
-
-                        countCompiledEntities++;
-                    }
-                    //if (Date.now() - time1 > 30) {
-                    //
-                    //    // Throttle the time we spend (re)compiling Entities each frame
-                    //
-                    //    break;
-                    //}
-                }
-            }
-
-            if (countCompiledEntities > 0) {
-                //    this.log("Compiled " + countCompiledEntities + " XEO.Entity" + (countCompiledEntities > 1 ? "s" : ""));
-            }
-
-            // Render a frame
-            // Only renders if there was a state update
-
-            this._renderer.render({
-                pass:pass,
-                clear: clear !== false, // Clear buffers?
-                force: forceRender // Render frame even if no state updates?
-            });
         },
 
         _getJSON: function () {

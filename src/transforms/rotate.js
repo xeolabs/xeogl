@@ -15,7 +15,7 @@
  ## Examples
 
  <ul>
- <li>[Transform hierarchy](../../examples/#transforms_hierarchy)</li>
+ <li>Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)</li>
  </ul>
 
  ## Usage
@@ -109,7 +109,7 @@
             this.angle = cfg.angle;
         },
 
-        _build: function () {
+        _update: function () {
             this.matrix = XEO.math.rotationMat4v(this._angle * XEO.math.DEGTORAD, this._xyz, this._matrix);
         },
 

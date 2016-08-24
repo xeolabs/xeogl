@@ -2,6 +2,7 @@
  A **Frustum** defines a perspective projection as a frustum-shaped view volume.
 
  <ul>
+ <li>Frustum is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
  {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>A Frustum lets us explicitly set the positions of the left, right, top, bottom, near and far planes, which is useful
@@ -19,7 +20,7 @@
  ## Examples
 
  <ul>
- <li>[Camera with frustum projection](../../examples/#camera_frustum)</li>
+ <li>[Camera with frustum projection](../../examples/#transforms_project_frustum)</li>
  <li>[Stereo viewing with frustum projection](../../examples/#effects_stereo)</li>
  </ul>
 
@@ -96,7 +97,7 @@
             this.far = cfg.far;
         },
 
-        _build: function () {
+        _update: function () {
             this.matrix = XEO.math.frustumMat4(
                 this._left,
                 this._right,

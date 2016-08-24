@@ -2,6 +2,7 @@
  An **Ortho** component defines an orthographic projection transform.
 
  <ul>
+ <li>Ortho is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
  {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>An Ortho works like Blender's orthographic projection, where the positions of the left, right, top and bottom planes are
@@ -20,7 +21,7 @@
  ## Examples
 
  <ul>
- <li>[Camera with orthographic projection](../../examples/#camera_ortho)</li>
+ <li>[Camera with orthographic projection](../../examples/#transforms_project_ortho)</li>
  </ul>
 
  ## Usage
@@ -81,7 +82,7 @@
             this._onCanvasBoundary = this.scene.canvas.on("boundary", this._scheduleUpdate, this);
         },
 
-        _build: function () {
+        _update: function () {
 
             var scene = this.scene;
             var scale = this._scale;
