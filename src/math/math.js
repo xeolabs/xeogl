@@ -1403,6 +1403,56 @@
         },
 
         /**
+         * Creates a matrix from a quaternion rotation and vector translation
+         *
+         * @param {Float32Array} q Rotation quaternion
+         * @param {Float32Array} v Translation vector
+         * @param {Float32Array} dest Destination matrix
+         * @returns {Float32Array} dest
+         */
+        rotationTranslationMat4: function (q, v, dest) {
+
+            dest = dest || XEO.math.mat4();
+
+            var x = q[0];
+            var y = q[1];
+            var z = q[2];
+            var w = q[3];
+
+            var x2 = x + x;
+            var y2 = y + y;
+            var z2 = z + z;
+            var xx = x * x2;
+            var xy = x * y2;
+            var xz = x * z2;
+            var yy = y * y2;
+            var yz = y * z2;
+            var zz = z * z2;
+            var wx = w * x2;
+            var wy = w * y2;
+            var wz = w * z2;
+
+            dest[0] = 1 - (yy + zz);
+            dest[1] = xy + wz;
+            dest[2] = xz - wy;
+            dest[3] = 0;
+            dest[4] = xy - wz;
+            dest[5] = 1 - (xx + zz);
+            dest[6] = yz + wx;
+            dest[7] = 0;
+            dest[8] = xz + wy;
+            dest[9] = yz - wx;
+            dest[10] = 1 - (xx + yy);
+            dest[11] = 0;
+            dest[12] = v[0];
+            dest[13] = v[1];
+            dest[14] = v[2];
+            dest[15] = 1;
+
+            return dest;
+        },
+
+        /**
          * Gets Euler angles from a 4x4 matrix.
          *
          * @param {Float32Array} mat The 4x4 matrix.
@@ -1505,7 +1555,7 @@
          * @param pos vec3 position of the viewer
          * @param target vec3 point the viewer is looking at
          * @param up vec3 pointing "up"
-         * @param dest mat4 Optional, mat4 frustum matrix will be written into
+         * @param dest mat4 Optional, mat4 matrix will be written into
          *
          * @return {mat4} dest if specified, a new mat4 otherwise
          */
@@ -1716,10 +1766,10 @@
 
         /**
          * Returns a 4x4 perspective projection matrix.
-         * @method perspectiveMatrix4v
+         * @method pespectiveMat4v
          * @static
          */
-        perspectiveMatrix4: function (fovyrad, aspectratio, znear, zfar, m) {
+        pespectiveMat4: function (fovyrad, aspectratio, znear, zfar, m) {
             var pmin = [];
             var pmax = [];
 
@@ -1742,14 +1792,13 @@
          */
         transformPoint3: function (m, p, dest) {
 
-            var r = dest || XEO.math.vec4();
+            dest = dest || XEO.math.vec3();
 
-            r[0] = (m[0] * p[0]) + (m[4] * p[1]) + (m[8] * p[2]) + m[12];
-            r[1] = (m[1] * p[0]) + (m[5] * p[1]) + (m[9] * p[2]) + m[13];
-            r[2] = (m[2] * p[0]) + (m[6] * p[1]) + (m[10] * p[2]) + m[14];
-            r[3] = 1.0;
+            dest[0] = (m[0] * p[0]) + (m[4] * p[1]) + (m[8] * p[2]) + m[12];
+            dest[1] = (m[1] * p[0]) + (m[5] * p[1]) + (m[9] * p[2]) + m[13];
+            dest[2] = (m[2] * p[0]) + (m[6] * p[1]) + (m[10] * p[2]) + m[14];
 
-            return r;
+            return dest;
         },
 
         /**
@@ -1758,14 +1807,15 @@
          * @static
          */
         transformPoint4: function (m, v, dest) {
-            var r = dest || XEO.math.vec4();
 
-            r[0] = m[0] * v[0] + m[4] * v[1] + m[8] * v[2] + m[12] * v[3];
-            r[1] = m[1] * v[0] + m[5] * v[1] + m[9] * v[2] + m[13] * v[3];
-            r[2] = m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14] * v[3];
-            r[3] = m[3] * v[0] + m[7] * v[1] + m[11] * v[2] + m[15] * v[3];
+            dest = dest || XEO.math.vec4();
 
-            return r;
+            dest[0] = m[0] * v[0] + m[4] * v[1] + m[8] * v[2] + m[12] * v[3];
+            dest[1] = m[1] * v[0] + m[5] * v[1] + m[9] * v[2] + m[13] * v[3];
+            dest[2] = m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14] * v[3];
+            dest[3] = m[3] * v[0] + m[7] * v[1] + m[11] * v[2] + m[15] * v[3];
+
+            return dest;
         },
 
 
