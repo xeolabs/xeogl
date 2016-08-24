@@ -78,6 +78,21 @@
  // ..and the rest of this example can be the same as the previous example.
 
  ````
+
+ The {{#crossLink "Scene"}}{{/crossLink}} will attempt to get use WebGL 2, or fall back on WebGL 1
+ if that's absent. If you just want WebGL 1, disable WebGL 2 like so:
+
+ ```` javascript
+ var scene = new XEO.Scene({
+          canvasId: "myCanvas",
+          webgl2 : true
+     });
+
+ // ..and the rest of this example can be the same as the previous examples.
+
+ ````
+
+
  @class Canvas
  @module XEO
  @submodule canvas
@@ -145,13 +160,36 @@
             this.gl = null;
 
             /**
+             * True when WebGL 2 support is enabled.
+             *
+             * @property webgl2
+             * @type {Boolean}
+             * @final
+             */
+            this.webgl2 = false; // Will set true in _initWebGL if WebGL is requested and we succeed in getting it.
+
+            /**
+             * Indicates whether this Canvas is transparent.
+             *
+             * @property transparent
+             * @type {Boolean}
+             * @final
+             */
+            this.transparent = !!cfg.transparent;
+
+            /**
              * Attributes for the WebGL context
              *
              * @type {{}|*}
              */
             this.contextAttr = cfg.contextAttr || {};
 
-            this.contextAttr.alpha = true;
+            this.contextAttr.alpha = this.transparent;
+            this.contextAttr.depth = true; // Need depth buffer
+            this.contextAttr.preMultipliedAlpha = true;
+            this.contextAttr.preserveDrawingbuffer = false;
+            this.contextAttr.antialias = true;  // TODO
+            this.contextAttr.stencil = true; // Request stencil buffer
 
             if (!cfg.canvas) {
 
@@ -226,7 +264,7 @@
 
             // Get WebGL context
 
-            this._initWebGL();
+            this._initWebGL(cfg);
 
             // Bind context loss and recovery handlers
 
@@ -429,14 +467,28 @@
          * Initialises the WebGL context
          * @private
          */
-        _initWebGL: function () {
+        _initWebGL: function (cfg) {
 
             // Default context attribute values
 
-            for (var i = 0; !this.gl && i < this._WEBGL_CONTEXT_NAMES.length; i++) {
+            if (cfg.webgl2) {
                 try {
-                    this.gl = this.canvas.getContext(this._WEBGL_CONTEXT_NAMES[i], this.contextAttr);
+                    this.gl = this.canvas.getContext("webgl2", this.contextAttr);
                 } catch (e) { // Try with next context name
+                }
+                if (!this.gl) {
+                    this.warn('Failed to get a WebGL 2 context - defaulting to WebGL 1.');
+                } else {
+                    this.webgl2 = true;
+                }
+            }
+
+            if (!this.gl) {
+                for (var i = 0; !this.gl && i < this._WEBGL_CONTEXT_NAMES.length; i++) {
+                    try {
+                        this.gl = this.canvas.getContext(this._WEBGL_CONTEXT_NAMES[i], this.contextAttr);
+                    } catch (e) { // Try with next context name
+                    }
                 }
             }
 
