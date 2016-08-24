@@ -356,10 +356,6 @@
 
         _loadSrc: function (src) {
 
-            //var task = this.scene.tasks.create({
-            //    description: "Loading texture"
-            //});
-
             var self = this;
 
             var image = new Image();

@@ -186,10 +186,6 @@
 
         _loadSrc: function (src) {
 
-            //var task = this.scene.tasks.create({
-            //    description: "Loading reflect"
-            //});
-
             var self = this;
 
             var image = new Image();
