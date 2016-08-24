@@ -5,8 +5,19 @@
     const PIN_COLOR = XEO.math.vec4([1.0, 1.0, 0.0]);
 
     /**
-     * Manages the {{#crossLink "Annotation/visible:event"}}Annotations{{/crossLink}} within a
-     * {{#crossLink "Scene/visible:event"}}{{/crossLink}}.
+     An **AnnotationManager** manages {{#crossLink "Annotation"}}Annotations{{/crossLink}} in a {{#crossLink "Scene"}}{{/crossLink}}.
+
+     @class AnnotationManager
+     @module XEO
+     @submodule annotations
+     @constructor
+     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Annotation in the default
+     {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+     @param [cfg] {*} Configs
+     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+     generated automatically when omitted.
+     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Annotation.
+     @extends Component
      */
     XEO.AnnotationManager = XEO.Component.extend({
 

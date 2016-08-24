@@ -7,7 +7,7 @@
 
  ````
 
- @class Heightmap
+ @class HeightmapGeometry
  @module XEO
  @submodule geometry
  @constructor

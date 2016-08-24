@@ -7,7 +7,7 @@
 
  ````
 
- @class CameraPath
+ @class CameraPathPlayer
  @module XEO
  @submodule animation
  @constructor
