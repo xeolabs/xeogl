@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeoengine.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>a <a href="../docs/classes/Camera.html"
+                                                                            target="_docs">Camera</a> with its projection transform
+    defined as a hierarchy containing a <a
+        href="../docs/classes/Perspective.html" target="_docs">Perspective</a> and a <a
+        href="../docs/classes/Scale.html" target="_docs">Scale</a>
+</div>
+
+<script>
+
+    // A Camera with its projection transform defined as a hierarchy containing a Scale and a Perspective
+
+    var lookat = new XEO.Lookat({
+        eye: [0, 0, -4],
+        look: [0, 0, 0],
+        up: [0, 1, 0]
+    });
+
+    var scale = new XEO.Scale({
+        xyz: [0.6, 0.6, 0.6]
+    });
+
+    var perspective = new XEO.Perspective({
+        fovy: 60,
+        near: 0.1,
+        far: 1000,
+        parent: scale
+    });
+
+    var camera = new XEO.Camera({
+        view: lookat,
+        project: perspective
+    });
+
+    var entity = new XEO.Entity({
+        camera: camera,
+        geometry: new XEO.BoxGeometry(),
+        material: new XEO.PhongMaterial({
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            })
+        })
+    });
+
+    entity.scene.on("tick",
+            function () {
+                lookat.rotateEyeY(0.5);
+                lookat.rotateEyeX(0.3);
+            });
+
+</script>
+</body>
+</html>

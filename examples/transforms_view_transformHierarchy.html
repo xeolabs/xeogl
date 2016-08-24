@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeoengine.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>a <a href="../docs/classes/Camera.html"
+                                                                          target="_docs">Camera</a> with its viewing transform
+    defined as a hierarchy containing a <a
+        href="../docs/classes/Quaternion.html" target="_docs">Quaternion</a> and a <a
+        href="../docs/classes/Translate.html" target="_docs">Translate</a>
+</div>
+
+<script>
+
+    // A Camera with its viewing transform defined as a hierarchy containing a Quaternion and a Translate
+
+    var translate = new XEO.Translate({
+        xyz: [0, 0, -10]
+    });
+
+    var quaternion = new XEO.Quaternion({
+        parent: translate
+    });
+
+    var camera = new XEO.Camera({
+        view: quaternion,
+        project: new XEO.Perspective({
+            fovy: 60,
+            near: 0.1,
+            far: 1000
+        })
+    });
+
+    var entity = new XEO.Entity({
+        camera: camera,
+        geometry: new XEO.BoxGeometry(),
+        material: new XEO.PhongMaterial({
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            })
+        })
+    });
+
+    entity.scene.on("tick",
+            function () {
+                quaternion.rotate([0, 1, 0, 0.5]);
+                quaternion.rotate([1, 0, 0, 0.7]);
+            });
+
+</script>
+</body>
+</html>
