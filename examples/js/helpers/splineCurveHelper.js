@@ -29,18 +29,7 @@ XEO.SplineCurveHelper = XEO.Component.extend({
         this.splineCurve = cfg.splineCurve;
     },
 
-    __scheduleBuild: function () {
-        if (!this.__dirty) {
-            this.__dirty = true;
-            var self = this;
-            XEO.scheduleTask(function () {
-                    self.__build();
-                    self.__dirty = false;
-                });
-        }
-    },
-
-    __build: function () {
+    _update: function () {
 
         var splineCurve = this._children.splineCurve;
 
@@ -112,7 +101,7 @@ XEO.SplineCurveHelper = XEO.Component.extend({
 
                     this._onPathCurves = newPath.on("curves",
                         function () {
-                            self.__scheduleBuild();
+                            self._scheduleUpdate();
                         });
                 }
             },

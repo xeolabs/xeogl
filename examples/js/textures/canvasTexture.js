@@ -38,7 +38,7 @@ XEO.TextureCanvas = XEO.Component.extend({
         this.clear();
     },
 
-    _build: function () {
+    _update: function () {
 
         var canvas = this._canvas = document.createElement('canvas');
 
@@ -96,8 +96,6 @@ XEO.TextureCanvas = XEO.Component.extend({
 
                 this._xSize = value;
 
-                this._needBuild = true;
-
                 this._scheduleUpdate();
 
                 /**
@@ -139,8 +137,6 @@ XEO.TextureCanvas = XEO.Component.extend({
                 }
 
                 this._ySize = value;
-
-                this._needBuild = true;
 
                 this._scheduleUpdate();
 
