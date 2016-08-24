@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeoengine.js"></script>
+
+    <script src="js/webvr/zSpace.js"></script>
+    <script src="js/webvr/zSpaceStylus.js"></script>
+
+<body>
+
+<div id="infoLight">
+    <span><a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>using a <a
+            href="../docs/classes/ZSpace.html"
+            target="_docs">ZSpace</a> component to visualize a scene with the zSpace Screen VR system</span><br><br>
+    <span id="log" style="color:red;font-size: 16px"></span>
+</div>
+
+<script>
+
+    // Load a glTF gearbox model into the default Scene
+    // Translate the model to roughly center it at World origin
+
+    var gearbox = new XEO.Model({
+        src: "models/gltf/gearbox/gearbox_assy.gltf",
+        transform: new XEO.Translate({
+            xyz: [-159.20, -18, -6.21]
+        })
+    });
+
+    // Create a ZSpace in the default Scene
+
+    var zSpace = new XEO.ZSpace({
+        viewerScale: 100 // Size the viewer's coordinate space to our model
+    });
+
+    // Check if we're actually running on a ZSpace device
+
+    zSpace.on("supported", function (supported) {
+
+        if (supported) {
+
+            // Track stylus input via a ZSpaceStylus, also in the default scene
+
+            var stylus = new XEO.ZSpaceStylus({
+                zSpace: zSpace
+            });
+
+            stylus.on("picked", function () {
+
+            });
+
+        } else {
+
+            // Not running on a ZSpace device - fall back to a regular camera control
+
+            document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. ";
+
+            new XEO.CameraControl();
+        }
+    });
+
+</script>
+</body>
+</html>

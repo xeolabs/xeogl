@@ -50,9 +50,9 @@ module.exports = function (grunt) {
                 url: '<%= pkg.homepage %>',
                 options: {
                     themedir: "yuiDocThemes/xeoengine",
-                    paths: ['src'],
+                    paths: ['src', 'examples/js/webvr'], // Add paths here as we include more non-core components in API docs
                     outdir: './docs/',
-                    "exclude": "renderer, utils, webgl"
+                    exclude: "renderer, utils, webgl"
                 },
                 logo: '../assets/images/logo.png'
             }
