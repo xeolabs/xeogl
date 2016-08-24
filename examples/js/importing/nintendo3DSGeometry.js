@@ -56,26 +56,29 @@
                                 //    return;
                             }
 
-                            var m = K3D.parse.from3DS(data);
+                            XEO.scheduleTask(function () {
 
-                            var mesh = m.edit.objects[0].mesh;
+                                var m = K3D.parse.from3DS(data);
 
-                            // Need to flip the UV coordinates on Y-axis for SceneJS geometry
-                            if (mesh.uvt) {
-                                for (var i = 1, len = mesh.uvt.length; i < len; i += 2) {
-                                    mesh.uvt[i] *= -1.0;
+                                var mesh = m.edit.objects[0].mesh;
+
+                                // Need to flip the UV coordinates on Y-axis for SceneJS geometry
+                                if (mesh.uvt) {
+                                    for (var i = 1, len = mesh.uvt.length; i < len; i += 2) {
+                                        mesh.uvt[i] *= -1.0;
+                                    }
                                 }
-                            }
 
-                            self.primitive = "triangles";
-                            self.positions = mesh.vertices;
-                            self.uv = mesh.uvt;
-                            self.normals = null;
-                            self.autoNormals = false;
-                            self.indices = mesh.indices;
-                            self.tangents = null;
+                                self.primitive = "triangles";
+                                self.positions = mesh.vertices;
+                                self.uv = mesh.uvt;
+                                self.normals = null;
+                                self.autoNormals = false;
+                                self.indices = mesh.indices;
+                                self.tangents = null;
 
-                            self.fire("loaded", true);
+                                self.fire("loaded", true);
+                            });
                         },
 
                         function (msg) {
