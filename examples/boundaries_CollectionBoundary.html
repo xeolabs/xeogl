@@ -21,6 +21,9 @@
     <ul>
         <li>mouse drag, arrow keys - orbit</li><li>Z,X  - pan forwards and backwards</li><li>A,D  - pan left and right</li><li>W,S  - pan up and down</li><li>1,2,3,4,5,6 - select axis-aligned view</li><li>click on entity to fly to it</li><li>shift-click entity to fly to its boundary</li><li>mouse wheel or '+' and '-' keys to zoom in and out</li>
     </ul>
+      <pre id="infoTxt"
+           style="left: 0; text-align: left; background: black; opacity: 0.7; color: white; font-size: 14pt;">
+    </pre>
 </div>
 
 <script>
@@ -46,8 +49,18 @@
     // Create 1000 moving Entities within the CollectionBoundary
 
     // Geometry shared by our Entities
-    var sphereGeometry = new XEO.SphereGeometry({
-        radius: 5
+    var sphereGeometry =new XEO.TorusGeometry({
+        radius: 6.0,
+        tube: 2.0,
+        radialSegments: 60,
+        tubeSegments: 60,
+        arc: Math.PI * 2.0
+    });
+
+    var boxGeometry = new XEO.BoxGeometry({
+        xSize: 6,
+        ySize: 6,
+        zSize: 6
     });
 
     var material = new XEO.PhongMaterial({
@@ -66,14 +79,18 @@
             // Create a randomly-positioned sphere Entity
 
             var entity = new XEO.Entity({
-                geometry: sphereGeometry,
+                geometry: boxGeometry,
                 material: material,
-                transform: new XEO.Translate({
-                    xyz: [
-                        Math.random() * r - halfr,
-                        Math.random() * r - halfr,
-                        Math.random() * r - halfr
-                    ]
+                transform:new XEO.Rotate({
+                    xyz: [Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1],
+                    angle: 0,
+                    parent: new XEO.Translate({
+                        xyz: [
+                            Math.random() * r - halfr,
+                            Math.random() * r - halfr,
+                            Math.random() * r - halfr
+                        ]
+                    })
                 })
             });
 
@@ -88,18 +105,22 @@
                 Math.random() * 2.0 - 1.0
             ];
 
+            var spin = Math.random();
+
             entity.scene.on("tick",
                     function () {
 
                         var dir = ((count++ % 300) > 150) ? 1.0 : -1.0;
 
-                        var xyz = entity.transform.xyz;
+                        var xyz = entity.transform.parent.xyz;
 
-                        entity.transform.xyz = [
+                        entity.transform.parent.xyz = [
                             xyz[0] + trajectory[0] * dir,
                             xyz[1] + trajectory[1] * dir,
                             xyz[2] + trajectory[2] * dir
                         ];
+
+                        entity.transform.angle += 0.5 + spin;
                     });
 
             // Add the Entity to the CollectionBoundary
@@ -122,12 +143,20 @@
             function () {
                 var view = scene.camera.view;
                 view.rotateEyeY(0.2);
+
+                logJSON(XEO.stats.frame);
             });
 
     // Permit user camera control
 
     var cameraControl = new XEO.CameraControl();
     cameraControl.mouseZoom.sensitivity = 5;
+
+
+    function logJSON(json) {
+        document.getElementById("infoTxt").innerHTML = JSON.stringify(json, null, 4);
+    }
+
 
 </script>
 </body>

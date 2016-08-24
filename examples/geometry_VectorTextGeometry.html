@@ -15,7 +15,8 @@
 <div id="infoLight">
     <a href="http://xeoengine.org">xeoEngine</a>
     <br><br>
-    <a href="js/geometry/vectorTextGeometry.js" target="_docs">XEO.VectorTextGeometry</a> showing the sourcecode for its scene definition
+    <a href="js/geometry/vectorTextGeometry.js" target="_docs">XEO.VectorTextGeometry</a> showing the sourcecode for its
+    scene definition
 </div>
 
 <script id="source">
@@ -23,14 +24,12 @@
     // VectorTextGeometry Demo
     // @xeolabs
 
-    var geometry = new XEO.VectorTextGeometry({
-        text: document.getElementById("source").innerText,
-        xSize: 2,
-        ySize: 2
-    });
-
-   var entity =  new XEO.Entity({
-        geometry: geometry,
+    var entity = new XEO.Entity({
+        geometry: new XEO.VectorTextGeometry({
+            text: document.getElementById("source").innerText,
+            xSize: 2,
+            ySize: 2
+        }),
         material: new XEO.PhongMaterial({
             emissive: [0.5, 1.0, 1.0],
             lineWidth: 2
@@ -41,21 +40,20 @@
         }),
         transform: new XEO.Translate({
             xyz: [0, 40, 0]
-        }),
+        })
     });
 
     // Move the camera back a bit, then orbit the
     // eye position about the look position
 
-    var scene = XEO.scene;
+    var scene = entity.scene;
+    var camera = scene.camera;
+    var view = camera.view;
 
-    scene.camera.view.zoom(120);
+    view.zoom(120);
 
     scene.on("tick",
             function () {
-
-                var view = scene.camera.view;
-
                 view.rotateEyeY(0.2);
                 view.rotateEyeX(0.1);
             });

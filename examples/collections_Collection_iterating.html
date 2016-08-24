@@ -13,6 +13,9 @@
 <div id="infoLight">
     <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>
     iterating over the components in a <a href="../docs/classes/Collection.html" target="_docs">Collection</a>
+        <pre id="infoTxt"
+             style="left: 0; text-align: left; background: black; opacity: 0.7; color: white; font-size: 14pt;">
+    </pre>
 </div>
 
 <script>
@@ -34,7 +37,7 @@
         })
     });
 
-    for (var i = 0; i < 20; i++) {
+    for (var i = 0; i < 500; i++) {
 
         new XEO.Entity({
 
@@ -46,7 +49,7 @@
                 xyz: [Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1],
                 angle: 0,
                 parent: new XEO.Translate({
-                    xyz: [Math.random() * 10 - 5, Math.random() * 10 - 5, Math.random() * 10 - 5]
+                    xyz: [Math.random() * 30 - 15, Math.random() * 30 - 15, Math.random() * 30 - 15]
                 })
             })
         });
@@ -80,7 +83,13 @@
                                 transform.angle += 1.0;
                             }
                         });
+
+                logJSON(XEO.stats.frame);
             });
+
+    function logJSON(json) {
+        document.getElementById("infoTxt").innerHTML = JSON.stringify(json, null, 4);
+    }
 
 </script>
 </body>
