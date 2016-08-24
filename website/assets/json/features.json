@@ -36,7 +36,7 @@
     "Custom shaders"
   ],
   "Animation and Transformation": [
-    "[[Dynamic transform hierarchies|transforms_hierarchy]]",
+    "[[Dynamic transform hierarchies|transforms_model_hierarchy]]",
     "[[Camera fly-to|animation_CameraFlight_Entity]]"
   ],
   "Importers and Tools": [
