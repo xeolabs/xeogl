@@ -1766,10 +1766,10 @@
 
         /**
          * Returns a 4x4 perspective projection matrix.
-         * @method pespectiveMat4v
+         * @method perspectiveMat4v
          * @static
          */
-        pespectiveMat4: function (fovyrad, aspectratio, znear, zfar, m) {
+        perspectiveMat4: function (fovyrad, aspectratio, znear, zfar, m) {
             var pmin = [];
             var pmax = [];
 

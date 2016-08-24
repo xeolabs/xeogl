@@ -86,7 +86,7 @@
             var canvas = this.scene.canvas.canvas;
             var aspect = canvas.clientWidth / canvas.clientHeight;
 
-            this.matrix = XEO.math.pespectiveMat4(this._fovy * (Math.PI / 180.0), aspect, this._near, this._far, this._matrix);
+            this.matrix = XEO.math.perspectiveMat4(this._fovy * (Math.PI / 180.0), aspect, this._near, this._far, this._matrix);
         },
 
         _props: {
