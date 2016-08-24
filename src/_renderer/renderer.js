@@ -1153,6 +1153,12 @@
         var i;
         var len;
 
+        var outputFramebuffer = this.bindOutputFramebuffer && this.unbindOutputFramebuffer && !params.pickObject && !params.rayPick;
+
+        if (outputFramebuffer) {
+            this.bindOutputFramebuffer(params.pass);
+        }
+
         var ambient = this._ambient;
         var ambientColor;
         if (ambient) {
@@ -1189,8 +1195,10 @@
             gl.getExtension("OES_element_index_uint");
         }
 
-        this.stats.frame.setUniform = 0;
-        this.stats.frame.setUniformCacheHits = 0;
+        var frameStats = this.stats.frame;
+
+        frameStats.setUniform = 0;
+        frameStats.setUniformCacheHits = 0;
 
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 
@@ -1250,10 +1258,6 @@
 
             var startTime = (new Date()).getTime();
 
-            if (this.bindOutputFramebuffer) {
-                this.bindOutputFramebuffer(params.pass);
-            }
-
             // Option to only render opaque objects
             len = (params.opaqueOnly && this._drawChunkListTransparentIndex >= 0 ? this._drawChunkListTransparentIndex : this._drawChunkListLen);
 
@@ -1263,21 +1267,17 @@
 
             var endTime = (new Date()).getTime();
 
-            this.stats.frame.renderTime = (endTime - startTime) / 1000.0;
-            this.stats.frame.drawElements = frameCtx.drawElements;
-            this.stats.frame.useProgram = frameCtx.useProgram;
-            this.stats.frame.bindTexture = frameCtx.bindTexture;
-            this.stats.frame.bindArray = frameCtx.bindArray;
+            frameStats.renderTime = (endTime - startTime) / 1000.0;
+            frameStats.drawElements = frameCtx.drawElements;
+            frameStats.useProgram = frameCtx.useProgram;
+            frameStats.bindTexture = frameCtx.bindTexture;
+            frameStats.bindArray = frameCtx.bindArray;
         }
 
-        gl.flush();
+      //  gl.finish();
 
         if (frameCtx.renderBuf) {
             frameCtx.renderBuf.unbind();
-        }
-
-        if (this.unbindOutputFramebuffer) {
-            this.unbindOutputFramebuffer();
         }
 
         var numTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
@@ -1287,7 +1287,11 @@
             gl.bindTexture(gl.TEXTURE_2D, null);
         }
 
-        this.stats.frame.drawChunks = this._drawChunkListLen;
+        if (outputFramebuffer) {
+            this.unbindOutputFramebuffer();
+        }
+
+        frameStats.drawChunks = this._drawChunkListLen;
     };
 
     /**
