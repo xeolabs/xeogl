@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src/transforms/lookat.js - xeoengine</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+
+                <h1 style="color:white;"><a href="../../">xeoEngine</a> / <a href="../../docs">API Docs</a></h1>
+
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.1.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
+                                <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
+                                <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
+                                <li><a href="../classes/Camera.html">Camera</a></li>
+                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraController.html">CameraController</a></li>
+                                <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
+                                <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/Collection.html">Collection</a></li>
+                                <li><a href="../classes/CollectionBoundary.html">CollectionBoundary</a></li>
+                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
+                                <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
+                                <li><a href="../classes/Component.html">Component</a></li>
+                                <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+                                <li><a href="../classes/Cull.html">Cull</a></li>
+                                <li><a href="../classes/Curve.html">Curve</a></li>
+                                <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
+                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
+                                <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
+                                <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Entity.html">Entity</a></li>
+                                <li><a href="../classes/Fresnel.html">Fresnel</a></li>
+                                <li><a href="../classes/Frustum.html">Frustum</a></li>
+                                <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
+                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
+                                <li><a href="../classes/KeyboardRotateCamera.html">KeyboardRotateCamera</a></li>
+                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
+                                <li><a href="../classes/LatheGeometry.html">LatheGeometry</a></li>
+                                <li><a href="../classes/Layer.html">Layer</a></li>
+                                <li><a href="../classes/Lights.html">Lights</a></li>
+                                <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/MegaTexture.html">MegaTexture</a></li>
+                                <li><a href="../classes/Model.html">Model</a></li>
+                                <li><a href="../classes/Modes.html">Modes</a></li>
+                                <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
+                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
+                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
+                                <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
+                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
+                                <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
+                                <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
+                                <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Path.html">Path</a></li>
+                                <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
+                                <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
+                                <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
+                                <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
+                                <li><a href="../classes/Skybox.html">Skybox</a></li>
+                                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
+                                <li><a href="../classes/Spinner.html">Spinner</a></li>
+                                <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/Stage.html">Stage</a></li>
+                                <li><a href="../classes/Stationary.html">Stationary</a></li>
+                                <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/Viewport.html">Viewport</a></li>
+                                <li><a href="../classes/Visibility.html">Visibility</a></li>
+                                <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
+                                <li><a href="../classes/ZSpace.html">ZSpace</a></li>
+                                <li><a href="../classes/ZSpaceStylus.html">ZSpaceStylus</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="..//modules/animation.html">animation</a></li>
+                                <li><a href="..//modules/boundaries.html">boundaries</a></li>
+                                <li><a href="..//modules/camera.html">camera</a></li>
+                                <li><a href="..//modules/canvas.html">canvas</a></li>
+                                <li><a href="..//modules/clipping.html">clipping</a></li>
+                                <li><a href="..//modules/collections.html">collections</a></li>
+                                <li><a href="..//modules/configs.html">configs</a></li>
+                                <li><a href="..//modules/controls.html">controls</a></li>
+                                <li><a href="..//modules/culling.html">culling</a></li>
+                                <li><a href="..//modules/curves.html">curves</a></li>
+                                <li><a href="..//modules/entities.html">entities</a></li>
+                                <li><a href="..//modules/geometry.html">geometry</a></li>
+                                <li><a href="..//modules/importing.html">importing</a></li>
+                                <li><a href="..//modules/input.html">input</a></li>
+                                <li><a href="..//modules/interaction.html">interaction</a></li>
+                                <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/materials.html">materials</a></li>
+                                <li><a href="..//modules/math.html">math</a></li>
+                                <li><a href="..//modules/paths.html">paths</a></li>
+                                <li><a href="..//modules/rendering.html">rendering</a></li>
+                                <li><a href="..//modules/shaders.html">shaders</a></li>
+                                <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="..//modules/transforms.html">transforms</a></li>
+                                <li><a href="..//modules/webvr.html">webvr</a></li>
+                                <li><a href="..//modules/XEO.html">XEO</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <!--<div id="api-options">-->
+                    <!--Show:-->
+                    <!--<label for="api-show-inherited">-->
+                        <!--<input type="checkbox" id="api-show-inherited" checked>-->
+                        <!--Inherited-->
+                    <!--</label>-->
+            
+                    <!--<label for="api-show-protected">-->
+                        <!--<input type="checkbox" id="api-show-protected">-->
+                        <!--Protected-->
+                    <!--</label>-->
+            
+                    <!--<label for="api-show-private">-->
+                        <!--<input type="checkbox" id="api-show-private">-->
+                        <!--Private-->
+                    <!--</label>-->
+                    <!--<label for="api-show-deprecated">-->
+                        <!--<input type="checkbox" id="api-show-deprecated">-->
+                        <!--Deprecated-->
+                    <!--</label>-->
+            
+                <!--</div>-->
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: src/transforms/lookat.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ A **Lookat** defines a viewing transform as an {{#crossLink &quot;Lookat/eye:property&quot;}}eye{{/crossLink}} position, a
+ {{#crossLink &quot;Lookat/look:property&quot;}}look{{/crossLink}} position and an {{#crossLink &quot;Lookat/up:property&quot;}}up{{/crossLink}}
+ vector.
+
+ &lt;ul&gt;
+ &lt;li&gt;Lookat is a sub-class of {{#crossLink &quot;Transform&quot;}}{{/crossLink}}.&lt;/li&gt;
+ &lt;li&gt;{{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} components pair these with projection transforms such as
+ {{#crossLink &quot;Perspective&quot;}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.&lt;/li&gt;
+ &lt;li&gt;See &lt;a href=&quot;Shader.html#inputs&quot;&gt;Shader Inputs&lt;/a&gt; for the variables that Lookat components create within xeoEngine&#x27;s shaders.&lt;/li&gt;
+ &lt;/ul&gt;
+
+ &lt;img src=&quot;../../../assets/images/Lookat.png&quot;&gt;&lt;/img&gt;
+
+ ## Examples
+
+ &lt;ul&gt;
+ &lt;li&gt;[Camera with Lookat and Perspective](../../examples/#transforms_project_perspective)&lt;/li&gt;
+ &lt;/ul&gt;
+
+ ## Usage
+
+ &#x60;&#x60;&#x60;&#x60;Javascript
+ new XEO.Entity({
+
+     camera: XEO.Camera({
+
+        view: new XEO.Lookat({
+            eye: [0, 0, 4],
+            look: [0, 0, 0],
+            up: [0, 1, 0]
+        }),
+
+        project: new XEO.Perspective({
+            fovy: 60,
+            near: 0.1,
+            far: 1000
+        })
+     }),
+
+     geometry: new XEO.BoxGeometry()
+ });
+ &#x60;&#x60;&#x60;&#x60;
+
+ @class Lookat
+ @module XEO
+ @submodule transforms
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Lookat in the default
+ {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Lookat.
+ @param [cfg.parent] {String|Transform} ID or instance of a parent {{#crossLink &quot;Transform&quot;}}{{/crossLink}} within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
+ @param [cfg.eye=[0,0,10]] {Array of Number} Eye position.
+ @param [cfg.look=[0,0,0]] {Array of Number} The position of the point-of-interest we&#x27;re looking at.
+ @param [cfg.up=[0,1,0]] {Array of Number} The &quot;up&quot; vector.
+ @param [cfg.gimbalLockY=false] {Boolean} Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.
+ @extends Transform
+ @author xeolabs / http://xeolabs.com/
+ */
+(function () {
+
+    &quot;use strict&quot;;
+
+    var tempVec3 = XEO.math.vec3();
+    var tempVec3b = XEO.math.vec3();
+    var tempVec3c = XEO.math.vec3();
+    var tempVec3d = XEO.math.vec3();
+    var tempVec3e = XEO.math.vec3();
+    var tempVec3f = XEO.math.vec3();
+
+    XEO.Lookat = XEO.Transform.extend({
+
+        type: &quot;XEO.Lookat&quot;,
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this._eye = XEO.math.vec3([0, 0, 10.0]);
+            this._look = XEO.math.vec3([0, 0, 0]);
+            this._up = XEO.math.vec3([0, 1, 0]);
+
+            this.eye = cfg.eye;
+            this.look = cfg.look;
+            this.up = cfg.up;
+            this.gimbalLockY = cfg.gimbalLockY;
+        },
+
+        _update: function () {
+            this.matrix = XEO.math.lookAtMat4v(this._eye, this._look, this._up, this._matrix);
+        },
+
+        /**
+         * Rotate &#x27;eye&#x27; about &#x27;look&#x27;, around the &#x27;up&#x27; vector
+         *
+         * @param {Number} angle Angle of rotation in degrees
+         */
+        rotateEyeY: function (angle) {
+
+            // Get &#x27;look&#x27; -&gt; &#x27;eye&#x27; vector
+            var eye2 = XEO.math.subVec3(this._eye, this._look, tempVec3);
+
+            var mat = XEO.math.rotationMat4v(angle * 0.0174532925, this._gimbalLockY ? XEO.math.vec3([0, 1, 0]) : this._up);
+            eye2 = XEO.math.transformPoint3(mat, eye2, tempVec3b);
+
+            // Set eye position as &#x27;look&#x27; plus &#x27;eye&#x27; vector
+            this.eye = XEO.math.addVec3(eye2, this._look, tempVec3c);
+
+            if (this._gimbalLockY) {
+
+                // Rotate &#x27;up&#x27; vector about orthogonal vector
+                this.up = XEO.math.transformPoint3(mat, this._up, tempVec3d);
+            }
+        },
+
+        /**
+         * Rotate &#x27;eye&#x27; about &#x27;look&#x27; around the X-axis
+         *
+         * @param {Number} angle Angle of rotation in degrees
+         */
+        rotateEyeX: function (angle) {
+
+            // Get &#x27;look&#x27; -&gt; &#x27;eye&#x27; vector
+            var eye2 = XEO.math.subVec3(this._eye, this._look, tempVec3);
+
+            // Get orthogonal vector from &#x27;eye&#x27; and &#x27;up&#x27;
+            var left = XEO.math.cross3Vec3(XEO.math.normalizeVec3(eye2, tempVec3b), XEO.math.normalizeVec3(this._up, tempVec3c));
+
+            // Rotate &#x27;eye&#x27; vector about orthogonal vector
+            var mat = XEO.math.rotationMat4v(angle * 0.0174532925, left);
+            eye2 = XEO.math.transformPoint3(mat, eye2, tempVec3d);
+
+            // Set eye position as &#x27;look&#x27; plus &#x27;eye&#x27; vector
+            this.eye = XEO.math.addVec3(eye2, this._look, tempVec3e);
+
+            // Rotate &#x27;up&#x27; vector about orthogonal vector
+            this.up = XEO.math.transformPoint3(mat, this._up, tempVec3f);
+        },
+
+        /**
+         * Rotate &#x27;look&#x27; about &#x27;eye&#x27;, around the &#x27;up&#x27; vector
+         *
+         * &lt;p&gt;Applies constraints added with {@link #addConstraint}.&lt;/p&gt;
+         *
+         * @param {Number} angle Angle of rotation in degrees
+         */
+        rotateLookY: function (angle) {
+
+            // Get &#x27;look&#x27; -&gt; &#x27;eye&#x27; vector
+            var look2 = XEO.math.subVec3(this._look, this._eye, tempVec3);
+
+            // Rotate &#x27;look&#x27; vector about &#x27;up&#x27; vector
+            var mat = XEO.math.rotationMat4v(angle * 0.0174532925, this._up);
+            look2 = XEO.math.transformPoint3(mat, look2, tempVec3b);
+
+            // Set look position as &#x27;look&#x27; plus &#x27;eye&#x27; vector
+            this.look = XEO.math.addVec3(look2, this._eye, tempVec3c);
+        },
+
+        /**
+         * Rotate &#x27;eye&#x27; about &#x27;look&#x27; around the X-axis
+         *
+         * @param {Number} angle Angle of rotation in degrees
+         */
+        rotateLookX: function (angle) {
+
+            // Get &#x27;look&#x27; -&gt; &#x27;eye&#x27; vector
+            var look2 = XEO.math.subVec3(this._look, this._eye, tempVec3);
+
+            // Get orthogonal vector from &#x27;eye&#x27; and &#x27;up&#x27;
+            var left = XEO.math.cross3Vec3(XEO.math.normalizeVec3(look2, tempVec3b), XEO.math.normalizeVec3(this._up, tempVec3c));
+
+            // Rotate &#x27;look&#x27; vector about orthogonal vector
+            var mat = XEO.math.rotationMat4v(angle * 0.0174532925, left);
+            look2 = XEO.math.transformPoint3(mat, look2, tempVec3d);
+
+            // Set eye position as &#x27;look&#x27; plus &#x27;eye&#x27; vector
+            this.look = XEO.math.addVec3(look2, this._eye, tempVec3e);
+
+            // Rotate &#x27;up&#x27; vector about orthogonal vector
+            this.up = XEO.math.transformPoint3(mat, this._up, tempVecf);
+        },
+
+        /**
+         * Pans the camera along X and Y axis.
+         * @param pan The pan vector
+         */
+        pan: function (pan) {
+
+            // Get &#x27;look&#x27; -&gt; &#x27;eye&#x27; vector
+            var eye2 = XEO.math.subVec3(this._eye, this._look, tempVec3);
+
+            // Building this pan vector
+            var vec = [0, 0, 0];
+            var v;
+
+            if (pan[0] !== 0) {
+
+                // Pan along orthogonal vector to &#x27;look&#x27; and &#x27;up&#x27;
+
+                var left = XEO.math.cross3Vec3(XEO.math.normalizeVec3(eye2, []), XEO.math.normalizeVec3(this._up, tempVec3b));
+
+                v = XEO.math.mulVec3Scalar(left, pan[0]);
+
+                vec[0] += v[0];
+                vec[1] += v[1];
+                vec[2] += v[2];
+            }
+
+            if (pan[1] !== 0) {
+
+                // Pan along &#x27;up&#x27; vector
+
+                v = XEO.math.mulVec3Scalar(XEO.math.normalizeVec3(this._up, tempVec3c), pan[1]);
+
+                vec[0] += v[0];
+                vec[1] += v[1];
+                vec[2] += v[2];
+            }
+
+            if (pan[2] !== 0) {
+
+                // Pan along &#x27;eye&#x27;- -&gt; &#x27;look&#x27; vector
+
+                v = XEO.math.mulVec3Scalar(XEO.math.normalizeVec3(eye2, tempVec3d), pan[2]);
+
+                vec[0] += v[0];
+                vec[1] += v[1];
+                vec[2] += v[2];
+            }
+
+            this.eye = XEO.math.addVec3(this._eye, vec, tempVec3e);
+            this.look = XEO.math.addVec3(this._look, vec, tempVec3f);
+        },
+
+        /**
+         * Increments/decrements zoom factor, ie. distance between eye and look.
+         * @param delta
+         */
+        zoom: function (delta) {
+
+            var vec = XEO.math.subVec3(this._eye, this._look, tempVec3); // Get vector from eye to look
+            var lenLook = Math.abs(XEO.math.lenVec3(vec, tempVec3b));    // Get len of that vector
+            var newLenLook = Math.abs(lenLook + delta);         // Get new len after zoom
+
+            var dir = XEO.math.normalizeVec3(vec, tempVec3c);  // Get normalised vector
+
+            this.eye = XEO.math.addVec3(this._look, XEO.math.mulVec3Scalar(dir, newLenLook), tempVec3d);
+        },
+
+        _props: {
+
+            /**
+             * Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.
+             *
+             * Fires a {{#crossLink &quot;Lookat/gimbalLockY:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property gimbalLockY
+             * @default false
+             * @type Boolean
+             */
+            gimbalLockY: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    this._gimbalLockY = value;
+
+                    /**
+                     * Fired whenever this Lookat&#x27;s  {{#crossLink &quot;Lookat/gimbalLockY:property&quot;}}{{/crossLink}} property changes.
+                     *
+                     * @event gimbalLockY
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;gimbalLockY&quot;, this._gimbalLockY);
+                },
+
+                get: function () {
+                    return this._gimbalLockY;
+                }
+            },
+
+            /**
+             * Position of this Lookat&#x27;s eye.
+             *
+             * Fires an {{#crossLink &quot;Lookat/eye:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property eye
+             * @default [0,0,10]
+             * @type Float32Array
+             */
+            eye: {
+
+                set: function (value) {
+
+                    this._eye.set(value || [0, 0, 10]);
+
+                    this._scheduleUpdate(0); // Ensure matrix built on next &quot;tick&quot;
+
+                    /**
+                     * Fired whenever this Lookat&#x27;s  {{#crossLink &quot;Lookat/eye:property&quot;}}{{/crossLink}} property changes.
+                     *
+                     * @event eye
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;eye&quot;, this._eye);
+                },
+
+                get: function () {
+                    return this._eye;
+                }
+            },
+
+            /**
+             * Position of this Lookat&#x27;s point-of-interest.
+             *
+             * Fires a {{#crossLink &quot;Lookat/look:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property look
+             * @default [0,0,0]
+             * @type Float32Array
+             */
+            look: {
+
+                set: function (value) {
+
+                    this._look.set(value || [0, 0, 0]);
+
+                    this._scheduleUpdate(0); // Ensure matrix built on next &quot;tick&quot;;
+
+                    /**
+                     * Fired whenever this Lookat&#x27;s  {{#crossLink &quot;Lookat/look:property&quot;}}{{/crossLink}} property changes.
+                     *
+                     * @event look
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;look&quot;, this._look);
+                },
+
+                get: function () {
+                    return this._look;
+                }
+            },
+
+            /**
+             * Direction of the &quot;up&quot; vector.
+             * Fires an {{#crossLink &quot;Lookat/up:event&quot;}}{{/crossLink}} event on change.
+             * @property up
+             * @default [0,1,0]
+             * @type Float32Array
+             */
+            up: {
+
+                set: function (value) {
+
+                    this._up.set(value || [0, 1, 0]);
+
+                    this._scheduleUpdate(0); // Ensure matrix built on next &quot;tick&quot;
+
+                    /**
+                     * Fired whenever this Lookat&#x27;s  {{#crossLink &quot;Lookat/up:property&quot;}}{{/crossLink}} property changes.
+                     *
+                     * @event up
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;up&quot;, this._up);
+                },
+
+                get: function () {
+                    return this._up;
+                }
+            }
+        },
+
+        _getJSON: function () {
+            var json = {
+                eye: this._eye,
+                look: this._look,
+                up: this._up
+            };
+            if (this._parent) {
+                json.parent = this._parent.id;
+            }
+            return json;
+        }
+    });
+
+})();
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>
