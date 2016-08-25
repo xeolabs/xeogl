@@ -14,51 +14,59 @@
 
 <body>
 
-<div id="infoLight">
-    <span><a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>using a <a
+<div id="infoLight"
+     style="left: 0; text-align: left; background: black; opacity: 0.7; padding: 8px; color: white; font-size: 14pt;">
+    <span><a href="http://xeoengine.org" target="_home">xeoEngine</a><br>using a <a
             href="../docs/classes/ZSpace.html"
-            target="_docs">ZSpace</a> component to visualize a scene with the zSpace Screen VR system</span><br><br>
+            target="_docs">ZSpace</a> component to view a scene with zSpace VR</span><br>
     <span id="log" style="color:red;font-size: 16px"></span>
 </div>
 
 <script>
 
-    // Demonstrates how to view a xeoEngine scene using a zSpace stereo viewing device.
+    // Demonstrates how to view a xeoEngine Scene using ZSpace VR
 
-    // Add some random spinning entities to the default scene
+    // Create some entities
 
-    var rotate = new XEO.Rotate({
-        xyz: [0, 1, 0],
-        angle: 0
+    var geometry = new XEO.TorusGeometry({
+        radius: 1.0,
+        tube: 0.4,
+        radialSegments: 60,
+        tubeSegments: 60,
+        arc: Math.PI * 2.0
     });
 
-    for (var i = 0; i < 200; i++) {
+    var material = new XEO.PhongMaterial({
+        diffuseMap: new XEO.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+        })
+    });
 
-        new XEO.Entity({
-            transform: new XEO.Translate({
-                xyz: [
-                    Math.random() * 60 - 30,
-                    //Math.random() * 60 - 30,
-                    0,
-                    Math.random() * 60 - 30
-                ],
-                parent: rotate
-            }),
-            material: new XEO.PhongMaterial({
-                diffuse: [
-                    Math.random(),
-                    Math.random(),
-                    Math.random()
-                ]
+    var entities = [];
+
+    for (var i = 0; i < 50; i++) {
+
+        entities.push(new XEO.Entity({
+            geometry: geometry,
+            material: material,
+            transform: new XEO.Rotate({
+                xyz: [Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1],
+                angle: 0,
+                parent: new XEO.Translate({
+                    xyz: [Math.random() * 30 - 15, Math.random() * 30 - 15, Math.random() * 30 - 15]
+                })
             })
-        });
+        }));
     }
 
     // Spin the entities
 
     XEO.scene.on("tick", function () {
-        rotate.angle = rotate.angle + 0.5;
+        for (var i = 0, len = entities.length; i < len; i++) {
+            entities[i].transform.angle += 0.5;
+        }
     });
+
 
     // Create a ZSpace in the default Scene
 

@@ -3,12 +3,67 @@
     "use strict";
 
     /**
-     A **Nintendo3DSGeometry** is a Geometry that's loaded from a
+     A **Nintendo3DSGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that's loaded from a
      <a href="https://en.wikipedia.org/wiki/Nintendo_3DS" target = "_other">Nintendo 3DS</a> file.
+
+     ## Examples
+
+     <ul>
+     <li>[Importing a Lexus from 3DS](../../examples/#importing_3ds_lexus)</li>
+     </ul>
+
+     ## Usage
+
+     ````javascript
+     var entity = new XEO.Entity({
+
+        geometry: new XEO.Nintendo3DSGeometry({
+            src: "models/3ds/lexus.3ds"
+        }),
+
+        material: new XEO.PhongMaterial({
+            diffuseMap: new XEO.Texture({
+                src: "models/3ds/lexus.jpg"
+            }),
+            specular: [0, 0, 0]
+        }),
+
+        // We need to rotate this particular .3DS model
+        transform: new XEO.Rotate({
+            xyz: [1,0,0],
+            angle: -90,
+            parent: new XEO.Rotate({
+                xyz: [0,1,0],
+                angle: 90
+            })
+        })
+     });
+
+     // When the Nintendo3DSGeometry has loaded,
+     // fly the camera to fit the entity in view
+
+     var cameraFlight = new XEO.CameraFlight();
+
+     entity.geometry.on("loaded", function () {
+
+             cameraFlight.flyTo({
+                 aabb: entity.worldBoundary.aabb
+             });
+         });
+     ````
 
      @class Nintendo3DSGeometry
      @module XEO
-     @extends Component
+     @submodule geometry
+     @constructor
+     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Nintendo3DSGeometry in the default
+     {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+     @param [cfg] {*} Configs
+     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+     generated automatically when omitted.
+     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Nintendo3DSGeometry.
+     @param [cfg.src] {String} Path to the .3DS file.
+     @extends Geometry
      */
     XEO.Nintendo3DSGeometry = XEO.Geometry.extend({
 

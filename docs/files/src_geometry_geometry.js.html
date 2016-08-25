@@ -50,7 +50,6 @@
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraController.html">CameraController</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
-                                <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -89,6 +88,8 @@
                                 <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
                                 <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
+                                <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
+                                <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -96,7 +97,6 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
-                                <li><a href="../classes/Position3D.html">Position3D</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -111,8 +111,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
-                                <li><a href="../classes/Task.html">Task</a></li>
-                                <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
                                 <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
@@ -121,6 +119,8 @@
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
+                                <li><a href="../classes/ZSpace.html">ZSpace</a></li>
+                                <li><a href="../classes/ZSpaceStylus.html">ZSpaceStylus</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -144,10 +144,10 @@
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/paths.html">paths</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/reporting.html">reporting</a></li>
                                 <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
+                                <li><a href="..//modules/webvr.html">webvr</a></li>
                                 <li><a href="..//modules/XEO.html">XEO</a></li>
                             </ul>
                         </div>
@@ -445,11 +445,6 @@
                 }
             });
 
-            this._updateScheduled = false;
-            this._vboUpdateScheduled = false;
-
-            this._hashDirty = true;
-
             // Typed arrays
 
             this._positionsData = null;
@@ -467,7 +462,9 @@
 
             // Flags for work pending
 
-            this._vboUpdateScheduled = false;
+            this._updateScheduled = false;
+            this._geometryUpdateScheduled = false;
+            this._hashDirty = true;
             this._positionsDirty = true;
             this._colorsDirty = true;
             this._normalsDirty = true;
@@ -523,7 +520,7 @@
 
             this.usage = cfg.usage;
 
-            this._webglContextRestored = this.scene.canvas.on(&quot;webglContextRestored&quot;, this._scheduleVBOUpdate, this);
+            this._webglContextRestored = this.scene.canvas.on(&quot;webglContextRestored&quot;, this._scheduleGeometryUpdate, this);
 
             XEO.stats.memory.meshes++;
         },
@@ -544,52 +541,40 @@
 
             if (this._updateScheduled) {
 
-                this._vboUpdateScheduled = true; // Prevents needless scheduling within _update()
+                this._geometryUpdateScheduled = true; // Prevents needless scheduling within _update()
 
-                if (this._update) {
+                if (this._update) { // Template method from XEO.Component
                     this._update();
                 }
 
                 this._updateScheduled = false;
             }
 
-            if (this._vboUpdateScheduled) {
-                this._doVBOUpdate();
+            if (this._geometryUpdateScheduled) {
+                this._updateGeometry();
             }
         },
 
-        /**
-         * Protected virtual template method, implemented by sub-classes to generate geometry data arrays.
-         *
-         * @protected
-         */
-        _update: null,
-
-        _scheduleVBOUpdate: function () {
-
-            if (!this._vboUpdateScheduled) {
-
-                this._vboUpdateScheduled = true;
-
-                // Build VBOs for renderer; no other components in the scene
-                // will be waiting them, so OK to schedule that for next tick.
-                XEO.scheduleTask(this._doVBOUpdate, this);
+        _scheduleGeometryUpdate: function () {
+            if (!this._geometryUpdateScheduled) {
+                this._geometryUpdateScheduled = true;
+                XEO.scheduleTask(this._updateGeometry, this);
             }
         },
 
-        _doVBOUpdate: function () {
+        _updateGeometry: function () {
 
             if (this._updateScheduled) {
 
                 if (this._update) {
-                    this._vboUpdateScheduled = true; // Prevents needless scheduling within _update()
+                    this._geometryUpdateScheduled = true; // Prevents needless scheduling within _update()
                     this._update();
                 }
 
                 this._updateScheduled = false;
-                this._vboUpdateScheduled = true;
+                this._geometryUpdateScheduled = true;
 
-            } else if (!this._vboUpdateScheduled) {
+            } else if (!this._geometryUpdateScheduled) {
                 return;
             }
 
@@ -720,7 +705,7 @@
                 this._pickVBOsDirty = true;
             }
 
-            this._vboUpdateScheduled = false;
+            this._geometryUpdateScheduled = false;
 
             this._setBoundaryDirty();
         },
@@ -731,7 +716,7 @@
                 return;
             }
 
-            if (this._updateScheduled || this._vboUpdateScheduled) {
+            if (this._updateScheduled || this._geometryUpdateScheduled) {
                 this._doUpdate();
             }
 
@@ -768,7 +753,7 @@
                 return;
             }
 
-            if (this._updateScheduled || this._vboUpdateScheduled) {
+            if (this._updateScheduled || this._geometryUpdateScheduled) {
                 this._doUpdate();
             }
 
@@ -846,7 +831,7 @@
 
                     this._state.usageName = value;
 
-                    this._scheduleVBOUpdate();
+                    this._scheduleGeometryUpdate();
 
                     this.fire(&quot;dirty&quot;, true);
 
@@ -898,7 +883,7 @@
 
                     this._state.primitiveName = value;
 
-                    this._scheduleVBOUpdate();
+                    this._scheduleGeometryUpdate();
 
                     this._hashDirty = true;
 
@@ -944,7 +929,7 @@
                     this._positionsData = value;
                     this._positionsDirty = true;
 
-                    this._scheduleVBOUpdate();
+                    this._scheduleGeometryUpdate();
 
                     if (dirty) {
                         this._hashDirty = true;
@@ -1006,7 +991,7 @@
                     this._normalsData = value;
                     this._normalsDirty = true;
 
-                    this._scheduleVBOUpdate();
+                    this._scheduleGeometryUpdate();
 
                     if (dirty) {
                         this._hashDirty = true;
@@ -1056,7 +1041,7 @@
                     this._uvData = value;
                     this._uvDirty = true;
 
-                    this._scheduleVBOUpdate();
+                    this._scheduleGeometryUpdate();
 
                     if (dirty) {
                         this._hashDirty = true;
@@ -1106,7 +1091,7 @@
                     this._colorsData = value;
                     this._colorsDirty = true;
 
-                    this._scheduleVBOUpdate();
+                    this._scheduleGeometryUpdate();
 
                     if (dirty) {
                         this._hashDirty = true;
@@ -1171,7 +1156,7 @@
                     this._indicesData = value;
                     this._indicesDirty = true;
 
-                    this._scheduleVBOUpdate();
+                    this._scheduleGeometryUpdate();
 
                     if (dirty) {
                         this._hashDirty = true;
@@ -1238,7 +1223,7 @@
 
                             getPositions: function () {
 
-                                if (self._updateScheduled) {
+                                if (self._updateScheduled || self._geometryUpdateScheduled) {
                                     self._doUpdate();
                                 }
 
@@ -1283,7 +1268,7 @@
 
                     this._normalsDirty = true;
 
-                    this._scheduleVBOUpdate();
+                    this._scheduleGeometryUpdate();
 
                     /**
                      * Fired whenever this Geometry&#x27;s {{#crossLink &quot;Geometry/autoNormals:property&quot;}}{{/crossLink}} property changes.
@@ -1298,49 +1283,6 @@
                     return this._autoNormals;
                 }
             }
-            //,
-            //
-            ///**
-            // * Set true to make this Geometry automatically generate {{#crossLink &quot;Geometry/tangents:property&quot;}}{{/crossLink}} from
-            // * {{#crossLink &quot;Geometry/uv:property&quot;}}{{/crossLink}} and {{#crossLink &quot;Geometry/normals:property&quot;}}{{/crossLink}}.
-            // *
-            // * This Geomatry will auto-generate its {{#crossLink &quot;Geometry/tangents:property&quot;}}{{/crossLink}} on the
-            // * next {{#crossLink &quot;Scene&quot;}}{{/crossLink}} {{#crossLink &quot;Scene/tick:event&quot;}}{{/crossLink}} event.
-            // *
-            // * Fires a {{#crossLink &quot;Geometry/autoTangents:event&quot;}}{{/crossLink}} event on change.
-            // *
-            // * @property autoTangents
-            // * @default  false
-            // * @type Boolean
-            // */
-            //autoTangents: {
-            //
-            //    set: function (value) {
-            //
-            //        value = !!value;
-            //
-            //        if (this._autoTangents === value) {
-            //            return;
-            //        }
-            //
-            //        this._autoTangents = value;
-            //
-            //        /**
-            //         * Fired whenever this Geometry&#x27;s {{#crossLink &quot;Geometry/autoTangents:property&quot;}}{{/crossLink}} property changes.
-            //         * @event autoTangents
-            //         * @type Boolean
-            //         * @param value The property&#x27;s new value
-            //         */
-            //        this.fire(&quot;autoTangents&quot;, this._primitive);
-            //
-            //        this._scheduleVBOUpdate();
-            //    },
-            //
-            //    get: function () {
-            //        return this._autoTangents;
-            //    }
-            //}
-
         },
 
         _setBoundaryDirty: function () {
@@ -1358,7 +1300,7 @@
 
         _compile: function () {
 
-            if (this._updateScheduled || this._vboUpdateScheduled) {
+            if (this._updateScheduled || this._geometryUpdateScheduled) {
                 this._doUpdate();
             }
 
@@ -1403,8 +1345,8 @@
 
         _getJSON: function () {
 
-            if (this._updateScheduled) {
-                this._update();
+            if (this._updateScheduled || this._geometryUpdateScheduled) {
+                this._doUpdate();
             }
 
             return {

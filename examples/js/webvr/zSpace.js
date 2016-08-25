@@ -2,14 +2,14 @@
  A **ZSpace** component makes its {{#crossLink "Scene"}}{{/crossLink}} viewable with a zSpace viewer.
 
  <ul>
- <li>a **ZSpace** requires WebGL2 and WebVR support, which you'll have if you're running on a zSpace viewer.</li>
- <li>a **ZSpace** is attached to a {{#crossLink "Camera"}}{{/crossLink}}</li>
- <li>a **ZSpace** requires its {{#crossLink "Camera"}}Camera{{/crossLink}} to have a {{#crossLink "Transform"}}{{/crossLink}}
+ <li>a ZSpace requires WebGL2 and WebVR support, which you'll have if you're running on a zSpace viewer.</li>
+ <li>a ZSpace is attached to a {{#crossLink "Camera"}}{{/crossLink}}</li>
+ <li>a ZSpace requires its {{#crossLink "Camera"}}Camera{{/crossLink}} to have a {{#crossLink "Transform"}}{{/crossLink}}
  (and not a subclass) for each of it's {{#crossLink "Camera/view:property"}}{{/crossLink}} and
- {{#crossLink "Camera/view:property"}}projection{{/crossLink}} transforms. This is because the **ZSpace** needs to directly update
+ {{#crossLink "Camera/view:property"}}projection{{/crossLink}} transforms. This is because the ZSpace needs to directly update
  the matrices on those transforms as part of the stereo viewing effect. If those transforms are of a different type, then
- the **ZSpace** will temporarily replace them with {{#crossLink "Transform"}}Transforms{{/crossLink}}.</li>
- <li>a {{#crossLink "ZSpaceStylus"}}{{/crossLink}} can be used to track stylus input on a **ZSpace**.</li>
+ the ZSpace will temporarily replace them with {{#crossLink "Transform"}}Transforms{{/crossLink}}.</li>
+ <li>a {{#crossLink "ZSpaceStylus"}}{{/crossLink}} can be used to track stylus input on a ZSpace.</li>
  </ul>
 
  ## Examples
@@ -44,14 +44,31 @@
  ````
 
  In this example we didn't specify a {{#crossLink "Camera"}}{{/crossLink}} for our {{#crossLink "Entity"}}{{/crossLink}} and
- **ZSpace**, which causes them attach to their {{#crossLink "Scene"}}Scene's{{/crossLink}} default
+ ZSpace, which causes them attach to their {{#crossLink "Scene"}}Scene's{{/crossLink}} default
  {{#crossLink "Camera"}}{{/crossLink}}.
 
  Note however that the default {{#crossLink "Camera"}}{{/crossLink}} has a {{#crossLink "Lookat"}}{{/crossLink}} for its view transform
- and a {{#crossLink "Perspective"}}{{/crossLink}} for its projection. Therefore, whenever active, the **ZSpace** will
+ and a {{#crossLink "Perspective"}}{{/crossLink}} for its projection. Therefore, whenever active, the ZSpace will
  replace those with {{#crossLink "Transform"}}{{/crossLink}} components, which it will update in order to create
  the stereo effect. If the ZSpace is later deactivated or destroyed, it will restore the
  {{#crossLink "Camera"}}Camera's{{/crossLink}} original {{#crossLink "Lookat"}}{{/crossLink}} and {{#crossLink "Perspective"}}{{/crossLink}}.
+
+ ## Sizing the zSpace viewer coordinate system
+
+ ````javascript
+ var zSpace = new XEO.ZSpace({
+    viewerScale: 30
+ });
+ ````
+
+ We can also automatically fit the viewer coordinate system to whatever is in the {{#crossLink "Scene"}}{{/crossLink}}:
+
+ ````javascript
+ var zSpace = new XEO.ZSpace({
+    autoViewerScale: true
+ });
+ ````
+
 
  ## Detecting support
 
@@ -135,6 +152,8 @@
  @param [cfg.nearClip=0.1] {Number} Position of the near clipping plane on the View-space Z-axis.
  @param [cfg.farClip=10000] {Number} Position of the far clipping plane on the View-space Z-axis.
  @param [cfg.viewerScale=1000] {Number} The viewer scale factor.
+ @param [cfg.autoViewerScale=true] {Boolean} Set true to automatically size {{#crossLink "ZSpace/viewerScale:property"}}{{/crossLink}} to fit
+  everything in the {{#crossLink "Scene"}}{{/crossLink}}.
  @param [cfg.displaySize=0.521,0.293] {Array of Number} The viewer display size.
  @param [cfg.displayResolution=1920,1080] {Array of Number} The viewer display resolution.
  @param [cfg.active=true] {Boolean} Whether or not this ZSpace is initially active.
@@ -160,6 +179,8 @@
             this._displaySize = math.vec2([0.521, 0.293]);
             this._displayResolution = math.vec2([1920, 1080]);
             this._viewerScale = 1.0;
+            this._autoViewerScale = false;
+            this._autoViewerScaleDirty = false;
             this._stylusButton0 = false;
             this._stylusButton1 = false;
             this._stylusButton2 = false;
@@ -293,6 +314,7 @@
             this.nearClip = cfg.nearClip;
             this.farClip = cfg.farClip;
             this.viewerScale = cfg.viewerScale;
+            this.autoViewerScale = cfg.autoViewerScale;
             this.viewerOrigin = cfg.viewerOrigin;
             this.displaySize = cfg.displaySize;
             this.displayResolution = cfg.displayResolution;
@@ -407,6 +429,8 @@
             /**
              * The viewer scale.
              *
+             * Updates to this are ignored when {{#crossLink "ZSpace/autoViewerScale:property"}}{{/crossLink}} is true.
+             *
              * Fires a {{#crossLink "ZSpace/viewerScale:event"}}{{/crossLink}} event on change.
              *
              * @property viewerScale
@@ -443,6 +467,53 @@
 
                 get: function () {
                     return this._viewerScale;
+                }
+            },
+
+            /**
+             * Set true to automatically size {{#crossLink "ZSpace/viewerScale:event"}}{{/crossLink}} to fit
+             * everything in the {{#crossLink "Scene"}}{{/crossLink}}.
+             *
+             * Fires a {{#crossLink "ZSpace/autoViewerScale:event"}}{{/crossLink}} event on change.
+             *
+             * @property autoViewerScale
+             * @default true
+             * @type Boolean
+             */
+            autoViewerScale: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (this._autoViewerScale === value) {
+                        return;
+                    }
+
+                    if (value) {
+                        var self = this;
+                        this._onSceneBoundary = this.scene.worldBoundary.on("updated", function (boundary) {
+                            self._autoViewerScaleDirty = true;
+                        });
+                    } else {
+                        this.scene.worldBoundary.off(this._onSceneBoundary);
+                    }
+
+                    this._autoViewerScale = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this ZSpace's {{#crossLink "ZSpace/autoViewerScale:property"}}{{/crossLink}} property changes.
+                     * @event autoViewerScale
+                     * @type Boolean
+                     * @param value The property's new value
+                     */
+                    this.fire("autoViewerScale", this._autoViewerScale);
+                },
+
+                get: function () {
+                    return this._autoViewerScale;
                 }
             },
 
@@ -698,14 +769,14 @@
                 if (!self._supported) { // Support not found yet
                     return;
                 }
-             //   self._bindFrameBuffer(pass); // pass will be 0 for left or 1 for right
+                //   self._bindFrameBuffer(pass); // pass will be 0 for left or 1 for right
             };
 
             this._renderer.unbindOutputFramebuffer = function () {
                 if (!self._supported) { // Support not found yet
                     return;
                 }
-              //  self._unbindFrameBuffer();
+                //  self._unbindFrameBuffer();
             };
         },
 
@@ -898,6 +969,13 @@
 
                 // Viewer scale matrix
 
+                if (this._autoViewerScaleDirty) {
+                    this._autoViewerScaleDirty = false;
+                    var boundary = this.scene.worldBoundary;
+                   // this.viewerOrigin = boundary.center;
+                    this.viewerScale = math.getAABBDiag(boundary.aabb); // Fire update events etc.
+                }
+
                 scale[0] = this._viewerScale;
                 scale[1] = this._viewerScale;
                 scale[2] = this._viewerScale;
@@ -1073,12 +1151,16 @@
         _getJSON: function () { // Returns JSON configuration of this component
             var json = {
                 active: this._active,
-                viewerScale: this._viewerScale,
                 displayResolution: this._displayResolution.slice(0),
                 displaySize: this._displaySize.slice(0),
                 nearClip: this._nearClip,
                 farClip: this._farClip
             };
+            if (this._autoViewerScale) {
+                json.autoViewerScale = this._autoViewerScale;
+            } else {
+                json.viewerScale = this._viewerScale;
+            }
             if (this._attached.camera) {
                 json.camera = this._attached.camera.id;
             }
@@ -1087,6 +1169,7 @@
 
         _destroy: function () { // Destroys this component, deactivating it first
             this.active = false;
+            this.autoViewerScale = false;
         }
     });
 

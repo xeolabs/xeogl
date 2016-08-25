@@ -11,7 +11,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "CameraControl",
         "CameraController",
         "CameraFlight",
-        "CameraPath",
         "Canvas",
         "Clip",
         "Clips",
@@ -50,6 +49,8 @@ YUI.add("yuidoc-meta", function(Y) {
         "MousePickEntity",
         "MouseRotateCamera",
         "MouseZoomCamera",
+        "Nintendo3DSGeometry",
+        "OBJGeometry",
         "Ortho",
         "Path",
         "PathGeometry",
@@ -57,7 +58,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "PhongMaterial",
         "PlaneGeometry",
         "PointLight",
-        "Position3D",
         "QuadraticBezierCurve",
         "Quaternion",
         "Reflect",
@@ -72,8 +72,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "SplineCurve",
         "Stage",
         "Stationary",
-        "Task",
-        "Tasks",
         "Texture",
         "TorusGeometry",
         "Transform",
@@ -81,7 +79,9 @@ YUI.add("yuidoc-meta", function(Y) {
         "Viewport",
         "Visibility",
         "XEO",
-        "XEO.math.math"
+        "XEO.math.math",
+        "ZSpace",
+        "ZSpaceStylus"
     ],
     "modules": [
         "XEO",
@@ -105,10 +105,10 @@ YUI.add("yuidoc-meta", function(Y) {
         "math",
         "paths",
         "rendering",
-        "reporting",
         "shaders",
         "skyboxes",
-        "transforms"
+        "transforms",
+        "webvr"
     ],
     "allModules": [
         {
@@ -212,11 +212,6 @@ YUI.add("yuidoc-meta", function(Y) {
             "description": "Components that influence the way entities are rendered with WebGL."
         },
         {
-            "displayName": "reporting",
-            "name": "reporting",
-            "description": "Components for reporting Scene statistics."
-        },
-        {
             "displayName": "shaders",
             "name": "shaders",
             "description": "Components for defining custom GLSL shaders."
@@ -230,6 +225,11 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "transforms",
             "name": "transforms",
             "description": "Modelling transform components."
+        },
+        {
+            "displayName": "webvr",
+            "name": "webvr",
+            "description": "Components for Virtual Reality."
         },
         {
             "displayName": "XEO",

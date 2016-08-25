@@ -50,7 +50,6 @@
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraController.html">CameraController</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
-                                <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -89,6 +88,8 @@
                                 <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
                                 <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
+                                <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
+                                <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -96,7 +97,6 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
-                                <li><a href="../classes/Position3D.html">Position3D</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -111,8 +111,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
-                                <li><a href="../classes/Task.html">Task</a></li>
-                                <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
                                 <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
@@ -121,6 +119,8 @@
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
+                                <li><a href="../classes/ZSpace.html">ZSpace</a></li>
+                                <li><a href="../classes/ZSpaceStylus.html">ZSpaceStylus</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -144,10 +144,10 @@
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/paths.html">paths</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/reporting.html">reporting</a></li>
                                 <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
+                                <li><a href="..//modules/webvr.html">webvr</a></li>
                                 <li><a href="..//modules/XEO.html">XEO</a></li>
                             </ul>
                         </div>
@@ -1135,19 +1135,7 @@
 
                                     this._transformDirty = true;
 
-                                    XEO.scheduleTask(function () {
-
-                                            if (!this._transformDirty) {
-                                                return;
-                                            }
-
-                                            this._attached.transform._buildLeafMatrix();
-
-                                            this._setWorldBoundaryDirty();
-
-                                            this._transformDirty = false;
-                                        },
-                                        this);
+                                    XEO.scheduleTask(this._transformUpdated, this);
                                 },
                                 scope: this
                             },
@@ -1601,6 +1589,16 @@
 
         // Callbacks as members, to avoid GC churn
 
+        _transformUpdated: function () {
+            if (!this._transformDirty) {
+                return;
+            }
+            this._attached.transform._buildLeafMatrix();
+            this._setWorldBoundaryDirty();
+            this._transformDirty = false;
+        },
+
+
         _setWorldBoundaryDirty: function () {
             this._worldBoundaryDirty = true;
             if (this._worldBoundary) {
@@ -1627,11 +1625,15 @@
         // Returns true if there is enough on this Entity to render something.
         _valid: function () {
             var geometry = this._attached.geometry;
-            return geometry &amp;&amp; geometry.positions &amp;&amp; geometry.indices;
+            return !this.destroyed &amp;&amp; geometry &amp;&amp; geometry.positions &amp;&amp; geometry.indices;
 
         },
 
         _compile: function () {
+
+            if (!this._valid()) {
+                return;
+            }
 
             var attached = this._attached;
 

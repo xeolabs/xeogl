@@ -50,7 +50,6 @@
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraController.html">CameraController</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
-                                <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -89,6 +88,8 @@
                                 <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
                                 <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
+                                <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
+                                <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -96,7 +97,6 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
-                                <li><a href="../classes/Position3D.html">Position3D</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -111,8 +111,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
-                                <li><a href="../classes/Task.html">Task</a></li>
-                                <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
                                 <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
@@ -121,6 +119,8 @@
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
+                                <li><a href="../classes/ZSpace.html">ZSpace</a></li>
+                                <li><a href="../classes/ZSpaceStylus.html">ZSpaceStylus</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -144,10 +144,10 @@
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/paths.html">paths</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/reporting.html">reporting</a></li>
                                 <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
+                                <li><a href="..//modules/webvr.html">webvr</a></li>
                                 <li><a href="..//modules/XEO.html">XEO</a></li>
                             </ul>
                         </div>
@@ -1591,6 +1591,56 @@
         },
 
         /**
+         * Creates a matrix from a quaternion rotation and vector translation
+         *
+         * @param {Float32Array} q Rotation quaternion
+         * @param {Float32Array} v Translation vector
+         * @param {Float32Array} dest Destination matrix
+         * @returns {Float32Array} dest
+         */
+        rotationTranslationMat4: function (q, v, dest) {
+
+            dest = dest || XEO.math.mat4();
+
+            var x = q[0];
+            var y = q[1];
+            var z = q[2];
+            var w = q[3];
+
+            var x2 = x + x;
+            var y2 = y + y;
+            var z2 = z + z;
+            var xx = x * x2;
+            var xy = x * y2;
+            var xz = x * z2;
+            var yy = y * y2;
+            var yz = y * z2;
+            var zz = z * z2;
+            var wx = w * x2;
+            var wy = w * y2;
+            var wz = w * z2;
+
+            dest[0] = 1 - (yy + zz);
+            dest[1] = xy + wz;
+            dest[2] = xz - wy;
+            dest[3] = 0;
+            dest[4] = xy - wz;
+            dest[5] = 1 - (xx + zz);
+            dest[6] = yz + wx;
+            dest[7] = 0;
+            dest[8] = xz + wy;
+            dest[9] = yz - wx;
+            dest[10] = 1 - (xx + yy);
+            dest[11] = 0;
+            dest[12] = v[0];
+            dest[13] = v[1];
+            dest[14] = v[2];
+            dest[15] = 1;
+
+            return dest;
+        },
+
+        /**
          * Gets Euler angles from a 4x4 matrix.
          *
          * @param {Float32Array} mat The 4x4 matrix.
@@ -1693,7 +1743,7 @@
          * @param pos vec3 position of the viewer
          * @param target vec3 point the viewer is looking at
          * @param up vec3 pointing &quot;up&quot;
-         * @param dest mat4 Optional, mat4 frustum matrix will be written into
+         * @param dest mat4 Optional, mat4 matrix will be written into
          *
          * @return {mat4} dest if specified, a new mat4 otherwise
          */
@@ -1904,10 +1954,10 @@
 
         /**
          * Returns a 4x4 perspective projection matrix.
-         * @method perspectiveMatrix4v
+         * @method perspectiveMat4v
          * @static
          */
-        perspectiveMatrix4: function (fovyrad, aspectratio, znear, zfar, m) {
+        perspectiveMat4: function (fovyrad, aspectratio, znear, zfar, m) {
             var pmin = [];
             var pmax = [];
 
@@ -1930,14 +1980,13 @@
          */
         transformPoint3: function (m, p, dest) {
 
-            var r = dest || XEO.math.vec4();
+            dest = dest || XEO.math.vec3();
 
-            r[0] = (m[0] * p[0]) + (m[4] * p[1]) + (m[8] * p[2]) + m[12];
-            r[1] = (m[1] * p[0]) + (m[5] * p[1]) + (m[9] * p[2]) + m[13];
-            r[2] = (m[2] * p[0]) + (m[6] * p[1]) + (m[10] * p[2]) + m[14];
-            r[3] = 1.0;
+            dest[0] = (m[0] * p[0]) + (m[4] * p[1]) + (m[8] * p[2]) + m[12];
+            dest[1] = (m[1] * p[0]) + (m[5] * p[1]) + (m[9] * p[2]) + m[13];
+            dest[2] = (m[2] * p[0]) + (m[6] * p[1]) + (m[10] * p[2]) + m[14];
 
-            return r;
+            return dest;
         },
 
         /**
@@ -1946,14 +1995,15 @@
          * @static
          */
         transformPoint4: function (m, v, dest) {
-            var r = dest || XEO.math.vec4();
 
-            r[0] = m[0] * v[0] + m[4] * v[1] + m[8] * v[2] + m[12] * v[3];
-            r[1] = m[1] * v[0] + m[5] * v[1] + m[9] * v[2] + m[13] * v[3];
-            r[2] = m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14] * v[3];
-            r[3] = m[3] * v[0] + m[7] * v[1] + m[11] * v[2] + m[15] * v[3];
+            dest = dest || XEO.math.vec4();
 
-            return r;
+            dest[0] = m[0] * v[0] + m[4] * v[1] + m[8] * v[2] + m[12] * v[3];
+            dest[1] = m[1] * v[0] + m[5] * v[1] + m[9] * v[2] + m[13] * v[3];
+            dest[2] = m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14] * v[3];
+            dest[3] = m[3] * v[0] + m[7] * v[1] + m[11] * v[2] + m[15] * v[3];
+
+            return dest;
         },
 
 

@@ -1,6 +1,12 @@
 /**
  A **TorusGeometry** defines torus-shaped geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
+ ## Examples
+
+ <ul>
+ <li>[Textured TorusGeometry](../../examples/#geometry_TorusGeometry)</li>
+ </ul>
+
  ## Usage
 
  An {{#crossLink "Entity"}}{{/crossLink}} with a TorusGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with

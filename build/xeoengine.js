@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-08-16
+ * Built on 2016-08-25
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -38,7 +38,7 @@
         /**
          * Information about available WebGL support
          */
-        this.WEBGL_INFO = (function() {
+        this.WEBGL_INFO = (function () {
             var info = {
                 WEBGL: false
             };
@@ -49,7 +49,7 @@
                 return info;
             }
 
-            var gl = canvas.getContext("webgl", { antialias: true }) || canvas.getContext("experimental-webgl", { antialias: true });
+            var gl = canvas.getContext("webgl", {antialias: true}) || canvas.getContext("experimental-webgl", {antialias: true});
 
             info.WEBGL = !!gl;
 
@@ -75,7 +75,7 @@
             info.MAX_TEXTURE_SIZE = gl.getParameter(gl.MAX_TEXTURE_SIZE);
             info.MAX_CUBE_MAP_SIZE = gl.getParameter(gl.MAX_CUBE_MAP_TEXTURE_SIZE);
             info.MAX_RENDERBUFFER_SIZE = gl.getParameter(gl.MAX_RENDERBUFFER_SIZE);
-            info.MAX_TEXTURE_UNITS =  gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+            info.MAX_TEXTURE_UNITS = gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
             info.MAX_VERTEX_ATTRIBS = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
             info.MAX_VERTEX_UNIFORM_VECTORS = gl.getParameter(gl.MAX_VERTEX_UNIFORM_VECTORS);
             info.MAX_FRAGMENT_UNIFORM_VECTORS = gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS);
@@ -83,7 +83,7 @@
 
             info.SUPPORTED_EXTENSIONS = {};
 
-            gl.getSupportedExtensions().forEach(function(ext) {
+            gl.getSupportedExtensions().forEach(function (ext) {
                 info.SUPPORTED_EXTENSIONS[ext] = true;
             });
 
@@ -139,7 +139,9 @@
                 bindTexture: 0,
                 bindArray: 0,
                 drawElements: 0,
-                drawChunks: 0
+                drawChunks: 0,
+                tasksRun: 0,
+                tasksScheduled: 0
             }
         };
 
@@ -186,7 +188,7 @@
 
             // Hoisted vars
 
-            var taskBudget = 8; // How long we're allowed to spend on tasks in each frame
+            var taskBudget = 15; // Millisecs we're allowed to spend on tasks in each frame
             var frameTime;
             var lastFrameTime = 0;
             var elapsedFrameTime;
@@ -233,7 +235,12 @@
                 // Process as many enqueued tasks as we can
                 // within the per-frame task budget
 
-                self._runScheduledTasks(updateTime + taskBudget);
+                var tasksRun = self._runScheduledTasks(updateTime + taskBudget);
+                var tasksScheduled = self._taskQueue.length;
+
+                self.stats.frame.tasksRun = tasksRun;
+                self.stats.frame.tasksScheduled = tasksScheduled;
+                self.stats.frame.tasksBudget = taskBudget;
 
                 tickEvent.time = updateTime;
 
@@ -386,6 +393,7 @@
             var taskQueue = this._taskQueue;
             var callback;
             var scope;
+            var tasksRun = 0;
 
             while (taskQueue.length > 0 && time < until) {
                 callback = taskQueue.shift();
@@ -396,7 +404,10 @@
                     callback();
                 }
                 time = (new Date()).getTime();
+                tasksRun++;
             }
+
+            return tasksRun;
         },
 
         /**
@@ -2151,6 +2162,12 @@ var Canvas2Image = (function () {
         var i;
         var len;
 
+        var outputFramebuffer = this.bindOutputFramebuffer && this.unbindOutputFramebuffer && !params.pickObject && !params.rayPick;
+
+        if (outputFramebuffer) {
+            this.bindOutputFramebuffer(params.pass);
+        }
+
         var ambient = this._ambient;
         var ambientColor;
         if (ambient) {
@@ -2187,8 +2204,10 @@ var Canvas2Image = (function () {
             gl.getExtension("OES_element_index_uint");
         }
 
-        this.stats.frame.setUniform = 0;
-        this.stats.frame.setUniformCacheHits = 0;
+        var frameStats = this.stats.frame;
+
+        frameStats.setUniform = 0;
+        frameStats.setUniformCacheHits = 0;
 
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 
@@ -2248,10 +2267,6 @@ var Canvas2Image = (function () {
 
             var startTime = (new Date()).getTime();
 
-            if (this.bindOutputFramebuffer) {
-                this.bindOutputFramebuffer(params.pass);
-            }
-
             // Option to only render opaque objects
             len = (params.opaqueOnly && this._drawChunkListTransparentIndex >= 0 ? this._drawChunkListTransparentIndex : this._drawChunkListLen);
 
@@ -2261,21 +2276,17 @@ var Canvas2Image = (function () {
 
             var endTime = (new Date()).getTime();
 
-            this.stats.frame.renderTime = (endTime - startTime) / 1000.0;
-            this.stats.frame.drawElements = frameCtx.drawElements;
-            this.stats.frame.useProgram = frameCtx.useProgram;
-            this.stats.frame.bindTexture = frameCtx.bindTexture;
-            this.stats.frame.bindArray = frameCtx.bindArray;
+            frameStats.renderTime = (endTime - startTime) / 1000.0;
+            frameStats.drawElements = frameCtx.drawElements;
+            frameStats.useProgram = frameCtx.useProgram;
+            frameStats.bindTexture = frameCtx.bindTexture;
+            frameStats.bindArray = frameCtx.bindArray;
         }
 
-        gl.flush();
+      //  gl.finish();
 
         if (frameCtx.renderBuf) {
             frameCtx.renderBuf.unbind();
-        }
-
-        if (this.unbindOutputFramebuffer) {
-            this.unbindOutputFramebuffer();
         }
 
         var numTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
@@ -2285,7 +2296,11 @@ var Canvas2Image = (function () {
             gl.bindTexture(gl.TEXTURE_2D, null);
         }
 
-        this.stats.frame.drawChunks = this._drawChunkListLen;
+        if (outputFramebuffer) {
+            this.unbindOutputFramebuffer();
+        }
+
+        frameStats.drawChunks = this._drawChunkListLen;
     };
 
     /**
@@ -8273,6 +8288,56 @@ var Canvas2Image = (function () {
         },
 
         /**
+         * Creates a matrix from a quaternion rotation and vector translation
+         *
+         * @param {Float32Array} q Rotation quaternion
+         * @param {Float32Array} v Translation vector
+         * @param {Float32Array} dest Destination matrix
+         * @returns {Float32Array} dest
+         */
+        rotationTranslationMat4: function (q, v, dest) {
+
+            dest = dest || XEO.math.mat4();
+
+            var x = q[0];
+            var y = q[1];
+            var z = q[2];
+            var w = q[3];
+
+            var x2 = x + x;
+            var y2 = y + y;
+            var z2 = z + z;
+            var xx = x * x2;
+            var xy = x * y2;
+            var xz = x * z2;
+            var yy = y * y2;
+            var yz = y * z2;
+            var zz = z * z2;
+            var wx = w * x2;
+            var wy = w * y2;
+            var wz = w * z2;
+
+            dest[0] = 1 - (yy + zz);
+            dest[1] = xy + wz;
+            dest[2] = xz - wy;
+            dest[3] = 0;
+            dest[4] = xy - wz;
+            dest[5] = 1 - (xx + zz);
+            dest[6] = yz + wx;
+            dest[7] = 0;
+            dest[8] = xz + wy;
+            dest[9] = yz - wx;
+            dest[10] = 1 - (xx + yy);
+            dest[11] = 0;
+            dest[12] = v[0];
+            dest[13] = v[1];
+            dest[14] = v[2];
+            dest[15] = 1;
+
+            return dest;
+        },
+
+        /**
          * Gets Euler angles from a 4x4 matrix.
          *
          * @param {Float32Array} mat The 4x4 matrix.
@@ -8375,7 +8440,7 @@ var Canvas2Image = (function () {
          * @param pos vec3 position of the viewer
          * @param target vec3 point the viewer is looking at
          * @param up vec3 pointing "up"
-         * @param dest mat4 Optional, mat4 frustum matrix will be written into
+         * @param dest mat4 Optional, mat4 matrix will be written into
          *
          * @return {mat4} dest if specified, a new mat4 otherwise
          */
@@ -8586,10 +8651,10 @@ var Canvas2Image = (function () {
 
         /**
          * Returns a 4x4 perspective projection matrix.
-         * @method perspectiveMatrix4v
+         * @method perspectiveMat4v
          * @static
          */
-        perspectiveMatrix4: function (fovyrad, aspectratio, znear, zfar, m) {
+        perspectiveMat4: function (fovyrad, aspectratio, znear, zfar, m) {
             var pmin = [];
             var pmax = [];
 
@@ -8612,14 +8677,13 @@ var Canvas2Image = (function () {
          */
         transformPoint3: function (m, p, dest) {
 
-            var r = dest || XEO.math.vec4();
+            dest = dest || XEO.math.vec3();
 
-            r[0] = (m[0] * p[0]) + (m[4] * p[1]) + (m[8] * p[2]) + m[12];
-            r[1] = (m[1] * p[0]) + (m[5] * p[1]) + (m[9] * p[2]) + m[13];
-            r[2] = (m[2] * p[0]) + (m[6] * p[1]) + (m[10] * p[2]) + m[14];
-            r[3] = 1.0;
+            dest[0] = (m[0] * p[0]) + (m[4] * p[1]) + (m[8] * p[2]) + m[12];
+            dest[1] = (m[1] * p[0]) + (m[5] * p[1]) + (m[9] * p[2]) + m[13];
+            dest[2] = (m[2] * p[0]) + (m[6] * p[1]) + (m[10] * p[2]) + m[14];
 
-            return r;
+            return dest;
         },
 
         /**
@@ -8628,14 +8692,15 @@ var Canvas2Image = (function () {
          * @static
          */
         transformPoint4: function (m, v, dest) {
-            var r = dest || XEO.math.vec4();
 
-            r[0] = m[0] * v[0] + m[4] * v[1] + m[8] * v[2] + m[12] * v[3];
-            r[1] = m[1] * v[0] + m[5] * v[1] + m[9] * v[2] + m[13] * v[3];
-            r[2] = m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14] * v[3];
-            r[3] = m[3] * v[0] + m[7] * v[1] + m[11] * v[2] + m[15] * v[3];
+            dest = dest || XEO.math.vec4();
 
-            return r;
+            dest[0] = m[0] * v[0] + m[4] * v[1] + m[8] * v[2] + m[12] * v[3];
+            dest[1] = m[1] * v[0] + m[5] * v[1] + m[9] * v[2] + m[13] * v[3];
+            dest[2] = m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14] * v[3];
+            dest[3] = m[3] * v[0] + m[7] * v[1] + m[11] * v[2] + m[15] * v[3];
+
+            return dest;
         },
 
 
@@ -11197,12 +11262,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          * @param {Number} [priority=1]
          */
         _scheduleUpdate: function (priority) {
-
             if (!this._updateScheduled) {
-
                 this._updateScheduled = true;
-                this._buildScheduled = true;
-
                 if (priority === 0) {
                     XEO.deferTask(this._doUpdate, this);
                 } else {
@@ -11215,35 +11276,13 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          * @private
          */
         _doUpdate: function () {
-
             if (this._updateScheduled) {
-
-                if (this._buildScheduled) {
-
-                    if (this._build) {
-                        this._build();
-                    }
-
-                    this._buildScheduled = false;
-                }
-
                 if (this._update) {
                     this._update();
                 }
-
                 this._updateScheduled = false;
             }
-        }
-        ,
-
-        /**
-         * Optional virtual template method, normally implemented
-         * by sub-classes to generate some data before _update gets
-         * called
-         *
-         * @protected
-         */
-        _build: null,
+        },
 
         /**
          * Protected virtual template method, optionally implemented
@@ -11553,6 +11592,20 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  {{#crossLink "XEO"}}XEO{{/crossLink}} entity's {{#crossLink "XEO/scene:property"}}scene{{/crossLink}} property. Expect to
  see the HTML canvas for the default Scene magically appear in the page when you do that.
 
+ ## <a name="webgl2">WebGL 2</a>
+
+ By default, our Scene will attempt to use WebGL 2. If that's not supported then it will fall back on WebGL 1, if available.
+ You can force the Scene to use WebGL 1 by supplying this property to teh Scene's constructor:
+
+ ````javascript
+ var scene = new XEO.Scene({
+     webgl2: false // Default is true
+ });
+
+ // We can then check this property on the Canvas to see if WebGL 2 is supported:
+ var gotWebGL2 = scene.canvas.webgl2; // True if we have WebGL 2
+ ````
+
  ## <a name="savingAndLoading">Saving and Loading Scenes</a>
 
  The entire runtime state of a Scene can be serialized and deserialized to and from JSON. This means you can create a
@@ -11567,12 +11620,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
       json: json
   });
 
- ````
-
  ***Note:*** this will save your {{#crossLink "Geometry"}}Geometry{{/crossLink}}s' array properties
  ({{#crossLink "Geometry/positions:property"}}positions{{/crossLink}}, {{#crossLink "Geometry/normals:property"}}normals{{/crossLink}},
  {{#crossLink "Geometry/indices:property"}}indices{{/crossLink}} etc) as JSON arrays, which may stress your browser
  if those arrays are huge.
+
 
  @class Scene
  @module XEO
@@ -11581,6 +11633,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  @param [cfg.id] {String} Optional ID, unique among all Scenes in xeoEngine, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Scene.
  @param [cfg.canvasId] {String} ID of existing HTML5 canvas in the DOM - creates a full-page canvas automatically if this is omitted
+ @param [cfg.webgl2=true] {Boolean} Set this false when we **don't** want to use WebGL 2 for our Scene; the Scene will fall
+ back on WebGL 1 if not available. This property will be deprecated when WebGL 2 is supported everywhere.
  @param [cfg.components] {Array(Object)} JSON array containing parameters for {{#crossLink "Component"}}Component{{/crossLink}} subtypes to immediately create within the Scene.
  @param [cfg.passes=1] The number of times this Scene renders per frame.
  @extends Component
@@ -11686,6 +11740,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              */
             this.canvas = new XEO.Canvas(this, {
                 canvas: cfg.canvas, // Can be canvas ID, canvas element, or null
+                transparent: cfg.transparent,
+                webgl2: cfg.webgl2 !== false,
                 contextAttr: cfg.contextAttr || {}
             });
 
@@ -11719,15 +11775,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this.input = new XEO.Input(this, {
                 element: this.canvas.overlay
             });
-
-            /**
-             * Tracks any asynchronous tasks that occur within this Scene.
-             * @final
-             * @property tasks
-             * @type {Tasks}
-             * @final
-             */
-            this.tasks = new XEO.Tasks(this);
 
             // Register Scene on engine
             // Do this BEFORE we add components below
@@ -11918,8 +11965,16 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             // Whenever the Entity signals dirty,
             // schedule its recompilation into the renderer
 
+            var self = this;
+
             if (!this._dirtyEntities[entity.id]) {
+
                 this._dirtyEntities[entity.id] = entity;
+
+                XEO.scheduleTask(function() {
+                    entity._compile();
+                    delete self._dirtyEntities[entity.id];
+                });
             }
         },
 
@@ -11963,7 +12018,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     clear = (pass === 0);
 
-                    this._compile(pass, clear, true); // Render, maybe rebuild draw list first
+                    this._renderer.render({
+                        pass: pass,
+                        clear: clear !== false
+                    });
 
                     /**
                      * Fired when we have just rendered a frame for a Scene.
@@ -12910,7 +12968,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                             worldPos[2] = tempVec4b[2];
 
                             hit.worldPos = worldPos;
-                            
+
                             // Get View-space cartesian coordinates of the ray-triangle intersection
 
                             math.transformVec4(entity.camera.view.matrix, worldPos, tempVec4c);
@@ -13131,55 +13189,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             }
 
             component.destroy();
-        },
-
-        /**
-         * Compiles and renders this Scene
-         * @private
-         */
-        _compile: function (pass, clear, forceRender) {
-
-            // Compile dirty entities into this._renderer
-
-            var countCompiledEntities = 0;
-
-            //var time1 = Date.now();
-            var entity;
-
-            for (var id in this._dirtyEntities) {
-                if (this._dirtyEntities.hasOwnProperty(id)) {
-
-                    entity = this._dirtyEntities[id];
-
-                    if (entity._valid()) {
-
-                        entity._compile();
-
-                        delete this._dirtyEntities[id];
-
-                        countCompiledEntities++;
-                    }
-                    //if (Date.now() - time1 > 30) {
-                    //
-                    //    // Throttle the time we spend (re)compiling Entities each frame
-                    //
-                    //    break;
-                    //}
-                }
-            }
-
-            if (countCompiledEntities > 0) {
-                //    this.log("Compiled " + countCompiledEntities + " XEO.Entity" + (countCompiledEntities > 1 ? "s" : ""));
-            }
-
-            // Render a frame
-            // Only renders if there was a state update
-
-            this._renderer.render({
-                pass:pass,
-                clear: clear !== false, // Clear buffers?
-                force: forceRender // Render frame even if no state updates?
-            });
         },
 
         _getJSON: function () {
@@ -14276,6 +14285,21 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  // ..and the rest of this example can be the same as the previous example.
 
  ````
+
+ The {{#crossLink "Scene"}}{{/crossLink}} will attempt to get use WebGL 2, or fall back on WebGL 1
+ if that's absent. If you just want WebGL 1, disable WebGL 2 like so:
+
+ ```` javascript
+ var scene = new XEO.Scene({
+          canvasId: "myCanvas",
+          webgl2 : true
+     });
+
+ // ..and the rest of this example can be the same as the previous examples.
+
+ ````
+
+
  @class Canvas
  @module XEO
  @submodule canvas
@@ -14343,13 +14367,36 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this.gl = null;
 
             /**
+             * True when WebGL 2 support is enabled.
+             *
+             * @property webgl2
+             * @type {Boolean}
+             * @final
+             */
+            this.webgl2 = false; // Will set true in _initWebGL if WebGL is requested and we succeed in getting it.
+
+            /**
+             * Indicates whether this Canvas is transparent.
+             *
+             * @property transparent
+             * @type {Boolean}
+             * @final
+             */
+            this.transparent = !!cfg.transparent;
+
+            /**
              * Attributes for the WebGL context
              *
              * @type {{}|*}
              */
             this.contextAttr = cfg.contextAttr || {};
 
-            this.contextAttr.alpha = true;
+            this.contextAttr.alpha = this.transparent;
+            this.contextAttr.depth = true; // Need depth buffer
+            this.contextAttr.preMultipliedAlpha = true;
+            this.contextAttr.preserveDrawingbuffer = false;
+            this.contextAttr.antialias = true;  // TODO
+            this.contextAttr.stencil = true; // Request stencil buffer
 
             if (!cfg.canvas) {
 
@@ -14424,7 +14471,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             // Get WebGL context
 
-            this._initWebGL();
+            this._initWebGL(cfg);
 
             // Bind context loss and recovery handlers
 
@@ -14627,14 +14674,28 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          * Initialises the WebGL context
          * @private
          */
-        _initWebGL: function () {
+        _initWebGL: function (cfg) {
 
             // Default context attribute values
 
-            for (var i = 0; !this.gl && i < this._WEBGL_CONTEXT_NAMES.length; i++) {
+            if (cfg.webgl2) {
                 try {
-                    this.gl = this.canvas.getContext(this._WEBGL_CONTEXT_NAMES[i], this.contextAttr);
+                    this.gl = this.canvas.getContext("webgl2", this.contextAttr);
                 } catch (e) { // Try with next context name
+                }
+                if (!this.gl) {
+                    this.warn('Failed to get a WebGL 2 context - defaulting to WebGL 1.');
+                } else {
+                    this.webgl2 = true;
+                }
+            }
+
+            if (!this.gl) {
+                for (var i = 0; !this.gl && i < this._WEBGL_CONTEXT_NAMES.length; i++) {
+                    try {
+                        this.gl = this.canvas.getContext(this._WEBGL_CONTEXT_NAMES[i], this.contextAttr);
+                    } catch (e) { // Try with next context name
+                    }
                 }
             }
 
@@ -18975,1616 +19036,6 @@ visibility.destroy();
 
 })();
 ;/**
-  Components for defining 3D curves.
-
-  @module XEO
-  @submodule curves
- */;/**
-
- **Curve** is the abstract base class for {{#crossLink "SplineCurve"}}{{/crossLink}},
- {{#crossLink "CubicBezierCurve"}}{{/crossLink}}, {{#crossLink "QuadraticBezierCurve"}}{{/crossLink}} and {{#crossLink "Path"}}{{/crossLink}}.
-
- ## Examples
-
- <ul>
- <li>[CubicBezierCurve example](../../examples/#curves_CubicBezierCurve)</li>
- <li>[Tweening position along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve)</li>
- <li>[Tweening color along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve_color)</li>
- <li>[Simple SplineCurve example](../../examples/#curves_SplineCurve)</li>
- <li>[Moving a PointLight along a SplineCurve](../../examples/#lights_point_world)</li>
- <li>[Path example](../../examples/#curves_Path)</li>
- </ul>
-
- @class Curve
- @module XEO
- @submodule curves
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
- @param [cfg] {*} Configuration
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Curve.
- @param [cfg.t=0] Current position on this Curve, in range between 0..1.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.Curve = XEO.Component.extend({
-
-        /**
-         JavaScript class name for this Component.
-
-         @property type
-         @type String
-         @final
-         */
-        type: "XEO.Curve",
-
-        _init: function (cfg) {
-
-            this.t = cfg.t;
-        },
-
-        _props: {
-
-            /**
-             Progress along this Curve.
-
-             Automatically clamps to range [0..1].
-
-             Fires a {{#crossLink "Curve/t:event"}}{{/crossLink}} event on change.
-
-             @property t
-             @default 0
-             @type Number
-             */
-            t: {
-
-                set: function (value) {
-
-                    value = value || 0;
-
-                    this._t = value < 0.0 ? 0.0 : (value > 1.0 ? 1.0 : value);
-
-                    /**
-                     * Fired whenever this Curve's
-                     * {{#crossLink "Curve/t:property"}}{{/crossLink}} property changes.
-                     * @event t
-                     * @param value The property's new value
-                     */
-                    this.fire("t", this._t);
-                },
-
-                get: function () {
-                    return this._t;
-                }
-            },
-
-
-            /**
-             Tangent on this Curve at position {{#crossLink "Curve/t:property"}}{{/crossLink}}.
-
-             @property tangent
-             @type {{Array of Number}}
-             */
-            tangent: {
-
-                get: function () {
-
-                    return this.getTangent(this._t);
-                }
-            },
-
-            /**
-             Length of this Curve.
-             @property length
-             @type {Number}
-             */
-            length: {
-
-                get: function () {
-                    var lengths = this._getLengths();
-                    return lengths[lengths.length - 1];
-                }
-            }
-        },
-
-        /**
-         * Returns a normalized tangent vector on this Curve at the given position.
-         * @method getTangent
-         * @param {Number} t Position to get tangent at.
-         * @returns {{Array of Number}} Normalized tangent vector
-         */
-        getTangent: function (t) {
-
-            var delta = 0.0001;
-
-            if (t === undefined) {
-                t = this._t;
-            }
-
-            var t1 = t - delta;
-            var t2 = t + delta;
-
-            if (t1 < 0) {
-                t1 = 0;
-            }
-
-            if (t2 > 1) {
-                t2 = 1;
-            }
-
-            var pt1 = this.getPoint(t1);
-            var pt2 = this.getPoint(t2);
-
-            var vec = XEO.math.subVec3(pt2, pt1, []);
-
-            return XEO.math.normalizeVec3(vec, []);
-        },
-
-
-        getPointAt: function (u) {
-
-            var t = this.getUToTMapping(u);
-
-            return this.getPoint(t);
-
-        },
-
-        /**
-         * Samples points on this Curve, at the given number of equally-spaced divisions.
-         * @method getPoints
-         * @param {Number} divisions The number of divisions.
-         * @returns {Array of Array} Array of sampled 3D points.
-         */
-        getPoints: function (divisions) {
-
-            if (!divisions) {
-                divisions = 5;
-            }
-
-            var d, pts = [];
-
-            for (d = 0; d <= divisions; d++) {
-                pts.push(this.getPoint(d / divisions));
-            }
-
-            return pts;
-
-        },
-
-        getSpacedPoints: function (divisions) {
-
-            if (!divisions) {
-                divisions = 5;
-            }
-
-            var d, pts = [];
-
-            for (d = 0; d <= divisions; d++) {
-                pts.push(this.getPointAt(d / divisions));
-            }
-
-            return pts;
-        },
-
-
-        _getLengths: function (divisions) {
-
-            if (!divisions) {
-                divisions = (this.__arcLengthDivisions) ? (this.__arcLengthDivisions) : 200;
-            }
-
-            if (this.cacheArcLengths
-                && ( this.cacheArcLengths.length === divisions + 1 )
-                && !this.needsUpdate) {
-
-                return this.cacheArcLengths;
-
-            }
-
-            this.needsUpdate = false;
-
-            var cache = [];
-            var current;
-            var last = this.getPoint(0);
-            var p;
-            var sum = 0;
-
-            cache.push(0);
-
-            for (p = 1; p <= divisions; p++) {
-
-                current = this.getPoint(p / divisions);
-                sum += XEO.math.lenVec3(XEO.math.subVec3(current, last, []));
-                cache.push(sum);
-                last = current;
-
-            }
-
-            this.cacheArcLengths = cache;
-
-            return cache; // { sums: cache, sum:sum }, Sum is in the last element.
-
-        },
-
-        _updateArcLengths: function () {
-            this.needsUpdate = true;
-            this._getLengths();
-        },
-
-        // Given u ( 0 .. 1 ), get a t to find p. This gives you points which are equi distance
-
-        getUToTMapping: function (u, distance) {
-
-            var arcLengths = this._getLengths();
-
-            var i = 0;
-            var il = arcLengths.length;
-            var t;
-
-            var targetArcLength; // The targeted u distance value to get
-
-            if (distance) {
-
-                targetArcLength = distance;
-
-            } else {
-
-                targetArcLength = u * arcLengths[il - 1];
-            }
-
-            //var time = Date.now();
-
-            // binary search for the index with largest value smaller than target u distance
-
-            var low = 0, high = il - 1, comparison;
-
-            while (low <= high) {
-
-                i = Math.floor(low + ( high - low ) / 2); // less likely to overflow, though probably not issue here, JS doesn't really have integers, all numbers are floats
-
-                comparison = arcLengths[i] - targetArcLength;
-
-                if (comparison < 0) {
-
-                    low = i + 1;
-
-                } else if (comparison > 0) {
-
-                    high = i - 1;
-
-                } else {
-
-                    high = i;
-                    break;
-
-                    // DONE
-                }
-            }
-
-            i = high;
-
-            //console.log('b' , i, low, high, Date.now()- time);
-
-            if (arcLengths[i] === targetArcLength) {
-
-                t = i / ( il - 1 );
-
-                return t;
-
-            }
-
-            // we could get finer grain at lengths, or use simple interpolatation between two points
-
-            var lengthBefore = arcLengths[i];
-            var lengthAfter = arcLengths[i + 1];
-
-            var segmentLength = lengthAfter - lengthBefore;
-
-            // determine where we are between the 'before' and 'after' points
-
-            var segmentFraction = ( targetArcLength - lengthBefore ) / segmentLength;
-
-            // add that fractional amount to t
-
-            t = ( i + segmentFraction ) / ( il - 1 );
-
-            return t;
-        }
-    });
-
-})();
-;/**
- A **CubicBezierCurve** is a {{#crossLink "Curve"}}{{/crossLink}} along which a 3D position can be animated.
-
- <ul>
- <li>As shown in the diagram below, a CubicBezierCurve is defined by four control points.</li>
- <li>You can sample a {{#crossLink "CubicBezierCurve/point:property"}}{{/crossLink}} and a {{#crossLink "CubicBezierCurve/tangent:property"}}{{/crossLink}}
- vector on a CubicBezierCurve for any given value of {{#crossLink "CubicBezierCurve/t:property"}}{{/crossLink}} in the range [0..1].</li>
- <li>When you set {{#crossLink "CubicBezierCurve/t:property"}}{{/crossLink}} on a CubicBezierCurve, its
- {{#crossLink "CubicBezierCurve/point:property"}}{{/crossLink}} and {{#crossLink "CubicBezierCurve/tangent:property"}}{{/crossLink}} properties
- will update accordingly.</li>
- <li>To build a complex path, you can combine an unlimited combination of CubicBezierCurves,
- {{#crossLink "QuadraticBezierCurve"}}QuadraticBezierCurves{{/crossLink}} and {{#crossLink "SplineCurve"}}SplineCurves{{/crossLink}}
- into a {{#crossLink "Path"}}{{/crossLink}}.</li>
- </ul>
-
- <img style="border:1px solid;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/B%C3%A9zier_3_big.gif/240px-B%C3%A9zier_3_big.gif"/><br>
- *[Cubic Bezier Curve from WikiPedia](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)*
-
- ## Examples
-
- <ul>
- <li>[CubicBezierCurve example](../../examples/#curves_CubicBezierCurve)</li>
- <li>[Path example](../../examples/#curves_Path)</li>
- </ul>
-
- ## Usage
-
- #### Animation along a CubicBezierCurve
-
- Let's create a CubicBezierCurve, subscribe to updates on its {{#crossLink "CubicBezierCurve/point:property"}}{{/crossLink}},
- {{#crossLink "Curve/tangent:property"}}{{/crossLink}} and {{#crossLink "Curve/t:property"}}{{/crossLink}} properties,
- then vary its {{#crossLink "CubicBezierCurve/t:property"}}{{/crossLink}}
- property over time:
-
- ````javascript
- var curve = new XEO.CubicBezierCurve({
-     v0: [-10, 0, 0],
-     v1: [-5, 15, 0],
-     v2: [20, 15, 0],
-     v3: [10, 0, 0]
- });
-
- curve.on("point", function(point) {
-     this.log("curve.point=" + JSON.stringify(point));
- });
-
- curve.on("tangent", function(tangent) {
-     this.log("curve.tangent=" + JSON.stringify(tangent));
- });
-
- curve.on("t", function(t) {
-     this.log("curve.t=" + t);
- });
-
- curve.scene.on("tick", function(e) {
-     curve.t = (e.time - e.startTime) * 0.01;
- });
- ````
-
- #### Randomly sampling points
-
- Use CubicBezierCurve's {{#crossLink "CubicBezierCurve/getPoint:method"}}{{/crossLink}} and
- {{#crossLink "Curve/getTangent:method"}}{{/crossLink}} methods to sample the point and vector
- at a given **t**:
-
- ````javascript
- curve.scene.on("tick", function(e) {
-
-     var t = (e.time - e.startTime) * 0.01;
-
-     var point = curve.getPoint(t);
-     var tangent = curve.getTangent(t);
-
-     this.log("t=" + t + ", point=" + JSON.stringify(point) + ", tangent=" + JSON.stringify(tangent));
- });
- ````
-
- #### Sampling multiple points
-
- Use CubicBezierCurve's {{#crossLink "Curve/getPoints:method"}}{{/crossLink}} method to sample a list of equidistant points
- along it. In the snippet below, we'll build a {{#crossLink "Geometry"}}{{/crossLink}} that renders a line along the
- curve.  Note that we need to flatten the points array for consumption by the {{#crossLink "Geometry"}}{{/crossLink}}.
-
- ````javascript
- var geometry = new XEO.Geometry({
-     positions: XEO.math.flatten(curve.getPoints(50))
- });
- ````
-
- @class CubicBezierCurve
- @module XEO
- @submodule curves
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
- @param [cfg] {*} Configuration
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CubicBezierCurve.
- @param [cfg.v0=[0,0,0]] The starting point.
- @param [cfg.v1=[0,0,0]] The first control point.
- @param [cfg.v2=[0,0,0]] The middle control point.
- @param [cfg.v3=[0,0,0]] The ending point.
- @param [cfg.t=0] Current position on this CubicBezierCurve, in range between 0..1.
- @extends Curve
- */
-(function () {
-
-    "use strict";
-
-    XEO.CubicBezierCurve = XEO.Curve.extend({
-
-        /**
-         JavaScript class name for this Component.
-
-         @property type
-         @type String
-         @final
-         */
-        type: "XEO.CubicBezierCurve",
-
-        _init: function (cfg) {
-
-            this._super(cfg);
-
-            this.v0 = cfg.v0;
-            this.v1 = cfg.v1;
-            this.v2 = cfg.v2;
-            this.v3 = cfg.v3;
-
-            this.t = cfg.t;
-        },
-
-        _props: {
-
-            /**
-             Starting point on this CubicBezierCurve.
-
-             Fires a {{#crossLink "CubicBezierCurve/v0:event"}}{{/crossLink}} event on change.
-
-             @property v0
-             @default [0.0, 0.0, 0.0]
-             @type Float32Array
-             */
-            v0: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this CubicBezierCurve's
-                     * {{#crossLink "CubicBezierCurve/v0:property"}}{{/crossLink}} property changes.
-                     * @event v0
-                     * @param value The property's new value
-                     */
-                    this.fire("v0", this._v0 = value || XEO.math.vec3([0, 0, 0]));
-                },
-
-                get: function () {
-                    return this._v0;
-                }
-            },
-
-            /**
-             First control point on this CubicBezierCurve.
-
-             Fires a {{#crossLink "CubicBezierCurve/v1:event"}}{{/crossLink}} event on change.
-
-             @property v1
-             @default [0.0, 0.0, 0.0]
-             @type Float32Array
-             */
-            v1: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this CubicBezierCurve's
-                     * {{#crossLink "CubicBezierCurve/v1:property"}}{{/crossLink}} property changes.
-                     * @event v1
-                     * @param value The property's new value
-                     */
-                    this.fire("v1", this._v1 = value || XEO.math.vec3([0, 0, 0]));
-                },
-
-                get: function () {
-                    return this._v1;
-                }
-            },
-
-            /**
-             Second control point on this CubicBezierCurve.
-
-             Fires a {{#crossLink "CubicBezierCurve/v2:event"}}{{/crossLink}} event on change.
-
-             @property v2
-             @default [0.0, 0.0, 0.0]
-             @type Float32Array
-             */
-            v2: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this CubicBezierCurve's
-                     * {{#crossLink "CubicBezierCurve/v2:property"}}{{/crossLink}} property changes.
-                     * @event v2
-                     * @param value The property's new value
-                     */
-                    this.fire("v2", this._v2 = value || XEO.math.vec3([0, 0, 0]));
-                },
-
-                get: function () {
-                    return this._v2;
-                }
-            },
-
-            /**
-             End point on this CubicBezierCurve.
-
-             Fires a {{#crossLink "CubicBezierCurve/v3:event"}}{{/crossLink}} event on change.
-
-             @property v3
-             @default [0.0, 0.0, 0.0]
-             @type Float32Array
-             */
-            v3: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this CubicBezierCurve's
-                     * {{#crossLink "CubicBezierCurve/v3:property"}}{{/crossLink}} property changes.
-                     * @event v3
-                     * @param value The property's new value
-                     */
-                    this.fire("v3", this._v3 = value || XEO.math.vec3([0, 0, 0]));
-                },
-
-                get: function () {
-                    return this._v3;
-                }
-            },
-
-            /**
-             Current position of progress along this CubicBezierCurve.
-
-             Automatically clamps to range [0..1].
-
-             Fires a {{#crossLink "CubicBezierCurve/t:event"}}{{/crossLink}} event on change.
-
-             @property t
-             @default 0
-             @type Number
-             */
-            t: {
-                set: function (value) {
-
-                    value = value || 0;
-
-                    this._t = value < 0.0 ? 0.0 : (value > 1.0 ? 1.0 : value);
-
-                    /**
-                     * Fired whenever this CubicBezierCurve's
-                     * {{#crossLink "CubicBezierCurve/t:property"}}{{/crossLink}} property changes.
-                     * @event t
-                     * @param value The property's new value
-                     */
-                    this.fire("t", this._t);
-                },
-
-                get: function () {
-                    return this._t;
-                }
-            },
-
-            /**
-             Point on this CubicBezierCurve at position {{#crossLink "CubicBezierCurve/t:property"}}{{/crossLink}}.
-
-             @property point
-             @type {{Array of Number}}
-             */
-            point: {
-
-                get: function () {
-                    return this.getPoint(this._t);
-                }
-            }
-        },
-
-        /**
-         * Returns point on this CubicBezierCurve at the given position.
-         * @method getPoint
-         * @param {Number} t Position to get point at.
-         * @returns {{Array of Number}}
-         */
-        getPoint: function (t) {
-
-            var math = XEO.math;
-            var vector = math.vec3();
-
-            vector[0] = math.b3(t, this._v0[0], this._v1[0], this._v2[0], this._v3[0]);
-            vector[1] = math.b3(t, this._v0[1], this._v1[1], this._v2[1], this._v3[1]);
-            vector[2] = math.b3(t, this._v0[2], this._v1[2], this._v2[2], this._v3[2]);
-
-            return vector;
-        },
-
-        _getJSON: function () {
-            return {
-                v0: this._v0,
-                v1: this._v1,
-                v2: this._v2,
-                v3: this._v3,
-                t: this._t
-            };
-        }
-    });
-
-})();
-;/**
- A **SplineCurve** is a {{#crossLink "Curve"}}{{/crossLink}} along which a 3D position can be animated.
-
- <ul>
- <li>As shown in the diagram below, a SplineCurve is defined by three or more control points.</li>
- <li>You can sample a {{#crossLink "SplineCurve/point:property"}}{{/crossLink}} and a {{#crossLink "Curve/tangent:property"}}{{/crossLink}}
- vector on a SplineCurve for any given value of {{#crossLink "SplineCurve/t:property"}}{{/crossLink}} in the range [0..1].</li>
- <li>When you set {{#crossLink "SplineCurve/t:property"}}{{/crossLink}} on a SplineCurve, its {{#crossLink "SplineCurve/point:property"}}{{/crossLink}} and {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties will update accordingly.</li>
- <li>To build a complex path, you can combine an unlimited combination of SplineCurves,
- {{#crossLink "CubicBezierCurve"}}CubicBezierCurves{{/crossLink}} and {{#crossLink "QuadraticBezierCurve"}}QuadraticBezierCurves{{/crossLink}}
- into a {{#crossLink "Path"}}{{/crossLink}}.</li>
- </ul>
-
- <img style="border:1px solid; background: white;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Quadratic_spline_six_segments.svg/200px-Quadratic_spline_six_segments.svg.png"/><br>
- *<a href="https://en.wikipedia.org/wiki/Spline_(mathematics)">Spline Curve from Wikipedia</a>*
-
- ## Examples
-
- <ul>
- <li>[Simple SplineCurve example](../../examples/#curves_SplineCurve)</li>
- <li>[Moving a PointLight along a SplineCurve](../../examples/#lights_point_world)</li>
- <li>[Path example](../../examples/#curves_Path)</li>
- </ul>
-
- ## Usage
-
- #### Animation along a SplineCurve
-
- Let's create a SplineCurve, subscribe to updates on its {{#crossLink "SplineCurve/point:property"}}{{/crossLink}},
- {{#crossLink "Curve/tangent:property"}}{{/crossLink}} and {{#crossLink "Curve/t:property"}}{{/crossLink}} properties,
- then vary its {{#crossLink "SplineCurve/t:property"}}{{/crossLink}}
- property over time:
-
- ````javascript
- var curve = new XEO.SplineCurve({
-     points: [
-         [-10, 0, 0],
-         [-5, 15, 0],
-         [20, 15, 0],
-         [10, 0, 0]
-     ]
- });
-
- curve.on("point", function(point) {
-     this.log("curve.point=" + JSON.stringify(point));
- });
-
- curve.on("tangent", function(tangent) {
-     this.log("curve.tangent=" + JSON.stringify(tangent));
- });
-
- curve.on("t", function(t) {
-     this.log("curve.t=" + t);
- });
-
- curve.scene.on("tick", function(e) {
-     curve.t = (e.time - e.startTime) * 0.01;
- });
- ````
-
- #### Randomly sampling points
-
- Use SplineCurve's {{#crossLink "SplineCurve/getPoint:method"}}{{/crossLink}} and
- {{#crossLink "Curve/getTangent:method"}}{{/crossLink}} methods to sample the point and vector
- at a given **t**:
-
- ````javascript
- curve.scene.on("tick", function(e) {
-
-     var t = (e.time - e.startTime) * 0.01;
-
-     var point = curve.getPoint(t);
-     var tangent = curve.getTangent(t);
-
-     this.log("t=" + t + ", point=" + JSON.stringify(point) + ", tangent=" + JSON.stringify(tangent));
- });
- ````
-
- #### Sampling multiple points
-
- Use SplineCurve's {{#crossLink "Curve/getPoints:method"}}{{/crossLink}} method to sample a list of equidistant points
- along it. In the snippet below, we'll build a {{#crossLink "Geometry"}}{{/crossLink}} that renders a line along the
- curve.  Note that we need to flatten the points array for consumption by the {{#crossLink "Geometry"}}{{/crossLink}}.
-
- ````javascript
- var geometry = new XEO.Geometry({
-     positions: XEO.math.flatten(curve.getPoints(50))
- });
- ````
-
- @class SplineCurve
- @module XEO
- @submodule curves
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
- @param [cfg] {*} Configuration
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this SplineCurve.
- @param [cfg.points=[]] Control points on this SplineCurve.
- @param [cfg.t=0] Current position on this SplineCurve, in range between 0..1.
- @extends Curve
- */
-(function () {
-
-    "use strict";
-
-    XEO.SplineCurve = XEO.Curve.extend({
-
-        /**
-         JavaScript class name for this Component.
-
-         @property type
-         @type String
-         @final
-         */
-        type: "XEO.SplineCurve",
-
-        _init: function (cfg) {
-
-            this._super(cfg);
-
-            this.points = cfg.points;
-
-            this.t = cfg.t;
-        },
-
-        _props: {
-
-            /**
-             Control points on this SplineCurve.
-
-             Fires a {{#crossLink "SplineCurve/points:event"}}{{/crossLink}} event on change.
-
-             @property points
-             @default []
-             @type Float32Array
-             */
-            points: {
-
-                set: function (value) {
-
-                    this._points = value || [];
-
-                    /**
-                     * Fired whenever this SplineCurve's
-                     * {{#crossLink "SplineCurve/points:property"}}{{/crossLink}} property changes.
-                     * @event points
-                     * @param value The property's new value
-                     */
-                    this.fire("points", this._points);
-                },
-
-                get: function () {
-                    return this._points;
-                }
-            },
-
-            /**
-             Progress along this SplineCurve.
-
-             Automatically clamps to range [0..1].
-
-             Fires a {{#crossLink "SplineCurve/t:event"}}{{/crossLink}} event on change.
-
-             @property t
-             @default 0
-             @type Number
-             */
-            t: {
-                set: function (value) {
-
-                    value = value || 0;
-
-                    this._t = value < 0.0 ? 0.0 : (value > 1.0 ? 1.0 : value);
-
-                    /**
-                     * Fired whenever this SplineCurve's
-                     * {{#crossLink "SplineCurve/t:property"}}{{/crossLink}} property changes.
-                     * @event t
-                     * @param value The property's new value
-                     */
-                    this.fire("t", this._t);
-                },
-
-                get: function () {
-                    return this._t;
-                }
-            },
-
-            /**
-             Point on this SplineCurve at position {{#crossLink "SplineCurve/t:property"}}{{/crossLink}}.
-
-             @property point
-             @type {{Array of Number}}
-             */
-            point: {
-
-                get: function () {
-                    return this.getPoint(this._t);
-                }
-            }
-        },
-
-        /**
-         * Returns point on this SplineCurve at the given position.
-         * @method getPoint
-         * @param {Number} t Position to get point at.
-         * @returns {{Array of Number}}
-         */
-        getPoint: function (t) {
-
-            var math = XEO.math;
-
-            var points = this.points;
-
-            if (points.length < 3) {
-                this.error("Can't sample point from SplineCurve - not enough points on curve - returning [0,0,0].");
-                return;
-            }
-
-            var point = ( points.length - 1 ) * t;
-
-            var intPoint = Math.floor(point);
-            var weight = point - intPoint;
-
-            var point0 = points[intPoint === 0 ? intPoint : intPoint - 1];
-            var point1 = points[intPoint];
-            var point2 = points[intPoint > points.length - 2 ? points.length - 1 : intPoint + 1];
-            var point3 = points[intPoint > points.length - 3 ? points.length - 1 : intPoint + 2];
-
-            var vector = math.vec3();
-
-            vector[0] = math.catmullRomInterpolate(point0[0], point1[0], point2[0], point3[0], weight);
-            vector[1] = math.catmullRomInterpolate(point0[1], point1[1], point2[1], point3[1], weight);
-            vector[2] = math.catmullRomInterpolate(point0[2], point1[2], point2[2], point3[2], weight);
-
-            return vector;
-        },
-
-        _getJSON: function () {
-            return {
-                points: points,
-                t: this._t
-            };
-        }
-    });
-
-})();
-;/**
- A **QuadraticBezierCurve** is a {{#crossLink "Curve"}}{{/crossLink}} along which a 3D position can be animated.
-
- <ul>
-    <li>As shown in the diagram below, a QuadraticBezierCurve is defined by three control points.</li>
- <li>You can sample a {{#crossLink "QuadraticBezierCurve/point:property"}}{{/crossLink}} and a {{#crossLink "Curve/tangent:property"}}{{/crossLink}}
- vector on a QuadraticBezierCurve for any given value of {{#crossLink "QuadraticBezierCurve/t:property"}}{{/crossLink}} in the range [0..1].</li>
- <li>When you set {{#crossLink "QuadraticBezierCurve/t:property"}}{{/crossLink}} on a QuadraticBezierCurve, its
- {{#crossLink "QuadraticBezierCurve/point:property"}}{{/crossLink}} and {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties
- will update accordingly.</li>
-    <li>To build a complex path, you can combine an unlimited combination of QuadraticBezierCurves,
- {{#crossLink "CubicBezierCurve"}}CubicBezierCurves{{/crossLink}} and {{#crossLink "SplineCurve"}}SplineCurves{{/crossLink}}
- into a {{#crossLink "Path"}}{{/crossLink}}.</li>
- </ul>
-
- <img style="border:1px solid;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/B%C3%A9zier_2_big.gif/240px-B%C3%A9zier_2_big.gif"/><br>
- *[Quadratic Bezier Curve from WikiPedia](https://en.wikipedia.org/wiki/B%C3%A9zier_curve)*
-
- ## Examples
-
- <ul>
- <li>[Tweening position along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve)</li>
- <li>[Tweening color along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve_color)</li>
- <li>[Path example](../../examples/#curves_Path)</li>
- </ul>
-
- ## Usage
-
- #### Animation along a QuadraticBezierCurve
-
- Let's create a QuadraticBezierCurve, subscribe to updates on its {{#crossLink "QuadraticBezierCurve/point:property"}}{{/crossLink}},
- {{#crossLink "Curve/tangent:property"}}{{/crossLink}} and {{#crossLink "Curve/t:property"}}{{/crossLink}} properties,
- then vary its {{#crossLink "QuadraticBezierCurve/t:property"}}{{/crossLink}}
- property over time:
-
- ````javascript
- var curve = new XEO.QuadraticBezierCurve({
-     v0: [10, 0, 0],
-     v1: [20, 15, 0],
-     v2: [10, 0, 0]
- });
-
- curve.on("point", function(point) {
-     this.log("curve.point=" + JSON.stringify(point));
- });
-
- curve.on("tangent", function(tangent) {
-     this.log("curve.tangent=" + JSON.stringify(tangent));
- });
-
- curve.on("t", function(t) {
-     this.log("curve.t=" + t);
- });
-
- curve.scene.on("tick", function(e) {
-     curve.t = (e.time - e.startTime) * 0.01;
- });
- ````
-
- #### Randomly sampling points
-
- Use QuadraticBezierCurve's {{#crossLink "QuadraticBezierCurve/getPoint:method"}}{{/crossLink}} and
- {{#crossLink "Curve/getTangent:method"}}{{/crossLink}} methods to sample the point and vector
- at a given **t**:
-
- ````javascript
- curve.scene.on("tick", function(e) {
-
-     var t = (e.time - e.startTime) * 0.01;
-
-     var point = curve.getPoint(t);
-     var tangent = curve.getTangent(t);
-
-     this.log("t=" + t + ", point=" + JSON.stringify(point) + ", tangent=" + JSON.stringify(tangent));
- });
- ````
-
- #### Sampling multiple points
-
- Use QuadraticBezierCurve's {{#crossLink "Curve/getPoints:method"}}{{/crossLink}} method to sample a list of equidistant points
- along it. In the snippet below, we'll build a {{#crossLink "Geometry"}}{{/crossLink}} that renders a line along the
- curve.  Note that we need to flatten the points array for consumption by the {{#crossLink "Geometry"}}{{/crossLink}}.
-
- ````javascript
- var geometry = new XEO.Geometry({
-     positions: XEO.math.flatten(curve.getPoints(50))
- });
- ````
-
- @class QuadraticBezierCurve
- @module XEO
- @submodule curves
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
- @param [cfg] {*} Configuration
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this QuadraticBezierCurve.
- @param [cfg.v0=[0,0,0]] The starting point.
- @param [cfg.v1=[0,0,0]] The middle control point.
- @param [cfg.v2=[0,0,0]] The end point.
- @param [cfg.t=0] Current position on this QuadraticBezierCurve, in range between 0..1.
- @extends Curve
- */
-(function () {
-
-    "use strict";
-
-    XEO.QuadraticBezierCurve = XEO.Curve.extend({
-
-        /**
-         JavaScript class name for this Component.
-
-         @property type
-         @type String
-         @final
-         */
-        type: "XEO.QuadraticBezierCurve",
-
-        _init: function (cfg) {
-
-            this._super(cfg);
-
-            this.v0 = cfg.v0;
-            this.v1 = cfg.v1;
-            this.v2 = cfg.v2;
-
-            this.t = cfg.t;
-        },
-
-        _props: {
-
-            /**
-             Starting point on this QuadraticBezierCurve.
-
-             Fires a {{#crossLink "QuadraticBezierCurve/v0:event"}}{{/crossLink}} event on change.
-
-             @property v0
-             @default [0.0, 0.0, 0.0]
-             @type Float32Array
-             */
-            v0: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this QuadraticBezierCurve's
-                     * {{#crossLink "QuadraticBezierCurve/v0:property"}}{{/crossLink}} property changes.
-                     * @event v0
-                     * @param value The property's new value
-                     */
-                    this.fire("v0", this._v0 = value || XEO.math.vec3([0, 0, 0]));
-                },
-
-                get: function () {
-                    return this._v0;
-                }
-            },
-
-            /**
-             Middle control point on this QuadraticBezierCurve.
-
-             Fires a {{#crossLink "QuadraticBezierCurve/v1:event"}}{{/crossLink}} event on change.
-
-             @property v1
-             @default [0.0, 0.0, 0.0]
-             @type Float32Array
-             */
-            v1: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this QuadraticBezierCurve's
-                     * {{#crossLink "QuadraticBezierCurve/v1:property"}}{{/crossLink}} property changes.
-                     * @event v1
-                     * @param value The property's new value
-                     */
-                    this.fire("v1", this._v1 = value || XEO.math.vec3([0, 0, 0]));
-                },
-
-                get: function () {
-                    return this._v1;
-                }
-            },
-
-            /**
-             End point on this QuadraticBezierCurve.
-
-             Fires a {{#crossLink "QuadraticBezierCurve/v2:event"}}{{/crossLink}} event on change.
-
-             @property v2
-             @default [0.0, 0.0, 0.0]
-             @type Float32Array
-             */
-            v2: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this QuadraticBezierCurve's
-                     * {{#crossLink "QuadraticBezierCurve/v2:property"}}{{/crossLink}} property changes.
-                     * @event v2
-                     * @param value The property's new value
-                     */
-                    this.fire("v2", this._v2 = value || XEO.math.vec3([0, 0, 0]));
-                },
-
-                get: function () {
-                    return this._v2;
-                }
-            },
-
-            /**
-             Progress along this QuadraticBezierCurve.
-
-             Automatically clamps to range [0..1].
-
-             Fires a {{#crossLink "QuadraticBezierCurve/t:event"}}{{/crossLink}} event on change.
-
-             @property t
-             @default 0
-             @type Number
-             */
-            t: {
-                set: function (value) {
-
-                    value = value || 0;
-
-                    this._t = value < 0.0 ? 0.0 : (value > 1.0 ? 1.0 : value);
-
-                    /**
-                     * Fired whenever this QuadraticBezierCurve's
-                     * {{#crossLink "QuadraticBezierCurve/t:property"}}{{/crossLink}} property changes.
-                     * @event t
-                     * @param value The property's new value
-                     */
-                    this.fire("t", this._t);
-                },
-
-                get: function () {
-                    return this._t;
-                }
-            },
-
-
-            /**
-             Point on this QuadraticBezierCurve at position {{#crossLink "QuadraticBezierCurve/t:property"}}{{/crossLink}}.
-
-             @property point
-             @type {{Array of Number}}
-             */
-            point: {
-
-                get: function () {
-                    return this.getPoint(this._t);
-                }
-            }
-        },
-
-        /**
-         * Returns point on this QuadraticBezierCurve at the given position.
-         * @method getPoint
-         * @param {Number} t Position to get point at.
-         * @returns {{Array of Number}}
-         */
-        getPoint: function (t) {
-
-            var math = XEO.math;
-            var vector = math.vec3();
-
-            vector[0] = math.b2(t, this._v0[0], this._v1[0], this._v2[0]);
-            vector[1] = math.b2(t, this._v0[1], this._v1[1], this._v2[1]);
-            vector[2] = math.b2(t, this._v0[2], this._v1[2], this._v2[2]);
-
-            return vector;
-        },
-
-        _getJSON: function () {
-            return {
-                v0: this._v0,
-                v1: this._v1,
-                v2: this._v2,
-                t: this._t
-            };
-        }
-    });
-
-})();
-;/**
- A **Path** is a complex curved path constructed from various {{#crossLink "Curve"}}{{/crossLink}} subtypes.
-
- <ul>
- <li>A Path can be constructed from these {{#crossLink "Curve"}}{{/crossLink}} subtypes: {{#crossLink "SplineCurve"}}{{/crossLink}},
- {{#crossLink "CubicBezierCurve"}}{{/crossLink}} and {{#crossLink "QuadraticBezierCurve"}}{{/crossLink}}.</li>
- <li>You can sample a {{#crossLink "Path/point:property"}}{{/crossLink}} and a {{#crossLink "Curve/tangent:property"}}{{/crossLink}}
- vector on a Path for any given value of {{#crossLink "Path/t:property"}}{{/crossLink}} in the range [0..1].</li>
- <li>When you set {{#crossLink "Path/t:property"}}{{/crossLink}} on a Path, its
- {{#crossLink "Path/point:property"}}{{/crossLink}} and {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties
- will update accordingly.</li>
- </ul>
-
- ## Examples
-
- <ul>
- <li>[CubicBezierCurve example](../../examples/#curves_CubicBezierCurve)</li>
- <li>[Tweening position along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve)</li>
- <li>[Tweening color along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve_color)</li>
- <li>[SplineCurve example](../../examples/#curves_SplineCurve)</li>
- <li>[Path example](../../examples/#curves_Path)</li>
- </ul>
-
- ## Usage
-
- #### Animation along a SplineCurve
-
- Create a Path containing a {{#crossLink "CubicBezierCurve"}}{{/crossLink}}, a {{#crossLink "QuadraticBezierCurve"}}{{/crossLink}}
- and a {{#crossLink "SplineCurve"}}{{/crossLink}}, subscribe to updates on its {{#crossLink "Path/point:property"}}{{/crossLink}} and
- {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties, then vary its {{#crossLink "Path/t:property"}}{{/crossLink}}
- property over time:
-
- ````javascript
- var path = new XEO.Path({
-     curves: [
-         new XEO.CubicBezierCurve({
-             v0: [-10, 0, 0],
-             v1: [-5, 15, 0],
-             v2: [20, 15, 0],
-             v3: [10, 0, 0]
-         }),
-         new XEO.QuadraticBezierCurve({
-             v0: [10, 0, 0],
-             v1: [20, 15, 0],
-             v2: [10, 0, 0]
-         }),
-         new XEO.SplineCurve({
-             points: [
-                 [10, 0, 0],
-                 [-5, 15, 0],
-                 [20, 15, 0],
-                 [10, 0, 0]
-             ]
-         })
-     ]
- });
-
- path.on("point", function(point) {
-     this.log("path.point=" + JSON.stringify(point));
- });
-
- path.on("tangent", function(tangent) {
-     this.log("path.tangent=" + JSON.stringify(tangent));
- });
-
- path.on("t", function(t) {
-     this.log("path.t=" + t);
- });
-
- path.scene.on("tick", function(e) {
-     path.t = (e.time - e.startTime) * 0.01;
- });
- ````
-
- #### Randomly sampling points
-
- Use Path's {{#crossLink "Path/getPoint:method"}}{{/crossLink}} and
- {{#crossLink "path/getTangent:method"}}{{/crossLink}} methods to sample the point and vector
- at a given **t**:
-
- ````javascript
- path.scene.on("tick", function(e) {
-
-     var t = (e.time - e.startTime) * 0.01;
-
-     var point = path.getPoint(t);
-     var tangent = path.getTangent(t);
-
-     this.log("t=" + t + ", point=" + JSON.stringify(point) + ", tangent=" + JSON.stringify(tangent));
- });
- ````
-
- #### Sampling multiple points
-
- Use Path's {{#crossLink "path/getPoints:method"}}{{/crossLink}} method to sample a list of equidistant points
- along it. In the snippet below, we'll build a {{#crossLink "Geometry"}}{{/crossLink}} that renders a line along the
- path.  Note that we need to flatten the points array for consumption by the {{#crossLink "Geometry"}}{{/crossLink}}.
-
- ````javascript
- var geometry = new XEO.Geometry({
-     positions: XEO.math.flatten(path.getPoints(50))
- });
- ````
- 
- @class Path
- @module XEO
- @submodule paths
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
- @param [cfg] {*} Fly configuration
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Path.
- @param [cfg.paths=[]] IDs or instances of {{#crossLink "path"}}{{/crossLink}} subtypes to add to this Path.
- @param [cfg.t=0] Current position on this Path, in range between 0..1.
- @extends path
- */
-(function () {
-
-    "use strict";
-
-    XEO.Path = XEO.Curve.extend({
-
-        /**
-         JavaScript class name for this Component.
-
-         @property type
-         @type String
-         @final
-         */
-        type: "XEO.Path",
-
-        _init: function (cfg) {
-
-            this._super(cfg);
-
-            this._cachedLengths = [];
-            this._dirty = true;
-
-            // Array of child Curve components
-            this._curves = [];
-
-            this._t = 0;
-
-            // Subscriptions to "dirty" events from child Curve components
-            this._dirtySubs = [];
-
-            // Subscriptions to "destroyed" events from child Curve components
-            this._destroyedSubs = [];
-
-            // Add initial curves
-            this.curves = cfg.curves || [];
-
-            // Set initial progress
-            this.t = cfg.t;
-        },
-
-        /**
-         * Adds a {{#crossLink "Curve"}}{{/crossLink}} to this Path.
-         *
-         * Fires a {{#crossLink "Path/curves:event"}}{{/crossLink}} event on change.
-         *
-         * @param {Curve} curve The {{#crossLink "Curve"}}{{/crossLink}} to add.
-         */
-        addCurve: function (curve) {
-
-            this._curves.push(curve);
-
-            this._dirty = true;
-
-            /**
-             * Fired whenever this Path's
-             * {{#crossLink "Path/curves:property"}}{{/crossLink}} property changes.
-             * @event curves
-             * @param value The property's new value
-             */
-            this.fire("curves", this._curves);
-        },
-
-        _props: {
-
-            /**
-             The {{#crossLink "Curve"}}Curves{{/crossLink}} in this Path.
-
-             Fires a {{#crossLink "Path/curves:event"}}{{/crossLink}} event on change.
-
-             @property curves
-             @default []
-             @type {{Array of Spline, Path, QuadraticBezierCurve or CubicBezierCurve}}
-             */
-            curves: {
-
-                set: function (value) {
-
-                    value = value || [];
-
-                    var curve;
-
-                    // Unsubscribe from events on old curves
-
-                    var i;
-                    var len;
-
-                    for (i = 0, len = this._curves.length; i < len; i++) {
-
-                        curve = this._curves[i];
-
-                        curve.off(this._dirtySubs[i]);
-                        curve.off(this._destroyedSubs[i]);
-                    }
-
-                    this._curves = [];
-
-                    this._dirtySubs = [];
-                    this._destroyedSubs = [];
-
-                    var self = this;
-
-                    function curveDirty() {
-                        self._dirty = true;
-                    }
-
-                    function curveDestroyed() {
-
-                        var id = this.id;
-
-                        for (i = 0, len = self._curves.length; i < len; i++) {
-
-                            if (self._curves[i].id === id) {
-
-                                self._curves = self._curves.slice(i, i + 1);
-                                self._dirtySubs = self._dirtySubs.slice(i, i + 1);
-                                self._destroyedSubs = self._destroyedSubs.slice(i, i + 1);
-
-                                self._dirty = true;
-
-                                self.fire("curves", self._curves);
-
-                                return;
-                            }
-                        }
-                    }
-
-                    for (i = 0, len = value.length; i < len; i++) {
-
-                        curve = value[i];
-
-                        if (XEO._isNumeric(curve) || XEO._isString(curve)) {
-
-                            // ID given for curve - find the curve component
-
-                            var id = curve;
-
-                            curve = this.scene.components[id];
-
-                            if (!curve) {
-                                this.error("Component not found: " + XEO._inQuotes(id));
-                                continue;
-                            }
-                        }
-
-                        var type = curve.type;
-
-                        if (type !== "XEO.SplineCurve" &&
-                            type !== "XEO.Path" &&
-                            type !== "XEO.CubicBezierCurve" &&
-                            type !== "XEO.QuadraticBezierCurve") {
-
-                            this.error("Component " + XEO._inQuotes(curve.id)
-                                + " is not a XEO.SplineCurve, XEO.Path or XEO.QuadraticBezierCurve");
-
-                            continue;
-                        }
-
-                        this._curves.push(curve);
-
-                        this._dirtySubs.push(curve.on("dirty", curveDirty));
-
-                        this._destroyedSubs.push(curve.on("destroyed", curveDestroyed));
-                    }
-
-                    this._dirty = true;
-
-                    this.fire("curves", this._curves);
-                },
-
-                get: function () {
-                    return this._curves;
-                }
-            },
-
-            /**
-             Current point of progress along this Path.
-
-             Automatically clamps to range [0..1].
-
-             Fires a {{#crossLink "Path/t:event"}}{{/crossLink}} event on change.
-
-             @property t
-             @default 0
-             @type Number
-             */
-            t: {
-                set: function (value) {
-
-                    value = value || 0;
-
-                    this._t = value < 0.0 ? 0.0 : (value > 1.0 ? 1.0 : value);
-
-                    /**
-                     * Fired whenever this Path's
-                     * {{#crossLink "Path/t:property"}}{{/crossLink}} property changes.
-                     * @event t
-                     * @param value The property's new value
-                     */
-                    this.fire("t", this._t);
-                },
-
-                get: function () {
-                    return this._t;
-                }
-            },
-
-            /**
-             Point on this Path corresponding to the current value of {{#crossLink "Path/t:property"}}{{/crossLink}}.
-
-             @property point
-             @type {{Array of Number}}
-             */
-            point: {
-
-                get: function () {
-                    return this.getPoint(this._t);
-                }
-            },
-
-            /**
-             Length of this Path, which is the cumulative length of all {{#crossLink "Curve/t:property"}}Curves{{/crossLink}}
-             currently in {{#crossLink "Path/curves:property"}}{{/crossLink}}.
-
-             @property length
-             @type {Number}
-             */
-            length: {
-
-                get: function () {
-                    var lens = this._getCurveLengths();
-                    return lens[lens.length - 1];
-                }
-            }
-        },
-
-        /**
-         * Gets a point on this Path corresponding to the given progress position.
-         * @param {Number} t Indicates point of progress along this curve, in the range [0..1].
-         * @returns {{Array of Number}}
-         */
-        getPoint: function (t) {
-
-            var d = t * this.length;
-            var curveLengths = this._getCurveLengths();
-            var i = 0, diff, curve;
-
-            while (i < curveLengths.length) {
-
-                if (curveLengths[i] >= d) {
-
-                    diff = curveLengths[i] - d;
-                    curve = this._curves[i];
-
-                    var u = 1 - diff / curve.length;
-
-                    return curve.getPointAt(u);
-                }
-                i++;
-            }
-            return null;
-        },
-
-        _getCurveLengths: function () {
-
-            if (!this._dirty) {
-                return this._cachedLengths;
-            }
-
-            var lengths = [];
-            var sums = 0;
-            var i, il = this._curves.length;
-
-            for (i = 0; i < il; i++) {
-
-                sums += this._curves[i].length;
-                lengths.push(sums);
-
-            }
-
-            this._cachedLengths = lengths;
-            this._dirty = false;
-
-            return lengths;
-        },
-
-        _getJSON: function () {
-
-            var curveIds = [];
-
-            for (var i = 0, len = this._curves.length; i < len; i++) {
-                curveIds.push(this._curves[i].id);
-            }
-
-            return {
-                curves: curveIds,
-                t: this._t
-            };
-        },
-
-        _destroy: function () {
-
-            var i;
-            var len;
-            var curve;
-
-            for (i = 0, len = this._curves.length; i < len; i++) {
-
-                curve = this._curves[i];
-
-                curve.off(this._dirtySubs[i]);
-                curve.off(this._destroyedSubs[i]);
-            }
-
-            this._super();
-        }
-    });
-
-})();
-
-;/**
  * Components for defining geometry.
  *
  * @module XEO
@@ -20848,11 +19299,6 @@ visibility.destroy();
                 }
             });
 
-            this._updateScheduled = false;
-            this._vboUpdateScheduled = false;
-
-            this._hashDirty = true;
-
             // Typed arrays
 
             this._positionsData = null;
@@ -20870,7 +19316,9 @@ visibility.destroy();
 
             // Flags for work pending
 
-            this._vboUpdateScheduled = false;
+            this._updateScheduled = false;
+            this._geometryUpdateScheduled = false;
+            this._hashDirty = true;
             this._positionsDirty = true;
             this._colorsDirty = true;
             this._normalsDirty = true;
@@ -20926,7 +19374,7 @@ visibility.destroy();
 
             this.usage = cfg.usage;
 
-            this._webglContextRestored = this.scene.canvas.on("webglContextRestored", this._scheduleVBOUpdate, this);
+            this._webglContextRestored = this.scene.canvas.on("webglContextRestored", this._scheduleGeometryUpdate, this);
 
             XEO.stats.memory.meshes++;
         },
@@ -20947,52 +19395,40 @@ visibility.destroy();
 
             if (this._updateScheduled) {
 
-                this._vboUpdateScheduled = true; // Prevents needless scheduling within _update()
+                this._geometryUpdateScheduled = true; // Prevents needless scheduling within _update()
 
-                if (this._update) {
+                if (this._update) { // Template method from XEO.Component
                     this._update();
                 }
 
                 this._updateScheduled = false;
             }
 
-            if (this._vboUpdateScheduled) {
-                this._doVBOUpdate();
+            if (this._geometryUpdateScheduled) {
+                this._updateGeometry();
             }
         },
 
-        /**
-         * Protected virtual template method, implemented by sub-classes to generate geometry data arrays.
-         *
-         * @protected
-         */
-        _update: null,
-
-        _scheduleVBOUpdate: function () {
-
-            if (!this._vboUpdateScheduled) {
-
-                this._vboUpdateScheduled = true;
-
-                // Build VBOs for renderer; no other components in the scene
-                // will be waiting them, so OK to schedule that for next tick.
-                XEO.scheduleTask(this._doVBOUpdate, this);
+        _scheduleGeometryUpdate: function () {
+            if (!this._geometryUpdateScheduled) {
+                this._geometryUpdateScheduled = true;
+                XEO.scheduleTask(this._updateGeometry, this);
             }
         },
 
-        _doVBOUpdate: function () {
+        _updateGeometry: function () {
 
             if (this._updateScheduled) {
 
                 if (this._update) {
-                    this._vboUpdateScheduled = true; // Prevents needless scheduling within _update()
+                    this._geometryUpdateScheduled = true; // Prevents needless scheduling within _update()
                     this._update();
                 }
 
                 this._updateScheduled = false;
-                this._vboUpdateScheduled = true;
+                this._geometryUpdateScheduled = true;
 
-            } else if (!this._vboUpdateScheduled) {
+            } else if (!this._geometryUpdateScheduled) {
                 return;
             }
 
@@ -21123,7 +19559,7 @@ visibility.destroy();
                 this._pickVBOsDirty = true;
             }
 
-            this._vboUpdateScheduled = false;
+            this._geometryUpdateScheduled = false;
 
             this._setBoundaryDirty();
         },
@@ -21134,7 +19570,7 @@ visibility.destroy();
                 return;
             }
 
-            if (this._updateScheduled || this._vboUpdateScheduled) {
+            if (this._updateScheduled || this._geometryUpdateScheduled) {
                 this._doUpdate();
             }
 
@@ -21171,7 +19607,7 @@ visibility.destroy();
                 return;
             }
 
-            if (this._updateScheduled || this._vboUpdateScheduled) {
+            if (this._updateScheduled || this._geometryUpdateScheduled) {
                 this._doUpdate();
             }
 
@@ -21249,7 +19685,7 @@ visibility.destroy();
 
                     this._state.usageName = value;
 
-                    this._scheduleVBOUpdate();
+                    this._scheduleGeometryUpdate();
 
                     this.fire("dirty", true);
 
@@ -21301,7 +19737,7 @@ visibility.destroy();
 
                     this._state.primitiveName = value;
 
-                    this._scheduleVBOUpdate();
+                    this._scheduleGeometryUpdate();
 
                     this._hashDirty = true;
 
@@ -21347,7 +19783,7 @@ visibility.destroy();
                     this._positionsData = value;
                     this._positionsDirty = true;
 
-                    this._scheduleVBOUpdate();
+                    this._scheduleGeometryUpdate();
 
                     if (dirty) {
                         this._hashDirty = true;
@@ -21409,7 +19845,7 @@ visibility.destroy();
                     this._normalsData = value;
                     this._normalsDirty = true;
 
-                    this._scheduleVBOUpdate();
+                    this._scheduleGeometryUpdate();
 
                     if (dirty) {
                         this._hashDirty = true;
@@ -21459,7 +19895,7 @@ visibility.destroy();
                     this._uvData = value;
                     this._uvDirty = true;
 
-                    this._scheduleVBOUpdate();
+                    this._scheduleGeometryUpdate();
 
                     if (dirty) {
                         this._hashDirty = true;
@@ -21509,7 +19945,7 @@ visibility.destroy();
                     this._colorsData = value;
                     this._colorsDirty = true;
 
-                    this._scheduleVBOUpdate();
+                    this._scheduleGeometryUpdate();
 
                     if (dirty) {
                         this._hashDirty = true;
@@ -21574,7 +20010,7 @@ visibility.destroy();
                     this._indicesData = value;
                     this._indicesDirty = true;
 
-                    this._scheduleVBOUpdate();
+                    this._scheduleGeometryUpdate();
 
                     if (dirty) {
                         this._hashDirty = true;
@@ -21641,7 +20077,7 @@ visibility.destroy();
 
                             getPositions: function () {
 
-                                if (self._updateScheduled) {
+                                if (self._updateScheduled || self._geometryUpdateScheduled) {
                                     self._doUpdate();
                                 }
 
@@ -21686,7 +20122,7 @@ visibility.destroy();
 
                     this._normalsDirty = true;
 
-                    this._scheduleVBOUpdate();
+                    this._scheduleGeometryUpdate();
 
                     /**
                      * Fired whenever this Geometry's {{#crossLink "Geometry/autoNormals:property"}}{{/crossLink}} property changes.
@@ -21701,49 +20137,6 @@ visibility.destroy();
                     return this._autoNormals;
                 }
             }
-            //,
-            //
-            ///**
-            // * Set true to make this Geometry automatically generate {{#crossLink "Geometry/tangents:property"}}{{/crossLink}} from
-            // * {{#crossLink "Geometry/uv:property"}}{{/crossLink}} and {{#crossLink "Geometry/normals:property"}}{{/crossLink}}.
-            // *
-            // * This Geomatry will auto-generate its {{#crossLink "Geometry/tangents:property"}}{{/crossLink}} on the
-            // * next {{#crossLink "Scene"}}{{/crossLink}} {{#crossLink "Scene/tick:event"}}{{/crossLink}} event.
-            // *
-            // * Fires a {{#crossLink "Geometry/autoTangents:event"}}{{/crossLink}} event on change.
-            // *
-            // * @property autoTangents
-            // * @default  false
-            // * @type Boolean
-            // */
-            //autoTangents: {
-            //
-            //    set: function (value) {
-            //
-            //        value = !!value;
-            //
-            //        if (this._autoTangents === value) {
-            //            return;
-            //        }
-            //
-            //        this._autoTangents = value;
-            //
-            //        /**
-            //         * Fired whenever this Geometry's {{#crossLink "Geometry/autoTangents:property"}}{{/crossLink}} property changes.
-            //         * @event autoTangents
-            //         * @type Boolean
-            //         * @param value The property's new value
-            //         */
-            //        this.fire("autoTangents", this._primitive);
-            //
-            //        this._scheduleVBOUpdate();
-            //    },
-            //
-            //    get: function () {
-            //        return this._autoTangents;
-            //    }
-            //}
-
         },
 
         _setBoundaryDirty: function () {
@@ -21761,7 +20154,7 @@ visibility.destroy();
 
         _compile: function () {
 
-            if (this._updateScheduled || this._vboUpdateScheduled) {
+            if (this._updateScheduled || this._geometryUpdateScheduled) {
                 this._doUpdate();
             }
 
@@ -21806,8 +20199,8 @@ visibility.destroy();
 
         _getJSON: function () {
 
-            if (this._updateScheduled) {
-                this._update();
+            if (this._updateScheduled || this._geometryUpdateScheduled) {
+                this._doUpdate();
             }
 
             return {
@@ -22506,6 +20899,12 @@ visibility.destroy();
 ;/**
  A **TorusGeometry** defines torus-shaped geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
+ ## Examples
+
+ <ul>
+ <li>[Textured TorusGeometry](../../examples/#geometry_TorusGeometry)</li>
+ </ul>
+
  ## Usage
 
  An {{#crossLink "Entity"}}{{/crossLink}} with a TorusGeometry and a {{#crossLink "PhongMaterial"}}{{/crossLink}} with
@@ -22938,6 +21337,12 @@ visibility.destroy();
 })();
 ;/**
  A **SphereGeometry** defines spherical geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+ ## Examples
+
+ <ul>
+ <li>[Textured SphereGeometry](../../examples/#geometry_SphereGeometry)</li>
+ </ul>
 
  ## Usage
 
@@ -30832,10 +29237,6 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
         _loadSrc: function (src) {
 
-            //var task = this.scene.tasks.create({
-            //    description: "Loading texture"
-            //});
-
             var self = this;
 
             var image = new Image();
@@ -31964,10 +30365,6 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
         _loadSrc: function (src) {
 
-            //var task = this.scene.tasks.create({
-            //    description: "Loading reflect"
-            //});
-
             var self = this;
 
             var image = new Image();
@@ -33043,19 +31440,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                                     this._transformDirty = true;
 
-                                    XEO.scheduleTask(function () {
-
-                                            if (!this._transformDirty) {
-                                                return;
-                                            }
-
-                                            this._attached.transform._buildLeafMatrix();
-
-                                            this._setWorldBoundaryDirty();
-
-                                            this._transformDirty = false;
-                                        },
-                                        this);
+                                    XEO.scheduleTask(this._transformUpdated, this);
                                 },
                                 scope: this
                             },
@@ -33509,6 +31894,16 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
         // Callbacks as members, to avoid GC churn
 
+        _transformUpdated: function () {
+            if (!this._transformDirty) {
+                return;
+            }
+            this._attached.transform._buildLeafMatrix();
+            this._setWorldBoundaryDirty();
+            this._transformDirty = false;
+        },
+
+
         _setWorldBoundaryDirty: function () {
             this._worldBoundaryDirty = true;
             if (this._worldBoundary) {
@@ -33535,11 +31930,15 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
         // Returns true if there is enough on this Entity to render something.
         _valid: function () {
             var geometry = this._attached.geometry;
-            return geometry && geometry.positions && geometry.indices;
+            return !this.destroyed && geometry && geometry.positions && geometry.indices;
 
         },
 
         _compile: function () {
+
+            if (!this._valid()) {
+                return;
+            }
 
             var attached = this._attached;
 
@@ -35341,304 +33740,6 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- * Components for reporting Scene statistics.
- *
- * @module XEO
- * @submodule reporting
- */;/**
- A **Task** represents an asynchronously-running process within a {{#crossLink "Tasks"}}Tasks{{/crossLink}}.
-
- See the {{#crossLink "Tasks"}}{{/crossLink}} documentation for more information.</li>
-
- <img src="../../../assets/images/Task.png"></img>
-
- @class Task
- @module XEO
- @submodule reporting
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.Task = XEO.Component.extend({
-
-        type: "XEO.Task",
-
-        serializable: false,
-
-        _init: function (cfg) {
-
-            this.description = cfg.description || "";
-
-            this.failed = false;
-
-            this.completed = false;
-        },
-
-        /**
-         * Sets this Task as successfully completed.
-         *
-         * Fires a  {{#crossLink "Task/completed:event"}}{{/crossLink}} event on this task, as well as
-         * a {{#crossLink "Tasks/completed:event"}}{{/crossLink}} event on the parent  {{#crossLink "Tasks"}}Task{{/crossLink}}.
-         *
-         * @method setCompleted
-         */
-        setCompleted: function () {
-
-            /**
-             * Fired when this Task has successfully completed.
-             *
-             * @event completed
-             */
-            this.fire("completed", this.completed = true);
-        },
-
-        /**
-         * Sets this Task as having failed.
-         *
-         * Fires a  {{#crossLink "Task/failed:event"}}{{/crossLink}} event on this task, as well as
-         * a {{#crossLink "Tasks/failed:event"}}{{/crossLink}} event on the parent  {{#crossLink "Tasks"}}Tasks{{/crossLink}}.
-         *
-         * @method setFailed
-         */
-        setFailed: function () {
-
-            /**
-             * Fired when this Task has failed to complete successfully.
-             *
-             * @event failed
-             */
-            this.fire("failed", this.failed = true);
-        },
-
-        _destroy: function () {
-            if (!this.completed && this.destroyed) {
-                this.setCompleted();
-            }
-        }
-    });
-
-})();
-;/**
- A **Tasks** tracks general asynchronous tasks running within a {{#crossLink "Scene"}}Scene{{/crossLink}}.
-
- <ul>
- <li>Each {{#crossLink "Scene"}}Scene{{/crossLink}} has a Tasks component, available via the
- {{#crossLink "Scene"}}Scene{{/crossLink}}'s {{#crossLink "Scene/tasks:property"}}tasks{{/crossLink}} property,
- within which it will create and destroy {{#crossLink "Task"}}Task{{/crossLink}} components to indicate what processes
- it's running internally.</li>
-
- <li>You can also manage your own {{#crossLink "Task"}}Task{{/crossLink}} components within that, to indicate what
- application-level processes you are running.</li>
- </ul>
-
- <img src="../../../assets/images/Tasks.png"></img>
-
- ## Usage
-
- This example shows how to manage tasks and subscribe to their life cycles.
-
- ````Javascript
-// Create a Scene
-var scene = new XEO.Scene();
-
-// Get the Tasks tracker
-var tasks = scene.tasks;
-
-// Subscribe to all task creations
-tasks.on("started", function(task) {
-     console.log("Task started: " + task.id +", " + task.description);
-});
-
-// Subscribe to all task completions
-tasks.on("completed", function(task) {
-      console.log("Task completed: " + task.id +", " + task.description);
-});
-
- // Subscribe to all task failures
-tasks.on("failed", function(task) {
-     console.log("Task failed: " + task.id +", " + task.description);
-});
-
-// Create and start Task "foo"
-var taskFoo = tasks.create({
-     id: "foo", // Optional, unique ID generated automatically when omitted
-     description: "Loading something"
-});
-
-// Create and start Task "bar"
-var taskBar = tasks.create({
-     id: "bar",
-     description: "Loading something else"
-});
-
-// Subscribe to completion of Task "foo"
-taskFoo.on("completed", function(task) {
-     console.log("Task completed: " + task.id +", " + task.description);
-});
-
-// Subscribe to failure of a specific task
-taskFoo.on("failed", function(task) {
-     console.log("Task failed: " + task.id +", " + task.description);
-});
-
-// Set Task "foo" as completed, via the Tasks
-// Fires the "completed" handler we registered above, also fires "completed" on the Task itself
-tasks.setCompleted("foo");
-
-// Set Task "bar" as failed, this time directly on the Task in question
-myTask2.setFailed();
-
-````
- @class Tasks
- @module XEO
- @submodule reporting
- @constructor
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.Tasks = XEO.Component.extend({
-
-        type: "XEO.Tasks",
-
-        serializable: false,
-
-        _init: function () {
-
-            this._idMap = new XEO.utils.Map();
-
-            this.tasks = {};
-        },
-
-        /**
-         * Creates and starts a new {{#crossLink "Task"}}Task{{/crossLink}} instance with this Tasks.
-         *
-         * If an ID is given for the new {{#crossLink "Task"}}Task{{/crossLink}} that is already in use for
-         * another, will log an error message and return null.
-         *
-         * On success, fires a {{#crossLink "Tasks/started:event"}}{{/crossLink}} event and returns the new {{#crossLink "Task"}}Task{{/crossLink}}
-         *  instance.
-         *
-         * @method create
-         * @param params Task params.
-         * @param [params.id] {String} Optional unique ID,
-         * internally generated if not supplied.
-         * @param [params.description] {String} Optional description.
-         * @returns {Task|null} The new new {{#crossLink "Task"}}Task{{/crossLink}} instance, or null if there was an ID
-         * clash with an existing {{#crossLink "Task"}}Task{{/crossLink}}.
-         */
-        create: function (params) {
-
-            params = params || {};
-
-            if (params.id) {
-                if (this.tasks[params.id]) {
-                    this.error("Task " + XEO._inQuotes(params.id) + "already exists");
-                    return null;
-                }
-            } else {
-                params.id = this._idMap.addItem({});
-            }
-
-            var task = new XEO.Task(this, params);
-
-            this.tasks[params.id] = task;
-
-            var self = this;
-
-            /**
-             * Fired whenever a Task within this Tasks has successfully completed.
-             *
-             * @event completed
-             * @param {Task} value The task that has completed
-             */
-            task.on("completed",
-                function () {
-                    delete self.tasks[task.id];
-                    self._idMap.removeItem(task.id);
-                    self.fire("completed", task, true);
-                });
-
-            /**
-             * Fired whenever a Task within this Tasks has failed.
-             *
-             * @event failed
-             * @param {Task} value The task that has failed
-             */
-            task.on("failed",
-                function () {
-                    delete self.tasks[task.id];
-                    self._idMap.removeItem(task.id);
-                    self.fire("failed", task, true);
-                });
-
-            self.fire("started", task, true);
-
-            return task;
-        },
-
-        /**
-         * Completes the {{#crossLink "Task"}}Task{{/crossLink}} with the given ID.
-         *
-         * Fires a {{#crossLink "Tasks/completed:event"}}{{/crossLink}} event, as well as separate
-         * {{#crossLink "Task/completed:event"}}{{/crossLink}} event on the {{#crossLink "Task"}}Task{{/crossLink}} itself.
-         *
-         * Logs an error message if no task can be found for the given ID.
-         *
-         * @method setCompleted
-         * @param {String} id ID of the {{#crossLink "Task"}}Task{{/crossLink}} to complete.
-         */
-        setCompleted: function (id) {
-
-            var task = this.tasks[id];
-
-            if (!task) {
-                this.error("Task not found:" + XEO._inQuotes(id));
-                return;
-            }
-
-            task.fire("completed", task, true);
-        },
-
-        /**
-         * Fails the {{#crossLink "Task"}}Task{{/crossLink}} with the given ID.
-         *
-         * Fires a {{#crossLink "Tasks/failed:event"}}{{/crossLink}} event, as well as separate
-         * {{#crossLink "Task/failed:event"}}{{/crossLink}} event on the {{#crossLink "Task"}}Task{{/crossLink}} itself.
-         *
-         * Logs an error message if no task can be found for the given ID.
-         *
-         * @method setFailed
-         * @param {String} id ID of the {{#crossLink "Task"}}Task{{/crossLink}} to fail.
-         */
-        setFailed: function (id) {
-
-            var task = this.tasks[id];
-
-            if (!task) {
-                this.error("Task not found:" + XEO._inQuotes(id));
-                return;
-            }
-
-            task.fire("failed", task, true);
-        },
-
-        clear: function () {
-            for (var id in this.tasks) {
-                if (this.tasks.hasOwnProperty(id)) {
-                    this.tasks[id].setCompleted();
-                }
-            }
-        }
-    });
-
-
-})();
-;/**
  * Components for defining custom GLSL shaders.
  *
  * @module XEO
@@ -36191,238 +34292,6 @@ myTask2.setFailed();
         _getJSON: function () {
             return {
                 params: this._state.params
-            };
-        }
-    });
-
-})();
-;/**
- * Skybox components.
- *
- * @module XEO
- * @submodule skyboxes
- */;/**
- A **Skybox** is a textured box that does not translate with respect to the
- {{#crossLink "Lookat"}}viewing transform{{/crossLink}}, to a provide the appearance of a background
- for associated {{#crossLink "Entities"}}Entities{{/crossLink}}.
-
- ## Examples
-
- <ul>
- <li>[Basic Skybox](../../examples/#skyboxes_skybox)</li>
- <li>[Custom Skybox](../../examples/#skyboxes_customSkybox)</li>
- </ul>
-
- ## Usage
-
- In the example below we're going to create twenty randomly-positioned and colored {{#crossLink "Entity"}}Entities{{/crossLink}}
- and wrap them in a Skybox. The Skybox will use the texture image shown on the left, and the result will appear as shown
- on the right.
-
- <img src="../../assets/images/skyboxMiramarClouds.jpg">&nbsp;&nbsp;<img src="../../assets/images/skyboxScreenshot.png">
-
- ````javascript
- // A bunch of random cube Entities
-
- // Share this BoxGeometry among the Entities
- var boxGeometry = new BoxGeometry();
-
- for (var i = 0; i < 20; i++) {
-        new XEO.Entity({
-            geometry: boxGeometry,
-            transform: new XEO.Translate({
-                xyz: [
-                    Math.random() * 15 - 7,
-                    Math.random() * 15 - 7,
-                    Math.random() * 15 - 7
-                ]
-            }),
-            material: new XEO.PhongMaterial({
-                diffuse: [
-                    Math.random(),
-                    Math.random(),
-                    Math.random()
-                ]
-            })
-        });
-    }
-
- // A Skybox that wraps our Entities in a cloudy background
- var skybox = new XEO.Skybox({
-        src: "textures/skybox/miramarClouds.jpg",
-        size: 1000 // Default
-    });
-
- // Get the default Scene off the Skybox
- var scene = skybox.scene;
-
- // Move the camera back a bit
- scene.camera.view.eye = [0, 0, -30];
-
- // Slowly orbit the camera on each frame
- scene.on("tick", function () {
-         scene.camera.view.rotateEyeY(0.2);
-     });
- ````
-
- @class Skybox
- @module XEO
- @submodule skyboxes
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Skybox within the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted
- @param [cfg] {*} Skybox configuration
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Skybox.
- @param [cfg.src=[null]] {String} Path to skybox texture
- @param [cfg.size=1000] {Number} Size of this Skybox, given as the distance from the center at [0,0,0] to each face.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    XEO.Skybox = XEO.Component.extend({
-
-        type: "XEO.Skybox",
-
-        _init: function (cfg) {
-
-            var cfg2 = {
-
-                geometry: this.create(XEO.Geometry, { // Box-shaped geometry
-                        primitive: "triangles",
-                        positions: [
-                            1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1, // v0-v1-v2-v3 front
-                            1, 1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, // v0-v3-v4-v5 right
-                            1, 1, 1, 1, 1, -1, -1, 1, -1, -1, 1, 1, // v0-v5-v6-v1 top
-                            -1, 1, 1, -1, 1, -1, -1, -1, -1, -1, -1, 1, // v1-v6-v7-v2 left
-                            -1, -1, -1, 1, -1, -1, 1, -1, 1, -1, -1, 1, // v7-v4-v3-v2 bottom
-                            1, -1, -1, -1, -1, -1, -1, 1, -1, 1, 1, -1 // v4-v7-v6-v5 back
-                        ],
-                        uv: [
-                            0.5, 0.6666,
-                            0.25, 0.6666,
-                            0.25, 0.3333,
-                            0.5, 0.3333,
-
-                            0.5, 0.6666,
-                            0.5, 0.3333,
-                            0.75, 0.3333,
-                            0.75, 0.6666,
-
-                            0.5, 0.6666,
-                            0.5, 1,
-                            0.25, 1,
-                            0.25, 0.6666,
-
-                            0.25, 0.6666,
-                            0.0, 0.6666,
-                            0.0, 0.3333,
-                            0.25, 0.3333,
-
-                            0.25, 0,
-                            0.50, 0,
-                            0.50, 0.3333,
-                            0.25, 0.3333,
-
-                            0.75, 0.3333,
-                            1.0, 0.3333,
-                            1.0, 0.6666,
-                            0.75, 0.6666
-                        ],
-                        indices: [
-                            0, 1, 2,
-                            0, 2, 3,
-                            4, 5, 6,
-                            4, 6, 7,
-                            8, 9, 10,
-                            8, 10, 11,
-                            12, 13, 14,
-                            12, 14, 15,
-
-                            16, 17, 18,
-                            16, 18, 19,
-
-                            20, 21, 22,
-                            20, 22, 23
-                        ]
-                    },
-                    "geometryInstance"), // Use same Geometry for all Skyboxes
-
-                transform: this.create(XEO.Scale, { // Scale the box
-                    xyz: [2000, 2000, 2000] // Overridden when we initialize the 'size' property, below
-                }),
-
-                material: this.create(XEO.PhongMaterial, { // Emissive map of sky, no diffuse, ambient or specular reflection
-                        ambient: [0, 0, 0],
-                        diffuse: [0, 0, 0],
-                        specular: [0, 0, 0],
-                        emissiveMap: this.create(XEO.Texture, {
-                            src: cfg.src
-                        })
-                    },
-                    "materialInstance"), // Use same PhongMaterial for all Skyboxes
-
-                stationary: this.create(XEO.Stationary, { // Lock skybox position with respect to viewpoint
-                        active: true
-                    },
-                    "stationaryInstance"), // Use same Stationary for all SkyBoxes
-
-                modes: this.create(XEO.Modes, {
-                        backfaces: true, // Show interior faces of our skybox geometry
-                        pickable: false, // Don't want to ba able to pick skybox
-
-                        // SkyBox does not contribute to the size of any enclosing boundaries
-                        // that might be calculated by xeoEngine, eg. like that returned by XEO.Scene#worldBoundary
-                        collidable: false
-                    },
-                    "modesInstance") // Use same Modes for all Skyboxes
-            };
-
-            this._skyboxEntity = this.create(XEO.Entity, cfg2);
-
-            this.size = cfg.size; // Sets 'xyz' property on the Entity's Scale transform
-        },
-
-        _props: {
-
-            /**
-             * Size of this Skybox, given as the distance from the center at [0,0,0] to each face.
-             *
-             * Fires an {{#crossLink "Skybox/size:event"}}{{/crossLink}} event on change.
-             *
-             * @property size
-             * @default 1000
-             * @type {Number}
-             */
-            size: {
-
-                set: function (value) {
-
-                    this._size = value || 1000;
-
-                    this._skyboxEntity.transform.xyz = [this._size, this._size, this._size];
-
-                    /**
-                     Fired whenever this Skybox's {{#crossLink "Skybox/size:property"}}{{/crossLink}} property changes.
-
-                     @event size
-                     @param value {Array of Number} The property's new value
-                     */
-                    this.fire("size", this._size);
-                },
-
-                get: function () {
-                    return this._size;
-                }
-            }
-        },
-
-        _getJSON: function () {
-            return {
-                src: this._skyboxEntity.material.emissiveMap.src,
-                size: this._size
             };
         }
     });
@@ -37373,12 +35242,15 @@ myTask2.setFailed();
  * @module XEO
  * @submodule transforms
  */;/**
- A **Transform** defines a modelling matrix to transform attached {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
+ A **Transform** is a modelling, viewing or projection transformation.
 
  <ul>
  <li>Sub-classes of Transform include: {{#crossLink "Translate"}}{{/crossLink}},
- {{#crossLink "Scale"}}{{/crossLink}}, {{#crossLink "Rotate"}}{{/crossLink}}, and {{#crossLink "Quaternion"}}{{/crossLink}}</li>
+ {{#crossLink "Scale"}}{{/crossLink}}, {{#crossLink "Rotate"}}{{/crossLink}}, {{#crossLink "Quaternion"}}{{/crossLink}},
+ {{#crossLink "Lookat"}}{{/crossLink}}, {{#crossLink "Perspective"}}{{/crossLink}}, {{#crossLink "Frustum"}}{{/crossLink}}
+ and {{#crossLink "Ortho"}}{{/crossLink}}.</li>
  <li>Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.</li>
+
  <li>When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
  within a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, it will be transformed by each {{#crossLink "Transform"}}{{/crossLink}}
  on the path up to the root, in that order.</li>
@@ -37390,12 +35262,13 @@ myTask2.setFailed();
  ## Examples
 
  <ul>
- <li>[Transform hierarchy](../../examples/#transforms_hierarchy)</li>
+ <li>[Modelling transform hierarchy](../../examples/#transforms_model_hierarchy)</li>
  <li>[Attaching transforms to Models, via constructor](../../examples/#importing_gltf_techniques_configTransform)</li>
  <li>[Attaching transforms to Models, via property](../../examples/#importing_gltf_techniques_attachTransform)</li>
  </ul>
 
  ## Usage
+
 
  In this example we'll create the table shown below, which consists of five {{#crossLink "Entity"}}Entities{{/crossLink}}
  that share a {{#crossLink "BoxGeometry"}}{{/crossLink}} and each connect to a different leaf within a hierarchy of
@@ -37711,6 +35584,8 @@ myTask2.setFailed();
 
                     this._leafMatrixDirty = true;
 
+                    this._renderer.imageDirty = true;
+
                     /**
                      * Fired whenever this Transform's {{#crossLink "Transform/matrix:property"}}{{/crossLink}} property changes.
                      * @event matrix
@@ -37793,7 +35668,7 @@ myTask2.setFailed();
  ## Examples
 
  <ul>
- <li>[Transform hierarchy](../../examples/#transforms_hierarchy)</li>
+ <li>Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)</li>
  </ul>
 
  ## Usage
@@ -37887,7 +35762,7 @@ myTask2.setFailed();
             this.angle = cfg.angle;
         },
 
-        _build: function () {
+        _update: function () {
             this.matrix = XEO.math.rotationMat4v(this._angle * XEO.math.DEGTORAD, this._xyz, this._matrix);
         },
 
@@ -37982,6 +35857,10 @@ myTask2.setFailed();
  </ul>
 
  <img src="../../../assets/images/Quaternion.png"></img>
+
+ <ul>
+ <li>Viewing transform hierarchy](../../examples/#transforms_view_hierarchy)</li>
+ </ul>
 
  ## Usage
 
@@ -38163,7 +36042,8 @@ myTask2.setFailed();
  ## Examples
 
  <ul>
- <li>[Transform hierarchy](../../examples/#transforms_hierarchy)</li>
+ <li>Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)</li>
+ <li>Projection transform hierarchy](../../examples/#transforms_project_hierarchy)</li>
  </ul>
 
  ## Usage
@@ -38255,7 +36135,7 @@ myTask2.setFailed();
             this.xyz = cfg.xyz;
         },
 
-        _build: function () {
+        _update: function () {
             this.matrix = XEO.math.scalingMat4v(this._xyz, this._matrix);
         },
 
@@ -38320,7 +36200,7 @@ myTask2.setFailed();
  ## Examples
 
  <ul>
- <li>[Transform hierarchy](../../examples/#transforms_hierarchy)</li>
+ <li>Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)</li>
  </ul>
 
  ## Usage
@@ -38415,7 +36295,7 @@ myTask2.setFailed();
             this.xyz = cfg.xyz;
         },
 
-        _build: function () {
+        _update: function () {
             this.matrix = XEO.math.translationMat4v(this._xyz, this._matrix);
         },
 
@@ -38786,6 +36666,7 @@ myTask2.setFailed();
  A **Frustum** defines a perspective projection as a frustum-shaped view volume.
 
  <ul>
+ <li>Frustum is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
  {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>A Frustum lets us explicitly set the positions of the left, right, top, bottom, near and far planes, which is useful
@@ -38803,7 +36684,7 @@ myTask2.setFailed();
  ## Examples
 
  <ul>
- <li>[Camera with frustum projection](../../examples/#camera_frustum)</li>
+ <li>[Camera with frustum projection](../../examples/#transforms_project_frustum)</li>
  <li>[Stereo viewing with frustum projection](../../examples/#effects_stereo)</li>
  </ul>
 
@@ -38880,7 +36761,7 @@ myTask2.setFailed();
             this.far = cfg.far;
         },
 
-        _build: function () {
+        _update: function () {
             this.matrix = XEO.math.frustumMat4(
                 this._left,
                 this._right,
@@ -39102,12 +36983,19 @@ myTask2.setFailed();
  vector.
 
  <ul>
+ <li>Lookat is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with projection transforms such as
  {{#crossLink "Perspective"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Lookat components create within xeoEngine's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/Lookat.png"></img>
+
+ ## Examples
+
+ <ul>
+ <li>[Camera with Lookat and Perspective](../../examples/#transforms_project_perspective)</li>
+ </ul>
 
  ## Usage
 
@@ -39179,7 +37067,7 @@ myTask2.setFailed();
             this.gimbalLockY = cfg.gimbalLockY;
         },
 
-        _build: function () {
+        _update: function () {
             this.matrix = XEO.math.lookAtMat4v(this._eye, this._look, this._up, this._matrix);
         },
 
@@ -39484,6 +37372,7 @@ myTask2.setFailed();
  An **Ortho** component defines an orthographic projection transform.
 
  <ul>
+ <li>Ortho is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
  {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>An Ortho works like Blender's orthographic projection, where the positions of the left, right, top and bottom planes are
@@ -39502,7 +37391,7 @@ myTask2.setFailed();
  ## Examples
 
  <ul>
- <li>[Camera with orthographic projection](../../examples/#camera_ortho)</li>
+ <li>[Camera with orthographic projection](../../examples/#transforms_project_ortho)</li>
  </ul>
 
  ## Usage
@@ -39563,7 +37452,7 @@ myTask2.setFailed();
             this._onCanvasBoundary = this.scene.canvas.on("boundary", this._scheduleUpdate, this);
         },
 
-        _build: function () {
+        _update: function () {
 
             var scene = this.scene;
             var scale = this._scale;
@@ -39714,7 +37603,7 @@ myTask2.setFailed();
  A **Perspective** component defines a perspective projection transform.
 
  <ul>
-
+ <li>Perspective is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
  {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>Alternatively, use {{#crossLink "Ortho"}}{{/crossLink}} if you need a orthographic projection.</li>
@@ -39726,7 +37615,7 @@ myTask2.setFailed();
  ## Examples
 
  <ul>
- <li>[Camera with perspective projection](../../examples/#camera_perspective)</li>
+ <li>[Camera with perspective projection](../../examples/#transforms_project_perspective)</li>
  </ul>
 
  ## Usage
@@ -39793,12 +37682,12 @@ myTask2.setFailed();
             this.far = cfg.far;
         },
 
-        _build: function () {
+        _update: function () {
 
             var canvas = this.scene.canvas.canvas;
             var aspect = canvas.clientWidth / canvas.clientHeight;
 
-            this.matrix = XEO.math.perspectiveMatrix4(this._fovy * (Math.PI / 180.0), aspect, this._near, this._far, this._matrix);
+            this.matrix = XEO.math.perspectiveMat4(this._fovy * (Math.PI / 180.0), aspect, this._near, this._far, this._matrix);
         },
 
         _props: {

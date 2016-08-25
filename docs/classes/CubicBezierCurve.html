@@ -50,7 +50,6 @@
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraController.html">CameraController</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
-                                <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -89,6 +88,8 @@
                                 <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
                                 <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
+                                <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
+                                <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -96,7 +97,6 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
-                                <li><a href="../classes/Position3D.html">Position3D</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -111,8 +111,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
-                                <li><a href="../classes/Task.html">Task</a></li>
-                                <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
                                 <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
@@ -121,6 +119,8 @@
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
+                                <li><a href="../classes/ZSpace.html">ZSpace</a></li>
+                                <li><a href="../classes/ZSpaceStylus.html">ZSpaceStylus</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -144,10 +144,10 @@
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/paths.html">paths</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/reporting.html">reporting</a></li>
                                 <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
+                                <li><a href="..//modules/webvr.html">webvr</a></li>
                                 <li><a href="..//modules/XEO.html">XEO</a></li>
                             </ul>
                         </div>
@@ -190,7 +190,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_curves_cubicBezierCurve.js.html#l1"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:1</code></a>
+            Defined in: <a href="../files/examples_js_curves_cubicBezierCurve.js.html#l1"><code>examples&#x2F;js&#x2F;curves&#x2F;cubicBezierCurve.js:1</code></a>
         </div>
 
             Module: <a href="../modules/curves.html">curves</a><br>
@@ -302,7 +302,7 @@ curve.  Note that we need to flatten the points array for consumption by the <a 
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_curves_cubicBezierCurve.js.html#l1"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:1</code></a>
+                <a href="../files/examples_js_curves_cubicBezierCurve.js.html#l1"><code>examples&#x2F;js&#x2F;curves&#x2F;cubicBezierCurve.js:1</code></a>
                 </p>
         
         
@@ -652,18 +652,18 @@ curve.  Note that we need to flatten the points array for consumption by the <a 
     <div class="description">
         <p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 <p>You would typically use this method to conveniently instantiate components that you&#39;d want to
-share (ie. "instance") among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+share (ie. &quot;instance&quot;) among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
 <p>The method is given a component type, configuration and optional instance ID, like so:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(XEO.PhongMaterial, {
      diffuse: [1,0,0],
      specular: [1,1,0]
-}, "myMaterial");
+}, &quot;myMaterial&quot;);
 </code></pre>
 <p>The first time you call this method for the given <code>type</code> and <code>instanceId</code>, this method will create the
 <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, passing the given  attributes to the component&#39;s constructor.</p>
 <p>If you call this method again, specifying the same <code>type</code> and <code>instanceId</code>, the method will return the same
 component instance that it returned the first time, and will ignore the configuration:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
+<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, &quot;myMaterial&quot;);
 </code></pre>
 <p>So inthis example, our <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> will continue to have the red specular
 and diffuse color that we specified the first time.</p>
@@ -745,7 +745,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l1037"><code>src&#x2F;component.js:1037</code></a>
+        <a href="../files/src_component.js.html#l1011"><code>src&#x2F;component.js:1011</code></a>
         </p>
 
 
@@ -934,7 +934,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_curves_cubicBezierCurve.js.html#l288"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:288</code></a>
+        <a href="../files/examples_js_curves_cubicBezierCurve.js.html#l288"><code>examples&#x2F;js&#x2F;curves&#x2F;cubicBezierCurve.js:288</code></a>
         </p>
 
 
@@ -1001,7 +1001,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Curve.html#method_getPoints">Curve</a>:
-        <a href="../files/src_curves_curve.js.html#l154"><code>src&#x2F;curves&#x2F;curve.js:154</code></a>
+        <a href="../files/examples_js_curves_curve.js.html#l154"><code>examples&#x2F;js&#x2F;curves&#x2F;curve.js:154</code></a>
         </p>
 
 
@@ -1068,7 +1068,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Curve.html#method_getTangent">Curve</a>:
-        <a href="../files/src_curves_curve.js.html#l112"><code>src&#x2F;curves&#x2F;curve.js:112</code></a>
+        <a href="../files/examples_js_curves_curve.js.html#l112"><code>examples&#x2F;js&#x2F;curves&#x2F;curve.js:112</code></a>
         </p>
 
 
@@ -1143,12 +1143,12 @@ any subsequent notifications on that location as they are made.</p>
     </div>
 
     <div class="description">
-        <p>Tests if this component is of the given type, or is a subclass of the given type.</p>
-<p>The type may be given as either a string or a component constructor.</p>
-<p>This method works by walking up the inheritance type chain, which this component provides in
+        <p><p>Tests if this component is of the given type, or is a subclass of the given type.</p></p>
+<p><p>The type may be given as either a string or a component constructor.</p></p>
+<p><p>This method works by walking up the inheritance type chain, which this component provides in
 property <a href="../classes/Component.html#property_superTypes" class="crosslink">superTypes</a>, returning true as soon as one of the type strings in
-the chain matches the given type, of false if none match.</p>
-<h4 id="examples-">Examples:</h4>
+the chain matches the given type, of false if none match.</p></p>
+<p><h4 id="examples-">Examples:</h4></p>
 <pre class="code prettyprint"><code class="lang-javascript">var myRotate = new XEO.Rotate({ ... });
 
 myRotate.isType(XEO.Component); // Returns true for all XEO components
@@ -1639,7 +1639,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l976"><code>src&#x2F;component.js:976</code></a>
+                            <a href="../files/src_component.js.html#l950"><code>src&#x2F;component.js:950</code></a>
                             </p>
                     
                     
@@ -1664,7 +1664,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Curve.html#property_length">Curve</a>:
-                            <a href="../files/src_curves_curve.js.html#l98"><code>src&#x2F;curves&#x2F;curve.js:98</code></a>
+                            <a href="../files/examples_js_curves_curve.js.html#l98"><code>examples&#x2F;js&#x2F;curves&#x2F;curve.js:98</code></a>
                             </p>
                     
                     
@@ -1714,7 +1714,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_cubicBezierCurve.js.html#l274"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:274</code></a>
+                            <a href="../files/examples_js_curves_cubicBezierCurve.js.html#l274"><code>examples&#x2F;js&#x2F;curves&#x2F;cubicBezierCurve.js:274</code></a>
                             </p>
                     
                     
@@ -1769,7 +1769,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l1004"><code>src&#x2F;component.js:1004</code></a>
+                            <a href="../files/src_component.js.html#l978"><code>src&#x2F;component.js:978</code></a>
                             </p>
                     
                     
@@ -1806,7 +1806,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     <p>For example, if this component is a <a href="../classes/Rotate.html" class="crosslink">Rotate</a>, which
                     extends <a href="../classes/Transform.html" class="crosslink">Transform</a>, which in turn extends <a href="../classes/Component.html" class="crosslink">Component</a>,
                     then this property will have the value:</p>
-                    <pre class="code prettyprint"><code class="lang-json">["XEO.Component", "XEO.Transform"]
+                    <pre class="code prettyprint"><code class="lang-json">[&quot;XEO.Component&quot;, &quot;XEO.Transform&quot;]
                     </code></pre>
                     <p>Note that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.</p>
                     
@@ -1829,7 +1829,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Curve
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_curves_cubicBezierCurve.js.html#l242"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:242</code></a>
+                            <a href="../files/examples_js_curves_cubicBezierCurve.js.html#l242"><code>examples&#x2F;js&#x2F;curves&#x2F;cubicBezierCurve.js:242</code></a>
                             </p>
                     
                     
@@ -1857,7 +1857,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Curve.html#property_tangent">Curve</a>:
-                            <a href="../files/src_curves_curve.js.html#l84"><code>src&#x2F;curves&#x2F;curve.js:84</code></a>
+                            <a href="../files/examples_js_curves_curve.js.html#l84"><code>examples&#x2F;js&#x2F;curves&#x2F;curve.js:84</code></a>
                             </p>
                     
                     
@@ -1886,7 +1886,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_curves_cubicBezierCurve.js.html#l111"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:111</code></a>
+                            <a href="../files/examples_js_curves_cubicBezierCurve.js.html#l111"><code>examples&#x2F;js&#x2F;curves&#x2F;cubicBezierCurve.js:111</code></a>
                             </p>
                     
                     
@@ -1911,7 +1911,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_cubicBezierCurve.js.html#l134"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:134</code></a>
+                            <a href="../files/examples_js_curves_cubicBezierCurve.js.html#l134"><code>examples&#x2F;js&#x2F;curves&#x2F;cubicBezierCurve.js:134</code></a>
                             </p>
                     
                     
@@ -1938,7 +1938,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_cubicBezierCurve.js.html#l161"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:161</code></a>
+                            <a href="../files/examples_js_curves_cubicBezierCurve.js.html#l161"><code>examples&#x2F;js&#x2F;curves&#x2F;cubicBezierCurve.js:161</code></a>
                             </p>
                     
                     
@@ -1965,7 +1965,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_cubicBezierCurve.js.html#l188"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:188</code></a>
+                            <a href="../files/examples_js_curves_cubicBezierCurve.js.html#l188"><code>examples&#x2F;js&#x2F;curves&#x2F;cubicBezierCurve.js:188</code></a>
                             </p>
                     
                     
@@ -1992,7 +1992,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_cubicBezierCurve.js.html#l215"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:215</code></a>
+                            <a href="../files/examples_js_curves_cubicBezierCurve.js.html#l215"><code>examples&#x2F;js&#x2F;curves&#x2F;cubicBezierCurve.js:215</code></a>
                             </p>
                     
                     
@@ -2025,7 +2025,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1095"><code>src&#x2F;component.js:1095</code></a>
+                            <a href="../files/src_component.js.html#l1069"><code>src&#x2F;component.js:1069</code></a>
                             </p>
                     
                     
@@ -2053,7 +2053,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Curve
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_curves_cubicBezierCurve.js.html#l260"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:260</code></a>
+                            <a href="../files/examples_js_curves_cubicBezierCurve.js.html#l260"><code>examples&#x2F;js&#x2F;curves&#x2F;cubicBezierCurve.js:260</code></a>
                             </p>
                     
                     
@@ -2096,7 +2096,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_cubicBezierCurve.js.html#l147"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:147</code></a>
+                            <a href="../files/examples_js_curves_cubicBezierCurve.js.html#l147"><code>examples&#x2F;js&#x2F;curves&#x2F;cubicBezierCurve.js:147</code></a>
                             </p>
                     
                     
@@ -2139,7 +2139,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_cubicBezierCurve.js.html#l174"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:174</code></a>
+                            <a href="../files/examples_js_curves_cubicBezierCurve.js.html#l174"><code>examples&#x2F;js&#x2F;curves&#x2F;cubicBezierCurve.js:174</code></a>
                             </p>
                     
                     
@@ -2182,7 +2182,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_cubicBezierCurve.js.html#l201"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:201</code></a>
+                            <a href="../files/examples_js_curves_cubicBezierCurve.js.html#l201"><code>examples&#x2F;js&#x2F;curves&#x2F;cubicBezierCurve.js:201</code></a>
                             </p>
                     
                     
@@ -2225,7 +2225,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_curves_cubicBezierCurve.js.html#l228"><code>src&#x2F;curves&#x2F;cubicBezierCurve.js:228</code></a>
+                            <a href="../files/examples_js_curves_cubicBezierCurve.js.html#l228"><code>examples&#x2F;js&#x2F;curves&#x2F;cubicBezierCurve.js:228</code></a>
                             </p>
                     
                     

@@ -3,12 +3,65 @@
     "use strict";
 
     /**
-     An **ObjGeometry** is a Geometry that's loaded from a
+     An **ObjGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that's loaded from a
      <a href="https://en.wikipedia.org/wiki/Wavefront_.obj_file" target = "_other">Wavefront .OBJ</a> file.
+
+     ## Examples
+
+     <ul>
+     <li>[Importing a Raptor from OBJ](../../examples/#importing_obj_raptor)</li>
+     </ul>
+
+     ## Usage
+
+     ````javascript
+     var entity = new XEO.Entity({
+
+        geometry: new XEO.OBJGeometry({
+            src: "models/obj/raptor.obj"
+        }),
+
+        material: new XEO.PhongMaterial({
+            diffuseMap: new XEO.Texture({
+                src: "models/obj/raptor.jpg"
+            })
+        }),
+
+        transform: new XEO.Rotate({
+            xyz: [1, 0, 0],
+            angle: 0,
+
+            parent: new XEO.Translate({
+                xyz: [10, 3, 10]
+            })
+        })
+     });
+
+     // When the OBJGeometry has loaded,
+     // fly the camera to fit the entity in view
+
+     var cameraFlight = new XEO.CameraFlight();
+
+     entity.geometry.on("loaded", function () {
+
+             cameraFlight.flyTo({
+                 aabb: entity.worldBoundary.aabb
+             });
+         });
+     ````
 
      @class OBJGeometry
      @module XEO
-     @extends Component
+     @submodule geometry
+     @constructor
+     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this OBJGeometry in the default
+     {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+     @param [cfg] {*} Configs
+     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+     generated automatically when omitted.
+     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this OBJGeometry.
+     @param [cfg.src] {String} Path to the .OBJ file.
+     @extends Geometry
      */
     XEO.OBJGeometry = XEO.Geometry.extend({
 

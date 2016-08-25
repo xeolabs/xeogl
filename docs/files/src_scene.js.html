@@ -50,7 +50,6 @@
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraController.html">CameraController</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
-                                <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -89,6 +88,8 @@
                                 <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
                                 <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
+                                <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
+                                <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -96,7 +97,6 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
-                                <li><a href="../classes/Position3D.html">Position3D</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -111,8 +111,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
-                                <li><a href="../classes/Task.html">Task</a></li>
-                                <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
                                 <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
@@ -121,6 +119,8 @@
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
+                                <li><a href="../classes/ZSpace.html">ZSpace</a></li>
+                                <li><a href="../classes/ZSpaceStylus.html">ZSpaceStylus</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -144,10 +144,10 @@
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/paths.html">paths</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/reporting.html">reporting</a></li>
                                 <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
+                                <li><a href="..//modules/webvr.html">webvr</a></li>
                                 <li><a href="..//modules/XEO.html">XEO</a></li>
                             </ul>
                         </div>
@@ -337,6 +337,20 @@
  {{#crossLink &quot;XEO&quot;}}XEO{{/crossLink}} entity&#x27;s {{#crossLink &quot;XEO/scene:property&quot;}}scene{{/crossLink}} property. Expect to
  see the HTML canvas for the default Scene magically appear in the page when you do that.
 
+ ## &lt;a name=&quot;webgl2&quot;&gt;WebGL 2&lt;/a&gt;
+
+ By default, our Scene will attempt to use WebGL 2. If that&#x27;s not supported then it will fall back on WebGL 1, if available.
+ You can force the Scene to use WebGL 1 by supplying this property to teh Scene&#x27;s constructor:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ var scene = new XEO.Scene({
+     webgl2: false // Default is true
+ });
+
+ // We can then check this property on the Canvas to see if WebGL 2 is supported:
+ var gotWebGL2 = scene.canvas.webgl2; // True if we have WebGL 2
+ &#x60;&#x60;&#x60;&#x60;
+
  ## &lt;a name=&quot;savingAndLoading&quot;&gt;Saving and Loading Scenes&lt;/a&gt;
 
  The entire runtime state of a Scene can be serialized and deserialized to and from JSON. This means you can create a
@@ -351,12 +365,11 @@
       json: json
   });
 
- &#x60;&#x60;&#x60;&#x60;
-
  ***Note:*** this will save your {{#crossLink &quot;Geometry&quot;}}Geometry{{/crossLink}}s&#x27; array properties
  ({{#crossLink &quot;Geometry/positions:property&quot;}}positions{{/crossLink}}, {{#crossLink &quot;Geometry/normals:property&quot;}}normals{{/crossLink}},
  {{#crossLink &quot;Geometry/indices:property&quot;}}indices{{/crossLink}} etc) as JSON arrays, which may stress your browser
  if those arrays are huge.
+
 
  @class Scene
  @module XEO
@@ -365,6 +378,8 @@
  @param [cfg.id] {String} Optional ID, unique among all Scenes in xeoEngine, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Scene.
  @param [cfg.canvasId] {String} ID of existing HTML5 canvas in the DOM - creates a full-page canvas automatically if this is omitted
+ @param [cfg.webgl2=true] {Boolean} Set this false when we **don&#x27;t** want to use WebGL 2 for our Scene; the Scene will fall
+ back on WebGL 1 if not available. This property will be deprecated when WebGL 2 is supported everywhere.
  @param [cfg.components] {Array(Object)} JSON array containing parameters for {{#crossLink &quot;Component&quot;}}Component{{/crossLink}} subtypes to immediately create within the Scene.
  @param [cfg.passes=1] The number of times this Scene renders per frame.
  @extends Component
@@ -470,6 +485,8 @@
              */
             this.canvas = new XEO.Canvas(this, {
                 canvas: cfg.canvas, // Can be canvas ID, canvas element, or null
+                transparent: cfg.transparent,
+                webgl2: cfg.webgl2 !== false,
                 contextAttr: cfg.contextAttr || {}
             });
 
@@ -503,15 +520,6 @@
             this.input = new XEO.Input(this, {
                 element: this.canvas.overlay
             });
-
-            /**
-             * Tracks any asynchronous tasks that occur within this Scene.
-             * @final
-             * @property tasks
-             * @type {Tasks}
-             * @final
-             */
-            this.tasks = new XEO.Tasks(this);
 
             // Register Scene on engine
             // Do this BEFORE we add components below
@@ -702,8 +710,16 @@
             // Whenever the Entity signals dirty,
             // schedule its recompilation into the renderer
 
+            var self = this;
+
             if (!this._dirtyEntities[entity.id]) {
+
                 this._dirtyEntities[entity.id] = entity;
+
+                XEO.scheduleTask(function() {
+                    entity._compile();
+                    delete self._dirtyEntities[entity.id];
+                });
             }
         },
 
@@ -747,7 +763,10 @@
 
                     clear = (pass === 0);
 
-                    this._compile(pass, clear, true); // Render, maybe rebuild draw list first
+                    this._renderer.render({
+                        pass: pass,
+                        clear: clear !== false
+                    });
 
                     /**
                      * Fired when we have just rendered a frame for a Scene.
@@ -1694,7 +1713,7 @@
                             worldPos[2] = tempVec4b[2];
 
                             hit.worldPos = worldPos;
-                            
+
                             // Get View-space cartesian coordinates of the ray-triangle intersection
 
                             math.transformVec4(entity.camera.view.matrix, worldPos, tempVec4c);
@@ -1915,55 +1934,6 @@
             }
 
             component.destroy();
-        },
-
-        /**
-         * Compiles and renders this Scene
-         * @private
-         */
-        _compile: function (pass, clear, forceRender) {
-
-            // Compile dirty entities into this._renderer
-
-            var countCompiledEntities = 0;
-
-            //var time1 = Date.now();
-            var entity;
-
-            for (var id in this._dirtyEntities) {
-                if (this._dirtyEntities.hasOwnProperty(id)) {
-
-                    entity = this._dirtyEntities[id];
-
-                    if (entity._valid()) {
-
-                        entity._compile();
-
-                        delete this._dirtyEntities[id];
-
-                        countCompiledEntities++;
-                    }
-                    //if (Date.now() - time1 &gt; 30) {
-                    //
-                    //    // Throttle the time we spend (re)compiling Entities each frame
-                    //
-                    //    break;
-                    //}
-                }
-            }
-
-            if (countCompiledEntities &gt; 0) {
-                //    this.log(&quot;Compiled &quot; + countCompiledEntities + &quot; XEO.Entity&quot; + (countCompiledEntities &gt; 1 ? &quot;s&quot; : &quot;&quot;));
-            }
-
-            // Render a frame
-            // Only renders if there was a state update
-
-            this._renderer.render({
-                pass:pass,
-                clear: clear !== false, // Clear buffers?
-                force: forceRender // Render frame even if no state updates?
-            });
         },
 
         _getJSON: function () {

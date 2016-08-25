@@ -71,6 +71,8 @@
 
             this._super(cfg);
 
+            // Create helper entity to show stylus in the 3D view
+
             this._modes = this.create(XEO.Modes, {
                 pickable: false,
                 collidable: false,
@@ -141,12 +143,51 @@
                         component: value,
                         sceneDefault: false,
                         on: {
-                            stylusMoved: function () {
-                                self.log("stylusMoved");
-                                self._quaternion.xyzw = this.stylusOrientation;
-                                self._translate.xyz = this.stylusPos;
-                                self._visibility.visible = true;
-                            },
+
+                            stylusMoved: (function () {
+
+                                var stylusWorldMat = math.mat4();
+                                var pos = math.vec3();
+                                var dir = math.vec3();
+
+                                return function () {
+
+                                    math.mulMat4(this.camera.view.matrix, this.stylusCameraMatrix, stylusWorldMat);
+
+                                    pos[0] = stylusWorldMat[12];
+                                    pos[1] = stylusWorldMat[13];
+                                    pos[2] = stylusWorldMat[14];
+
+                                    dir[0] = -stylusWorldMat[8];
+                                    dir[1] = -stylusWorldMat[9];
+                                    dir[2] = -stylusWorldMat[10];
+
+                                    math.normalizeVec3(dir);
+
+                                    //raycaster.set(pos, dir);
+                                    //
+                                    //if (draggingObject == null) {
+                                    //    intersects = raycaster.intersectObjects(scene.children, true);
+                                    //
+                                    //    var hit = false;
+                                    //    stylusLength = 0.5 * zspace.viewerScale;
+                                    //    objectHit = null;
+                                    //    for (var i = 0; i < intersects.length; i++) {
+                                    //        if (intersects[i].object != stylusLine) {
+                                    //            stylusLength = intersects[i].distance;
+                                    //            objectHit = intersects[i].object;
+                                    //            hit = true;
+                                    //            break;
+                                    //        }
+                                    //    }
+                                    //}
+
+
+                                    //self._quaternion.xyzw = this.stylusOrientation;
+                                    self._translate.xyz = pos;
+                                    self._visibility.visible = true;
+                                };
+                            })(),
 
                             stylusButton0: function (value) { // TODO: Show on helper
                                 self.log("stylusButton0");

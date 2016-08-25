@@ -50,7 +50,6 @@
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraController.html">CameraController</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
-                                <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
@@ -89,6 +88,8 @@
                                 <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
                                 <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
                                 <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
+                                <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
+                                <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
@@ -96,7 +97,6 @@
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
-                                <li><a href="../classes/Position3D.html">Position3D</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
@@ -111,8 +111,6 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
-                                <li><a href="../classes/Task.html">Task</a></li>
-                                <li><a href="../classes/Tasks.html">Tasks</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
                                 <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
@@ -121,6 +119,8 @@
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
+                                <li><a href="../classes/ZSpace.html">ZSpace</a></li>
+                                <li><a href="../classes/ZSpaceStylus.html">ZSpaceStylus</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -144,10 +144,10 @@
                                 <li><a href="..//modules/math.html">math</a></li>
                                 <li><a href="..//modules/paths.html">paths</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/reporting.html">reporting</a></li>
                                 <li><a href="..//modules/shaders.html">shaders</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
+                                <li><a href="..//modules/webvr.html">webvr</a></li>
                                 <li><a href="..//modules/XEO.html">XEO</a></li>
                             </ul>
                         </div>
@@ -204,12 +204,18 @@
 <a href="../classes/Lookat.html#property_look" class="crosslink">look</a> position and an <a href="../classes/Lookat.html#property_up" class="crosslink">up</a>
 vector.</p>
 <ul>
+<li>Lookat is a sub-class of <a href="../classes/Transform.html" class="crosslink">Transform</a>.</li>
 <li><a href="../classes/Camera.html" class="crosslink">Camera</a> components pair these with projection transforms such as
 <a href="../classes/Perspective.html" class="crosslink">Perspective</a>, to define viewpoints on attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</li>
 <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Lookat components create within xeoEngine&#39;s shaders.</li>
 </ul>
 
 <p><img src="../../../assets/images/Lookat.png"></img></p>
+<h2 id="examples">Examples</h2>
+<ul>
+<li><a href="../../examples/#transforms_project_perspective">Camera with Lookat and Perspective</a></li>
+</ul>
+
 <h2 id="usage">Usage</h2>
 <pre class="code prettyprint"><code class="lang-Javascript">new XEO.Entity({
 
@@ -693,7 +699,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l1037"><code>src&#x2F;component.js:1037</code></a>
+        <a href="../files/src_component.js.html#l1011"><code>src&#x2F;component.js:1011</code></a>
         </p>
 
 
@@ -1334,7 +1340,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_lookat.js.html#l279"><code>src&#x2F;transforms&#x2F;lookat.js:279</code></a>
+                            <a href="../files/src_transforms_lookat.js.html#l286"><code>src&#x2F;transforms&#x2F;lookat.js:286</code></a>
                             </p>
                     
                     
@@ -1361,7 +1367,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_lookat.js.html#l248"><code>src&#x2F;transforms&#x2F;lookat.js:248</code></a>
+                            <a href="../files/src_transforms_lookat.js.html#l255"><code>src&#x2F;transforms&#x2F;lookat.js:255</code></a>
                             </p>
                     
                     
@@ -1440,7 +1446,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l976"><code>src&#x2F;component.js:976</code></a>
+                            <a href="../files/src_component.js.html#l950"><code>src&#x2F;component.js:950</code></a>
                             </p>
                     
                     
@@ -1465,7 +1471,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_lookat.js.html#l310"><code>src&#x2F;transforms&#x2F;lookat.js:310</code></a>
+                            <a href="../files/src_transforms_lookat.js.html#l317"><code>src&#x2F;transforms&#x2F;lookat.js:317</code></a>
                             </p>
                     
                     
@@ -1495,7 +1501,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Transform
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_transforms_transform.js.html#l323"><code>src&#x2F;transforms&#x2F;transform.js:323</code></a>
+                            <a href="../files/src_transforms_transform.js.html#l327"><code>src&#x2F;transforms&#x2F;transform.js:327</code></a>
                             </p>
                     
                     
@@ -1547,7 +1553,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Transform.html#property_parent">Transform</a>:
-                            <a href="../files/src_transforms_transform.js.html#l267"><code>src&#x2F;transforms&#x2F;transform.js:267</code></a>
+                            <a href="../files/src_transforms_transform.js.html#l271"><code>src&#x2F;transforms&#x2F;transform.js:271</code></a>
                             </p>
                     
                     
@@ -1603,7 +1609,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l1004"><code>src&#x2F;component.js:1004</code></a>
+                            <a href="../files/src_component.js.html#l978"><code>src&#x2F;component.js:978</code></a>
                             </p>
                     
                     
@@ -1689,7 +1695,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_lookat.js.html#l341"><code>src&#x2F;transforms&#x2F;lookat.js:341</code></a>
+                            <a href="../files/src_transforms_lookat.js.html#l348"><code>src&#x2F;transforms&#x2F;lookat.js:348</code></a>
                             </p>
                     
                     
@@ -1722,7 +1728,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1095"><code>src&#x2F;component.js:1095</code></a>
+                            <a href="../files/src_component.js.html#l1069"><code>src&#x2F;component.js:1069</code></a>
                             </p>
                     
                     
@@ -1747,7 +1753,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_lookat.js.html#l296"><code>src&#x2F;transforms&#x2F;lookat.js:296</code></a>
+                            <a href="../files/src_transforms_lookat.js.html#l303"><code>src&#x2F;transforms&#x2F;lookat.js:303</code></a>
                             </p>
                     
                     
@@ -1789,7 +1795,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_lookat.js.html#l265"><code>src&#x2F;transforms&#x2F;lookat.js:265</code></a>
+                            <a href="../files/src_transforms_lookat.js.html#l272"><code>src&#x2F;transforms&#x2F;lookat.js:272</code></a>
                             </p>
                     
                     
@@ -1831,7 +1837,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_lookat.js.html#l327"><code>src&#x2F;transforms&#x2F;lookat.js:327</code></a>
+                            <a href="../files/src_transforms_lookat.js.html#l334"><code>src&#x2F;transforms&#x2F;lookat.js:334</code></a>
                             </p>
                     
                     
@@ -1873,7 +1879,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Transform.html#event_matrix">Transform</a>:
-                            <a href="../files/src_transforms_transform.js.html#l340"><code>src&#x2F;transforms&#x2F;transform.js:340</code></a>
+                            <a href="../files/src_transforms_transform.js.html#l346"><code>src&#x2F;transforms&#x2F;transform.js:346</code></a>
                             </p>
                     
                     
@@ -1915,7 +1921,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Transform.html#event_parent">Transform</a>:
-                            <a href="../files/src_transforms_transform.js.html#l303"><code>src&#x2F;transforms&#x2F;transform.js:303</code></a>
+                            <a href="../files/src_transforms_transform.js.html#l307"><code>src&#x2F;transforms&#x2F;transform.js:307</code></a>
                             </p>
                     
                     
@@ -1957,7 +1963,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_transforms_lookat.js.html#l356"><code>src&#x2F;transforms&#x2F;lookat.js:356</code></a>
+                            <a href="../files/src_transforms_lookat.js.html#l363"><code>src&#x2F;transforms&#x2F;lookat.js:363</code></a>
                             </p>
                     
                     
@@ -1999,7 +2005,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Transform.html#event_updated">Transform</a>:
-                            <a href="../files/src_transforms_transform.js.html#l203"><code>src&#x2F;transforms&#x2F;transform.js:203</code></a>
+                            <a href="../files/src_transforms_transform.js.html#l207"><code>src&#x2F;transforms&#x2F;transform.js:207</code></a>
                             </p>
                     
                     
