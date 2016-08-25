@@ -10648,15 +10648,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             // Attached components keyed to IDs
             this._attachments = {};
 
-            // Pub/sub
+            // Events
             this._handleMap = new XEO.utils.Map(); // Subscription handle pool
             this._handleEvents = {}; // Subscription handles mapped to event names
             this._eventSubs = {}; // Event names mapped to subscribers
-
-            this._events = {}; // Maps locations to publications
-
+            this._events = {}; // Maps names to events
             this._eventCallDepth = 0; // Helps us catch stack overflows from recursive events
 
+            // Components created with #create
             this._sharedComponents = {};
 
             if (this.scene && this.type !== "XEO.Scene") { // HACK: Don't add scene to itself
@@ -10667,10 +10666,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 this.scene._addComponent(this);
             }
 
+            // True when #_update will be called on next tick
             this._updateScheduled = false;
 
-            // Initialize this component using the configs
-
+            // Initialize this component
             if (this._init) {
                 this._init(cfg);
             }
@@ -10844,7 +10843,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             }
             return handle;
         },
-
+        
         /**
          * Cancels an event subscription that was previously made with {{#crossLink "Component/on:method"}}{{/crossLink}} or
          * {{#crossLink "Component/once:method"}}{{/crossLink}}.
@@ -11210,7 +11209,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          * var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
          * ````
          *
-         * So inthis example, our {{#crossLink "PhongMaterial"}}{{/crossLink}} will continue to have the red specular
+         * So in this example, our {{#crossLink "PhongMaterial"}}{{/crossLink}} will continue to have the red specular
          * and diffuse color that we specified the first time.
          *
          * Each time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a
