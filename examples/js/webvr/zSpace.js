@@ -153,7 +153,7 @@
  @param [cfg.farClip=10000] {Number} Position of the far clipping plane on the View-space Z-axis.
  @param [cfg.viewerScale=1000] {Number} The viewer scale factor.
  @param [cfg.autoViewerScale=true] {Boolean} Set true to automatically size {{#crossLink "ZSpace/viewerScale:property"}}{{/crossLink}} to fit
-  everything in the {{#crossLink "Scene"}}{{/crossLink}}.
+ everything in the {{#crossLink "Scene"}}{{/crossLink}}.
  @param [cfg.displaySize=0.521,0.293] {Array of Number} The viewer display size.
  @param [cfg.displayResolution=1920,1080] {Array of Number} The viewer display resolution.
  @param [cfg.active=true] {Boolean} Whether or not this ZSpace is initially active.
@@ -209,7 +209,7 @@
             this._stylusCameraMatrix = math.identityMat4();
 
             // Stereo drawing framebuffer
-            this._frameBufferCreated = false; // True when allocated
+            this._frameBufferAllocated = false; // True when allocated
             this._frameBuffer = null;
             this._frameBufferTexture = null;
             this._frameBufferDepthTexture = null;
@@ -754,7 +754,7 @@
             });
 
             this._onWebGLContextRestored = this.scene.canvas.on("webglContextRestored", function () {
-                self._frameBufferCreated = false; // Framebuffers were destroyed by context loss, reallocate next time we bind
+                self._frameBufferAllocated = false; // Framebuffers were destroyed by context loss, reallocate next time we bind
             });
 
             // Intercept each render with a callback; we'll get two invocations
@@ -769,20 +769,22 @@
                 if (!self._supported) { // Support not found yet
                     return;
                 }
-                //   self._bindFrameBuffer(pass); // pass will be 0 for left or 1 for right
+            //    self._bindFrameBuffer(pass); // pass will be 0 for left or 1 for right
             };
 
-            this._renderer.unbindOutputFramebuffer = function () {
+            this._renderer.unbindOutputFramebuffer = function (pass) {
                 if (!self._supported) { // Support not found yet
                     return;
                 }
-                //  self._unbindFrameBuffer();
+                if (pass === 1) { // Unbind after right eye pass
+              //      self._unbindFrameBuffer();
+                }
             };
         },
 
         _bindFrameBuffer: function (pass) { // Activates stereo output framebuffer, lazy-allocating it if needed
-            if (!this._frameBufferCreated) { // Becomes false on "webglContextRestored" event and when canvas resized
-                this._createFrameBuffer();
+            if (!this._frameBufferAllocated) { // Becomes false on "webglContextRestored" event and when canvas resized
+                this._allocateFrameBuffer();
             }
             // this.log("Binding stereo framebuffer - pass = " + pass);
             var gl = this.scene.canvas.gl;
@@ -794,14 +796,14 @@
             gl.framebufferTextureLayer(gl.DRAW_FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, this._frameBufferDepthTexture, 0, pass);
         },
 
-        _createFrameBuffer: function () { // Allocates stereo output framebuffer
+        _allocateFrameBuffer: function () { // Allocates stereo output framebuffer
 
             var gl = this.scene.canvas.gl;
             var canvas = this.scene.canvas.canvas;
             var width = canvas.clientWidth;
             var height = canvas.clientHeight;
 
-            this.log("Creating stereo framebuffer - size = " + width + ", " + height);
+            // this.log("Creating stereo framebuffer - size = " + width + ", " + height);
 
             this._frameBufferTexture = gl.createTexture();
             gl.bindTexture(gl.TEXTURE_2D_ARRAY, this._frameBufferTexture);
@@ -820,25 +822,26 @@
             gl.bindTexture(gl.TEXTURE_2D_ARRAY, this._frameBufferDepthTexture);
             gl.texImage3D(gl.TEXTURE_2D_ARRAY, 0, gl.DEPTH24_STENCIL8, width, height, 2, 0, gl.DEPTH_STENCIL, gl.UNSIGNED_INT_24_8, null);
             gl.framebufferTextureLayer(gl.DRAW_FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, this._frameBufferDepthTexture, 0, 0);
+
             gl.setStereoFramebuffer(this._frameBuffer, this._frameBufferTexture);
 
-            this._frameBufferCreated = true;
+            this._frameBufferAllocated = true;
         },
 
         _destroyFrameBuffer: function () { // Called on deactivation to destroy stereo framebuffer
 
-            if (!this._frameBufferCreated) {
+            if (!this._frameBufferAllocated) {
                 return;
             }
 
-            this.log("Destroying stereo framebuffer");
+            //this.log("Destroying stereo framebuffer");
 
             var gl = this.scene.canvas.gl;
 
             gl.deleteTexture(this._frameBufferDepthTexture);
             gl.deleteFramebuffer(this._frameBuffer);
 
-            this._frameBufferCreated = false;
+            this._frameBufferAllocated = false;
         },
 
         _unbindFrameBuffer: function () { // Deactivates stereo output framebuffer
@@ -881,10 +884,12 @@
             }
 
             // If we have not yet configured the scene to do two passes per frame,
-            // then configure it now and come back on the next render
+            // then configure it now and come back on the next render.
+            // Note that we also configure the scene to clear the framebuffer before each pass.
 
-            if (this.scene.passes !== 2) {
+            if (this.scene.passes !== 2 || !this.scene.clearEachPass) {
                 this.scene.passes = 2;
+                this.scene.clearEachPass = true;
                 return;
             }
 
@@ -969,12 +974,12 @@
 
                 // Viewer scale matrix
 
-                if (this._autoViewerScaleDirty) {
-                    this._autoViewerScaleDirty = false;
-                    var boundary = this.scene.worldBoundary;
-                   // this.viewerOrigin = boundary.center;
-                    this.viewerScale = math.getAABBDiag(boundary.aabb); // Fire update events etc.
-                }
+                //if (this._autoViewerScaleDirty) {
+                //    this._autoViewerScaleDirty = false;
+                //    var boundary = this.scene.worldBoundary;
+                //    // this.viewerOrigin = boundary.center;
+                //    this.viewerScale = math.getAABBDiag(boundary.aabb); // Fire update events etc.
+                //}
 
                 scale[0] = this._viewerScale;
                 scale[1] = this._viewerScale;
@@ -1128,8 +1133,7 @@
 
             var scene = this.scene;
 
-            scene.passes = 1;
-            scene.stereo = false;
+            scene.passes = 1; // Don't need to restore scene.clearEachPass
 
             if (this._oldView) { // Transforms were replaced on camera when activating - restore old transforms
                 this._attached.camera.view = this._oldView;

@@ -323,7 +323,10 @@
             var scene = this.scene;
 
             // Configure Scene to render twice for each frame
+            // and only clear the frame before the first pass
+
             scene.passes = 2;
+            scene.clearEachPass = false;
 
             var canvasBoundary;
 
@@ -472,7 +475,7 @@
         _deactivate: function () {
             var scene = this.scene;
 
-            scene.passes = 1;
+            scene.passes = 1; // Don't need to restore scene.clearEachPass
 
             scene.off(this._onSceneRendering);
             scene.off(this._onSceneRendered);

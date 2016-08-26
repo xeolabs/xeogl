@@ -1220,7 +1220,8 @@
         }
 
         if (params.clear) {
-            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+            //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         }
 
         gl.frontFace(gl.CCW);
@@ -1274,7 +1275,7 @@
             frameStats.bindArray = frameCtx.bindArray;
         }
 
-      //  gl.finish();
+        //  gl.finish();
 
         if (frameCtx.renderBuf) {
             frameCtx.renderBuf.unbind();
@@ -1288,7 +1289,7 @@
         }
 
         if (outputFramebuffer) {
-            this.unbindOutputFramebuffer();
+            this.unbindOutputFramebuffer(params.pass);
         }
 
         frameStats.drawChunks = this._drawChunkListLen;

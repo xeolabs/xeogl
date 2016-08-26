@@ -194,6 +194,8 @@
  back on WebGL 1 if not available. This property will be deprecated when WebGL 2 is supported everywhere.
  @param [cfg.components] {Array(Object)} JSON array containing parameters for {{#crossLink "Component"}}Component{{/crossLink}} subtypes to immediately create within the Scene.
  @param [cfg.passes=1] The number of times this Scene renders per frame.
+ @param [cfg.clearEachPass=false] When doing multiple passes per frame, specifies whether to clear the
+  canvas before each pass (true) or just before the first pass (false).
  @extends Component
  */
 (function () {
@@ -306,10 +308,6 @@
             this.canvas.on("boundary",
                 function () {
                     self._renderer.imageDirty = true;
-                    self._renderer.render({ // FIXME: What about stereo views?
-                        force: true,
-                        clear: true
-                    });
                 });
 
             this.canvas.on("webglContextFailed",
@@ -371,6 +369,7 @@
             this._initDefaults();
 
             this.passes = cfg.passes;
+            this.clearEachPass = cfg.clearEachPass;
         },
 
         _initDefaults: function () {
@@ -528,10 +527,17 @@
 
                 this._dirtyEntities[entity.id] = entity;
 
-                XEO.scheduleTask(function() {
-                    entity._compile();
-                    delete self._dirtyEntities[entity.id];
-                });
+                // TODO: Getting 'location is not from current program' when this is
+                // uncommented on chrome/windows
+
+                //XEO.scheduleTask(function () {
+                //    if (self._dirtyEntities[entity.id]) {
+                //        if (entity._valid()) {
+                //            entity._compile();
+                //            delete self._dirtyEntities[entity.id];
+                //        }
+                //    }
+                //});
             }
         },
 
@@ -557,8 +563,11 @@
                 renderEvent.sceneId = this.id;
 
                 var passes = this._passes;
+                var clearEachPass = this._clearEachPass;
                 var pass;
                 var clear;
+                //var forceRender = (passes > 1) && clearEachPass;
+                var forceRender = false;
 
                 for (pass = 0; pass < passes; pass++) {
 
@@ -573,12 +582,9 @@
                      */
                     this.fire("rendering", renderEvent, true);
 
-                    clear = (pass === 0);
+                    clear = clearEachPass || (pass === 0);
 
-                    this._renderer.render({
-                        pass: pass,
-                        clear: clear !== false
-                    });
+                    this._compile(pass, clear, forceRender);
 
                     /**
                      * Fired when we have just rendered a frame for a Scene.
@@ -637,6 +643,43 @@
                     return this._passes;
                 }
             },
+
+            /**
+             * When doing multiple passes per frame, specifies whether to clear the
+             * canvas before each pass (true) or just before the first pass (false).
+             *
+             * @property clearEachPass
+             * @default false
+             * @type Boolean
+             */
+            clearEachPass: {
+
+                set: function (value) {
+
+                   value = !!value;
+
+                    if (value === this._clearEachPass) {
+                        return;
+                    }
+
+                    this._clearEachPass = value;
+
+                    this._renderer.drawListDirty = true;
+
+                    /**
+                     Fired whenever this Scene's {{#crossLink "Scene/clearEachPass:property"}}{{/crossLink}} property changes.
+
+                     @event clearEachPass
+                     @param value {Boolean} The property's new value
+                     */
+                    this.fire("clearEachPass", this._clearEachPass);
+                },
+
+                get: function () {
+                    return this._clearEachPass;
+                }
+            },
+
 
             /**
              * The default projection transform provided by this Scene, which is
@@ -1748,6 +1791,42 @@
             component.destroy();
         },
 
+        /**
+         * Compiles and renders this Scene
+         * @private
+         */
+        _compile: function (pass, clear, forceRender) {
+
+            // Compile dirty entities into this._renderer
+
+            var countCompiledEntities = 0;
+            var entity;
+
+            for (var id in this._dirtyEntities) {
+                if (this._dirtyEntities.hasOwnProperty(id)) {
+                    entity = this._dirtyEntities[id];
+                    if (entity._valid()) {
+                        entity._compile();
+                        delete this._dirtyEntities[id];
+                        countCompiledEntities++;
+                    }
+                }
+            }
+
+            if (countCompiledEntities > 0) {
+                //    this.log("Compiled " + countCompiledEntities + " XEO.Entity" + (countCompiledEntities > 1 ? "s" : ""));
+            }
+
+            // Render a frame
+            // Only renders if there was a state update
+
+            this._renderer.render({
+                pass: pass,
+                clear: clear, // Clear buffers?
+                force: forceRender
+            });
+        },
+
         _getJSON: function () {
 
             // Get list of component JSONs, in ascending order of component
@@ -1788,6 +1867,8 @@
             }
 
             return {
+                passes: this._passes,
+                clearEachPass: this._clearEachPass,
                 components: componentJSONs
             };
         }
