@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-08-25
+ * Built on 2016-08-26
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -2229,7 +2229,8 @@ var Canvas2Image = (function () {
         }
 
         if (params.clear) {
-            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+            //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         }
 
         gl.frontFace(gl.CCW);
@@ -2283,7 +2284,7 @@ var Canvas2Image = (function () {
             frameStats.bindArray = frameCtx.bindArray;
         }
 
-      //  gl.finish();
+        //  gl.finish();
 
         if (frameCtx.renderBuf) {
             frameCtx.renderBuf.unbind();
@@ -2297,7 +2298,7 @@ var Canvas2Image = (function () {
         }
 
         if (outputFramebuffer) {
-            this.unbindOutputFramebuffer();
+            this.unbindOutputFramebuffer(params.pass);
         }
 
         frameStats.drawChunks = this._drawChunkListLen;
@@ -6729,7 +6730,7 @@ var Canvas2Image = (function () {
 
                 // Renderer hook to bind a custom output framebuffer
                 if (frameCtx.bindOutputFramebuffer) {
-                        frameCtx.bindOutputFramebuffer(frameCtx.pass);
+                    frameCtx.bindOutputFramebuffer(frameCtx.pass);
                 }
             }
 
@@ -6752,7 +6753,9 @@ var Canvas2Image = (function () {
 
             gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
             gl.clearColor(frameCtx.ambientColor[0], frameCtx.ambientColor[1], frameCtx.ambientColor[2], 1.0);
-            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+            //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+
+            //gl.clear(frameCtx.depthMode ? gl.COLOR_BUFFER_BIT : gl.DEPTH_BUFFER_BIT);
 
             frameCtx.renderBuf = renderBuf;
         }
@@ -11636,6 +11639,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  back on WebGL 1 if not available. This property will be deprecated when WebGL 2 is supported everywhere.
  @param [cfg.components] {Array(Object)} JSON array containing parameters for {{#crossLink "Component"}}Component{{/crossLink}} subtypes to immediately create within the Scene.
  @param [cfg.passes=1] The number of times this Scene renders per frame.
+ @param [cfg.clearEachPass=false] When doing multiple passes per frame, specifies whether to clear the
+  canvas before each pass (true) or just before the first pass (false).
  @extends Component
  */
 (function () {
@@ -11748,10 +11753,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this.canvas.on("boundary",
                 function () {
                     self._renderer.imageDirty = true;
-                    self._renderer.render({ // FIXME: What about stereo views?
-                        force: true,
-                        clear: true
-                    });
                 });
 
             this.canvas.on("webglContextFailed",
@@ -11813,6 +11814,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this._initDefaults();
 
             this.passes = cfg.passes;
+            this.clearEachPass = cfg.clearEachPass;
         },
 
         _initDefaults: function () {
@@ -11970,10 +11972,17 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 this._dirtyEntities[entity.id] = entity;
 
-                XEO.scheduleTask(function() {
-                    entity._compile();
-                    delete self._dirtyEntities[entity.id];
-                });
+                // TODO: Getting 'location is not from current program' when this is
+                // uncommented on chrome/windows
+
+                //XEO.scheduleTask(function () {
+                //    if (self._dirtyEntities[entity.id]) {
+                //        if (entity._valid()) {
+                //            entity._compile();
+                //            delete self._dirtyEntities[entity.id];
+                //        }
+                //    }
+                //});
             }
         },
 
@@ -11999,8 +12008,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 renderEvent.sceneId = this.id;
 
                 var passes = this._passes;
+                var clearEachPass = this._clearEachPass;
                 var pass;
                 var clear;
+                //var forceRender = (passes > 1) && clearEachPass;
+                var forceRender = false;
 
                 for (pass = 0; pass < passes; pass++) {
 
@@ -12015,12 +12027,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                      */
                     this.fire("rendering", renderEvent, true);
 
-                    clear = (pass === 0);
+                    clear = clearEachPass || (pass === 0);
 
-                    this._renderer.render({
-                        pass: pass,
-                        clear: clear !== false
-                    });
+                    this._compile(pass, clear, forceRender);
 
                     /**
                      * Fired when we have just rendered a frame for a Scene.
@@ -12079,6 +12088,43 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     return this._passes;
                 }
             },
+
+            /**
+             * When doing multiple passes per frame, specifies whether to clear the
+             * canvas before each pass (true) or just before the first pass (false).
+             *
+             * @property clearEachPass
+             * @default false
+             * @type Boolean
+             */
+            clearEachPass: {
+
+                set: function (value) {
+
+                   value = !!value;
+
+                    if (value === this._clearEachPass) {
+                        return;
+                    }
+
+                    this._clearEachPass = value;
+
+                    this._renderer.drawListDirty = true;
+
+                    /**
+                     Fired whenever this Scene's {{#crossLink "Scene/clearEachPass:property"}}{{/crossLink}} property changes.
+
+                     @event clearEachPass
+                     @param value {Boolean} The property's new value
+                     */
+                    this.fire("clearEachPass", this._clearEachPass);
+                },
+
+                get: function () {
+                    return this._clearEachPass;
+                }
+            },
+
 
             /**
              * The default projection transform provided by this Scene, which is
@@ -13190,6 +13236,42 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             component.destroy();
         },
 
+        /**
+         * Compiles and renders this Scene
+         * @private
+         */
+        _compile: function (pass, clear, forceRender) {
+
+            // Compile dirty entities into this._renderer
+
+            var countCompiledEntities = 0;
+            var entity;
+
+            for (var id in this._dirtyEntities) {
+                if (this._dirtyEntities.hasOwnProperty(id)) {
+                    entity = this._dirtyEntities[id];
+                    if (entity._valid()) {
+                        entity._compile();
+                        delete this._dirtyEntities[id];
+                        countCompiledEntities++;
+                    }
+                }
+            }
+
+            if (countCompiledEntities > 0) {
+                //    this.log("Compiled " + countCompiledEntities + " XEO.Entity" + (countCompiledEntities > 1 ? "s" : ""));
+            }
+
+            // Render a frame
+            // Only renders if there was a state update
+
+            this._renderer.render({
+                pass: pass,
+                clear: clear, // Clear buffers?
+                force: forceRender
+            });
+        },
+
         _getJSON: function () {
 
             // Get list of component JSONs, in ascending order of component
@@ -13230,6 +13312,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             }
 
             return {
+                passes: this._passes,
+                clearEachPass: this._clearEachPass,
                 components: componentJSONs
             };
         }
@@ -31954,7 +32038,6 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             attached.layer._compile();
             attached.lights._compile();
             attached.material._compile();
-            //attached.morphTargets._compile();
             attached.reflect._compile();
             attached.shader._compile();
             attached.shaderParams._compile();

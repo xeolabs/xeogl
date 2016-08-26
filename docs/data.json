@@ -6229,6 +6229,12 @@
                             "description": "The number of times this Scene renders per frame.",
                             "optional": true,
                             "optdefault": "1"
+                        },
+                        {
+                            "name": "clearEachPass",
+                            "description": "When doing multiple passes per frame, specifies whether to clear the\n canvas before each pass (true) or just before the first pass (false).",
+                            "optional": true,
+                            "optdefault": "false"
                         }
                     ]
                 }
@@ -6324,7 +6330,7 @@
                         },
                         {
                             "name": "autoViewerScale",
-                            "description": "Set true to automatically size {{#crossLink \"ZSpace/viewerScale:property\"}}{{/crossLink}} to fit\n everything in the {{#crossLink \"Scene\"}}{{/crossLink}}.",
+                            "description": "Set true to automatically size {{#crossLink \"ZSpace/viewerScale:property\"}}{{/crossLink}} to fit\neverything in the {{#crossLink \"Scene\"}}{{/crossLink}}.",
                             "type": "Boolean",
                             "optional": true,
                             "optdefault": "true"
@@ -8129,7 +8135,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1297,
+            "line": 1298,
             "description": "Reads the colors of some pixels in the last rendered frame.",
             "params": [
                 {
@@ -8157,7 +8163,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1344,
+            "line": 1345,
             "description": "Destroys this Renderer.",
             "class": "CameraFlight"
         },
@@ -20238,7 +20244,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 203,
+            "line": 205,
             "description": "Fired whenever a debug message logged on a component within this Scene.",
             "itemtype": "event",
             "name": "log",
@@ -20254,7 +20260,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 209,
+            "line": 211,
             "description": "Fired whenever an error is logged on a component within this Scene.",
             "itemtype": "event",
             "name": "error",
@@ -20270,7 +20276,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 215,
+            "line": 217,
             "description": "Fired whenever a warning is logged on a component within this Scene.",
             "itemtype": "event",
             "name": "warn",
@@ -20286,7 +20292,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 230,
+            "line": 232,
             "description": "The epoch time (in milliseconds since 1970) when this Scene was instantiated.",
             "itemtype": "property",
             "name": "timeCreated",
@@ -20296,7 +20302,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 238,
+            "line": 240,
             "description": "The {{#crossLink \"Component\"}}Component{{/crossLink}}s within\nthis Scene, mapped to their IDs.\n\nWill also contain the {{#crossLink \"Entity\"}}{{/crossLink}}s\ncontained in {{#crossLink \"Entity/components:property\"}}{{/crossLink}}.",
             "itemtype": "property",
             "name": "components",
@@ -20306,7 +20312,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 250,
+            "line": 252,
             "description": "For each {{#crossLink \"Component\"}}Component{{/crossLink}} type, a map of\nIDs to instances.",
             "itemtype": "property",
             "name": "types",
@@ -20316,7 +20322,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 259,
+            "line": 261,
             "description": "The {{#crossLink \"Entity\"}}{{/crossLink}}s within\nthis Scene, mapped to their IDs.\n\nThe {{#crossLink \"Entity\"}}{{/crossLink}}s in this map\nwill also be contained in {{#crossLink \"Entity/components:property\"}}{{/crossLink}}.",
             "itemtype": "property",
             "name": "entities",
@@ -20326,7 +20332,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 283,
+            "line": 285,
             "description": "Configurations for this Scene. Set whatever properties on here\nthat will be useful to the components within the Scene.",
             "final": 1,
             "itemtype": "property",
@@ -20337,7 +20343,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 292,
+            "line": 294,
             "description": "Manages the HTML5 canvas for this Scene.",
             "final": 1,
             "itemtype": "property",
@@ -20348,7 +20354,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 325,
+            "line": 323,
             "description": "Publishes input events that occur on this Scene's canvas.",
             "final": 1,
             "itemtype": "property",
@@ -20359,7 +20365,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 466,
+            "line": 465,
             "description": "Fired whenever a component has been created within this Scene.",
             "itemtype": "event",
             "name": "componentCreated",
@@ -20375,7 +20381,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 510,
+            "line": 509,
             "description": "Fired whenever a component within this Scene has been destroyed.",
             "itemtype": "event",
             "name": "componentDestroyed",
@@ -20391,7 +20397,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 538,
+            "line": 544,
             "description": "Renders a single frame of this Scene.\n\nThis forces a render of this Scene, even if nothing has updated since the last render.\n\nThis method is typically used when we want to synchronously take a snapshot of the canvas and need everything\nrendered right at that moment.",
             "itemtype": "method",
             "name": "render",
@@ -20400,7 +20406,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 567,
+            "line": 576,
             "description": "Fired when about to render a frame for a Scene.",
             "itemtype": "event",
             "name": "rendering",
@@ -20421,7 +20427,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 583,
+            "line": 589,
             "description": "Fired when we have just rendered a frame for a Scene.",
             "itemtype": "event",
             "name": "rendering",
@@ -20442,7 +20448,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 597,
+            "line": 603,
             "description": "The number of times this Scene renders per frame.",
             "itemtype": "property",
             "name": "passes",
@@ -20453,7 +20459,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 627,
+            "line": 633,
             "description": "Fired whenever this Scene's {{#crossLink \"Scene/passes:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "passes",
@@ -20469,7 +20475,34 @@
         },
         {
             "file": "src/scene.js",
-            "line": 641,
+            "line": 647,
+            "description": "When doing multiple passes per frame, specifies whether to clear the\ncanvas before each pass (true) or just before the first pass (false).",
+            "itemtype": "property",
+            "name": "clearEachPass",
+            "default": "false",
+            "type": "Boolean",
+            "class": "Scene",
+            "module": "XEO"
+        },
+        {
+            "file": "src/scene.js",
+            "line": 669,
+            "description": "Fired whenever this Scene's {{#crossLink \"Scene/clearEachPass:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "clearEachPass",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Boolean"
+                }
+            ],
+            "class": "Scene",
+            "module": "XEO"
+        },
+        {
+            "file": "src/scene.js",
+            "line": 684,
             "description": "The default projection transform provided by this Scene, which is\na {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.\n\nThis {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} has an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to\n\"default.project\", with all other properties set to their default\nvalues.\n\n{{#crossLink \"Camera\"}}Cameras{{/crossLink}} within this Scene\nare attached to this {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}\nby default.",
             "itemtype": "property",
             "name": "project",
@@ -20480,7 +20513,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 669,
+            "line": 712,
             "description": "The default viewing transform provided by this Scene, which is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.\n\nThis {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.view\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Camera\"}}Cameras{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "view",
@@ -20491,7 +20524,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 692,
+            "line": 735,
             "description": "The default {{#crossLink \"Camera\"}}Camera{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Camera\"}}Camera{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.camera\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Camera\"}}Camera{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "camera",
@@ -20502,7 +20535,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 717,
+            "line": 760,
             "description": "The default modelling {{#crossLink \"Transform\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Transform\"}}{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.transform\",\nwith all other properties initialised to their default values (ie. an identity matrix).\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Transform\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "transform",
@@ -20513,7 +20546,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 741,
+            "line": 784,
             "description": "The default {{#crossLink \"Billboard\"}}Billboard{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Billboard\"}}Billboard{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.billboard\"\nand an {{#crossLink \"Billboard/active:property\"}}{{/crossLink}} property set to false, to disable it.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Billboard\"}}Billboard{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "billboard",
@@ -20524,7 +20557,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 765,
+            "line": 808,
             "description": "The default {{#crossLink \"Stationary\"}}Stationary{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Stationary\"}}Stationary{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.stationary\"\nand an {{#crossLink \"Stationary/active:property\"}}{{/crossLink}} property set to false, to disable it.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Stationary\"}}Stationary{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "stationary",
@@ -20535,7 +20568,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 789,
+            "line": 832,
             "description": "The default {{#crossLink \"Clips\"}}Clips{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Clips\"}}Clips{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.clips\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Clips\"}}Clips{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "clips",
@@ -20546,7 +20579,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 812,
+            "line": 855,
             "description": "The default {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.colorBuf\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "colorBuf",
@@ -20557,7 +20590,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 835,
+            "line": 878,
             "description": "The default {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} provided by this Scene.\n\nThe {{#crossLink \"ColorTarget\"}}DepthTarget{{/crossLink}} is\n{{#crossLink \"ColorTarget/active:property\"}}inactive{{/crossLink}} by default and will have an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthTarget\".\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "colorTarget",
@@ -20568,7 +20601,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 859,
+            "line": 902,
             "description": "The default {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthBuf\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "depthBuf",
@@ -20579,7 +20612,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 883,
+            "line": 926,
             "description": "The default {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} provided by this Scene.\n\nThe {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} is\n{{#crossLink \"DepthTarget/active:property\"}}inactive{{/crossLink}} by default and has an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthTarget\".\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "depthTarget",
@@ -20590,7 +20623,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 907,
+            "line": 950,
             "description": "The default {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.visibility\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Visibility\"}}Visibility{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "visibility",
@@ -20601,7 +20634,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 930,
+            "line": 973,
             "description": "The default {{#crossLink \"Cull\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Cull\"}}cull{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.cull\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Cull\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "cull",
@@ -20612,7 +20645,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 953,
+            "line": 996,
             "description": "The default {{#crossLink \"Modes\"}}Modes{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Modes\"}}Modes{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.modes\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Modes\"}}Modes{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "modes",
@@ -20623,7 +20656,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 975,
+            "line": 1018,
             "description": "The default geometry provided by this Scene, which is a {{#crossLink \"BoxGeometry\"}}BoxGeometry{{/crossLink}}.\n\nThis {{#crossLink \"BoxGeometry\"}}BoxGeometry{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.geometry\".\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Geometry\"}}Geometry{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "geometry",
@@ -20634,7 +20667,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 996,
+            "line": 1039,
             "description": "The default {{#crossLink \"Layer\"}}Layer{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Layer\"}}Layer{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.layer\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Layer\"}}Layer{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "layer",
@@ -20645,7 +20678,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1019,
+            "line": 1062,
             "description": "The default {{#crossLink \"Lights\"}}Lights{{/crossLink}} provided\nby this Scene.\n\nThis {{#crossLink \"Lights\"}}Lights{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to *````\"default.lights\"````*,\nwith all other properties initialised to their default values (ie. the default set of light sources for a {{#crossLink \"Lights\"}}Lights{{/crossLink}}).\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Lights\"}}Lights{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "lights",
@@ -20656,7 +20689,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1074,
+            "line": 1117,
             "description": "The {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} provided as the default material by this Scene.\n\nThis {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.material\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "material",
@@ -20667,7 +20700,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1097,
+            "line": 1140,
             "description": "The default {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.morphTargets\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -20678,7 +20711,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1119,
+            "line": 1162,
             "description": "The default {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} provided by this Scene,\n(which is initially an empty {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} that has no effect).\n\nThis {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.reflect\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Reflect\"}}Reflect{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "reflect",
@@ -20689,7 +20722,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1142,
+            "line": 1185,
             "description": "The default {{#crossLink \"Shader\"}}Shader{{/crossLink}} provided by this Scene\n(which is initially an empty {{#crossLink \"Shader\"}}Shader{{/crossLink}} that has no effect).\n\nThis {{#crossLink \"Shader\"}}Shader{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.shader\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Shader\"}}Shader{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "shader",
@@ -20700,7 +20733,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1165,
+            "line": 1208,
             "description": "The default {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.shaderParams\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ShaderParams\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "shaderParams",
@@ -20711,7 +20744,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1188,
+            "line": 1231,
             "description": "The default {{#crossLink \"Stage\"}}Stage{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Stage\"}}Stage{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.stage\" and\na {{#crossLink \"Stage/priority:property\"}}priority{{/crossLink}} equal to ````0````.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Stage\"}}Stage{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "stage",
@@ -20722,7 +20755,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1212,
+            "line": 1255,
             "description": "The default {{#crossLink \"Viewport\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Viewport\"}}{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.viewport\" and\n{{#crossLink \"Viewport/autoBoundary:property\"}}{{/crossLink}} set ````true````.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Viewport\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "viewport",
@@ -20733,7 +20766,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1237,
+            "line": 1280,
             "description": "The World-space 3D boundary of this Scene.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will be lazy-initialized the first time\nyou reference this property, and will persist on this Scene until you\ncall {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on the {{#crossLink \"Boundary3D\"}}{{/crossLink}}\nagain. The property will then be set to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance\nnext time you reference it.\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary3D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "worldBoundary",
@@ -20744,7 +20777,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1320,
+            "line": 1363,
             "description": "Attempts to pick an {{#crossLink \"Entity\"}}Entity{{/crossLink}} at the given Canvas-space coordinates.\n\nIgnores {{#crossLink \"Entity\"}}Entities{{/crossLink}} that are attached\nto either a {{#crossLink \"Stage\"}}Stage{{/crossLink}} with {{#crossLink \"Stage/pickable:property\"}}pickable{{/crossLink}}\nset *false* or a {{#crossLink \"Modes\"}}Modes{{/crossLink}} with {{#crossLink \"Modes/pickable:property\"}}pickable{{/crossLink}} set *false*.\n\nOn success, will fire a {{#crossLink \"Scene/picked:event\"}}{{/crossLink}} event on this Scene, along with\na separate {{#crossLink \"Entity/picked:event\"}}{{/crossLink}} event on the target {{#crossLink \"Entity\"}}Entity{{/crossLink}}.\n\n````javascript\n\npick({\n     canvasPos: [23, 131],\n     rayPick: true\n     });\n\n````",
             "itemtype": "method",
             "name": "pick",
@@ -20779,7 +20812,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1601,
+            "line": 1644,
             "description": "Resets this Scene to its default state.\n\nReferences to any components in this Scene will become invalid.",
             "itemtype": "method",
             "name": "clear",
@@ -20788,7 +20821,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1627,
+            "line": 1670,
             "description": "Convenience method for creating or reusing a Component within this Scene.\n\nYou would typically use this method to conveniently instantiate components that you'd want to\nshare (ie. \"instance\") among your {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe method is given a component type, share ID and constructor attributes, like so:\n\n````javascript\nvar material = myScene.getComponent(\"XEO.PhongMaterial\", \"myMaterial\", { diffuse: [1,0,0] });\n````\n\nThe first time you call this method for the given ````type```` and ````instanceId````, this method will create the\n{{#crossLink \"PhongMaterial\"}}{{/crossLink}}, passing the given  attributes to the component's constructor.\n\nIf you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same\ncomponent instance that it returned the first time, and will ignore the attributes:\n\n````javascript\nvar material2 = myScene.getComponent(\"XEO.PhongMaterial\", \"myMaterial\", { specular: [1,1,0] });\n````\n\nEach time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a\nreference count for the component instance. You can release the shared component instance with a call to\n{{#crossLink \"Scene/putSharedComponent:method\"}}{{/crossLink}}, and once you have released it as many\ntimes as you got it, the Scene will destroy the component.",
             "itemtype": "method",
             "name": "_getSharedComponent",
@@ -20821,7 +20854,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1723,
+            "line": 1766,
             "description": "Releases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -20830,6 +20863,15 @@
                     "type": "Component"
                 }
             ],
+            "class": "Scene",
+            "module": "XEO"
+        },
+        {
+            "file": "src/scene.js",
+            "line": 1794,
+            "description": "Compiles and renders this Scene",
+            "access": "private",
+            "tagname": "",
             "class": "Scene",
             "module": "XEO"
         },
@@ -22451,11 +22493,11 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1320"
+            "line": " src/scene.js:1363"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1627"
+            "line": " src/scene.js:1670"
         },
         {
             "message": "unknown tag: demo",
@@ -22975,11 +23017,11 @@
         },
         {
             "message": "Missing item type\nReads the colors of some pixels in the last rendered frame.",
-            "line": " src/_renderer/renderer.js:1297"
+            "line": " src/_renderer/renderer.js:1298"
         },
         {
             "message": "Missing item type\nDestroys this Renderer.",
-            "line": " src/_renderer/renderer.js:1344"
+            "line": " src/_renderer/renderer.js:1345"
         },
         {
             "message": "Missing item type\nRenderer states",
@@ -23183,7 +23225,11 @@
         },
         {
             "message": "Missing item type\nReleases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
-            "line": " src/scene.js:1723"
+            "line": " src/scene.js:1766"
+        },
+        {
+            "message": "Missing item type\nCompiles and renders this Scene",
+            "line": " src/scene.js:1794"
         },
         {
             "message": "Missing item type\nInformation about available WebGL support",
