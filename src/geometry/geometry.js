@@ -693,6 +693,10 @@
                         value = "triangles";
                     }
 
+                    if (this._state.primitiveName === value) {
+                        return;
+                    }
+
                     this._state.primitiveName = value;
 
                     this._scheduleGeometryUpdate();
