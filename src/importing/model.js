@@ -109,6 +109,18 @@
                         return;
                     }
 
+                    if (value === this._src) { // Already loaded this model
+
+                        /**
+                         Fired whenever this Model has finished loading components from the glTF file
+                         specified by {{#crossLink "Model/src:property"}}{{/crossLink}}.
+                         @event loaded
+                         */
+                        this.fire("loaded");
+
+                        return;
+                    }
+
                     this._clear();
 
                     this._src = value;
