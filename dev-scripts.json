@@ -1,18 +1,17 @@
 {
   "engine": [
     "src/xeo.js",
+
     "src/libs/canvas2image.js",
+
     "src/_utils/inheritance.js",
     "src/_utils/map.js",
+
+    "src/math/_module.js",
+    "src/math/math.js",
+    "src/math/mathCurves.js",
+
     "src/_renderer/renderer.js",
-    "src/_renderer/states.js",
-    "src/_renderer/object.js",
-    "src/_renderer/objectFactory.js",
-    "src/_renderer/program.js",
-    "src/_renderer/programFactory.js",
-    "src/_renderer/programSource.js",
-    "src/_renderer/programSourceFactory.js",
-    "src/_renderer/renderContext.js",
     "src/_renderer/webgl/webgl.js",
     "src/_renderer/webgl/arrayBuffer.js",
     "src/_renderer/webgl/attribute.js",
@@ -22,6 +21,15 @@
     "src/_renderer/webgl/shader.js",
     "src/_renderer/webgl/texture2d.js",
     "src/_renderer/webgl/uniform.js",
+
+    "src/_renderer/states.js",
+    "src/_renderer/object.js",
+    "src/_renderer/objectFactory.js",
+    "src/_renderer/program.js",
+    "src/_renderer/programFactory.js",
+    "src/_renderer/programSource.js",
+    "src/_renderer/programSourceFactory.js",
+
     "src/_renderer/chunks/chunk.js",
     "src/_renderer/chunks/chunkFactory.js",
     "src/_renderer/chunks/clipsChunk.js",
@@ -41,22 +49,26 @@
     "src/_renderer/chunks/shaderParamsChunk.js",
     "src/_renderer/chunks/viewTransformChunk.js",
     "src/_renderer/chunks/viewportChunk.js",
-    "src/math/_module.js",
-    "src/math/math.js",
-    "src/math/mathCurves.js",
+
     "src/component.js",
     "src/scene.js",
+
     "src/animation/_module.js",
     "src/animation/morphTargets.js",
     "src/animation/cameraFlight.js",
+
     "src/camera/camera.js",
+
     "src/canvas/canvas.js",
     "src/canvas/spinner.js",
+
     "src/clipping/_module.js",
     "src/clipping/clip.js",
     "src/clipping/clips.js",
+
     "src/configs/_module.js",
     "src/configs/configs.js",
+
     "src/controls/_module.js",
     "src/controls/cameraControl.js",
     "src/controls/cameraController.js",
@@ -68,9 +80,11 @@
     "src/controls/mousePanCamera.js",
     "src/controls/mousePickEntity.js",
     "src/controls/mouseZoomCamera.js",
+
     "src/culling/_module.js",
     "src/culling/cull.js",
     "src/culling/visibility.js",
+
     "src/geometry/_module.js",
     "src/geometry/geometry.js",
     "src/geometry/boxGeometry.js",
@@ -81,28 +95,35 @@
     "src/geometry/cylinderGeometry.js",
     "src/geometry/planeGeometry.js",
     "src/geometry/latheGeometry.js",
+
     "src/collections/_module.js",
     "src/collections/collection.js",
+
     "src/input/_module.js",
     "src/input/input.js",
+
     "src/lighting/_module.js",
     "src/lighting/lights.js",
     "src/lighting/ambientLight.js",
     "src/lighting/dirLight.js",
     "src/lighting/pointLight.js",
+
     "src/importing/_module.js",
     "src/importing/gltf/glTFParser.js",
     "src/importing/gltf/glTFLoaderUtils.js",
     "src/importing/gltf/glTFLoader.js",
     "src/importing/model.js",
+
     "src/materials/_module.js",
     "src/materials/material.js",
     "src/materials/phongMaterial.js",
     "src/materials/texture.js",
     "src/materials/fresnel.js",
+
     "src/materials/reflect.js",
     "src/entities/_module.js",
     "src/entities/entity.js",
+
     "src/rendering/_module.js",
     "src/rendering/colorBuf.js",
     "src/rendering/depthBuf.js",
@@ -112,13 +133,16 @@
     "src/rendering/modes.js",
     "src/rendering/viewport.js",
     "src/rendering/stage.js",
+
     "src/shaders/_module.js",
     "src/shaders/shader.js",
     "src/shaders/shaderParams.js",
+
     "src/boundaries/_module.js",
     "src/boundaries/boundary2d.js",
     "src/boundaries/boundary3d.js",
     "src/boundaries/collectionBoundary.js",
+
     "src/transforms/_module.js",
     "src/transforms/transform.js",
     "src/transforms/rotate.js",
