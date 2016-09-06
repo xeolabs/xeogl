@@ -120,8 +120,6 @@
                 frameCount: 0,
                 fps: 0,
                 useProgram: 0,
-                setUniform: 0,
-                setUniformCacheHits: 0,
                 bindTexture: 0,
                 bindArray: 0,
                 drawElements: 0,
@@ -174,7 +172,7 @@
 
             // Hoisted vars
 
-            var taskBudget = 15; // Millisecs we're allowed to spend on tasks in each frame
+            var taskBudget = 10; // Millisecs we're allowed to spend on tasks in each frame
             var frameTime;
             var lastFrameTime = 0;
             var elapsedFrameTime;
@@ -334,6 +332,8 @@
 
             this.scenes[scene.id] = scene;
 
+            this.stats.components.scenes++;
+
             var self = this;
 
             // Unregister destroyed scenes
@@ -344,6 +344,8 @@
                     self._sceneIDMap.removeItem(scene.id);
 
                     delete self.scenes[scene.id];
+
+                    self.stats.components.scenes--;
                 });
         },
 
