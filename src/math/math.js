@@ -2598,9 +2598,9 @@
          *
          * @method buildNormals
          * @static
-         * @param {Array of Number} positions One-dimensional flattened array of positions.
-         * @param {Array of Number} indices One-dimensional flattened array of indices.*
-         * @returns {Array of Number} One-dimensional flattened array of normal vectors.
+         * @param {Float32Array} positions One-dimensional flattened array of positions.
+         * @param {Float32Array} indices One-dimensional flattened array of indices.*
+         * @returns {Float32Array} One-dimensional flattened array of normal vectors.
          */
         buildNormals: function (positions, indices) {
 
@@ -2670,10 +2670,10 @@
          *
          * @method buildTangents
          * @static
-         * @param {Array of Number} positions One-dimensional flattened array of positions.
-         * @param {Array of Number} indices One-dimensional flattened array of indices.
-         * @param {Array of Number} uv One-dimensional flattened array of UV coordinates.
-         * @returns {Array of Number} One-dimensional flattened array of tangents.
+         * @param {Float32Array} positions One-dimensional flattened array of positions.
+         * @param {Float32Array} indices One-dimensional flattened array of indices.
+         * @param {Float32Array} uv One-dimensional flattened array of UV coordinates.
+         * @returns {Float32Array} One-dimensional flattened array of tangents.
          */
         buildTangents: function (positions, indices, uv) {
 
@@ -2767,8 +2767,8 @@
          *
          * @method getPickPrimitives
          * @static
-         * @param {Array of Number} positions One-dimensional flattened array of positions.
-         * @param {Array of Number} indices One-dimensional flattened array of indices.
+         * @param {Float32Array} positions One-dimensional flattened array of positions.
+         * @param {Float32Array} indices One-dimensional flattened array of indices.
          * @returns {*} Object containing the arrays, created by this method or reused from 'pickTris' parameter.
          */
         getPickPrimitives: function (positions, indices) {
@@ -2867,13 +2867,13 @@
          *
          * @method rayTriangleIntersect
          * @static
-         * @param {Array of Number} origin Ray origin.
-         * @param {Array of Number} dir Ray direction.
-         * @param {Array of Number} a First triangle vertex.
-         * @param {Array of Number} b Second triangle vertex.
-         * @param {Array of Number} c Third triangle vertex.
-         * @param {Array of Number} [isect] Intersection point.
-         * @returns {Array of Number} The intersection point, or null if no intersection found.
+         * @param {Float32Array} origin Ray origin.
+         * @param {Float32Array} dir Ray direction.
+         * @param {Float32Array} a First triangle vertex.
+         * @param {Float32Array} b Second triangle vertex.
+         * @param {Float32Array} c Third triangle vertex.
+         * @param {Float32Array} [isect] Intersection point.
+         * @returns {Float32Array} The intersection point, or null if no intersection found.
          */
         rayTriangleIntersect: function (origin, dir, a, b, c, isect) {
 
@@ -2915,13 +2915,13 @@
          *
          * @method rayPlaneIntersect
          * @static
-         * @param {Array of Number} origin Ray origin.
-         * @param {Array of Number} dir Ray direction.
-         * @param {Array of Number} a First point on plane.
-         * @param {Array of Number} b Second point on plane.
-         * @param {Array of Number} c Third point on plane.
-         * @param {Array of Number} [isect] Intersection point.
-         * @returns {Array of Number} The intersection point.
+         * @param {Float32Array} origin Ray origin.
+         * @param {Float32Array} dir Ray direction.
+         * @param {Float32Array} a First point on plane.
+         * @param {Float32Array} b Second point on plane.
+         * @param {Float32Array} c Third point on plane.
+         * @param {Float32Array} [isect] Intersection point.
+         * @returns {Float32Array} The intersection point.
          */
         rayPlaneIntersect: function (origin, dir, a, b, c, isect) {
 
@@ -2953,12 +2953,12 @@
          *
          * @method cartesianToBaryCentric
          * @static
-         * @param {Array of Number} cartesian Cartesian coordinates.
-         * @param {Array of Number} a First triangle vertex.
-         * @param {Array of Number} b Second triangle vertex.
-         * @param {Array of Number} c Third triangle vertex.
-         * @param {Array of Number} [bary] The barycentric coordinates.
-         * @returns {Array of Number} The barycentric coordinates, or null if the triangle was invalid.
+         * @param {Float32Array} cartesian Cartesian coordinates.
+         * @param {Float32Array} a First triangle vertex.
+         * @param {Float32Array} b Second triangle vertex.
+         * @param {Float32Array} c Third triangle vertex.
+         * @param {Float32Array} [bary] The barycentric coordinates.
+         * @returns {Float32Array} The barycentric coordinates, or null if the triangle was invalid.
          * @returns {*}
          */
         cartesianToBarycentric: function (cartesian, a, b, c, bary) {
@@ -3020,7 +3020,7 @@
          *
          * @method barycentricInsideTriangle
          * @static
-         * @param {Array of Number} bary Barycentric coordinates.
+         * @param {Float32Array} bary Barycentric coordinates.
          * @returns {Boolean} True if the barycentric coordinates are inside their triangle.
          * @returns {*}
          */
@@ -3037,12 +3037,12 @@
          *
          * @method barycentricToCartesian
          * @static
-         * @param {Array of Number} bary The barycentric coordinate.
-         * @param {Array of Number} a First triangle vertex.
-         * @param {Array of Number} b Second triangle vertex.
-         * @param {Array of Number} c Third triangle vertex.
-         * @param {Array of Number} [cartesian] Cartesian coordinates.
-         * @returns {Array of Number} The cartesian coordinates, or null if the triangle was invalid.
+         * @param {Float32Array} bary The barycentric coordinate.
+         * @param {Float32Array} a First triangle vertex.
+         * @param {Float32Array} b Second triangle vertex.
+         * @param {Float32Array} c Third triangle vertex.
+         * @param {Float32Array} [cartesian] Cartesian coordinates.
+         * @returns {Float32Array} The cartesian coordinates, or null if the triangle was invalid.
          * @returns {*}
          */
         barycentricToCartesian2: function (bary, a, b, c, cartesian) {
