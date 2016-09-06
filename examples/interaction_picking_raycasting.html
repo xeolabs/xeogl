@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeoengine.js"></script>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>picking <a
+        href="../docs/classes/Entity.html" target="_docs">Entities</a> using an arbitrarily-positioned World-space ray
+</div>
+
+<script>
+
+    //---- Model  ----------------------------------------------------------
+
+    // Load glTF
+    var gearbox = new XEO.Model({
+        src: "models/gltf/gearbox/gearbox_assy.gltf"
+    });
+
+    // Set initial camera position
+    var view = gearbox.scene.camera.view;
+    view.eye = [184.21, 10.54, -7.03];
+    view.look = [159.20, 17.02, 3.21];
+    view.up = [-0.15, 0.97, 0.13];
+
+    // Zoom camera out a bit
+
+    var scene = XEO.scene;
+
+    // Set initial camera position
+    // Allow user camera control
+    new XEO.CameraControl();
+
+    //---- Helpers ----------------------------------------------------------
+
+    // Helper that shows our ray as a line segment
+    var rayHelper = new XEO.Entity({
+        geometry: new XEO.Geometry({
+            primitive: "lines",
+            positions: [0, 0, 0, 0, 0, 0],
+            indices: [0, 1]
+        }),
+        material: new XEO.PhongMaterial({
+            emissive: [1, 0.3, 0.3],
+            diffuse: [0, 0, 0],
+            ambient: [0, 0, 0],
+            lineWidth: 3
+        }),
+        modes: new XEO.Modes({
+            pickable: false,
+            collidable: false
+        })
+    });
+
+    // Sets the position of the ray helper
+    var showRay = (function () {
+        // Efficient technique for frequent geometry array update - avoids garbage collection
+        var positions = new Float32Array(6);
+        return function (origin, direction) {
+            positions[0] = origin[0];
+            positions[1] = origin[1];
+            positions[2] = origin[2];
+            positions[3] = origin[0] + direction[0];
+            positions[4] = origin[1] + direction[1];
+            positions[5] = origin[2] + direction[2];
+            rayHelper.geometry.positions = positions;
+        };
+    })();
+
+    function highlightRay(highlight) {
+        rayHelper.material.emissive = highlight ? [0.5, 1.0, 0.5] : [0.6, 0.6, 0.6];
+        rayHelper.material.lineWidth = highlight ? 3 : 2;
+    }
+
+    // Helper that shows ray-entity intersections
+    var hitHelper = new XEO.Entity({
+        geometry: new XEO.SphereGeometry({
+            radius: 0.2
+        }),
+        material: new XEO.PhongMaterial({
+            emissive: [1, 0, 0],
+            diffuse: [0, 0, 0]
+        }),
+        transform: new XEO.Translate(),
+        modes: new XEO.Modes({
+            pickable: false
+        }),
+        visibility: new XEO.Visibility({
+            visible: false
+        })
+    });
+
+    function showHit(hit) {
+        hitHelper.transform.xyz = hit.worldPos;
+        hitHelper.visibility.visible = true;
+    }
+
+    function hideHit() {
+        hitHelper.visibility.visible = false;
+    }
+
+    //--------------------------------------------------------------------
+
+    var rayOrigin = new Float32Array([169.20, 17.02, -20.0]);
+    var rayDirection = new Float32Array([0, 10, 60]);
+
+    var xinc = -0.04;
+    var i = 0;
+
+
+    gearbox.scene.on("tick", function () {
+
+        // Orbit the camera
+        view.rotateEyeY(xinc < 0 ? 0.2 : -0.2);
+        view.rotateEyeX(xinc < 0 ? 0.1 : -0.1);
+
+        rayOrigin[0] += xinc;
+        rayOrigin[1] = 12 - Math.sin(rayOrigin[0] * 2.0) * 5;
+
+        i++;
+
+        if (i < 0 || i > 500) {
+            xinc = -xinc;
+            i = 0;
+        }
+
+        showRay(rayOrigin, rayDirection);
+
+        var hit = scene.pick({
+            rayPick: true,
+            origin: rayOrigin,
+            direction: rayDirection
+        });
+
+        if (hit && hit.worldPos) {
+
+            var primitive = hit.primitive; // Type of primitive that was picked, usually "triangles"
+            var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array
+            var indices = hit.indices; // UInt32Array containing the triangle's vertex indices
+            var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle
+            var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle
+            var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle
+            var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle
+            var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle
+            var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle
+            var origin = hit.origin; // Float32Array containing the World-space ray origin
+            var direction = hit.direction; // Float32Array containing the World-space ray direction
+
+            showHit(hit);
+            highlightRay(true);
+
+        } else {
+
+            hideHit();
+            highlightRay(false);
+        }
+    });
+
+</script>
+</body>
+</html>
