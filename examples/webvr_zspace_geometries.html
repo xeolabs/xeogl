@@ -9,8 +9,8 @@
 
     <script src="../build/xeoengine.js"></script>
 
-    <script src="js/webvr/zSpace.js"></script>
-    <script src="js/webvr/zSpaceStylus.js"></script>
+    <script src="js/webvr/zspace/zSpace.js"></script>
+    <script src="js/webvr/zspace/zSpaceStylusHelper.js"></script>
 
 <body>
 
@@ -24,9 +24,7 @@
 
 <script>
 
-    // Demonstrates how to view a xeoEngine Scene using ZSpace VR
-
-    // Create some entities
+    // Create some scene entities
 
     var geometry = new XEO.TorusGeometry({
         radius: 1.0,
@@ -42,11 +40,9 @@
         })
     });
 
-    var entities = [];
+    for (var i = 0; i < 500; i++) {
 
-    for (var i = 0; i < 50; i++) {
-
-        entities.push(new XEO.Entity({
+        new XEO.Entity({
             geometry: geometry,
             material: material,
             transform: new XEO.Rotate({
@@ -56,43 +52,64 @@
                     xyz: [Math.random() * 30 - 15, Math.random() * 30 - 15, Math.random() * 30 - 15]
                 })
             })
-        }));
+        });
     }
 
-    // Spin the entities
+    // Create a ZSpace effect
 
-    XEO.scene.on("tick", function () {
-        for (var i = 0, len = entities.length; i < len; i++) {
-            entities[i].transform.angle += 0.5;
-        }
-    });
-
-
-    // Create a ZSpace in the default Scene
-
-    var zSpace = new XEO.ZSpace({
-        viewerScale: 30 // Size viewer's coordinate space to the entities
+    var zspace = new XEO.ZSpace({
+        viewerScale: 5 // Scales the scene within the viewer
     });
 
     // Check if we're actually running on a ZSpace device
 
-    zSpace.on("supported", function (supported) {
+    zspace.on("supported", function (supported) {
 
         if (supported) {
 
-            // Track stylus input via a ZSpaceStylus, also in the default scene
+            // Create a helper to show the zSpace stylus
+            // as an object in the 3D view
 
-            var stylus = new XEO.ZSpaceStylus({
-                zSpace: zSpace
+            var stylusHelper = new XEO.ZSpaceStylusHelper({
+                zspace: zspace
             });
 
-            stylus.on("picked", function () {
+            // Make our helper glow whenever the stylus hits an Entity
 
+            zspace.on("stylusMoved", function () {
+
+                var hit = zspace.scene.pick({
+                    rayPick: true,
+                    origin: zspace.stylusPos,
+                    direction: zspace.stylusOrientation
+                });
+
+                if (hit) { // Stylus hit an Entity
+
+                    stylusHelper.highlighted = true;
+
+                    var entity = hit.entity; // The Entity we hit
+                    var primitive = hit.primitive; // Type of primitive that was picked, usually "triangles"
+                    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array
+                    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices
+                    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle
+                    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle
+                    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle
+                    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle
+                    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle
+                    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle
+
+                    //...
+
+                } else {
+
+                    stylusHelper.highlighted = false;
+                }
             });
 
         } else {
 
-            // Not running on a ZSpace device - fall back to a regular camera control
+            // Not running on a ZSpace device - fall back to a default camera control
 
             document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. ";
 
