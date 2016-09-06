@@ -1441,11 +1441,37 @@
 
         },
 
-        _compile: function () {
+        __compile: function () {
 
-            if (!this._valid()) {
-                return;
+            var self = this;
+
+            if (!this._compiling) {
+
+                self._compiling = true;
+
+                var object = this._renderer.objects[this.id];
+
+                if (object) {
+                    object.compiled = false;
+                }
+
+                var task = function () {
+
+                    if (!self._valid()) {
+                        XEO.scheduleTask(task);
+                        return;
+                    }
+
+                    self.__compile();
+
+                    self._compiling = false;
+                };
+
+                XEO.scheduleTask(task);
             }
+        },
+
+        _compile: function () {
 
             var attached = this._attached;
 

@@ -17,6 +17,8 @@
 
                 object.id = id;
 
+                object.compiled = false;
+
                 return object;
             }
 

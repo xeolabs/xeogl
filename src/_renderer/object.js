@@ -52,5 +52,10 @@
          * State for the XEO.renderer.Material that this object was compiled from, used for (re)computing #sortKey
          */
         this.material = null;
+
+        /**
+         * True once the object has been compiled within the renderer display list.
+         */
+        this.compiled = false;
     };
 })();
