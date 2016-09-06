@@ -1640,8 +1640,6 @@
                             math.normalizeVec3(localRayDir);
                             math.rayTriangleIntersect(localRayOrigin, localRayDir, a, b, c, position);
 
-                            console.log(position);
-
                             // Get Local-space cartesian coordinates of the ray-triangle intersection
 
                             hit.localPos = position;
