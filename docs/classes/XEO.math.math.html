@@ -120,7 +120,7 @@
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                                 <li><a href="../classes/ZSpace.html">ZSpace</a></li>
-                                <li><a href="../classes/ZSpaceStylus.html">ZSpaceStylus</a></li>
+                                <li><a href="../classes/ZSpaceStylusHelper.html">ZSpaceStylusHelper</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -1507,7 +1507,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">bary</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -1585,7 +1585,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">bary</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -1596,7 +1596,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
                 </li>
                 <li class="param">
                         <code class="param-name">a</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -1607,7 +1607,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
                 </li>
                 <li class="param">
                         <code class="param-name">b</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -1618,7 +1618,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
                 </li>
                 <li class="param">
                         <code class="param-name">c</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -1629,7 +1629,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
                 </li>
                 <li class="param">
                         <code class="param-name optional">[cartesian]</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
@@ -1667,7 +1667,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
         </div>
 
         <span class="returns-inline">
-            <span class="type">Array of Number</span>
+            <span class="type">Float32Array</span>
         </span>
 
 
@@ -1699,7 +1699,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">positions</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -1710,7 +1710,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
                 </li>
                 <li class="param">
                         <code class="param-name">indices</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -1726,7 +1726,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                        <span class="type">Array of Number</span>:
+                        <span class="type">Float32Array</span>:
                     <p>One-dimensional flattened array of normal vectors.</p>
 
             </div>
@@ -1752,7 +1752,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
         </div>
 
         <span class="returns-inline">
-            <span class="type">Array of Number</span>
+            <span class="type">Float32Array</span>
         </span>
 
 
@@ -1784,7 +1784,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">positions</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -1795,7 +1795,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
                 </li>
                 <li class="param">
                         <code class="param-name">indices</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -1806,7 +1806,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
                 </li>
                 <li class="param">
                         <code class="param-name">uv</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -1822,7 +1822,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                        <span class="type">Array of Number</span>:
+                        <span class="type">Float32Array</span>:
                     <p>One-dimensional flattened array of tangents.</p>
 
             </div>
@@ -1886,7 +1886,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">cartesian</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -1897,7 +1897,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
                 </li>
                 <li class="param">
                         <code class="param-name">a</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -1908,7 +1908,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
                 </li>
                 <li class="param">
                         <code class="param-name">b</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -1919,7 +1919,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
                 </li>
                 <li class="param">
                         <code class="param-name">c</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -1930,7 +1930,7 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
                 </li>
                 <li class="param">
                         <code class="param-name optional">[bary]</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
@@ -3966,7 +3966,7 @@ Creates new AABB if none supplied.</p>
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">positions</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -3977,7 +3977,7 @@ Creates new AABB if none supplied.</p>
                 </li>
                 <li class="param">
                         <code class="param-name">indices</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -5850,7 +5850,7 @@ Creates new AABB if none supplied.</p>
         </div>
 
         <span class="returns-inline">
-            <span class="type">Array of Number</span>
+            <span class="type">Float32Array</span>
         </span>
 
 
@@ -5882,7 +5882,7 @@ Creates new AABB if none supplied.</p>
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">origin</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -5893,7 +5893,7 @@ Creates new AABB if none supplied.</p>
                 </li>
                 <li class="param">
                         <code class="param-name">dir</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -5904,7 +5904,7 @@ Creates new AABB if none supplied.</p>
                 </li>
                 <li class="param">
                         <code class="param-name">a</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -5915,7 +5915,7 @@ Creates new AABB if none supplied.</p>
                 </li>
                 <li class="param">
                         <code class="param-name">b</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -5926,7 +5926,7 @@ Creates new AABB if none supplied.</p>
                 </li>
                 <li class="param">
                         <code class="param-name">c</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -5937,7 +5937,7 @@ Creates new AABB if none supplied.</p>
                 </li>
                 <li class="param">
                         <code class="param-name optional">[isect]</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
@@ -5954,7 +5954,7 @@ Creates new AABB if none supplied.</p>
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                        <span class="type">Array of Number</span>:
+                        <span class="type">Float32Array</span>:
                     <p>The intersection point.</p>
 
             </div>
@@ -5989,7 +5989,7 @@ Creates new AABB if none supplied.</p>
         </div>
 
         <span class="returns-inline">
-            <span class="type">Array of Number</span>
+            <span class="type">Float32Array</span>
         </span>
 
 
@@ -6021,7 +6021,7 @@ Creates new AABB if none supplied.</p>
             <ul class="params-list">
                 <li class="param">
                         <code class="param-name">origin</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -6032,7 +6032,7 @@ Creates new AABB if none supplied.</p>
                 </li>
                 <li class="param">
                         <code class="param-name">dir</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -6043,7 +6043,7 @@ Creates new AABB if none supplied.</p>
                 </li>
                 <li class="param">
                         <code class="param-name">a</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -6054,7 +6054,7 @@ Creates new AABB if none supplied.</p>
                 </li>
                 <li class="param">
                         <code class="param-name">b</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -6065,7 +6065,7 @@ Creates new AABB if none supplied.</p>
                 </li>
                 <li class="param">
                         <code class="param-name">c</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
 
 
                     <div class="param-description">
@@ -6076,7 +6076,7 @@ Creates new AABB if none supplied.</p>
                 </li>
                 <li class="param">
                         <code class="param-name optional">[isect]</code>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
                         <span class="flag optional" title="This parameter is optional.">optional</span>
 
 
@@ -6093,7 +6093,7 @@ Creates new AABB if none supplied.</p>
             <h4>Returns:</h4>
 
             <div class="returns-description">
-                        <span class="type">Array of Number</span>:
+                        <span class="type">Float32Array</span>:
                     <p>The intersection point, or null if no intersection found.</p>
 
             </div>

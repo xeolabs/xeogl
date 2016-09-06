@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-08-26
+ * Built on 2016-09-06
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -134,8 +134,6 @@
                 frameCount: 0,
                 fps: 0,
                 useProgram: 0,
-                setUniform: 0,
-                setUniformCacheHits: 0,
                 bindTexture: 0,
                 bindArray: 0,
                 drawElements: 0,
@@ -188,7 +186,7 @@
 
             // Hoisted vars
 
-            var taskBudget = 15; // Millisecs we're allowed to spend on tasks in each frame
+            var taskBudget = 10; // Millisecs we're allowed to spend on tasks in each frame
             var frameTime;
             var lastFrameTime = 0;
             var elapsedFrameTime;
@@ -348,6 +346,8 @@
 
             this.scenes[scene.id] = scene;
 
+            this.stats.components.scenes++;
+
             var self = this;
 
             // Unregister destroyed scenes
@@ -358,6 +358,8 @@
                     self._sceneIDMap.removeItem(scene.id);
 
                     delete self.scenes[scene.id];
+
+                    self.stats.components.scenes--;
                 });
         },
 
@@ -1005,5880 +1007,6 @@ var Canvas2Image = (function () {
             return item;
         };
     };
-
-})();
-;(function () {
-
-    "use strict";
-
-    XEO.renderer = XEO.renderer || {};
-
-    /**
-     *  Renderer compiled from a {@link SceneJS.Scene}, providing methods to render and pick.
-     *
-     * <p>A Renderer is a container of {@link XEO.renderer.Object}s which are created (or updated) by a depth-first
-     * <b>compilation traversal</b> of a {@link SceneJS.Scene}.</b>
-     *
-     * <h2>Rendering Pipeline</h2>
-     *
-     * <p>Conceptually, a Renderer implements a pipeline with the following stages:</p>
-     *
-     * <ol>
-     * <li>Create or update {@link XEO.renderer.Object}s during scene compilation</li>
-     * <li>Organise the {@link XEO.renderer.Object} into an <b>object list</b></li>
-     * <li>Determine the GL state sort order for the object list</li>
-     * <li>State sort the object list</li>
-     * <li>Create a <b>draw list</b> containing {@link XEO.renderer.Chunk}s belonging to the {@link XEO.renderer.Object}s in the object list</li>
-     * <li>Render the draw list to draw the image</li>
-     * </ol>
-     *
-     * <p>An update to the scene causes the pipeline to be re-executed from one of these stages, and SceneJS is designed
-     * so that the pipeline is always re-executed from the latest stage possible to avoid redoing work.</p>
-     *
-     * <p>For example:</p>
-     *
-     * <ul>
-     * <li>when an object is created or updated, we need to (re)do stages 2, 3, 4, 5 and 6</li>
-     * <li>when an object is made invisible, we need to redo stages 5 and 6</li>
-     * <li>when an object is assigned to a different scene render layer (works like a render bin), we need to redo
-     *   stages 3, 4, 5, and 6</li>
-     *<li>when the colour of an object changes, or maybe when the viewpoint changes, we simplt redo stage 6</li>
-     * </ul>
-     *
-     * <h2>Object Creation</h2>
-     * <p>The object soup (stage 1) is constructed by a depth-first traversal of the scene graph, which we think of as
-     * "compiling" the scene graph into the Renderer. As traversal visits each scene component, the component's state core is
-     * set on the Renderer (such as {@link #flags}, {@link #layer}, {@link #renderer} etc), which we think of as the
-     * cores that are active at that instant during compilation. Each of the scene's leaf components is always
-     * a {@link SceneJS.Geometry}, and when traversal visits one of those it calls {@link #buildObject} to create an
-     * object in the soup. For each of the currently active cores, the object is given a {@link XEO.renderer.Chunk}
-     * containing the WebGL calls for rendering it.</p>
-     *
-     * <p>The object also gets a shader (implemented by {@link XEO.renderer.Program}), taylored to render those state cores.</p>
-     *
-     * <p>Limited re-compilation may also be done on portions of a scene that have been added or sufficiently modified. When
-     * traversal visits a {@link SceneJS.Geometry} for which an object already exists in the display, {@link #buildObject}
-     * may update the {@link XEO.renderer.Chunk}s on the object as required for any changes in the core soup since the
-     * last time the object was built. If differences among the cores require it, then {@link #buildObject} may also replace
-     * the object's {@link XEO.renderer.Program} in order to render the new core soup configuration.</p>
-     *
-     * <p>So in summary, to each {@link XEO.renderer.Object} it builds, {@link #buildObject} creates a list of
-     * {@link XEO.renderer.Chunk}s to render the set of component state cores that are currently set on the {@link XEO.Renderer}.
-     * When {@link #buildObject} is re-building an existing object, it may replace one or more {@link XEO.renderer.Chunk}s
-     * for state cores that have changed from the last time the object was built or re-built.</p>
-
-     * <h2>Object Destruction</h2>
-     * <p>Destruction of a scene graph branch simply involves a call to {@link #removeObject} for each {@link SceneJS.Geometry}
-     * in the branch.</p>
-     *
-     * <h2>Draw List</h2>
-     * <p>The draw list is actually comprised of two lists of state chunks: a "pick" list to render a pick buffer
-     * for colour-indexed GPU picking, along with a "draw" list for normal image rendering. The chunks in these lists
-     * are held in the state-sorted order of their objects in #_objectList, with runs of duplicate states removed.</p>
-     *
-     * <p>After a scene update, we set a flag on the display to indicate the stage we will need to redo from. The pipeline is
-     * then lazy-redone on the next call to #render or #pick.</p>
-     */
-    XEO.renderer.Renderer = function (stats, cfg) {
-
-        // Collects runtime statistics
-        this.stats = stats || {};
-
-        // Renderer is bound to the lifetime of an HTML5 canvas
-        this._canvas = cfg.canvas;
-
-        // Factory which creates and recycles XEO.renderer.Program instances
-        this._programFactory = new XEO.renderer.ProgramFactory(this.stats, {
-            canvas: cfg.canvas
-        });
-
-        // Factory which creates and recycles XEO.renderer.Object instances
-        this._objectFactory = new XEO.renderer.ObjectFactory();
-
-        // Factory which creates and recycles XEO.renderer.Chunk instances
-        this._chunkFactory = new XEO.renderer.ChunkFactory();
-
-        // State chunks that are dynamically inserted by the renderer
-        this._extraChunks = [];
-        this._numExtraChunks = 0;
-
-        /**
-         * Indicates if the canvas is transparent
-         * @type {boolean}
-         */
-        this.transparent = cfg.transparent === true;
-
-        /**
-         * Optional callback to fire when renderer wants to
-         * bind an output framebuffer.
-         *
-         * When this is missing, the renderer will implicitly bind
-         * WebGL's default framebuffer.
-         *
-         * The callback takes one parameter, which is the index of the current
-         * rendering pass in which the buffer is to be bound.
-         *
-         * Use like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });
-         */
-        this.bindOutputFramebuffer = null;
-
-        /**
-         * Optional callback to fire when renderer wants to
-         * unbind any output drawing framebuffer that was
-         * previously bound with #bindOutputFramebuffer.
-         *
-         * Callback takes no parameters.
-         */
-        this.unbindOutputFramebuffer = null;
-
-        // The objects in the render
-        this.objects = {};
-
-        // Ambient color
-        this._ambient = null;
-
-        // The object list, containing all elements of #objects, kept in GL state-sorted order
-        this._objectList = [];
-        this._objectListLen = 0;
-
-        // The "draw list", comprised collectively of three lists of state chunks belong to visible objects
-        // within #_objectList: a "pick" list to render a pick buffer for colour-indexed GPU picking, along with an
-        // "draw" list for normal image rendering.  The chunks in these lists are held in the state-sorted order of
-        // their objects in #_objectList, with runs of duplicate states removed.
-
-        this._objectPickList = [];
-        this._objectPickListLen = 0;
-
-        this._drawChunkList = [];      // State chunk list to render all objects
-        this._drawChunkListLen = 0;
-
-        this._pickObjectChunkList = [];  // State chunk list to render scene to pick buffer
-        this._pickObjectChunkListLen = 0;
-
-        // Tracks the index of the first chunk in the transparency pass. The first run of chunks
-        // in the list are for opaque objects, while the remainder are for transparent objects.
-        // This supports a mode in which we only render the opaque chunks.
-        this._drawChunkListTransparentIndex = -1;
-
-        // The frame context holds state shared across a single render of the
-        // draw list, along with any results of the render, such as pick hits
-        this._frameCtx = {
-            pickObjects: [], // Pick names of objects hit during pick render
-            canvas: this._canvas,
-            renderTarget: null,
-            renderBuf: null,
-            depthbufEnabled: null,
-            clearDepth: null,
-            depthFunc: null,
-            blendEnabled: false,
-            backfaces: true,
-            frontface: true, // true = "ccw" else "cw"
-            pickIndex: 0, // Indexes this._pickObjects
-            textureUnit: 0,
-            transparent: false, // True while rendering transparency bin
-            ambientColor: null,
-            drawElements: 0,
-            useProgram: 0,
-            bindTexture: 0,
-            bindArray: null,
-            pass: null,
-            bindOutputFramebuffer: null
-        };
-
-        //----------------- Render states --------------------------------------
-
-        /**
-         Visibility render state.
-         @property visibility
-         @type {renderer.Visibility}
-         */
-        this.visibility = null;
-
-        /**
-         Culling render state.
-         @property cull
-         @type {renderer.Cull}
-         */
-        this.cull = null;
-
-        /**
-         Modes render state.
-         @property modes
-         @type {renderer.Modes}
-         */
-        this.modes = null;
-
-        /**
-         Render state for an effects layer.
-         @property layer
-         @type {renderer.Layer}
-         */
-        this.layer = null;
-
-        /**
-         Render state for an effects pipeline stage.
-         @property stage
-         @type {renderer.Layer}
-         */
-        this.stage = null;
-
-        /**
-         Depth buffer render state.
-         @property depthBuf
-         @type {renderer.DepthBuf}
-         */
-        this.depthBuf = null;
-
-        /**
-         Color buffer render state.
-         @property colorBuf
-         @type {renderer.ColorBuf}
-         */
-        this.colorBuf = null;
-
-        /**
-         Lights render state.
-         @property lights
-         @type {renderer.Lights}
-         */
-        this.lights = null;
-
-        /**
-         Material render state.
-         @property material
-         @type {renderer.Material}
-         */
-        this.material = null;
-
-        /**
-         Environmental reflection render state.
-         @property reflection
-         @type {renderer.Reflect}
-         */
-        this.reflect = null;
-
-        /**
-         Modelling transform render state.
-         @property modelTransform
-         @type {renderer.Transform}
-         */
-        this.modelTransform = null;
-
-        /**
-         View transform render state.
-         @property viewTransform
-         @type {renderer.Transform}
-         */
-        this.viewTransform = null;
-
-        /**
-         Projection transform render state.
-         @property projTransform
-         @type {renderer.Transform}
-         */
-        this.projTransform = null;
-
-        /**
-         Billboard render state.
-         @property billboard
-         @type {renderer.Billboard}
-         */
-        this.billboard = null;
-
-        /**
-         Stationary render state.
-         @property stationary
-         @type {renderer.Stationary}
-         */
-        this.stationary = null;
-
-        /**
-         Color target render state.
-         @property colorTarget
-         @type {renderer.RenderTarget}
-         */
-        this.colorTarget = null;
-
-        /**
-         Depth target render state.
-         @property depthTarget
-         @type {renderer.RenderTarget}
-         */
-        this.depthTarget = null;
-
-        /**
-         Cross-section planes render state.
-         @property clips
-         @type {renderer.Clips}
-         */
-        this.clips = null;
-
-        /**
-         Morph targets render state.
-         @property morphTargets
-         @type {renderer.MorphTargets}
-         */
-        this.morphTargets = null;
-
-        /**
-         Custom shader render state.
-         @property shader
-         @type {renderer.Shader}
-         */
-        this.shader = null;
-
-        /**
-         Render state providing custom shader params.
-         @property shaderParams
-         @type {renderer.Shader}
-         */
-        this.shaderParams = null;
-
-        /**
-         Geometry render state.
-         @property geometry
-         @type {renderer.Geometry}
-         */
-        this.geometry = null;
-
-        /**
-         Viewport render state.
-         @property viewport
-         @type {renderer.Viewport}
-         */
-        this.viewport = null;
-
-
-        //----------------- Renderer dirty flags -------------------------------
-
-        /**
-         * Flags the object list as needing to be rebuilt from renderer objects
-         * on the next call to {@link #render} or {@link #pick}. Setting this
-         * will cause the rendering pipeline to be executed from stage #2
-         * (see class comment), causing object list rebuild, state order
-         * determination, state sort, draw list construction and image render.
-         * @type Boolean
-         */
-        this.objectListDirty = true;
-
-        /**
-         * Flags the object list as needing state orders to be (re)computed on the
-         * next call to {@link #render} or {@link #pick}. Setting this will cause
-         * the rendering pipeline to be executed from stage #3 (see class comment),
-         * causing state order determination, state sort, draw list construction
-         * and image render.
-         * @type Boolean
-         */
-        this.stateOrderDirty = true;
-
-        /**
-         * Flags the object list as needing to be state-sorted on the next call
-         * to {@link #render} or {@link #pick}.Setting this will cause the
-         * rendering pipeline to be executed from stage #4 (see class comment),
-         * causing state sort, draw list construction and image render.
-         * @type Boolean
-         */
-        this.stateSortDirty = true;
-
-        /**
-         * Flags the draw list as needing to be rebuilt from the object list on
-         * the next call to {@link #render} or {@link #pick}.  Setting this will
-         * cause the rendering pipeline to be executed from stage #5
-         * (see class comment), causing draw list construction and image render.
-         * @type Boolean
-         */
-        this.drawListDirty = true;
-
-        /**
-         * Flags the image as needing to be redrawn from the draw list on the
-         * next call to {@link #render} or {@link #pick}. Setting this will
-         * cause the rendering pipeline to be executed from stage #6
-         * (see class comment), causing the image render.
-         * @type Boolean
-         */
-        this.imageDirty = true;
-    };
-
-    /**
-     * Reallocates WebGL resources for objects within this renderer.
-     */
-    XEO.renderer.Renderer.prototype.webglRestored = function () {
-
-        // Re-allocate programs
-        this._programFactory.webglRestored();
-
-        // Re-bind chunks to the programs
-        this._chunkFactory.webglRestored();
-
-        var gl = this._canvas.gl;
-
-        // Rebuild pick buffer
-
-        if (this.pickBuf) {
-            this.pickBuf.webglRestored(gl);
-        }
-
-        // Need redraw
-
-        this.imageDirty = true;
-    };
-
-    /**
-     * Internally creates (or updates) a {@link XEO.renderer.Object} of the given
-     * ID from whatever component state cores are currently set on this {@link XEO.Renderer}.
-     * The object is created if it does not already exist in the display, otherwise
-     * it is updated with the current states, possibly replacing states already
-     * referenced by the object.
-     *
-     * @param {String} objectId ID of object to create or update
-     */
-    XEO.renderer.Renderer.prototype.buildObject = function (objectId) {
-
-        var object = this.objects[objectId];
-
-        if (!object) {
-            object = this._objectFactory.get(objectId);
-        }
-
-        // Attach to the object any states that we need to get off it later.
-        // Most of these will be used when composing the object's shader.
-
-        object.stage = this.stage;
-        object.layer = this.layer;
-        object.colorTarget = this.colorTarget;
-        object.depthTarget = this.depthTarget;
-        object.material = this.material;
-        object.reflect = this.reflect;
-        object.geometry = this.geometry;
-        object.visibility = this.visibility;
-        object.cull = this.cull;
-        object.modes = this.modes;
-        object.billboard = this.billboard;
-        object.stationary = this.stationary;
-        object.viewport = this.viewport;
-
-        // Build hash of the object's state configuration. This is used
-        // to hash the object's shader so that it may be reused by other
-        // objects that have the same state configuration.
-
-        var hash = ([
-
-            // Make sure that every state type
-            // with a hash is concatenated here
-
-            this.geometry.hash,
-            this.shader.hash,
-            this.clips.hash,
-            this.material.hash,
-            //this.reflect.hash,
-            this.lights.hash,
-            this.billboard.hash,
-            this.stationary.hash
-
-        ]).join(";");
-
-        if (!object.program || hash !== object.hash) {
-
-            // Get new program for object if needed
-
-            if (object.program) {
-                this._programFactory.put(object.program);
-            }
-
-            object.program = this._programFactory.get(hash, this);
-
-            object.hash = hash;
-        }
-
-        var programState = object.program;
-
-        if (programState) {
-
-            var program = programState.program;
-
-            if (!program.allocated || !program.compiled || !program.validated || !program.linked) {
-
-                if (this.objects[objectId]) {
-
-                    // Don't keep faulty objects in the renderer
-                    this.removeObject(objectId);
-                }
-
-                return {
-                    error: true,
-                    errorLog: program.errorLog
-                }
-            }
-        }
-
-
-        // Build sequence of draw chunks on the object
-
-        // The order of some of these is important because some chunks will set
-        // state on this._frameCtx to be consumed by other chunks downstream.
-
-        this._setChunk(object, 0, "program", object.program); // Must be first
-        this._setChunk(object, 1, "modelTransform", this.modelTransform);
-        this._setChunk(object, 2, "viewTransform", this.viewTransform);
-        this._setChunk(object, 3, "projTransform", this.projTransform);
-        this._setChunk(object, 4, "modes", this.modes);
-        this._setChunk(object, 5, "shader", this.shader);
-        this._setChunk(object, 6, "shaderParams", this.shaderParams);
-        this._setChunk(object, 7, "depthBuf", this.depthBuf);
-        this._setChunk(object, 8, "colorBuf", this.colorBuf);
-        this._setChunk(object, 9, "lights", this.lights);
-        this._setChunk(object, 10, this.material.type, this.material); // Supports different material systems
-        this._setChunk(object, 11, "clips", this.clips);
-        this._setChunk(object, 12, "viewport", this.viewport);
-        this._setChunk(object, 13, "geometry", this.geometry);
-        this._setChunk(object, 14, "draw", this.geometry, true); // Must be last
-
-        if (!this.objects[objectId]) {
-
-            this.objects[objectId] = object;
-
-            this.objectListDirty = true;
-
-        } else {
-
-            // At the very least, the object sort order will need be recomputed
-
-            this.stateOrderDirty = true;
-        }
-
-        return object;
-    };
-
-    /** Adds a render state chunk to a render graph object.
-     */
-    XEO.renderer.Renderer.prototype._setChunk = function (object, order, type, state, neg) {
-
-        var id;
-
-        var chunkType = this._chunkFactory.types[type];
-
-        if (type === "program") {
-            id = (object.program.id + 1) * 100000000;
-
-        } else if (chunkType.constructor.prototype.programGlobal) {
-            id = state.id;
-
-        } else {
-            id = ((object.program.id + 1) * 100000000) + ((state.id + 1));
-        }
-
-        if (neg) {
-            id *= 100000;
-        }
-
-        var oldChunk = object.chunks[order];
-
-        if (oldChunk) {
-            this._chunkFactory.putChunk(oldChunk);
-        }
-
-        // Attach new chunk
-
-        object.chunks[order] = this._chunkFactory.getChunk(id, type, object.program.program, state);
-
-        // Ambient light is global across everything in display, and
-        // can never be disabled, so grab it now because we want to
-        // feed it to gl.clearColor before each display list render
-
-        if (type === "lights") {
-            this._setAmbient(state);
-        }
-    };
-
-    // Sets the singular ambient light.
-    XEO.renderer.Renderer.prototype._setAmbient = function (state) {
-
-        var lights = state.lights;
-        var light;
-
-        for (var i = 0, len = lights.length; i < len; i++) {
-
-            light = lights[i];
-
-            if (light.type === "ambient") {
-
-                this._ambient = light;
-            }
-        }
-    };
-
-    /**
-     * Removes an object from this Renderer
-     *
-     * @param {String} objectId ID of object to remove
-     */
-    XEO.renderer.Renderer.prototype.removeObject = function (objectId) {
-
-        var object = this.objects[objectId];
-
-        if (!object) {
-
-            // Object not found
-            return;
-        }
-
-        // Release draw chunks
-        var chunks = object.chunks;
-        for (var i = 0, len = chunks.length; i < len; i++) {
-            this._chunkFactory.putChunk(chunks[i]);
-        }
-
-        // Release object's shader
-        this._programFactory.put(object.program);
-
-        object.program = null;
-        object.hash = null;
-
-        // Release object
-        this._objectFactory.put(object);
-
-        delete this.objects[objectId];
-
-        // Need to repack object map into fast iteration list
-        this.objectListDirty = true;
-    };
-
-    /**
-     * Renders a new frame, if neccessary.
-     */
-    XEO.renderer.Renderer.prototype.render = function (params) {
-
-        params = params || {};
-
-        if (this.objectListDirty) {
-            this._buildObjectList();        // Build the scene object list
-            this.objectListDirty = false;
-            this.stateOrderDirty = true;    // Now needs state ordering
-        }
-
-        if (this.stateOrderDirty) {
-            this._makeStateSortKeys();      // Determine the state sort order
-            this.stateOrderDirty = false;
-            this.stateSortDirty = true;     // Now needs state sorting
-        }
-
-        if (this.stateSortDirty) {
-            this._stateSort();              // State sort the scene object list
-            this.stateSortDirty = false;
-            this.drawListDirty = true;      // Now need to build object draw list
-        }
-
-        if (this.drawListDirty) {           // Build draw list from object list
-            this._buildDrawList();
-            this.imageDirty = true;         // Now need to render the draw list
-        }
-
-        if (this.imageDirty || params.force) {
-            this._doDrawList({                  // Render the draw list
-                clear: (params.clear !== false), // Clear buffers by default
-                opaqueOnly: params.opaqueOnly,
-                pass: params.pass
-            });
-            this.stats.frame.frameCount++;
-            this.imageDirty = false;
-        }
-    };
-
-    /**
-     * Builds the object list from the object map
-     */
-    XEO.renderer.Renderer.prototype._buildObjectList = function () {
-        this._objectListLen = 0;
-        for (var objectId in this.objects) {
-            if (this.objects.hasOwnProperty(objectId)) {
-                this._objectList[this._objectListLen++] = this.objects[objectId];
-            }
-        }
-    };
-
-    /**
-     * Generates object state sort keys
-     */
-    XEO.renderer.Renderer.prototype._makeStateSortKeys = function () {
-        var object;
-        for (var i = 0, len = this._objectListLen; i < len; i++) {
-            object = this._objectList[i];
-            if (!object.program) { // Non-visual object (eg. sound)
-                object.sortKey = -1;
-            } else {
-                object.sortKey =
-                    ((object.stage.priority + 1) * 10000000000000000)
-                    + ((object.modes.transparent ? 2 : 1) * 100000000000000)
-                    + ((object.layer.priority + 1) * 10000000000000)
-                    + ((object.program.id + 1) * 100000000)
-                    + ((object.material.id + 1) * 10000)
-                    + object.geometry.id;
-            }
-        }
-    };
-
-    /**
-     * State-sorts the object list
-     */
-    XEO.renderer.Renderer.prototype._stateSort = function () {
-        this._objectList.length = this._objectListLen;
-        this._objectList.sort(function (a, b) {
-            return a.sortKey - b.sortKey;
-        });
-    };
-
-    /**
-     * Logs the object list
-     */
-    XEO.renderer.Renderer.prototype._logObjectList = function () {
-        console.log("--------------------------------------------------------------------------------------------------");
-        console.log(this._objectListLen + " objects");
-        for (var i = 0, len = this._objectListLen; i < len; i++) {
-            var object = this._objectList[i];
-            console.log("XEO.Renderer : object[" + i + "] sortKey = " + object.sortKey);
-        }
-        console.log("--------------------------------------------------------------------------------------------------");
-    };
-
-    /**
-     * Builds the draw list, which is the list of draw state-chunks to apply to WebGL
-     * to render the visible objects in the object list for the next frame.
-     * Preserves the state sort order of the object list among the draw chunks.
-     */
-    XEO.renderer.Renderer.prototype._buildDrawList = function () {
-
-        this._clearExtraChunks();
-
-        this._lastDrawChunkId = this._lastDrawChunkId || [];
-        this._lastPickObjectChunkId = this._lastPickObjectChunkId || [];
-
-        var i;
-        var len;
-
-        for (i = 0; i < 20; i++) {
-            this._lastDrawChunkId[i] = null;
-            this._lastPickObjectChunkId[i] = null;
-        }
-
-        this._drawChunkListLen = 0;
-        this._pickObjectChunkListLen = 0;
-
-        // For each render target, a list of objects to render to that target
-        var targetObjectLists = {};
-
-        // A list of all the render target object lists
-        var targetListList = [];
-
-        // List of all targets
-        var targetList = [];
-
-        var object;
-        var colorRenderBuf;
-        var depthRenderBuf;
-        var target;
-        var targetChunk;
-        var list;
-        var id;
-
-        this._objectDrawList = this._objectDrawList || [];
-        this._objectDrawListLen = 0;
-        this._objectPickListLen = 0;
-
-        for (i = 0, len = this._objectListLen; i < len; i++) {
-
-            object = this._objectList[i];
-
-            // Skip culled objects
-
-            if (object.cull.culled === true) {
-                continue;
-            }
-
-            // Skip invisible objects
-
-            if (object.visibility.visible === false) {
-                continue;
-            }
-
-            // Put objects with render targets into a bin for each target
-
-            colorRenderBuf = object.colorTarget ? object.colorTarget.renderBuf : null;
-            depthRenderBuf = object.depthTarget ? object.depthTarget.renderBuf : null;
-
-            if (colorRenderBuf) {
-
-                target = object.colorTarget;
-
-                list = targetObjectLists[target.id];
-
-                if (!list) {
-
-                    list = [];
-
-                    targetObjectLists[target.id] = list;
-
-                    targetListList.push(list);
-
-                    id = -this._numExtraChunks;
-
-                    targetChunk = this._chunkFactory.getChunk(id, "renderTarget", object.program.program, target);
-
-                    this._extraChunks[this._numExtraChunks++] = targetChunk;
-
-                    targetList.push(targetChunk);
-                }
-
-                list.push(object);
-
-            } else if (depthRenderBuf) {
-
-                target = object.depthTarget;
-
-                list = targetObjectLists[target.id];
-
-                if (!list) {
-
-                    list = [];
-
-                    targetObjectLists[target.id] = list;
-
-                    targetListList.push(list);
-
-                    id = -this._numExtraChunks;
-
-                    targetChunk = this._chunkFactory.getChunk(id, "renderTarget", object.program.program, target);
-
-                    this._extraChunks[this._numExtraChunks++] = targetChunk;
-
-                    targetList.push(targetChunk);
-                }
-
-                list.push(object);
-
-            } else {
-
-                // Put objects without render targets into their own list
-
-                this._objectDrawList[this._objectDrawListLen++] = object;
-            }
-        }
-
-        // Append chunks for objects within render targets first
-
-        var pickable;
-        var renderTargetBound = false;
-
-        for (i = 0, len = targetListList.length; i < len; i++) {
-
-            targetChunk = targetList[i];
-            list = targetListList[i];
-
-            this._appendRenderTargetChunk(targetChunk);
-
-            for (var j = 0, lenj = list.length; j < lenj; j++) {
-
-                object = list[j];
-
-                pickable = object.stage && object.stage.pickable; // We'll only pick objects in pickable stages
-
-                this._appendObjectToDrawChunkLists(object, pickable);
-
-                renderTargetBound = true;
-            }
-        }
-
-        if (renderTargetBound) {
-
-            // Unbinds any render target bound previously
-
-            id = this._numExtraChunks * -1000.0;
-
-            this._appendRenderTargetChunk(this._chunkFactory.getChunk(id, "renderTarget", object.program.program, {}));
-
-            this._extraChunks[this._numExtraChunks++] = targetChunk;
-        }
-
-        // Append chunks for objects not in render targets
-
-        for (i = 0, len = this._objectDrawListLen; i < len; i++) {
-
-            object = this._objectDrawList[i];
-
-            pickable = !object.stage || (object.stage && object.stage.pickable); // Don't pick unpickable stages, ie. FX passes
-
-            this._appendObjectToDrawChunkLists(object, pickable);
-        }
-
-        // Draw list is now up to date.
-
-        this.drawListDirty = false;
-    };
-
-    XEO.renderer.Renderer.prototype._clearExtraChunks = function () {
-        for (var i = 0, len = this._numExtraChunks; i < len; i++) {
-            this._chunkFactory.putChunk(this._extraChunks[i]);
-        }
-        this._numExtraChunks = 0;
-    };
-
-    XEO.renderer.Renderer.prototype._appendRenderTargetChunk = function (chunk) {
-        this._drawChunkList[this._drawChunkListLen++] = chunk;
-    };
-
-    /**
-     * Appends an object to the draw and pick lists.
-     * @param object
-     * @param pickable
-     * @private
-     */
-    XEO.renderer.Renderer.prototype._appendObjectToDrawChunkLists = function (object, pickable) {
-
-        pickable = pickable && object.modes.pickable;
-
-        var chunks = object.chunks;
-        var chunk;
-
-        for (var i = 0, len = chunks.length; i < len; i++) {
-
-            chunk = chunks[i];
-
-            if (chunk) {
-
-                // As we apply the state chunk lists we track the ID of most types
-                // of chunk in order to cull redundant re-applications of runs
-                // of the same chunk - except for those chunks with a 'unique' flag,
-                // because we don't want to collapse runs of draw chunks because
-                // they contain the GL drawElements calls which render the objects.
-
-                if (chunk.draw) {
-
-                    // Draw pass
-
-                    if (chunk.unique || this._lastDrawChunkId[i] !== chunk.id) {
-
-                        // Don't reapply repeated chunks
-
-                        this._drawChunkList[this._drawChunkListLen] = chunk;
-                        this._lastDrawChunkId[i] = chunk.id;
-
-                        if (chunk.state && chunk.state.transparent && this._drawChunkListTransparentIndex < 0) {
-                            this._drawChunkListTransparentIndex = this._drawChunkListLen;
-                        }
-
-                        this._drawChunkListLen++
-                    }
-                }
-
-                if (chunk.pickObject) {
-
-                    // Object-picking pass
-
-                    if (pickable) {
-
-                        // Don't pick unpickable objects
-
-                        if (chunk.unique || this._lastPickObjectChunkId[i] !== chunk.id) {
-
-                            // Don't reapply repeated chunks
-
-                            this._pickObjectChunkList[this._pickObjectChunkListLen++] = chunk;
-                            this._lastPickObjectChunkId[i] = chunk.id;
-                        }
-                    }
-                }
-            }
-        }
-
-        if (pickable) {
-            this._objectPickList[this._objectPickListLen++] = object;
-        }
-    };
-
-    /**
-     * Logs the contents of the draw list to the console.
-     *
-     * @private
-     */
-    XEO.renderer.Renderer.prototype._logDrawList = function () {
-
-        console.log("--------------------------------------------------------------------------------------------------");
-        console.log(this._drawChunkListLen + " draw list chunks");
-
-        for (var i = 0, len = this._drawChunkListLen; i < len; i++) {
-
-            var chunk = this._drawChunkList[i];
-
-            console.log("[chunk " + i + "] type = " + chunk.type);
-
-            switch (chunk.type) {
-                case "draw":
-                    console.log("\n");
-                    break;
-
-                case "renderTarget":
-                    console.log(" type = renderTarget");
-                    break;
-            }
-        }
-
-        console.log("--------------------------------------------------------------------------------------------------");
-    };
-
-    /**
-     * Logs the contents of the pick list to the console.
-     *
-     * @private
-     */
-    XEO.renderer.Renderer.prototype._logPickList = function () {
-
-        console.log("--------------------------------------------------------------------------------------------------");
-        console.log(this._pickObjectChunkListLen + " pick list chunks");
-
-        for (var i = 0, len = this._pickObjectChunkListLen; i < len; i++) {
-
-            var chunk = this._pickObjectChunkList[i];
-
-            console.log("[chunk " + i + "] type = " + chunk.type);
-
-            switch (chunk.type) {
-                case "draw":
-                    console.log("\n");
-                    break;
-                case "renderTarget":
-                    console.log(" type = renderTarget");
-                    break;
-            }
-        }
-
-        console.log("--------------------------------------------------------------------------------------------------");
-    };
-
-    /**
-     * Attempts to pick an object at the given canvas coordinates.
-     *
-     * @param {*} params Picking params.
-     * @returns {*} Hit result, if any.
-     */
-    XEO.renderer.Renderer.prototype.pick = function (params) {
-
-        var gl = this._canvas.gl;
-
-        var hit = null;
-
-        var canvasX = params.canvasPos[0];
-        var canvasY = params.canvasPos[1];
-
-        var pickBuf = this.pickBuf;
-
-        if (!pickBuf) {
-
-            // Lazy-create the pick buffer
-
-            pickBuf = new XEO.renderer.webgl.RenderBuffer({
-                gl: this._canvas.gl,
-                canvas: this._canvas.canvas
-            });
-
-            this.pickBuf = pickBuf;
-        }
-
-        // Do any pending render
-
-        this.render();
-
-        pickBuf.bind();
-
-        pickBuf.clear();
-
-        this._doDrawList({
-            pickObject: true,
-            clear: true
-        });
-
-        //     gl.finish();
-
-        // Convert picked pixel color to object index
-
-        var pix = pickBuf.read(canvasX, canvasY);
-        var pickedObjectIndex = pix[0] + pix[1] * 256 + pix[2] * 65536;
-        pickedObjectIndex = (pickedObjectIndex >= 1) ? pickedObjectIndex - 1 : -1;
-
-        var object = this._objectPickList[pickedObjectIndex];
-
-        if (object) {
-
-            // Object was picked
-
-            hit = {
-                entity: object.id,
-                canvasPos: [
-                    canvasX,
-                    canvasY
-                ]
-            };
-
-            // Now do a primitive-pick if requested
-
-            if (params.rayPick) {
-
-                pickBuf.clear();
-
-                this._doDrawList({
-                    rayPick: true,
-                    object: object,
-                    clear: true
-                });
-
-                gl.finish();
-
-                // Convert picked pixel color to primitive index
-
-                pix = pickBuf.read(canvasX, canvasY);
-                var primIndex = pix[0] + (pix[1] * 256) + (pix[2] * 256 * 256) + (pix[3] * 256 * 256 * 256);
-                primIndex *= 3; // Convert from triangle number to first vertex in indices
-
-                hit.primIndex = primIndex;
-            }
-        }
-
-        pickBuf.unbind();
-
-        return hit;
-    };
-
-    /** Renders either the draw or pick list.
-     *
-     * @param {*} params
-     * @param {Boolean} params.clear Set true to clear the color, depth and stencil buffers first
-     * @param {Boolean} params.pickObject
-     * @param {Boolean} params.rayPick
-     * @param {Boolean} params.object
-     * @param {Boolean} params.opaqueOnly
-     * @private
-     */
-    XEO.renderer.Renderer.prototype._doDrawList = function (params) {
-
-        var gl = this._canvas.gl;
-        var i;
-        var len;
-
-        var outputFramebuffer = this.bindOutputFramebuffer && this.unbindOutputFramebuffer && !params.pickObject && !params.rayPick;
-
-        if (outputFramebuffer) {
-            this.bindOutputFramebuffer(params.pass);
-        }
-
-        var ambient = this._ambient;
-        var ambientColor;
-        if (ambient) {
-            var color = ambient.color;
-            var intensity = ambient.intensity;
-            ambientColor = [color[0] * intensity, color[1] * intensity, color[2] * intensity, 1.0];
-        } else {
-            ambientColor = [0, 0, 0];
-        }
-
-        var frameCtx = this._frameCtx;
-
-        frameCtx.renderTarget = null;
-        frameCtx.renderBuf = null;
-        frameCtx.depthbufEnabled = null;
-        frameCtx.clearDepth = null;
-        frameCtx.depthFunc = gl.LESS;
-        frameCtx.blendEnabled = false;
-        frameCtx.backfaces = true;
-        frameCtx.frontface = true; // true == "ccw" else "cw"
-        frameCtx.pickIndex = 0; // Indexes this._pickObjects
-        frameCtx.textureUnit = 0;
-        frameCtx.transparent = false; // True while rendering transparency bin
-        frameCtx.ambientColor = ambientColor;
-        frameCtx.drawElements = 0;
-        frameCtx.useProgram = 0;
-        frameCtx.bindTexture = 0;
-        frameCtx.bindArray = 0;
-        frameCtx.pass = params.pass;
-        frameCtx.bindOutputFramebuffer = this.bindOutputFramebuffer;
-
-        // The extensions needs to be re-queried in case the context was lost and has been recreated.
-        if (XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {
-            gl.getExtension("OES_element_index_uint");
-        }
-
-        var frameStats = this.stats.frame;
-
-        frameStats.setUniform = 0;
-        frameStats.setUniformCacheHits = 0;
-
-        gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-
-        gl.enable(gl.DEPTH_TEST);
-
-        if (this.transparent || params.pickObject || params.rayPick) {
-
-            // Canvas is transparent - set clear color with zero alpha
-            // to allow background to show through
-
-            gl.clearColor(0, 0, 0, 0);
-
-        } else {
-
-            // Canvas is opaque - set clear color to the current ambient
-            // color, which can be provided by an ambient light source
-
-            gl.clearColor(ambientColor[0], ambientColor[1], ambientColor[2], 1.0);
-        }
-
-        if (params.clear) {
-            //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
-            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        }
-
-        gl.frontFace(gl.CCW);
-        gl.disable(gl.CULL_FACE);
-        gl.disable(gl.BLEND);
-
-        if (params.pickObject) {
-
-            // Pick an object
-
-            for (i = 0, len = this._pickObjectChunkListLen; i < len; i++) {
-                this._pickObjectChunkList[i].pickObject(frameCtx);
-            }
-
-        } else if (params.rayPick) {
-
-            // Pick a primitive of an object
-
-            if (params.object) {
-
-                var chunks = params.object.chunks;
-                var chunk;
-
-                for (i = 0, len = chunks.length; i < len; i++) {
-                    chunk = chunks[i];
-                    if (chunk.pickPrimitive) {
-                        chunk.pickPrimitive(frameCtx);
-                    }
-                }
-            }
-
-        } else {
-
-            // Render all visible objects
-
-            var startTime = (new Date()).getTime();
-
-            // Option to only render opaque objects
-            len = (params.opaqueOnly && this._drawChunkListTransparentIndex >= 0 ? this._drawChunkListTransparentIndex : this._drawChunkListLen);
-
-            for (i = 0; i < len; i++) {
-                this._drawChunkList[i].draw(frameCtx);
-            }
-
-            var endTime = (new Date()).getTime();
-
-            frameStats.renderTime = (endTime - startTime) / 1000.0;
-            frameStats.drawElements = frameCtx.drawElements;
-            frameStats.useProgram = frameCtx.useProgram;
-            frameStats.bindTexture = frameCtx.bindTexture;
-            frameStats.bindArray = frameCtx.bindArray;
-        }
-
-        //  gl.finish();
-
-        if (frameCtx.renderBuf) {
-            frameCtx.renderBuf.unbind();
-        }
-
-        var numTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
-        for (var ii = 0; ii < numTextureUnits; ++ii) {
-            gl.activeTexture(gl.TEXTURE0 + ii);
-            gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-            gl.bindTexture(gl.TEXTURE_2D, null);
-        }
-
-        if (outputFramebuffer) {
-            this.unbindOutputFramebuffer(params.pass);
-        }
-
-        frameStats.drawChunks = this._drawChunkListLen;
-    };
-
-    /**
-     * Reads the colors of some pixels in the last rendered frame.
-     *
-     * @param {Float32Array} pixels
-     * @param {Float32Array} colors
-     * @param {Number} len
-     * @param {Boolean} opaqueOnly
-     */
-    XEO.renderer.Renderer.prototype.readPixels = function (pixels, colors, len, opaqueOnly) {
-
-        if (!this._readPixelBuf) {
-            this._readPixelBuf = new XEO.renderer.webgl.RenderBuffer({
-                gl: this._canvas.gl,
-                canvas: this._canvas.canvas
-            });
-        }
-
-        this._readPixelBuf.bind();
-
-        this._readPixelBuf.clear();
-
-        this.render({
-            force: true,
-            opaqueOnly: opaqueOnly
-        });
-
-        var color;
-        var i;
-        var j;
-        var k;
-
-        for (i = 0; i < len; i++) {
-
-            j = i * 2;
-            k = i * 4;
-
-            color = this._readPixelBuf.read(pixels[j], pixels[j + 1]);
-
-            colors[k] = color[0];
-            colors[k + 1] = color[1];
-            colors[k + 2] = color[2];
-            colors[k + 3] = color[3];
-        }
-
-        this._readPixelBuf.unbind();
-    };
-
-    /**
-     * Destroys this Renderer.
-     */
-    XEO.renderer.Renderer.prototype.destroy = function () {
-        this._programFactory.destroy();
-    };
-})();
-;/**
- * Renderer states
- */
-(function () {
-
-    "use strict";
-
-    XEO.renderer = XEO.renderer || {};
-
-
-    /**
-
-     Base class for Renderer states.
-
-     renderer.State
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     */
-    XEO.renderer.State = Class.extend({
-
-        __init: function (cfg) {
-
-            this.id = this._ids.addItem({});
-
-            this.hash = cfg.hash || "" + this.id; // Not used by all sub-classes
-
-            for (var key in cfg) {
-                if (cfg.hasOwnProperty(key)) {
-                    this[key] = cfg[key];
-                }
-            }
-        },
-
-        destroy: function () {
-            this._ids.removeItem(this.id);
-        }
-    });
-
-    //XEO.renderer.State.prototype.destroy = function () {
-    //    states.removeItem(this.id);
-    //};
-
-    /**
-
-     Visibility state.
-
-     renderer.Visibility
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     @param cfg.visible {Boolean} Flag which controls visibility of the associated render objects.
-     @extends renderer.State
-     */
-    XEO.renderer.Visibility = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-    /**
-
-     Culling state.
-
-     renderer.Cull
-     @module XEO
-
-     @constructor
-     @param cfg {*} Configs
-     @param cfg.culled {Boolean} Flag which controls cull state of the associated render objects.
-     @extends renderer.State
-     */
-    XEO.renderer.Cull = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-    /**
-
-     Modes state.
-
-     renderer.Mode
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     @param cfg.pickable {Boolean} Flag which controls pickability of the associated render objects.
-     @param cfg.clipping {Boolean} Flag which controls whether associated render objects are clippable.
-     @param cfg.transparent {Boolean} Flag which controls transparency of the associated render objects.
-     @param cfg.frontFace {Boolean} Flag which determines winding order of backfaces on the associated render objects - true == "ccw", false == "cw".
-     @extends renderer.State
-     */
-    XEO.renderer.Modes = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-    /**
-
-     Layer state.
-
-     renderer.Layer
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     @param cfg.priority {Number} Layer render priority.
-     @extends renderer.State
-     */
-    XEO.renderer.Layer = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-    /**
-
-     Stage state.
-
-     renderer.Stage
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     @param cfg.priority {Number} Stage render priority.
-     @extends renderer.State
-     */
-    XEO.renderer.Stage = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-    /**
-
-     Depth buffer state.
-
-     renderer.DepthBuf
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     @param cfg.clearDepth {Number} Clear depth
-     @param cfg.depthBuf {String} Depth function
-     @extends renderer.State
-     */
-    XEO.renderer.DepthBuf = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-    /**
-
-     Color buffer state.
-
-     renderer.ColorBuf
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     @param cfg.blendEnabled {Boolean} Indicates if blending is enebled for
-     @param cfg.colorMask {Array of String} The color mask
-     @extends renderer.State
-     */
-    XEO.renderer.ColorBuf = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-    /**
-
-     Renderer lights state.
-
-     renderer.Lights
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     @param cfg.colorMask {Array of Object} The light sources
-     @extends renderer.State
-     */
-    XEO.renderer.Lights = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-    /**
-
-     PhongMaterial state.
-
-     renderer.PhongMaterial
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    XEO.renderer.PhongMaterial = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-    /**
-
-     Environmental reflection state.
-
-     renderer.Reflect
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    XEO.renderer.Reflect = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-    /**
-
-     Transform state.
-
-     renderer.Transform
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    XEO.renderer.Transform = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-    /**
-
-     Billboard transform state.
-
-     renderer.Billboard
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    XEO.renderer.Billboard = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-    /**
-
-     Stationary transform state.
-
-     renderer.Stationary
-     @module XEO
-
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    XEO.renderer.Stationary = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-
-    /**
-
-     Render target state.
-
-     renderer.RenderTarget
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    XEO.renderer.RenderTarget = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-    XEO.renderer.RenderTarget.DEPTH = 0;
-    XEO.renderer.RenderTarget.COLOR = 1;
-
-    /**
-
-     Clip planes state.
-
-     renderer.Clips
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    XEO.renderer.Clips = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-    /**
-
-     Renderer morph targets state.
-
-     renderer.MorphTargets
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    XEO.renderer.MorphTargets = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-    /**
-
-     Shader state.
-
-     renderer.Shader
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    XEO.renderer.Shader = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-    /**
-
-     Shader parameters state.
-
-     renderer.ShaderParams
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    XEO.renderer.ShaderParams = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-    /**
-
-     Texture state.
-
-     renderer.Texture
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    XEO.renderer.Texture = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-
-    /**
-
-     Fresnel state.
-
-     renderer.Fresnel
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    XEO.renderer.Fresnel = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-
-    /**
-
-     Geometry state.
-
-     renderer.Geometry
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    XEO.renderer.Geometry = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-    /**
-
-     Program state.
-
-     renderer.ProgramState
-     @module XEO
-     
-     @constructor
-     @param cfg {*} Configs
-     @extends renderer.State
-     */
-    XEO.renderer.ProgramState = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-
-    /**
-
-     Viewport state.
-
-     renderer.Viewport
-     @module XEO
-
-     @constructor
-     @param cfg {*} Configs
-     @param cfg.boundary {Float32Array} Canvas-space viewport extents.
-     @extends renderer.State
-     */
-    XEO.renderer.Viewport = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
-    });
-})();
-
-
-;(function () {
-
-    "use strict";
-
-    /**
-     * An object within a XEO.renderer.Renderer
-     */
-    XEO.renderer.Object = function (id) {
-
-        /**
-         * ID for this object, unique among all objects in the Renderer
-         */
-        this.id = id;
-
-        /**
-         * Hash code for this object, unique among all objects in the Renderer
-         */
-        this.hash = null;
-
-        /**
-         * State sort key, computed from #layer, #program and #material
-         * @type Number
-         */
-        this.sortKey = null;
-
-        /**
-         * Sequence of state chunks applied to render this object
-         */
-        this.chunks = [];
-
-        /**
-         * Shader programs that render this object, also used for (re)computing #sortKey
-         */
-        this.program = null;
-
-        /**
-         * State for the XEO.renderer.Stage that this object was compiled from, used for (re)computing #sortKey and visibility cull
-         */
-        this.stage = null;
-
-        /**
-         * State for the XEO.renderer.Modes that this object was compiled from, used for visibility cull
-         */
-        this.modes = null;
-
-        /**
-         * State for the XEO.renderer.Layer that this object was compiled from, used for (re)computing #sortKey and visibility cull
-         */
-        this.layer = null;
-
-        /**
-         * State for the XEO.renderer.Material that this object was compiled from, used for (re)computing #sortKey
-         */
-        this.material = null;
-    };
-})();;                (function () {
-
-    "use strict";
-
-    XEO.renderer.ObjectFactory = function () {
-
-        var freeObjects = [];
-        var numFreeObjects = 0;
-
-        this.get = function (id) {
-
-            var object;
-
-            if (numFreeObjects > 0) {
-
-                object = freeObjects[--numFreeObjects];
-
-                object.id = id;
-
-                return object;
-            }
-
-            return new XEO.renderer.Object(id);
-        };
-
-        this.put = function (object) {
-            freeObjects[numFreeObjects++] = object;
-        };
-    };
-
-})();
-
-
-;(function () {
-
-    "use strict";
-
-    XEO.renderer = XEO.renderer || {};
-
-    /**
-     *  Vertex and fragment shaders for pick and draw
-     *
-     * @param {*} stats Collects runtime statistics
-     * @param {String} hash Hash code which uniquely identifies the capabilities of the program, computed from hashes on the {@link Scene_Core}s that the {@link XEO.renderer.ProgramSource} composed to render
-     * @param {XEO.renderer.ProgramSource} source Sourcecode from which the the program is compiled in {@link #build}
-     * @param {WebGLRenderingContext} gl WebGL context
-     */
-    XEO.renderer.Program = function (stats, hash, source, gl) {
-
-        this.stats = stats;
-
-        /**
-         * Hash code for this program's capabilities, same as the hash on {@link #source}
-         * @type String
-         */
-        this.hash = source.hash;
-
-        /**
-         * Source code for this program's shaders
-         * @type renderer.ProgramSource
-         */
-        this.source = source;
-
-        /**
-         * WebGL context on which this program's shaders are allocated
-         * @type WebGLRenderingContext
-         */
-        this.gl = gl;
-
-        /**
-         * The drawing program
-         * @type webgl.Program
-         */
-        this.draw = null;
-
-        /**
-         * The object picking program
-         * @type webgl.Program
-         */
-        this.pickObject = null;
-
-        /**
-         * The primitive picking program
-         * @type webgl.Program
-         */
-        this.pickPrimitive = null;
-
-        /**
-         * The count of display objects using this program
-         * @type Number
-         */
-        this.useCount = 0;
-
-        /**
-         * True when successfully allocated
-         * @type {boolean}
-         */
-        this.allocated = false;
-
-        /**
-         * True when successfully compiled
-         * @type {boolean}
-         */
-        this.compiled = false;
-
-        /**
-         * True when successfully linked
-         * @type {boolean}
-         */
-        this.linked = false;
-
-        /**
-         * True when successfully validated
-         * @type {boolean}
-         */
-        this.validated = false;
-
-        /**
-         * Contains error log on failure to allocate, compile, validate or link
-         * @type {boolean}
-         */
-        this.errorLog = null;
-
-
-        this.build(gl);
-    };
-
-    /**
-     *  Creates the render and pick programs.
-     * This is also re-called to re-create them after WebGL context loss.
-     */
-    XEO.renderer.Program.prototype.build = function (gl) {
-
-        this.gl = gl;
-
-        this.allocated = false;
-        this.compiled = false;
-        this.linked = false;
-        this.validated = false;
-        this.errorLog = null;
-
-        this.draw = new XEO.renderer.webgl.Program(this.stats, gl, this.source.vertexDraw, this.source.fragmentDraw);
-        this.pickObject = new XEO.renderer.webgl.Program(this.stats, gl, this.source.vertexPickObject, this.source.fragmentPickObject);
-        this.pickPrimitive = new XEO.renderer.webgl.Program(this.stats, gl, this.source.vertexPickPrimitive, this.source.fragmentPickPrimitive);
-
-        if (!this.draw.allocated) {
-            this.errorLog = ["Draw program failed to allocate"].concat(this.draw.errorLog);
-            return;
-        }
-
-        if (!this.pickObject.allocated) {
-            this.errorLog = ["Object-picking program failed to allocate"].concat(this.pickObject.errorLog);
-            return;
-        }
-
-        if (!this.pickPrimitive.allocated) {
-            this.errorLog = ["Primitive-picking program failed to allocate"].concat(this.pickPrimitive.errorLog);
-            return;
-        }
-
-        this.allocated = true;
-
-        if (!this.draw.compiled) {
-            this.errorLog = ["Draw program failed to compile"].concat(this.draw.errorLog);
-            return;
-        }
-
-        if (!this.pickObject.compiled) {
-            this.errorLog = ["Object-picking program failed to compile"].concat(this.pickObject.errorLog);
-            return;
-        }
-
-        if (!this.pickPrimitive.compiled) {
-            this.errorLog = ["Primitive-picking program failed to compile"].concat(this.pickPrimitive.errorLog);
-            return;
-        }
-
-        this.compiled = true;
-
-        if (!this.draw.linked) {
-            this.errorLog = ["Draw program failed to link"].concat(this.draw.errorLog);
-            return;
-        }
-
-        if (!this.pickObject.linked) {
-            this.errorLog = ["Object-picking program failed to link"].concat(this.pickObject.errorLog);
-            return;
-        }
-
-        if (!this.pickPrimitive.linked) {
-            this.errorLog = ["Primitive-picking program failed to link"].concat(this.pickPrimitive.errorLog);
-            return;
-        }
-
-        this.linked = true;
-
-        if (!this.draw.validated) {
-            this.errorLog = ["Draw program failed to validate"].concat(this.draw.errorLog);
-            return;
-        }
-
-        if (!this.pickObject.validated) {
-            this.errorLog = ["Object-picking program failed to validate"].concat(this.pickObject.errorLog);
-            return;
-        }
-
-        if (!this.pickPrimitive.validated) {
-            this.errorLog = ["Primitive-picking program failed to validate"].concat(this.pickPrimitive.errorLog);
-            return;
-        }
-
-        this.validated = true;
-    };
-
-})();
-;(function () {
-
-    "use strict";
-
-    /**
-     *  Manages {@link XEO.renderer.ProgramState} instances.
-     * @param stats Collects runtime statistics
-     * @param cfg Configs
-     */
-    XEO.renderer.ProgramFactory = function (stats, cfg) {
-
-        this.stats = stats;
-
-        this._canvas = cfg.canvas;
-
-        this._programStates = {};
-    };
-
-
-    /**
-     * Get a program that fits the given set of states.
-     * Reuses any free program in the pool that matches the given hash.
-     */
-    XEO.renderer.ProgramFactory.prototype.get = function (hash, states) {
-
-        var programState = this._programStates[hash];
-
-        if (!programState) {
-
-            // No program exists for the states
-
-            // Create it and map it to the hash
-
-            var source = XEO.renderer.ProgramSourceFactory.getSource(hash, states);
-
-            var program = new XEO.renderer.Program(this.stats, hash, source, this._canvas.gl);
-
-            programState = new XEO.renderer.ProgramState({
-                program: program,
-                useCount: 1
-            });
-
-            this._programStates[hash] = programState;
-
-            this.stats.memory.programs++;
-        }
-
-        programState.useCount++;
-
-        return programState;
-    };
-
-    /**
-     * Release a program back to the pool.
-     */
-    XEO.renderer.ProgramFactory.prototype.put = function (programState) {
-
-        var program = programState.program;
-
-        if (--program.useCount <= 0) {
-
-            program.draw.destroy();
-            program.pickObject.destroy();
-            program.pickPrimitive.destroy();
-
-            XEO.renderer.ProgramSourceFactory.putSource(program.hash);
-
-            delete this._programStates[program.hash];
-
-            this.stats.memory.programs--;
-        }
-    };
-
-    /**
-     * Rebuild all programs in the pool after WebGL context was lost and restored.
-     */
-    XEO.renderer.ProgramFactory.prototype.webglRestored = function () {
-
-        var gl = this._canvas.gl;
-
-        for (var id in this._programStates) {
-            if (this._programStates.hasOwnProperty(id)) {
-
-                this._programStates[id].build(gl);
-            }
-        }
-    };
-
-    XEO.renderer.ProgramFactory.prototype.destroy = function () {
-    };
-
-})();
-;(function () {
-
-    "use strict";
-
-    /**
-     *  Source code for pick and draw shader programs, to be compiled into one or more {@link XEO.renderer.Program}s
-     *
-     * @param {String} hash Hash code identifying the rendering capabilities of the programs
-     * @param {String} vertexPickObject Vertex shader source for object picking.
-     * @param {String} fragmentPickObject Fragment shader source for object picking.
-     * @param {String} vertexPickPrimitive Vertex shader source for primitive picking.
-     * @param {String} fragmentPickPrimitive Fragment shader source for primitive picking.
-     * @param {String} vertexDraw Vertex shader source for drawing.
-     * @param {String} fragmentDraw Fragment shader source for drawing.
-     */
-    XEO.renderer.ProgramSource = function (hash,
-                                           vertexPickObject, fragmentPickObject,
-                                           vertexPickPrimitive, fragmentPickPrimitive,
-                                           vertexDraw, fragmentDraw) {
-
-        /**
-         * Hash code identifying the capabilities of the {@link XEO.renderer.Program} that is compiled from this source
-         * @type String
-         */
-        this.hash = hash;
-
-        /**
-         * Vertex shader source for object picking
-         * @type {Array of String]
-         */
-        this.vertexPickObject = vertexPickObject;
-
-        /**
-         * Fragment shader source for object picking.
-         * @type {Array of String}
-         */
-        this.fragmentPickObject = fragmentPickObject;
-
-        /**
-         * Vertex shader source for primitive picking.
-         * @type {Array of String]
-         */
-        this.vertexPickPrimitive = vertexPickPrimitive;
-
-        /**
-         * Fragment shader source for primitive picking.
-         * @type {Array of String}
-         */
-        this.fragmentPickPrimitive = fragmentPickPrimitive;
-
-        /**
-         * Vertex shader source for drawing.
-         * @type {Array of String}
-         */
-        this.vertexDraw = vertexDraw;
-
-        /**
-         * Fragment shader source for drawing.
-         * @type {Array of String}
-         */
-        this.fragmentDraw = fragmentDraw;
-
-        /**
-         * Count of {@link XEO.renderer.Program}s compiled from this program source code
-         * @type Number
-         */
-        this.useCount = 0;
-    };
-
-})();
-
-;(function () {
-
-    "use strict";
-
-    /**
-     *  Manages creation, sharing and recycle of {@link XEO.renderer.ProgramSource} instances
-     */
-    XEO.renderer.ProgramSourceFactory = new (function () {
-
-        var cache = {}; // Caches source code against hashes
-
-        var src = ""; // Accumulates source code as it's being built
-
-        var states; // Cache rendering state
-        var texturing; // True when rendering state contains textures
-        var normals; // True when rendering state contains normals
-        var normalMapping; // True when rendering state contains tangents
-        var reflection; // True when rendering state contains reflections
-
-        var diffuseFresnel;
-        var specularFresnel;
-        var opacityFresnel;
-        var reflectivityFresnel;
-        var emissiveFresnel;
-
-        /**
-         * Get source code for a program to render the given states.
-         * Attempts to reuse cached source code for the given hash.
-         */
-        this.getSource = function (hash, _states) {
-
-            var source = cache[hash];
-
-            if (source) {
-                source.useCount++;
-                return source;
-            }
-
-            states = _states;
-
-            texturing = hasTextures();
-            normals = hasNormals();
-            normalMapping = hasNormalMap();
-            reflection = hasReflection();
-
-            diffuseFresnel = states.material.diffuseFresnel;
-            specularFresnel = states.material.specularFresnel;
-            opacityFresnel = states.material.opacityFresnel;
-            reflectivityFresnel = states.material.reflectivityFresnel;
-            emissiveFresnel = states.material.emissiveFresnel;
-
-            source = new XEO.renderer.ProgramSource(
-                hash,
-                vertexPickObject(),
-                fragmentPickObject(),
-                vertexPickPrimitive(),
-                fragmentPickPrimitive(),
-                vertexDraw(),
-                fragmentDraw()
-            );
-
-            cache[hash] = source;
-
-            return source;
-        };
-
-        function hasTextures() {
-            if (!states.geometry.uv) {
-                return false;
-            }
-            var material = states.material;
-            return material.ambientMap ||
-                material.diffuseMap ||
-                material.specularMap ||
-                material.emissiveMap ||
-                material.opacityMap ||
-                material.reflectivityMap ||
-                states.material.normalMap;
-        }
-
-        function hasReflection() {
-            return false;
-            //return (states.cubemap.layers && states.cubemap.layers.length > 0 && states.geometry.normalBuf);
-        }
-
-        function hasNormals() {
-            var primitive = states.geometry.primitiveName;
-            if (states.geometry.normals && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
-                return true;
-            }
-            return false;
-        }
-
-        function hasNormalMap() {
-            var geometry = states.geometry;
-            return (geometry.positions && geometry.indices && geometry.normals && geometry.uv && states.material.normalMap);
-        }
-
-        /**
-         * Releases program source code back to this factory.
-         */
-        this.putSource = function (hash) {
-            var source = cache[hash];
-            if (source) {
-                if (--source.useCount === 0) {
-                    cache[source.hash] = null;
-                }
-            }
-        };
-
-
-        // NOTE: Picking shaders will become more complex and will eventually be
-        // composed from state, in the same manner as the draw shaders.
-
-        function vertexPickObject() {
-            begin();
-            add("// Object picking vertex shader");
-            add("attribute vec3 xeo_aPosition;");
-            add("uniform mat4 xeo_uModelMatrix;");
-            add("uniform mat4 xeo_uViewMatrix;");
-            add("uniform mat4 xeo_uViewNormalMatrix;");
-            add("uniform mat4 xeo_uProjMatrix;");
-            add("varying vec4 xeo_vWorldPosition;");
-            add("varying vec4 xeo_vViewPosition;");
-            add("void main(void) {");
-            add("   vec4 tmpVertex = vec4(xeo_aPosition, 1.0); ");
-            add("   xeo_vWorldPosition = xeo_uModelMatrix * tmpVertex; ");
-            add("   xeo_vViewPosition = xeo_uViewMatrix * xeo_vWorldPosition;");
-            add("   gl_Position = xeo_uProjMatrix * xeo_vViewPosition;");
-            add("}");
-            return end();
-        }
-
-        function fragmentPickObject() {
-            begin();
-            add("// Object picking fragment shader");
-            add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
-            add("uniform vec4 xeo_uPickColor;");
-            add("void main(void) {");
-            add("   gl_FragColor = xeo_uPickColor; ");
-            add("}");
-            return end();
-        }
-
-        function vertexPickPrimitive() {
-            begin();
-            add("// Triangle picking vertex shader");
-            add("attribute vec3 xeo_aPosition;");
-            add("attribute vec4 xeo_aColor;");
-            add("uniform vec3 xeo_uPickColor;");
-            add("uniform mat4 xeo_uModelMatrix;");
-            add("uniform mat4 xeo_uViewMatrix;");
-            add("uniform mat4 xeo_uProjMatrix;");
-            add("varying vec4 xeo_vWorldPosition;");
-            add("varying vec4 xeo_vViewPosition;");
-            add("varying vec4 xeo_vColor;");
-            add("void main(void) {");
-            add("   vec4 tmpVertex = vec4(xeo_aPosition, 1.0); ");
-            add("   vec4 worldPosition = xeo_uModelMatrix * tmpVertex; ");
-            add("   vec4 viewPosition = xeo_uViewMatrix * worldPosition;");
-            add("   xeo_vColor = xeo_aColor;");
-            add("   gl_Position = xeo_uProjMatrix * viewPosition;");
-            add("}");
-            return end();
-        }
-
-        function fragmentPickPrimitive() {
-            begin();
-            add("// Triangle picking fragment shader");
-            add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
-            add("varying vec4 xeo_vColor;");
-            add("void main(void) {");
-            add("   gl_FragColor = xeo_vColor;");
-            add("}");
-            return end();
-        }
-
-        function vertexDraw() {
-
-            var vertex = states.shader.vertex;
-
-            if (vertex) {
-
-                // Custom vertex shader
-                return vertex;
-            }
-
-            var i;
-            var len;
-            var light;
-
-            begin();
-
-            add("// Drawing vertex shader");
-
-            add("uniform mat4 xeo_uModelMatrix;          // Modeling matrix");
-            add("uniform mat4 xeo_uViewMatrix;           // Viewing matrix");
-            add("uniform mat4 xeo_uProjMatrix;           // Projection matrix");
-
-            add("attribute vec3 xeo_aPosition;           // Local-space vertex position");
-
-            add();
-
-            add("varying vec4 xeo_vViewPosition;         // Output: View-space fragment position");
-
-            if (normals) {
-
-                add();
-
-                add("attribute vec3 xeo_aNormal;             // Local-space vertex normal");
-
-                add("uniform mat4 xeo_uModelNormalMatrix;    // Modeling normal matrix");
-                add("uniform mat4 xeo_uViewNormalMatrix;     // Viewing normal matrix");
-
-                add("varying vec3 xeo_vViewEyeVec;           // Output: View-space vector from fragment position to eye");
-                add("varying vec3 xeo_vViewNormal;           // Output: View-space normal");
-
-                // Lights
-                for (i = 0, len = states.lights.lights.length; i < len; i++) {
-
-                    light = states.lights.lights[i];
-
-                    if (light.type === "ambient") {
-                        continue;
-                    }
-
-                    if (light.type === "dir") {
-                        add("uniform vec3 xeo_uLightDir" + i + ";   // Directional light direction");
-                    }
-
-                    if (light.type === "point") {
-                        add("uniform vec3 xeo_uLightPos" + i + ";   // Positional light position");
-                    }
-
-                    if (light.type === "spot") {
-                        add("uniform vec3 xeo_uLightPos" + i + ";   // Spot light position");
-                    }
-
-                    add("varying vec4 xeo_vViewLightVecAndDist" + i + "; // Output: Vector from vertex to light, packaged with the pre-computed length of that vector");
-                }
-            }
-
-            if (normalMapping) {
-                add("attribute vec3 xeo_aTangent;");
-            }
-
-            if (texturing) {
-
-                add();
-
-                // Vertex UV coordinate
-                add("attribute vec2 xeo_aUV;");
-
-                // Fragment UV coordinate
-                add("varying vec2 xeo_vUV;");
-            }
-
-            if (states.geometry.colors) {
-
-                // Vertex color
-                add("attribute vec4 xeo_aColor;");
-
-                // Fragment color
-                add("varying vec4 xeo_vColor;");
-            }
-
-            if (states.geometry.primitiveName === "points") {
-                add("uniform float xeo_uPointSize;");
-            }
-
-            if (states.billboard.active) {
-
-                add("void billboard(inout mat4 mat) {");
-                add("   mat[0][0] = 1.0;");
-                add("   mat[0][1] = 0.0;");
-                add("   mat[0][2] = 0.0;");
-                if (states.billboard.spherical) {
-                    add("   mat[1][0] = 0.0;");
-                    add("   mat[1][1] = 1.0;");
-                    add("   mat[1][2] = 0.0;");
-                }
-                add("   mat[2][0] = 0.0;");
-                add("   mat[2][1] = 0.0;");
-                add("   mat[2][2] =1.0;");
-                add("}");
-            }
-
-            // ------------------- main -------------------------------
-
-            add();
-            add("void main(void) {");
-            add();
-            add("   vec4 localPosition = vec4(xeo_aPosition, 1.0); ");
-
-            if (normals) {
-
-                add("   vec4 localNormal = vec4(xeo_aNormal, 0.0); ");
-                add("   mat4 modelNormalMatrix = xeo_uModelNormalMatrix;");
-                add("   mat4 viewNormalMatrix = xeo_uViewNormalMatrix;");
-            }
-
-            add("   mat4 modelMatrix = xeo_uModelMatrix;");
-            add("   mat4 viewMatrix = xeo_uViewMatrix;");
-            add("   vec4 worldPosition;");
-
-            if (states.stationary.active) {
-                add("   viewMatrix[3][0] = viewMatrix[3][1] = viewMatrix[3][2] = 0.0;")
-            }
-
-            if (states.billboard.active) {
-
-                add("   mat4 modelViewMatrix =  xeo_uViewMatrix * xeo_uModelMatrix;");
-
-                add("   billboard(modelMatrix);");
-                add("   billboard(viewMatrix);");
-                add("   billboard(modelViewMatrix);");
-
-                if (normals) {
-
-                    add("   mat4 modelViewNormalMatrix =  xeo_uViewNormalMatrix * xeo_uModelNormalMatrix;");
-
-                    add("   billboard(modelNormalMatrix);");
-                    add("   billboard(viewNormalMatrix);");
-                    add("   billboard(modelViewNormalMatrix);");
-                }
-
-                add("   worldPosition = modelMatrix * localPosition;");
-                add("   vec4 viewPosition = modelViewMatrix * localPosition;");
-
-            } else {
-
-                add("   worldPosition = modelMatrix * localPosition;");
-                add("   vec4 viewPosition  = viewMatrix * worldPosition; ");
-            }
-
-            if (normals) {
-
-                add("   vec3 worldNormal = (modelNormalMatrix * localNormal).xyz; ");
-                add("   xeo_vViewNormal = normalize((viewNormalMatrix * vec4(worldNormal, 1.0)).xyz);");
-
-                if (normalMapping) {
-
-                    // Compute the tangent-bitangent-normal (TBN) matrix
-
-                    add("   vec3 tangent = normalize((xeo_uViewNormalMatrix * xeo_uModelNormalMatrix * vec4(xeo_aTangent, 1.0)).xyz);");
-                    add("   vec3 bitangent = cross(xeo_vViewNormal, tangent);");
-                    add("   mat3 TBN = mat3(tangent, bitangent, xeo_vViewNormal);");
-                }
-
-                add("   vec3 tmpVec3;");
-                add("   float lightDist;");
-
-                // Lights
-
-                for (i = 0, len = states.lights.lights.length; i < len; i++) {
-
-                    light = states.lights.lights[i];
-
-                    if (light.type === "ambient") {
-                        continue;
-                    }
-
-                    if (light.type === "dir") {
-
-                        // Directional light
-
-                        if (light.space === "world") {
-
-                            // World space light
-
-                            add("   tmpVec3 = xeo_uLightDir" + i + ";");
-
-                            // Transform to View space
-                            add("   tmpVec3 = vec3(viewMatrix * vec4(tmpVec3, 1.0)).xyz;");
-
-                            if (normalMapping) {
-
-                                // Transform to Tangent space
-                                add("   tmpVec3 *= TBN;");
-                            }
-
-                        } else {
-
-                            // View space light
-
-                            add("   tmpVec3 = xeo_uLightDir" + i + ";");
-
-                            if (normalMapping) {
-
-                                // Transform to Tangent space
-                                add("   tmpVec3 *= TBN;");
-                            }
-                        }
-
-                        // Pipe the light direction and zero distance through to the fragment shader
-                        add("   xeo_vViewLightVecAndDist" + i + " = vec4(tmpVec3, 0.0);");
-                    }
-
-                    if (light.type === "point") {
-
-                        // Positional light
-
-                        if (light.space === "world") {
-
-                            // World space
-
-                            // Get vertex -> light vector in View space
-                            // Transform light pos to View space first
-                            add("   tmpVec3 = (viewMatrix * vec4(xeo_uLightPos" + i + ", 1.0)).xyz - viewPosition.xyz;"); // Vector from World coordinate to light pos
-
-                            // Get distance to light
-                            add("   lightDist = abs(length(tmpVec3));");
-
-                            if (normalMapping) {
-
-                                // Transform light vector to Tangent space
-                               add("   tmpVec3 *= TBN;");
-                            }
-
-                        } else {
-
-                            // View space
-
-                            // Get vertex -> light vector in View space
-                            add("   tmpVec3 = xeo_uLightPos" + i + ".xyz - viewPosition.xyz;"); // Vector from View coordinate to light pos
-
-                            // Get distance to light
-                            add("   lightDist = abs(length(tmpVec3));");
-
-                            if (normalMapping) {
-
-                                // Transform light vector to tangent space
-                                add("   tmpVec3 *= TBN;");
-                            }
-                        }
-
-                        // Pipe the light direction and distance through to the fragment shader
-                        add("   xeo_vViewLightVecAndDist" + i + " = vec4(tmpVec3, lightDist);");
-                    }
-                }
-
-                add("   xeo_vViewEyeVec = -viewPosition.xyz;");
-
-                if (normalMapping) {
-
-                    // Transform vertex->eye vector to tangent space
-                    add("   xeo_vViewEyeVec *= TBN;");
-                }
-            }
-
-            if (texturing) {
-                add("   xeo_vUV = xeo_aUV;");
-            }
-
-            if (states.geometry.colors) {
-                add("   xeo_vColor = xeo_aColor;");
-            }
-
-            if (states.geometry.primitiveName === "points") {
-                add("   gl_PointSize = xeo_uPointSize;");
-            }
-
-            add("   xeo_vViewPosition = viewPosition;");
-
-            add("   gl_Position = xeo_uProjMatrix * viewPosition;");
-
-            add("}");
-
-            return end();
-        }
-
-
-        function fragmentDraw() {
-
-            var fragment = states.shader.fragment;
-            if (fragment) {
-                // Custom fragment shader
-                return fragment;
-            }
-
-            var i;
-            var len;
-
-            var light;
-
-            begin();
-
-            add("// Drawing fragment shader");
-
-            add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
-            add();
-
-            if (normals) {
-
-                add("varying vec4 xeo_vViewPosition;");
-
-                add();
-
-                add("uniform vec3 xeo_uSpecular;");
-                add("uniform float xeo_uShininess;");
-                add("uniform float xeo_uReflectivity;");
-            }
-
-            if (normalMapping) {
-            //    add("varying vec3 xeo_vTangent;");
-            }
-
-            add("uniform vec3 xeo_uEmissive;");
-            add("uniform float xeo_uOpacity;");
-            add("uniform vec3 xeo_uDiffuse;");
-
-            add();
-
-            if (states.geometry.colors) {
-                add("varying vec4 xeo_vColor;");
-            }
-
-            if (texturing) {
-
-                add();
-                comment("Texture variables");
-                add();
-
-                if (states.geometry.uv) {
-                    add("varying vec2 xeo_vUV;");
-                }
-
-                if (states.material.emissiveMap) {
-                    add("uniform sampler2D xeo_uEmissiveMap;");
-                    if (states.material.emissiveMap.matrix) {
-                        add("uniform mat4 xeo_uEmissiveMapMatrix;");
-                    }
-                }
-
-                if (states.material.opacityMap) {
-                    add("uniform sampler2D xeo_uOpacityMap;");
-                    if (states.material.opacityMap.matrix) {
-                        add("uniform mat4 xeo_uOpacityMapMatrix;");
-                    }
-                }
-
-                if (states.material.ambientMap) {
-                    add("uniform sampler2D xeo_uAmbientMap;");
-                    if (states.material.ambientMap.matrix) {
-                        add("uniform mat4 xeo_uAmbientMapMatrix;");
-                    }
-                }
-
-                if (states.material.diffuseMap) {
-                    add("uniform sampler2D xeo_uDiffuseMap;");
-                    if (states.material.diffuseMap.matrix) {
-                        add("uniform mat4 xeo_uDiffuseMapMatrix;");
-                    }
-                }
-
-                if (normals) {
-
-                    if (states.material.specularMap) {
-                        add("uniform sampler2D xeo_uSpecularMap;");
-                        if (states.material.specularMap.matrix) {
-                            add("uniform mat4 xeo_uSpecularMapMatrix;");
-                        }
-                    }
-
-                    if (states.material.reflectivityMap) {
-                        add("uniform sampler2D xeo_uTextureReflectivity;");
-                        if (states.material.reflectivityMap.matrix) {
-                            add("uniform mat4 xeo_uTextureReflectivityMatrix;");
-                        }
-                    }
-
-                    if (normalMapping) {
-                        add("uniform sampler2D xeo_uNormalMap;");
-                        if (states.material.normalMap.matrix) {
-                            add("uniform mat4 xeo_uNormalMapMatrix;");
-                        }
-                    }
-                }
-            }
-
-            add("uniform vec3 xeo_uLightAmbientColor;");
-            add("uniform float xeo_uLightAmbientIntensity;");
-
-            if (normals) {
-
-                // View-space vector from fragment to eye
-
-                add("varying vec3 xeo_vViewEyeVec;");
-
-                // View-space fragment normal
-
-                add("varying vec3 xeo_vViewNormal;");
-
-                // Light sources
-
-                for (i = 0, len = states.lights.lights.length; i < len; i++) {
-
-                    light = states.lights.lights[i];
-
-                    if (light.type === "ambient") {
-                        continue;
-                    }
-
-                    add("uniform vec3 xeo_uLightColor" + i + ";");
-                    add("uniform float xeo_uLightIntensity" + i + ";");
-                    if (light.type === "point") {
-                        add("uniform vec3 xeo_uLightAttenuation" + i + ";");
-                    }
-                    add("varying vec4 xeo_vViewLightVecAndDist" + i + ";");         // Vector from light to vertex
-                }
-
-                if (diffuseFresnel || specularFresnel || opacityFresnel || emissiveFresnel || reflectivityFresnel) {
-
-                    add();
-                    comment("Fresnel variables");
-                    add();
-
-                    if (diffuseFresnel) {
-                        add("uniform float xeo_uDiffuseFresnelCenterBias;");
-                        add("uniform float xeo_uDiffuseFresnelEdgeBias;");
-                        add("uniform float xeo_uDiffuseFresnelPower;");
-                        add("uniform vec3 xeo_uDiffuseFresnelCenterColor;");
-                        add("uniform vec3 xeo_uDiffuseFresnelEdgeColor;");
-                        add();
-                    }
-
-                    if (specularFresnel) {
-                        add("uniform float xeo_uSpecularFresnelCenterBias;");
-                        add("uniform float xeo_uSpecularFresnelEdgeBias;");
-                        add("uniform float xeo_uSpecularFresnelPower;");
-                        add("uniform vec3 xeo_uSpecularFresnelCenterColor;");
-                        add("uniform vec3 xeo_uSpecularFresnelEdgeColor;");
-                        add();
-                    }
-
-                    if (opacityFresnel) {
-                        add("uniform float xeo_uOpacityFresnelCenterBias;");
-                        add("uniform float xeo_uOpacityFresnelEdgeBias;");
-                        add("uniform float xeo_uOpacityFresnelPower;");
-                        add("uniform vec3 xeo_uOpacityFresnelCenterColor;");
-                        add("uniform vec3 xeo_uOpacityFresnelEdgeColor;");
-                        add();
-                    }
-
-                    if (reflectivityFresnel) {
-                        add("uniform float xeo_uReflectivityFresnelCenterBias;");
-                        add("uniform float xeo_uReflectivityFresnelEdgeBias;");
-                        add("uniform float xeo_uReflectivityFresnelPower;");
-                        add("uniform vec3 xeo_uReflectivityFresnelCenterColor;");
-                        add("uniform vec3 xeo_uReflectivityFresnelEdgeColor;");
-                        add();
-                    }
-
-                    if (emissiveFresnel) {
-                        add("uniform float xeo_uEmissiveFresnelCenterBias;");
-                        add("uniform float xeo_uEmissiveFresnelEdgeBias;");
-                        add("uniform float xeo_uEmissiveFresnelPower;");
-                        add("uniform vec3 xeo_uEmissiveFresnelCenterColor;");
-                        add("uniform vec3 xeo_uEmissiveFresnelEdgeColor;");
-                        add();
-                    }
-
-                    comment("Fresnel calculation");
-                    add();
-                    add("float fresnel(vec3 eyeDir, vec3 normal, float edgeBias, float centerBias, float power) {");
-                    add("    float fr = abs(dot(eyeDir, normal));");
-                    add("    float finalFr = clamp((fr - edgeBias) / (centerBias - edgeBias), 0.0, 1.0);");
-                    add("    return pow(finalFr, power);");
-                    add("}");
-                }
-            }
-
-            add();
-
-            add("void main(void) {");
-
-            add();
-
-            add("   vec3 ambient = xeo_uLightAmbientColor;");
-            add("   vec3 emissive = xeo_uEmissive;");
-            add("   float opacity = xeo_uOpacity;");
-
-            if (states.geometry.colors) {
-                add("   vec3 diffuse = xeo_vColor.rgb;"); // Diffuse color from vertex colors
-            } else {
-                add("   vec3 diffuse = xeo_uDiffuse;");
-            }
-
-            if (normals) {
-
-                add("vec3 viewEyeVec = normalize(xeo_vViewEyeVec);");
-
-                add("   vec3 specular = xeo_uSpecular;");
-                add("   float shininess = xeo_uShininess;");
-                add("   float reflectivity = xeo_uReflectivity;");
-
-                if (normalMapping) {
-
-                    add("   vec3 viewNormal = vec3(0.0, 1.0, 0.0);");
-
-                } else {
-
-                    // Normalize the interpolated normals in the per-fragment-fragment-shader,
-                    // because if we linear interpolated two nonparallel normalized vectors,
-                    // the resulting vector won’t be of length 1
-
-                    add("   vec3 viewNormal = normalize(xeo_vViewNormal);");
-                }
-            }
-
-            if (texturing) {
-
-                // Apply textures
-
-                add();
-                comment("   Apply textures");
-                add();
-
-                add("   vec4 texturePos = vec4(xeo_vUV.s, xeo_vUV.t, 1.0, 1.0);");
-                add("   vec2 textureCoord;");
-
-                var material = states.material;
-
-                // Opacity and emissive lighting and mapping are independent of normals
-
-                if (material.emissiveMap) {
-                    add();
-                    if (material.emissiveMap.matrix) {
-                        add("   textureCoord = (xeo_uEmissiveMapMatrix * texturePos).xy;");
-                    } else {
-                        add("   textureCoord = texturePos.xy;");
-                    }
-                    add("   textureCoord.y = -textureCoord.y;");
-                    add("   emissive = texture2D(xeo_uEmissiveMap, textureCoord).rgb;");
-                }
-
-                if (material.opacityMap) {
-                    add();
-                    if (material.opacityMap.matrix) {
-                        add("   textureCoord = (xeo_uOpacityMapMatrix * texturePos).xy;");
-                    } else {
-                        add("   textureCoord = texturePos.xy;");
-                    }
-                    add("   textureCoord.y = -textureCoord.y;");
-                    add("   opacity = texture2D(xeo_uOpacityMap, textureCoord).b;");
-                }
-
-                if (material.ambientMap) {
-                    add();
-                    if (material.ambientMap.matrix) {
-                        add("   textureCoord = (xeo_uAmbientMapMatrix * texturePos).xy;");
-                    } else {
-                        add("   textureCoord = texturePos.xy;");
-                    }
-                    add("   textureCoord.y = -textureCoord.y;");
-                    add("   ambient = texture2D(xeo_uAmbientMap, textureCoord).rgb;");
-                }
-
-                if (material.diffuseMap) {
-                    add();
-                    if (material.diffuseMap.matrix) {
-                        add("   textureCoord = (xeo_uDiffuseMapMatrix * texturePos).xy;");
-                    } else {
-                        add("   textureCoord = texturePos.xy;");
-                    }
-                    add("   textureCoord.y = -textureCoord.y;");
-                    add("   diffuse = texture2D(xeo_uDiffuseMap, textureCoord).rgb;");
-                }
-
-                if (normals) {
-
-                    if (material.specularMap) {
-                        add();
-                        if (material.specularMap.matrix) {
-                            add("   textureCoord = (xeo_uSpecularMapMatrix * texturePos).xy;");
-                        } else {
-                            add("   textureCoord = texturePos.xy;");
-                        }
-                        add("   textureCoord.y = -textureCoord.y;");
-                        add("   specular = texture2D(xeo_uSpecularMap, textureCoord).rgb;");
-                    }
-
-                    if (material.reflectivityMap) {
-                        add();
-                        if (material.reflectivityMap.matrix) {
-                            add("   textureCoord = (xeo_uReflectivityMapMatrix * texturePos).xy;");
-                        } else {
-                            add("   textureCoord = texturePos.xy;");
-                        }
-                        add("   textureCoord.y = -textureCoord.y;");
-                        add("   reflectivity = texture2D(xeo_uReflectivityMap, textureCoord).b;");
-                    }
-                }
-
-                if (normalMapping) {
-                    add();
-                    if (material.normalMap.matrix) {
-                        add("   textureCoord = (xeo_uNormalMapMatrix * texturePos).xy;");
-                    } else {
-                        add("   textureCoord = texturePos.xy;");
-                    }
-                    add("   textureCoord.y = -textureCoord.y;");
-                    add("   viewNormal = normalize(texture2D(xeo_uNormalMap, vec2(textureCoord.x, textureCoord.y)).xyz * 2.0 - 1.0);");
-                }
-            }
-
-            add("   vec4 fragColor;");
-
-            if (normals) {
-
-                // Get Lambertian shading terms
-
-                add();
-                add("   vec3  diffuseLight = vec3(0.0, 0.0, 0.0);");
-                add("   vec3  specularLight = vec3(0.0, 0.0, 0.0);");
-
-                add();
-                add("   vec3  viewLightVec;");
-                add("   float specAngle;");
-                add("   float lightDist;");
-                add("   float attenuation;");
-
-
-                for (i = 0, len = states.lights.lights.length; i < len; i++) {
-
-                    light = states.lights.lights[i];
-
-                    if (light.type === "ambient") {
-                        continue;
-                    }
-
-                    // If normal mapping, the fragment->light vector will be in tangent space
-                    add("   viewLightVec = normalize(xeo_vViewLightVecAndDist" + i + ".xyz);");
-
-
-                    if (light.type === "point") {
-                        add();
-
-                        add("   specAngle = max(dot(viewNormal, viewLightVec), 0.0);");
-
-                        add("   lightDist = xeo_vViewLightVecAndDist" + i + ".w;");
-
-                        add("   attenuation = 1.0 - (" +
-                            "  xeo_uLightAttenuation" + i + "[0] + " +
-                            "  xeo_uLightAttenuation" + i + "[1] * lightDist + " +
-                            "  xeo_uLightAttenuation" + i + "[2] * lightDist * lightDist);");
-
-                        add("   diffuseLight += xeo_uLightIntensity" + i + " * specAngle * xeo_uLightColor" + i + " * attenuation;");
-
-                        add("   specularLight += xeo_uLightIntensity" + i + " *  pow(max(dot(reflect(-viewLightVec, -viewNormal), viewEyeVec), 0.0), shininess) * attenuation;");
-                    }
-
-                    if (light.type === "dir") {
-
-                        add("   specAngle = max(dot(viewNormal, -viewLightVec), 0.0);");
-
-                        add("   diffuseLight += xeo_uLightIntensity" + i + " * specAngle * xeo_uLightColor" + i + ";");
-
-                        add("   specularLight += xeo_uLightIntensity" + i + " * pow(max(dot(reflect(viewLightVec, -viewNormal), viewEyeVec), 0.0), shininess);");
-                    }
-                }
-
-                add();
-
-                // Get Fresnel terms
-
-                if (diffuseFresnel || specularFresnel || opacityFresnel || emissiveFresnel || reflectivityFresnel) {
-
-                    add();
-                    comment("   Apply Fresnels");
-
-                    if (diffuseFresnel) {
-                        add();
-                        add("float diffuseFresnel = fresnel(viewEyeVec, viewNormal, xeo_uDiffuseFresnelEdgeBias, xeo_uDiffuseFresnelCenterBias, xeo_uDiffuseFresnelPower);");
-                        add("diffuse *= mix(xeo_uDiffuseFresnelEdgeColor, xeo_uDiffuseFresnelCenterColor, diffuseFresnel);");
-                    }
-
-                    if (specularFresnel) {
-                        add();
-                        add("float specularFresnel = fresnel(viewEyeVec, viewNormal, xeo_uSpecularFresnelEdgeBias, xeo_uSpecularFresnelCenterBias, xeo_uSpecularFresnelPower);");
-                        add("specular *= mix(xeo_uSpecularFresnelEdgeColor, xeo_uSpecularFresnelCenterColor, specularFresnel);");
-                    }
-
-                    if (opacityFresnel) {
-                        add();
-                        add("float opacityFresnel = fresnel(viewEyeVec, viewNormal, xeo_uOpacityFresnelEdgeBias, xeo_uOpacityFresnelCenterBias, xeo_uOpacityFresnelPower);");
-                        add("opacity *= mix(xeo_uOpacityFresnelEdgeColor.r, xeo_uOpacityFresnelCenterColor.r, opacityFresnel);");
-                    }
-
-                    if (emissiveFresnel) {
-                        add();
-                        add("float emissiveFresnel = fresnel(viewEyeVec, viewNormal, xeo_uEmissiveFresnelEdgeBias, xeo_uEmissiveFresnelCenterBias, xeo_uEmissiveFresnelPower);");
-                        add("emissive *= mix(xeo_uEmissiveFresnelEdgeColor, xeo_uEmissiveFresnelCenterColor, emissiveFresnel);");
-                    }
-                }
-
-                // Combine terms with Blinn-Phong BRDF
-
-                add();
-                comment("   Phong BRDF");
-                add();
-                add("   fragColor = vec4((specular * specularLight) + ((diffuseLight + (ambient * xeo_uLightAmbientIntensity) ) * diffuse) + emissive, opacity);");
-
-            } else {
-
-                // No normals
-                add();
-                comment("   Non-Lambertian BRDF");
-                add();
-                add("   fragColor = vec4(emissive + diffuse, opacity);");
-            }
-
-            add("   fragColor.rgb *= fragColor.a;");
-
-            add("   gl_FragColor = fragColor;");
-
-            add("}");
-
-            return end();
-        }
-
-        // Start fresh program source
-        function begin() {
-            src = [];
-        }
-
-        // Append to program source
-        function add(txt) {
-            src.push(txt || "");
-        }
-
-        // Append to program source
-        function comment(txt) {
-            if (txt) {
-                var c = 0;
-                for (var i = 0, len = txt.length; i < len; i++) {
-                    if (txt.charAt(i) === " ") {
-                        c++;
-                    }
-                }
-                var pad = c > 0 ? txt.substring(0, c - 1) : "";
-                src.push(pad + "// " + txt.substring(c - 1));
-            }
-        }
-
-        // Finish building program source
-        function end() {
-            return src;
-        }
-
-        function getFSFloatPrecision(gl) {
-
-            if (!gl.getShaderPrecisionFormat) {
-                return "mediump";
-            }
-
-            if (gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT).precision > 0) {
-                return "highp";
-            }
-
-            if (gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.MEDIUM_FLOAT).precision > 0) {
-                return "mediump";
-            }
-
-            return "lowp";
-        }
-
-    })();
-
-})();;(function () {
-
-    "use strict";
-
-    XEO.renderer.webgl = {
-
-        /** Maps XEO component parameter names to WebGL enum names
-         */
-        enums: {
-            funcAdd: "FUNC_ADD",
-            funcSubtract: "FUNC_SUBTRACT",
-            funcReverseSubtract: "FUNC_REVERSE_SUBTRACT",
-            zero: "ZERO",
-            one: "ONE",
-            srcColor: "SRC_COLOR",
-            oneMinusSrcColor: "ONE_MINUS_SRC_COLOR",
-            dstColor: "DST_COLOR",
-            oneMinusDstColor: "ONE_MINUS_DST_COLOR",
-            srcAlpha: "SRC_ALPHA",
-            oneMinusSrcAlpha: "ONE_MINUS_SRC_ALPHA",
-            dstAlpha: "DST_ALPHA",
-            oneMinusDstAlpha: "ONE_MINUS_DST_ALPHA",
-            contantColor: "CONSTANT_COLOR",
-            oneMinusConstantColor: "ONE_MINUS_CONSTANT_COLOR",
-            constantAlpha: "CONSTANT_ALPHA",
-            oneMinusConstantAlpha: "ONE_MINUS_CONSTANT_ALPHA",
-            srcAlphaSaturate: "SRC_ALPHA_SATURATE",
-            front: "FRONT",
-            back: "BACK",
-            frontAndBack: "FRONT_AND_BACK",
-            never: "NEVER",
-            less: "LESS",
-            equal: "EQUAL",
-            lequal: "LEQUAL",
-            greater: "GREATER",
-            notequal: "NOTEQUAL",
-            gequal: "GEQUAL",
-            always: "ALWAYS",
-            cw: "CW",
-            ccw: "CCW",
-            linear: "LINEAR",
-            nearest: "NEAREST",
-            linearMipmapNearest: "LINEAR_MIPMAP_NEAREST",
-            nearestMipmapNearest: "NEAREST_MIPMAP_NEAREST",
-            nearestMipmapLinear: "NEAREST_MIPMAP_LINEAR",
-            linearMipmapLinear: "LINEAR_MIPMAP_LINEAR",
-            repeat: "REPEAT",
-            clampToEdge: "CLAMP_TO_EDGE",
-            mirroredRepeat: "MIRRORED_REPEAT",
-            alpha: "ALPHA",
-            rgb: "RGB",
-            rgba: "RGBA",
-            luminance: "LUMINANCE",
-            luminanceAlpha: "LUMINANCE_ALPHA",
-            textureBinding2D: "TEXTURE_BINDING_2D",
-            textureBindingCubeMap: "TEXTURE_BINDING_CUBE_MAP",
-            compareRToTexture: "COMPARE_R_TO_TEXTURE", // Hardware Shadowing Z-depth,
-            unsignedByte: "UNSIGNED_BYTE"
-        }
-    };
-
-})();;(function () {
-
-    "use strict";
-
-    /**
-     * Buffer for vertices and indices
-     *
-     * @param gl WebGL
-     * @param type  Eg. ARRAY_BUFFER, ELEMENT_ARRAY_BUFFER
-     * @param data  WebGL array wrapper
-     * @param numItems Count of items in array wrapper
-     * @param itemSize Size of each item
-     * @param usage Eg. STATIC_DRAW
-     */
-    XEO.renderer.webgl.ArrayBuffer = function (gl, type, data, numItems, itemSize, usage) {
-
-        /**
-         * True when this buffer is allocated and ready to go
-         * @type {boolean}
-         */
-        this.allocated = false;
-
-        this.gl = gl;
-
-        this.type = type;
-
-        this.itemType = data.constructor == Uint8Array   ? gl.UNSIGNED_BYTE :
-            data.constructor == Uint16Array  ? gl.UNSIGNED_SHORT :
-                data.constructor == Uint32Array  ? gl.UNSIGNED_INT :
-                    gl.FLOAT;
-
-        this.usage = usage;
-
-        this.length = 0;
-        this.numItems = 0;
-        this.itemSize = itemSize;
-
-        this._allocate(data);
-    };
-
-    /**
-     * Allocates this buffer
-     *
-     * @param data
-     * @private
-     */
-    XEO.renderer.webgl.ArrayBuffer.prototype._allocate = function (data) {
-
-        this.allocated = false;
-
-        this._handle = this.gl.createBuffer();
-
-        if (!this._handle) {
-            throw "Failed to allocate WebGL ArrayBuffer";
-        }
-
-        if (this._handle) {
-
-            this.gl.bindBuffer(this.type, this._handle);
-            this.gl.bufferData(this.type, data, this.usage);
-            this.gl.bindBuffer(this.type, null);
-
-            this.length = data.length;
-            this.numItems = this.length / this.itemSize;
-
-            this.allocated = true;
-        }
-    };
-
-    /**
-     * Updates data within this buffer, reallocating if needed.
-     *
-     * @param data
-     * @param offset
-     */
-    XEO.renderer.webgl.ArrayBuffer.prototype.setData = function (data, offset) {
-
-        if (!this.allocated) {
-            return;
-        }
-
-        if (data.length > this.length) {
-
-            // Needs reallocation
-
-            this.destroy();
-
-            this._allocate(data, data.length);
-
-        } else {
-
-            // No reallocation needed
-
-            if (offset || offset === 0) {
-
-                this.gl.bufferSubData(this.type, offset, data);
-
-            } else {
-
-                this.gl.bufferData(this.type, data);
-            }
-        }
-    };
-
-    /**
-     * Binds this buffer
-     */
-    XEO.renderer.webgl.ArrayBuffer.prototype.bind = function () {
-
-        if (!this.allocated) {
-            return;
-        }
-
-        this.gl.bindBuffer(this.type, this._handle);
-    };
-
-    /**
-     * Unbinds this buffer
-     */
-    XEO.renderer.webgl.ArrayBuffer.prototype.unbind = function () {
-
-        if (!this.allocated) {
-            return;
-        }
-
-        this.gl.bindBuffer(this.type, null);
-    };
-
-    /**
-     * Destroys this buffer
-     */
-    XEO.renderer.webgl.ArrayBuffer.prototype.destroy = function () {
-
-        if (!this.allocated) {
-            return;
-        }
-
-        this.gl.deleteBuffer(this._handle);
-
-        this._handle = null;
-
-        this.allocated = false;
-    };
-
-})();
-
-;(function () {
-
-    "use strict";
-
-    /**
-     * An attribute within a {@link XEO.renderer.webgl.Shader}
-     */
-    XEO.renderer.webgl.Attribute = function (gl, location) {
-
-        this.gl = gl;
-
-        this.location = location;
-    };
-
-    XEO.renderer.webgl.Attribute.prototype.bindFloatArrayBuffer = function (buffer) {
-
-        if (buffer) {
-
-            buffer.bind();
-
-            this.gl.enableVertexAttribArray(this.location);
-
-            // Vertices are not homogeneous - no w-element
-            this.gl.vertexAttribPointer(this.location, buffer.itemSize, this.gl.FLOAT, false, 0, 0);
-        }
-    };
-
-    XEO.renderer.webgl.Attribute.prototype.bindInterleavedFloatArrayBuffer = function (components, stride, byteOffset) {
-
-        this.gl.enableVertexAttribArray(this.location);
-
-        // Vertices are not homogeneous - no w-element
-        this.gl.vertexAttribPointer(this.location, components, this.gl.FLOAT, false, stride, byteOffset);
-    };
-
-})();;(function () {
-
-    "use strict";
-
-    function joinSansComments(srcLines) {
-        var src = [];
-        var line;
-        var n;
-        for (var i = 0, len = srcLines.length; i < len; i++) {
-            line = srcLines[i];
-            n = line.indexOf("/");
-            if (n > 0) {
-                if (line.charAt(n + 1) === "/") {
-                    line = line.substring(0, n);
-                }
-            }
-            src.push(line);
-        }
-        return src.join("\n");
-    }
-
-    /**
-     * Wrapper for a WebGL program
-     *
-     * @param stats Collects runtime statistics
-     * @param gl WebGL gl
-     * @param vertex Source code for vertex shader
-     * @param fragment Source code for fragment shader
-     */
-    XEO.renderer.webgl.Program = function (stats, gl, vertex, fragment) {
-
-        this.stats = stats;
-
-        this.gl = gl;
-
-        /**
-         * True when successfully allocated
-         * @type {boolean}
-         */
-        this.allocated = false;
-
-        /**
-         * True when successfully compiled
-         * @type {boolean}
-         */
-        this.compiled = false;
-
-        /**
-         * True when successfully linked
-         * @type {boolean}
-         */
-        this.linked = false;
-
-        /**
-         * True when successfully validated
-         * @type {boolean}
-         */
-        this.validated = false;
-
-        /**
-         * Contains error log on failure to allocate, compile, validate or link
-         * @type {boolean}
-         */
-        this.errorLog = null;
-
-        // Inputs for this program
-
-        this.uniforms = {};
-        this.samplers = {};
-        this.attributes = {};
-
-        // Shaders
-
-        this._vertexShader = new XEO.renderer.webgl.Shader(gl, gl.VERTEX_SHADER, joinSansComments(vertex));
-        this._fragmentShader = new XEO.renderer.webgl.Shader(gl, gl.FRAGMENT_SHADER, joinSansComments(fragment));
-
-        if (!this._vertexShader.allocated) {
-            this.errorLog = ["Vertex shader failed to allocate"].concat(this._vertexShader.errorLog);
-            return;
-        }
-
-        if (!this._fragmentShader.allocated) {
-            this.errorLog = ["Fragment shader failed to allocate"].concat(this._fragmentShader.errorLog);
-            return;
-        }
-
-        this.allocated = true;
-
-        if (!this._vertexShader.compiled) {
-            this.errorLog = ["Vertex shader failed to compile"].concat(this._vertexShader.errorLog);
-            return;
-        }
-
-        if (!this._fragmentShader.compiled) {
-            this.errorLog = ["Fragment shader failed to compile"].concat(this._fragmentShader.errorLog);
-            return;
-        }
-
-        this.compiled = true;
-
-
-        var a;
-        var i;
-        var u;
-        var uName;
-        var location;
-
-        // Program
-
-        this.handle = gl.createProgram();
-
-        if (!this.handle) {
-            this.errorLog = ["Failed to allocate program"];
-            return;
-        }
-
-        gl.attachShader(this.handle, this._vertexShader.handle);
-        gl.attachShader(this.handle, this._fragmentShader.handle);
-
-        gl.linkProgram(this.handle);
-
-        this.linked = gl.getProgramParameter(this.handle, gl.LINK_STATUS);
-
-        // HACK: Disable validation temporarily: https://github.com/xeolabs/xeoengine/issues/5
-        // Perhaps we should defer validation until render-time, when the program has values set for all inputs?
-
-        //this.validated = this.linked ? gl.getProgramParameter(this.handle, gl.VALIDATE_STATUS) : false;
-        this.validated = true;
-
-        if (!this.linked || !this.validated) {
-
-            this.errorLog = [];
-
-            this.errorLog.push("");
-            this.errorLog.push(gl.getProgramInfoLog(this.handle));
-
-            this.errorLog.push("\nVertex shader:\n");
-            this.errorLog = this.errorLog.concat(vertex);
-
-            this.errorLog.push("\nFragment shader:\n");
-            this.errorLog = this.errorLog.concat(fragment);
-
-            return;
-        }
-
-
-        // Discover uniforms and samplers
-
-        var numUniforms = gl.getProgramParameter(this.handle, gl.ACTIVE_UNIFORMS);
-
-        for (i = 0; i < numUniforms; ++i) {
-
-            u = gl.getActiveUniform(this.handle, i);
-
-            if (u) {
-
-                uName = u.name;
-
-                if (uName[uName.length - 1] === "\u0000") {
-                    uName = uName.substr(0, uName.length - 1);
-                }
-
-                location = gl.getUniformLocation(this.handle, uName);
-
-                if ((u.type === gl.SAMPLER_2D) || (u.type === gl.SAMPLER_CUBE) || (u.type === 35682)) {
-
-                    this.samplers[uName] = new XEO.renderer.webgl.Sampler(gl, location);
-
-                } else {
-
-                    this.uniforms[uName] = new XEO.renderer.webgl.Uniform(stats.frame, gl, u.type, location);
-                }
-            }
-        }
-
-        // Discover attributes
-
-        var numAttribs = gl.getProgramParameter(this.handle, gl.ACTIVE_ATTRIBUTES);
-
-        for (i = 0; i < numAttribs; i++) {
-
-            a = gl.getActiveAttrib(this.handle, i);
-
-            if (a) {
-
-                location = gl.getAttribLocation(this.handle, a.name);
-
-                this.attributes[a.name] = new XEO.renderer.webgl.Attribute(gl, location);
-            }
-        }
-
-        this.allocated = true;
-    };
-
-    XEO.renderer.webgl.Program.prototype.bind = function () {
-
-        if (!this.allocated) {
-            return;
-        }
-
-        this.gl.useProgram(this.handle);
-    };
-
-    XEO.renderer.webgl.Program.prototype.setUniform = function (name, value) {
-
-        if (!this.allocated) {
-            return;
-        }
-
-        var u = this.uniforms[name];
-
-        if (u) {
-            u.setValue(value);
-        }
-    };
-
-    XEO.renderer.webgl.Program.prototype.getUniform = function (name) {
-
-        if (!this.allocated) {
-            return;
-        }
-
-        return this.uniforms[name];
-    };
-
-    XEO.renderer.webgl.Program.prototype.getAttribute = function (name) {
-
-        if (!this.allocated) {
-            return;
-        }
-
-        return this.attributes[name];
-    };
-
-    //XEO.renderer.webgl.Program.prototype.bindFloatArrayBuffer = function (name, buffer) {
-    //
-    //    if (!this.allocated) {
-    //        return;
-    //    }
-    //
-    //    return this.attributes[name];
-    //};
-
-    XEO.renderer.webgl.Program.prototype.bindTexture = function (name, texture, unit) {
-
-        if (!this.allocated) {
-            return false;
-        }
-
-        var sampler = this.samplers[name];
-
-        if (sampler) {
-            return sampler.bindTexture(texture, unit);
-
-        } else {
-            return false;
-        }
-    };
-
-    XEO.renderer.webgl.Program.prototype.destroy = function () {
-
-        if (!this.allocated) {
-            return;
-        }
-
-        this.gl.deleteProgram(this.handle);
-        this.gl.deleteShader(this._vertexShader.handle);
-        this.gl.deleteShader(this._fragmentShader.handle);
-
-        this.handle = null;
-        this.attributes = null;
-        this.uniforms = null;
-        this.samplers = null;
-
-        this.allocated = false;
-    };
-
-})();
-;(function () {
-
-    "use strict";
-
-    XEO.renderer.webgl.RenderBuffer = function (cfg) {
-
-        /**
-         * True as soon as this buffer is allocated and ready to go
-         */
-        this.allocated = false;
-
-        /**
-         * The HTMLCanvasElement
-         */
-        this.canvas = cfg.canvas;
-
-        /**
-         * WebGL context
-         */
-        this.gl = cfg.gl;
-
-        /**
-         * Buffer resources, set up in #_touch
-         */
-        this.buffer = null;
-
-        /**
-         * True while this buffer is bound
-         */
-        this.bound = false;
-
-        /**
-         * Optional explicit buffer size - when omitted, buffer defaults to canvas size
-         */
-        this.size = cfg.size;
-    };
-
-    /**
-     * Sets custom dimensions for this buffer.
-     *
-     * Buffer dynamically re-sizes to canvas when size is null.
-     *
-     * @param size {Array of Number} Two-element size vector
-     */
-    XEO.renderer.webgl.RenderBuffer.prototype.setSize = function (size) {
-        this.size = size;
-    };
-
-    /**
-     * Called after WebGL context is restored.
-     */
-    XEO.renderer.webgl.RenderBuffer.prototype.webglRestored = function (gl) {
-        this.gl = gl;
-        this.buffer = null;
-        this.allocated = false;
-        this.bound = false;
-    };
-
-    /**
-     * Binds this buffer
-     */
-    XEO.renderer.webgl.RenderBuffer.prototype.bind = function () {
-
-        this._touch();
-
-        if (this.bound) {
-            return;
-        }
-
-        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.buffer.framebuf);
-
-        this.bound = true;
-    };
-
-    XEO.renderer.webgl.RenderBuffer.prototype._touch = function () {
-
-        var width;
-        var height;
-
-        if (this.size) {
-
-            // Buffer sized to custom dimensions
-
-            width = this.size[0];
-            height = this.size[1];
-
-        } else {
-
-            // Buffer sized to canvas (default)
-
-            width = this.canvas.clientWidth;
-            height = this.canvas.clientHeight;
-        }
-
-        if (this.buffer) {
-
-            // Currently have a buffer
-
-            if (this.buffer.width === width && this.buffer.height === height) {
-
-                // Canvas size unchanged, buffer still good
-
-                return;
-
-            } else {
-
-                // Buffer needs reallocation for new canvas size
-
-                this.gl.deleteTexture(this.buffer.texture);
-                this.gl.deleteFramebuffer(this.buffer.framebuf);
-                this.gl.deleteRenderbuffer(this.buffer.renderbuf);
-            }
-        }
-
-        this.buffer = {
-            framebuf: this.gl.createFramebuffer(),
-            renderbuf: this.gl.createRenderbuffer(),
-            texture: this.gl.createTexture(),
-            width: width,
-            height: height
-        };
-
-        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.buffer.framebuf);
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.buffer.texture);
-        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
-        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
-        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
-        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
-
-        try {
-            // Do it the way the spec requires
-            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, width, height, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, null);
-        } catch (exception) {
-            // Workaround for what appears to be a Minefield bug.
-            var textureStorage = new WebGLUnsignedByteArray(width * height * 3);
-            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, width, height, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, textureStorage);
-        }
-
-
-        this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, this.buffer.renderbuf);
-        this.gl.renderbufferStorage(this.gl.RENDERBUFFER, this.gl.DEPTH_COMPONENT16, width, height);
-        this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0, this.gl.TEXTURE_2D, this.buffer.texture, 0);
-        this.gl.framebufferRenderbuffer(this.gl.FRAMEBUFFER, this.gl.DEPTH_ATTACHMENT, this.gl.RENDERBUFFER, this.buffer.renderbuf);
-        this.gl.bindTexture(this.gl.TEXTURE_2D, null);
-        this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, null);
-        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
-
-        // Verify framebuffer is OK
-        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.buffer.framebuf);
-
-        if (!this.gl.isFramebuffer(this.buffer.framebuf)) {
-            throw "Invalid framebuffer";
-        }
-        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
-
-        var status = this.gl.checkFramebufferStatus(this.gl.FRAMEBUFFER);
-
-        switch (status) {
-
-            case this.gl.FRAMEBUFFER_COMPLETE:
-                break;
-
-            case this.gl.FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-                throw "Incomplete framebuffer: FRAMEBUFFER_INCOMPLETE_ATTACHMENT";
-
-            case this.gl.FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-                throw "Incomplete framebuffer: FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT";
-
-            case this.gl.FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
-                throw "Incomplete framebuffer: FRAMEBUFFER_INCOMPLETE_DIMENSIONS";
-
-            case this.gl.FRAMEBUFFER_UNSUPPORTED:
-                throw "Incomplete framebuffer: FRAMEBUFFER_UNSUPPORTED";
-
-            default:
-                throw "Incomplete framebuffer: " + status;
-        }
-
-        this.bound = false;
-    };
-
-    /**
-     * Clears this renderbuffer
-     */
-    XEO.renderer.webgl.RenderBuffer.prototype.clear = function () {
-        if (!this.bound) {
-            throw "Render buffer not bound";
-        }
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-        this.gl.disable(this.gl.BLEND);
-    };
-
-    /**
-     * Reads buffer pixel at given coordinates
-     */
-    XEO.renderer.webgl.RenderBuffer.prototype.read = function (pickX, pickY) {
-        var x = pickX;
-        var y = this.canvas.height - pickY;
-        var pix = new Uint8Array(4);
-        this.gl.readPixels(x, y, 1, 1, this.gl.RGBA, this.gl.UNSIGNED_BYTE, pix);
-        return pix;
-    };
-
-    /**
-     * Unbinds this renderbuffer
-     */
-    XEO.renderer.webgl.RenderBuffer.prototype.unbind = function () {
-        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
-        this.bound = false;
-    };
-
-    /** Returns the texture
-     */
-    XEO.renderer.webgl.RenderBuffer.prototype.getTexture = function () {
-
-        var self = this;
-
-        return {
-
-            renderBuffer: this,
-
-            bind: function (unit) {
-                if (self.buffer && self.buffer.texture) {
-                    self.gl.activeTexture(self.gl["TEXTURE" + unit]);
-                    self.gl.bindTexture(self.gl.TEXTURE_2D, self.buffer.texture);
-                    return true;
-                }
-                return false;
-            },
-
-            unbind: function (unit) {
-                if (self.buffer && self.buffer.texture) {
-                    self.gl.activeTexture(self.gl["TEXTURE" + unit]);
-                    self.gl.bindTexture(self.gl.TEXTURE_2D, null);
-                }
-            }
-        };
-    };
-
-    /** Destroys this buffer
-     */
-    XEO.renderer.webgl.RenderBuffer.prototype.destroy = function () {
-
-        if (this.allocated) {
-
-            this.gl.deleteTexture(this.buffer.texture);
-            this.gl.deleteFramebuffer(this.buffer.framebuf);
-            this.gl.deleteRenderbuffer(this.buffer.renderbuf);
-
-            this.allocated = false;
-            this.buffer = null;
-            this.bound = false;
-        }
-    };
-
-})();
-;(function () {
-
-    "use strict";
-
-    XEO.renderer.webgl.Sampler = function (gl, location) {
-
-        this.bindTexture = function (texture, unit) {
-
-            if (texture.bind(unit)) {
-
-                gl.uniform1i(location, unit);
-
-                return true;
-            }
-
-            return false;
-        };
-    };
-
-})();;(function () {
-
-    "use strict";
-
-    /**
-     * A vertex/fragment shader in a program
-     *
-     * @param gl WebGL gl
-     * @param type gl.VERTEX_SHADER | gl.FRAGMENT_SHADER
-     * @param source Source code for shader
-     */
-    XEO.renderer.webgl.Shader = function (gl, type, source) {
-
-        /**
-         * True if this shader successfully allocated. When false,
-         * #error will contain WebGL the error log.
-         * @type {boolean}
-         */
-        this.allocated = false;
-
-        /**
-         * True if this shader successfully compiled. When false,
-         * #error will contain WebGL the error log.
-         * @type {boolean}
-         */
-        this.compiled = false;
-
-        /**
-         * Saves the WebGL error log when this shader failed to allocate or compile.
-         * @type {boolean}
-         */
-        this.errorLog = null;
-
-        /**
-         * The GLSL for this shader.
-         * @type {Array of String}
-         */
-        this.source = source;
-
-        /**
-         * WebGL handle to this shader's GPU resource
-         */
-        this.handle = gl.createShader(type);
-
-        if (!this.handle) {
-            this.errorLog = [
-                "Failed to allocate"
-            ];
-            return;
-        }
-
-        this.allocated = true;
-
-        gl.shaderSource(this.handle, source);
-        gl.compileShader(this.handle);
-
-        this.compiled = gl.getShaderParameter(this.handle, gl.COMPILE_STATUS);
-
-        if (!this.compiled) {
-
-            if (!gl.isContextLost()) { // Handled explicitly elsewhere, so won't re-handle here
-
-                this.errorLog = [];
-                this.errorLog.push("");
-                this.errorLog.push(gl.getShaderInfoLog(this.handle));
-                this.errorLog = this.errorLog.concat(this.source);
-            }
-        }
-    };
-
-})();;(function () {
-
-    "use strict";
-
-    XEO.renderer.webgl.Texture2D = function (gl) {
-
-        this.gl = gl;
-
-        this.target = gl.TEXTURE_2D;
-
-        this.texture = gl.createTexture();
-
-        this.allocated = true;
-    };
-
-    XEO.renderer.webgl.Texture2D.prototype.setImage = function (image, props) {
-
-        var gl = this.gl;
-
-        gl.bindTexture(this.target, this.texture);
-
-        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, props.flipY);
-
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-
-        gl.bindTexture(this.target, null);
-    };
-
-    XEO.renderer.webgl.Texture2D.prototype.setProps = function (props) {
-
-        var gl = this.gl;
-
-        gl.bindTexture(this.target, this.texture);
-
-        if (props.minFilter) {
-
-            var minFilter = this._getGLEnum(props.minFilter);
-
-            if (minFilter) {
-
-                gl.texParameteri(this.target, gl.TEXTURE_MIN_FILTER, minFilter);
-
-                if (minFilter === gl.NEAREST_MIPMAP_NEAREST ||
-                    minFilter === gl.LINEAR_MIPMAP_NEAREST ||
-                    minFilter === gl.NEAREST_MIPMAP_LINEAR ||
-                    minFilter === gl.LINEAR_MIPMAP_LINEAR) {
-
-                    gl.generateMipmap(this.target);
-                }
-            }
-        }
-
-        if (props.magFilter) {
-            var magFilter = this._getGLEnum(props.magFilter);
-            if (magFilter) {
-                gl.texParameteri(this.target, gl.TEXTURE_MAG_FILTER, magFilter);
-            }
-        }
-
-        if (props.wrapS) {
-            var wrapS = this._getGLEnum(props.wrapS);
-            if (wrapS) {
-                gl.texParameteri(this.target, gl.TEXTURE_WRAP_S, wrapS);
-            }
-        }
-
-        if (props.wrapT) {
-            var wrapT = this._getGLEnum(props.wrapT);
-            if (wrapT) {
-                gl.texParameteri(this.target, gl.TEXTURE_WRAP_T, wrapT);
-            }
-        }
-
-        gl.bindTexture(this.target, null);
-    };
-
-    XEO.renderer.webgl.Texture2D.prototype._getGLEnum = function (name, defaultVal) {
-
-        if (name === undefined) {
-            return defaultVal;
-        }
-
-        var glName = XEO.renderer.webgl.enums[name];
-
-        if (glName === undefined) {
-            return defaultVal;
-        }
-
-        return this.gl[glName];
-    };
-
-
-    XEO.renderer.webgl.Texture2D.prototype.bind = function (unit) {
-
-        if (!this.allocated) {
-            return;
-        }
-
-        if (this.texture) {
-
-            var gl = this.gl;
-
-            gl.activeTexture(gl["TEXTURE" + unit]);
-
-            gl.bindTexture(this.target, this.texture);
-
-            return true;
-        }
-
-        return false;
-    };
-
-    XEO.renderer.webgl.Texture2D.prototype.unbind = function (unit) {
-
-        if (!this.allocated) {
-            return;
-        }
-
-        if (this.texture) {
-
-            var gl = this.gl;
-
-            gl.activeTexture(gl["TEXTURE" + unit]);
-
-            gl.bindTexture(this.target, null);
-        }
-    };
-
-    XEO.renderer.webgl.Texture2D.prototype.destroy = function () {
-
-        if (!this.allocated) {
-            return;
-        }
-
-        if (this.texture) {
-
-            this.gl.deleteTexture(this.texture);
-
-            this.texture = null;
-        }
-    };
-
-
-    XEO.renderer.webgl.clampImageSize = function (image, numPixels) {
-
-        var n = image.width * image.height;
-
-        if (n > numPixels) {
-
-            var ratio = numPixels / n;
-
-            var width = image.width * ratio;
-            var height = image.height * ratio;
-
-            var canvas = document.createElement("canvas");
-
-            canvas.width = XEO.renderer.webgl.nextHighestPowerOfTwo(width);
-            canvas.height = XEO.renderer.webgl.nextHighestPowerOfTwo(height);
-
-            var ctx = canvas.getContext("2d");
-
-            ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, canvas.width, canvas.height);
-
-            image = canvas;
-        }
-
-        return image;
-    };
-
-    XEO.renderer.webgl.ensureImageSizePowerOfTwo = function (image) {
-
-        if (!XEO.renderer.webgl.isPowerOfTwo(image.width) || !XEO.renderer.webgl.isPowerOfTwo(image.height)) {
-
-            var canvas = document.createElement("canvas");
-
-            canvas.width = XEO.renderer.webgl.nextHighestPowerOfTwo(image.width);
-            canvas.height = XEO.renderer.webgl.nextHighestPowerOfTwo(image.height);
-
-            var ctx = canvas.getContext("2d");
-
-            ctx.drawImage(image,
-                0, 0, image.width, image.height,
-                0, 0, canvas.width, canvas.height);
-            image = canvas;
-        }
-
-        return image;
-    };
-
-    XEO.renderer.webgl.isPowerOfTwo = function (x) {
-        return (x & (x - 1)) === 0;
-    };
-
-    XEO.renderer.webgl.nextHighestPowerOfTwo = function (x) {
-        --x;
-        for (var i = 1; i < 32; i <<= 1) {
-            x = x | x >> i;
-        }
-        return x + 1;
-    };
-
-})();
-;(function () {
-
-    "use strict";
-
-    XEO.renderer.webgl.Uniform = function (renderStats, gl, type, location) {
-
-        var func = null;
-
-        var value0 = null;
-        var value1 = null;
-        var value2 = null;
-        var value3 = null;
-
-        if (type === gl.BOOL) {
-
-            func = function (v) {
-                if (value0 === v) {
-                    renderStats.setUniformCacheHits++;
-                    return;
-                }
-                value0 = v;
-                gl.uniform1i(location, v);
-                renderStats.setUniform++;
-            };
-
-        } else if (type === gl.BOOL_VEC2) {
-
-            func = function (v) {
-                if (value0 === v[0] && value1 === v[1]) {
-                    renderStats.setUniformCacheHits++;
-                    return;
-                }
-                value0 = v[0];
-                value1 = v[1];
-                gl.uniform2iv(location, v);
-                renderStats.setUniform++;
-            };
-
-        } else if (type === gl.BOOL_VEC3) {
-
-            func = function (v) {
-                if (value0 === v[0] && value1 === v[1] && value2 === v[2]) {
-                    renderStats.setUniformCacheHits++;
-                    return;
-                }
-                value0 = v[0];
-                value1 = v[1];
-                value2 = v[2];
-                gl.uniform3iv(location, v);
-                renderStats.setUniform++;
-            };
-
-        } else if (type === gl.BOOL_VEC4) {
-
-            func = function (v) {
-                if (value0 === v[0] && value1 === v[1] && value2 === v[2] && value3 === v[3]) {
-                    renderStats.setUniformCacheHits++;
-                    return;
-                }
-                value0 = v[0];
-                value1 = v[1];
-                value2 = v[2];
-                value3 = v[3];
-                gl.uniform4iv(location, v);
-                renderStats.setUniform++;
-            };
-
-        } else if (type === gl.INT) {
-
-            func = function (v) {
-                if (value0 === v) {
-                    renderStats.setUniformCacheHits++;
-                    return;
-                }
-                value0 = v;
-                gl.uniform1iv(location, v);
-                renderStats.setUniform++;
-            };
-
-        } else if (type === gl.INT_VEC2) {
-
-            func = function (v) {
-                if (value0 === v[0] && value1 === v[1]) {
-                    renderStats.setUniformCacheHits++;
-                    return;
-                }
-                value0 = v[0];
-                value1 = v[1];
-                gl.uniform2iv(location, v);
-                renderStats.setUniform++;
-            };
-
-        } else if (type === gl.INT_VEC3) {
-
-            func = function (v) {
-                if (value0 === v[0] && value1 === v[1] && value2 === v[2]) {
-                    renderStats.setUniformCacheHits++;
-                    return;
-                }
-                value0 = v[0];
-                value1 = v[1];
-                value2 = v[2];
-                gl.uniform3iv(location, v);
-                renderStats.setUniform++;
-            };
-
-        } else if (type === gl.INT_VEC4) {
-
-            func = function (v) {
-                if (value0 === v[0] && value1 === v[1] && value2 === v[2] && value3 === v[3]) {
-                    renderStats.setUniformCacheHits++;
-                    return;
-                }
-                value0 = v[0];
-                value1 = v[1];
-                value2 = v[2];
-                value3 = v[3];
-                gl.uniform4iv(location, v);
-                renderStats.setUniform++;
-            };
-
-        } else if (type === gl.FLOAT) {
-
-            func = function (v) {
-                if (value0 === v) {
-                    renderStats.setUniformCacheHits++;
-                    return;
-                }
-                value0 = v;
-                gl.uniform1f(location, v);
-                renderStats.setUniform++;
-            };
-
-        } else if (type === gl.FLOAT_VEC2) {
-
-            func = function (v) {
-                if (value0 === v[0] && value1 === v[1]) {
-                    renderStats.setUniformCacheHits++;
-                    return;
-                }
-                value0 = v[0];
-                value1 = v[1];
-                gl.uniform2fv(location, v);
-                renderStats.setUniform++;
-            };
-
-        } else if (type === gl.FLOAT_VEC3) {
-
-            func = function (v) {
-                if (value0 === v[0] && value1 === v[1] && value2 === v[2]) {
-                    renderStats.setUniformCacheHits++;
-                    return;
-                }
-                value0 = v[0];
-                value1 = v[1];
-                value2 = v[2];
-                gl.uniform3fv(location, v);
-                renderStats.setUniform++;
-            };
-
-        } else if (type === gl.FLOAT_VEC4) {
-
-            func = function (v) {
-                if (value0 === v[0] && value1 === v[1] && value2 === v[2] && value3 === v[3]) {
-                    renderStats.setUniformCacheHits++;
-                    return;
-                }
-                value0 = v[0];
-                value1 = v[1];
-                value2 = v[2];
-                value3 = v[3];
-                gl.uniform4fv(location, v);
-                renderStats.setUniform++;
-            };
-
-        } else if (type === gl.FLOAT_MAT2) {
-
-            func = function (v) {
-                gl.uniformMatrix2fv(location, gl.FALSE, v);
-                renderStats.setUniform++;
-            };
-
-        } else if (type === gl.FLOAT_MAT3) {
-
-            func = function (v) {
-                gl.uniformMatrix3fv(location, gl.FALSE, v);
-                renderStats.setUniform++;
-            };
-
-        } else if (type === gl.FLOAT_MAT4) {
-
-            func = function (v) {
-                gl.uniformMatrix4fv(location, gl.FALSE, v);
-                renderStats.setUniform++;
-            };
-
-        } else {
-            throw "Unsupported shader uniform type: " + type;
-        }
-
-        this.setValue = func;
-
-        this.getLocation = function () {
-            return location;
-        };
-    };
-
-})();
-
-
-
-
-
-
-
-
-
-;(function () {
-
-    "use strict";
-
-    /**
-     * A chunk of WebGL state changes to render a XEO.renderer.State.
-     *
-     * @private
-     */
-    XEO.renderer.Chunk = function () {
-    };
-
-    /**
-     * Initialises the chunk.
-     *
-     * @param {Number} id Chunk ID
-     * @param {XEO.renderer.Program} program Program to render this chunk
-     * @param {XEO.renderer.State} state The state rendered by this chunk
-     */
-    XEO.renderer.Chunk.prototype.init = function (id, program, state) {
-
-        this.id = id;
-
-        this.program = program;
-
-        this.state = state;
-
-        this.useCount = 0;
-
-        if (this.build) {
-            this.build();
-        }
-    };
-
-})();
-;(function () {
-
-    "use strict";
-
-    /**
-     *  Manages creation, reuse and destruction of {@link XEO.renderer.Chunk}s.
-     */
-    XEO.renderer.ChunkFactory = function () {
-        this.types = XEO.renderer.ChunkFactory.types;
-    };
-
-    /**
-     * Sub-classes of {@link XEO.renderer.Chunk} provided by this factory
-     */
-    XEO.renderer.ChunkFactory.types = {};   // Supported chunk classes, installed by #createChunkType
-
-    /**
-     * Creates a chunk type.
-     *
-     * @param params Members to augment the chunk class prototype with
-     * @param params.type Type name for the new chunk class
-     * @param params.draw Method to render the chunk in draw render
-     * @param params.pickObject
-     * @param params.pickPrimitive
-     */
-    XEO.renderer.ChunkFactory.createChunkType = function (params) {
-
-        if (!params.type) {
-            throw "'type' expected in params";
-        }
-
-        var supa = XEO.renderer.Chunk;
-
-        var chunkClass = function () { // Create the class
-            this.useCount = 0;
-            this.init.apply(this, arguments);
-        };
-
-        chunkClass.prototype = new supa();              // Inherit from base class
-        chunkClass.prototype.constructor = chunkClass;
-
-        XEO._apply(params, chunkClass.prototype);   // Augment subclass
-
-        XEO.renderer.ChunkFactory.types[params.type] = {
-            constructor: chunkClass,
-            chunks: {},
-            freeChunks: [],
-            freeChunksLen: 0
-        };
-
-        return chunkClass;
-    };
-
-    /**
-     * Gets a chunk from this factory.
-     */
-    XEO.renderer.ChunkFactory.prototype.getChunk = function (id, type, program, state) {
-
-        var chunkType = this.types[type];
-
-        if (!chunkType) {
-            throw "chunk type not supported: '" + type + "'";
-        }
-
-        var chunk = chunkType.chunks[id];
-
-        if (chunk) {
-            chunk.useCount++;
-            return chunk;
-        }
-
-        // Try to recycle a free chunk
-
-        if (chunkType.freeChunksLen > 0) {
-            chunk = chunkType.freeChunks[--chunkType.freeChunksLen];
-        }
-
-        if (chunk) {
-
-            // Reinitialise the free chunk
-
-            chunk.init(id, program, state);
-
-        } else {
-
-            // No free chunk, create a new one
-
-            chunk = new chunkType.constructor(id, program, state);
-        }
-
-        chunk.useCount = 1;
-
-        chunkType.chunks[id] = chunk;
-
-        return chunk;
-    };
-
-    /**
-     * Releases a chunk back to this factory.
-     *
-     * @param {XEO.renderer.Chunk} chunk Chunk to release
-     */
-    XEO.renderer.ChunkFactory.prototype.putChunk = function (chunk) {
-
-        if (chunk.useCount === 0) { // In case of excess puts
-            return;
-        }
-
-        // Free the chunk if use count now zero
-
-        if (--chunk.useCount <= 0) {
-
-            var chunkType = this.types[chunk.type];
-
-            delete chunkType.chunks[chunk.id];
-
-            chunkType.freeChunks[chunkType.freeChunksLen++] = chunk;
-        }
-    };
-
-    /**
-     * Restores the chunks in this factory after a WebGL context recovery.
-     */
-    XEO.renderer.ChunkFactory.prototype.webglRestored = function () {
-
-        var types = this.types;
-        var chunkType;
-        var chunks;
-        var chunk;
-
-        for (var type in types) {
-
-            if (types.hasOwnProperty(type)) {
-
-                chunkType = types[type];
-
-                chunks = chunkType.chunks;
-
-                for (var id in chunks) {
-
-                    if (chunks.hasOwnProperty(id)) {
-
-                        chunk = chunks[id];
-
-                        if (chunk.build) {
-                            chunk.build();
-                        }
-                    }
-                }
-            }
-        }
-    };
-
-})();
-;(function () {
-
-    "use strict";
-
-    /**
-     * Create display state chunk type for draw and pick render of user clipping planes
-     */
-    XEO.renderer.ChunkFactory.createChunkType({
-
-        type: "clips",
-
-        build: function () {
-
-            var i;
-            var len;
-
-            this._uClipModeDraw = this._uClipModeDraw || [];
-            this._uClipPlaneDraw = this._uClipPlaneDraw || [];
-
-            var draw = this.program.draw;
-
-            for (i = 0, len = this.state.clips.length; i < len; i++) {
-                this._uClipModeDraw[i] = draw.getUniform("xeo_uClipMode" + i);
-                this._uClipPlaneDraw[i] = draw.getUniform("xeo_uClipPlane" + i)
-            }
-
-            this._uClipModePick = this._uClipModePick || [];
-            this._uClipPlanePick = this._uClipPlanePick || [];
-
-            var pick = this.program.pick;
-
-            for (i = 0, len = this.state.clips.length; i < len; i++) {
-                this._uClipModePick[i] = pick.getUniform("xeo_uClipMode" + i);
-                this._uClipPlanePick[i] = pick.getUniform("xeo_uClipPlane" + i)
-            }
-        },
-
-        drawPick: function (frameCtx) {
-
-            return;
-
-            var uClipMode = (frameCtx.pick) ? this._uClipModePick : this._uClipModeDraw;
-            var uClipPlane = (frameCtx.pick) ? this._uClipPlanePick : this._uClipPlaneDraw;
-
-            var mode;
-            var plane;
-            var clips = this.state.clips;
-            var clip;
-
-            for (var i = 0, len = clips.length; i < len; i++) {
-
-                mode = uClipMode[i];
-                plane = uClipPlane[i];
-
-                if (mode && plane) {
-
-                    clip = clips[i];
-
-                    if (clip.mode === "inside") {
-
-                        mode.setValue(2);
-                        plane.setValue(clip.plane);
-
-                    } else if (clip.mode === "outside") {
-
-                        mode.setValue(1);
-                        plane.setValue(clip.plane);
-
-                    } else {
-
-                        // Disabled
-
-                        mode.setValue(0);
-                    }
-                }
-            }
-        }
-    });
-
-})();;(function () {
-
-    "use strict";
-
-    /**
-     *
-     */
-    XEO.renderer.ChunkFactory.createChunkType({
-
-        type: "colorBuf",
-
-        // Avoid re-application of this chunk after a program switch.
-
-        programGlobal: true,
-
-        draw: function (frameCtx) {
-
-            if (!frameCtx.transparent) {
-
-                // Blending forced while rendering a transparent bin
-
-                var state = this.state;
-                var blendEnabled = state.blendEnabled;
-
-                var gl = this.program.gl;
-
-                if (frameCtx.blendEnabled !== blendEnabled) {
-
-                    if (blendEnabled) {
-                        gl.enable(gl.BLEND);
-
-                    } else {
-                        gl.disable(gl.BLEND);
-                    }
-
-                    frameCtx.blendEnabled = blendEnabled;
-                }
-
-                var colorMask = state.colorMask;
-
-                gl.colorMask(colorMask[0], colorMask[1], colorMask[2], colorMask[3]);
-            }
-        }
-    });
-
-})();
-;(function () {
-
-    "use strict";
-
-    XEO.renderer.ChunkFactory.createChunkType({
-
-        type: "cubemap",
-
-        build: function () {
-//            this._uCubeMapSampler = this._uCubeMapSampler || [];
-//            this._uCubeMapIntensity = this._uCubeMapIntensity || [];
-//            var layers = this.state.layers;
-//            if (layers) {
-//                var layer;
-//                var draw = this.program.draw;
-//                for (var i = 0, len = layers.length; i < len; i++) {
-//                    layer = layers[i];
-//                    this._uCubeMapSampler[i] = "xeo_uCubeMapSampler" + i;
-//                    this._uCubeMapIntensity[i] = draw.getUniform("xeo_uCubeMapIntensity" + i);
-//                }
-//            }
-        },
-
-        draw: function (frameCtx) {
-//            var layers = this.state.layers;
-//            if (layers) {
-//                var layer;
-//                var draw = this.program.draw;
-//                for (var i = 0, len = layers.length; i < len; i++) {
-//                    layer = layers[i];
-//                    if (this._uCubeMapSampler[i] && layer.texture) {
-//                        draw.bindTexture(this._uCubeMapSampler[i], layer.texture, frameCtx.textureUnit++);
-//                        if (this._uCubeMapIntensity[i]) {
-//                            this._uCubeMapIntensity[i].setValue(layer.intensity);
-//                        }
-//                    }
-//                }
-//            }
-//
-//            if (frameCtx.textureUnit > 10) { // TODO: Find how many textures allowed
-//                frameCtx.textureUnit = 0;
-//            }
-        }
-    });
-
-})();;(function () {
-
-    "use strict";
-
-    /**
-     *
-     */
-    XEO.renderer.ChunkFactory.createChunkType({
-
-        type: "depthBuf",
-
-        // Avoid reapplication of this chunk after a program switch.
-
-        programGlobal: true,
-
-        draw: function (frameCtx) {
-
-            var gl = this.program.gl;
-
-            var state = this.state;
-            var active = state.active;
-
-            if (frameCtx.depthbufEnabled !== active) {
-
-                if (!active) {
-                    gl.enable(gl.DEPTH_TEST);
-
-                } else {
-                    gl.disable(gl.DEPTH_TEST);
-                }
-
-                frameCtx.depthbufEnabled = active;
-            }
-
-            var clearDepth = state.clearDepth;
-
-            if (frameCtx.clearDepth !== clearDepth) {
-                gl.clearDepth(clearDepth);
-                frameCtx.clearDepth = clearDepth;
-            }
-
-            var depthFunc = state.depthFunc;
-
-            if (frameCtx.depthFunc !== depthFunc) {
-                gl.depthFunc(depthFunc);
-                frameCtx.depthFunc = depthFunc;
-            }
-
-            if (state.clear) {
-                gl.clear(gl.DEPTH_BUFFER_BIT);
-            }
-        }
-    });
-
-})();
-;(function () {
-
-    "use strict";
-
-    XEO.renderer.ChunkFactory.createChunkType({
-
-        type: "draw",
-
-        // As we apply a list of state chunks in a {@link XEO.renderer.Renderer},
-        // we track the ID of each chunk in order to avoid redundantly re-applying
-        // the same chunk. We don't want that for draw chunks however, because
-        // they contain drawElements calls, which we need to do for each object.
-
-        unique: true,
-
-        build: function () {
-            this._uPickColorObject = this.program.pickObject.getUniform("xeo_uPickColor");
-        },
-
-        draw: function (frameCtx) {
-            var state = this.state;
-            var gl = this.program.gl;
-
-            if (state.indices) {
-                gl.drawElements(state.primitive, state.indices.numItems, state.indices.itemType, 0);
-                frameCtx.drawElements++;
-            }
-        },
-
-        pickObject: function (frameCtx) {
-
-            var state = this.state;
-            var gl = this.program.gl;
-
-            if (this._uPickColorObject) {
-
-                frameCtx.pickObjects[frameCtx.pickIndex++] = this.object;
-
-                var b = frameCtx.pickIndex >> 16 & 0xFF;
-                var g = frameCtx.pickIndex >> 8 & 0xFF;
-                var r = frameCtx.pickIndex & 0xFF;
-
-                this._uPickColorObject.setValue([r / 255, g / 255, b / 255, 1]);
-
-                //frameCtx.pickIndex++
-            }
-
-            if (state.indices) {
-                gl.drawElements(state.primitive, state.indices.numItems, state.indices.itemType, 0);
-                frameCtx.drawElements++;
-            }
-        },
-
-        pickPrimitive: function () {
-
-            var state = this.state;
-            var gl = this.program.gl;
-
-            var pickPositions = state.getPickPositions();
-
-            if (pickPositions) {
-                gl.drawArrays(state.primitive, 0, pickPositions.numItems / 3);
-            }
-        }
-    });
-
-})();
-;(function () {
-
-    "use strict";
-
-    /**
-     *  Create display state chunk type for draw and pick render of geometry
-     */
-    XEO.renderer.ChunkFactory.createChunkType({
-
-        type: "geometry",
-
-        build: function () {
-
-            var draw = this.program.draw;
-            this._aPositionDraw = draw.getAttribute("xeo_aPosition");
-            this._aNormalDraw = draw.getAttribute("xeo_aNormal");
-            this._aUVDraw = draw.getAttribute("xeo_aUV");
-            this._aTangentDraw = draw.getAttribute("xeo_aTangent");
-            this._aColorDraw = draw.getAttribute("xeo_aColor");
-
-            var pickObject = this.program.pickObject;
-            this._aPositionPickObject = pickObject.getAttribute("xeo_aPosition");
-
-            var pickPrimitive = this.program.pickPrimitive;
-            this._aPositionPickPrimitive = pickPrimitive.getAttribute("xeo_aPosition");
-            this._aColorPickPrimitive = pickPrimitive.getAttribute("xeo_aColor");
-        },
-
-        draw: function (frameCtx) {
-
-            var state = this.state;
-
-            if (this._aPositionDraw) {
-                this._aPositionDraw.bindFloatArrayBuffer(state.positions);
-                frameCtx.bindArray++;
-            }
-
-            if (this._aNormalDraw) {
-                this._aNormalDraw.bindFloatArrayBuffer(state.normals);
-                frameCtx.bindArray++;
-            }
-
-            if (this._aUVDraw) {
-                this._aUVDraw.bindFloatArrayBuffer(state.uv);
-                frameCtx.bindArray++;
-            }
-
-            if (this._aColorDraw) {
-                this._aColorDraw.bindFloatArrayBuffer(state.colors);
-                frameCtx.bindArray++;
-            }
-
-            if (this._aTangentDraw) {
-
-                // Tangents array is lazy-built from UVs and normals,
-                // now that we know that we need it
-
-                this._aTangentDraw.bindFloatArrayBuffer(state.getTangents());
-                frameCtx.bindArray++;
-            }
-
-            if (state.indices) {
-                state.indices.bind();
-                frameCtx.bindArray++;
-            }
-        },
-
-        pickObject: function () {
-
-            var state = this.state;
-
-            if (this._aPositionPickObject) {
-                this._aPositionPickObject.bindFloatArrayBuffer(state.positions);
-            }
-
-            if (state.indices) {
-                state.indices.bind();
-            }
-        },
-
-        pickPrimitive: function () {
-
-            var state = this.state;
-
-            // Arrays for primitive-picking are lazy-built
-            // now that we know we need them
-
-            if (this._aPositionPickPrimitive) {
-                this._aPositionPickPrimitive.bindFloatArrayBuffer(state.getPickPositions());
-            }
-
-            if (this._aColorPickPrimitive) {
-                this._aColorPickPrimitive.bindFloatArrayBuffer(state.getPickColors());
-            }
-        }
-    });
-
-})();;(function () {
-
-    "use strict";
-
-    XEO.renderer.ChunkFactory.createChunkType({
-
-        type: "lights",
-
-        build: function () {
-
-            this._uLightAmbientColor = this._uLightAmbientColor || [];
-            this._uLightAmbientIntensity = this._uLightAmbientIntensity || [];
-
-            this._uLightColor = this._uLightColor || [];
-            this._uLightIntensity = this._uLightIntensity || [];
-
-            this._uLightDir = this._uLightDir || [];
-            this._uLightPos = this._uLightPos || [];
-
-            this._uLightAttenuation = this._uLightAttenuation || [];
-
-            var lights = this.state.lights;
-            var program = this.program;
-
-            for (var i = 0, len = lights.length; i < len; i++) {
-
-                switch (lights[i].type) {
-
-                    case "ambient":
-                        this._uLightAmbientColor[i] = program.draw.getUniform("xeo_uLightAmbientColor");
-                        this._uLightAmbientIntensity[i] = program.draw.getUniform("xeo_uLightAmbientIntensity");
-                        break;
-
-                    case "dir":
-                        this._uLightColor[i] = program.draw.getUniform("xeo_uLightColor" + i);
-                        this._uLightIntensity[i] = program.draw.getUniform("xeo_uLightIntensity" + i);
-                        this._uLightPos[i] = null;
-                        this._uLightDir[i] = program.draw.getUniform("xeo_uLightDir" + i);
-                        break;
-
-                    case "point":
-                        this._uLightColor[i] = program.draw.getUniform("xeo_uLightColor" + i);
-                        this._uLightIntensity[i] = program.draw.getUniform("xeo_uLightIntensity" + i);
-                        this._uLightPos[i] = program.draw.getUniform("xeo_uLightPos" + i);
-                        this._uLightDir[i] = null;
-                        this._uLightAttenuation[i] = program.draw.getUniform("xeo_uLightAttenuation" + i);
-                        break;
-                }
-            }
-        },
-
-        draw: function () {
-
-            var lights = this.state.lights;
-            var light;
-
-            for (var i = 0, len = lights.length; i < len; i++) {
-
-                light = lights[i];
-
-                // Ambient color
-
-                if (this._uLightAmbientColor[i]) {
-                    this._uLightAmbientColor[i].setValue(light.color);
-
-                    if (this._uLightAmbientIntensity[i]) {
-                        this._uLightAmbientIntensity[i].setValue(light.intensity);
-                    }
-
-                } else {
-
-                    // Color and intensity
-
-                    if (this._uLightColor[i]) {
-                        this._uLightColor[i].setValue(light.color);
-                    }
-
-                    if (this._uLightIntensity[i]) {
-                        this._uLightIntensity[i].setValue(light.intensity);
-                    }
-
-                    if (this._uLightPos[i]) {
-
-                        // Position
-
-                        this._uLightPos[i].setValue(light.pos);
-
-                        // Attenuation
-
-                        if (this._uLightAttenuation[i]) {
-                            this._uLightAttenuation[i].setValue(light.attenuation);
-                        }
-                    }
-
-                    // Direction
-
-                    if (this._uLightDir[i]) {
-                        this._uLightDir[i].setValue(light.dir);
-                    }
-                }
-            }
-        }
-    });
-
-})();
-;(function () {
-
-    "use strict";
-
-    XEO.renderer.ChunkFactory.createChunkType({
-
-        type: "modelTransform",
-
-        build: function () {
-            this._uModelMatrixDraw = this.program.draw.getUniform("xeo_uModelMatrix");
-            this._uModelNormalMatrixDraw = this.program.draw.getUniform("xeo_uModelNormalMatrix");
-            this._uModelMatrixPickObject = this.program.pickObject.getUniform("xeo_uModelMatrix");
-            this._uModelMatrixPickPrimitive = this.program.pickPrimitive.getUniform("xeo_uModelMatrix");
-        },
-
-        draw: function () {
-            if (this._uModelMatrixDraw) {
-                this._uModelMatrixDraw.setValue(this.state.getMatrix());
-            }
-            if (this._uModelNormalMatrixDraw) {
-                this._uModelNormalMatrixDraw.setValue(this.state.getNormalMatrix());
-            }
-        },
-
-        pickObject: function () {
-            if (this._uModelMatrixPickObject) {
-                this._uModelMatrixPickObject.setValue(this.state.getMatrix());
-            }
-        },
-
-        pickPrimitive: function () {
-            if (this._uModelMatrixPickPrimitive) {
-                this._uModelMatrixPickPrimitive.setValue(this.state.getMatrix());
-            }
-        }
-    });
-
-})();;(function () {
-
-    "use strict";
-
-    XEO.renderer.ChunkFactory.createChunkType({
-
-        type: "modes",
-
-        build: function () {
-        },
-
-        draw: function (frameCtx) {
-
-            var state = this.state;
-            var gl = this.program.gl;
-
-            var backfaces = state.backfaces;
-
-            if (frameCtx.backfaces !== backfaces) {
-                if (backfaces) {
-                    gl.disable(gl.CULL_FACE);
-                } else {
-                    gl.enable(gl.CULL_FACE);
-                }
-                frameCtx.backfaces = backfaces;
-            }
-
-            var frontface = state.frontface;
-
-            if (frameCtx.frontface !== frontface) {
-
-                // frontface is boolean for speed,
-                // true == "ccw", false == "cw"
-
-                if (frontface) {
-                    gl.frontFace(gl.CCW);
-                } else {
-                    gl.frontFace(gl.CW);
-                }
-                frameCtx.frontface = frontface;
-            }
-
-            var transparent = state.transparent;
-
-            if (frameCtx.transparent !== transparent) {
-                if (!frameCtx.pick) {
-                    if (transparent) {
-
-                        // Entering a transparency bin
-
-                        gl.enable(gl.BLEND);
-                        gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-                        frameCtx.blendEnabled = true;
-                    } else {
-
-                        // Leaving a transparency bin
-
-                        gl.disable(gl.BLEND);
-                        frameCtx.blendEnabled = false;
-                    }
-                }
-                frameCtx.transparent = transparent;
-            }
-        },
-
-        pickObject: function (frameCtx) {
-
-            var state = this.state;
-            var gl = this.program.gl;
-
-            var backfaces = state.backfaces;
-            if (frameCtx.backfaces !== backfaces) {
-                if (backfaces) {
-                    gl.disable(gl.CULL_FACE);
-                } else {
-                    gl.enable(gl.CULL_FACE);
-                }
-                frameCtx.backfaces = backfaces;
-            }
-
-            var frontface = state.frontface;
-            if (frameCtx.frontface !== frontface) {
-
-                // frontface is boolean for speed,
-                // true == "ccw", false == "cw"
-
-                if (frontface) {
-                    gl.frontFace(gl.CCW);
-                } else {
-                    gl.frontFace(gl.CW);
-                }
-                frameCtx.frontface = frontface;
-            }
-        },
-
-        pickPrimitive: function (frameCtx) {
-
-            var state = this.state;
-            var gl = this.program.gl;
-
-            var backfaces = state.backfaces;
-            if (frameCtx.backfaces !== backfaces) {
-                if (backfaces) {
-                    gl.disable(gl.CULL_FACE);
-                } else {
-                    gl.enable(gl.CULL_FACE);
-                }
-                frameCtx.backfaces = backfaces;
-            }
-
-            var frontface = state.frontface;
-            if (frameCtx.frontface !== frontface) {
-
-                // frontface is boolean for speed,
-                // true == "ccw", false == "cw"
-
-                if (frontface) {
-                    gl.frontFace(gl.CCW);
-                } else {
-                    gl.frontFace(gl.CW);
-                }
-                frameCtx.frontface = frontface;
-            }
-        }
-    });
-})();
-;(function () {
-
-    "use strict";
-
-    XEO.renderer.ChunkFactory.createChunkType({
-
-        type: "phongMaterial",
-
-        build: function () {
-
-            var state = this.state;
-
-            var draw = this.program.draw;
-
-            // Blinn-Phong base material
-
-            this._uDiffuse = draw.getUniform("xeo_uDiffuse");
-            this._uSpecular = draw.getUniform("xeo_uSpecular");
-            this._uEmissive = draw.getUniform("xeo_uEmissive");
-            this._uOpacity = draw.getUniform("xeo_uOpacity");
-            this._uShininess = draw.getUniform("xeo_uShininess");
-
-            this._uPointSize = draw.getUniform("xeo_uPointSize");
-
-            // Textures
-
-            if (state.ambientMap) {
-                this._uAmbientMap = "xeo_uAmbientMap";
-                this._uAmbientMapMatrix = draw.getUniform("xeo_uAmbientMapMatrix");
-            }
-
-            if (state.diffuseMap) {
-                this._uDiffuseMap = "xeo_uDiffuseMap";
-                this._uDiffuseMapMatrix = draw.getUniform("xeo_uDiffuseMapMatrix");
-            }
-
-            if (state.specularMap) {
-                this._uSpecularMap = "xeo_uSpecularMap";
-                this._uSpecularMapMatrix = draw.getUniform("xeo_uSpecularMapMatrix");
-            }
-
-            if (state.emissiveMap) {
-                this._uEmissiveMap = "xeo_uEmissiveMap";
-                this._uEmissiveMapMatrix = draw.getUniform("xeo_uEmissiveMapMatrix");
-            }
-
-            if (state.opacityMap) {
-                this._uOpacityMap = "xeo_uOpacityMap";
-                this._uOpacityMapMatrix = draw.getUniform("xeo_uOpacityMapMatrix");
-            }
-
-            if (state.reflectivityMap) {
-                this._uReflectivityMap = "xeo_uReflectivityMap";
-                this._uReflectivityMapMatrix = draw.getUniform("xeo_uReflectivityMapMatrix");
-            }
-
-            if (state.normalMap) {
-                this._uNormalMap = "xeo_uNormalMap";
-                this._uNormalMapMatrix = draw.getUniform("xeo_uNormalMapMatrix");
-            }
-
-            // Fresnel effects
-
-            if (state.diffuseFresnel) {
-                this._uDiffuseFresnelEdgeBias = draw.getUniform("xeo_uDiffuseFresnelEdgeBias");
-                this._uDiffuseFresnelCenterBias = draw.getUniform("xeo_uDiffuseFresnelCenterBias");
-                this._uDiffuseFresnelEdgeColor = draw.getUniform("xeo_uDiffuseFresnelEdgeColor");
-                this._uDiffuseFresnelCenterColor = draw.getUniform("xeo_uDiffuseFresnelCenterColor");
-                this._uDiffuseFresnelPower = draw.getUniform("xeo_uDiffuseFresnelPower");
-            }
-
-            if (state.specularFresnel) {
-                this._uSpecularFresnelEdgeBias = draw.getUniform("xeo_uSpecularFresnelEdgeBias");
-                this._uSpecularFresnelCenterBias = draw.getUniform("xeo_uSpecularFresnelCenterBias");
-                this._uSpecularFresnelEdgeColor = draw.getUniform("xeo_uSpecularFresnelEdgeColor");
-                this._uSpecularFresnelCenterColor = draw.getUniform("xeo_uSpecularFresnelCenterColor");
-                this._uSpecularFresnelPower = draw.getUniform("xeo_uSpecularFresnelPower");
-            }
-
-            if (state.opacityFresnel) {
-                this._uOpacityFresnelEdgeBias = draw.getUniform("xeo_uOpacityFresnelEdgeBias");
-                this._uOpacityFresnelCenterBias = draw.getUniform("xeo_uOpacityFresnelCenterBias");
-                this._uOpacityFresnelEdgeColor = draw.getUniform("xeo_uOpacityFresnelEdgeColor");
-                this._uOpacityFresnelCenterColor = draw.getUniform("xeo_uOpacityFresnelCenterColor");
-                this._uOpacityFresnelPower = draw.getUniform("xeo_uOpacityFresnelPower");
-            }
-
-            if (state.reflectivityFresnel) {
-                this._uReflectivityFresnelEdgeBias = draw.getUniform("xeo_uReflectivityFresnelEdgeBias");
-                this._uReflectivityFresnelCenterBias = draw.getUniform("xeo_uReflectivityFresnelCenterBias");
-                this._uReflectivityFresnelEdgeColor = draw.getUniform("xeo_uReflectivityFresnelEdgeColor");
-                this._uReflectivityFresnelCenterColor = draw.getUniform("xeo_uReflectivityFresnelCenterColor");
-                this._uReflectivityFresnelPower = draw.getUniform("xeo_uReflectivityFresnelPower");
-            }
-
-            if (state.emissiveFresnel) {
-                this._uEmissiveFresnelEdgeBias = draw.getUniform("xeo_uEmissiveFresnelEdgeBias");
-                this._uEmissiveFresnelCenterBias = draw.getUniform("xeo_uEmissiveFresnelCenterBias");
-                this._uEmissiveFresnelEdgeColor = draw.getUniform("xeo_uEmissiveFresnelEdgeColor");
-                this._uEmissiveFresnelCenterColor = draw.getUniform("xeo_uEmissiveFresnelCenterColor");
-                this._uEmissiveFresnelPower = draw.getUniform("xeo_uEmissiveFresnelPower");
-            }
-        },
-
-        draw: function (frameCtx) {
-
-            var draw = this.program.draw;
-            var state = this.state;
-            var gl = this.program.gl;
-
-
-            if (this._uShininess) {
-                this._uShininess.setValue(state.shininess);
-            }
-
-            if (frameCtx.lineWidth !== state.lineWidth) {
-                gl.lineWidth(state.lineWidth);
-                frameCtx.lineWidth = state.lineWidth;
-            }
-
-            if (this._uPointSize) {
-                this._uPointSize.setValue(state.pointSize);
-            }
-
-            // Ambient map
-
-            if (state.ambientMap && state.ambientMap.texture) {
-
-                draw.bindTexture(this._uAmbientMap, state.ambientMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
-                frameCtx.bindTexture++;
-
-                if (this._uAmbientMapMatrix) {
-                    this._uAmbientMapMatrix.setValue(state.ambientMap.matrix);
-                }
-            }
-
-            // Diffuse map
-
-            if (state.diffuseMap && state.diffuseMap.texture) {
-
-                draw.bindTexture(this._uDiffuseMap, state.diffuseMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
-                frameCtx.bindTexture++;
-
-                if (this._uDiffuseMapMatrix) {
-                    this._uDiffuseMapMatrix.setValue(state.diffuseMap.matrix);
-                }
-
-            } else if (this._uDiffuse) {
-                this._uDiffuse.setValue(state.diffuse);
-            }
-
-            // Specular map
-
-            if (state.specularMap && state.specularMap.texture) {
-
-                draw.bindTexture(this._uSpecularMap, state.specularMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
-                frameCtx.bindTexture++;
-
-                if (this._uSpecularMapMatrix) {
-                    this._uSpecularMapMatrix.setValue(state.specularMap.matrix);
-                }
-
-            } else if (this._uSpecular) {
-                this._uSpecular.setValue(state.specular);
-            }
-
-            // Emissive map
-
-            if (state.emissiveMap && state.emissiveMap.texture) {
-
-                draw.bindTexture(this._uEmissiveMap, state.emissiveMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
-                frameCtx.bindTexture++;
-
-                if (this._uEmissiveMapMatrix) {
-                    this._uEmissiveMapMatrix.setValue(state.emissiveMap.matrix);
-                }
-
-            } else if (this._uEmissive) {
-                this._uEmissive.setValue(state.emissive);
-            }
-
-            // Opacity map
-
-            if (state.opacityMap && state.opacityMap.texture) {
-
-                draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
-                frameCtx.bindTexture++;
-
-                if (this._uOpacityMapMatrix) {
-                    this._uOpacityMapMatrix.setValue(state.opacityMap.matrix);
-                }
-
-            } else if (this._uOpacity) {
-                this._uOpacity.setValue(state.opacity);
-            }
-
-            // Reflectivity map
-
-            if (state.reflectivityMap && state.reflectivityMap.texture) {
-
-                draw.bindTexture(this._uReflectivityMap, state.reflectivityMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
-
-                if (this._uReflectivityMapMatrix) {
-                    this._uReflectivityMapMatrix.setValue(state.reflectivityMap.matrix);
-                }
-            }
-
-            // Normal map
-
-            if (state.normalMap && state.normalMap.texture) {
-
-                draw.bindTexture(this._uNormalMap, state.normalMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
-                frameCtx.bindTexture++;
-
-                if (this._uNormalMapMatrix) {
-                    this._uNormalMapMatrix.setValue(state.normalMap.matrix);
-                }
-            }
-
-            // Fresnel effects
-
-            if (state.diffuseFresnel) {
-
-                if (this._uDiffuseFresnelEdgeBias) {
-                    this._uDiffuseFresnelEdgeBias.setValue(state.diffuseFresnel.edgeBias);
-                }
-
-                if (this._uDiffuseFresnelCenterBias) {
-                    this._uDiffuseFresnelCenterBias.setValue(state.diffuseFresnel.centerBias);
-                }
-
-                if (this._uDiffuseFresnelEdgeColor) {
-                    this._uDiffuseFresnelEdgeColor.setValue(state.diffuseFresnel.edgeColor);
-                }
-
-                if (this._uDiffuseFresnelCenterColor) {
-                    this._uDiffuseFresnelCenterColor.setValue(state.diffuseFresnel.centerColor);
-                }
-
-                if (this._uDiffuseFresnelPower) {
-                    this._uDiffuseFresnelPower.setValue(state.diffuseFresnel.power);
-                }
-            }
-
-            if (state.specularFresnel) {
-
-                if (this._uSpecularFresnelEdgeBias) {
-                    this._uSpecularFresnelEdgeBias.setValue(state.specularFresnel.edgeBias);
-                }
-
-                if (this._uSpecularFresnelCenterBias) {
-                    this._uSpecularFresnelCenterBias.setValue(state.specularFresnel.centerBias);
-                }
-
-                if (this._uSpecularFresnelEdgeColor) {
-                    this._uSpecularFresnelEdgeColor.setValue(state.specularFresnel.edgeColor);
-                }
-
-                if (this._uSpecularFresnelCenterColor) {
-                    this._uSpecularFresnelCenterColor.setValue(state.specularFresnel.centerColor);
-                }
-
-                if (this._uSpecularFresnelPower) {
-                    this._uSpecularFresnelPower.setValue(state.specularFresnel.power);
-                }
-            }
-
-            if (state.opacityFresnel) {
-
-                if (this._uOpacityFresnelEdgeBias) {
-                    this._uOpacityFresnelEdgeBias.setValue(state.opacityFresnel.edgeBias);
-                }
-
-                if (this._uOpacityFresnelCenterBias) {
-                    this._uOpacityFresnelCenterBias.setValue(state.opacityFresnel.centerBias);
-                }
-
-                if (this._uOpacityFresnelEdgeColor) {
-                    this._uOpacityFresnelEdgeColor.setValue(state.opacityFresnel.edgeColor);
-                }
-
-                if (this._uOpacityFresnelCenterColor) {
-                    this._uOpacityFresnelCenterColor.setValue(state.opacityFresnel.centerColor);
-                }
-
-                if (this._uOpacityFresnelPower) {
-                    this._uOpacityFresnelPower.setValue(state.opacityFresnel.power);
-                }
-            }
-
-            if (state.reflectivityFresnel) {
-
-                if (this._uReflectivityFresnelEdgeBias) {
-                    this._uReflectivityFresnelEdgeBias.setValue(state.reflectivityFresnel.edgeBias);
-                }
-
-                if (this._uReflectivityFresnelCenterBias) {
-                    this._uReflectivityFresnelCenterBias.setValue(state.reflectivityFresnel.centerBias);
-                }
-
-                if (this._uReflectivityFresnelEdgeColor) {
-                    this._uReflectivityFresnelEdgeColor.setValue(state.reflectivityFresnel.edgeColor);
-                }
-
-                if (this._uReflectivityFresnelCenterColor) {
-                    this._uReflectivityFresnelCenterColor.setValue(state.reflectivityFresnel.centerColor);
-                }
-
-                if (this._uReflectivityFresnelPower) {
-                    this._uReflectivityFresnelPower.setValue(state.reflectivityFresnel.power);
-                }
-            }
-
-            if (state.emissiveFresnel) {
-
-                if (this._uEmissiveFresnelEdgeBias) {
-                    this._uEmissiveFresnelEdgeBias.setValue(state.emissiveFresnel.edgeBias);
-                }
-
-                if (this._uEmissiveFresnelCenterBias) {
-                    this._uEmissiveFresnelCenterBias.setValue(state.emissiveFresnel.centerBias);
-                }
-
-                if (this._uEmissiveFresnelEdgeColor) {
-                    this._uEmissiveFresnelEdgeColor.setValue(state.emissiveFresnel.edgeColor);
-                }
-
-                if (this._uEmissiveFresnelCenterColor) {
-                    this._uEmissiveFresnelCenterColor.setValue(state.emissiveFresnel.centerColor);
-                }
-
-                if (this._uEmissiveFresnelPower) {
-                    this._uEmissiveFresnelPower.setValue(state.emissiveFresnel.power);
-                }
-            }
-        }
-    });
-
-})();
-;(function () {
-
-    "use strict";
-
-    XEO.renderer.ChunkFactory.createChunkType({
-
-        type: "program",
-
-        build: function () {
-        },
-
-        draw: function (frameCtx) {
-            this.program.draw.bind();
-            frameCtx.useProgram++;
-        },
-
-        pickObject: function () {
-            this.program.pickObject.bind();
-        },
-
-        pickPrimitive: function () {
-            this.program.pickPrimitive.bind();
-        }
-    });
-})();
-
-
-
-;(function () {
-
-    "use strict";
-
-    XEO.renderer.ChunkFactory.createChunkType({
-
-        type: "projTransform",
-
-        build: function () {
-            this._uProjMatrixDraw = this.program.draw.getUniform("xeo_uProjMatrix");
-            this._uProjMatrixPickObject = this.program.pickObject.getUniform("xeo_uProjMatrix");
-            this._uProjMatrixPickPrimitive = this.program.pickPrimitive.getUniform("xeo_uProjMatrix");
-        },
-
-        draw: function () {
-            if (this._uProjMatrixDraw) {
-                this._uProjMatrixDraw.setValue(this.state.getMatrix());
-            }
-        },
-
-        pickObject: function () {
-            if (this._uProjMatrixPickObject) {
-                this._uProjMatrixPickObject.setValue(this.state.getMatrix());
-            }
-        },
-
-        pickPrimitive: function () {
-            if (this._uProjMatrixPickPrimitive) {
-                this._uProjMatrixPickPrimitive.setValue(this.state.getMatrix());
-            }
-        }
-    });
-
-})();;(function () {
-
-    "use strict";
-
-    /**
-     *   Create display state chunk type for draw and pick render of renderTarget
-     */
-    XEO.renderer.ChunkFactory.createChunkType({
-
-        type: "renderTarget",
-
-        // Avoid reapplication of this chunk type after a program switch.
-
-        programGlobal: true,
-
-        draw: function (frameCtx) {
-
-            var gl = this.program.gl;
-            var state = this.state;
-
-            // Flush and unbind any render buffer already bound
-
-            if (frameCtx.renderBuf) {
-                gl.flush();
-                frameCtx.renderBuf.unbind();
-                frameCtx.renderBuf = null;
-
-                // Renderer hook to bind a custom output framebuffer
-                if (frameCtx.bindOutputFramebuffer) {
-                    frameCtx.bindOutputFramebuffer(frameCtx.pass);
-                }
-            }
-
-            // Set depthMode false and bail if no render buffer for this chunk
-            var renderBuf = state.renderBuf;
-            if (!renderBuf) {
-                frameCtx.depthMode = false;
-                return;
-            }
-
-            // Bind this chunk's render buffer, set depthMode, enable blend if depthMode false, clear buffer
-            renderBuf.bind();
-
-            frameCtx.depthMode = (state.type === state.DEPTH);
-
-            if (frameCtx.blendEnabled && !frameCtx.depthMode) {
-                gl.enable(gl.BLEND);
-                gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-            }
-
-            gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-            gl.clearColor(frameCtx.ambientColor[0], frameCtx.ambientColor[1], frameCtx.ambientColor[2], 1.0);
-            //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
-
-            //gl.clear(frameCtx.depthMode ? gl.COLOR_BUFFER_BIT : gl.DEPTH_BUFFER_BIT);
-
-            frameCtx.renderBuf = renderBuf;
-        }
-    });
-
-})();;(function () {
-
-    "use strict";
-
-    XEO.renderer.ChunkFactory.createChunkType({
-
-        type: "shader",
-
-        draw: function () {
-
-            var params = this.state.params;
-
-            if (params) {
-
-                var program = this.program.draw;
-                var name;
-
-                for (name in params) {
-                    if (params.hasOwnProperty(name)) {
-                        program.setUniform(name, params[name]);
-                    }
-                }
-            }
-        }
-    });
-})();;(function () {
-
-    "use strict";
-
-    XEO.renderer.ChunkFactory.createChunkType({
-
-        type: "shaderParams",
-
-        draw: function () {
-
-            var params = this.state.params;
-
-            if (params) {
-
-                var program = this.program.draw;
-                var name;
-
-                for (name in params) {
-                    if (params.hasOwnProperty(name)) {
-                        program.setUniform(name, params[name]);
-                    }
-                }
-            }
-        }
-    });
-
-})();;(function () {
-
-    "use strict";
-
-    XEO.renderer.ChunkFactory.createChunkType({
-
-        type: "viewTransform",
-
-        build: function () {
-            this._uViewMatrixDraw = this.program.draw.getUniform("xeo_uViewMatrix");
-            this._uViewNormalMatrixDraw = this.program.draw.getUniform("xeo_uViewNormalMatrix");
-            this._uViewMatrixPickObject = this.program.pickObject.getUniform("xeo_uViewMatrix");
-            this._uViewMatrixPickPrimitive = this.program.pickPrimitive.getUniform("xeo_uViewMatrix");
-        },
-
-        draw: function () {
-            if (this._uViewMatrixDraw) {
-                this._uViewMatrixDraw.setValue(this.state.getMatrix());
-            }
-            if (this._uViewNormalMatrixDraw) {
-                this._uViewNormalMatrixDraw.setValue(this.state.getNormalMatrix());
-            }
-        },
-
-        pickObject: function () {
-            if (this._uViewMatrixPickObject) {
-                this._uViewMatrixPickObject.setValue(this.state.getMatrix());
-            }
-        },
-
-        pickPrimitive: function () {
-            if (this._uViewMatrixPickPrimitive) {
-                this._uViewMatrixPickPrimitive.setValue(this.state.getMatrix());
-            }
-        }
-    });
-
-})();;(function () {
-
-    "use strict";
-
-    /**
-     *
-     */
-    XEO.renderer.ChunkFactory.createChunkType({
-
-        type: "viewport",
-
-        // Avoid re-application of this chunk after a program switch.
-
-        programGlobal: true,
-
-        draw: function () {
-            var boundary = this.state.boundary;
-            this.program.gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
-        },
-
-        pickObject: function () {
-            var boundary = this.state.boundary;
-            this.program.gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
-        },
-
-        pickPrimitive: function () {
-            var boundary = this.state.boundary;
-            this.program.gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
-        }
-    });
 
 })();
 ;/**
@@ -9486,9 +3614,9 @@ var Canvas2Image = (function () {
          *
          * @method buildNormals
          * @static
-         * @param {Array of Number} positions One-dimensional flattened array of positions.
-         * @param {Array of Number} indices One-dimensional flattened array of indices.*
-         * @returns {Array of Number} One-dimensional flattened array of normal vectors.
+         * @param {Float32Array} positions One-dimensional flattened array of positions.
+         * @param {Float32Array} indices One-dimensional flattened array of indices.*
+         * @returns {Float32Array} One-dimensional flattened array of normal vectors.
          */
         buildNormals: function (positions, indices) {
 
@@ -9558,10 +3686,10 @@ var Canvas2Image = (function () {
          *
          * @method buildTangents
          * @static
-         * @param {Array of Number} positions One-dimensional flattened array of positions.
-         * @param {Array of Number} indices One-dimensional flattened array of indices.
-         * @param {Array of Number} uv One-dimensional flattened array of UV coordinates.
-         * @returns {Array of Number} One-dimensional flattened array of tangents.
+         * @param {Float32Array} positions One-dimensional flattened array of positions.
+         * @param {Float32Array} indices One-dimensional flattened array of indices.
+         * @param {Float32Array} uv One-dimensional flattened array of UV coordinates.
+         * @returns {Float32Array} One-dimensional flattened array of tangents.
          */
         buildTangents: function (positions, indices, uv) {
 
@@ -9655,8 +3783,8 @@ var Canvas2Image = (function () {
          *
          * @method getPickPrimitives
          * @static
-         * @param {Array of Number} positions One-dimensional flattened array of positions.
-         * @param {Array of Number} indices One-dimensional flattened array of indices.
+         * @param {Float32Array} positions One-dimensional flattened array of positions.
+         * @param {Float32Array} indices One-dimensional flattened array of indices.
          * @returns {*} Object containing the arrays, created by this method or reused from 'pickTris' parameter.
          */
         getPickPrimitives: function (positions, indices) {
@@ -9755,13 +3883,13 @@ var Canvas2Image = (function () {
          *
          * @method rayTriangleIntersect
          * @static
-         * @param {Array of Number} origin Ray origin.
-         * @param {Array of Number} dir Ray direction.
-         * @param {Array of Number} a First triangle vertex.
-         * @param {Array of Number} b Second triangle vertex.
-         * @param {Array of Number} c Third triangle vertex.
-         * @param {Array of Number} [isect] Intersection point.
-         * @returns {Array of Number} The intersection point, or null if no intersection found.
+         * @param {Float32Array} origin Ray origin.
+         * @param {Float32Array} dir Ray direction.
+         * @param {Float32Array} a First triangle vertex.
+         * @param {Float32Array} b Second triangle vertex.
+         * @param {Float32Array} c Third triangle vertex.
+         * @param {Float32Array} [isect] Intersection point.
+         * @returns {Float32Array} The intersection point, or null if no intersection found.
          */
         rayTriangleIntersect: function (origin, dir, a, b, c, isect) {
 
@@ -9803,13 +3931,13 @@ var Canvas2Image = (function () {
          *
          * @method rayPlaneIntersect
          * @static
-         * @param {Array of Number} origin Ray origin.
-         * @param {Array of Number} dir Ray direction.
-         * @param {Array of Number} a First point on plane.
-         * @param {Array of Number} b Second point on plane.
-         * @param {Array of Number} c Third point on plane.
-         * @param {Array of Number} [isect] Intersection point.
-         * @returns {Array of Number} The intersection point.
+         * @param {Float32Array} origin Ray origin.
+         * @param {Float32Array} dir Ray direction.
+         * @param {Float32Array} a First point on plane.
+         * @param {Float32Array} b Second point on plane.
+         * @param {Float32Array} c Third point on plane.
+         * @param {Float32Array} [isect] Intersection point.
+         * @returns {Float32Array} The intersection point.
          */
         rayPlaneIntersect: function (origin, dir, a, b, c, isect) {
 
@@ -9841,12 +3969,12 @@ var Canvas2Image = (function () {
          *
          * @method cartesianToBaryCentric
          * @static
-         * @param {Array of Number} cartesian Cartesian coordinates.
-         * @param {Array of Number} a First triangle vertex.
-         * @param {Array of Number} b Second triangle vertex.
-         * @param {Array of Number} c Third triangle vertex.
-         * @param {Array of Number} [bary] The barycentric coordinates.
-         * @returns {Array of Number} The barycentric coordinates, or null if the triangle was invalid.
+         * @param {Float32Array} cartesian Cartesian coordinates.
+         * @param {Float32Array} a First triangle vertex.
+         * @param {Float32Array} b Second triangle vertex.
+         * @param {Float32Array} c Third triangle vertex.
+         * @param {Float32Array} [bary] The barycentric coordinates.
+         * @returns {Float32Array} The barycentric coordinates, or null if the triangle was invalid.
          * @returns {*}
          */
         cartesianToBarycentric: function (cartesian, a, b, c, bary) {
@@ -9908,7 +4036,7 @@ var Canvas2Image = (function () {
          *
          * @method barycentricInsideTriangle
          * @static
-         * @param {Array of Number} bary Barycentric coordinates.
+         * @param {Float32Array} bary Barycentric coordinates.
          * @returns {Boolean} True if the barycentric coordinates are inside their triangle.
          * @returns {*}
          */
@@ -9925,12 +4053,12 @@ var Canvas2Image = (function () {
          *
          * @method barycentricToCartesian
          * @static
-         * @param {Array of Number} bary The barycentric coordinate.
-         * @param {Array of Number} a First triangle vertex.
-         * @param {Array of Number} b Second triangle vertex.
-         * @param {Array of Number} c Third triangle vertex.
-         * @param {Array of Number} [cartesian] Cartesian coordinates.
-         * @returns {Array of Number} The cartesian coordinates, or null if the triangle was invalid.
+         * @param {Float32Array} bary The barycentric coordinate.
+         * @param {Float32Array} a First triangle vertex.
+         * @param {Float32Array} b Second triangle vertex.
+         * @param {Float32Array} c Third triangle vertex.
+         * @param {Float32Array} [cartesian] Cartesian coordinates.
+         * @returns {Float32Array} The cartesian coordinates, or null if the triangle was invalid.
          * @returns {*}
          */
         barycentricToCartesian2: function (bary, a, b, c, cartesian) {
@@ -10357,6 +4485,6051 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
     return this.b3p0(t, p0) + this.b3p1(t, p1) + this.b3p2(t, p2) + this.b3p3(t, p3);
 };
 
+;(function () {
+
+    "use strict";
+
+    XEO.renderer = XEO.renderer || {};
+
+    /**
+     *  Renderer compiled from a {@link SceneJS.Scene}, providing methods to render and pick.
+     *
+     * <p>A Renderer is a container of {@link XEO.renderer.Object}s which are created (or updated) by a depth-first
+     * <b>compilation traversal</b> of a {@link SceneJS.Scene}.</b>
+     *
+     * <h2>Rendering Pipeline</h2>
+     *
+     * <p>Conceptually, a Renderer implements a pipeline with the following stages:</p>
+     *
+     * <ol>
+     * <li>Create or update {@link XEO.renderer.Object}s during scene compilation</li>
+     * <li>Organise the {@link XEO.renderer.Object} into an <b>object list</b></li>
+     * <li>Determine the GL state sort order for the object list</li>
+     * <li>State sort the object list</li>
+     * <li>Create a <b>draw list</b> containing {@link XEO.renderer.Chunk}s belonging to the {@link XEO.renderer.Object}s in the object list</li>
+     * <li>Render the draw list to draw the image</li>
+     * </ol>
+     *
+     * <p>An update to the scene causes the pipeline to be re-executed from one of these stages, and SceneJS is designed
+     * so that the pipeline is always re-executed from the latest stage possible to avoid redoing work.</p>
+     *
+     * <p>For example:</p>
+     *
+     * <ul>
+     * <li>when an object is created or updated, we need to (re)do stages 2, 3, 4, 5 and 6</li>
+     * <li>when an object is made invisible, we need to redo stages 5 and 6</li>
+     * <li>when an object is assigned to a different scene render layer (works like a render bin), we need to redo
+     *   stages 3, 4, 5, and 6</li>
+     *<li>when the colour of an object changes, or maybe when the viewpoint changes, we simplt redo stage 6</li>
+     * </ul>
+     *
+     * <h2>Object Creation</h2>
+     * <p>The object soup (stage 1) is constructed by a depth-first traversal of the scene graph, which we think of as
+     * "compiling" the scene graph into the Renderer. As traversal visits each scene component, the component's state core is
+     * set on the Renderer (such as {@link #flags}, {@link #layer}, {@link #renderer} etc), which we think of as the
+     * cores that are active at that instant during compilation. Each of the scene's leaf components is always
+     * a {@link SceneJS.Geometry}, and when traversal visits one of those it calls {@link #buildObject} to create an
+     * object in the soup. For each of the currently active cores, the object is given a {@link XEO.renderer.Chunk}
+     * containing the WebGL calls for rendering it.</p>
+     *
+     * <p>The object also gets a shader (implemented by {@link XEO.renderer.Program}), taylored to render those state cores.</p>
+     *
+     * <p>Limited re-compilation may also be done on portions of a scene that have been added or sufficiently modified. When
+     * traversal visits a {@link SceneJS.Geometry} for which an object already exists in the display, {@link #buildObject}
+     * may update the {@link XEO.renderer.Chunk}s on the object as required for any changes in the core soup since the
+     * last time the object was built. If differences among the cores require it, then {@link #buildObject} may also replace
+     * the object's {@link XEO.renderer.Program} in order to render the new core soup configuration.</p>
+     *
+     * <p>So in summary, to each {@link XEO.renderer.Object} it builds, {@link #buildObject} creates a list of
+     * {@link XEO.renderer.Chunk}s to render the set of component state cores that are currently set on the {@link XEO.Renderer}.
+     * When {@link #buildObject} is re-building an existing object, it may replace one or more {@link XEO.renderer.Chunk}s
+     * for state cores that have changed from the last time the object was built or re-built.</p>
+
+     * <h2>Object Destruction</h2>
+     * <p>Destruction of a scene graph branch simply involves a call to {@link #removeObject} for each {@link SceneJS.Geometry}
+     * in the branch.</p>
+     *
+     * <h2>Draw List</h2>
+     * <p>The draw list is actually comprised of two lists of state chunks: a "pick" list to render a pick buffer
+     * for colour-indexed GPU picking, along with a "draw" list for normal image rendering. The chunks in these lists
+     * are held in the state-sorted order of their objects in #_objectList, with runs of duplicate states removed.</p>
+     *
+     * <p>After a scene update, we set a flag on the display to indicate the stage we will need to redo from. The pipeline is
+     * then lazy-redone on the next call to #render or #pick.</p>
+     */
+    XEO.renderer.Renderer = function (stats, cfg) {
+
+        // Collects runtime statistics
+        this.stats = stats || {};
+
+        // Renderer is bound to the lifetime of an HTML5 canvas
+        this._canvas = cfg.canvas;
+
+        // Factory which creates and recycles XEO.renderer.Program instances
+        this._programFactory = new XEO.renderer.ProgramFactory(this.stats, {
+            canvas: cfg.canvas
+        });
+
+        // Factory which creates and recycles XEO.renderer.Object instances
+        this._objectFactory = new XEO.renderer.ObjectFactory();
+
+        // Factory which creates and recycles XEO.renderer.Chunk instances
+        this._chunkFactory = new XEO.renderer.ChunkFactory();
+
+        // State chunks that are dynamically inserted by the renderer
+        this._extraChunks = [];
+        this._numExtraChunks = 0;
+
+        /**
+         * Indicates if the canvas is transparent
+         * @type {boolean}
+         */
+        this.transparent = cfg.transparent === true;
+
+        /**
+         * Optional callback to fire when renderer wants to
+         * bind an output framebuffer. This is useful when we need to bind a stereo output buffer for WebVR.
+         *
+         * When this is missing, the renderer will implicitly bind
+         * WebGL's default framebuffer.
+         *
+         * The callback takes one parameter, which is the index of the current
+         * rendering pass in which the buffer is to be bound.
+         *
+         * Use like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });
+         */
+        this.bindOutputFramebuffer = null;
+
+        /**
+         * Optional callback to fire when renderer wants to
+         * unbind any output drawing framebuffer that was
+         * previously bound with #bindOutputFramebuffer.
+         *
+         * The callback takes one parameter, which is the index of the current
+         * rendering pass in which the buffer is to be bound.
+         *
+         * Use like this: myRenderer.unbindOutputFramebuffer = function(pass) { .. });
+         *
+         * Callback takes no parameters.
+         */
+        this.unbindOutputFramebuffer = null;
+
+        // The objects in the render
+        this.objects = {};
+
+        // Ambient color
+        this._ambient = null;
+
+        // The object list, containing all elements of #objects, kept in GL state-sorted order
+        this._objectList = [];
+        this._objectListLen = 0;
+
+        // The "draw list", comprised collectively of three lists of state chunks belong to visible objects
+        // within #_objectList: a "pick" list to render a pick buffer for colour-indexed GPU picking, along with an
+        // "draw" list for normal image rendering.  The chunks in these lists are held in the state-sorted order of
+        // their objects in #_objectList, with runs of duplicate states removed.
+
+        this._objectPickList = [];
+        this._objectPickListLen = 0;
+
+        this._drawChunkList = [];      // State chunk list to render all objects
+        this._drawChunkListLen = 0;
+
+        this._pickObjectChunkList = [];  // State chunk list to render scene to pick buffer
+        this._pickObjectChunkListLen = 0;
+
+        // Tracks the index of the first chunk in the transparency pass. The first run of chunks
+        // in the list are for opaque objects, while the remainder are for transparent objects.
+        // This supports a mode in which we only render the opaque chunks.
+        this._drawChunkListTransparentIndex = -1;
+
+        // The frame context holds state shared across a single render of the
+        // draw list, along with any results of the render, such as pick hits
+        this._frameCtx = {
+            pickObjects: [], // Pick names of objects hit during pick render
+            canvas: this._canvas,
+            renderTarget: null,
+            renderBuf: null,
+            depthbufEnabled: null,
+            clearDepth: null,
+            depthFunc: null,
+            blendEnabled: false,
+            backfaces: true,
+            frontface: true, // true = "ccw" else "cw"
+            pickIndex: 0, // Indexes this._pickObjects
+            textureUnit: 0,
+            transparent: false, // True while rendering transparency bin
+            ambientColor: null,
+            drawElements: 0,
+            useProgram: 0,
+            bindTexture: 0,
+            bindArray: null,
+            pass: null,
+            bindOutputFramebuffer: null
+        };
+
+        //----------------- Render states --------------------------------------
+
+        /**
+         Visibility render state.
+         @property visibility
+         @type {renderer.Visibility}
+         */
+        this.visibility = null;
+
+        /**
+         Culling render state.
+         @property cull
+         @type {renderer.Cull}
+         */
+        this.cull = null;
+
+        /**
+         Modes render state.
+         @property modes
+         @type {renderer.Modes}
+         */
+        this.modes = null;
+
+        /**
+         Render state for an effects layer.
+         @property layer
+         @type {renderer.Layer}
+         */
+        this.layer = null;
+
+        /**
+         Render state for an effects pipeline stage.
+         @property stage
+         @type {renderer.Layer}
+         */
+        this.stage = null;
+
+        /**
+         Depth buffer render state.
+         @property depthBuf
+         @type {renderer.DepthBuf}
+         */
+        this.depthBuf = null;
+
+        /**
+         Color buffer render state.
+         @property colorBuf
+         @type {renderer.ColorBuf}
+         */
+        this.colorBuf = null;
+
+        /**
+         Lights render state.
+         @property lights
+         @type {renderer.Lights}
+         */
+        this.lights = null;
+
+        /**
+         Material render state.
+         @property material
+         @type {renderer.Material}
+         */
+        this.material = null;
+
+        /**
+         Environmental reflection render state.
+         @property reflection
+         @type {renderer.Reflect}
+         */
+        this.reflect = null;
+
+        /**
+         Modelling transform render state.
+         @property modelTransform
+         @type {renderer.Transform}
+         */
+        this.modelTransform = null;
+
+        /**
+         View transform render state.
+         @property viewTransform
+         @type {renderer.Transform}
+         */
+        this.viewTransform = null;
+
+        /**
+         Projection transform render state.
+         @property projTransform
+         @type {renderer.Transform}
+         */
+        this.projTransform = null;
+
+        /**
+         Billboard render state.
+         @property billboard
+         @type {renderer.Billboard}
+         */
+        this.billboard = null;
+
+        /**
+         Stationary render state.
+         @property stationary
+         @type {renderer.Stationary}
+         */
+        this.stationary = null;
+
+        /**
+         Color target render state.
+         @property colorTarget
+         @type {renderer.RenderTarget}
+         */
+        this.colorTarget = null;
+
+        /**
+         Depth target render state.
+         @property depthTarget
+         @type {renderer.RenderTarget}
+         */
+        this.depthTarget = null;
+
+        /**
+         Cross-section planes render state.
+         @property clips
+         @type {renderer.Clips}
+         */
+        this.clips = null;
+
+        /**
+         Morph targets render state.
+         @property morphTargets
+         @type {renderer.MorphTargets}
+         */
+        this.morphTargets = null;
+
+        /**
+         Custom shader render state.
+         @property shader
+         @type {renderer.Shader}
+         */
+        this.shader = null;
+
+        /**
+         Render state providing custom shader params.
+         @property shaderParams
+         @type {renderer.Shader}
+         */
+        this.shaderParams = null;
+
+        /**
+         Geometry render state.
+         @property geometry
+         @type {renderer.Geometry}
+         */
+        this.geometry = null;
+
+        /**
+         Viewport render state.
+         @property viewport
+         @type {renderer.Viewport}
+         */
+        this.viewport = null;
+
+
+        //----------------- Renderer dirty flags -------------------------------
+
+        /**
+         * Flags the object list as needing to be rebuilt from renderer objects
+         * on the next call to {@link #render} or {@link #pick}. Setting this
+         * will cause the rendering pipeline to be executed from stage #2
+         * (see class comment), causing object list rebuild, state order
+         * determination, state sort, draw list construction and image render.
+         * @type Boolean
+         */
+        this.objectListDirty = true;
+
+        /**
+         * Flags the object list as needing state orders to be (re)computed on the
+         * next call to {@link #render} or {@link #pick}. Setting this will cause
+         * the rendering pipeline to be executed from stage #3 (see class comment),
+         * causing state order determination, state sort, draw list construction
+         * and image render.
+         * @type Boolean
+         */
+        this.stateOrderDirty = true;
+
+        /**
+         * Flags the object list as needing to be state-sorted on the next call
+         * to {@link #render} or {@link #pick}.Setting this will cause the
+         * rendering pipeline to be executed from stage #4 (see class comment),
+         * causing state sort, draw list construction and image render.
+         * @type Boolean
+         */
+        this.stateSortDirty = true;
+
+        /**
+         * Flags the draw list as needing to be rebuilt from the object list on
+         * the next call to {@link #render} or {@link #pick}.  Setting this will
+         * cause the rendering pipeline to be executed from stage #5
+         * (see class comment), causing draw list construction and image render.
+         * @type Boolean
+         */
+        this.drawListDirty = true;
+
+        /**
+         * Flags the image as needing to be redrawn from the draw list on the
+         * next call to {@link #render} or {@link #pick}. Setting this will
+         * cause the rendering pipeline to be executed from stage #6
+         * (see class comment), causing the image render.
+         * @type Boolean
+         */
+        this.imageDirty = true;
+    };
+
+    /**
+     * Reallocates WebGL resources for objects within this renderer.
+     */
+    XEO.renderer.Renderer.prototype.webglRestored = function () {
+
+        // Re-allocate programs
+        this._programFactory.webglRestored();
+
+        // Re-bind chunks to the programs
+        this._chunkFactory.webglRestored();
+
+        var gl = this._canvas.gl;
+
+        // Rebuild pick buffer
+
+        if (this.pickBuf) {
+            this.pickBuf.webglRestored(gl);
+        }
+
+        // Need redraw
+
+        this.imageDirty = true;
+    };
+
+    /**
+     * Internally creates (or updates) a {@link XEO.renderer.Object} of the given
+     * ID from whatever component state cores are currently set on this {@link XEO.Renderer}.
+     * The object is created if it does not already exist in the display, otherwise
+     * it is updated with the current states, possibly replacing states already
+     * referenced by the object.
+     *
+     * @param {String} objectId ID of object to create or update
+     */
+    XEO.renderer.Renderer.prototype.buildObject = function (objectId) {
+
+        var object = this.objects[objectId];
+
+        if (!object) {
+            object = this._objectFactory.get(objectId);
+        }
+
+        // Attach to the object any states that we need to get off it later.
+        // Most of these will be used when composing the object's shader.
+
+        object.stage = this.stage;
+        object.layer = this.layer;
+        object.colorTarget = this.colorTarget;
+        object.depthTarget = this.depthTarget;
+        object.material = this.material;
+        object.reflect = this.reflect;
+        object.geometry = this.geometry;
+        object.visibility = this.visibility;
+        object.cull = this.cull;
+        object.modes = this.modes;
+        object.billboard = this.billboard;
+        object.stationary = this.stationary;
+        object.viewport = this.viewport;
+
+        // Build hash of the object's state configuration. This is used
+        // to hash the object's shader so that it may be reused by other
+        // objects that have the same state configuration.
+
+        var hash = ([
+
+            // Make sure that every state type
+            // with a hash is concatenated here
+
+            this.geometry.hash,
+            this.shader.hash,
+            this.clips.hash,
+            this.material.hash,
+            //this.reflect.hash,
+            this.lights.hash,
+            this.billboard.hash,
+            this.stationary.hash
+
+        ]).join(";");
+
+        if (!object.program || hash !== object.hash) {
+
+            // Get new program for object if needed
+
+            if (object.program) {
+                this._programFactory.put(object.program);
+            }
+
+            object.program = this._programFactory.get(hash, this);
+
+            object.hash = hash;
+        }
+
+        var programState = object.program;
+
+        if (programState) {
+
+            var program = programState.program;
+
+            if (!program.allocated || !program.compiled || !program.validated || !program.linked) {
+
+                if (this.objects[objectId]) {
+
+                    // Don't keep faulty objects in the renderer
+                    this.removeObject(objectId);
+                }
+
+                return {
+                    error: true,
+                    errorLog: program.errorLog
+                }
+            }
+        }
+
+
+        // Build sequence of draw chunks on the object
+
+        // The order of some of these is important because some chunks will set
+        // state on this._frameCtx to be consumed by other chunks downstream.
+
+        this._setChunk(object, 0, "program", object.program); // Must be first
+        this._setChunk(object, 1, "modelTransform", this.modelTransform);
+        this._setChunk(object, 2, "viewTransform", this.viewTransform);
+        this._setChunk(object, 3, "projTransform", this.projTransform);
+        this._setChunk(object, 4, "modes", this.modes);
+        this._setChunk(object, 5, "shader", this.shader);
+        this._setChunk(object, 6, "shaderParams", this.shaderParams);
+        this._setChunk(object, 7, "depthBuf", this.depthBuf);
+        this._setChunk(object, 8, "colorBuf", this.colorBuf);
+        this._setChunk(object, 9, "lights", this.lights);
+        this._setChunk(object, 10, this.material.type, this.material); // Supports different material systems
+        this._setChunk(object, 11, "clips", this.clips);
+        this._setChunk(object, 12, "viewport", this.viewport);
+        this._setChunk(object, 13, "geometry", this.geometry);
+        this._setChunk(object, 14, "draw", this.geometry, true); // Must be last
+
+        if (!this.objects[objectId]) {
+
+            this.objects[objectId] = object;
+
+            this.objectListDirty = true;
+
+        } else {
+
+            // At the very least, the object sort order will need be recomputed
+
+            this.stateOrderDirty = true;
+        }
+
+        object.compiled = true;
+
+        return object;
+    };
+
+    /** Adds a render state chunk to a render graph object.
+     */
+    XEO.renderer.Renderer.prototype._setChunk = function (object, order, type, state, neg) {
+
+        var id;
+
+        var chunkType = this._chunkFactory.types[type];
+
+        if (type === "program") {
+            id = (object.program.id + 1) * 100000000;
+
+        } else if (chunkType.constructor.prototype.programGlobal) {
+            id = state.id;
+
+        } else {
+            id = ((object.program.id + 1) * 100000000) + ((state.id + 1));
+        }
+
+        if (neg) {
+            id *= 100000;
+        }
+
+        var oldChunk = object.chunks[order];
+
+        if (oldChunk) {
+            this._chunkFactory.putChunk(oldChunk);
+        }
+
+        // Attach new chunk
+
+        object.chunks[order] = this._chunkFactory.getChunk(id, type, object.program.program, state);
+
+        // Ambient light is global across everything in display, and
+        // can never be disabled, so grab it now because we want to
+        // feed it to gl.clearColor before each display list render
+
+        if (type === "lights") {
+            this._setAmbient(state);
+        }
+    };
+
+    // Sets the singular ambient light.
+    XEO.renderer.Renderer.prototype._setAmbient = function (state) {
+
+        var lights = state.lights;
+        var light;
+
+        for (var i = 0, len = lights.length; i < len; i++) {
+
+            light = lights[i];
+
+            if (light.type === "ambient") {
+
+                this._ambient = light;
+            }
+        }
+    };
+
+    /**
+     * Removes an object from this Renderer
+     *
+     * @param {String} objectId ID of object to remove
+     */
+    XEO.renderer.Renderer.prototype.removeObject = function (objectId) {
+
+        var object = this.objects[objectId];
+
+        if (!object) {
+
+            // Object not found
+            return;
+        }
+
+        // Release draw chunks
+        var chunks = object.chunks;
+        for (var i = 0, len = chunks.length; i < len; i++) {
+            this._chunkFactory.putChunk(chunks[i]);
+        }
+
+        // Release object's shader
+        this._programFactory.put(object.program);
+
+        object.program = null;
+        object.hash = null;
+
+        // Release object
+        this._objectFactory.put(object);
+
+        delete this.objects[objectId];
+
+        // Need to repack object map into fast iteration list
+        this.objectListDirty = true;
+    };
+
+    /**
+     * Renders a new frame, if neccessary.
+     */
+    XEO.renderer.Renderer.prototype.render = function (params) {
+
+        params = params || {};
+
+        if (this.objectListDirty) {
+            this._buildObjectList();        // Build the scene object list
+            this.objectListDirty = false;
+            this.stateOrderDirty = true;    // Now needs state ordering
+        }
+
+        if (this.stateOrderDirty) {
+            this._makeStateSortKeys();      // Determine the state sort order
+            this.stateOrderDirty = false;
+            this.stateSortDirty = true;     // Now needs state sorting
+        }
+
+        if (this.stateSortDirty) {
+            this._stateSort();              // State sort the scene object list
+            this.stateSortDirty = false;
+            this.drawListDirty = true;      // Now need to build object draw list
+        }
+
+        if (this.drawListDirty) {           // Build draw list from object list
+            this._buildDrawList();
+            this.imageDirty = true;         // Now need to render the draw list
+        }
+
+        if (this.imageDirty || params.force) {
+            //this._renderObjectList({                  // Render the draw list
+            //    clear: (params.clear !== false), // Clear buffers by default
+            //    opaqueOnly: params.opaqueOnly,
+            //    pass: params.pass
+            //});
+
+            this._doDrawList({                  // Render the draw list
+                clear: (params.clear !== false), // Clear buffers by default
+                opaqueOnly: params.opaqueOnly,
+                pass: params.pass
+            });
+
+            this.stats.frame.frameCount++;
+            this.imageDirty = false;
+        }
+    };
+
+    /**
+     * Builds the object list from the object map
+     */
+    XEO.renderer.Renderer.prototype._buildObjectList = function () {
+        this._objectListLen = 0;
+        for (var objectId in this.objects) {
+            if (this.objects.hasOwnProperty(objectId)) {
+                this._objectList[this._objectListLen++] = this.objects[objectId];
+            }
+        }
+    };
+
+    /**
+     * Generates object state sort keys
+     */
+    XEO.renderer.Renderer.prototype._makeStateSortKeys = function () {
+        var object;
+        for (var i = 0, len = this._objectListLen; i < len; i++) {
+            object = this._objectList[i];
+            if (!object.program) { // Non-visual object (eg. sound)
+                object.sortKey = -1;
+            } else {
+                object.sortKey =
+                    ((object.stage.priority + 1) * 10000000000000000)
+                    + ((object.modes.transparent ? 2 : 1) * 100000000000000)
+                    + ((object.layer.priority + 1) * 10000000000000)
+                    + ((object.program.id + 1) * 100000000)
+                    + ((object.material.id + 1) * 10000)
+                    + object.geometry.id;
+            }
+        }
+    };
+
+    /**
+     * State-sorts the object list
+     */
+    XEO.renderer.Renderer.prototype._stateSort = function () {
+        this._objectList.length = this._objectListLen;
+        this._objectList.sort(function (a, b) {
+            return a.sortKey - b.sortKey;
+        });
+    };
+
+    /**
+     * Logs the object list
+     */
+    XEO.renderer.Renderer.prototype._logObjectList = function () {
+        console.log("--------------------------------------------------------------------------------------------------");
+        console.log(this._objectListLen + " objects");
+        for (var i = 0, len = this._objectListLen; i < len; i++) {
+            var object = this._objectList[i];
+            console.log("XEO.Renderer : object[" + i + "] sortKey = " + object.sortKey);
+        }
+        console.log("--------------------------------------------------------------------------------------------------");
+    };
+
+    XEO.renderer.Renderer.prototype._renderObjectList = function (params) {
+
+        var startTime = Date.now();
+
+        var lastChunkId = this._lastChunkId = this._lastChunkId || new Int32Array(30);
+        for (i = 0; i < 20; i++) {
+            lastChunkId[i] = -9999999999999;
+        }
+
+        var gl = this._canvas.gl;
+        var i;
+        var len;
+        var j;
+        var lenj;
+        var chunks;
+        var chunk;
+        var object;
+        var id;
+
+        // The extensions needs to be re-queried in case the context was lost and has been recreated.
+        if (XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {
+            gl.getExtension("OES_element_index_uint");
+        }
+
+        var outputFramebuffer = this.bindOutputFramebuffer && this.unbindOutputFramebuffer && !params.pickObject && !params.rayPick;
+
+        if (outputFramebuffer) {
+            this.bindOutputFramebuffer(params.pass);
+        }
+
+        var ambient = this._ambient;
+        var ambientColor;
+        if (ambient) {
+            var color = ambient.color;
+            var intensity = ambient.intensity;
+            ambientColor = [color[0] * intensity, color[1] * intensity, color[2] * intensity, 1.0];
+        } else {
+            ambientColor = [0, 0, 0];
+        }
+
+        var frameCtx = this._frameCtx;
+        frameCtx.renderTarget = null;
+        frameCtx.renderBuf = null;
+        frameCtx.depthbufEnabled = null;
+        frameCtx.clearDepth = null;
+        frameCtx.depthFunc = gl.LESS;
+        frameCtx.blendEnabled = false;
+        frameCtx.backfaces = true;
+        frameCtx.frontface = true; // true == "ccw" else "cw"
+        frameCtx.pickIndex = 0; // Indexes this._pickObjects
+        frameCtx.textureUnit = 0;
+        frameCtx.transparent = false; // True while rendering transparency bin
+        frameCtx.ambientColor = ambientColor;
+        frameCtx.drawElements = 0;
+        frameCtx.useProgram = 0;
+        frameCtx.bindTexture = 0;
+        frameCtx.bindArray = 0;
+        frameCtx.pass = params.pass;
+        frameCtx.bindOutputFramebuffer = this.bindOutputFramebuffer;
+
+        gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+
+        if (this.transparent || params.pickObject || params.rayPick) {
+
+            // Canvas is transparent - set clear color with zero alpha
+            // to allow background to show through
+            gl.clearColor(0, 0, 0, 0);
+        } else {
+
+            // Canvas is opaque - set clear color to the current ambient
+            gl.clearColor(ambientColor[0], ambientColor[1], ambientColor[2], 1.0);
+        }
+
+        if (params.clear) {
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        }
+
+        gl.enable(gl.DEPTH_TEST);
+        gl.frontFace(gl.CCW);
+        gl.disable(gl.CULL_FACE);
+        gl.disable(gl.BLEND);
+
+        for (i = 0, len = this._objectListLen; i < len; i++) {
+
+            object = this._objectList[i];
+
+            if (!object.compiled) {
+                continue;
+            }
+
+            if (object.cull.culled === true) {
+                continue;
+            }
+
+            if (object.visibility.visible === false) {
+                continue;
+            }
+
+            chunks = object.chunks;
+
+            for (j = 0, lenj = chunks.length; j < lenj; j++) {
+
+                chunk = chunks[j];
+
+                if (chunk) {
+
+                    // As we apply the state chunk lists we track the ID of most types
+                    // of chunk in order to cull redundant re-applications of runs
+                    // of the same chunk - except for those chunks with a 'unique' flag,
+                    // because we don't want to collapse runs of draw chunks because
+                    // they contain the GL drawElements calls which render the objects.
+
+                    if (chunk.draw && (chunk.unique || lastChunkId[j] !== chunk.id)) {
+                        chunk.draw(frameCtx);
+                        lastChunkId[j] = chunk.id;
+                    }
+                }
+            }
+        }
+
+        var endTime = Date.now();
+
+        var frameStats = this.stats.frame;
+        frameStats.renderTime = (endTime - startTime) / 1000.0;
+        frameStats.drawElements = frameCtx.drawElements;
+        frameStats.useProgram = frameCtx.useProgram;
+        frameStats.bindTexture = frameCtx.bindTexture;
+        frameStats.bindArray = frameCtx.bindArray;
+    };
+
+
+    /**
+     * Builds the draw list, which is the list of draw state-chunks to apply to WebGL
+     * to render the visible objects in the object list for the next frame.
+     * Preserves the state sort order of the object list among the draw chunks.
+     */
+    XEO.renderer.Renderer.prototype._buildDrawList = function () {
+
+        this._clearExtraChunks();
+
+        this._lastDrawChunkId = this._lastDrawChunkId || [];
+        this._lastPickObjectChunkId = this._lastPickObjectChunkId || [];
+
+        var i;
+        var len;
+
+        for (i = 0; i < 20; i++) {
+            this._lastDrawChunkId[i] = null;
+            this._lastPickObjectChunkId[i] = null;
+        }
+
+        this._drawChunkListLen = 0;
+        this._pickObjectChunkListLen = 0;
+
+        // For each render target, a list of objects to render to that target
+        var targetObjectLists = {};
+
+        // A list of all the render target object lists
+        var targetListList = [];
+
+        // List of all targets
+        var targetList = [];
+
+        var object;
+        var colorRenderBuf;
+        var depthRenderBuf;
+        var target;
+        var targetChunk;
+        var list;
+        var id;
+
+        this._objectDrawList = this._objectDrawList || [];
+        this._objectDrawListLen = 0;
+        this._objectPickListLen = 0;
+
+        for (i = 0, len = this._objectListLen; i < len; i++) {
+
+            object = this._objectList[i];
+
+            // Skip culled objects
+
+            if (object.cull.culled === true) {
+                continue;
+            }
+
+            // Skip invisible objects
+
+            if (object.visibility.visible === false) {
+                continue;
+            }
+
+            // Put objects with render targets into a bin for each target
+
+            colorRenderBuf = object.colorTarget ? object.colorTarget.renderBuf : null;
+            depthRenderBuf = object.depthTarget ? object.depthTarget.renderBuf : null;
+
+            if (colorRenderBuf) {
+
+                target = object.colorTarget;
+
+                list = targetObjectLists[target.id];
+
+                if (!list) {
+
+                    list = [];
+
+                    targetObjectLists[target.id] = list;
+
+                    targetListList.push(list);
+
+                    id = -this._numExtraChunks;
+
+                    targetChunk = this._chunkFactory.getChunk(id, "renderTarget", object.program.program, target);
+
+                    this._extraChunks[this._numExtraChunks++] = targetChunk;
+
+                    targetList.push(targetChunk);
+                }
+
+                list.push(object);
+
+            } else if (depthRenderBuf) {
+
+                target = object.depthTarget;
+
+                list = targetObjectLists[target.id];
+
+                if (!list) {
+
+                    list = [];
+
+                    targetObjectLists[target.id] = list;
+
+                    targetListList.push(list);
+
+                    id = -this._numExtraChunks;
+
+                    targetChunk = this._chunkFactory.getChunk(id, "renderTarget", object.program.program, target);
+
+                    this._extraChunks[this._numExtraChunks++] = targetChunk;
+
+                    targetList.push(targetChunk);
+                }
+
+                list.push(object);
+
+            } else {
+
+                // Put objects without render targets into their own list
+
+                this._objectDrawList[this._objectDrawListLen++] = object;
+            }
+        }
+
+        // Append chunks for objects within render targets first
+
+        var pickable;
+        var renderTargetBound = false;
+
+        for (i = 0, len = targetListList.length; i < len; i++) {
+
+            targetChunk = targetList[i];
+            list = targetListList[i];
+
+            this._appendRenderTargetChunk(targetChunk);
+
+            for (var j = 0, lenj = list.length; j < lenj; j++) {
+
+                object = list[j];
+
+                pickable = object.stage && object.stage.pickable; // We'll only pick objects in pickable stages
+
+                this._appendObjectToDrawChunkLists(object, pickable);
+
+                renderTargetBound = true;
+            }
+        }
+
+        if (renderTargetBound) {
+
+            // Unbinds any render target bound previously
+
+            id = this._numExtraChunks * -1000.0;
+
+            this._appendRenderTargetChunk(this._chunkFactory.getChunk(id, "renderTarget", object.program.program, {}));
+
+            this._extraChunks[this._numExtraChunks++] = targetChunk;
+        }
+
+        // Append chunks for objects not in render targets
+
+        for (i = 0, len = this._objectDrawListLen; i < len; i++) {
+
+            object = this._objectDrawList[i];
+
+            pickable = !object.stage || (object.stage && object.stage.pickable); // Don't pick unpickable stages, ie. FX passes
+
+            this._appendObjectToDrawChunkLists(object, pickable);
+        }
+
+        // Draw list is now up to date.
+
+        this.drawListDirty = false;
+    };
+
+    XEO.renderer.Renderer.prototype._clearExtraChunks = function () {
+        for (var i = 0, len = this._numExtraChunks; i < len; i++) {
+            this._chunkFactory.putChunk(this._extraChunks[i]);
+        }
+        this._numExtraChunks = 0;
+    };
+
+    XEO.renderer.Renderer.prototype._appendRenderTargetChunk = function (chunk) {
+        this._drawChunkList[this._drawChunkListLen++] = chunk;
+    };
+
+    /**
+     * Appends an object to the draw and pick lists.
+     * @param object
+     * @param pickable
+     * @private
+     */
+    XEO.renderer.Renderer.prototype._appendObjectToDrawChunkLists = function (object, pickable) {
+
+        pickable = pickable && object.modes.pickable;
+
+        var chunks = object.chunks;
+        var chunk;
+
+        for (var i = 0, len = chunks.length; i < len; i++) {
+
+            chunk = chunks[i];
+
+            if (chunk) {
+
+                // As we apply the state chunk lists we track the ID of most types
+                // of chunk in order to cull redundant re-applications of runs
+                // of the same chunk - except for those chunks with a 'unique' flag,
+                // because we don't want to collapse runs of draw chunks because
+                // they contain the GL drawElements calls which render the objects.
+
+                if (chunk.draw) {
+
+                    // Draw pass
+
+                    if (chunk.unique || this._lastDrawChunkId[i] !== chunk.id) {
+
+                        // Don't reapply repeated chunks
+
+                        this._drawChunkList[this._drawChunkListLen] = chunk;
+                        this._lastDrawChunkId[i] = chunk.id;
+
+                        if (chunk.state && chunk.state.transparent && this._drawChunkListTransparentIndex < 0) {
+                            this._drawChunkListTransparentIndex = this._drawChunkListLen;
+                        }
+
+                        this._drawChunkListLen++
+                    }
+                }
+
+                if (chunk.pickObject) {
+
+                    // Object-picking pass
+
+                    if (pickable) {
+
+                        // Don't pick unpickable objects
+
+                        if (chunk.unique || this._lastPickObjectChunkId[i] !== chunk.id) {
+
+                            // Don't reapply repeated chunks
+
+                            this._pickObjectChunkList[this._pickObjectChunkListLen++] = chunk;
+                            this._lastPickObjectChunkId[i] = chunk.id;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (pickable) {
+            this._objectPickList[this._objectPickListLen++] = object;
+        }
+    };
+
+    /**
+     * Logs the contents of the draw list to the console.
+     *
+     * @private
+     */
+    XEO.renderer.Renderer.prototype._logDrawList = function () {
+
+        console.log("--------------------------------------------------------------------------------------------------");
+        console.log(this._drawChunkListLen + " draw list chunks");
+
+        for (var i = 0, len = this._drawChunkListLen; i < len; i++) {
+
+            var chunk = this._drawChunkList[i];
+
+            console.log("[chunk " + i + "] type = " + chunk.type);
+
+            switch (chunk.type) {
+                case "draw":
+                    console.log("\n");
+                    break;
+
+                case "renderTarget":
+                    console.log(" type = renderTarget");
+                    break;
+            }
+        }
+
+        console.log("--------------------------------------------------------------------------------------------------");
+    };
+
+    /**
+     * Logs the contents of the pick list to the console.
+     *
+     * @private
+     */
+    XEO.renderer.Renderer.prototype._logPickList = function () {
+
+        console.log("--------------------------------------------------------------------------------------------------");
+        console.log(this._pickObjectChunkListLen + " pick list chunks");
+
+        for (var i = 0, len = this._pickObjectChunkListLen; i < len; i++) {
+
+            var chunk = this._pickObjectChunkList[i];
+
+            console.log("[chunk " + i + "] type = " + chunk.type);
+
+            switch (chunk.type) {
+                case "draw":
+                    console.log("\n");
+                    break;
+                case "renderTarget":
+                    console.log(" type = renderTarget");
+                    break;
+            }
+        }
+
+        console.log("--------------------------------------------------------------------------------------------------");
+    };
+
+    /**
+     * Attempts to pick an object.
+     *
+     * @param {*} params Picking params.
+     * @returns {*} Hit result, if any.
+     */
+    XEO.renderer.Renderer.prototype.pick = (function () {
+
+        var math = XEO.math;
+
+        var tempVec3a = math.vec3();
+        var tempMat4a = math.mat4();
+        var up = math.vec3([0, 1, 0]);
+
+        return function (params) {
+
+            var gl = this._canvas.gl;
+            var hit = null;
+            var pickBuf = this.pickBuf;
+
+            if (!pickBuf) {  // Lazy-create the pick buffer
+                pickBuf = new XEO.renderer.webgl.RenderBuffer({
+                    gl: this._canvas.gl,
+                    canvas: this._canvas.canvas
+                });
+                this.pickBuf = pickBuf;
+            }
+
+            // Do any pending render
+            this.render();
+
+            pickBuf.bind();
+            pickBuf.clear();
+
+            var canvas = this._canvas.canvas;
+            var pickBufX;
+            var pickBufY;
+            var origin;
+            var direction;
+            var look;
+            var pickMatrix = null;
+
+            if (params.rayPick && !params.canvasPos) {
+
+                // Ray-picking with arbitrarily World-space ray
+
+                origin = params.origin || math.vec3([0, 0, 0]);
+                direction = params.direction || math.vec3([0, 0, 1]);
+                look = math.addVec3(origin, direction, tempVec3a);
+
+                pickMatrix = XEO.math.lookAtMat4v(origin, look, up, tempMat4a);
+
+                pickBufX = canvas.clientWidth * 0.5;
+                pickBufY = canvas.clientHeight * 0.5;
+
+            } else {
+
+                if (params.canvasPos) {
+                    pickBufX = params.canvasPos[0];
+                    pickBufY = params.canvasPos[1];
+
+                } else {
+                    pickBufX = canvas.clientWidth * 0.5;
+                    pickBufY = canvas.clientHeight * 0.5;
+                }
+            }
+
+            this._doDrawList({
+                pickObject: true,
+                clear: true,
+                pickMatrix: pickMatrix
+            });
+
+            //     gl.finish();
+
+            // Convert picked pixel color to object index
+
+            var pix = pickBuf.read(pickBufX, pickBufY);
+            var pickedObjectIndex = pix[0] + pix[1] * 256 + pix[2] * 65536;
+            pickedObjectIndex = (pickedObjectIndex >= 1) ? pickedObjectIndex - 1 : -1;
+
+            var object = this._objectPickList[pickedObjectIndex];
+
+            if (object) {
+
+                // Object was picked
+
+                hit = {
+                    entity: object.id
+                };
+
+                // Now do a primitive-pick if requested
+
+                if (params.rayPick) {
+
+                    pickBuf.clear();
+
+                    this._doDrawList({
+                        rayPick: true,
+                        object: object,
+                        pickMatrix: pickMatrix,
+                        clear: true
+                    });
+
+                    gl.finish();
+
+                    // Convert picked pixel color to primitive index
+
+                    pix = pickBuf.read(pickBufX, pickBufY);
+                    var primIndex = pix[0] + (pix[1] * 256) + (pix[2] * 256 * 256) + (pix[3] * 256 * 256 * 256);
+                    primIndex *= 3; // Convert from triangle number to first vertex in indices
+
+                    hit.primIndex = primIndex;
+
+                    if (pickMatrix) {
+                        hit.origin = origin;
+                        hit.direction = direction;
+                    }
+                }
+            }
+
+            pickBuf.unbind();
+
+            return hit;
+        };
+    })();
+
+    /** Renders either the draw or pick list.
+     *
+     * @param {*} params
+     * @param {Boolean} params.clear Set true to clear the color, depth and stencil buffers first
+     * @param {Boolean} params.pickObject
+     * @param {Boolean} params.rayPick
+     * @param {Boolean} params.object
+     * @param {Boolean} params.opaqueOnly
+     * @param {Boolean} params.pickMatrix
+     * @private
+     */
+    XEO.renderer.Renderer.prototype._doDrawList = function (params) {
+
+        var gl = this._canvas.gl;
+        var i;
+        var len;
+
+        var outputFramebuffer = this.bindOutputFramebuffer && this.unbindOutputFramebuffer && !params.pickObject && !params.rayPick;
+
+        if (outputFramebuffer) {
+            this.bindOutputFramebuffer(params.pass);
+        }
+
+        var ambient = this._ambient;
+        var ambientColor;
+        if (ambient) {
+            var color = ambient.color;
+            var intensity = ambient.intensity;
+            ambientColor = [color[0] * intensity, color[1] * intensity, color[2] * intensity, 1.0];
+        } else {
+            ambientColor = [0, 0, 0];
+        }
+
+        var frameCtx = this._frameCtx;
+
+        frameCtx.renderTarget = null;
+        frameCtx.renderBuf = null;
+        frameCtx.depthbufEnabled = null;
+        frameCtx.clearDepth = null;
+        frameCtx.depthFunc = gl.LESS;
+        frameCtx.blendEnabled = false;
+        frameCtx.backfaces = true;
+        frameCtx.frontface = true; // true == "ccw" else "cw"
+        frameCtx.pickIndex = 0; // Indexes this._pickObjects
+        frameCtx.textureUnit = 0;
+        frameCtx.transparent = false; // True while rendering transparency bin
+        frameCtx.ambientColor = ambientColor;
+        frameCtx.drawElements = 0;
+        frameCtx.useProgram = 0;
+        frameCtx.bindTexture = 0;
+        frameCtx.bindArray = 0;
+        frameCtx.pass = params.pass;
+        frameCtx.bindOutputFramebuffer = this.bindOutputFramebuffer;
+        frameCtx.pickMatrix = params.pickMatrix;
+
+        // The extensions needs to be re-queried in case the context was lost and has been recreated.
+        if (XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {
+            gl.getExtension("OES_element_index_uint");
+        }
+
+        var frameStats = this.stats.frame;
+
+        gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+
+        gl.enable(gl.DEPTH_TEST);
+        gl.frontFace(gl.CCW);
+        gl.disable(gl.CULL_FACE);
+        gl.disable(gl.BLEND);
+
+        if (this.transparent || params.pickObject || params.rayPick) {
+
+            // Canvas is transparent - set clear color with zero alpha
+            // to allow background to show through
+
+            gl.clearColor(0, 0, 0, 0);
+
+        } else {
+
+            // Canvas is opaque - set clear color to the current ambient
+            // color, which can be provided by an ambient light source
+
+            gl.clearColor(ambientColor[0], ambientColor[1], ambientColor[2], 1.0);
+        }
+
+        if (params.clear) {
+            //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        }
+
+        if (params.pickObject) {
+
+            // Pick an object
+
+            for (i = 0, len = this._pickObjectChunkListLen; i < len; i++) {
+                this._pickObjectChunkList[i].pickObject(frameCtx);
+            }
+
+        } else if (params.rayPick) {
+
+            // Pick a primitive of an object
+
+            if (params.object) {
+
+                var chunks = params.object.chunks;
+                var chunk;
+
+                for (i = 0, len = chunks.length; i < len; i++) {
+                    chunk = chunks[i];
+                    if (chunk.pickPrimitive) {
+                        chunk.pickPrimitive(frameCtx);
+                    }
+                }
+            }
+
+        } else {
+
+            // Render all visible objects
+
+            var startTime = (new Date()).getTime();
+
+            // Option to only render opaque objects
+            len = (params.opaqueOnly && this._drawChunkListTransparentIndex >= 0 ? this._drawChunkListTransparentIndex : this._drawChunkListLen);
+
+            for (i = 0; i < len; i++) {
+                this._drawChunkList[i].draw(frameCtx);
+            }
+
+            var endTime = (new Date()).getTime();
+
+            frameStats.renderTime = (endTime - startTime) / 1000.0;
+            frameStats.drawElements = frameCtx.drawElements;
+            frameStats.useProgram = frameCtx.useProgram;
+            frameStats.bindTexture = frameCtx.bindTexture;
+            frameStats.bindArray = frameCtx.bindArray;
+        }
+
+        //  gl.finish();
+
+        if (frameCtx.renderBuf) {
+            frameCtx.renderBuf.unbind();
+        }
+
+        var numTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
+        for (var ii = 0; ii < numTextureUnits; ++ii) {
+            gl.activeTexture(gl.TEXTURE0 + ii);
+            gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+            gl.bindTexture(gl.TEXTURE_2D, null);
+        }
+
+        if (outputFramebuffer) {
+            this.unbindOutputFramebuffer(params.pass);
+        }
+
+        frameStats.drawChunks = this._drawChunkListLen;
+    };
+
+    /**
+     * Reads the colors of some pixels in the last rendered frame.
+     *
+     * @param {Float32Array} pixels
+     * @param {Float32Array} colors
+     * @param {Number} len
+     * @param {Boolean} opaqueOnly
+     */
+    XEO.renderer.Renderer.prototype.readPixels = function (pixels, colors, len, opaqueOnly) {
+
+        if (!this._readPixelBuf) {
+            this._readPixelBuf = new XEO.renderer.webgl.RenderBuffer({
+                gl: this._canvas.gl,
+                canvas: this._canvas.canvas
+            });
+        }
+
+        this._readPixelBuf.bind();
+
+        this._readPixelBuf.clear();
+
+        this.render({
+            force: true,
+            opaqueOnly: opaqueOnly
+        });
+
+        var color;
+        var i;
+        var j;
+        var k;
+
+        for (i = 0; i < len; i++) {
+
+            j = i * 2;
+            k = i * 4;
+
+            color = this._readPixelBuf.read(pixels[j], pixels[j + 1]);
+
+            colors[k] = color[0];
+            colors[k + 1] = color[1];
+            colors[k + 2] = color[2];
+            colors[k + 3] = color[3];
+        }
+
+        this._readPixelBuf.unbind();
+    };
+
+    /**
+     * Destroys this Renderer.
+     */
+    XEO.renderer.Renderer.prototype.destroy = function () {
+        this._programFactory.destroy();
+    };
+})();
+;(function () {
+
+    "use strict";
+
+    XEO.renderer.webgl = {
+
+        /** Maps XEO component parameter names to WebGL enum names
+         */
+        enums: {
+            funcAdd: "FUNC_ADD",
+            funcSubtract: "FUNC_SUBTRACT",
+            funcReverseSubtract: "FUNC_REVERSE_SUBTRACT",
+            zero: "ZERO",
+            one: "ONE",
+            srcColor: "SRC_COLOR",
+            oneMinusSrcColor: "ONE_MINUS_SRC_COLOR",
+            dstColor: "DST_COLOR",
+            oneMinusDstColor: "ONE_MINUS_DST_COLOR",
+            srcAlpha: "SRC_ALPHA",
+            oneMinusSrcAlpha: "ONE_MINUS_SRC_ALPHA",
+            dstAlpha: "DST_ALPHA",
+            oneMinusDstAlpha: "ONE_MINUS_DST_ALPHA",
+            contantColor: "CONSTANT_COLOR",
+            oneMinusConstantColor: "ONE_MINUS_CONSTANT_COLOR",
+            constantAlpha: "CONSTANT_ALPHA",
+            oneMinusConstantAlpha: "ONE_MINUS_CONSTANT_ALPHA",
+            srcAlphaSaturate: "SRC_ALPHA_SATURATE",
+            front: "FRONT",
+            back: "BACK",
+            frontAndBack: "FRONT_AND_BACK",
+            never: "NEVER",
+            less: "LESS",
+            equal: "EQUAL",
+            lequal: "LEQUAL",
+            greater: "GREATER",
+            notequal: "NOTEQUAL",
+            gequal: "GEQUAL",
+            always: "ALWAYS",
+            cw: "CW",
+            ccw: "CCW",
+            linear: "LINEAR",
+            nearest: "NEAREST",
+            linearMipmapNearest: "LINEAR_MIPMAP_NEAREST",
+            nearestMipmapNearest: "NEAREST_MIPMAP_NEAREST",
+            nearestMipmapLinear: "NEAREST_MIPMAP_LINEAR",
+            linearMipmapLinear: "LINEAR_MIPMAP_LINEAR",
+            repeat: "REPEAT",
+            clampToEdge: "CLAMP_TO_EDGE",
+            mirroredRepeat: "MIRRORED_REPEAT",
+            alpha: "ALPHA",
+            rgb: "RGB",
+            rgba: "RGBA",
+            luminance: "LUMINANCE",
+            luminanceAlpha: "LUMINANCE_ALPHA",
+            textureBinding2D: "TEXTURE_BINDING_2D",
+            textureBindingCubeMap: "TEXTURE_BINDING_CUBE_MAP",
+            compareRToTexture: "COMPARE_R_TO_TEXTURE", // Hardware Shadowing Z-depth,
+            unsignedByte: "UNSIGNED_BYTE"
+        }
+    };
+
+})();;(function () {
+
+    "use strict";
+
+    /**
+     * Buffer for vertices and indices
+     *
+     * @param gl WebGL
+     * @param type  Eg. ARRAY_BUFFER, ELEMENT_ARRAY_BUFFER
+     * @param data  WebGL array wrapper
+     * @param numItems Count of items in array wrapper
+     * @param itemSize Size of each item
+     * @param usage Eg. STATIC_DRAW
+     */
+    XEO.renderer.webgl.ArrayBuffer = function (gl, type, data, numItems, itemSize, usage) {
+
+        /**
+         * True when this buffer is allocated and ready to go
+         * @type {boolean}
+         */
+        this.allocated = false;
+
+        this.gl = gl;
+
+        this.type = type;
+
+        this.itemType = data.constructor == Uint8Array   ? gl.UNSIGNED_BYTE :
+            data.constructor == Uint16Array  ? gl.UNSIGNED_SHORT :
+                data.constructor == Uint32Array  ? gl.UNSIGNED_INT :
+                    gl.FLOAT;
+
+        this.usage = usage;
+
+        this.length = 0;
+        this.numItems = 0;
+        this.itemSize = itemSize;
+
+        this._allocate(data);
+    };
+
+    /**
+     * Allocates this buffer
+     *
+     * @param data
+     * @private
+     */
+    XEO.renderer.webgl.ArrayBuffer.prototype._allocate = function (data) {
+
+        this.allocated = false;
+
+        this._handle = this.gl.createBuffer();
+
+        if (!this._handle) {
+            throw "Failed to allocate WebGL ArrayBuffer";
+        }
+
+        if (this._handle) {
+
+            this.gl.bindBuffer(this.type, this._handle);
+            this.gl.bufferData(this.type, data, this.usage);
+            this.gl.bindBuffer(this.type, null);
+
+            this.length = data.length;
+            this.numItems = this.length / this.itemSize;
+
+            this.allocated = true;
+        }
+    };
+
+    /**
+     * Updates data within this buffer, reallocating if needed.
+     *
+     * @param data
+     * @param offset
+     */
+    XEO.renderer.webgl.ArrayBuffer.prototype.setData = function (data, offset) {
+
+        if (!this.allocated) {
+            return;
+        }
+
+        if (data.length > this.length) {
+
+            // Needs reallocation
+
+            this.destroy();
+
+            this._allocate(data, data.length);
+
+        } else {
+
+            // No reallocation needed
+
+            if (offset || offset === 0) {
+
+                this.gl.bufferSubData(this.type, offset, data);
+
+            } else {
+
+                this.gl.bufferData(this.type, data);
+            }
+        }
+    };
+
+    /**
+     * Binds this buffer
+     */
+    XEO.renderer.webgl.ArrayBuffer.prototype.bind = function () {
+
+        if (!this.allocated) {
+            return;
+        }
+
+        this.gl.bindBuffer(this.type, this._handle);
+    };
+
+    /**
+     * Unbinds this buffer
+     */
+    XEO.renderer.webgl.ArrayBuffer.prototype.unbind = function () {
+
+        if (!this.allocated) {
+            return;
+        }
+
+        this.gl.bindBuffer(this.type, null);
+    };
+
+    /**
+     * Destroys this buffer
+     */
+    XEO.renderer.webgl.ArrayBuffer.prototype.destroy = function () {
+
+        if (!this.allocated) {
+            return;
+        }
+
+        this.gl.deleteBuffer(this._handle);
+
+        this._handle = null;
+
+        this.allocated = false;
+    };
+
+})();
+
+;(function () {
+
+    "use strict";
+
+    /**
+     * An attribute within a {@link XEO.renderer.webgl.Shader}
+     */
+    XEO.renderer.webgl.Attribute = function (gl, location) {
+
+        this.gl = gl;
+
+        this.location = location;
+    };
+
+    XEO.renderer.webgl.Attribute.prototype.bindFloatArrayBuffer = function (buffer) {
+
+        if (buffer) {
+
+            buffer.bind();
+
+            this.gl.enableVertexAttribArray(this.location);
+
+            // Vertices are not homogeneous - no w-element
+            this.gl.vertexAttribPointer(this.location, buffer.itemSize, this.gl.FLOAT, false, 0, 0);
+        }
+    };
+
+    XEO.renderer.webgl.Attribute.prototype.bindInterleavedFloatArrayBuffer = function (components, stride, byteOffset) {
+
+        this.gl.enableVertexAttribArray(this.location);
+
+        // Vertices are not homogeneous - no w-element
+        this.gl.vertexAttribPointer(this.location, components, this.gl.FLOAT, false, stride, byteOffset);
+    };
+
+})();;(function () {
+
+    "use strict";
+
+    function joinSansComments(srcLines) {
+        var src = [];
+        var line;
+        var n;
+        for (var i = 0, len = srcLines.length; i < len; i++) {
+            line = srcLines[i];
+            n = line.indexOf("/");
+            if (n > 0) {
+                if (line.charAt(n + 1) === "/") {
+                    line = line.substring(0, n);
+                }
+            }
+            src.push(line);
+        }
+        return src.join("\n");
+    }
+
+    /**
+     * Wrapper for a WebGL program
+     *
+     * @param stats Collects runtime statistics
+     * @param gl WebGL gl
+     * @param vertex Source code for vertex shader
+     * @param fragment Source code for fragment shader
+     */
+    XEO.renderer.webgl.Program = function (stats, gl, vertex, fragment) {
+
+        this.stats = stats;
+
+        this.gl = gl;
+
+        /**
+         * True when successfully allocated
+         * @type {boolean}
+         */
+        this.allocated = false;
+
+        /**
+         * True when successfully compiled
+         * @type {boolean}
+         */
+        this.compiled = false;
+
+        /**
+         * True when successfully linked
+         * @type {boolean}
+         */
+        this.linked = false;
+
+        /**
+         * True when successfully validated
+         * @type {boolean}
+         */
+        this.validated = false;
+
+        /**
+         * Contains error log on failure to allocate, compile, validate or link
+         * @type {boolean}
+         */
+        this.errorLog = null;
+
+        // Inputs for this program
+
+        this.uniforms = {};
+        this.samplers = {};
+        this.attributes = {};
+
+        // Shaders
+
+        this._vertexShader = new XEO.renderer.webgl.Shader(gl, gl.VERTEX_SHADER, joinSansComments(vertex));
+        this._fragmentShader = new XEO.renderer.webgl.Shader(gl, gl.FRAGMENT_SHADER, joinSansComments(fragment));
+
+        if (!this._vertexShader.allocated) {
+            this.errorLog = ["Vertex shader failed to allocate"].concat(this._vertexShader.errorLog);
+            return;
+        }
+
+        if (!this._fragmentShader.allocated) {
+            this.errorLog = ["Fragment shader failed to allocate"].concat(this._fragmentShader.errorLog);
+            return;
+        }
+
+        this.allocated = true;
+
+        if (!this._vertexShader.compiled) {
+            this.errorLog = ["Vertex shader failed to compile"].concat(this._vertexShader.errorLog);
+            return;
+        }
+
+        if (!this._fragmentShader.compiled) {
+            this.errorLog = ["Fragment shader failed to compile"].concat(this._fragmentShader.errorLog);
+            return;
+        }
+
+        this.compiled = true;
+
+
+        var a;
+        var i;
+        var u;
+        var uName;
+        var location;
+
+        // Program
+
+        this.handle = gl.createProgram();
+
+        if (!this.handle) {
+            this.errorLog = ["Failed to allocate program"];
+            return;
+        }
+
+        gl.attachShader(this.handle, this._vertexShader.handle);
+        gl.attachShader(this.handle, this._fragmentShader.handle);
+
+        gl.linkProgram(this.handle);
+
+        this.linked = gl.getProgramParameter(this.handle, gl.LINK_STATUS);
+
+        // HACK: Disable validation temporarily: https://github.com/xeolabs/xeoengine/issues/5
+        // Perhaps we should defer validation until render-time, when the program has values set for all inputs?
+
+        //this.validated = this.linked ? gl.getProgramParameter(this.handle, gl.VALIDATE_STATUS) : false;
+        this.validated = true;
+
+        if (!this.linked || !this.validated) {
+
+            this.errorLog = [];
+
+            this.errorLog.push("");
+            this.errorLog.push(gl.getProgramInfoLog(this.handle));
+
+            this.errorLog.push("\nVertex shader:\n");
+            this.errorLog = this.errorLog.concat(vertex);
+
+            this.errorLog.push("\nFragment shader:\n");
+            this.errorLog = this.errorLog.concat(fragment);
+
+            return;
+        }
+
+
+        // Discover uniforms and samplers
+
+        var numUniforms = gl.getProgramParameter(this.handle, gl.ACTIVE_UNIFORMS);
+
+        for (i = 0; i < numUniforms; ++i) {
+
+            u = gl.getActiveUniform(this.handle, i);
+
+            if (u) {
+
+                uName = u.name;
+
+                if (uName[uName.length - 1] === "\u0000") {
+                    uName = uName.substr(0, uName.length - 1);
+                }
+
+                location = gl.getUniformLocation(this.handle, uName);
+
+                if ((u.type === gl.SAMPLER_2D) || (u.type === gl.SAMPLER_CUBE) || (u.type === 35682)) {
+
+                    this.samplers[uName] = new XEO.renderer.webgl.Sampler(gl, location);
+
+                } else {
+
+                    this.uniforms[uName] = new XEO.renderer.webgl.Uniform(stats.frame, gl, u.type, location);
+                }
+            }
+        }
+
+        // Discover attributes
+
+        var numAttribs = gl.getProgramParameter(this.handle, gl.ACTIVE_ATTRIBUTES);
+
+        for (i = 0; i < numAttribs; i++) {
+
+            a = gl.getActiveAttrib(this.handle, i);
+
+            if (a) {
+
+                location = gl.getAttribLocation(this.handle, a.name);
+
+                this.attributes[a.name] = new XEO.renderer.webgl.Attribute(gl, location);
+            }
+        }
+
+        this.allocated = true;
+    };
+
+    XEO.renderer.webgl.Program.prototype.bind = function () {
+
+        if (!this.allocated) {
+            return;
+        }
+
+        this.gl.useProgram(this.handle);
+    };
+
+    XEO.renderer.webgl.Program.prototype.setUniform = function (name, value) {
+
+        if (!this.allocated) {
+            return;
+        }
+
+        var u = this.uniforms[name];
+
+        if (u) {
+            u.setValue(value);
+        }
+    };
+
+    XEO.renderer.webgl.Program.prototype.getUniform = function (name) {
+
+        if (!this.allocated) {
+            return;
+        }
+
+        return this.uniforms[name];
+    };
+
+    XEO.renderer.webgl.Program.prototype.getAttribute = function (name) {
+
+        if (!this.allocated) {
+            return;
+        }
+
+        return this.attributes[name];
+    };
+
+    //XEO.renderer.webgl.Program.prototype.bindFloatArrayBuffer = function (name, buffer) {
+    //
+    //    if (!this.allocated) {
+    //        return;
+    //    }
+    //
+    //    return this.attributes[name];
+    //};
+
+    XEO.renderer.webgl.Program.prototype.bindTexture = function (name, texture, unit) {
+
+        if (!this.allocated) {
+            return false;
+        }
+
+        var sampler = this.samplers[name];
+
+        if (sampler) {
+            return sampler.bindTexture(texture, unit);
+
+        } else {
+            return false;
+        }
+    };
+
+    XEO.renderer.webgl.Program.prototype.destroy = function () {
+
+        if (!this.allocated) {
+            return;
+        }
+
+        this.gl.deleteProgram(this.handle);
+        this.gl.deleteShader(this._vertexShader.handle);
+        this.gl.deleteShader(this._fragmentShader.handle);
+
+        this.handle = null;
+        this.attributes = null;
+        this.uniforms = null;
+        this.samplers = null;
+
+        this.allocated = false;
+    };
+
+})();
+;(function () {
+
+    "use strict";
+
+    XEO.renderer.webgl.RenderBuffer = function (cfg) {
+
+        /**
+         * True as soon as this buffer is allocated and ready to go
+         */
+        this.allocated = false;
+
+        /**
+         * The HTMLCanvasElement
+         */
+        this.canvas = cfg.canvas;
+
+        /**
+         * WebGL context
+         */
+        this.gl = cfg.gl;
+
+        /**
+         * Buffer resources, set up in #_touch
+         */
+        this.buffer = null;
+
+        /**
+         * True while this buffer is bound
+         */
+        this.bound = false;
+
+        /**
+         * Optional explicit buffer size - when omitted, buffer defaults to canvas size
+         */
+        this.size = cfg.size;
+    };
+
+    /**
+     * Sets custom dimensions for this buffer.
+     *
+     * Buffer dynamically re-sizes to canvas when size is null.
+     *
+     * @param size {Array of Number} Two-element size vector
+     */
+    XEO.renderer.webgl.RenderBuffer.prototype.setSize = function (size) {
+        this.size = size;
+    };
+
+    /**
+     * Called after WebGL context is restored.
+     */
+    XEO.renderer.webgl.RenderBuffer.prototype.webglRestored = function (gl) {
+        this.gl = gl;
+        this.buffer = null;
+        this.allocated = false;
+        this.bound = false;
+    };
+
+    /**
+     * Binds this buffer
+     */
+    XEO.renderer.webgl.RenderBuffer.prototype.bind = function () {
+
+        this._touch();
+
+        if (this.bound) {
+            return;
+        }
+
+        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.buffer.framebuf);
+
+        this.bound = true;
+    };
+
+    XEO.renderer.webgl.RenderBuffer.prototype._touch = function () {
+
+        var width;
+        var height;
+
+        if (this.size) {
+
+            // Buffer sized to custom dimensions
+
+            width = this.size[0];
+            height = this.size[1];
+
+        } else {
+
+            // Buffer sized to canvas (default)
+
+            width = this.canvas.clientWidth;
+            height = this.canvas.clientHeight;
+        }
+
+        if (this.buffer) {
+
+            // Currently have a buffer
+
+            if (this.buffer.width === width && this.buffer.height === height) {
+
+                // Canvas size unchanged, buffer still good
+
+                return;
+
+            } else {
+
+                // Buffer needs reallocation for new canvas size
+
+                this.gl.deleteTexture(this.buffer.texture);
+                this.gl.deleteFramebuffer(this.buffer.framebuf);
+                this.gl.deleteRenderbuffer(this.buffer.renderbuf);
+            }
+        }
+
+        this.buffer = {
+            framebuf: this.gl.createFramebuffer(),
+            renderbuf: this.gl.createRenderbuffer(),
+            texture: this.gl.createTexture(),
+            width: width,
+            height: height
+        };
+
+        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.buffer.framebuf);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, this.buffer.texture);
+        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
+        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
+        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+        this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+
+        try {
+            // Do it the way the spec requires
+            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, width, height, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, null);
+        } catch (exception) {
+            // Workaround for what appears to be a Minefield bug.
+            var textureStorage = new WebGLUnsignedByteArray(width * height * 3);
+            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, width, height, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, textureStorage);
+        }
+
+
+        this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, this.buffer.renderbuf);
+        this.gl.renderbufferStorage(this.gl.RENDERBUFFER, this.gl.DEPTH_COMPONENT16, width, height);
+        this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0, this.gl.TEXTURE_2D, this.buffer.texture, 0);
+        this.gl.framebufferRenderbuffer(this.gl.FRAMEBUFFER, this.gl.DEPTH_ATTACHMENT, this.gl.RENDERBUFFER, this.buffer.renderbuf);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+        this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, null);
+        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+
+        // Verify framebuffer is OK
+        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.buffer.framebuf);
+
+        if (!this.gl.isFramebuffer(this.buffer.framebuf)) {
+            throw "Invalid framebuffer";
+        }
+        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+
+        var status = this.gl.checkFramebufferStatus(this.gl.FRAMEBUFFER);
+
+        switch (status) {
+
+            case this.gl.FRAMEBUFFER_COMPLETE:
+                break;
+
+            case this.gl.FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+                throw "Incomplete framebuffer: FRAMEBUFFER_INCOMPLETE_ATTACHMENT";
+
+            case this.gl.FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+                throw "Incomplete framebuffer: FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT";
+
+            case this.gl.FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
+                throw "Incomplete framebuffer: FRAMEBUFFER_INCOMPLETE_DIMENSIONS";
+
+            case this.gl.FRAMEBUFFER_UNSUPPORTED:
+                throw "Incomplete framebuffer: FRAMEBUFFER_UNSUPPORTED";
+
+            default:
+                throw "Incomplete framebuffer: " + status;
+        }
+
+        this.bound = false;
+    };
+
+    /**
+     * Clears this renderbuffer
+     */
+    XEO.renderer.webgl.RenderBuffer.prototype.clear = function () {
+        if (!this.bound) {
+            throw "Render buffer not bound";
+        }
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+        this.gl.disable(this.gl.BLEND);
+    };
+
+    /**
+     * Reads buffer pixel at given coordinates
+     */
+    XEO.renderer.webgl.RenderBuffer.prototype.read = function (pickX, pickY) {
+        var x = pickX;
+        var y = this.canvas.height - pickY;
+        var pix = new Uint8Array(4);
+        this.gl.readPixels(x, y, 1, 1, this.gl.RGBA, this.gl.UNSIGNED_BYTE, pix);
+        return pix;
+    };
+
+    /**
+     * Unbinds this renderbuffer
+     */
+    XEO.renderer.webgl.RenderBuffer.prototype.unbind = function () {
+        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+        this.bound = false;
+    };
+
+    /** Returns the texture
+     */
+    XEO.renderer.webgl.RenderBuffer.prototype.getTexture = function () {
+
+        var self = this;
+
+        return {
+
+            renderBuffer: this,
+
+            bind: function (unit) {
+                if (self.buffer && self.buffer.texture) {
+                    self.gl.activeTexture(self.gl["TEXTURE" + unit]);
+                    self.gl.bindTexture(self.gl.TEXTURE_2D, self.buffer.texture);
+                    return true;
+                }
+                return false;
+            },
+
+            unbind: function (unit) {
+                if (self.buffer && self.buffer.texture) {
+                    self.gl.activeTexture(self.gl["TEXTURE" + unit]);
+                    self.gl.bindTexture(self.gl.TEXTURE_2D, null);
+                }
+            }
+        };
+    };
+
+    /** Destroys this buffer
+     */
+    XEO.renderer.webgl.RenderBuffer.prototype.destroy = function () {
+
+        if (this.allocated) {
+
+            this.gl.deleteTexture(this.buffer.texture);
+            this.gl.deleteFramebuffer(this.buffer.framebuf);
+            this.gl.deleteRenderbuffer(this.buffer.renderbuf);
+
+            this.allocated = false;
+            this.buffer = null;
+            this.bound = false;
+        }
+    };
+
+})();
+;(function () {
+
+    "use strict";
+
+    XEO.renderer.webgl.Sampler = function (gl, location) {
+
+        this.bindTexture = function (texture, unit) {
+
+            if (texture.bind(unit)) {
+
+                gl.uniform1i(location, unit);
+
+                return true;
+            }
+
+            return false;
+        };
+    };
+
+})();;(function () {
+
+    "use strict";
+
+    /**
+     * A vertex/fragment shader in a program
+     *
+     * @param gl WebGL gl
+     * @param type gl.VERTEX_SHADER | gl.FRAGMENT_SHADER
+     * @param source Source code for shader
+     */
+    XEO.renderer.webgl.Shader = function (gl, type, source) {
+
+        /**
+         * True if this shader successfully allocated. When false,
+         * #error will contain WebGL the error log.
+         * @type {boolean}
+         */
+        this.allocated = false;
+
+        /**
+         * True if this shader successfully compiled. When false,
+         * #error will contain WebGL the error log.
+         * @type {boolean}
+         */
+        this.compiled = false;
+
+        /**
+         * Saves the WebGL error log when this shader failed to allocate or compile.
+         * @type {boolean}
+         */
+        this.errorLog = null;
+
+        /**
+         * The GLSL for this shader.
+         * @type {Array of String}
+         */
+        this.source = source;
+
+        /**
+         * WebGL handle to this shader's GPU resource
+         */
+        this.handle = gl.createShader(type);
+
+        if (!this.handle) {
+            this.errorLog = [
+                "Failed to allocate"
+            ];
+            return;
+        }
+
+        this.allocated = true;
+
+        gl.shaderSource(this.handle, source);
+        gl.compileShader(this.handle);
+
+        this.compiled = gl.getShaderParameter(this.handle, gl.COMPILE_STATUS);
+
+        if (!this.compiled) {
+
+            if (!gl.isContextLost()) { // Handled explicitly elsewhere, so won't re-handle here
+
+                this.errorLog = [];
+                this.errorLog.push("");
+                this.errorLog.push(gl.getShaderInfoLog(this.handle));
+                this.errorLog = this.errorLog.concat(this.source);
+            }
+        }
+    };
+
+})();;(function () {
+
+    "use strict";
+
+    XEO.renderer.webgl.Texture2D = function (gl) {
+
+        this.gl = gl;
+
+        this.target = gl.TEXTURE_2D;
+
+        this.texture = gl.createTexture();
+
+        this.allocated = true;
+    };
+
+    XEO.renderer.webgl.Texture2D.prototype.setImage = function (image, props) {
+
+        var gl = this.gl;
+
+        gl.bindTexture(this.target, this.texture);
+
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, props.flipY);
+
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+
+        gl.bindTexture(this.target, null);
+    };
+
+    XEO.renderer.webgl.Texture2D.prototype.setProps = function (props) {
+
+        var gl = this.gl;
+
+        gl.bindTexture(this.target, this.texture);
+
+        if (props.minFilter) {
+
+            var minFilter = this._getGLEnum(props.minFilter);
+
+            if (minFilter) {
+
+                gl.texParameteri(this.target, gl.TEXTURE_MIN_FILTER, minFilter);
+
+                if (minFilter === gl.NEAREST_MIPMAP_NEAREST ||
+                    minFilter === gl.LINEAR_MIPMAP_NEAREST ||
+                    minFilter === gl.NEAREST_MIPMAP_LINEAR ||
+                    minFilter === gl.LINEAR_MIPMAP_LINEAR) {
+
+                    gl.generateMipmap(this.target);
+                }
+            }
+        }
+
+        if (props.magFilter) {
+            var magFilter = this._getGLEnum(props.magFilter);
+            if (magFilter) {
+                gl.texParameteri(this.target, gl.TEXTURE_MAG_FILTER, magFilter);
+            }
+        }
+
+        if (props.wrapS) {
+            var wrapS = this._getGLEnum(props.wrapS);
+            if (wrapS) {
+                gl.texParameteri(this.target, gl.TEXTURE_WRAP_S, wrapS);
+            }
+        }
+
+        if (props.wrapT) {
+            var wrapT = this._getGLEnum(props.wrapT);
+            if (wrapT) {
+                gl.texParameteri(this.target, gl.TEXTURE_WRAP_T, wrapT);
+            }
+        }
+
+        gl.bindTexture(this.target, null);
+    };
+
+    XEO.renderer.webgl.Texture2D.prototype._getGLEnum = function (name, defaultVal) {
+
+        if (name === undefined) {
+            return defaultVal;
+        }
+
+        var glName = XEO.renderer.webgl.enums[name];
+
+        if (glName === undefined) {
+            return defaultVal;
+        }
+
+        return this.gl[glName];
+    };
+
+
+    XEO.renderer.webgl.Texture2D.prototype.bind = function (unit) {
+
+        if (!this.allocated) {
+            return;
+        }
+
+        if (this.texture) {
+
+            var gl = this.gl;
+
+            gl.activeTexture(gl["TEXTURE" + unit]);
+
+            gl.bindTexture(this.target, this.texture);
+
+            return true;
+        }
+
+        return false;
+    };
+
+    XEO.renderer.webgl.Texture2D.prototype.unbind = function (unit) {
+
+        if (!this.allocated) {
+            return;
+        }
+
+        if (this.texture) {
+
+            var gl = this.gl;
+
+            gl.activeTexture(gl["TEXTURE" + unit]);
+
+            gl.bindTexture(this.target, null);
+        }
+    };
+
+    XEO.renderer.webgl.Texture2D.prototype.destroy = function () {
+
+        if (!this.allocated) {
+            return;
+        }
+
+        if (this.texture) {
+
+            this.gl.deleteTexture(this.texture);
+
+            this.texture = null;
+        }
+    };
+
+
+    XEO.renderer.webgl.clampImageSize = function (image, numPixels) {
+
+        var n = image.width * image.height;
+
+        if (n > numPixels) {
+
+            var ratio = numPixels / n;
+
+            var width = image.width * ratio;
+            var height = image.height * ratio;
+
+            var canvas = document.createElement("canvas");
+
+            canvas.width = XEO.renderer.webgl.nextHighestPowerOfTwo(width);
+            canvas.height = XEO.renderer.webgl.nextHighestPowerOfTwo(height);
+
+            var ctx = canvas.getContext("2d");
+
+            ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, canvas.width, canvas.height);
+
+            image = canvas;
+        }
+
+        return image;
+    };
+
+    XEO.renderer.webgl.ensureImageSizePowerOfTwo = function (image) {
+
+        if (!XEO.renderer.webgl.isPowerOfTwo(image.width) || !XEO.renderer.webgl.isPowerOfTwo(image.height)) {
+
+            var canvas = document.createElement("canvas");
+
+            canvas.width = XEO.renderer.webgl.nextHighestPowerOfTwo(image.width);
+            canvas.height = XEO.renderer.webgl.nextHighestPowerOfTwo(image.height);
+
+            var ctx = canvas.getContext("2d");
+
+            ctx.drawImage(image,
+                0, 0, image.width, image.height,
+                0, 0, canvas.width, canvas.height);
+            image = canvas;
+        }
+
+        return image;
+    };
+
+    XEO.renderer.webgl.isPowerOfTwo = function (x) {
+        return (x & (x - 1)) === 0;
+    };
+
+    XEO.renderer.webgl.nextHighestPowerOfTwo = function (x) {
+        --x;
+        for (var i = 1; i < 32; i <<= 1) {
+            x = x | x >> i;
+        }
+        return x + 1;
+    };
+
+})();
+;(function () {
+
+    "use strict";
+
+    XEO.renderer.webgl.Uniform = function (renderStats, gl, type, location) {
+
+        var func = null;
+        var value = null;
+
+        if (type === gl.BOOL) {
+
+            func = function (v) {
+                if (value === v) {
+                    return;
+                }
+                value = v;
+                gl.uniform1i(location, v);
+            };
+
+        } else if (type === gl.BOOL_VEC2) {
+            value = new Array(2);
+
+            func = function (v) {
+                if (value[0] === v[0] && value[1] === v[1]) {
+                    return;
+                }
+                value[0] = v[0];
+                value[1] = v[1];
+                gl.uniform2iv(location, v);
+            };
+
+        } else if (type === gl.BOOL_VEC3) {
+            value = new Array(3);
+
+            func = function (v) {
+                if (value[0] === v[0] && value[1] === v[1] && value[2] === v[2]) {
+                    return;
+                }
+                value[0] = v[0];
+                value[1] = v[1];
+                value[2] = v[2];
+                gl.uniform3iv(location, v);
+            };
+
+        } else if (type === gl.BOOL_VEC4) {
+            value = new Array(4);
+
+            func = function (v) {
+                if (value[0] === v[0] && value[1] === v[1] && value[2] === v[2] && value[3] === v[3]) {
+                    return;
+                }
+                value[0] = v[0];
+                value[1] = v[1];
+                value[2] = v[2];
+                value[3] = v[3];
+                gl.uniform4iv(location, v);
+            };
+
+        } else if (type === gl.INT) {
+
+            func = function (v) {
+                if (value === v) {
+                    return;
+                }
+                value = v;
+                gl.uniform1iv(location, v);
+            };
+
+        } else if (type === gl.INT_VEC2) {
+            value = new Uint32Array(2);
+
+            func = function (v) {
+                if (value[0] === v[0] && value[1] === v[1]) {
+                    return;
+                }
+                value.set(v);
+                gl.uniform2iv(location, v);
+            };
+
+        } else if (type === gl.INT_VEC3) {
+            value = new Uint32Array(3);
+
+            func = function (v) {
+                if (value[0] === v[0] && value[1] === v[1] && value[2] === v[2]) {
+                    return;
+                }
+                value.set(v);
+                gl.uniform3iv(location, v);
+            };
+
+        } else if (type === gl.INT_VEC4) {
+            value = new Uint32Array(4);
+
+            func = function (v) {
+                if (value[0] === v[0] && value[1] === v[1] && value[2] === v[2] && value[3] === v[3]) {
+                    return;
+                }
+                value.set(v);
+                gl.uniform4iv(location, v);
+            };
+
+        } else if (type === gl.FLOAT) {
+
+            func = function (v) {
+                if (value === v) {
+                    return;
+                }
+                value = v;
+                gl.uniform1f(location, v);
+            };
+
+        } else if (type === gl.FLOAT_VEC2) {
+            value = new Float32Array(2);
+
+            func = function (v) {
+                if (value[0] === v[0] && value[1] === v[1]) {
+                    return;
+                }
+                value.set(v);
+                gl.uniform2fv(location, v);
+            };
+
+        } else if (type === gl.FLOAT_VEC3) {
+            value = new Float32Array(3);
+
+            func = function (v) {
+                if (value[0] === v[0] && value[1] === v[1] && value[2] === v[2]) {
+                    return;
+                }
+                value.set(v);
+                gl.uniform3fv(location, v);
+            };
+
+        } else if (type === gl.FLOAT_VEC4) {
+            value = new Float32Array(4);
+
+            func = function (v) {
+                if (value[0] === v[0] && value[1] === v[1] && value[2] === v[2] && value[3] === v[3]) {
+                    return;
+                }
+                value.set(v);
+                gl.uniform4fv(location, v);
+            };
+
+        } else if (type === gl.FLOAT_MAT2) {
+            value = new Float32Array(4);
+
+            func = function (v) {
+                if (value[0] === v[0] && value[1] === v[1] &&
+                    value[2] === v[2] && value[3] === v[3]) {
+                    return;
+                }
+                value.set(v);
+                gl.uniformMatrix2fv(location, gl.FALSE, v);
+            };
+
+        } else if (type === gl.FLOAT_MAT3) {
+            value = new Float32Array(9);
+
+            func = function (v) {
+                if (value[0] === v[0] && value[1] === v[1] && value[2] === v[2] &&
+                    value[3] === v[3] && value[4] === v[4] && value[5] === v[5] &&
+                    value[6] === v[6] && value[7] === v[7] && value[8] === v[8]) {
+                    return;
+                }
+                value.set(v);
+                gl.uniformMatrix3fv(location, gl.FALSE, v);
+            };
+
+        } else if (type === gl.FLOAT_MAT4) {
+            value = new Float32Array(16);
+
+            func = function (v) {
+                if (value[0] === v[0]   && value[1] === v[1]   && value[2] === v[2]   && value[3] === v[3]   &&
+                    value[4] === v[4]   && value[5] === v[5]   && value[6] === v[6]   && value[7] === v[7]   &&
+                    value[8] === v[8]   && value[9] === v[9]   && value[10] === v[10] && value[11] === v[11] &&
+                    value[12] === v[12] && value[13] === v[13] && value[14] === v[14] && value[15] === v[15]) {
+                    return;
+                }
+                value.set(v);
+                gl.uniformMatrix4fv(location, gl.FALSE, v);
+            };
+
+        } else {
+            throw "Unsupported shader uniform type: " + type;
+        }
+
+        this.setValue = func;
+
+        this.getLocation = function () {
+            return location;
+        };
+    };
+
+})();
+
+
+
+
+
+
+
+
+
+;/**
+ * Renderer states
+ */
+(function () {
+
+    "use strict";
+
+    XEO.renderer = XEO.renderer || {};
+
+
+    /**
+
+     Base class for Renderer states.
+
+     renderer.State
+     @module XEO
+     
+     @constructor
+     @param cfg {*} Configs
+     */
+    XEO.renderer.State = Class.extend({
+
+        __init: function (cfg) {
+
+            this.id = this._ids.addItem({});
+
+            this.hash = cfg.hash || "" + this.id; // Not used by all sub-classes
+
+            for (var key in cfg) {
+                if (cfg.hasOwnProperty(key)) {
+                    this[key] = cfg[key];
+                }
+            }
+        },
+
+        destroy: function () {
+            this._ids.removeItem(this.id);
+        }
+    });
+
+    //XEO.renderer.State.prototype.destroy = function () {
+    //    states.removeItem(this.id);
+    //};
+
+    /**
+
+     Visibility state.
+
+     renderer.Visibility
+     @module XEO
+     
+     @constructor
+     @param cfg {*} Configs
+     @param cfg.visible {Boolean} Flag which controls visibility of the associated render objects.
+     @extends renderer.State
+     */
+    XEO.renderer.Visibility = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+    /**
+
+     Culling state.
+
+     renderer.Cull
+     @module XEO
+
+     @constructor
+     @param cfg {*} Configs
+     @param cfg.culled {Boolean} Flag which controls cull state of the associated render objects.
+     @extends renderer.State
+     */
+    XEO.renderer.Cull = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+    /**
+
+     Modes state.
+
+     renderer.Mode
+     @module XEO
+     
+     @constructor
+     @param cfg {*} Configs
+     @param cfg.pickable {Boolean} Flag which controls pickability of the associated render objects.
+     @param cfg.clipping {Boolean} Flag which controls whether associated render objects are clippable.
+     @param cfg.transparent {Boolean} Flag which controls transparency of the associated render objects.
+     @param cfg.frontFace {Boolean} Flag which determines winding order of backfaces on the associated render objects - true == "ccw", false == "cw".
+     @extends renderer.State
+     */
+    XEO.renderer.Modes = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+    /**
+
+     Layer state.
+
+     renderer.Layer
+     @module XEO
+     
+     @constructor
+     @param cfg {*} Configs
+     @param cfg.priority {Number} Layer render priority.
+     @extends renderer.State
+     */
+    XEO.renderer.Layer = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+    /**
+
+     Stage state.
+
+     renderer.Stage
+     @module XEO
+     
+     @constructor
+     @param cfg {*} Configs
+     @param cfg.priority {Number} Stage render priority.
+     @extends renderer.State
+     */
+    XEO.renderer.Stage = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+    /**
+
+     Depth buffer state.
+
+     renderer.DepthBuf
+     @module XEO
+     
+     @constructor
+     @param cfg {*} Configs
+     @param cfg.clearDepth {Number} Clear depth
+     @param cfg.depthBuf {String} Depth function
+     @extends renderer.State
+     */
+    XEO.renderer.DepthBuf = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+    /**
+
+     Color buffer state.
+
+     renderer.ColorBuf
+     @module XEO
+     
+     @constructor
+     @param cfg {*} Configs
+     @param cfg.blendEnabled {Boolean} Indicates if blending is enebled for
+     @param cfg.colorMask {Array of String} The color mask
+     @extends renderer.State
+     */
+    XEO.renderer.ColorBuf = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+    /**
+
+     Renderer lights state.
+
+     renderer.Lights
+     @module XEO
+     
+     @constructor
+     @param cfg {*} Configs
+     @param cfg.colorMask {Array of Object} The light sources
+     @extends renderer.State
+     */
+    XEO.renderer.Lights = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+    /**
+
+     PhongMaterial state.
+
+     renderer.PhongMaterial
+     @module XEO
+     
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    XEO.renderer.PhongMaterial = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+    /**
+
+     Environmental reflection state.
+
+     renderer.Reflect
+     @module XEO
+     
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    XEO.renderer.Reflect = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+    /**
+
+     Transform state.
+
+     renderer.Transform
+     @module XEO
+     
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    XEO.renderer.Transform = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+    /**
+
+     Billboard transform state.
+
+     renderer.Billboard
+     @module XEO
+     
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    XEO.renderer.Billboard = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+    /**
+
+     Stationary transform state.
+
+     renderer.Stationary
+     @module XEO
+
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    XEO.renderer.Stationary = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+
+    /**
+
+     Render target state.
+
+     renderer.RenderTarget
+     @module XEO
+     
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    XEO.renderer.RenderTarget = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+    XEO.renderer.RenderTarget.DEPTH = 0;
+    XEO.renderer.RenderTarget.COLOR = 1;
+
+    /**
+
+     Clip planes state.
+
+     renderer.Clips
+     @module XEO
+     
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    XEO.renderer.Clips = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+    /**
+
+     Renderer morph targets state.
+
+     renderer.MorphTargets
+     @module XEO
+     
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    XEO.renderer.MorphTargets = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+    /**
+
+     Shader state.
+
+     renderer.Shader
+     @module XEO
+     
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    XEO.renderer.Shader = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+    /**
+
+     Shader parameters state.
+
+     renderer.ShaderParams
+     @module XEO
+     
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    XEO.renderer.ShaderParams = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+    /**
+
+     Texture state.
+
+     renderer.Texture
+     @module XEO
+     
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    XEO.renderer.Texture = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+
+    /**
+
+     Fresnel state.
+
+     renderer.Fresnel
+     @module XEO
+     
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    XEO.renderer.Fresnel = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+
+    /**
+
+     Geometry state.
+
+     renderer.Geometry
+     @module XEO
+     
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    XEO.renderer.Geometry = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+    /**
+
+     Program state.
+
+     renderer.ProgramState
+     @module XEO
+     
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    XEO.renderer.ProgramState = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+
+    /**
+
+     Viewport state.
+
+     renderer.Viewport
+     @module XEO
+
+     @constructor
+     @param cfg {*} Configs
+     @param cfg.boundary {Float32Array} Canvas-space viewport extents.
+     @extends renderer.State
+     */
+    XEO.renderer.Viewport = XEO.renderer.State.extend({
+        _ids: new XEO.utils.Map({})
+    });
+})();
+
+
+;(function () {
+
+    "use strict";
+
+    /**
+     * An object within a XEO.renderer.Renderer
+     */
+    XEO.renderer.Object = function (id) {
+
+        /**
+         * ID for this object, unique among all objects in the Renderer
+         */
+        this.id = id;
+
+        /**
+         * Hash code for this object, unique among all objects in the Renderer
+         */
+        this.hash = null;
+
+        /**
+         * State sort key, computed from #layer, #program and #material
+         * @type Number
+         */
+        this.sortKey = null;
+
+        /**
+         * Sequence of state chunks applied to render this object
+         */
+        this.chunks = [];
+
+        /**
+         * Shader programs that render this object, also used for (re)computing #sortKey
+         */
+        this.program = null;
+
+        /**
+         * State for the XEO.renderer.Stage that this object was compiled from, used for (re)computing #sortKey and visibility cull
+         */
+        this.stage = null;
+
+        /**
+         * State for the XEO.renderer.Modes that this object was compiled from, used for visibility cull
+         */
+        this.modes = null;
+
+        /**
+         * State for the XEO.renderer.Layer that this object was compiled from, used for (re)computing #sortKey and visibility cull
+         */
+        this.layer = null;
+
+        /**
+         * State for the XEO.renderer.Material that this object was compiled from, used for (re)computing #sortKey
+         */
+        this.material = null;
+
+        /**
+         * True once the object has been compiled within the renderer display list.
+         */
+        this.compiled = false;
+    };
+})();;                (function () {
+
+    "use strict";
+
+    XEO.renderer.ObjectFactory = function () {
+
+        var freeObjects = [];
+        var numFreeObjects = 0;
+
+        this.get = function (id) {
+
+            var object;
+
+            if (numFreeObjects > 0) {
+
+                object = freeObjects[--numFreeObjects];
+
+                object.id = id;
+
+                object.compiled = false;
+
+                return object;
+            }
+
+            return new XEO.renderer.Object(id);
+        };
+
+        this.put = function (object) {
+            freeObjects[numFreeObjects++] = object;
+        };
+    };
+
+})();
+
+
+;(function () {
+
+    "use strict";
+
+    XEO.renderer = XEO.renderer || {};
+
+    /**
+     *  Vertex and fragment shaders for pick and draw
+     *
+     * @param {*} stats Collects runtime statistics
+     * @param {String} hash Hash code which uniquely identifies the capabilities of the program, computed from hashes on the {@link Scene_Core}s that the {@link XEO.renderer.ProgramSource} composed to render
+     * @param {XEO.renderer.ProgramSource} source Sourcecode from which the the program is compiled in {@link #build}
+     * @param {WebGLRenderingContext} gl WebGL context
+     */
+    XEO.renderer.Program = function (stats, hash, source, gl) {
+
+        this.stats = stats;
+
+        /**
+         * Hash code for this program's capabilities, same as the hash on {@link #source}
+         * @type String
+         */
+        this.hash = source.hash;
+
+        /**
+         * Source code for this program's shaders
+         * @type renderer.ProgramSource
+         */
+        this.source = source;
+
+        /**
+         * WebGL context on which this program's shaders are allocated
+         * @type WebGLRenderingContext
+         */
+        this.gl = gl;
+
+        /**
+         * The drawing program
+         * @type webgl.Program
+         */
+        this.draw = null;
+
+        /**
+         * The object picking program
+         * @type webgl.Program
+         */
+        this.pickObject = null;
+
+        /**
+         * The primitive picking program
+         * @type webgl.Program
+         */
+        this.pickPrimitive = null;
+
+        /**
+         * The count of display objects using this program
+         * @type Number
+         */
+        this.useCount = 0;
+
+        /**
+         * True when successfully allocated
+         * @type {boolean}
+         */
+        this.allocated = false;
+
+        /**
+         * True when successfully compiled
+         * @type {boolean}
+         */
+        this.compiled = false;
+
+        /**
+         * True when successfully linked
+         * @type {boolean}
+         */
+        this.linked = false;
+
+        /**
+         * True when successfully validated
+         * @type {boolean}
+         */
+        this.validated = false;
+
+        /**
+         * Contains error log on failure to allocate, compile, validate or link
+         * @type {boolean}
+         */
+        this.errorLog = null;
+
+
+        this.build(gl);
+    };
+
+    /**
+     *  Creates the render and pick programs.
+     * This is also re-called to re-create them after WebGL context loss.
+     */
+    XEO.renderer.Program.prototype.build = function (gl) {
+
+        this.gl = gl;
+
+        this.allocated = false;
+        this.compiled = false;
+        this.linked = false;
+        this.validated = false;
+        this.errorLog = null;
+
+        this.draw = new XEO.renderer.webgl.Program(this.stats, gl, this.source.vertexDraw, this.source.fragmentDraw);
+        this.pickObject = new XEO.renderer.webgl.Program(this.stats, gl, this.source.vertexPickObject, this.source.fragmentPickObject);
+        this.pickPrimitive = new XEO.renderer.webgl.Program(this.stats, gl, this.source.vertexPickPrimitive, this.source.fragmentPickPrimitive);
+
+        if (!this.draw.allocated) {
+            this.errorLog = ["Draw program failed to allocate"].concat(this.draw.errorLog);
+            return;
+        }
+
+        if (!this.pickObject.allocated) {
+            this.errorLog = ["Object-picking program failed to allocate"].concat(this.pickObject.errorLog);
+            return;
+        }
+
+        if (!this.pickPrimitive.allocated) {
+            this.errorLog = ["Primitive-picking program failed to allocate"].concat(this.pickPrimitive.errorLog);
+            return;
+        }
+
+        this.allocated = true;
+
+        if (!this.draw.compiled) {
+            this.errorLog = ["Draw program failed to compile"].concat(this.draw.errorLog);
+            return;
+        }
+
+        if (!this.pickObject.compiled) {
+            this.errorLog = ["Object-picking program failed to compile"].concat(this.pickObject.errorLog);
+            return;
+        }
+
+        if (!this.pickPrimitive.compiled) {
+            this.errorLog = ["Primitive-picking program failed to compile"].concat(this.pickPrimitive.errorLog);
+            return;
+        }
+
+        this.compiled = true;
+
+        if (!this.draw.linked) {
+            this.errorLog = ["Draw program failed to link"].concat(this.draw.errorLog);
+            return;
+        }
+
+        if (!this.pickObject.linked) {
+            this.errorLog = ["Object-picking program failed to link"].concat(this.pickObject.errorLog);
+            return;
+        }
+
+        if (!this.pickPrimitive.linked) {
+            this.errorLog = ["Primitive-picking program failed to link"].concat(this.pickPrimitive.errorLog);
+            return;
+        }
+
+        this.linked = true;
+
+        if (!this.draw.validated) {
+            this.errorLog = ["Draw program failed to validate"].concat(this.draw.errorLog);
+            return;
+        }
+
+        if (!this.pickObject.validated) {
+            this.errorLog = ["Object-picking program failed to validate"].concat(this.pickObject.errorLog);
+            return;
+        }
+
+        if (!this.pickPrimitive.validated) {
+            this.errorLog = ["Primitive-picking program failed to validate"].concat(this.pickPrimitive.errorLog);
+            return;
+        }
+
+        this.validated = true;
+    };
+
+})();
+;(function () {
+
+    "use strict";
+
+    /**
+     *  Manages {@link XEO.renderer.ProgramState} instances.
+     * @param stats Collects runtime statistics
+     * @param cfg Configs
+     */
+    XEO.renderer.ProgramFactory = function (stats, cfg) {
+
+        this.stats = stats;
+
+        this._canvas = cfg.canvas;
+
+        this._programStates = {};
+    };
+
+
+    /**
+     * Get a program that fits the given set of states.
+     * Reuses any free program in the pool that matches the given hash.
+     */
+    XEO.renderer.ProgramFactory.prototype.get = function (hash, states) {
+
+        var programState = this._programStates[hash];
+
+        if (!programState) {
+
+            // No program exists for the states
+
+            // Create it and map it to the hash
+
+            var source = XEO.renderer.ProgramSourceFactory.getSource(hash, states);
+
+            var program = new XEO.renderer.Program(this.stats, hash, source, this._canvas.gl);
+
+            programState = new XEO.renderer.ProgramState({
+                program: program,
+                useCount: 1
+            });
+
+            this._programStates[hash] = programState;
+
+            this.stats.memory.programs++;
+        }
+
+        programState.useCount++;
+
+        return programState;
+    };
+
+    /**
+     * Release a program back to the pool.
+     */
+    XEO.renderer.ProgramFactory.prototype.put = function (programState) {
+
+        var program = programState.program;
+
+        if (--program.useCount <= 0) {
+
+            program.draw.destroy();
+            program.pickObject.destroy();
+            program.pickPrimitive.destroy();
+
+            XEO.renderer.ProgramSourceFactory.putSource(program.hash);
+
+            delete this._programStates[program.hash];
+
+            this.stats.memory.programs--;
+        }
+    };
+
+    /**
+     * Rebuild all programs in the pool after WebGL context was lost and restored.
+     */
+    XEO.renderer.ProgramFactory.prototype.webglRestored = function () {
+
+        var gl = this._canvas.gl;
+
+        for (var id in this._programStates) {
+            if (this._programStates.hasOwnProperty(id)) {
+
+                this._programStates[id].build(gl);
+            }
+        }
+    };
+
+    XEO.renderer.ProgramFactory.prototype.destroy = function () {
+    };
+
+})();
+;(function () {
+
+    "use strict";
+
+    /**
+     *  Source code for pick and draw shader programs, to be compiled into one or more {@link XEO.renderer.Program}s
+     *
+     * @param {String} hash Hash code identifying the rendering capabilities of the programs
+     * @param {String} vertexPickObject Vertex shader source for object picking.
+     * @param {String} fragmentPickObject Fragment shader source for object picking.
+     * @param {String} vertexPickPrimitive Vertex shader source for primitive picking.
+     * @param {String} fragmentPickPrimitive Fragment shader source for primitive picking.
+     * @param {String} vertexDraw Vertex shader source for drawing.
+     * @param {String} fragmentDraw Fragment shader source for drawing.
+     */
+    XEO.renderer.ProgramSource = function (hash,
+                                           vertexPickObject, fragmentPickObject,
+                                           vertexPickPrimitive, fragmentPickPrimitive,
+                                           vertexDraw, fragmentDraw) {
+
+        /**
+         * Hash code identifying the capabilities of the {@link XEO.renderer.Program} that is compiled from this source
+         * @type String
+         */
+        this.hash = hash;
+
+        /**
+         * Vertex shader source for object picking
+         * @type {Array of String]
+         */
+        this.vertexPickObject = vertexPickObject;
+
+        /**
+         * Fragment shader source for object picking.
+         * @type {Array of String}
+         */
+        this.fragmentPickObject = fragmentPickObject;
+
+        /**
+         * Vertex shader source for primitive picking.
+         * @type {Array of String]
+         */
+        this.vertexPickPrimitive = vertexPickPrimitive;
+
+        /**
+         * Fragment shader source for primitive picking.
+         * @type {Array of String}
+         */
+        this.fragmentPickPrimitive = fragmentPickPrimitive;
+
+        /**
+         * Vertex shader source for drawing.
+         * @type {Array of String}
+         */
+        this.vertexDraw = vertexDraw;
+
+        /**
+         * Fragment shader source for drawing.
+         * @type {Array of String}
+         */
+        this.fragmentDraw = fragmentDraw;
+
+        /**
+         * Count of {@link XEO.renderer.Program}s compiled from this program source code
+         * @type Number
+         */
+        this.useCount = 0;
+    };
+
+})();
+
+;(function () {
+
+    "use strict";
+
+    /**
+     *  Manages creation, sharing and recycle of {@link XEO.renderer.ProgramSource} instances
+     */
+    XEO.renderer.ProgramSourceFactory = new (function () {
+
+        var cache = {}; // Caches source code against hashes
+
+        var src = ""; // Accumulates source code as it's being built
+
+        var states; // Cache rendering state
+        var texturing; // True when rendering state contains textures
+        var normals; // True when rendering state contains normals
+        var normalMapping; // True when rendering state contains tangents
+        var reflection; // True when rendering state contains reflections
+
+        var diffuseFresnel;
+        var specularFresnel;
+        var opacityFresnel;
+        var reflectivityFresnel;
+        var emissiveFresnel;
+
+        /**
+         * Get source code for a program to render the given states.
+         * Attempts to reuse cached source code for the given hash.
+         */
+        this.getSource = function (hash, _states) {
+
+            var source = cache[hash];
+
+            if (source) {
+                source.useCount++;
+                return source;
+            }
+
+            states = _states;
+
+            texturing = hasTextures();
+            normals = hasNormals();
+            normalMapping = hasNormalMap();
+            reflection = hasReflection();
+
+            diffuseFresnel = states.material.diffuseFresnel;
+            specularFresnel = states.material.specularFresnel;
+            opacityFresnel = states.material.opacityFresnel;
+            reflectivityFresnel = states.material.reflectivityFresnel;
+            emissiveFresnel = states.material.emissiveFresnel;
+
+            source = new XEO.renderer.ProgramSource(
+                hash,
+                vertexPickObject(),
+                fragmentPickObject(),
+                vertexPickPrimitive(),
+                fragmentPickPrimitive(),
+                vertexDraw(),
+                fragmentDraw()
+            );
+
+            cache[hash] = source;
+
+            return source;
+        };
+
+        function hasTextures() {
+            if (!states.geometry.uv) {
+                return false;
+            }
+            var material = states.material;
+            return material.ambientMap ||
+                material.diffuseMap ||
+                material.specularMap ||
+                material.emissiveMap ||
+                material.opacityMap ||
+                material.reflectivityMap ||
+                states.material.normalMap;
+        }
+
+        function hasReflection() {
+            return false;
+            //return (states.cubemap.layers && states.cubemap.layers.length > 0 && states.geometry.normalBuf);
+        }
+
+        function hasNormals() {
+            var primitive = states.geometry.primitiveName;
+            if (states.geometry.normals && (primitive === "triangles" || primitive === "triangle-strip" || primitive === "triangle-fan")) {
+                return true;
+            }
+            return false;
+        }
+
+        function hasNormalMap() {
+            var geometry = states.geometry;
+            return (geometry.positions && geometry.indices && geometry.normals && geometry.uv && states.material.normalMap);
+        }
+
+        /**
+         * Releases program source code back to this factory.
+         */
+        this.putSource = function (hash) {
+            var source = cache[hash];
+            if (source) {
+                if (--source.useCount === 0) {
+                    cache[source.hash] = null;
+                }
+            }
+        };
+
+
+        // NOTE: Picking shaders will become more complex and will eventually be
+        // composed from state, in the same manner as the draw shaders.
+
+        function vertexPickObject() {
+            begin();
+            add("// Object picking vertex shader");
+            add("attribute vec3 xeo_aPosition;");
+            add("uniform mat4 xeo_uModelMatrix;");
+            add("uniform mat4 xeo_uViewMatrix;");
+            add("uniform mat4 xeo_uViewNormalMatrix;");
+            add("uniform mat4 xeo_uProjMatrix;");
+            add("varying vec4 xeo_vWorldPosition;");
+            add("varying vec4 xeo_vViewPosition;");
+            add("void main(void) {");
+            add("   vec4 tmpVertex = vec4(xeo_aPosition, 1.0); ");
+            add("   xeo_vWorldPosition = xeo_uModelMatrix * tmpVertex; ");
+            add("   xeo_vViewPosition = xeo_uViewMatrix * xeo_vWorldPosition;");
+            add("   gl_Position = xeo_uProjMatrix * xeo_vViewPosition;");
+            add("}");
+            return end();
+        }
+
+        function fragmentPickObject() {
+            begin();
+            add("// Object picking fragment shader");
+            add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
+            add("uniform vec4 xeo_uPickColor;");
+            add("void main(void) {");
+            add("   gl_FragColor = xeo_uPickColor; ");
+            add("}");
+            return end();
+        }
+
+        function vertexPickPrimitive() {
+            begin();
+            add("// Triangle picking vertex shader");
+            add("attribute vec3 xeo_aPosition;");
+            add("attribute vec4 xeo_aColor;");
+            add("uniform vec3 xeo_uPickColor;");
+            add("uniform mat4 xeo_uModelMatrix;");
+            add("uniform mat4 xeo_uViewMatrix;");
+            add("uniform mat4 xeo_uProjMatrix;");
+            add("varying vec4 xeo_vWorldPosition;");
+            add("varying vec4 xeo_vViewPosition;");
+            add("varying vec4 xeo_vColor;");
+            add("void main(void) {");
+            add("   vec4 tmpVertex = vec4(xeo_aPosition, 1.0); ");
+            add("   vec4 worldPosition = xeo_uModelMatrix * tmpVertex; ");
+            add("   vec4 viewPosition = xeo_uViewMatrix * worldPosition;");
+            add("   xeo_vColor = xeo_aColor;");
+            add("   gl_Position = xeo_uProjMatrix * viewPosition;");
+            add("}");
+            return end();
+        }
+
+        function fragmentPickPrimitive() {
+            begin();
+            add("// Triangle picking fragment shader");
+            add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
+            add("varying vec4 xeo_vColor;");
+            add("void main(void) {");
+            add("   gl_FragColor = xeo_vColor;");
+            add("}");
+            return end();
+        }
+
+        function vertexDraw() {
+
+            var vertex = states.shader.vertex;
+
+            if (vertex) {
+
+                // Custom vertex shader
+                return vertex;
+            }
+
+            var i;
+            var len;
+            var light;
+
+            begin();
+
+            add("// Drawing vertex shader");
+
+            add("uniform mat4 xeo_uModelMatrix;          // Modeling matrix");
+            add("uniform mat4 xeo_uViewMatrix;           // Viewing matrix");
+            add("uniform mat4 xeo_uProjMatrix;           // Projection matrix");
+
+            add("attribute vec3 xeo_aPosition;           // Local-space vertex position");
+
+            add();
+
+            add("varying vec4 xeo_vViewPosition;         // Output: View-space fragment position");
+
+            if (normals) {
+
+                add();
+
+                add("attribute vec3 xeo_aNormal;             // Local-space vertex normal");
+
+                add("uniform mat4 xeo_uModelNormalMatrix;    // Modeling normal matrix");
+                add("uniform mat4 xeo_uViewNormalMatrix;     // Viewing normal matrix");
+
+                add("varying vec3 xeo_vViewEyeVec;           // Output: View-space vector from fragment position to eye");
+                add("varying vec3 xeo_vViewNormal;           // Output: View-space normal");
+
+                // Lights
+                for (i = 0, len = states.lights.lights.length; i < len; i++) {
+
+                    light = states.lights.lights[i];
+
+                    if (light.type === "ambient") {
+                        continue;
+                    }
+
+                    if (light.type === "dir") {
+                        add("uniform vec3 xeo_uLightDir" + i + ";   // Directional light direction");
+                    }
+
+                    if (light.type === "point") {
+                        add("uniform vec3 xeo_uLightPos" + i + ";   // Positional light position");
+                    }
+
+                    if (light.type === "spot") {
+                        add("uniform vec3 xeo_uLightPos" + i + ";   // Spot light position");
+                    }
+
+                    add("varying vec4 xeo_vViewLightVecAndDist" + i + "; // Output: Vector from vertex to light, packaged with the pre-computed length of that vector");
+                }
+            }
+
+            if (normalMapping) {
+                add("attribute vec3 xeo_aTangent;");
+            }
+
+            if (texturing) {
+
+                add();
+
+                // Vertex UV coordinate
+                add("attribute vec2 xeo_aUV;");
+
+                // Fragment UV coordinate
+                add("varying vec2 xeo_vUV;");
+            }
+
+            if (states.geometry.colors) {
+
+                // Vertex color
+                add("attribute vec4 xeo_aColor;");
+
+                // Fragment color
+                add("varying vec4 xeo_vColor;");
+            }
+
+            if (states.geometry.primitiveName === "points") {
+                add("uniform float xeo_uPointSize;");
+            }
+
+            if (states.billboard.active) {
+
+                add("void billboard(inout mat4 mat) {");
+                add("   mat[0][0] = 1.0;");
+                add("   mat[0][1] = 0.0;");
+                add("   mat[0][2] = 0.0;");
+                if (states.billboard.spherical) {
+                    add("   mat[1][0] = 0.0;");
+                    add("   mat[1][1] = 1.0;");
+                    add("   mat[1][2] = 0.0;");
+                }
+                add("   mat[2][0] = 0.0;");
+                add("   mat[2][1] = 0.0;");
+                add("   mat[2][2] =1.0;");
+                add("}");
+            }
+
+            // ------------------- main -------------------------------
+
+            add();
+            add("void main(void) {");
+            add();
+            add("   vec4 localPosition = vec4(xeo_aPosition, 1.0); ");
+
+            if (normals) {
+
+                add("   vec4 localNormal = vec4(xeo_aNormal, 0.0); ");
+                add("   mat4 modelNormalMatrix = xeo_uModelNormalMatrix;");
+                add("   mat4 viewNormalMatrix = xeo_uViewNormalMatrix;");
+            }
+
+            add("   mat4 modelMatrix = xeo_uModelMatrix;");
+            add("   mat4 viewMatrix = xeo_uViewMatrix;");
+            add("   vec4 worldPosition;");
+
+            if (states.stationary.active) {
+                add("   viewMatrix[3][0] = viewMatrix[3][1] = viewMatrix[3][2] = 0.0;")
+            }
+
+            if (states.billboard.active) {
+
+                add("   mat4 modelViewMatrix =  xeo_uViewMatrix * xeo_uModelMatrix;");
+
+                add("   billboard(modelMatrix);");
+                add("   billboard(viewMatrix);");
+                add("   billboard(modelViewMatrix);");
+
+                if (normals) {
+
+                    add("   mat4 modelViewNormalMatrix =  xeo_uViewNormalMatrix * xeo_uModelNormalMatrix;");
+
+                    add("   billboard(modelNormalMatrix);");
+                    add("   billboard(viewNormalMatrix);");
+                    add("   billboard(modelViewNormalMatrix);");
+                }
+
+                add("   worldPosition = modelMatrix * localPosition;");
+                add("   vec4 viewPosition = modelViewMatrix * localPosition;");
+
+            } else {
+
+                add("   worldPosition = modelMatrix * localPosition;");
+                add("   vec4 viewPosition  = viewMatrix * worldPosition; ");
+            }
+
+            if (normals) {
+
+                add("   vec3 worldNormal = (modelNormalMatrix * localNormal).xyz; ");
+                add("   xeo_vViewNormal = normalize((viewNormalMatrix * vec4(worldNormal, 1.0)).xyz);");
+
+                if (normalMapping) {
+
+                    // Compute the tangent-bitangent-normal (TBN) matrix
+
+                    add("   vec3 tangent = normalize((xeo_uViewNormalMatrix * xeo_uModelNormalMatrix * vec4(xeo_aTangent, 1.0)).xyz);");
+                    add("   vec3 bitangent = cross(xeo_vViewNormal, tangent);");
+                    add("   mat3 TBN = mat3(tangent, bitangent, xeo_vViewNormal);");
+                }
+
+                add("   vec3 tmpVec3;");
+                add("   float lightDist;");
+
+                // Lights
+
+                for (i = 0, len = states.lights.lights.length; i < len; i++) {
+
+                    light = states.lights.lights[i];
+
+                    if (light.type === "ambient") {
+                        continue;
+                    }
+
+                    if (light.type === "dir") {
+
+                        // Directional light
+
+                        if (light.space === "world") {
+
+                            // World space light
+
+                            add("   tmpVec3 = xeo_uLightDir" + i + ";");
+
+                            // Transform to View space
+                            add("   tmpVec3 = vec3(viewMatrix * vec4(tmpVec3, 1.0)).xyz;");
+
+                            if (normalMapping) {
+
+                                // Transform to Tangent space
+                                add("   tmpVec3 *= TBN;");
+                            }
+
+                        } else {
+
+                            // View space light
+
+                            add("   tmpVec3 = xeo_uLightDir" + i + ";");
+
+                            if (normalMapping) {
+
+                                // Transform to Tangent space
+                                add("   tmpVec3 *= TBN;");
+                            }
+                        }
+
+                        // Pipe the light direction and zero distance through to the fragment shader
+                        add("   xeo_vViewLightVecAndDist" + i + " = vec4(tmpVec3, 0.0);");
+                    }
+
+                    if (light.type === "point") {
+
+                        // Positional light
+
+                        if (light.space === "world") {
+
+                            // World space
+
+                            // Get vertex -> light vector in View space
+                            // Transform light pos to View space first
+                            add("   tmpVec3 = (viewMatrix * vec4(xeo_uLightPos" + i + ", 1.0)).xyz - viewPosition.xyz;"); // Vector from World coordinate to light pos
+
+                            // Get distance to light
+                            add("   lightDist = abs(length(tmpVec3));");
+
+                            if (normalMapping) {
+
+                                // Transform light vector to Tangent space
+                               add("   tmpVec3 *= TBN;");
+                            }
+
+                        } else {
+
+                            // View space
+
+                            // Get vertex -> light vector in View space
+                            add("   tmpVec3 = xeo_uLightPos" + i + ".xyz - viewPosition.xyz;"); // Vector from View coordinate to light pos
+
+                            // Get distance to light
+                            add("   lightDist = abs(length(tmpVec3));");
+
+                            if (normalMapping) {
+
+                                // Transform light vector to tangent space
+                                add("   tmpVec3 *= TBN;");
+                            }
+                        }
+
+                        // Pipe the light direction and distance through to the fragment shader
+                        add("   xeo_vViewLightVecAndDist" + i + " = vec4(tmpVec3, lightDist);");
+                    }
+                }
+
+                add("   xeo_vViewEyeVec = -viewPosition.xyz;");
+
+                if (normalMapping) {
+
+                    // Transform vertex->eye vector to tangent space
+                    add("   xeo_vViewEyeVec *= TBN;");
+                }
+            }
+
+            if (texturing) {
+                add("   xeo_vUV = xeo_aUV;");
+            }
+
+            if (states.geometry.colors) {
+                add("   xeo_vColor = xeo_aColor;");
+            }
+
+            if (states.geometry.primitiveName === "points") {
+                add("   gl_PointSize = xeo_uPointSize;");
+            }
+
+            add("   xeo_vViewPosition = viewPosition;");
+
+            add("   gl_Position = xeo_uProjMatrix * viewPosition;");
+
+            add("}");
+
+            return end();
+        }
+
+
+        function fragmentDraw() {
+
+            var fragment = states.shader.fragment;
+            if (fragment) {
+                // Custom fragment shader
+                return fragment;
+            }
+
+            var i;
+            var len;
+
+            var light;
+
+            begin();
+
+            add("// Drawing fragment shader");
+
+            add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
+            add();
+
+            if (normals) {
+
+                add("varying vec4 xeo_vViewPosition;");
+
+                add();
+
+                add("uniform vec3 xeo_uSpecular;");
+                add("uniform float xeo_uShininess;");
+                add("uniform float xeo_uReflectivity;");
+            }
+
+            if (normalMapping) {
+            //    add("varying vec3 xeo_vTangent;");
+            }
+
+            add("uniform vec3 xeo_uEmissive;");
+            add("uniform float xeo_uOpacity;");
+            add("uniform vec3 xeo_uDiffuse;");
+
+            add();
+
+            if (states.geometry.colors) {
+                add("varying vec4 xeo_vColor;");
+            }
+
+            if (texturing) {
+
+                add();
+                comment("Texture variables");
+                add();
+
+                if (states.geometry.uv) {
+                    add("varying vec2 xeo_vUV;");
+                }
+
+                if (states.material.emissiveMap) {
+                    add("uniform sampler2D xeo_uEmissiveMap;");
+                    if (states.material.emissiveMap.matrix) {
+                        add("uniform mat4 xeo_uEmissiveMapMatrix;");
+                    }
+                }
+
+                if (states.material.opacityMap) {
+                    add("uniform sampler2D xeo_uOpacityMap;");
+                    if (states.material.opacityMap.matrix) {
+                        add("uniform mat4 xeo_uOpacityMapMatrix;");
+                    }
+                }
+
+                if (states.material.ambientMap) {
+                    add("uniform sampler2D xeo_uAmbientMap;");
+                    if (states.material.ambientMap.matrix) {
+                        add("uniform mat4 xeo_uAmbientMapMatrix;");
+                    }
+                }
+
+                if (states.material.diffuseMap) {
+                    add("uniform sampler2D xeo_uDiffuseMap;");
+                    if (states.material.diffuseMap.matrix) {
+                        add("uniform mat4 xeo_uDiffuseMapMatrix;");
+                    }
+                }
+
+                if (normals) {
+
+                    if (states.material.specularMap) {
+                        add("uniform sampler2D xeo_uSpecularMap;");
+                        if (states.material.specularMap.matrix) {
+                            add("uniform mat4 xeo_uSpecularMapMatrix;");
+                        }
+                    }
+
+                    if (states.material.reflectivityMap) {
+                        add("uniform sampler2D xeo_uTextureReflectivity;");
+                        if (states.material.reflectivityMap.matrix) {
+                            add("uniform mat4 xeo_uTextureReflectivityMatrix;");
+                        }
+                    }
+
+                    if (normalMapping) {
+                        add("uniform sampler2D xeo_uNormalMap;");
+                        if (states.material.normalMap.matrix) {
+                            add("uniform mat4 xeo_uNormalMapMatrix;");
+                        }
+                    }
+                }
+            }
+
+            add("uniform vec3 xeo_uLightAmbientColor;");
+            add("uniform float xeo_uLightAmbientIntensity;");
+
+            if (normals) {
+
+                // View-space vector from fragment to eye
+
+                add("varying vec3 xeo_vViewEyeVec;");
+
+                // View-space fragment normal
+
+                add("varying vec3 xeo_vViewNormal;");
+
+                // Light sources
+
+                for (i = 0, len = states.lights.lights.length; i < len; i++) {
+
+                    light = states.lights.lights[i];
+
+                    if (light.type === "ambient") {
+                        continue;
+                    }
+
+                    add("uniform vec3 xeo_uLightColor" + i + ";");
+                    add("uniform float xeo_uLightIntensity" + i + ";");
+                    if (light.type === "point") {
+                        add("uniform vec3 xeo_uLightAttenuation" + i + ";");
+                    }
+                    add("varying vec4 xeo_vViewLightVecAndDist" + i + ";");         // Vector from light to vertex
+                }
+
+                if (diffuseFresnel || specularFresnel || opacityFresnel || emissiveFresnel || reflectivityFresnel) {
+
+                    add();
+                    comment("Fresnel variables");
+                    add();
+
+                    if (diffuseFresnel) {
+                        add("uniform float xeo_uDiffuseFresnelCenterBias;");
+                        add("uniform float xeo_uDiffuseFresnelEdgeBias;");
+                        add("uniform float xeo_uDiffuseFresnelPower;");
+                        add("uniform vec3 xeo_uDiffuseFresnelCenterColor;");
+                        add("uniform vec3 xeo_uDiffuseFresnelEdgeColor;");
+                        add();
+                    }
+
+                    if (specularFresnel) {
+                        add("uniform float xeo_uSpecularFresnelCenterBias;");
+                        add("uniform float xeo_uSpecularFresnelEdgeBias;");
+                        add("uniform float xeo_uSpecularFresnelPower;");
+                        add("uniform vec3 xeo_uSpecularFresnelCenterColor;");
+                        add("uniform vec3 xeo_uSpecularFresnelEdgeColor;");
+                        add();
+                    }
+
+                    if (opacityFresnel) {
+                        add("uniform float xeo_uOpacityFresnelCenterBias;");
+                        add("uniform float xeo_uOpacityFresnelEdgeBias;");
+                        add("uniform float xeo_uOpacityFresnelPower;");
+                        add("uniform vec3 xeo_uOpacityFresnelCenterColor;");
+                        add("uniform vec3 xeo_uOpacityFresnelEdgeColor;");
+                        add();
+                    }
+
+                    if (reflectivityFresnel) {
+                        add("uniform float xeo_uReflectivityFresnelCenterBias;");
+                        add("uniform float xeo_uReflectivityFresnelEdgeBias;");
+                        add("uniform float xeo_uReflectivityFresnelPower;");
+                        add("uniform vec3 xeo_uReflectivityFresnelCenterColor;");
+                        add("uniform vec3 xeo_uReflectivityFresnelEdgeColor;");
+                        add();
+                    }
+
+                    if (emissiveFresnel) {
+                        add("uniform float xeo_uEmissiveFresnelCenterBias;");
+                        add("uniform float xeo_uEmissiveFresnelEdgeBias;");
+                        add("uniform float xeo_uEmissiveFresnelPower;");
+                        add("uniform vec3 xeo_uEmissiveFresnelCenterColor;");
+                        add("uniform vec3 xeo_uEmissiveFresnelEdgeColor;");
+                        add();
+                    }
+
+                    comment("Fresnel calculation");
+                    add();
+                    add("float fresnel(vec3 eyeDir, vec3 normal, float edgeBias, float centerBias, float power) {");
+                    add("    float fr = abs(dot(eyeDir, normal));");
+                    add("    float finalFr = clamp((fr - edgeBias) / (centerBias - edgeBias), 0.0, 1.0);");
+                    add("    return pow(finalFr, power);");
+                    add("}");
+                }
+            }
+
+            add();
+
+            add("void main(void) {");
+
+            add();
+
+            add("   vec3 ambient = xeo_uLightAmbientColor;");
+            add("   vec3 emissive = xeo_uEmissive;");
+            add("   float opacity = xeo_uOpacity;");
+
+            if (states.geometry.colors) {
+                add("   vec3 diffuse = xeo_vColor.rgb;"); // Diffuse color from vertex colors
+            } else {
+                add("   vec3 diffuse = xeo_uDiffuse;");
+            }
+
+            if (normals) {
+
+                add("vec3 viewEyeVec = normalize(xeo_vViewEyeVec);");
+
+                add("   vec3 specular = xeo_uSpecular;");
+                add("   float shininess = xeo_uShininess;");
+                add("   float reflectivity = xeo_uReflectivity;");
+
+                if (normalMapping) {
+
+                    add("   vec3 viewNormal = vec3(0.0, 1.0, 0.0);");
+
+                } else {
+
+                    // Normalize the interpolated normals in the per-fragment-fragment-shader,
+                    // because if we linear interpolated two nonparallel normalized vectors,
+                    // the resulting vector won’t be of length 1
+
+                    add("   vec3 viewNormal = normalize(xeo_vViewNormal);");
+                }
+            }
+
+            if (texturing) {
+
+                // Apply textures
+
+                add();
+                comment("   Apply textures");
+                add();
+
+                add("   vec4 texturePos = vec4(xeo_vUV.s, xeo_vUV.t, 1.0, 1.0);");
+                add("   vec2 textureCoord;");
+
+                var material = states.material;
+
+                // Opacity and emissive lighting and mapping are independent of normals
+
+                if (material.emissiveMap) {
+                    add();
+                    if (material.emissiveMap.matrix) {
+                        add("   textureCoord = (xeo_uEmissiveMapMatrix * texturePos).xy;");
+                    } else {
+                        add("   textureCoord = texturePos.xy;");
+                    }
+                    add("   textureCoord.y = -textureCoord.y;");
+                    add("   emissive = texture2D(xeo_uEmissiveMap, textureCoord).rgb;");
+                }
+
+                if (material.opacityMap) {
+                    add();
+                    if (material.opacityMap.matrix) {
+                        add("   textureCoord = (xeo_uOpacityMapMatrix * texturePos).xy;");
+                    } else {
+                        add("   textureCoord = texturePos.xy;");
+                    }
+                    add("   textureCoord.y = -textureCoord.y;");
+                    add("   opacity = texture2D(xeo_uOpacityMap, textureCoord).b;");
+                }
+
+                if (material.ambientMap) {
+                    add();
+                    if (material.ambientMap.matrix) {
+                        add("   textureCoord = (xeo_uAmbientMapMatrix * texturePos).xy;");
+                    } else {
+                        add("   textureCoord = texturePos.xy;");
+                    }
+                    add("   textureCoord.y = -textureCoord.y;");
+                    add("   ambient = texture2D(xeo_uAmbientMap, textureCoord).rgb;");
+                }
+
+                if (material.diffuseMap) {
+                    add();
+                    if (material.diffuseMap.matrix) {
+                        add("   textureCoord = (xeo_uDiffuseMapMatrix * texturePos).xy;");
+                    } else {
+                        add("   textureCoord = texturePos.xy;");
+                    }
+                    add("   textureCoord.y = -textureCoord.y;");
+                    add("   diffuse = texture2D(xeo_uDiffuseMap, textureCoord).rgb;");
+                }
+
+                if (normals) {
+
+                    if (material.specularMap) {
+                        add();
+                        if (material.specularMap.matrix) {
+                            add("   textureCoord = (xeo_uSpecularMapMatrix * texturePos).xy;");
+                        } else {
+                            add("   textureCoord = texturePos.xy;");
+                        }
+                        add("   textureCoord.y = -textureCoord.y;");
+                        add("   specular = texture2D(xeo_uSpecularMap, textureCoord).rgb;");
+                    }
+
+                    if (material.reflectivityMap) {
+                        add();
+                        if (material.reflectivityMap.matrix) {
+                            add("   textureCoord = (xeo_uReflectivityMapMatrix * texturePos).xy;");
+                        } else {
+                            add("   textureCoord = texturePos.xy;");
+                        }
+                        add("   textureCoord.y = -textureCoord.y;");
+                        add("   reflectivity = texture2D(xeo_uReflectivityMap, textureCoord).b;");
+                    }
+                }
+
+                if (normalMapping) {
+                    add();
+                    if (material.normalMap.matrix) {
+                        add("   textureCoord = (xeo_uNormalMapMatrix * texturePos).xy;");
+                    } else {
+                        add("   textureCoord = texturePos.xy;");
+                    }
+                    add("   textureCoord.y = -textureCoord.y;");
+                    add("   viewNormal = normalize(texture2D(xeo_uNormalMap, vec2(textureCoord.x, textureCoord.y)).xyz * 2.0 - 1.0);");
+                }
+            }
+
+            add("   vec4 fragColor;");
+
+            if (normals) {
+
+                // Get Lambertian shading terms
+
+                add();
+                add("   vec3  diffuseLight = vec3(0.0, 0.0, 0.0);");
+                add("   vec3  specularLight = vec3(0.0, 0.0, 0.0);");
+
+                add();
+                add("   vec3  viewLightVec;");
+                add("   float specAngle;");
+                add("   float lightDist;");
+                add("   float attenuation;");
+
+
+                for (i = 0, len = states.lights.lights.length; i < len; i++) {
+
+                    light = states.lights.lights[i];
+
+                    if (light.type === "ambient") {
+                        continue;
+                    }
+
+                    // If normal mapping, the fragment->light vector will be in tangent space
+                    add("   viewLightVec = normalize(xeo_vViewLightVecAndDist" + i + ".xyz);");
+
+
+                    if (light.type === "point") {
+                        add();
+
+                        add("   specAngle = max(dot(viewNormal, viewLightVec), 0.0);");
+
+                        add("   lightDist = xeo_vViewLightVecAndDist" + i + ".w;");
+
+                        add("   attenuation = 1.0 - (" +
+                            "  xeo_uLightAttenuation" + i + "[0] + " +
+                            "  xeo_uLightAttenuation" + i + "[1] * lightDist + " +
+                            "  xeo_uLightAttenuation" + i + "[2] * lightDist * lightDist);");
+
+                        add("   diffuseLight += xeo_uLightIntensity" + i + " * specAngle * xeo_uLightColor" + i + " * attenuation;");
+
+                        add("   specularLight += xeo_uLightIntensity" + i + " *  pow(max(dot(reflect(-viewLightVec, -viewNormal), viewEyeVec), 0.0), shininess) * attenuation;");
+                    }
+
+                    if (light.type === "dir") {
+
+                        add("   specAngle = max(dot(viewNormal, -viewLightVec), 0.0);");
+
+                        add("   diffuseLight += xeo_uLightIntensity" + i + " * specAngle * xeo_uLightColor" + i + ";");
+
+                        add("   specularLight += xeo_uLightIntensity" + i + " * pow(max(dot(reflect(viewLightVec, -viewNormal), viewEyeVec), 0.0), shininess);");
+                    }
+                }
+
+                add();
+
+                // Get Fresnel terms
+
+                if (diffuseFresnel || specularFresnel || opacityFresnel || emissiveFresnel || reflectivityFresnel) {
+
+                    add();
+                    comment("   Apply Fresnels");
+
+                    if (diffuseFresnel) {
+                        add();
+                        add("float diffuseFresnel = fresnel(viewEyeVec, viewNormal, xeo_uDiffuseFresnelEdgeBias, xeo_uDiffuseFresnelCenterBias, xeo_uDiffuseFresnelPower);");
+                        add("diffuse *= mix(xeo_uDiffuseFresnelEdgeColor, xeo_uDiffuseFresnelCenterColor, diffuseFresnel);");
+                    }
+
+                    if (specularFresnel) {
+                        add();
+                        add("float specularFresnel = fresnel(viewEyeVec, viewNormal, xeo_uSpecularFresnelEdgeBias, xeo_uSpecularFresnelCenterBias, xeo_uSpecularFresnelPower);");
+                        add("specular *= mix(xeo_uSpecularFresnelEdgeColor, xeo_uSpecularFresnelCenterColor, specularFresnel);");
+                    }
+
+                    if (opacityFresnel) {
+                        add();
+                        add("float opacityFresnel = fresnel(viewEyeVec, viewNormal, xeo_uOpacityFresnelEdgeBias, xeo_uOpacityFresnelCenterBias, xeo_uOpacityFresnelPower);");
+                        add("opacity *= mix(xeo_uOpacityFresnelEdgeColor.r, xeo_uOpacityFresnelCenterColor.r, opacityFresnel);");
+                    }
+
+                    if (emissiveFresnel) {
+                        add();
+                        add("float emissiveFresnel = fresnel(viewEyeVec, viewNormal, xeo_uEmissiveFresnelEdgeBias, xeo_uEmissiveFresnelCenterBias, xeo_uEmissiveFresnelPower);");
+                        add("emissive *= mix(xeo_uEmissiveFresnelEdgeColor, xeo_uEmissiveFresnelCenterColor, emissiveFresnel);");
+                    }
+                }
+
+                // Combine terms with Blinn-Phong BRDF
+
+                add();
+                comment("   Phong BRDF");
+                add();
+                add("   fragColor = vec4((specular * specularLight) + ((diffuseLight + (ambient * xeo_uLightAmbientIntensity) ) * diffuse) + emissive, opacity);");
+
+            } else {
+
+                // No normals
+                add();
+                comment("   Non-Lambertian BRDF");
+                add();
+                add("   fragColor = vec4(emissive + diffuse, opacity);");
+            }
+
+            add("   fragColor.rgb *= fragColor.a;");
+
+            add("   gl_FragColor = fragColor;");
+
+            add("}");
+
+            return end();
+        }
+
+        // Start fresh program source
+        function begin() {
+            src = [];
+        }
+
+        // Append to program source
+        function add(txt) {
+            src.push(txt || "");
+        }
+
+        // Append to program source
+        function comment(txt) {
+            if (txt) {
+                var c = 0;
+                for (var i = 0, len = txt.length; i < len; i++) {
+                    if (txt.charAt(i) === " ") {
+                        c++;
+                    }
+                }
+                var pad = c > 0 ? txt.substring(0, c - 1) : "";
+                src.push(pad + "// " + txt.substring(c - 1));
+            }
+        }
+
+        // Finish building program source
+        function end() {
+            return src;
+        }
+
+        function getFSFloatPrecision(gl) {
+
+            if (!gl.getShaderPrecisionFormat) {
+                return "mediump";
+            }
+
+            if (gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT).precision > 0) {
+                return "highp";
+            }
+
+            if (gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.MEDIUM_FLOAT).precision > 0) {
+                return "mediump";
+            }
+
+            return "lowp";
+        }
+
+    })();
+
+})();;(function () {
+
+    "use strict";
+
+    /**
+     * A chunk of WebGL state changes to render a XEO.renderer.State.
+     *
+     * @private
+     */
+    XEO.renderer.Chunk = function () {
+    };
+
+    /**
+     * Initialises the chunk.
+     *
+     * @param {Number} id Chunk ID
+     * @param {XEO.renderer.Program} program Program to render this chunk
+     * @param {XEO.renderer.State} state The state rendered by this chunk
+     */
+    XEO.renderer.Chunk.prototype.init = function (id, program, state) {
+
+        this.id = id;
+
+        this.program = program;
+
+        this.state = state;
+
+        this.useCount = 0;
+
+        if (this.build) {
+            this.build();
+        }
+    };
+
+})();
+;(function () {
+
+    "use strict";
+
+    /**
+     *  Manages creation, reuse and destruction of {@link XEO.renderer.Chunk}s.
+     */
+    XEO.renderer.ChunkFactory = function () {
+        this.types = XEO.renderer.ChunkFactory.types;
+    };
+
+    /**
+     * Sub-classes of {@link XEO.renderer.Chunk} provided by this factory
+     */
+    XEO.renderer.ChunkFactory.types = {};   // Supported chunk classes, installed by #createChunkType
+
+    /**
+     * Creates a chunk type.
+     *
+     * @param params Members to augment the chunk class prototype with
+     * @param params.type Type name for the new chunk class
+     * @param params.draw Method to render the chunk in draw render
+     * @param params.pickObject
+     * @param params.pickPrimitive
+     */
+    XEO.renderer.ChunkFactory.createChunkType = function (params) {
+
+        if (!params.type) {
+            throw "'type' expected in params";
+        }
+
+        var supa = XEO.renderer.Chunk;
+
+        var chunkClass = function () { // Create the class
+            this.useCount = 0;
+            this.init.apply(this, arguments);
+        };
+
+        chunkClass.prototype = new supa();              // Inherit from base class
+        chunkClass.prototype.constructor = chunkClass;
+
+        XEO._apply(params, chunkClass.prototype);   // Augment subclass
+
+        XEO.renderer.ChunkFactory.types[params.type] = {
+            constructor: chunkClass,
+            chunks: {},
+            freeChunks: [],
+            freeChunksLen: 0
+        };
+
+        return chunkClass;
+    };
+
+    /**
+     * Gets a chunk from this factory.
+     */
+    XEO.renderer.ChunkFactory.prototype.getChunk = function (id, type, program, state) {
+
+        var chunkType = this.types[type];
+
+        if (!chunkType) {
+            throw "chunk type not supported: '" + type + "'";
+        }
+
+        var chunk = chunkType.chunks[id];
+
+        if (chunk) {
+            chunk.useCount++;
+            return chunk;
+        }
+
+        // Try to recycle a free chunk
+
+        if (chunkType.freeChunksLen > 0) {
+            chunk = chunkType.freeChunks[--chunkType.freeChunksLen];
+        }
+
+        if (chunk) {
+
+            // Reinitialise the free chunk
+
+            chunk.init(id, program, state);
+
+        } else {
+
+            // No free chunk, create a new one
+
+            chunk = new chunkType.constructor(id, program, state);
+        }
+
+        chunk.useCount = 1;
+
+        chunkType.chunks[id] = chunk;
+
+        return chunk;
+    };
+
+    /**
+     * Releases a chunk back to this factory.
+     *
+     * @param {XEO.renderer.Chunk} chunk Chunk to release
+     */
+    XEO.renderer.ChunkFactory.prototype.putChunk = function (chunk) {
+
+        if (chunk.useCount === 0) { // In case of excess puts
+            return;
+        }
+
+        // Free the chunk if use count now zero
+
+        if (--chunk.useCount <= 0) {
+
+            var chunkType = this.types[chunk.type];
+
+            delete chunkType.chunks[chunk.id];
+
+            chunkType.freeChunks[chunkType.freeChunksLen++] = chunk;
+        }
+    };
+
+    /**
+     * Restores the chunks in this factory after a WebGL context recovery.
+     */
+    XEO.renderer.ChunkFactory.prototype.webglRestored = function () {
+
+        var types = this.types;
+        var chunkType;
+        var chunks;
+        var chunk;
+
+        for (var type in types) {
+
+            if (types.hasOwnProperty(type)) {
+
+                chunkType = types[type];
+
+                chunks = chunkType.chunks;
+
+                for (var id in chunks) {
+
+                    if (chunks.hasOwnProperty(id)) {
+
+                        chunk = chunks[id];
+
+                        if (chunk.build) {
+                            chunk.build();
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+})();
+;(function () {
+
+    "use strict";
+
+    /**
+     * Create display state chunk type for draw and pick render of user clipping planes
+     */
+    XEO.renderer.ChunkFactory.createChunkType({
+
+        type: "clips",
+
+        build: function () {
+
+            var i;
+            var len;
+
+            this._uClipModeDraw = this._uClipModeDraw || [];
+            this._uClipPlaneDraw = this._uClipPlaneDraw || [];
+
+            var draw = this.program.draw;
+
+            for (i = 0, len = this.state.clips.length; i < len; i++) {
+                this._uClipModeDraw[i] = draw.getUniform("xeo_uClipMode" + i);
+                this._uClipPlaneDraw[i] = draw.getUniform("xeo_uClipPlane" + i)
+            }
+
+            this._uClipModePick = this._uClipModePick || [];
+            this._uClipPlanePick = this._uClipPlanePick || [];
+
+            var pick = this.program.pick;
+
+            for (i = 0, len = this.state.clips.length; i < len; i++) {
+                this._uClipModePick[i] = pick.getUniform("xeo_uClipMode" + i);
+                this._uClipPlanePick[i] = pick.getUniform("xeo_uClipPlane" + i)
+            }
+        },
+
+        drawPick: function (frameCtx) {
+
+            return;
+
+            var uClipMode = (frameCtx.pick) ? this._uClipModePick : this._uClipModeDraw;
+            var uClipPlane = (frameCtx.pick) ? this._uClipPlanePick : this._uClipPlaneDraw;
+
+            var mode;
+            var plane;
+            var clips = this.state.clips;
+            var clip;
+
+            for (var i = 0, len = clips.length; i < len; i++) {
+
+                mode = uClipMode[i];
+                plane = uClipPlane[i];
+
+                if (mode && plane) {
+
+                    clip = clips[i];
+
+                    if (clip.mode === "inside") {
+
+                        mode.setValue(2);
+                        plane.setValue(clip.plane);
+
+                    } else if (clip.mode === "outside") {
+
+                        mode.setValue(1);
+                        plane.setValue(clip.plane);
+
+                    } else {
+
+                        // Disabled
+
+                        mode.setValue(0);
+                    }
+                }
+            }
+        }
+    });
+
+})();;(function () {
+
+    "use strict";
+
+    /**
+     *
+     */
+    XEO.renderer.ChunkFactory.createChunkType({
+
+        type: "colorBuf",
+
+        // Avoid re-application of this chunk after a program switch.
+
+        programGlobal: true,
+
+        draw: function (frameCtx) {
+
+            if (!frameCtx.transparent) {
+
+                // Blending forced while rendering a transparent bin
+
+                var state = this.state;
+                var blendEnabled = state.blendEnabled;
+
+                var gl = this.program.gl;
+
+                if (frameCtx.blendEnabled !== blendEnabled) {
+
+                    if (blendEnabled) {
+                        gl.enable(gl.BLEND);
+
+                    } else {
+                        gl.disable(gl.BLEND);
+                    }
+
+                    frameCtx.blendEnabled = blendEnabled;
+                }
+
+                var colorMask = state.colorMask;
+
+                gl.colorMask(colorMask[0], colorMask[1], colorMask[2], colorMask[3]);
+            }
+        }
+    });
+
+})();
+;(function () {
+
+    "use strict";
+
+    XEO.renderer.ChunkFactory.createChunkType({
+
+        type: "cubemap",
+
+        build: function () {
+//            this._uCubeMapSampler = this._uCubeMapSampler || [];
+//            this._uCubeMapIntensity = this._uCubeMapIntensity || [];
+//            var layers = this.state.layers;
+//            if (layers) {
+//                var layer;
+//                var draw = this.program.draw;
+//                for (var i = 0, len = layers.length; i < len; i++) {
+//                    layer = layers[i];
+//                    this._uCubeMapSampler[i] = "xeo_uCubeMapSampler" + i;
+//                    this._uCubeMapIntensity[i] = draw.getUniform("xeo_uCubeMapIntensity" + i);
+//                }
+//            }
+        },
+
+        draw: function (frameCtx) {
+//            var layers = this.state.layers;
+//            if (layers) {
+//                var layer;
+//                var draw = this.program.draw;
+//                for (var i = 0, len = layers.length; i < len; i++) {
+//                    layer = layers[i];
+//                    if (this._uCubeMapSampler[i] && layer.texture) {
+//                        draw.bindTexture(this._uCubeMapSampler[i], layer.texture, frameCtx.textureUnit++);
+//                        if (this._uCubeMapIntensity[i]) {
+//                            this._uCubeMapIntensity[i].setValue(layer.intensity);
+//                        }
+//                    }
+//                }
+//            }
+//
+//            if (frameCtx.textureUnit > 10) { // TODO: Find how many textures allowed
+//                frameCtx.textureUnit = 0;
+//            }
+        }
+    });
+
+})();;(function () {
+
+    "use strict";
+
+    /**
+     *
+     */
+    XEO.renderer.ChunkFactory.createChunkType({
+
+        type: "depthBuf",
+
+        // Avoid reapplication of this chunk after a program switch.
+
+        programGlobal: true,
+
+        draw: function (frameCtx) {
+
+            var gl = this.program.gl;
+
+            var state = this.state;
+            var active = state.active;
+
+            if (frameCtx.depthbufEnabled !== active) {
+
+                if (!active) {
+                    gl.enable(gl.DEPTH_TEST);
+
+                } else {
+                    gl.disable(gl.DEPTH_TEST);
+                }
+
+                frameCtx.depthbufEnabled = active;
+            }
+
+            var clearDepth = state.clearDepth;
+
+            if (frameCtx.clearDepth !== clearDepth) {
+                gl.clearDepth(clearDepth);
+                frameCtx.clearDepth = clearDepth;
+            }
+
+            var depthFunc = state.depthFunc;
+
+            if (frameCtx.depthFunc !== depthFunc) {
+                gl.depthFunc(depthFunc);
+                frameCtx.depthFunc = depthFunc;
+            }
+
+            if (state.clear) {
+                gl.clear(gl.DEPTH_BUFFER_BIT);
+            }
+        }
+    });
+
+})();
+;(function () {
+
+    "use strict";
+
+    XEO.renderer.ChunkFactory.createChunkType({
+
+        type: "draw",
+
+        // As we apply a list of state chunks in a {@link XEO.renderer.Renderer},
+        // we track the ID of each chunk in order to avoid redundantly re-applying
+        // the same chunk. We don't want that for draw chunks however, because
+        // they contain drawElements calls, which we need to do for each object.
+
+        unique: true,
+
+        build: function () {
+            this._uPickColorObject = this.program.pickObject.getUniform("xeo_uPickColor");
+        },
+
+        draw: function (frameCtx) {
+            var state = this.state;
+            var gl = this.program.gl;
+
+            if (state.indices) {
+                gl.drawElements(state.primitive, state.indices.numItems, state.indices.itemType, 0);
+                frameCtx.drawElements++;
+            }
+        },
+
+        pickObject: function (frameCtx) {
+
+            var state = this.state;
+            var gl = this.program.gl;
+
+            if (this._uPickColorObject) {
+
+                frameCtx.pickObjects[frameCtx.pickIndex++] = this.object;
+
+                var b = frameCtx.pickIndex >> 16 & 0xFF;
+                var g = frameCtx.pickIndex >> 8 & 0xFF;
+                var r = frameCtx.pickIndex & 0xFF;
+
+                this._uPickColorObject.setValue([r / 255, g / 255, b / 255, 1]);
+
+                //frameCtx.pickIndex++
+            }
+
+            if (state.indices) {
+                gl.drawElements(state.primitive, state.indices.numItems, state.indices.itemType, 0);
+                frameCtx.drawElements++;
+            }
+        },
+
+        pickPrimitive: function () {
+
+            var state = this.state;
+            var gl = this.program.gl;
+
+            var pickPositions = state.getPickPositions();
+
+            if (pickPositions) {
+                gl.drawArrays(state.primitive, 0, pickPositions.numItems / 3);
+            }
+        }
+    });
+
+})();
+;(function () {
+
+    "use strict";
+
+    /**
+     *  Create display state chunk type for draw and pick render of geometry
+     */
+    XEO.renderer.ChunkFactory.createChunkType({
+
+        type: "geometry",
+
+        build: function () {
+
+            var draw = this.program.draw;
+            this._aPositionDraw = draw.getAttribute("xeo_aPosition");
+            this._aNormalDraw = draw.getAttribute("xeo_aNormal");
+            this._aUVDraw = draw.getAttribute("xeo_aUV");
+            this._aTangentDraw = draw.getAttribute("xeo_aTangent");
+            this._aColorDraw = draw.getAttribute("xeo_aColor");
+
+            var pickObject = this.program.pickObject;
+            this._aPositionPickObject = pickObject.getAttribute("xeo_aPosition");
+
+            var pickPrimitive = this.program.pickPrimitive;
+            this._aPositionPickPrimitive = pickPrimitive.getAttribute("xeo_aPosition");
+            this._aColorPickPrimitive = pickPrimitive.getAttribute("xeo_aColor");
+        },
+
+        draw: function (frameCtx) {
+
+            var state = this.state;
+
+            if (this._aPositionDraw) {
+                this._aPositionDraw.bindFloatArrayBuffer(state.positions);
+                frameCtx.bindArray++;
+            }
+
+            if (this._aNormalDraw) {
+                this._aNormalDraw.bindFloatArrayBuffer(state.normals);
+                frameCtx.bindArray++;
+            }
+
+            if (this._aUVDraw) {
+                this._aUVDraw.bindFloatArrayBuffer(state.uv);
+                frameCtx.bindArray++;
+            }
+
+            if (this._aColorDraw) {
+                this._aColorDraw.bindFloatArrayBuffer(state.colors);
+                frameCtx.bindArray++;
+            }
+
+            if (this._aTangentDraw) {
+
+                // Tangents array is lazy-built from UVs and normals,
+                // now that we know that we need it
+
+                this._aTangentDraw.bindFloatArrayBuffer(state.getTangents());
+                frameCtx.bindArray++;
+            }
+
+            if (state.indices) {
+                state.indices.bind();
+                frameCtx.bindArray++;
+            }
+        },
+
+        pickObject: function () {
+
+            var state = this.state;
+
+            if (this._aPositionPickObject) {
+                this._aPositionPickObject.bindFloatArrayBuffer(state.positions);
+            }
+
+            if (state.indices) {
+                state.indices.bind();
+            }
+        },
+
+        pickPrimitive: function () {
+
+            var state = this.state;
+
+            // Arrays for primitive-picking are lazy-built
+            // now that we know we need them
+
+            if (this._aPositionPickPrimitive) {
+                this._aPositionPickPrimitive.bindFloatArrayBuffer(state.getPickPositions());
+            }
+
+            if (this._aColorPickPrimitive) {
+                this._aColorPickPrimitive.bindFloatArrayBuffer(state.getPickColors());
+            }
+        }
+    });
+
+})();;(function () {
+
+    "use strict";
+
+    XEO.renderer.ChunkFactory.createChunkType({
+
+        type: "lights",
+
+        build: function () {
+
+            this._uLightAmbientColor = this._uLightAmbientColor || [];
+            this._uLightAmbientIntensity = this._uLightAmbientIntensity || [];
+
+            this._uLightColor = this._uLightColor || [];
+            this._uLightIntensity = this._uLightIntensity || [];
+
+            this._uLightDir = this._uLightDir || [];
+            this._uLightPos = this._uLightPos || [];
+
+            this._uLightAttenuation = this._uLightAttenuation || [];
+
+            var lights = this.state.lights;
+            var program = this.program;
+
+            for (var i = 0, len = lights.length; i < len; i++) {
+
+                switch (lights[i].type) {
+
+                    case "ambient":
+                        this._uLightAmbientColor[i] = program.draw.getUniform("xeo_uLightAmbientColor");
+                        this._uLightAmbientIntensity[i] = program.draw.getUniform("xeo_uLightAmbientIntensity");
+                        break;
+
+                    case "dir":
+                        this._uLightColor[i] = program.draw.getUniform("xeo_uLightColor" + i);
+                        this._uLightIntensity[i] = program.draw.getUniform("xeo_uLightIntensity" + i);
+                        this._uLightPos[i] = null;
+                        this._uLightDir[i] = program.draw.getUniform("xeo_uLightDir" + i);
+                        break;
+
+                    case "point":
+                        this._uLightColor[i] = program.draw.getUniform("xeo_uLightColor" + i);
+                        this._uLightIntensity[i] = program.draw.getUniform("xeo_uLightIntensity" + i);
+                        this._uLightPos[i] = program.draw.getUniform("xeo_uLightPos" + i);
+                        this._uLightDir[i] = null;
+                        this._uLightAttenuation[i] = program.draw.getUniform("xeo_uLightAttenuation" + i);
+                        break;
+                }
+            }
+        },
+
+        draw: function () {
+
+            var lights = this.state.lights;
+            var light;
+
+            for (var i = 0, len = lights.length; i < len; i++) {
+
+                light = lights[i];
+
+                // Ambient color
+
+                if (this._uLightAmbientColor[i]) {
+                    this._uLightAmbientColor[i].setValue(light.color);
+
+                    if (this._uLightAmbientIntensity[i]) {
+                        this._uLightAmbientIntensity[i].setValue(light.intensity);
+                    }
+
+                } else {
+
+                    // Color and intensity
+
+                    if (this._uLightColor[i]) {
+                        this._uLightColor[i].setValue(light.color);
+                    }
+
+                    if (this._uLightIntensity[i]) {
+                        this._uLightIntensity[i].setValue(light.intensity);
+                    }
+
+                    if (this._uLightPos[i]) {
+
+                        // Position
+
+                        this._uLightPos[i].setValue(light.pos);
+
+                        // Attenuation
+
+                        if (this._uLightAttenuation[i]) {
+                            this._uLightAttenuation[i].setValue(light.attenuation);
+                        }
+                    }
+
+                    // Direction
+
+                    if (this._uLightDir[i]) {
+                        this._uLightDir[i].setValue(light.dir);
+                    }
+                }
+            }
+        }
+    });
+
+})();
+;(function () {
+
+    "use strict";
+
+    XEO.renderer.ChunkFactory.createChunkType({
+
+        type: "modelTransform",
+
+        build: function () {
+            this._uModelMatrixDraw = this.program.draw.getUniform("xeo_uModelMatrix");
+            this._uModelNormalMatrixDraw = this.program.draw.getUniform("xeo_uModelNormalMatrix");
+            this._uModelMatrixPickObject = this.program.pickObject.getUniform("xeo_uModelMatrix");
+            this._uModelMatrixPickPrimitive = this.program.pickPrimitive.getUniform("xeo_uModelMatrix");
+        },
+
+        draw: function () {
+            if (this._uModelMatrixDraw) {
+                this._uModelMatrixDraw.setValue(this.state.getMatrix());
+            }
+            if (this._uModelNormalMatrixDraw) {
+                this._uModelNormalMatrixDraw.setValue(this.state.getNormalMatrix());
+            }
+        },
+
+        pickObject: function () {
+            if (this._uModelMatrixPickObject) {
+                this._uModelMatrixPickObject.setValue(this.state.getMatrix());
+            }
+        },
+
+        pickPrimitive: function () {
+            if (this._uModelMatrixPickPrimitive) {
+                this._uModelMatrixPickPrimitive.setValue(this.state.getMatrix());
+            }
+        }
+    });
+
+})();;(function () {
+
+    "use strict";
+
+    XEO.renderer.ChunkFactory.createChunkType({
+
+        type: "modes",
+
+        build: function () {
+        },
+
+        draw: function (frameCtx) {
+
+            var state = this.state;
+            var gl = this.program.gl;
+
+            var backfaces = state.backfaces;
+
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+
+            var frontface = state.frontface;
+
+            if (frameCtx.frontface !== frontface) {
+
+                // frontface is boolean for speed,
+                // true == "ccw", false == "cw"
+
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
+            }
+
+            var transparent = state.transparent;
+
+            if (frameCtx.transparent !== transparent) {
+                if (!frameCtx.pick) {
+                    if (transparent) {
+
+                        // Entering a transparency bin
+
+                        gl.enable(gl.BLEND);
+                        gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+                        frameCtx.blendEnabled = true;
+                    } else {
+
+                        // Leaving a transparency bin
+
+                        gl.disable(gl.BLEND);
+                        frameCtx.blendEnabled = false;
+                    }
+                }
+                frameCtx.transparent = transparent;
+            }
+        },
+
+        pickObject: function (frameCtx) {
+
+            var state = this.state;
+            var gl = this.program.gl;
+
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+
+                // frontface is boolean for speed,
+                // true == "ccw", false == "cw"
+
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
+            }
+        },
+
+        pickPrimitive: function (frameCtx) {
+
+            var state = this.state;
+            var gl = this.program.gl;
+
+            var backfaces = state.backfaces;
+            if (frameCtx.backfaces !== backfaces) {
+                if (backfaces) {
+                    gl.disable(gl.CULL_FACE);
+                } else {
+                    gl.enable(gl.CULL_FACE);
+                }
+                frameCtx.backfaces = backfaces;
+            }
+
+            var frontface = state.frontface;
+            if (frameCtx.frontface !== frontface) {
+
+                // frontface is boolean for speed,
+                // true == "ccw", false == "cw"
+
+                if (frontface) {
+                    gl.frontFace(gl.CCW);
+                } else {
+                    gl.frontFace(gl.CW);
+                }
+                frameCtx.frontface = frontface;
+            }
+        }
+    });
+})();
+;(function () {
+
+    "use strict";
+
+    XEO.renderer.ChunkFactory.createChunkType({
+
+        type: "phongMaterial",
+
+        build: function () {
+
+            var state = this.state;
+
+            var draw = this.program.draw;
+
+            // Blinn-Phong base material
+
+            this._uDiffuse = draw.getUniform("xeo_uDiffuse");
+            this._uSpecular = draw.getUniform("xeo_uSpecular");
+            this._uEmissive = draw.getUniform("xeo_uEmissive");
+            this._uOpacity = draw.getUniform("xeo_uOpacity");
+            this._uShininess = draw.getUniform("xeo_uShininess");
+
+            this._uPointSize = draw.getUniform("xeo_uPointSize");
+
+            // Textures
+
+            if (state.ambientMap) {
+                this._uAmbientMap = "xeo_uAmbientMap";
+                this._uAmbientMapMatrix = draw.getUniform("xeo_uAmbientMapMatrix");
+            }
+
+            if (state.diffuseMap) {
+                this._uDiffuseMap = "xeo_uDiffuseMap";
+                this._uDiffuseMapMatrix = draw.getUniform("xeo_uDiffuseMapMatrix");
+            }
+
+            if (state.specularMap) {
+                this._uSpecularMap = "xeo_uSpecularMap";
+                this._uSpecularMapMatrix = draw.getUniform("xeo_uSpecularMapMatrix");
+            }
+
+            if (state.emissiveMap) {
+                this._uEmissiveMap = "xeo_uEmissiveMap";
+                this._uEmissiveMapMatrix = draw.getUniform("xeo_uEmissiveMapMatrix");
+            }
+
+            if (state.opacityMap) {
+                this._uOpacityMap = "xeo_uOpacityMap";
+                this._uOpacityMapMatrix = draw.getUniform("xeo_uOpacityMapMatrix");
+            }
+
+            if (state.reflectivityMap) {
+                this._uReflectivityMap = "xeo_uReflectivityMap";
+                this._uReflectivityMapMatrix = draw.getUniform("xeo_uReflectivityMapMatrix");
+            }
+
+            if (state.normalMap) {
+                this._uNormalMap = "xeo_uNormalMap";
+                this._uNormalMapMatrix = draw.getUniform("xeo_uNormalMapMatrix");
+            }
+
+            // Fresnel effects
+
+            if (state.diffuseFresnel) {
+                this._uDiffuseFresnelEdgeBias = draw.getUniform("xeo_uDiffuseFresnelEdgeBias");
+                this._uDiffuseFresnelCenterBias = draw.getUniform("xeo_uDiffuseFresnelCenterBias");
+                this._uDiffuseFresnelEdgeColor = draw.getUniform("xeo_uDiffuseFresnelEdgeColor");
+                this._uDiffuseFresnelCenterColor = draw.getUniform("xeo_uDiffuseFresnelCenterColor");
+                this._uDiffuseFresnelPower = draw.getUniform("xeo_uDiffuseFresnelPower");
+            }
+
+            if (state.specularFresnel) {
+                this._uSpecularFresnelEdgeBias = draw.getUniform("xeo_uSpecularFresnelEdgeBias");
+                this._uSpecularFresnelCenterBias = draw.getUniform("xeo_uSpecularFresnelCenterBias");
+                this._uSpecularFresnelEdgeColor = draw.getUniform("xeo_uSpecularFresnelEdgeColor");
+                this._uSpecularFresnelCenterColor = draw.getUniform("xeo_uSpecularFresnelCenterColor");
+                this._uSpecularFresnelPower = draw.getUniform("xeo_uSpecularFresnelPower");
+            }
+
+            if (state.opacityFresnel) {
+                this._uOpacityFresnelEdgeBias = draw.getUniform("xeo_uOpacityFresnelEdgeBias");
+                this._uOpacityFresnelCenterBias = draw.getUniform("xeo_uOpacityFresnelCenterBias");
+                this._uOpacityFresnelEdgeColor = draw.getUniform("xeo_uOpacityFresnelEdgeColor");
+                this._uOpacityFresnelCenterColor = draw.getUniform("xeo_uOpacityFresnelCenterColor");
+                this._uOpacityFresnelPower = draw.getUniform("xeo_uOpacityFresnelPower");
+            }
+
+            if (state.reflectivityFresnel) {
+                this._uReflectivityFresnelEdgeBias = draw.getUniform("xeo_uReflectivityFresnelEdgeBias");
+                this._uReflectivityFresnelCenterBias = draw.getUniform("xeo_uReflectivityFresnelCenterBias");
+                this._uReflectivityFresnelEdgeColor = draw.getUniform("xeo_uReflectivityFresnelEdgeColor");
+                this._uReflectivityFresnelCenterColor = draw.getUniform("xeo_uReflectivityFresnelCenterColor");
+                this._uReflectivityFresnelPower = draw.getUniform("xeo_uReflectivityFresnelPower");
+            }
+
+            if (state.emissiveFresnel) {
+                this._uEmissiveFresnelEdgeBias = draw.getUniform("xeo_uEmissiveFresnelEdgeBias");
+                this._uEmissiveFresnelCenterBias = draw.getUniform("xeo_uEmissiveFresnelCenterBias");
+                this._uEmissiveFresnelEdgeColor = draw.getUniform("xeo_uEmissiveFresnelEdgeColor");
+                this._uEmissiveFresnelCenterColor = draw.getUniform("xeo_uEmissiveFresnelCenterColor");
+                this._uEmissiveFresnelPower = draw.getUniform("xeo_uEmissiveFresnelPower");
+            }
+        },
+
+        draw: function (frameCtx) {
+
+            var draw = this.program.draw;
+            var state = this.state;
+            var gl = this.program.gl;
+
+
+            if (this._uShininess) {
+                this._uShininess.setValue(state.shininess);
+            }
+
+            if (frameCtx.lineWidth !== state.lineWidth) {
+                gl.lineWidth(state.lineWidth);
+                frameCtx.lineWidth = state.lineWidth;
+            }
+
+            if (this._uPointSize) {
+                this._uPointSize.setValue(state.pointSize);
+            }
+
+            // Ambient map
+
+            if (state.ambientMap && state.ambientMap.texture) {
+
+                draw.bindTexture(this._uAmbientMap, state.ambientMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
+
+                if (this._uAmbientMapMatrix) {
+                    this._uAmbientMapMatrix.setValue(state.ambientMap.matrix);
+                }
+            }
+
+            // Diffuse map
+
+            if (state.diffuseMap && state.diffuseMap.texture) {
+
+                draw.bindTexture(this._uDiffuseMap, state.diffuseMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
+
+                if (this._uDiffuseMapMatrix) {
+                    this._uDiffuseMapMatrix.setValue(state.diffuseMap.matrix);
+                }
+
+            } else if (this._uDiffuse) {
+                this._uDiffuse.setValue(state.diffuse);
+            }
+
+            // Specular map
+
+            if (state.specularMap && state.specularMap.texture) {
+
+                draw.bindTexture(this._uSpecularMap, state.specularMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
+
+                if (this._uSpecularMapMatrix) {
+                    this._uSpecularMapMatrix.setValue(state.specularMap.matrix);
+                }
+
+            } else if (this._uSpecular) {
+                this._uSpecular.setValue(state.specular);
+            }
+
+            // Emissive map
+
+            if (state.emissiveMap && state.emissiveMap.texture) {
+
+                draw.bindTexture(this._uEmissiveMap, state.emissiveMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
+
+                if (this._uEmissiveMapMatrix) {
+                    this._uEmissiveMapMatrix.setValue(state.emissiveMap.matrix);
+                }
+
+            } else if (this._uEmissive) {
+                this._uEmissive.setValue(state.emissive);
+            }
+
+            // Opacity map
+
+            if (state.opacityMap && state.opacityMap.texture) {
+
+                draw.bindTexture(this._uOpacityMap, state.opacityMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
+
+                if (this._uOpacityMapMatrix) {
+                    this._uOpacityMapMatrix.setValue(state.opacityMap.matrix);
+                }
+
+            } else if (this._uOpacity) {
+                this._uOpacity.setValue(state.opacity);
+            }
+
+            // Reflectivity map
+
+            if (state.reflectivityMap && state.reflectivityMap.texture) {
+
+                draw.bindTexture(this._uReflectivityMap, state.reflectivityMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+
+                if (this._uReflectivityMapMatrix) {
+                    this._uReflectivityMapMatrix.setValue(state.reflectivityMap.matrix);
+                }
+            }
+
+            // Normal map
+
+            if (state.normalMap && state.normalMap.texture) {
+
+                draw.bindTexture(this._uNormalMap, state.normalMap.texture, (frameCtx.textureUnit < 8 ? frameCtx.textureUnit++ : frameCtx.textureUnit = 0));
+                frameCtx.bindTexture++;
+
+                if (this._uNormalMapMatrix) {
+                    this._uNormalMapMatrix.setValue(state.normalMap.matrix);
+                }
+            }
+
+            // Fresnel effects
+
+            if (state.diffuseFresnel) {
+
+                if (this._uDiffuseFresnelEdgeBias) {
+                    this._uDiffuseFresnelEdgeBias.setValue(state.diffuseFresnel.edgeBias);
+                }
+
+                if (this._uDiffuseFresnelCenterBias) {
+                    this._uDiffuseFresnelCenterBias.setValue(state.diffuseFresnel.centerBias);
+                }
+
+                if (this._uDiffuseFresnelEdgeColor) {
+                    this._uDiffuseFresnelEdgeColor.setValue(state.diffuseFresnel.edgeColor);
+                }
+
+                if (this._uDiffuseFresnelCenterColor) {
+                    this._uDiffuseFresnelCenterColor.setValue(state.diffuseFresnel.centerColor);
+                }
+
+                if (this._uDiffuseFresnelPower) {
+                    this._uDiffuseFresnelPower.setValue(state.diffuseFresnel.power);
+                }
+            }
+
+            if (state.specularFresnel) {
+
+                if (this._uSpecularFresnelEdgeBias) {
+                    this._uSpecularFresnelEdgeBias.setValue(state.specularFresnel.edgeBias);
+                }
+
+                if (this._uSpecularFresnelCenterBias) {
+                    this._uSpecularFresnelCenterBias.setValue(state.specularFresnel.centerBias);
+                }
+
+                if (this._uSpecularFresnelEdgeColor) {
+                    this._uSpecularFresnelEdgeColor.setValue(state.specularFresnel.edgeColor);
+                }
+
+                if (this._uSpecularFresnelCenterColor) {
+                    this._uSpecularFresnelCenterColor.setValue(state.specularFresnel.centerColor);
+                }
+
+                if (this._uSpecularFresnelPower) {
+                    this._uSpecularFresnelPower.setValue(state.specularFresnel.power);
+                }
+            }
+
+            if (state.opacityFresnel) {
+
+                if (this._uOpacityFresnelEdgeBias) {
+                    this._uOpacityFresnelEdgeBias.setValue(state.opacityFresnel.edgeBias);
+                }
+
+                if (this._uOpacityFresnelCenterBias) {
+                    this._uOpacityFresnelCenterBias.setValue(state.opacityFresnel.centerBias);
+                }
+
+                if (this._uOpacityFresnelEdgeColor) {
+                    this._uOpacityFresnelEdgeColor.setValue(state.opacityFresnel.edgeColor);
+                }
+
+                if (this._uOpacityFresnelCenterColor) {
+                    this._uOpacityFresnelCenterColor.setValue(state.opacityFresnel.centerColor);
+                }
+
+                if (this._uOpacityFresnelPower) {
+                    this._uOpacityFresnelPower.setValue(state.opacityFresnel.power);
+                }
+            }
+
+            if (state.reflectivityFresnel) {
+
+                if (this._uReflectivityFresnelEdgeBias) {
+                    this._uReflectivityFresnelEdgeBias.setValue(state.reflectivityFresnel.edgeBias);
+                }
+
+                if (this._uReflectivityFresnelCenterBias) {
+                    this._uReflectivityFresnelCenterBias.setValue(state.reflectivityFresnel.centerBias);
+                }
+
+                if (this._uReflectivityFresnelEdgeColor) {
+                    this._uReflectivityFresnelEdgeColor.setValue(state.reflectivityFresnel.edgeColor);
+                }
+
+                if (this._uReflectivityFresnelCenterColor) {
+                    this._uReflectivityFresnelCenterColor.setValue(state.reflectivityFresnel.centerColor);
+                }
+
+                if (this._uReflectivityFresnelPower) {
+                    this._uReflectivityFresnelPower.setValue(state.reflectivityFresnel.power);
+                }
+            }
+
+            if (state.emissiveFresnel) {
+
+                if (this._uEmissiveFresnelEdgeBias) {
+                    this._uEmissiveFresnelEdgeBias.setValue(state.emissiveFresnel.edgeBias);
+                }
+
+                if (this._uEmissiveFresnelCenterBias) {
+                    this._uEmissiveFresnelCenterBias.setValue(state.emissiveFresnel.centerBias);
+                }
+
+                if (this._uEmissiveFresnelEdgeColor) {
+                    this._uEmissiveFresnelEdgeColor.setValue(state.emissiveFresnel.edgeColor);
+                }
+
+                if (this._uEmissiveFresnelCenterColor) {
+                    this._uEmissiveFresnelCenterColor.setValue(state.emissiveFresnel.centerColor);
+                }
+
+                if (this._uEmissiveFresnelPower) {
+                    this._uEmissiveFresnelPower.setValue(state.emissiveFresnel.power);
+                }
+            }
+        }
+    });
+
+})();
+;(function () {
+
+    "use strict";
+
+    XEO.renderer.ChunkFactory.createChunkType({
+
+        type: "program",
+
+        build: function () {
+        },
+
+        draw: function (frameCtx) {
+            this.program.draw.bind();
+            frameCtx.useProgram++;
+        },
+
+        pickObject: function () {
+            this.program.pickObject.bind();
+        },
+
+        pickPrimitive: function () {
+            this.program.pickPrimitive.bind();
+        }
+    });
+})();
+
+
+
+;(function () {
+
+    "use strict";
+
+    XEO.renderer.ChunkFactory.createChunkType({
+
+        type: "projTransform",
+
+        build: function () {
+            this._uProjMatrixDraw = this.program.draw.getUniform("xeo_uProjMatrix");
+            this._uProjMatrixPickObject = this.program.pickObject.getUniform("xeo_uProjMatrix");
+            this._uProjMatrixPickPrimitive = this.program.pickPrimitive.getUniform("xeo_uProjMatrix");
+        },
+
+        draw: function () {
+            if (this._uProjMatrixDraw) {
+                this._uProjMatrixDraw.setValue(this.state.getMatrix());
+            }
+        },
+
+        pickObject: function () {
+            if (this._uProjMatrixPickObject) {
+                this._uProjMatrixPickObject.setValue(this.state.getMatrix());
+            }
+        },
+
+        pickPrimitive: function () {
+            if (this._uProjMatrixPickPrimitive) {
+                this._uProjMatrixPickPrimitive.setValue(this.state.getMatrix());
+            }
+        }
+    });
+
+})();;(function () {
+
+    "use strict";
+
+    /**
+     *   Create display state chunk type for draw and pick render of renderTarget
+     */
+    XEO.renderer.ChunkFactory.createChunkType({
+
+        type: "renderTarget",
+
+        // Avoid reapplication of this chunk type after a program switch.
+
+        programGlobal: true,
+
+        draw: function (frameCtx) {
+
+            var gl = this.program.gl;
+            var state = this.state;
+
+            // Flush and unbind any render buffer already bound
+
+            if (frameCtx.renderBuf) {
+                gl.flush();
+                frameCtx.renderBuf.unbind();
+                frameCtx.renderBuf = null;
+
+                // Renderer hook to bind a custom output framebuffer
+                if (frameCtx.bindOutputFramebuffer) {
+                    frameCtx.bindOutputFramebuffer(frameCtx.pass);
+                }
+            }
+
+            // Set depthMode false and bail if no render buffer for this chunk
+            var renderBuf = state.renderBuf;
+            if (!renderBuf) {
+                frameCtx.depthMode = false;
+                return;
+            }
+
+            // Bind this chunk's render buffer, set depthMode, enable blend if depthMode false, clear buffer
+            renderBuf.bind();
+
+            frameCtx.depthMode = (state.type === state.DEPTH);
+
+            if (frameCtx.blendEnabled && !frameCtx.depthMode) {
+                gl.enable(gl.BLEND);
+                gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+            }
+
+            gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+            gl.clearColor(frameCtx.ambientColor[0], frameCtx.ambientColor[1], frameCtx.ambientColor[2], 1.0);
+            //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+
+            //gl.clear(frameCtx.depthMode ? gl.COLOR_BUFFER_BIT : gl.DEPTH_BUFFER_BIT);
+
+            frameCtx.renderBuf = renderBuf;
+        }
+    });
+
+})();;(function () {
+
+    "use strict";
+
+    XEO.renderer.ChunkFactory.createChunkType({
+
+        type: "shader",
+
+        draw: function () {
+
+            var params = this.state.params;
+
+            if (params) {
+
+                var program = this.program.draw;
+                var name;
+
+                for (name in params) {
+                    if (params.hasOwnProperty(name)) {
+                        program.setUniform(name, params[name]);
+                    }
+                }
+            }
+        }
+    });
+})();;(function () {
+
+    "use strict";
+
+    XEO.renderer.ChunkFactory.createChunkType({
+
+        type: "shaderParams",
+
+        draw: function () {
+
+            var params = this.state.params;
+
+            if (params) {
+
+                var program = this.program.draw;
+                var name;
+
+                for (name in params) {
+                    if (params.hasOwnProperty(name)) {
+                        program.setUniform(name, params[name]);
+                    }
+                }
+            }
+        }
+    });
+
+})();;(function () {
+
+    "use strict";
+
+    XEO.renderer.ChunkFactory.createChunkType({
+
+        type: "viewTransform",
+
+        build: function () {
+            this._uViewMatrixDraw = this.program.draw.getUniform("xeo_uViewMatrix");
+            this._uViewNormalMatrixDraw = this.program.draw.getUniform("xeo_uViewNormalMatrix");
+            this._uViewMatrixPickObject = this.program.pickObject.getUniform("xeo_uViewMatrix");
+            this._uViewMatrixPickPrimitive = this.program.pickPrimitive.getUniform("xeo_uViewMatrix");
+        },
+
+        draw: function () {
+            if (this._uViewMatrixDraw) {
+                this._uViewMatrixDraw.setValue(this.state.getMatrix());
+            }
+            if (this._uViewNormalMatrixDraw) {
+                this._uViewNormalMatrixDraw.setValue(this.state.getNormalMatrix());
+            }
+        },
+
+        pickObject: function (frameCtx) {
+            if (this._uViewMatrixPickObject) {
+                this._uViewMatrixPickObject.setValue(frameCtx.pickMatrix || this.state.getMatrix());
+            }
+        },
+
+        pickPrimitive: function (frameCtx) {
+            if (this._uViewMatrixPickPrimitive) {
+                this._uViewMatrixPickPrimitive.setValue(frameCtx.pickMatrix || this.state.getMatrix());
+            }
+        }
+    });
+
+})();;(function () {
+
+    "use strict";
+
+    /**
+     *
+     */
+    XEO.renderer.ChunkFactory.createChunkType({
+
+        type: "viewport",
+
+        // Avoid re-application of this chunk after a program switch.
+
+        programGlobal: true,
+
+        draw: function () {
+            var boundary = this.state.boundary;
+            this.program.gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
+        },
+
+        pickObject: function () {
+            var boundary = this.state.boundary;
+            this.program.gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
+        },
+
+        pickPrimitive: function () {
+            var boundary = this.state.boundary;
+            this.program.gl.viewport(boundary[0], boundary[1], boundary[2], boundary[3]);
+        }
+    });
+
+})();
 ;/**
 
  **Component** is the base class for all xeoEngine components.
@@ -11640,7 +11813,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  @param [cfg.components] {Array(Object)} JSON array containing parameters for {{#crossLink "Component"}}Component{{/crossLink}} subtypes to immediately create within the Scene.
  @param [cfg.passes=1] The number of times this Scene renders per frame.
  @param [cfg.clearEachPass=false] When doing multiple passes per frame, specifies whether to clear the
-  canvas before each pass (true) or just before the first pass (false).
+ canvas before each pass (true) or just before the first pass (false).
  @extends Component
  */
 (function () {
@@ -12101,7 +12274,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 set: function (value) {
 
-                   value = !!value;
+                    value = !!value;
 
                     if (value === this._clearEachPass) {
                         return;
@@ -12806,85 +12979,141 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         },
 
         /**
-         * Attempts to pick an {{#crossLink "Entity"}}Entity{{/crossLink}} at the given Canvas-space coordinates.
+         * Attempts to pick an {{#crossLink "Entity"}}Entity{{/crossLink}} in this Scene.
          *
          * Ignores {{#crossLink "Entity"}}Entities{{/crossLink}} that are attached
          * to either a {{#crossLink "Stage"}}Stage{{/crossLink}} with {{#crossLink "Stage/pickable:property"}}pickable{{/crossLink}}
          * set *false* or a {{#crossLink "Modes"}}Modes{{/crossLink}} with {{#crossLink "Modes/pickable:property"}}pickable{{/crossLink}} set *false*.
          *
-         * On success, will fire a {{#crossLink "Scene/picked:event"}}{{/crossLink}} event on this Scene, along with
-         * a separate {{#crossLink "Entity/picked:event"}}{{/crossLink}} event on the target {{#crossLink "Entity"}}Entity{{/crossLink}}.
+         * Picking the {{#crossLink "Entity"}}{{/crossLink}} at the given canvas coordinates:
          *
          * ````javascript
+         * var hit = scene.pick({
+         *     canvasPos: [23, 131]
+         *  });
          *
-         * pick({
-         *      canvasPos: [23, 131],
-         *      rayPick: true
-         *      });
+         * if (hit) { // Picked an Entity
+         *     var entity = hit.entity;
+         * }
+         * ````
          *
+         * **Usage:**
+         *
+         * Picking the {{#crossLink "Entity"}}{{/crossLink}} that intersects a ray cast through the canvas:
+         *
+         * ````javascript
+         * var hit = scene.pick({
+         *     rayPick: true,
+         *     canvasPos: [23, 131]
+         *  });
+         *
+         * if (hit) { // Picked an Entity
+         *
+         *     var entity = hit.entity;
+         *
+         *     // These properties are only on the hit result when we do a ray-pick:
+         *
+         *     var primitive = hit.primitive; // Type of primitive that was picked, usually "triangles"
+         *     var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array
+         *     var indices = hit.indices; // UInt32Array containing the triangle's vertex indices
+         *     var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle
+         *     var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle
+         *     var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle
+         *     var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle
+         *     var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle
+         *     var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle
+         * }
+         * ````
+         *
+         * Picking the {{#crossLink "Entity"}}{{/crossLink}} that intersects an arbitrarily-aligned World-space ray:
+         *
+         * ````javascript
+         * var hit = scene.pick({
+         *     rayPick: true,       // Picking with arbitrarily-positioned ray
+         *     origin: [0,0,-5],    // Ray origin
+         *     direction: [0,0,1]   // Ray direction
+         * });
+         *
+         * if (hit) { // Picked an Entity with the ray
+         *
+         *     var entity = hit.entity;
+         *
+         *     var primitive = hit.primitive; // Type of primitive that was picked, usually "triangles"
+         *     var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array
+         *     var indices = hit.indices; // UInt32Array containing the triangle's vertex indices
+         *     var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle
+         *     var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle
+         *     var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle
+         *     var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle
+         *     var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle
+         *     var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle
+         *     var origin = hit.origin; // Float32Array containing the World-space ray origin
+         *     var direction = hit.direction; // Float32Array containing the World-space ray direction
+         * }
          * ````
          * @method pick
          *
          * @param {*} params Picking parameters.
-         * @param {Array of Number} [params.canvasPos] Canvas-space coordinates.
          * @param {Boolean} [params.rayPick=false] Whether to ray-pick.
-         * @returns {*} Hit record, returned when an {{#crossLink "Entity"}}{{/crossLink}} is picked, else null.
+         * @param {Float32Array} [params.canvasPos] Canvas-space coordinates. When ray-picking, this will override the
+         * **origin** and ** direction** parameters and will cause the ray to be fired through the canvas at this position,
+         * directly along the negative View-space Z-axis.
+         * @param {Float32Array} [params.origin] World-space ray origin when ray-picking. Ignored when canvasPos given.
+         * @param {Float32Array} [params.direction] World-space ray direction when ray-picking. Also indicates the length of the ray. Ignored when canvasPos given.
+         * @returns {*} Hit record, returned when an {{#crossLink "Entity"}}{{/crossLink}} is picked, else null. See
+         * method comments for description.
          */
         pick: (function () {
 
             // Cached vectors to avoid garbage collection
 
-            var origin = XEO.math.vec3();
-            var dir = XEO.math.vec3();
+            var math = XEO.math;
 
-            var a = XEO.math.vec3();
-            var b = XEO.math.vec3();
-            var c = XEO.math.vec3();
+            var localRayOrigin = math.vec3();
+            var localRayDir = math.vec3();
 
-            var triangleVertices = XEO.math.vec3();
-            var position = XEO.math.vec4();
-            var worldPos = XEO.math.vec4();
-            var viewPos = XEO.math.vec4();
-            var bary = XEO.math.vec3();
+            var a = math.vec3();
+            var b = math.vec3();
+            var c = math.vec3();
 
-            var na = XEO.math.vec3();
-            var nb = XEO.math.vec3();
-            var nc = XEO.math.vec3();
+            var triangleVertices = math.vec3();
+            var position = math.vec4();
+            var worldPos = math.vec3();
+            var viewPos = math.vec3();
+            var bary = math.vec3();
 
-            var uva = XEO.math.vec3();
-            var uvb = XEO.math.vec3();
-            var uvc = XEO.math.vec3();
+            var na = math.vec3();
+            var nb = math.vec3();
+            var nc = math.vec3();
 
-            var tempMat4 = XEO.math.mat4();
-            var tempMat4b = XEO.math.mat4();
+            var uva = math.vec3();
+            var uvb = math.vec3();
+            var uvc = math.vec3();
 
-            var tempVec2 = XEO.math.vec2();
+            var tempVec4a = math.vec4();
+            var tempVec4b = math.vec4();
+            var tempVec4c = math.vec4();
+            var tempVec4d = math.vec4();
+            var tempVec4e = math.vec4();
 
-            var tempVec4 = XEO.math.vec4();
-            var tempVec4b = XEO.math.vec4();
-            var tempVec4c = XEO.math.vec4();
+            var tempVec3 = math.vec3();
+            var tempVec3b = math.vec3();
+            var tempVec3c = math.vec3();
+            var tempVec3d = math.vec3();
+            var tempVec3e = math.vec3();
+            var tempVec3f = math.vec3();
+            var tempVec3g = math.vec3();
+            var tempVec3h = math.vec3();
+            var tempVec3i = math.vec3();
+            var tempVec3j = math.vec3();
+            var tempVec3k = math.vec3();
 
-            var tempVec3 = XEO.math.vec3();
-            var tempVec3b = XEO.math.vec3();
-            var tempVec3c = XEO.math.vec3();
-            var tempVec3d = XEO.math.vec3();
-            var tempVec3e = XEO.math.vec3();
-            var tempVec3f = XEO.math.vec3();
-            var tempVec3g = XEO.math.vec3();
-            var tempVec3h = XEO.math.vec3();
-            var tempVec3i = XEO.math.vec3();
-            var tempVec3j = XEO.math.vec3();
-            var tempVec3k = XEO.math.vec3();
+            var tempMat4 = math.mat4();
+            var tempMat4b = math.mat4();
+            var tempMat4c = math.mat4();
 
-
-            // Given a Entity and canvas coordinates, gets a ray
-            // originating at the World-space eye position that passes
-            // through the perspective projection plane. The ray is
-            // returned via the origin and dir arguments.
-
-            function getLocalRay(entity, canvasCoords, origin, dir) {
-
-                var math = XEO.math;
+            // Given a Entity and canvas coordinates, gets a Local-space ray.
+            function canvasPosToLocalRay(entity, canvasPos, localRayOrigin, localRayDir) {
 
                 var canvas = entity.scene.canvas.canvas;
 
@@ -12894,9 +13123,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 var vmMat = math.mulMat4(viewMat, modelMat, tempMat4);
                 var pvMat = math.mulMat4(projMat, vmMat, tempMat4b);
-                var pvMatInverse = math.inverseMat4(pvMat, tempMat4b);
-
-                //var modelMatInverse = math.inverseMat4(modelMat, tempMat4c);
+                var pvMatInverse = math.inverseMat4(pvMat, tempMat4c);
 
                 // Calculate clip space coordinates, which will be in range
                 // of x=[-1..1] and y=[-1..1], with y=(+1) at top
@@ -12904,31 +13131,61 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 var canvasWidth = canvas.width;
                 var canvasHeight = canvas.height;
 
-                var clipX = (canvasCoords[0] - canvasWidth / 2) / (canvasWidth / 2);  // Calculate clip space coordinates
-                var clipY = -(canvasCoords[1] - canvasHeight / 2) / (canvasHeight / 2);
+                var clipX = (canvasPos[0] - canvasWidth / 2) / (canvasWidth / 2);  // Calculate clip space coordinates
+                var clipY = -(canvasPos[1] - canvasHeight / 2) / (canvasHeight / 2);
 
-                var local1 = math.transformVec4(pvMatInverse, [clipX, clipY, -1, 1], tempVec4);
-                local1 = math.mulVec4Scalar(local1, 1 / local1[3]);
+                tempVec4a[0] = clipX;
+                tempVec4a[1] = clipY;
+                tempVec4a[2] = -1;
+                tempVec4a[3] = 1;
 
-                var local2 = math.transformVec4(pvMatInverse, [clipX, clipY, 1, 1], tempVec4b);
-                local2 = math.mulVec4Scalar(local2, 1 / local2[3]);
+                math.transformVec4(pvMatInverse, tempVec4a, tempVec4b);
+                math.mulVec4Scalar(tempVec4b, 1 / tempVec4b[3]);
 
-                origin[0] = local1[0];
-                origin[1] = local1[1];
-                origin[2] = local1[2];
+                tempVec4c[0] = clipX;
+                tempVec4c[1] = clipY;
+                tempVec4c[2] = 1;
+                tempVec4c[3] = 1;
 
-                math.subVec3(local2, local1, dir);
+                math.transformVec4(pvMatInverse, tempVec4c, tempVec4d);
+                math.mulVec4Scalar(tempVec4d, 1 / tempVec4d[3]);
 
-                math.normalizeVec3(dir);
+                localRayOrigin[0] = tempVec4d[0];
+                localRayOrigin[1] = tempVec4d[1];
+                localRayOrigin[2] = tempVec4d[2];
+
+                math.subVec3(tempVec4d, tempVec4b, localRayDir);
+
+                math.normalizeVec3(localRayDir);
+            }
+
+            // Transforms a ray from World-space to Local-space
+            function worldRayToLocalRay(entity, worldRayOrigin, worldRayDir, localRayOrigin, localRayDir) {
+
+                var modelMat = entity.transform.leafMatrix;
+                var modelMatInverse = math.inverseMat4(modelMat, tempMat4);
+
+                tempVec4a[0] = worldRayOrigin[0];
+                tempVec4a[1] = worldRayOrigin[1];
+                tempVec4a[2] = worldRayOrigin[2];
+                tempVec4a[3] = 1;
+
+                math.transformVec4(modelMatInverse, tempVec4a, tempVec4b);
+
+                localRayOrigin[0] = tempVec4b[0];
+                localRayOrigin[1] = tempVec4b[1];
+                localRayOrigin[2] = tempVec4b[2];
+
+                math.transformVec3(modelMatInverse, worldRayDir, localRayDir);
             }
 
             return function (params) {
 
-                var math = XEO.math;
-
                 params = params || {};
 
-                params.canvasPos = params.canvasPos || tempVec2;
+                if (params.rayPick && (!params.canvasPos && (!params.origin || !params.direction))) {
+                    this.warn("ray picking without canvasPos or ray origin and direction");
+                }
 
                 var hit = this._renderer.pick(params);
 
@@ -12987,26 +13244,37 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                             // from the eye position through the mouse position
                             // on the perspective projection plane
 
-                            getLocalRay(entity, params.canvasPos, origin, dir);
+                            var canvasPos;
 
-                            math.rayPlaneIntersect(origin, dir, a, b, c, position);
+                            if (params.canvasPos) {
+                                canvasPos = params.canvasPos;
+                                hit.canvasPos = params.canvasPos;
+                                canvasPosToLocalRay(entity, canvasPos, localRayOrigin, localRayDir);
+
+                            } else if (params.origin && params.direction) {
+                                worldRayToLocalRay(entity, params.origin, params.direction, localRayOrigin, localRayDir);
+                            }
+
+                            math.normalizeVec3(localRayDir);
+                            math.rayTriangleIntersect(localRayOrigin, localRayDir, a, b, c, position);
 
                             // Get Local-space cartesian coordinates of the ray-triangle intersection
 
+                            hit.localPos = position;
                             hit.position = position;
 
                             // Get interpolated World-space coordinates
 
                             // Need to transform homogeneous coords
 
-                            tempVec4[0] = position[0];
-                            tempVec4[1] = position[1];
-                            tempVec4[2] = position[2];
-                            tempVec4[3] = 1;
+                            tempVec4a[0] = position[0];
+                            tempVec4a[1] = position[1];
+                            tempVec4a[2] = position[2];
+                            tempVec4a[3] = 1;
 
                             // Get World-space cartesian coordinates of the ray-triangle intersection
 
-                            math.transformVec4(entity.transform.leafMatrix, tempVec4, tempVec4b);
+                            math.transformVec4(entity.transform.leafMatrix, tempVec4a, tempVec4b);
 
                             worldPos[0] = tempVec4b[0];
                             worldPos[1] = tempVec4b[1];
@@ -13016,7 +13284,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                             // Get View-space cartesian coordinates of the ray-triangle intersection
 
-                            math.transformVec4(entity.camera.view.matrix, worldPos, tempVec4c);
+                            math.transformVec4(entity.camera.view.matrix, tempVec4b, tempVec4c);
 
                             viewPos[0] = tempVec4c[0];
                             viewPos[1] = tempVec4c[1];
@@ -13083,7 +13351,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     return hit;
                 }
             };
-
         })(),
 
         /**
@@ -14479,7 +14746,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this.contextAttr.preMultipliedAlpha = true;
             this.contextAttr.preserveDrawingbuffer = false;
             this.contextAttr.antialias = true;  // TODO
-            this.contextAttr.stencil = true; // Request stencil buffer
+            //this.contextAttr.stencil = true; // Request stencil buffer
 
             if (!cfg.canvas) {
 
@@ -19816,6 +20083,10 @@ visibility.destroy();
                             "'triangle-strip' and 'triangle-fan'. Defaulting to 'triangles'.");
 
                         value = "triangles";
+                    }
+
+                    if (this._state.primitiveName === value) {
+                        return;
                     }
 
                     this._state.primitiveName = value;
@@ -27655,6 +27926,18 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                         return;
                     }
 
+                    if (value === this._src) { // Already loaded this model
+
+                        /**
+                         Fired whenever this Model has finished loading components from the glTF file
+                         specified by {{#crossLink "Model/src:property"}}{{/crossLink}}.
+                         @event loaded
+                         */
+                        this.fire("loaded");
+
+                        return;
+                    }
+
                     this._clear();
 
                     this._src = value;
@@ -32017,11 +32300,37 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
         },
 
-        _compile: function () {
+        __compile: function () {
 
-            if (!this._valid()) {
-                return;
+            var self = this;
+
+            if (!this._compiling) {
+
+                self._compiling = true;
+
+                var object = this._renderer.objects[this.id];
+
+                if (object) {
+                    object.compiled = false;
+                }
+
+                var task = function () {
+
+                    if (!self._valid()) {
+                        XEO.scheduleTask(task);
+                        return;
+                    }
+
+                    self.__compile();
+
+                    self._compiling = false;
+                };
+
+                XEO.scheduleTask(task);
             }
+        },
+
+        _compile: function () {
 
             var attached = this._attached;
 

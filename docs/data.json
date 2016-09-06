@@ -1044,11 +1044,11 @@
             "fors": {},
             "namespaces": {}
         },
-        "examples/js/webvr/zSpaceStylus.js": {
-            "name": "examples/js/webvr/zSpaceStylus.js",
+        "examples/js/webvr/zSpaceStylusHelper.js": {
+            "name": "examples/js/webvr/zSpaceStylusHelper.js",
             "modules": {},
             "classes": {
-                "ZSpaceStylus": 1
+                "ZSpaceStylusHelper": 1
             },
             "fors": {},
             "namespaces": {}
@@ -1246,7 +1246,7 @@
                 "Scene": 1,
                 "XEO": 1,
                 "ZSpace": 1,
-                "ZSpaceStylus": 1,
+                "ZSpaceStylusHelper": 1,
                 "Nintendo3DSGeometry": 1,
                 "OBJGeometry": 1,
                 "CubicBezierCurve": 1,
@@ -1634,14 +1634,14 @@
             "submodules": {},
             "classes": {
                 "ZSpace": 1,
-                "ZSpaceStylus": 1
+                "ZSpaceStylusHelper": 1
             },
             "fors": {},
             "is_submodule": 1,
             "namespaces": {},
             "module": "XEO",
             "namespace": "",
-            "file": "examples/js/webvr/zSpaceStylus.js",
+            "file": "examples/js/webvr/zSpaceStylusHelper.js",
             "line": 1,
             "description": "Components for Virtual Reality."
         },
@@ -6232,7 +6232,7 @@
                         },
                         {
                             "name": "clearEachPass",
-                            "description": "When doing multiple passes per frame, specifies whether to clear the\n canvas before each pass (true) or just before the first pass (false).",
+                            "description": "When doing multiple passes per frame, specifies whether to clear the\ncanvas before each pass (true) or just before the first pass (false).",
                             "optional": true,
                             "optdefault": "false"
                         }
@@ -6273,7 +6273,7 @@
             "namespace": "",
             "file": "examples/js/webvr/zSpace.js",
             "line": 1,
-            "description": "A **ZSpace** component makes its {{#crossLink \"Scene\"}}{{/crossLink}} viewable with a zSpace viewer.\n\n<ul>\n<li>a ZSpace requires WebGL2 and WebVR support, which you'll have if you're running on a zSpace viewer.</li>\n<li>a ZSpace is attached to a {{#crossLink \"Camera\"}}{{/crossLink}}</li>\n<li>a ZSpace requires its {{#crossLink \"Camera\"}}Camera{{/crossLink}} to have a {{#crossLink \"Transform\"}}{{/crossLink}}\n(and not a subclass) for each of it's {{#crossLink \"Camera/view:property\"}}{{/crossLink}} and\n{{#crossLink \"Camera/view:property\"}}projection{{/crossLink}} transforms. This is because the ZSpace needs to directly update\nthe matrices on those transforms as part of the stereo viewing effect. If those transforms are of a different type, then\nthe ZSpace will temporarily replace them with {{#crossLink \"Transform\"}}Transforms{{/crossLink}}.</li>\n<li>a {{#crossLink \"ZSpaceStylus\"}}{{/crossLink}} can be used to track stylus input on a ZSpace.</li>\n</ul>\n\n## Examples\n\n<ul>\n<li>[zSpace with random geometries](../../examples/#webvr_zspace_geometries)</li>\n<li>[zSpace with glTF gearbox model](../../examples/#webvr_zspace_gltf_gearbox)</li>\n</ul>\n\n## Usage\n\nIn the example below, we'll create an {{#crossLink \"Entity\"}}{{/crossLink}} in xeoEngine's default\n{{#crossLink \"Scene\"}}{{/crossLink}}. Then we'll also create a {{#crossLink \"ZSpace\"}}{{/crossLink}}, which\nenables us to view and interact with the {{#crossLink \"Scene\"}}{{/crossLink}} using a ZSpace viewer.\n\n````javascript\n\n// Create an Entity\n\nnew XEO.Entity({\n    geometry: new XEO.TorusGeometry(),\n    material: new XEO.PhongMaterial({\n       diffuseMap: new XEO.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n       })\n    })\n});\n\n// Create a zSpace viewer\n\nvar zSpace = new XEO.ZSpace();\n````\n\nIn this example we didn't specify a {{#crossLink \"Camera\"}}{{/crossLink}} for our {{#crossLink \"Entity\"}}{{/crossLink}} and\nZSpace, which causes them attach to their {{#crossLink \"Scene\"}}Scene's{{/crossLink}} default\n{{#crossLink \"Camera\"}}{{/crossLink}}.\n\nNote however that the default {{#crossLink \"Camera\"}}{{/crossLink}} has a {{#crossLink \"Lookat\"}}{{/crossLink}} for its view transform\nand a {{#crossLink \"Perspective\"}}{{/crossLink}} for its projection. Therefore, whenever active, the ZSpace will\nreplace those with {{#crossLink \"Transform\"}}{{/crossLink}} components, which it will update in order to create\nthe stereo effect. If the ZSpace is later deactivated or destroyed, it will restore the\n{{#crossLink \"Camera\"}}Camera's{{/crossLink}} original {{#crossLink \"Lookat\"}}{{/crossLink}} and {{#crossLink \"Perspective\"}}{{/crossLink}}.\n\n## Sizing the zSpace viewer coordinate system\n\n````javascript\nvar zSpace = new XEO.ZSpace({\n   viewerScale: 30\n});\n````\n\nWe can also automatically fit the viewer coordinate system to whatever is in the {{#crossLink \"Scene\"}}{{/crossLink}}:\n\n````javascript\nvar zSpace = new XEO.ZSpace({\n   autoViewerScale: true\n});\n````\n\n\n## Detecting support\n\nThe **ZSpace** will fire a \"supported\" event once it has determined whether or not the browser\nsupports a zSpace viewer:\n\n````javascript\nzSpace.on(\"supported\", function (supported) {\n\n       if (!supported) {\n\n           // Not a zSpace device\n\n           this.error(\"This computer is not a ZSpace viewer!\"); // Log error on the XEO.ZSpace component\n\n           // At this point you could just destroy the XEO.ZSpace to make it detach from the Camera\n       }\n   });\n````\n\n## Handling stylus events\n\nReading the current position and orientation of the stylus, along with the current stylus camera matrix:\n\n````javascript\nvar stylusPos = zSpace.stylusPos; // Position, as a three-element Float32Array\nvar stylusOrientation = zSpace.stylusOrientation; // Orientation quaternion, as a four-element Float32Array\nvar stylusCameraMatrix = zSpace.stylusCameraMatrix; // Sixteen-element Float32Array\n````\n\nNote that these properties only have meaningful values once the **ZSpace** has fired at least one \"stylusMoved\" event.\n\nSubscribing to stylus movement:\n\n````javascript\nzSpace.on(\"stylusMoved\", function() {\n    var stylusPos = this.stylusPos; // Position, as a three-element Float32Array\n    var stylusOrientation = this.stylusOrientation; // Orientation quaternion, as a four-element Float32Array\n    var stylusCameraMatrix = this.stylusCameraMatrix; // Sixteen-element Float32Array\n    //...\n});\n````\n\nReading the current state of each stylus button:\n\n````javascript\nvar button0 = zSpace.stylusButton0; // Boolean\nvar button1 = zSpace.stylusButton1;\nvar button2 = zSpace.stylusButton2;\n````\n\nSubscribing to change of state of each stylus button:\n\n````javascript\nzSpace.on(\"stylusButton0\", function(value) { // Boolean value\n    this.log(\"stylusButton0 = \" + value);\n});\n\nzSpace.on(\"stylusButton1\", function(value) {\n    this.log(\"stylusButton1 = \" + value);\n});\n\nzSpace.on(\"stylusButton2\", function(value) {\n    this.log(\"stylusButton2 = \" + value);\n});\n````",
+            "description": "A **ZSpace** component makes its {{#crossLink \"Scene\"}}{{/crossLink}} viewable with a zSpace viewer.\n\n<ul>\n<li>a ZSpace requires WebGL2 and WebVR support, which you'll have if you're running on a zSpace viewer.</li>\n<li>a ZSpace is attached to a {{#crossLink \"Camera\"}}{{/crossLink}}</li>\n<li>a ZSpace requires its {{#crossLink \"Camera\"}}Camera{{/crossLink}} to have a {{#crossLink \"Transform\"}}{{/crossLink}}\n(and not a subclass) for each of it's {{#crossLink \"Camera/view:property\"}}{{/crossLink}} and\n{{#crossLink \"Camera/view:property\"}}projection{{/crossLink}} transforms. This is because the ZSpace needs to directly update\nthe matrices on those transforms as part of the stereo viewing effect. If those transforms are of a different type, then\nthe ZSpace will temporarily replace them with {{#crossLink \"Transform\"}}Transforms{{/crossLink}}.</li>\n<li>you can use a {{#crossLink \"ZSpaceStylusHelper\"}}{{/crossLink}} to show the ZSpace's stylus as an object in the 3D view.</li>\n</ul>\n\n## Examples\n\n<ul>\n<li>[zSpace with random geometries](../../examples/#webvr_zspace_geometries)</li>\n<li>[zSpace with glTF gearbox model](../../examples/#webvr_zspace_gltf_gearbox)</li>\n</ul>\n\n## Usage\n\nIn the example below, we'll create an {{#crossLink \"Entity\"}}{{/crossLink}} in xeoEngine's default\n{{#crossLink \"Scene\"}}{{/crossLink}}. Then we'll also create a {{#crossLink \"ZSpace\"}}{{/crossLink}}, which\nenables us to view and interact with the {{#crossLink \"Scene\"}}{{/crossLink}} using a ZSpace viewer.\n\n````javascript\n// Create an Entity\n\nnew XEO.Entity({\n    geometry: new XEO.TorusGeometry(),\n    material: new XEO.PhongMaterial({\n       diffuseMap: new XEO.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n       })\n    })\n});\n\n// Create a zSpace viewer\n\nvar zSpace = new XEO.ZSpace();\n````\n\nIn this example we didn't specify a {{#crossLink \"Camera\"}}{{/crossLink}} for our {{#crossLink \"Entity\"}}{{/crossLink}} and\nZSpace, which causes them attach to their {{#crossLink \"Scene\"}}Scene's{{/crossLink}} default\n{{#crossLink \"Camera\"}}{{/crossLink}}.\n\nNote however that the default {{#crossLink \"Camera\"}}{{/crossLink}} has a {{#crossLink \"Lookat\"}}{{/crossLink}} for its view transform\nand a {{#crossLink \"Perspective\"}}{{/crossLink}} for its projection. Therefore, whenever active, the ZSpace will\nreplace those with {{#crossLink \"Transform\"}}{{/crossLink}} components, which it will update in order to create\nthe stereo effect. If the ZSpace is later deactivated or destroyed, it will restore the\n{{#crossLink \"Camera\"}}Camera's{{/crossLink}} original {{#crossLink \"Lookat\"}}{{/crossLink}} and {{#crossLink \"Perspective\"}}{{/crossLink}}.\n\n## Sizing the zSpace viewer coordinate system\n\n````javascript\nvar zSpace = new XEO.ZSpace({\n   viewerScale: 30\n});\n````\n\nWe can also automatically fit the viewer coordinate system to whatever is in the {{#crossLink \"Scene\"}}{{/crossLink}}:\n\n````javascript\nvar zSpace = new XEO.ZSpace({\n   autoViewerScale: true\n});\n````\n\n\n## Detecting support\n\nThe **ZSpace** will fire a \"supported\" event once it has determined whether or not the browser\nsupports a zSpace viewer:\n\n````javascript\nzSpace.on(\"supported\", function (supported) {\n\n       if (!supported) {\n\n           // Not a zSpace device\n\n           this.error(\"This computer is not a ZSpace viewer!\"); // Log error on the XEO.ZSpace component\n\n           // At this point you could just destroy the XEO.ZSpace to make it detach from the Camera\n       }\n   });\n````\n\n## Handling stylus input\n\nReading the current position and orientation of the stylus, along with the current stylus camera matrix:\n\n````javascript\nvar stylusPos = zSpace.stylusPos; // Position, as a three-element Float32Array\nvar stylusOrientation = zSpace.stylusOrientation; // Orientation quaternion, as a four-element Float32Array\nvar stylusCameraMatrix = zSpace.stylusCameraMatrix; // Sixteen-element Float32Array\n````\n\nNote that these properties only have meaningful values once the ZSpace has fired at least one {{#crossLink \"ZSpace/stylusMoved:event\"}}{{/crossLink}} event.\n\nSubscribing to stylus movement:\n\n````javascript\nzSpace.on(\"stylusMoved\", function() {\n    var stylusPos = this.stylusPos; // Position, as a three-element Float32Array\n    var stylusOrientation = this.stylusOrientation; // Orientation quaternion, as a four-element Float32Array\n    var stylusCameraMatrix = this.stylusCameraMatrix; // Sixteen-element Float32Array\n    //...\n});\n````\n\nReading the current state of each stylus button:\n\n````javascript\nvar button0 = zSpace.stylusButton0; // Boolean\nvar button1 = zSpace.stylusButton1;\nvar button2 = zSpace.stylusButton2;\n````\n\nSubscribing to change of state of each stylus button:\n\n````javascript\nzSpace.on(\"stylusButton0\", function(value) { // Boolean value\n    this.log(\"stylusButton0 = \" + value);\n});\n\nzSpace.on(\"stylusButton1\", function(value) {\n    this.log(\"stylusButton1 = \" + value);\n});\n\nzSpace.on(\"stylusButton2\", function(value) {\n    this.log(\"stylusButton2 = \" + value);\n});\n````\n\nUsing a {{#crossLink \"ZSpaceStylusHelper\"}}{{/crossLink}} to render the stylus as an object in the 3D view:\n\n````javascript\nvar stylusHelper = new XEO.ZSpaceStylusHelper({\n    zSpace: zSpace,\n    visible: true,       // Default\n    color: [0.5,0.5,0.5] // Default\n});\n````\n\nPicking an {{#crossLink \"Entity\"}}{{/crossLink}} with the stylus when button 0 is pressed:\n\n````javascript\nzSpace.on(\"stylusButton0\", function() {\n\n   var hit = zSpace.scene.pick({\n       rayPick: true,\n       origin: zSpace.stylusPos,\n       direction: zSpace.stylusOrientation\n   });\n\n   if (hit) { // Picked an Entity\n\n       var entity = hit.entity;\n\n       // These properties are only on the hit result when we do a ray-pick:\n\n       var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n       var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n       var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n       var localPos = hit.localPos; // Float32Array containing the picked Local-space position within the triangle\n       var worldPos = hit.worldPos; // Float32Array containing the picked World-space position within the triangle\n       var viewPos = hit.viewPos; // Float32Array containing the picked View-space position within the triangle\n       var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n       var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n       var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n\n       //...\n   }\n});\n````\n\nWe can also dynamically pick {{#crossLink \"Entity\"}}Entities{{/crossLink}} with the stylus as we move it around. In this\nexample we'll highlight our {{#crossLink \"ZSpaceStylusHelper\"}}{{/crossLink}} whenever the stylus intersects\nan {{#crossLink \"Entity\"}}{{/crossLink}}:\n\n````javascript\nzSpace.on(\"stylusMoved\", function() {\n\n   var hit = zSpace.scene.pick({\n       rayPick: true,\n       origin: zSpace.stylusPos,\n       direction: zSpace.stylusOrientation\n   });\n\n   if (hit) { // Picked an Entity\n\n       stylusHelper.highlight = true;\n\n       // The hit properties are the same as those shown in the previous example\n\n   } else {\n\n       // Un-highlight our ZSPaceStylusHelper\n       stylusHelper.highlight = false;\n   }\n});\n````",
             "submodule": "webvr",
             "is_constructor": 1,
             "params": [
@@ -6361,9 +6361,9 @@
             ],
             "extends": "Component"
         },
-        "ZSpaceStylus": {
-            "name": "ZSpaceStylus",
-            "shortname": "ZSpaceStylus",
+        "ZSpaceStylusHelper": {
+            "name": "ZSpaceStylusHelper",
+            "shortname": "ZSpaceStylusHelper",
             "classitems": [],
             "plugins": [],
             "extensions": [],
@@ -6371,15 +6371,15 @@
             "extension_for": [],
             "module": "XEO",
             "namespace": "",
-            "file": "examples/js/webvr/zSpaceStylus.js",
+            "file": "examples/js/webvr/zSpaceStylusHelper.js",
             "line": 1,
-            "description": "A **ZSpaceStylus** component is used in combination with a {{#crossLink \"ZSpace\"}}ZSpace{{/crossLink}} to create a\nstylus pointer in VR that can pick and drag {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n## Examples\n\n<ul>\n<li>[zSpace with random geometries](../../examples/#webvr_zspace_geometries)</li>\n<li>[zSpace with glTF gearbox model](../../examples/#webvr_zspace_gltf_gearbox)</li>\n</ul>\n\n## Usage\n\nIn the example below, we'll create an {{#crossLink \"Entity\"}}{{/crossLink}} in xeoEngine's default\n{{#crossLink \"Scene\"}}{{/crossLink}}. Then we'll also create a {{#crossLink \"ZSpace\"}}{{/crossLink}}, which\nenables us to view and interact with the {{#crossLink \"Scene\"}}{{/crossLink}} using a ZSpace viewer.\nFinally, we'll create a **ZSpaceStylus** to access the viewer's stylus input.\n\n````javascript\n\n// Create an Entity\n\nnew XEO.Entity({\n    geometry: new XEO.TorusGeometry(),\n    material: new XEO.PhongMaterial({\n       diffuseMap: new XEO.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n       })\n    })\n});\n\n// Create a ZSpace viewer\n\nvar zSpace = new XEO.ZSpace();\n\n// Create a ZSpaceStylus to access the viewer's stylus input device\n\nvar stylus = new XEO.ZSpaceStylus({\n    zSpace: zSpace\n});\n\nstylus.on(\"picked\", function () {\n\n});````",
+            "description": "A **ZSpaceStylusHelper** shows a {{#crossLink \"ZSpace\"}}{{/crossLink}} stylus as an object within the 3D view.\n\n## Examples\n\n<ul>\n<li>[zSpace with random geometries](../../examples/#webvr_zspace_geometries)</li>\n<li>[zSpace with glTF gearbox model](../../examples/#webvr_zspace_gltf_gearbox)</li>\n</ul>\n\n## Usage\n\nIn the example below, we'll create an {{#crossLink \"Entity\"}}{{/crossLink}} in xeoEngine's default\n{{#crossLink \"Scene\"}}{{/crossLink}}. Then we'll also create a {{#crossLink \"ZSpace\"}}{{/crossLink}}, which\nenables us to view and interact with the {{#crossLink \"Scene\"}}{{/crossLink}} using a ZSpace viewer.\nFinally, we'll create a **ZSpaceStylusHelper** to access the viewer's stylus input.\n\n````javascript\n// Create an Entity\n\nnew XEO.Entity({\n    geometry: new XEO.TorusGeometry(),\n    material: new XEO.PhongMaterial({\n       diffuseMap: new XEO.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n       })\n    })\n});\n\n// View it with a ZSpace viewer\n\nvar zSpace = new XEO.ZSpace();\n\n// Create a ZSpaceStylusHelper to show the viewer's stylus as an object in the 3D view\n\nvar stylusHelper = new XEO.ZSpaceStylusHelperHelper({\n    zSpace: zSpace\n});\n\n// Make our ZSpaceStylusHelper glow whenever the stylus intersects an Entity\n\nzSpace.on(\"stylusMoved\", function() {\n\n       var hit = zSpace.scene.pick({\n           rayPick: true,\n           origin: zSpace.stylusPos,\n           direction: zSpace.stylusOrientation\n       });\n\n       if (hit) { // Picked an Entity\n\n           stylusHelper.highlighted = true;\n\n           // These properties are only on the hit result when we do a ray-pick:\n\n           var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n           var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n           var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n           var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n           var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n           var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n           var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n           var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n           var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n\n           //...\n\n       } else {\n\n           stylusHelper.highlighted = false;\n       }\n    });\n````",
             "submodule": "webvr",
             "is_constructor": 1,
             "params": [
                 {
                     "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this ZSpaceStylus in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this ZSpaceStylusHelper in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
                     "type": "Scene",
                     "optional": true
                 },
@@ -6397,15 +6397,29 @@
                         },
                         {
                             "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this ZSpaceStylus.",
+                            "description": "Optional map of user-defined metadata to attach to this ZSpaceStylusHelper.",
                             "type": "String:Object",
                             "optional": true
                         },
                         {
                             "name": "ZSpace",
-                            "description": "ID or instance of a {{#crossLink \"ZSpace\"}}{{/crossLink}} for this ZSpaceStylus.\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this ZSpaceStylus.",
+                            "description": "ID or instance of a {{#crossLink \"ZSpace\"}}{{/crossLink}} for this ZSpaceStylusHelper.\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this ZSpaceStylusHelper.",
                             "type": "ZSpace",
                             "optional": true
+                        },
+                        {
+                            "name": "visible",
+                            "description": "Shows the ray as a line segment in the 3D view when true.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        },
+                        {
+                            "name": "highlighted",
+                            "description": "When true, highlights this ZSPaceStylusHelper in the 3D view by making it glow a different color.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "false"
                         }
                     ]
                 }
@@ -7433,6 +7447,12 @@
             "class": "CameraFlight"
         },
         {
+            "file": "src/_renderer/object.js",
+            "line": 56,
+            "description": "True once the object has been compiled within the renderer display list.",
+            "class": "CameraFlight"
+        },
+        {
             "file": "src/_renderer/program.js",
             "line": 7,
             "description": "Vertex and fragment shaders for pick and draw",
@@ -7717,18 +7737,18 @@
         {
             "file": "src/_renderer/renderer.js",
             "line": 102,
-            "description": "Optional callback to fire when renderer wants to\nbind an output framebuffer.\n\nWhen this is missing, the renderer will implicitly bind\nWebGL's default framebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });",
+            "description": "Optional callback to fire when renderer wants to\nbind an output framebuffer. This is useful when we need to bind a stereo output buffer for WebVR.\n\nWhen this is missing, the renderer will implicitly bind\nWebGL's default framebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
             "line": 116,
-            "description": "Optional callback to fire when renderer wants to\nunbind any output drawing framebuffer that was\npreviously bound with #bindOutputFramebuffer.\n\nCallback takes no parameters.",
+            "description": "Optional callback to fire when renderer wants to\nunbind any output drawing framebuffer that was\npreviously bound with #bindOutputFramebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.unbindOutputFramebuffer = function(pass) { .. });\n\nCallback takes no parameters.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 181,
+            "line": 186,
             "description": "Visibility render state.",
             "itemtype": "property",
             "name": "visibility",
@@ -7737,7 +7757,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 188,
+            "line": 193,
             "description": "Culling render state.",
             "itemtype": "property",
             "name": "cull",
@@ -7746,7 +7766,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 195,
+            "line": 200,
             "description": "Modes render state.",
             "itemtype": "property",
             "name": "modes",
@@ -7755,7 +7775,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 202,
+            "line": 207,
             "description": "Render state for an effects layer.",
             "itemtype": "property",
             "name": "layer",
@@ -7764,7 +7784,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 209,
+            "line": 214,
             "description": "Render state for an effects pipeline stage.",
             "itemtype": "property",
             "name": "stage",
@@ -7773,7 +7793,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 216,
+            "line": 221,
             "description": "Depth buffer render state.",
             "itemtype": "property",
             "name": "depthBuf",
@@ -7782,7 +7802,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 223,
+            "line": 228,
             "description": "Color buffer render state.",
             "itemtype": "property",
             "name": "colorBuf",
@@ -7791,7 +7811,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 230,
+            "line": 235,
             "description": "Lights render state.",
             "itemtype": "property",
             "name": "lights",
@@ -7800,7 +7820,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 237,
+            "line": 242,
             "description": "Material render state.",
             "itemtype": "property",
             "name": "material",
@@ -7809,7 +7829,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 244,
+            "line": 249,
             "description": "Environmental reflection render state.",
             "itemtype": "property",
             "name": "reflection",
@@ -7818,7 +7838,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 251,
+            "line": 256,
             "description": "Modelling transform render state.",
             "itemtype": "property",
             "name": "modelTransform",
@@ -7827,7 +7847,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 258,
+            "line": 263,
             "description": "View transform render state.",
             "itemtype": "property",
             "name": "viewTransform",
@@ -7836,7 +7856,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 265,
+            "line": 270,
             "description": "Projection transform render state.",
             "itemtype": "property",
             "name": "projTransform",
@@ -7845,7 +7865,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 272,
+            "line": 277,
             "description": "Billboard render state.",
             "itemtype": "property",
             "name": "billboard",
@@ -7854,7 +7874,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 279,
+            "line": 284,
             "description": "Stationary render state.",
             "itemtype": "property",
             "name": "stationary",
@@ -7863,7 +7883,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 286,
+            "line": 291,
             "description": "Color target render state.",
             "itemtype": "property",
             "name": "colorTarget",
@@ -7872,7 +7892,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 293,
+            "line": 298,
             "description": "Depth target render state.",
             "itemtype": "property",
             "name": "depthTarget",
@@ -7881,7 +7901,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 300,
+            "line": 305,
             "description": "Cross-section planes render state.",
             "itemtype": "property",
             "name": "clips",
@@ -7890,7 +7910,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 307,
+            "line": 312,
             "description": "Morph targets render state.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -7899,7 +7919,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 314,
+            "line": 319,
             "description": "Custom shader render state.",
             "itemtype": "property",
             "name": "shader",
@@ -7908,7 +7928,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 321,
+            "line": 326,
             "description": "Render state providing custom shader params.",
             "itemtype": "property",
             "name": "shaderParams",
@@ -7917,7 +7937,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 328,
+            "line": 333,
             "description": "Geometry render state.",
             "itemtype": "property",
             "name": "geometry",
@@ -7926,7 +7946,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 335,
+            "line": 340,
             "description": "Viewport render state.",
             "itemtype": "property",
             "name": "viewport",
@@ -7935,48 +7955,48 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 345,
+            "line": 350,
             "description": "Flags the object list as needing to be rebuilt from renderer objects\non the next call to {@link #render} or {@link #pick}. Setting this\nwill cause the rendering pipeline to be executed from stage #2\n(see class comment), causing object list rebuild, state order\ndetermination, state sort, draw list construction and image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 355,
+            "line": 360,
             "description": "Flags the object list as needing state orders to be (re)computed on the\nnext call to {@link #render} or {@link #pick}. Setting this will cause\nthe rendering pipeline to be executed from stage #3 (see class comment),\ncausing state order determination, state sort, draw list construction\nand image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 365,
+            "line": 370,
             "description": "Flags the object list as needing to be state-sorted on the next call\nto {@link #render} or {@link #pick}.Setting this will cause the\nrendering pipeline to be executed from stage #4 (see class comment),\ncausing state sort, draw list construction and image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 374,
+            "line": 379,
             "description": "Flags the draw list as needing to be rebuilt from the object list on\nthe next call to {@link #render} or {@link #pick}.  Setting this will\ncause the rendering pipeline to be executed from stage #5\n(see class comment), causing draw list construction and image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 383,
+            "line": 388,
             "description": "Flags the image as needing to be redrawn from the draw list on the\nnext call to {@link #render} or {@link #pick}. Setting this will\ncause the rendering pipeline to be executed from stage #6\n(see class comment), causing the image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 393,
+            "line": 398,
             "description": "Reallocates WebGL resources for objects within this renderer.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 417,
+            "line": 422,
             "description": "Internally creates (or updates) a {@link XEO.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link XEO.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
             "params": [
                 {
@@ -7989,12 +8009,12 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 543,
+            "line": 550,
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 601,
+            "line": 608,
             "description": "Removes an object from this Renderer",
             "params": [
                 {
@@ -8007,43 +8027,43 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 637,
+            "line": 644,
             "description": "Renders a new frame, if neccessary.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 678,
+            "line": 692,
             "description": "Builds the object list from the object map",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 690,
+            "line": 704,
             "description": "Generates object state sort keys",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 711,
+            "line": 725,
             "description": "State-sorts the object list",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 721,
+            "line": 735,
             "description": "Logs the object list",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 734,
+            "line": 879,
             "description": "Builds the draw list, which is the list of draw state-chunks to apply to WebGL\nto render the visible objects in the object list for the next frame.\nPreserves the state sort order of the object list among the draw chunks.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 919,
+            "line": 1064,
             "description": "Appends an object to the draw and pick lists.",
             "params": [
                 {
@@ -8061,7 +8081,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 988,
+            "line": 1133,
             "description": "Logs the contents of the draw list to the console.",
             "access": "private",
             "tagname": "",
@@ -8069,7 +8089,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1018,
+            "line": 1163,
             "description": "Logs the contents of the pick list to the console.",
             "access": "private",
             "tagname": "",
@@ -8077,8 +8097,8 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1047,
-            "description": "Attempts to pick an object at the given canvas coordinates.",
+            "line": 1192,
+            "description": "Attempts to pick an object.",
             "params": [
                 {
                     "name": "params",
@@ -8094,7 +8114,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1140,
+            "line": 1319,
             "params": [
                 {
                     "name": "params",
@@ -8125,6 +8145,11 @@
                             "name": "opaqueOnly",
                             "description": "",
                             "type": "Boolean"
+                        },
+                        {
+                            "name": "pickMatrix",
+                            "description": "",
+                            "type": "Boolean"
                         }
                     ]
                 }
@@ -8135,7 +8160,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1298,
+            "line": 1475,
             "description": "Reads the colors of some pixels in the last rendered frame.",
             "params": [
                 {
@@ -8163,7 +8188,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1345,
+            "line": 1522,
             "description": "Destroys this Renderer.",
             "class": "CameraFlight"
         },
@@ -11466,7 +11491,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 704,
+            "line": 708,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/primitive:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "primitive",
@@ -11483,7 +11508,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 718,
+            "line": 722,
             "description": "The Geometry's positions array.\n\nThis property is a one-dimensional array - use  {{#crossLink \"XEO.math/flatten:method\"}}{{/crossLink}} to\nconvert two-dimensional arrays for assignment to this property.\n\nFires a {{#crossLink \"Geometry/positions:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "positions",
@@ -11495,7 +11520,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 751,
+            "line": 755,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "positions",
@@ -11511,7 +11536,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 758,
+            "line": 762,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/localBoundary:property\"}}{{/crossLink}} property changes.\n\nNote that this event does not carry the value of the property. In order to avoid needlessly\ncalculating unused values for this property, it will be lazy-calculated next time it's referenced\non this Geometry.",
             "itemtype": "event",
             "name": "positions",
@@ -11527,7 +11552,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 783,
+            "line": 787,
             "description": "The Geometry's normal vectors array.\n\nFires a {{#crossLink \"Geometry/normals:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "normals",
@@ -11539,7 +11564,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 813,
+            "line": 817,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/ normals:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "normals",
@@ -11555,7 +11580,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 833,
+            "line": 837,
             "description": "The Geometry's UV coordinate array.\n\nFires a {{#crossLink \"Geometry/uv:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "uv",
@@ -11567,7 +11592,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 863,
+            "line": 867,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/uv:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "uv",
@@ -11583,7 +11608,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 883,
+            "line": 887,
             "description": "The Geometry's vertex colors array.\n\nFires a {{#crossLink \"Geometry/colors:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "colors",
@@ -11595,7 +11620,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 913,
+            "line": 917,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/colors:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "colors",
@@ -11611,7 +11636,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 933,
+            "line": 937,
             "description": "The Geometry's indices array.\n\nIf ````XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS[\"OES_element_index_uint\"]```` is true, then this can be\na ````Uint32Array````, otherwise it needs to be a ````Uint16Array````.\n\nFires a {{#crossLink \"Geometry/indices:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "indices",
@@ -11623,7 +11648,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 978,
+            "line": 982,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/indices:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "indices",
@@ -11639,7 +11664,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 998,
+            "line": 1002,
             "description": "Local-space 3D boundary enclosing the {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} of this Geometry.\n\nThe a {{#crossLink \"Boundary3D\"}}{{/crossLink}} is lazy-instantiated the first time that this\nproperty is referenced. If {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} is then called on it,\nthen this property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime it's referenced.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will fire an {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}}\nevent whenever this Geometry's {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} are updated.",
             "itemtype": "property",
             "name": "localBoundary",
@@ -11651,7 +11676,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 1056,
+            "line": 1060,
             "description": "Set true to make this Geometry automatically generate {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}} from\n{{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} and {{#crossLink \"Geometry/indices:property\"}}{{/crossLink}}.\n\nWhen true, causes this Geometry to auto-generate its {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}} on the\nnext {{#crossLink \"Scene\"}}{{/crossLink}} {{#crossLink \"Scene/tick:event\"}}{{/crossLink}} event.\n\nFires an {{#crossLink \"Geometry/autoNormals:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "autoNormals",
@@ -11663,7 +11688,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 1085,
+            "line": 1089,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/autoNormals:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "autoNormals",
@@ -12373,7 +12398,7 @@
         },
         {
             "file": "src/importing/model.js",
-            "line": 178,
+            "line": 114,
             "description": "Fired whenever this Model has finished loading components from the glTF file\nspecified by {{#crossLink \"Model/src:property\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "loaded",
@@ -12383,7 +12408,17 @@
         },
         {
             "file": "src/importing/model.js",
-            "line": 186,
+            "line": 190,
+            "description": "Fired whenever this Model has finished loading components from the glTF file\nspecified by {{#crossLink \"Model/src:property\"}}{{/crossLink}}.",
+            "itemtype": "event",
+            "name": "loaded",
+            "class": "Model",
+            "module": "XEO",
+            "submodule": "importing"
+        },
+        {
+            "file": "src/importing/model.js",
+            "line": 198,
             "description": "Fired whenever this Model's {{#crossLink \"Model/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -12399,7 +12434,7 @@
         },
         {
             "file": "src/importing/model.js",
-            "line": 199,
+            "line": 211,
             "description": "A {{#crossLink \"Collection\"}}{{/crossLink}} containing the scene components loaded by this Model.\n\nWhenever {{#crossLink \"Model/src:property\"}}{{/crossLink}} is set to the location of a valid glTF file,\nand once the file has been loaded, this {{#crossLink \"Collection\"}}{{/crossLink}} will contain whatever\ncomponents were loaded from that file.\n\nNote that prior to loading the file, the Model will destroy any components in the {{#crossLink \"Collection\"}}{{/crossLink}}.",
             "itemtype": "property",
             "name": "collection",
@@ -12411,7 +12446,7 @@
         },
         {
             "file": "src/importing/model.js",
-            "line": 219,
+            "line": 231,
             "description": "The Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} attached to this Model.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Model.\n\nInternally, the given {{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most\n{{#crossLink \"Transform\"}}Transform{{/crossLink}} that the Model attaches to\nits {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires an {{#crossLink \"Model/transform:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "transform",
@@ -12422,7 +12457,7 @@
         },
         {
             "file": "src/importing/model.js",
-            "line": 237,
+            "line": 249,
             "description": "Fired whenever this Model's {{#crossLink \"Model/transform:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "transform",
@@ -17822,17 +17857,17 @@
                 {
                     "name": "positions",
                     "description": "One-dimensional flattened array of positions.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 },
                 {
                     "name": "indices",
                     "description": "One-dimensional flattened array of indices.*",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 }
             ],
             "return": {
                 "description": "One-dimensional flattened array of normal vectors.",
-                "type": "Array of Number"
+                "type": "Float32Array"
             },
             "class": "XEO.math.math",
             "module": "XEO",
@@ -17850,22 +17885,22 @@
                 {
                     "name": "positions",
                     "description": "One-dimensional flattened array of positions.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 },
                 {
                     "name": "indices",
                     "description": "One-dimensional flattened array of indices.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 },
                 {
                     "name": "uv",
                     "description": "One-dimensional flattened array of UV coordinates.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 }
             ],
             "return": {
                 "description": "One-dimensional flattened array of tangents.",
-                "type": "Array of Number"
+                "type": "Float32Array"
             },
             "class": "XEO.math.math",
             "module": "XEO",
@@ -17905,12 +17940,12 @@
                 {
                     "name": "positions",
                     "description": "One-dimensional flattened array of positions.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 },
                 {
                     "name": "indices",
                     "description": "One-dimensional flattened array of indices.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 }
             ],
             "return": {
@@ -17933,38 +17968,38 @@
                 {
                     "name": "origin",
                     "description": "Ray origin.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 },
                 {
                     "name": "dir",
                     "description": "Ray direction.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 },
                 {
                     "name": "a",
                     "description": "First triangle vertex.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 },
                 {
                     "name": "b",
                     "description": "Second triangle vertex.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 },
                 {
                     "name": "c",
                     "description": "Third triangle vertex.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 },
                 {
                     "name": "isect",
                     "description": "Intersection point.",
-                    "type": "Array of Number",
+                    "type": "Float32Array",
                     "optional": true
                 }
             ],
             "return": {
                 "description": "The intersection point, or null if no intersection found.",
-                "type": "Array of Number"
+                "type": "Float32Array"
             },
             "class": "XEO.math.math",
             "module": "XEO",
@@ -17982,38 +18017,38 @@
                 {
                     "name": "origin",
                     "description": "Ray origin.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 },
                 {
                     "name": "dir",
                     "description": "Ray direction.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 },
                 {
                     "name": "a",
                     "description": "First point on plane.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 },
                 {
                     "name": "b",
                     "description": "Second point on plane.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 },
                 {
                     "name": "c",
                     "description": "Third point on plane.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 },
                 {
                     "name": "isect",
                     "description": "Intersection point.",
-                    "type": "Array of Number",
+                    "type": "Float32Array",
                     "optional": true
                 }
             ],
             "return": {
                 "description": "The intersection point.",
-                "type": "Array of Number"
+                "type": "Float32Array"
             },
             "class": "XEO.math.math",
             "module": "XEO",
@@ -18031,27 +18066,27 @@
                 {
                     "name": "cartesian",
                     "description": "Cartesian coordinates.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 },
                 {
                     "name": "a",
                     "description": "First triangle vertex.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 },
                 {
                     "name": "b",
                     "description": "Second triangle vertex.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 },
                 {
                     "name": "c",
                     "description": "Third triangle vertex.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 },
                 {
                     "name": "bary",
                     "description": "The barycentric coordinates.",
-                    "type": "Array of Number",
+                    "type": "Float32Array",
                     "optional": true
                 }
             ],
@@ -18075,7 +18110,7 @@
                 {
                     "name": "bary",
                     "description": "Barycentric coordinates.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 }
             ],
             "return": {
@@ -18098,27 +18133,27 @@
                 {
                     "name": "bary",
                     "description": "The barycentric coordinate.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 },
                 {
                     "name": "a",
                     "description": "First triangle vertex.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 },
                 {
                     "name": "b",
                     "description": "Second triangle vertex.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 },
                 {
                     "name": "c",
                     "description": "Third triangle vertex.",
-                    "type": "Array of Number"
+                    "type": "Float32Array"
                 },
                 {
                     "name": "cartesian",
                     "description": "Cartesian coordinates.",
-                    "type": "Array of Number",
+                    "type": "Float32Array",
                     "optional": true
                 }
             ],
@@ -20778,7 +20813,7 @@
         {
             "file": "src/scene.js",
             "line": 1363,
-            "description": "Attempts to pick an {{#crossLink \"Entity\"}}Entity{{/crossLink}} at the given Canvas-space coordinates.\n\nIgnores {{#crossLink \"Entity\"}}Entities{{/crossLink}} that are attached\nto either a {{#crossLink \"Stage\"}}Stage{{/crossLink}} with {{#crossLink \"Stage/pickable:property\"}}pickable{{/crossLink}}\nset *false* or a {{#crossLink \"Modes\"}}Modes{{/crossLink}} with {{#crossLink \"Modes/pickable:property\"}}pickable{{/crossLink}} set *false*.\n\nOn success, will fire a {{#crossLink \"Scene/picked:event\"}}{{/crossLink}} event on this Scene, along with\na separate {{#crossLink \"Entity/picked:event\"}}{{/crossLink}} event on the target {{#crossLink \"Entity\"}}Entity{{/crossLink}}.\n\n````javascript\n\npick({\n     canvasPos: [23, 131],\n     rayPick: true\n     });\n\n````",
+            "description": "Attempts to pick an {{#crossLink \"Entity\"}}Entity{{/crossLink}} in this Scene.\n\nIgnores {{#crossLink \"Entity\"}}Entities{{/crossLink}} that are attached\nto either a {{#crossLink \"Stage\"}}Stage{{/crossLink}} with {{#crossLink \"Stage/pickable:property\"}}pickable{{/crossLink}}\nset *false* or a {{#crossLink \"Modes\"}}Modes{{/crossLink}} with {{#crossLink \"Modes/pickable:property\"}}pickable{{/crossLink}} set *false*.\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} at the given canvas coordinates:\n\n````javascript\nvar hit = scene.pick({\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n    var entity = hit.entity;\n}\n````\n\n**Usage:**\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects a ray cast through the canvas:\n\n````javascript\nvar hit = scene.pick({\n    rayPick: true,\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n\n    var entity = hit.entity;\n\n    // These properties are only on the hit result when we do a ray-pick:\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n}\n````\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects an arbitrarily-aligned World-space ray:\n\n````javascript\nvar hit = scene.pick({\n    rayPick: true,       // Picking with arbitrarily-positioned ray\n    origin: [0,0,-5],    // Ray origin\n    direction: [0,0,1]   // Ray direction\n});\n\nif (hit) { // Picked an Entity with the ray\n\n    var entity = hit.entity;\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n    var origin = hit.origin; // Float32Array containing the World-space ray origin\n    var direction = hit.direction; // Float32Array containing the World-space ray direction\n}\n````",
             "itemtype": "method",
             "name": "pick",
             "params": [
@@ -20788,23 +20823,35 @@
                     "type": "*",
                     "props": [
                         {
-                            "name": "canvasPos",
-                            "description": "Canvas-space coordinates.",
-                            "type": "Array of Number",
-                            "optional": true
-                        },
-                        {
                             "name": "rayPick",
                             "description": "Whether to ray-pick.",
                             "type": "Boolean",
                             "optional": true,
                             "optdefault": "false"
+                        },
+                        {
+                            "name": "canvasPos",
+                            "description": "Canvas-space coordinates. When ray-picking, this will override the\n**origin** and ** direction** parameters and will cause the ray to be fired through the canvas at this position,\ndirectly along the negative View-space Z-axis.",
+                            "type": "Float32Array",
+                            "optional": true
+                        },
+                        {
+                            "name": "origin",
+                            "description": "World-space ray origin when ray-picking. Ignored when canvasPos given.",
+                            "type": "Float32Array",
+                            "optional": true
+                        },
+                        {
+                            "name": "direction",
+                            "description": "World-space ray direction when ray-picking. Also indicates the length of the ray. Ignored when canvasPos given.",
+                            "type": "Float32Array",
+                            "optional": true
                         }
                     ]
                 }
             ],
             "return": {
-                "description": "Hit record, returned when an {{#crossLink \"Entity\"}}{{/crossLink}} is picked, else null.",
+                "description": "Hit record, returned when an {{#crossLink \"Entity\"}}{{/crossLink}} is picked, else null. See\nmethod comments for description.",
                 "type": "*"
             },
             "class": "Scene",
@@ -20812,7 +20859,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1644,
+            "line": 1738,
             "description": "Resets this Scene to its default state.\n\nReferences to any components in this Scene will become invalid.",
             "itemtype": "method",
             "name": "clear",
@@ -20821,7 +20868,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1670,
+            "line": 1764,
             "description": "Convenience method for creating or reusing a Component within this Scene.\n\nYou would typically use this method to conveniently instantiate components that you'd want to\nshare (ie. \"instance\") among your {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe method is given a component type, share ID and constructor attributes, like so:\n\n````javascript\nvar material = myScene.getComponent(\"XEO.PhongMaterial\", \"myMaterial\", { diffuse: [1,0,0] });\n````\n\nThe first time you call this method for the given ````type```` and ````instanceId````, this method will create the\n{{#crossLink \"PhongMaterial\"}}{{/crossLink}}, passing the given  attributes to the component's constructor.\n\nIf you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same\ncomponent instance that it returned the first time, and will ignore the attributes:\n\n````javascript\nvar material2 = myScene.getComponent(\"XEO.PhongMaterial\", \"myMaterial\", { specular: [1,1,0] });\n````\n\nEach time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a\nreference count for the component instance. You can release the shared component instance with a call to\n{{#crossLink \"Scene/putSharedComponent:method\"}}{{/crossLink}}, and once you have released it as many\ntimes as you got it, the Scene will destroy the component.",
             "itemtype": "method",
             "name": "_getSharedComponent",
@@ -20854,7 +20901,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1766,
+            "line": 1860,
             "description": "Releases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -20868,7 +20915,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1794,
+            "line": 1888,
             "description": "Compiles and renders this Scene",
             "access": "private",
             "tagname": "",
@@ -20908,7 +20955,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 142,
+            "line": 140,
             "description": "Existing {{#crossLink \"Scene\"}}Scene{{/crossLink}}s , mapped to their IDs",
             "itemtype": "property",
             "name": "scenes",
@@ -20919,7 +20966,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 247,
+            "line": 245,
             "description": "Fired on each game loop iteration.",
             "itemtype": "event",
             "name": "tick",
@@ -20956,7 +21003,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 282,
+            "line": 280,
             "description": "The default {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\nComponents created without an explicit parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} will be created within this\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} by default.\n\nxeoEngine creates the default {{#crossLink \"Scene\"}}Scene{{/crossLink}} as soon as you either\nreference this property for the first time, or create your first {{#crossLink \"Entity\"}}Entity{{/crossLink}} without\na specified {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "property",
             "name": "scene",
@@ -20968,7 +21015,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 307,
+            "line": 305,
             "description": "Registers a scene on xeoEngine.\nThis is called within the XEO.Scene constructor.",
             "itemtype": "method",
             "name": "_addScene",
@@ -20987,7 +21034,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 350,
+            "line": 352,
             "description": "Schedule a task for xeoEngine to run at the next frame.\n\nInternally, this pushes the task to a FIFO queue. Within each frame interval, xeoEngine processes the queue\nfor a certain period of time, popping tasks and running them. After each frame interval, tasks that did not\nget a chance to run during the task are left in the queue to be run next time.",
             "itemtype": "method",
             "name": "schedule",
@@ -21010,7 +21057,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 399,
+            "line": 401,
             "description": "Destroys all user-created {{#crossLink \"Scene\"}}Scenes{{/crossLink}} and\nclears the default {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "clear",
@@ -21021,7 +21068,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 428,
+            "line": 430,
             "description": "Tests if the given object is an array",
             "access": "private",
             "tagname": "",
@@ -21031,7 +21078,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 436,
+            "line": 438,
             "description": "Tests if the given value is a string",
             "params": [
                 {
@@ -21051,7 +21098,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 447,
+            "line": 449,
             "description": "Tests if the given value is a number",
             "params": [
                 {
@@ -21071,7 +21118,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 457,
+            "line": 459,
             "description": "Tests if the given value is an ID",
             "params": [
                 {
@@ -21091,7 +21138,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 467,
+            "line": 469,
             "description": "Tests if the given components are the same, where the components can be either IDs or instances.",
             "params": [
                 {
@@ -21115,7 +21162,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 486,
+            "line": 488,
             "description": "Tests if the given value is a function",
             "params": [
                 {
@@ -21135,21 +21182,21 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 496,
+            "line": 498,
             "class": "XEO",
             "module": "XEO",
             "namespace": "XEO"
         },
         {
             "file": "src/xeo.js",
-            "line": 502,
+            "line": 504,
             "class": "XEO",
             "module": "XEO",
             "namespace": "XEO"
         },
         {
             "file": "src/xeo.js",
-            "line": 513,
+            "line": 515,
             "description": "Add non-null/defined properties of o to o2",
             "access": "private",
             "tagname": "",
@@ -21159,7 +21206,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 528,
+            "line": 530,
             "description": "Add properties of o to o2 where undefined or null on o2",
             "access": "private",
             "tagname": "",
@@ -21169,7 +21216,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 543,
+            "line": 545,
             "description": "Returns true if the given map is empty.",
             "params": [
                 {
@@ -21189,7 +21236,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 558,
+            "line": 560,
             "description": "Returns the given ID as a string, in quotes if the ID was a string to begin with.\n\nThis is useful for logging IDs.",
             "params": [
                 {
@@ -21218,7 +21265,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 326,
+            "line": 396,
             "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} attached to this ZSpace component.\n\nThe ZSpace component will attach a {{#crossLink \"Projection\"}}{{/crossLink}} to its\n{{#crossLink \"Camera\"}}{{/crossLink}} if the {{#crossLink \"Camera\"}}Camera{{/crossLink}} does not have\none already, replacing whatever projection transform component was already attached.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this ZSpace component. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.\n\nNo other component should modify the state of the {{#crossLink \"Camera\"}}{{/crossLink}} while\nit's attached to this ZSpace component. There is no prevention or check for that, so if that\nhappens you'll get unexpected results.",
             "itemtype": "property",
             "name": "camera",
@@ -21229,7 +21276,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 348,
+            "line": 418,
             "description": "Fired whenever this ZSpace component's {{#crossLink \"ZSpace/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
@@ -21245,7 +21292,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 368,
+            "line": 438,
             "description": "Position of this ZSpace's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"ZSpace/nearClip:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "nearClip",
@@ -21257,7 +21304,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 385,
+            "line": 455,
             "description": "Fired whenever this ZSpace's   {{#crossLink \"ZSpace/nearClip:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "nearClip",
@@ -21273,7 +21320,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 398,
+            "line": 468,
             "description": "Position of this ZSpace's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"ZSpace/farClip:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "farClip",
@@ -21285,7 +21332,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 415,
+            "line": 485,
             "description": "Fired whenever this ZSpace's  {{#crossLink \"ZSpace/farClip:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "farClip",
@@ -21301,7 +21348,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 429,
+            "line": 499,
             "description": "The viewer scale.\n\nUpdates to this are ignored when {{#crossLink \"ZSpace/autoViewerScale:property\"}}{{/crossLink}} is true.\n\nFires a {{#crossLink \"ZSpace/viewerScale:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "viewerScale",
@@ -21313,7 +21360,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 459,
+            "line": 529,
             "description": "Fired whenever this ZSpace's {{#crossLink \"ZSpace/viewerScale:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "viewerScale",
@@ -21330,7 +21377,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 473,
+            "line": 543,
             "description": "Set true to automatically size {{#crossLink \"ZSpace/viewerScale:event\"}}{{/crossLink}} to fit\neverything in the {{#crossLink \"Scene\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"ZSpace/autoViewerScale:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "autoViewerScale",
@@ -21342,7 +21389,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 506,
+            "line": 576,
             "description": "Fired whenever this ZSpace's {{#crossLink \"ZSpace/autoViewerScale:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "autoViewerScale",
@@ -21359,7 +21406,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 520,
+            "line": 590,
             "description": "The World-space origin.\n\nFires a {{#crossLink \"ZSpace/viewerOrigin:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "viewerOrigin",
@@ -21371,7 +21418,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 537,
+            "line": 607,
             "description": "Fired whenever this Translate's {{#crossLink \"Translate/viewerOrigin:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "viewerOrigin",
@@ -21388,7 +21435,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 550,
+            "line": 620,
             "description": "The display resolution.\n\nFires a {{#crossLink \"ZSpace/displayResolution:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "viewerScale",
@@ -21400,7 +21447,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 567,
+            "line": 637,
             "description": "Fired whenever this ZSpace's {{#crossLink \"ZSpace/displayResolution:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "displayResolution",
@@ -21417,7 +21464,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 581,
+            "line": 651,
             "description": "The display size.\n\nFires a {{#crossLink \"ZSpace/displaySize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "viewerScale",
@@ -21429,7 +21476,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 598,
+            "line": 668,
             "description": "Fired whenever this ZSpace's {{#crossLink \"ZSpace/displaySize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "displaySize",
@@ -21446,7 +21493,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 612,
+            "line": 682,
             "description": "The current 3D position of the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusMoved:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusPos",
@@ -21458,7 +21505,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 627,
+            "line": 697,
             "description": "The current 3D orientation of the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusMoved:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusOrientation",
@@ -21470,7 +21517,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 642,
+            "line": 712,
             "description": "The current camera matrix for the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusMoved:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusCameraMatrix",
@@ -21482,7 +21529,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 657,
+            "line": 727,
             "description": "Whether or not the first button is down on the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusButton0:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusButton0",
@@ -21495,7 +21542,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 673,
+            "line": 743,
             "description": "Whether or not the second button is down on the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusButton1:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusButton1",
@@ -21508,7 +21555,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 689,
+            "line": 759,
             "description": "Whether or not the third button is down on the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusButton2:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusButton2",
@@ -21521,7 +21568,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 705,
+            "line": 775,
             "description": "Flag which indicates whether this ZSpace component is active or not.\n\nNote that this ZSpace component can still be activated when the browser does not support ZSpace.\n\nFires an {{#crossLink \"ZSpace/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
@@ -21533,7 +21580,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 731,
+            "line": 801,
             "description": "Fired whenever this ZSpace component's {{#crossLink \"ZSpace/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
@@ -21548,13 +21595,127 @@
             "submodule": "webvr"
         },
         {
-            "file": "examples/js/webvr/zSpaceStylus.js",
-            "line": 126,
-            "description": "The {{#crossLink \"ZSpace\"}}{{/crossLink}} this stylus is currently connected to.\n\nFires a {{#crossLink \"ZSpaceStylus/ZSpace:event\"}}{{/crossLink}} event on change.",
+            "file": "examples/js/webvr/zSpace.js",
+            "line": 1195,
+            "description": "Fired whenever this ZSpace component's stylus moves.",
+            "itemtype": "event",
+            "name": "stylusMoved",
+            "class": "ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zSpace.js",
+            "line": 1205,
+            "description": "Fired whenever this ZSpace component's first button is pressed or released.",
+            "itemtype": "event",
+            "name": "stylusButton0",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "True if the button is down."
+                }
+            ],
+            "class": "ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zSpace.js",
+            "line": 1216,
+            "description": "Fired whenever this ZSpace component's second button is pressed or released.",
+            "itemtype": "event",
+            "name": "stylusButton1",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "True if the button is down."
+                }
+            ],
+            "class": "ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zSpace.js",
+            "line": 1227,
+            "description": "Fired whenever this ZSpace component's third button is pressed or released.",
+            "itemtype": "event",
+            "name": "stylusButton2",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "True if the button is down."
+                }
+            ],
+            "class": "ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zSpaceStylusHelper.js",
+            "line": 146,
+            "description": "The {{#crossLink \"ZSpace\"}}{{/crossLink}} this ZSpaceStylusHelper is currently connected to.\n\nFires a {{#crossLink \"ZSpaceStylusHelper/zSpace:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "zSpace",
             "type": "ZSpace",
-            "class": "ZSpaceStylus",
+            "class": "ZSpaceStylusHelper",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zSpaceStylusHelper.js",
+            "line": 178,
+            "description": "Shows the ray as a line segment in the 3D view when true.\n\nFires an {{#crossLink \"ZSpaceStylusHelper/visible:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "visible",
+            "type": "Boolean",
+            "default": "true",
+            "class": "ZSpaceStylusHelper",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zSpaceStylusHelper.js",
+            "line": 201,
+            "description": "Fired whenever this ZSpaceStylusHelper's {{#crossLink \"ZSpaceStylusHelper/visible:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "visible",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "ZSpaceStylusHelper",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zSpaceStylusHelper.js",
+            "line": 214,
+            "description": "Whether to highlight this ZSpaceStylusHelper or not.\n\nFires an {{#crossLink \"ZSpaceStylusHelper/highlighted:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "highlighted",
+            "type": "Boolean",
+            "default": "false",
+            "class": "ZSpaceStylusHelper",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zSpaceStylusHelper.js",
+            "line": 237,
+            "description": "Fired whenever this ZSpaceStylusHelper's {{#crossLink \"ZSpaceStylusHelper/highlighted:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "highlighted",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "ZSpaceStylusHelper",
             "module": "XEO",
             "submodule": "webvr"
         },
@@ -22317,7 +22478,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/_renderer/renderer.js:1047"
+            "line": " src/_renderer/renderer.js:1192"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -22497,39 +22658,39 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1670"
+            "line": " src/scene.js:1764"
         },
         {
             "message": "unknown tag: demo",
-            "line": " src/xeo.js:399"
+            "line": " src/xeo.js:401"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:436"
+            "line": " src/xeo.js:438"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:447"
+            "line": " src/xeo.js:449"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:457"
+            "line": " src/xeo.js:459"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:467"
+            "line": " src/xeo.js:469"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:486"
+            "line": " src/xeo.js:488"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:543"
+            "line": " src/xeo.js:545"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:558"
+            "line": " src/xeo.js:560"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -22800,6 +22961,10 @@
             "line": " src/_renderer/object.js:51"
         },
         {
+            "message": "Missing item type\nTrue once the object has been compiled within the renderer display list.",
+            "line": " src/_renderer/object.js:56"
+        },
+        {
             "message": "Missing item type\nVertex and fragment shaders for pick and draw",
             "line": " src/_renderer/program.js:7"
         },
@@ -22928,100 +23093,100 @@
             "line": " src/_renderer/renderer.js:96"
         },
         {
-            "message": "Missing item type\nOptional callback to fire when renderer wants to\nbind an output framebuffer.\n\nWhen this is missing, the renderer will implicitly bind\nWebGL's default framebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });",
+            "message": "Missing item type\nOptional callback to fire when renderer wants to\nbind an output framebuffer. This is useful when we need to bind a stereo output buffer for WebVR.\n\nWhen this is missing, the renderer will implicitly bind\nWebGL's default framebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });",
             "line": " src/_renderer/renderer.js:102"
         },
         {
-            "message": "Missing item type\nOptional callback to fire when renderer wants to\nunbind any output drawing framebuffer that was\npreviously bound with #bindOutputFramebuffer.\n\nCallback takes no parameters.",
+            "message": "Missing item type\nOptional callback to fire when renderer wants to\nunbind any output drawing framebuffer that was\npreviously bound with #bindOutputFramebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.unbindOutputFramebuffer = function(pass) { .. });\n\nCallback takes no parameters.",
             "line": " src/_renderer/renderer.js:116"
         },
         {
             "message": "Missing item type\nFlags the object list as needing to be rebuilt from renderer objects\non the next call to {@link #render} or {@link #pick}. Setting this\nwill cause the rendering pipeline to be executed from stage #2\n(see class comment), causing object list rebuild, state order\ndetermination, state sort, draw list construction and image render.",
-            "line": " src/_renderer/renderer.js:345"
+            "line": " src/_renderer/renderer.js:350"
         },
         {
             "message": "Missing item type\nFlags the object list as needing state orders to be (re)computed on the\nnext call to {@link #render} or {@link #pick}. Setting this will cause\nthe rendering pipeline to be executed from stage #3 (see class comment),\ncausing state order determination, state sort, draw list construction\nand image render.",
-            "line": " src/_renderer/renderer.js:355"
+            "line": " src/_renderer/renderer.js:360"
         },
         {
             "message": "Missing item type\nFlags the object list as needing to be state-sorted on the next call\nto {@link #render} or {@link #pick}.Setting this will cause the\nrendering pipeline to be executed from stage #4 (see class comment),\ncausing state sort, draw list construction and image render.",
-            "line": " src/_renderer/renderer.js:365"
+            "line": " src/_renderer/renderer.js:370"
         },
         {
             "message": "Missing item type\nFlags the draw list as needing to be rebuilt from the object list on\nthe next call to {@link #render} or {@link #pick}.  Setting this will\ncause the rendering pipeline to be executed from stage #5\n(see class comment), causing draw list construction and image render.",
-            "line": " src/_renderer/renderer.js:374"
+            "line": " src/_renderer/renderer.js:379"
         },
         {
             "message": "Missing item type\nFlags the image as needing to be redrawn from the draw list on the\nnext call to {@link #render} or {@link #pick}. Setting this will\ncause the rendering pipeline to be executed from stage #6\n(see class comment), causing the image render.",
-            "line": " src/_renderer/renderer.js:383"
+            "line": " src/_renderer/renderer.js:388"
         },
         {
             "message": "Missing item type\nReallocates WebGL resources for objects within this renderer.",
-            "line": " src/_renderer/renderer.js:393"
+            "line": " src/_renderer/renderer.js:398"
         },
         {
             "message": "Missing item type\nInternally creates (or updates) a {@link XEO.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link XEO.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
-            "line": " src/_renderer/renderer.js:417"
+            "line": " src/_renderer/renderer.js:422"
         },
         {
             "message": "Missing item type",
-            "line": " src/_renderer/renderer.js:543"
+            "line": " src/_renderer/renderer.js:550"
         },
         {
             "message": "Missing item type\nRemoves an object from this Renderer",
-            "line": " src/_renderer/renderer.js:601"
+            "line": " src/_renderer/renderer.js:608"
         },
         {
             "message": "Missing item type\nRenders a new frame, if neccessary.",
-            "line": " src/_renderer/renderer.js:637"
+            "line": " src/_renderer/renderer.js:644"
         },
         {
             "message": "Missing item type\nBuilds the object list from the object map",
-            "line": " src/_renderer/renderer.js:678"
+            "line": " src/_renderer/renderer.js:692"
         },
         {
             "message": "Missing item type\nGenerates object state sort keys",
-            "line": " src/_renderer/renderer.js:690"
+            "line": " src/_renderer/renderer.js:704"
         },
         {
             "message": "Missing item type\nState-sorts the object list",
-            "line": " src/_renderer/renderer.js:711"
+            "line": " src/_renderer/renderer.js:725"
         },
         {
             "message": "Missing item type\nLogs the object list",
-            "line": " src/_renderer/renderer.js:721"
+            "line": " src/_renderer/renderer.js:735"
         },
         {
             "message": "Missing item type\nBuilds the draw list, which is the list of draw state-chunks to apply to WebGL\nto render the visible objects in the object list for the next frame.\nPreserves the state sort order of the object list among the draw chunks.",
-            "line": " src/_renderer/renderer.js:734"
+            "line": " src/_renderer/renderer.js:879"
         },
         {
             "message": "Missing item type\nAppends an object to the draw and pick lists.",
-            "line": " src/_renderer/renderer.js:919"
+            "line": " src/_renderer/renderer.js:1064"
         },
         {
             "message": "Missing item type\nLogs the contents of the draw list to the console.",
-            "line": " src/_renderer/renderer.js:988"
+            "line": " src/_renderer/renderer.js:1133"
         },
         {
             "message": "Missing item type\nLogs the contents of the pick list to the console.",
-            "line": " src/_renderer/renderer.js:1018"
+            "line": " src/_renderer/renderer.js:1163"
         },
         {
-            "message": "Missing item type\nAttempts to pick an object at the given canvas coordinates.",
-            "line": " src/_renderer/renderer.js:1047"
+            "message": "Missing item type\nAttempts to pick an object.",
+            "line": " src/_renderer/renderer.js:1192"
         },
         {
             "message": "Missing item type",
-            "line": " src/_renderer/renderer.js:1140"
+            "line": " src/_renderer/renderer.js:1319"
         },
         {
             "message": "Missing item type\nReads the colors of some pixels in the last rendered frame.",
-            "line": " src/_renderer/renderer.js:1298"
+            "line": " src/_renderer/renderer.js:1475"
         },
         {
             "message": "Missing item type\nDestroys this Renderer.",
-            "line": " src/_renderer/renderer.js:1345"
+            "line": " src/_renderer/renderer.js:1522"
         },
         {
             "message": "Missing item type\nRenderer states",
@@ -23225,11 +23390,11 @@
         },
         {
             "message": "Missing item type\nReleases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
-            "line": " src/scene.js:1766"
+            "line": " src/scene.js:1860"
         },
         {
             "message": "Missing item type\nCompiles and renders this Scene",
-            "line": " src/scene.js:1794"
+            "line": " src/scene.js:1888"
         },
         {
             "message": "Missing item type\nInformation about available WebGL support",
@@ -23237,51 +23402,51 @@
         },
         {
             "message": "Missing item type\nTests if the given object is an array",
-            "line": " src/xeo.js:428"
+            "line": " src/xeo.js:430"
         },
         {
             "message": "Missing item type\nTests if the given value is a string",
-            "line": " src/xeo.js:436"
+            "line": " src/xeo.js:438"
         },
         {
             "message": "Missing item type\nTests if the given value is a number",
-            "line": " src/xeo.js:447"
+            "line": " src/xeo.js:449"
         },
         {
             "message": "Missing item type\nTests if the given value is an ID",
-            "line": " src/xeo.js:457"
+            "line": " src/xeo.js:459"
         },
         {
             "message": "Missing item type\nTests if the given components are the same, where the components can be either IDs or instances.",
-            "line": " src/xeo.js:467"
+            "line": " src/xeo.js:469"
         },
         {
             "message": "Missing item type\nTests if the given value is a function",
-            "line": " src/xeo.js:486"
+            "line": " src/xeo.js:488"
         },
         {
             "message": "Missing item type",
-            "line": " src/xeo.js:496"
+            "line": " src/xeo.js:498"
         },
         {
             "message": "Missing item type",
-            "line": " src/xeo.js:502"
+            "line": " src/xeo.js:504"
         },
         {
             "message": "Missing item type\nAdd non-null/defined properties of o to o2",
-            "line": " src/xeo.js:513"
+            "line": " src/xeo.js:515"
         },
         {
             "message": "Missing item type\nAdd properties of o to o2 where undefined or null on o2",
-            "line": " src/xeo.js:528"
+            "line": " src/xeo.js:530"
         },
         {
             "message": "Missing item type\nReturns true if the given map is empty.",
-            "line": " src/xeo.js:543"
+            "line": " src/xeo.js:545"
         },
         {
             "message": "Missing item type\nReturns the given ID as a string, in quotes if the ID was a string to begin with.\n\nThis is useful for logging IDs.",
-            "line": " src/xeo.js:558"
+            "line": " src/xeo.js:560"
         },
         {
             "message": "Missing item type\nAn Effect to enable zSpace Display",

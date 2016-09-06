@@ -120,7 +120,7 @@
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                                 <li><a href="../classes/ZSpace.html">ZSpace</a></li>
-                                <li><a href="../classes/ZSpaceStylus.html">ZSpaceStylus</a></li>
+                                <li><a href="../classes/ZSpaceStylusHelper.html">ZSpaceStylusHelper</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -879,6 +879,10 @@
                             &quot;&#x27;triangle-strip&#x27; and &#x27;triangle-fan&#x27;. Defaulting to &#x27;triangles&#x27;.&quot;);
 
                         value = &quot;triangles&quot;;
+                    }
+
+                    if (this._state.primitiveName === value) {
+                        return;
                     }
 
                     this._state.primitiveName = value;

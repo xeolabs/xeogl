@@ -120,7 +120,7 @@
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                                 <li><a href="../classes/ZSpace.html">ZSpace</a></li>
-                                <li><a href="../classes/ZSpaceStylus.html">ZSpaceStylus</a></li>
+                                <li><a href="../classes/ZSpaceStylusHelper.html">ZSpaceStylusHelper</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -383,7 +383,7 @@
  @param [cfg.components] {Array(Object)} JSON array containing parameters for {{#crossLink &quot;Component&quot;}}Component{{/crossLink}} subtypes to immediately create within the Scene.
  @param [cfg.passes=1] The number of times this Scene renders per frame.
  @param [cfg.clearEachPass=false] When doing multiple passes per frame, specifies whether to clear the
-  canvas before each pass (true) or just before the first pass (false).
+ canvas before each pass (true) or just before the first pass (false).
  @extends Component
  */
 (function () {
@@ -844,7 +844,7 @@
 
                 set: function (value) {
 
-                   value = !!value;
+                    value = !!value;
 
                     if (value === this._clearEachPass) {
                         return;
@@ -1549,85 +1549,141 @@
         },
 
         /**
-         * Attempts to pick an {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}} at the given Canvas-space coordinates.
+         * Attempts to pick an {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}} in this Scene.
          *
          * Ignores {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} that are attached
          * to either a {{#crossLink &quot;Stage&quot;}}Stage{{/crossLink}} with {{#crossLink &quot;Stage/pickable:property&quot;}}pickable{{/crossLink}}
          * set *false* or a {{#crossLink &quot;Modes&quot;}}Modes{{/crossLink}} with {{#crossLink &quot;Modes/pickable:property&quot;}}pickable{{/crossLink}} set *false*.
          *
-         * On success, will fire a {{#crossLink &quot;Scene/picked:event&quot;}}{{/crossLink}} event on this Scene, along with
-         * a separate {{#crossLink &quot;Entity/picked:event&quot;}}{{/crossLink}} event on the target {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}}.
+         * Picking the {{#crossLink &quot;Entity&quot;}}{{/crossLink}} at the given canvas coordinates:
          *
          * &#x60;&#x60;&#x60;&#x60;javascript
+         * var hit = scene.pick({
+         *     canvasPos: [23, 131]
+         *  });
          *
-         * pick({
-         *      canvasPos: [23, 131],
-         *      rayPick: true
-         *      });
+         * if (hit) { // Picked an Entity
+         *     var entity = hit.entity;
+         * }
+         * &#x60;&#x60;&#x60;&#x60;
          *
+         * **Usage:**
+         *
+         * Picking the {{#crossLink &quot;Entity&quot;}}{{/crossLink}} that intersects a ray cast through the canvas:
+         *
+         * &#x60;&#x60;&#x60;&#x60;javascript
+         * var hit = scene.pick({
+         *     rayPick: true,
+         *     canvasPos: [23, 131]
+         *  });
+         *
+         * if (hit) { // Picked an Entity
+         *
+         *     var entity = hit.entity;
+         *
+         *     // These properties are only on the hit result when we do a ray-pick:
+         *
+         *     var primitive = hit.primitive; // Type of primitive that was picked, usually &quot;triangles&quot;
+         *     var primIndex = hit.primIndex; // Position of triangle&#x27;s first index in the picked Entity&#x27;s Geometry&#x27;s indices array
+         *     var indices = hit.indices; // UInt32Array containing the triangle&#x27;s vertex indices
+         *     var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle
+         *     var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle
+         *     var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle
+         *     var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle
+         *     var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle
+         *     var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle
+         * }
+         * &#x60;&#x60;&#x60;&#x60;
+         *
+         * Picking the {{#crossLink &quot;Entity&quot;}}{{/crossLink}} that intersects an arbitrarily-aligned World-space ray:
+         *
+         * &#x60;&#x60;&#x60;&#x60;javascript
+         * var hit = scene.pick({
+         *     rayPick: true,       // Picking with arbitrarily-positioned ray
+         *     origin: [0,0,-5],    // Ray origin
+         *     direction: [0,0,1]   // Ray direction
+         * });
+         *
+         * if (hit) { // Picked an Entity with the ray
+         *
+         *     var entity = hit.entity;
+         *
+         *     var primitive = hit.primitive; // Type of primitive that was picked, usually &quot;triangles&quot;
+         *     var primIndex = hit.primIndex; // Position of triangle&#x27;s first index in the picked Entity&#x27;s Geometry&#x27;s indices array
+         *     var indices = hit.indices; // UInt32Array containing the triangle&#x27;s vertex indices
+         *     var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle
+         *     var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle
+         *     var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle
+         *     var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle
+         *     var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle
+         *     var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle
+         *     var origin = hit.origin; // Float32Array containing the World-space ray origin
+         *     var direction = hit.direction; // Float32Array containing the World-space ray direction
+         * }
          * &#x60;&#x60;&#x60;&#x60;
          * @method pick
          *
          * @param {*} params Picking parameters.
-         * @param {Array of Number} [params.canvasPos] Canvas-space coordinates.
          * @param {Boolean} [params.rayPick=false] Whether to ray-pick.
-         * @returns {*} Hit record, returned when an {{#crossLink &quot;Entity&quot;}}{{/crossLink}} is picked, else null.
+         * @param {Float32Array} [params.canvasPos] Canvas-space coordinates. When ray-picking, this will override the
+         * **origin** and ** direction** parameters and will cause the ray to be fired through the canvas at this position,
+         * directly along the negative View-space Z-axis.
+         * @param {Float32Array} [params.origin] World-space ray origin when ray-picking. Ignored when canvasPos given.
+         * @param {Float32Array} [params.direction] World-space ray direction when ray-picking. Also indicates the length of the ray. Ignored when canvasPos given.
+         * @returns {*} Hit record, returned when an {{#crossLink &quot;Entity&quot;}}{{/crossLink}} is picked, else null. See
+         * method comments for description.
          */
         pick: (function () {
 
             // Cached vectors to avoid garbage collection
 
-            var origin = XEO.math.vec3();
-            var dir = XEO.math.vec3();
+            var math = XEO.math;
 
-            var a = XEO.math.vec3();
-            var b = XEO.math.vec3();
-            var c = XEO.math.vec3();
+            var localRayOrigin = math.vec3();
+            var localRayDir = math.vec3();
 
-            var triangleVertices = XEO.math.vec3();
-            var position = XEO.math.vec4();
-            var worldPos = XEO.math.vec4();
-            var viewPos = XEO.math.vec4();
-            var bary = XEO.math.vec3();
+            var a = math.vec3();
+            var b = math.vec3();
+            var c = math.vec3();
 
-            var na = XEO.math.vec3();
-            var nb = XEO.math.vec3();
-            var nc = XEO.math.vec3();
+            var triangleVertices = math.vec3();
+            var position = math.vec4();
+            var worldPos = math.vec3();
+            var viewPos = math.vec3();
+            var bary = math.vec3();
 
-            var uva = XEO.math.vec3();
-            var uvb = XEO.math.vec3();
-            var uvc = XEO.math.vec3();
+            var na = math.vec3();
+            var nb = math.vec3();
+            var nc = math.vec3();
 
-            var tempMat4 = XEO.math.mat4();
-            var tempMat4b = XEO.math.mat4();
+            var uva = math.vec3();
+            var uvb = math.vec3();
+            var uvc = math.vec3();
 
-            var tempVec2 = XEO.math.vec2();
+            var tempVec4a = math.vec4();
+            var tempVec4b = math.vec4();
+            var tempVec4c = math.vec4();
+            var tempVec4d = math.vec4();
+            var tempVec4e = math.vec4();
 
-            var tempVec4 = XEO.math.vec4();
-            var tempVec4b = XEO.math.vec4();
-            var tempVec4c = XEO.math.vec4();
+            var tempVec3 = math.vec3();
+            var tempVec3b = math.vec3();
+            var tempVec3c = math.vec3();
+            var tempVec3d = math.vec3();
+            var tempVec3e = math.vec3();
+            var tempVec3f = math.vec3();
+            var tempVec3g = math.vec3();
+            var tempVec3h = math.vec3();
+            var tempVec3i = math.vec3();
+            var tempVec3j = math.vec3();
+            var tempVec3k = math.vec3();
 
-            var tempVec3 = XEO.math.vec3();
-            var tempVec3b = XEO.math.vec3();
-            var tempVec3c = XEO.math.vec3();
-            var tempVec3d = XEO.math.vec3();
-            var tempVec3e = XEO.math.vec3();
-            var tempVec3f = XEO.math.vec3();
-            var tempVec3g = XEO.math.vec3();
-            var tempVec3h = XEO.math.vec3();
-            var tempVec3i = XEO.math.vec3();
-            var tempVec3j = XEO.math.vec3();
-            var tempVec3k = XEO.math.vec3();
+            var tempMat4 = math.mat4();
+            var tempMat4b = math.mat4();
+            var tempMat4c = math.mat4();
 
-
-            // Given a Entity and canvas coordinates, gets a ray
-            // originating at the World-space eye position that passes
-            // through the perspective projection plane. The ray is
-            // returned via the origin and dir arguments.
-
-            function getLocalRay(entity, canvasCoords, origin, dir) {
-
-                var math = XEO.math;
+            // Given a Entity and canvas coordinates, gets a Local-space ray.
+            function canvasPosToLocalRay(entity, canvasPos, localRayOrigin, localRayDir) {
 
                 var canvas = entity.scene.canvas.canvas;
 
@@ -1637,9 +1693,7 @@
 
                 var vmMat = math.mulMat4(viewMat, modelMat, tempMat4);
                 var pvMat = math.mulMat4(projMat, vmMat, tempMat4b);
-                var pvMatInverse = math.inverseMat4(pvMat, tempMat4b);
-
-                //var modelMatInverse = math.inverseMat4(modelMat, tempMat4c);
+                var pvMatInverse = math.inverseMat4(pvMat, tempMat4c);
 
                 // Calculate clip space coordinates, which will be in range
                 // of x=[-1..1] and y=[-1..1], with y=(+1) at top
@@ -1647,31 +1701,61 @@
                 var canvasWidth = canvas.width;
                 var canvasHeight = canvas.height;
 
-                var clipX = (canvasCoords[0] - canvasWidth / 2) / (canvasWidth / 2);  // Calculate clip space coordinates
-                var clipY = -(canvasCoords[1] - canvasHeight / 2) / (canvasHeight / 2);
+                var clipX = (canvasPos[0] - canvasWidth / 2) / (canvasWidth / 2);  // Calculate clip space coordinates
+                var clipY = -(canvasPos[1] - canvasHeight / 2) / (canvasHeight / 2);
 
-                var local1 = math.transformVec4(pvMatInverse, [clipX, clipY, -1, 1], tempVec4);
-                local1 = math.mulVec4Scalar(local1, 1 / local1[3]);
+                tempVec4a[0] = clipX;
+                tempVec4a[1] = clipY;
+                tempVec4a[2] = -1;
+                tempVec4a[3] = 1;
 
-                var local2 = math.transformVec4(pvMatInverse, [clipX, clipY, 1, 1], tempVec4b);
-                local2 = math.mulVec4Scalar(local2, 1 / local2[3]);
+                math.transformVec4(pvMatInverse, tempVec4a, tempVec4b);
+                math.mulVec4Scalar(tempVec4b, 1 / tempVec4b[3]);
 
-                origin[0] = local1[0];
-                origin[1] = local1[1];
-                origin[2] = local1[2];
+                tempVec4c[0] = clipX;
+                tempVec4c[1] = clipY;
+                tempVec4c[2] = 1;
+                tempVec4c[3] = 1;
 
-                math.subVec3(local2, local1, dir);
+                math.transformVec4(pvMatInverse, tempVec4c, tempVec4d);
+                math.mulVec4Scalar(tempVec4d, 1 / tempVec4d[3]);
 
-                math.normalizeVec3(dir);
+                localRayOrigin[0] = tempVec4d[0];
+                localRayOrigin[1] = tempVec4d[1];
+                localRayOrigin[2] = tempVec4d[2];
+
+                math.subVec3(tempVec4d, tempVec4b, localRayDir);
+
+                math.normalizeVec3(localRayDir);
+            }
+
+            // Transforms a ray from World-space to Local-space
+            function worldRayToLocalRay(entity, worldRayOrigin, worldRayDir, localRayOrigin, localRayDir) {
+
+                var modelMat = entity.transform.leafMatrix;
+                var modelMatInverse = math.inverseMat4(modelMat, tempMat4);
+
+                tempVec4a[0] = worldRayOrigin[0];
+                tempVec4a[1] = worldRayOrigin[1];
+                tempVec4a[2] = worldRayOrigin[2];
+                tempVec4a[3] = 1;
+
+                math.transformVec4(modelMatInverse, tempVec4a, tempVec4b);
+
+                localRayOrigin[0] = tempVec4b[0];
+                localRayOrigin[1] = tempVec4b[1];
+                localRayOrigin[2] = tempVec4b[2];
+
+                math.transformVec3(modelMatInverse, worldRayDir, localRayDir);
             }
 
             return function (params) {
 
-                var math = XEO.math;
-
                 params = params || {};
 
-                params.canvasPos = params.canvasPos || tempVec2;
+                if (params.rayPick &amp;&amp; (!params.canvasPos &amp;&amp; (!params.origin || !params.direction))) {
+                    this.warn(&quot;ray picking without canvasPos or ray origin and direction&quot;);
+                }
 
                 var hit = this._renderer.pick(params);
 
@@ -1730,26 +1814,37 @@
                             // from the eye position through the mouse position
                             // on the perspective projection plane
 
-                            getLocalRay(entity, params.canvasPos, origin, dir);
+                            var canvasPos;
 
-                            math.rayPlaneIntersect(origin, dir, a, b, c, position);
+                            if (params.canvasPos) {
+                                canvasPos = params.canvasPos;
+                                hit.canvasPos = params.canvasPos;
+                                canvasPosToLocalRay(entity, canvasPos, localRayOrigin, localRayDir);
+
+                            } else if (params.origin &amp;&amp; params.direction) {
+                                worldRayToLocalRay(entity, params.origin, params.direction, localRayOrigin, localRayDir);
+                            }
+
+                            math.normalizeVec3(localRayDir);
+                            math.rayTriangleIntersect(localRayOrigin, localRayDir, a, b, c, position);
 
                             // Get Local-space cartesian coordinates of the ray-triangle intersection
 
+                            hit.localPos = position;
                             hit.position = position;
 
                             // Get interpolated World-space coordinates
 
                             // Need to transform homogeneous coords
 
-                            tempVec4[0] = position[0];
-                            tempVec4[1] = position[1];
-                            tempVec4[2] = position[2];
-                            tempVec4[3] = 1;
+                            tempVec4a[0] = position[0];
+                            tempVec4a[1] = position[1];
+                            tempVec4a[2] = position[2];
+                            tempVec4a[3] = 1;
 
                             // Get World-space cartesian coordinates of the ray-triangle intersection
 
-                            math.transformVec4(entity.transform.leafMatrix, tempVec4, tempVec4b);
+                            math.transformVec4(entity.transform.leafMatrix, tempVec4a, tempVec4b);
 
                             worldPos[0] = tempVec4b[0];
                             worldPos[1] = tempVec4b[1];
@@ -1759,7 +1854,7 @@
 
                             // Get View-space cartesian coordinates of the ray-triangle intersection
 
-                            math.transformVec4(entity.camera.view.matrix, worldPos, tempVec4c);
+                            math.transformVec4(entity.camera.view.matrix, tempVec4b, tempVec4c);
 
                             viewPos[0] = tempVec4c[0];
                             viewPos[1] = tempVec4c[1];
@@ -1826,7 +1921,6 @@
                     return hit;
                 }
             };
-
         })(),
 
         /**

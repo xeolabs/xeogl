@@ -120,7 +120,7 @@
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                                 <li><a href="../classes/ZSpace.html">ZSpace</a></li>
-                                <li><a href="../classes/ZSpaceStylus.html">ZSpaceStylus</a></li>
+                                <li><a href="../classes/ZSpaceStylusHelper.html">ZSpaceStylusHelper</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -1629,11 +1629,37 @@
 
         },
 
-        _compile: function () {
+        __compile: function () {
 
-            if (!this._valid()) {
-                return;
+            var self = this;
+
+            if (!this._compiling) {
+
+                self._compiling = true;
+
+                var object = this._renderer.objects[this.id];
+
+                if (object) {
+                    object.compiled = false;
+                }
+
+                var task = function () {
+
+                    if (!self._valid()) {
+                        XEO.scheduleTask(task);
+                        return;
+                    }
+
+                    self.__compile();
+
+                    self._compiling = false;
+                };
+
+                XEO.scheduleTask(task);
             }
+        },
+
+        _compile: function () {
 
             var attached = this._attached;
 

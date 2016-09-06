@@ -81,7 +81,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "XEO",
         "XEO.math.math",
         "ZSpace",
-        "ZSpaceStylus"
+        "ZSpaceStylusHelper"
     ],
     "modules": [
         "XEO",

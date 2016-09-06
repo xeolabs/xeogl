@@ -120,7 +120,7 @@
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                                 <li><a href="../classes/ZSpace.html">ZSpace</a></li>
-                                <li><a href="../classes/ZSpaceStylus.html">ZSpaceStylus</a></li>
+                                <li><a href="../classes/ZSpaceStylusHelper.html">ZSpaceStylusHelper</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -467,7 +467,7 @@ if those arrays are huge.</p>
         
                                         <div class="param-description">
                                             <p>When doing multiple passes per frame, specifies whether to clear the
-         canvas before each pass (true) or just before the first pass (false).</p>
+        canvas before each pass (true) or just before the first pass (false).</p>
         
                                         </div>
         
@@ -821,7 +821,7 @@ if those arrays are huge.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_scene.js.html#l1670"><code>src&#x2F;scene.js:1670</code></a>
+        <a href="../files/src_scene.js.html#l1764"><code>src&#x2F;scene.js:1764</code></a>
         </p>
 
 
@@ -917,7 +917,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_scene.js.html#l1644"><code>src&#x2F;scene.js:1644</code></a>
+        <a href="../files/src_scene.js.html#l1738"><code>src&#x2F;scene.js:1738</code></a>
         </p>
 
 
@@ -1643,17 +1643,66 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     </div>
 
     <div class="description">
-        <p>Attempts to pick an <a href="../classes/Entity.html" class="crosslink">Entity</a> at the given Canvas-space coordinates.</p>
+        <p>Attempts to pick an <a href="../classes/Entity.html" class="crosslink">Entity</a> in this Scene.</p>
 <p>Ignores <a href="../classes/Entity.html" class="crosslink">Entities</a> that are attached
 to either a <a href="../classes/Stage.html" class="crosslink">Stage</a> with <a href="../classes/Stage.html#property_pickable" class="crosslink">pickable</a>
 set <em>false</em> or a <a href="../classes/Modes.html" class="crosslink">Modes</a> with <a href="../classes/Modes.html#property_pickable" class="crosslink">pickable</a> set <em>false</em>.</p>
-<p>On success, will fire a Scene/picked:event event on this Scene, along with
-a separate <a href="../classes/Entity.html#event_picked" class="crosslink">picked</a> event on the target <a href="../classes/Entity.html" class="crosslink">Entity</a>.</p>
-<pre class="code prettyprint"><code class="lang-javascript">
-pick({
-     canvasPos: [23, 131],
-     rayPick: true
-     });
+<p>Picking the <a href="../classes/Entity.html" class="crosslink">Entity</a> at the given canvas coordinates:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var hit = scene.pick({
+    canvasPos: [23, 131]
+ });
+
+if (hit) { // Picked an Entity
+    var entity = hit.entity;
+}
+</code></pre>
+<p><strong>Usage:</strong></p>
+<p>Picking the <a href="../classes/Entity.html" class="crosslink">Entity</a> that intersects a ray cast through the canvas:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var hit = scene.pick({
+    rayPick: true,
+    canvasPos: [23, 131]
+ });
+
+if (hit) { // Picked an Entity
+
+    var entity = hit.entity;
+
+    // These properties are only on the hit result when we do a ray-pick:
+
+    var primitive = hit.primitive; // Type of primitive that was picked, usually "triangles"
+    var primIndex = hit.primIndex; // Position of triangle&#39;s first index in the picked Entity&#39;s Geometry&#39;s indices array
+    var indices = hit.indices; // UInt32Array containing the triangle&#39;s vertex indices
+    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle
+    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle
+    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle
+    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle
+    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle
+    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle
+}
+</code></pre>
+<p>Picking the <a href="../classes/Entity.html" class="crosslink">Entity</a> that intersects an arbitrarily-aligned World-space ray:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var hit = scene.pick({
+    rayPick: true,       // Picking with arbitrarily-positioned ray
+    origin: [0,0,-5],    // Ray origin
+    direction: [0,0,1]   // Ray direction
+});
+
+if (hit) { // Picked an Entity with the ray
+
+    var entity = hit.entity;
+
+    var primitive = hit.primitive; // Type of primitive that was picked, usually "triangles"
+    var primIndex = hit.primIndex; // Position of triangle&#39;s first index in the picked Entity&#39;s Geometry&#39;s indices array
+    var indices = hit.indices; // UInt32Array containing the triangle&#39;s vertex indices
+    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle
+    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle
+    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle
+    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle
+    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle
+    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle
+    var origin = hit.origin; // Float32Array containing the World-space ray origin
+    var direction = hit.direction; // Float32Array containing the World-space ray direction
+}
 </code></pre>
 
     </div>
@@ -1674,23 +1723,47 @@ pick({
 
                         <ul class="params-list">
                             <li class="param">
-                                    <code class="param-name optional">[canvasPos]</code>
-                                    <span class="type">Array of Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>Canvas-space coordinates.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
                                     <code class="param-name optional">[rayPick=false]</code>
                                     <span class="type">Boolean</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
 
                                 <div class="param-description">
                                     <p>Whether to ray-pick.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[canvasPos]</code>
+                                    <span class="type">Float32Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Canvas-space coordinates. When ray-picking, this will override the
+<strong>origin</strong> and <strong> direction</strong> parameters and will cause the ray to be fired through the canvas at this position,
+directly along the negative View-space Z-axis.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[origin]</code>
+                                    <span class="type">Float32Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>World-space ray origin when ray-picking. Ignored when canvasPos given.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[direction]</code>
+                                    <span class="type">Float32Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>World-space ray direction when ray-picking. Also indicates the length of the ray. Ignored when canvasPos given.</p>
 
                                 </div>
 
@@ -1705,7 +1778,8 @@ pick({
 
             <div class="returns-description">
                         <span class="type"></span>:
-                    <p>Hit record, returned when an <a href="../classes/Entity.html" class="crosslink">Entity</a> is picked, else null.</p>
+                    <p>Hit record, returned when an <a href="../classes/Entity.html" class="crosslink">Entity</a> is picked, else null. See
+method comments for description.</p>
 
             </div>
         </div>

@@ -120,7 +120,7 @@
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
                                 <li><a href="../classes/ZSpace.html">ZSpace</a></li>
-                                <li><a href="../classes/ZSpaceStylus.html">ZSpaceStylus</a></li>
+                                <li><a href="../classes/ZSpaceStylusHelper.html">ZSpaceStylusHelper</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -240,6 +240,11 @@
          * State for the XEO.renderer.Material that this object was compiled from, used for (re)computing #sortKey
          */
         this.material = null;
+
+        /**
+         * True once the object has been compiled within the renderer display list.
+         */
+        this.compiled = false;
     };
 })();
     </pre>
