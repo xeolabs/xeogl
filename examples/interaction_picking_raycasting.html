@@ -115,53 +115,55 @@
     var xinc = -0.04;
     var i = 0;
 
+    gearbox.on("loaded", function () {
 
-    gearbox.scene.on("tick", function () {
+        gearbox.scene.on("tick", function () {
 
-        // Orbit the camera
-        view.rotateEyeY(xinc < 0 ? 0.2 : -0.2);
-        view.rotateEyeX(xinc < 0 ? 0.1 : -0.1);
+            // Orbit the camera
+            view.rotateEyeY(xinc < 0 ? 0.2 : -0.2);
+            view.rotateEyeX(xinc < 0 ? 0.1 : -0.1);
 
-        rayOrigin[0] += xinc;
-        rayOrigin[1] = 12 - Math.sin(rayOrigin[0] * 2.0) * 5;
+            rayOrigin[0] += xinc;
+            rayOrigin[1] = 12 - Math.sin(rayOrigin[0] * 2.0) * 5;
 
-        i++;
+            i++;
 
-        if (i < 0 || i > 500) {
-            xinc = -xinc;
-            i = 0;
-        }
+            if (i < 0 || i > 500) {
+                xinc = -xinc;
+                i = 0;
+            }
 
-        showRay(rayOrigin, rayDirection);
+            showRay(rayOrigin, rayDirection);
 
-        var hit = scene.pick({
-            rayPick: true,
-            origin: rayOrigin,
-            direction: rayDirection
+            var hit = scene.pick({
+                rayPick: true,
+                origin: rayOrigin,
+                direction: rayDirection
+            });
+
+            if (hit && hit.worldPos) {
+
+                var primitive = hit.primitive; // Type of primitive that was picked, usually "triangles"
+                var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array
+                var indices = hit.indices; // UInt32Array containing the triangle's vertex indices
+                var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle
+                var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle
+                var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle
+                var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle
+                var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle
+                var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle
+                var origin = hit.origin; // Float32Array containing the World-space ray origin
+                var direction = hit.direction; // Float32Array containing the World-space ray direction
+
+                showHit(hit);
+                highlightRay(true);
+
+            } else {
+
+                hideHit();
+                highlightRay(false);
+            }
         });
-
-        if (hit && hit.worldPos) {
-
-            var primitive = hit.primitive; // Type of primitive that was picked, usually "triangles"
-            var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array
-            var indices = hit.indices; // UInt32Array containing the triangle's vertex indices
-            var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle
-            var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle
-            var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle
-            var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle
-            var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle
-            var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle
-            var origin = hit.origin; // Float32Array containing the World-space ray origin
-            var direction = hit.direction; // Float32Array containing the World-space ray direction
-
-            showHit(hit);
-            highlightRay(true);
-
-        } else {
-
-            hideHit();
-            highlightRay(false);
-        }
     });
 
 </script>
