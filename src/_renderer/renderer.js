@@ -101,7 +101,7 @@
 
         /**
          * Optional callback to fire when renderer wants to
-         * bind an output framebuffer.
+         * bind an output framebuffer. This is useful when we need to bind a stereo output buffer for WebVR.
          *
          * When this is missing, the renderer will implicitly bind
          * WebGL's default framebuffer.
@@ -117,6 +117,11 @@
          * Optional callback to fire when renderer wants to
          * unbind any output drawing framebuffer that was
          * previously bound with #bindOutputFramebuffer.
+         *
+         * The callback takes one parameter, which is the index of the current
+         * rendering pass in which the buffer is to be bound.
+         *
+         * Use like this: myRenderer.unbindOutputFramebuffer = function(pass) { .. });
          *
          * Callback takes no parameters.
          */
@@ -537,6 +542,8 @@
             this.stateOrderDirty = true;
         }
 
+        object.compiled = true;
+
         return object;
     };
 
@@ -665,11 +672,18 @@
         }
 
         if (this.imageDirty || params.force) {
+            //this._renderObjectList({                  // Render the draw list
+            //    clear: (params.clear !== false), // Clear buffers by default
+            //    opaqueOnly: params.opaqueOnly,
+            //    pass: params.pass
+            //});
+
             this._doDrawList({                  // Render the draw list
                 clear: (params.clear !== false), // Clear buffers by default
                 opaqueOnly: params.opaqueOnly,
                 pass: params.pass
             });
+
             this.stats.frame.frameCount++;
             this.imageDirty = false;
         }
@@ -730,6 +744,137 @@
         }
         console.log("--------------------------------------------------------------------------------------------------");
     };
+
+    XEO.renderer.Renderer.prototype._renderObjectList = function (params) {
+
+        var startTime = Date.now();
+
+        var lastChunkId = this._lastChunkId = this._lastChunkId || new Int32Array(30);
+        for (i = 0; i < 20; i++) {
+            lastChunkId[i] = -9999999999999;
+        }
+
+        var gl = this._canvas.gl;
+        var i;
+        var len;
+        var j;
+        var lenj;
+        var chunks;
+        var chunk;
+        var object;
+        var id;
+
+        // The extensions needs to be re-queried in case the context was lost and has been recreated.
+        if (XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {
+            gl.getExtension("OES_element_index_uint");
+        }
+
+        var outputFramebuffer = this.bindOutputFramebuffer && this.unbindOutputFramebuffer && !params.pickObject && !params.rayPick;
+
+        if (outputFramebuffer) {
+            this.bindOutputFramebuffer(params.pass);
+        }
+
+        var ambient = this._ambient;
+        var ambientColor;
+        if (ambient) {
+            var color = ambient.color;
+            var intensity = ambient.intensity;
+            ambientColor = [color[0] * intensity, color[1] * intensity, color[2] * intensity, 1.0];
+        } else {
+            ambientColor = [0, 0, 0];
+        }
+
+        var frameCtx = this._frameCtx;
+        frameCtx.renderTarget = null;
+        frameCtx.renderBuf = null;
+        frameCtx.depthbufEnabled = null;
+        frameCtx.clearDepth = null;
+        frameCtx.depthFunc = gl.LESS;
+        frameCtx.blendEnabled = false;
+        frameCtx.backfaces = true;
+        frameCtx.frontface = true; // true == "ccw" else "cw"
+        frameCtx.pickIndex = 0; // Indexes this._pickObjects
+        frameCtx.textureUnit = 0;
+        frameCtx.transparent = false; // True while rendering transparency bin
+        frameCtx.ambientColor = ambientColor;
+        frameCtx.drawElements = 0;
+        frameCtx.useProgram = 0;
+        frameCtx.bindTexture = 0;
+        frameCtx.bindArray = 0;
+        frameCtx.pass = params.pass;
+        frameCtx.bindOutputFramebuffer = this.bindOutputFramebuffer;
+
+        gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+
+        if (this.transparent || params.pickObject || params.rayPick) {
+
+            // Canvas is transparent - set clear color with zero alpha
+            // to allow background to show through
+            gl.clearColor(0, 0, 0, 0);
+        } else {
+
+            // Canvas is opaque - set clear color to the current ambient
+            gl.clearColor(ambientColor[0], ambientColor[1], ambientColor[2], 1.0);
+        }
+
+        if (params.clear) {
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        }
+
+        gl.enable(gl.DEPTH_TEST);
+        gl.frontFace(gl.CCW);
+        gl.disable(gl.CULL_FACE);
+        gl.disable(gl.BLEND);
+
+        for (i = 0, len = this._objectListLen; i < len; i++) {
+
+            object = this._objectList[i];
+
+            if (!object.compiled) {
+                continue;
+            }
+
+            if (object.cull.culled === true) {
+                continue;
+            }
+
+            if (object.visibility.visible === false) {
+                continue;
+            }
+
+            chunks = object.chunks;
+
+            for (j = 0, lenj = chunks.length; j < lenj; j++) {
+
+                chunk = chunks[j];
+
+                if (chunk) {
+
+                    // As we apply the state chunk lists we track the ID of most types
+                    // of chunk in order to cull redundant re-applications of runs
+                    // of the same chunk - except for those chunks with a 'unique' flag,
+                    // because we don't want to collapse runs of draw chunks because
+                    // they contain the GL drawElements calls which render the objects.
+
+                    if (chunk.draw && (chunk.unique || lastChunkId[j] !== chunk.id)) {
+                        chunk.draw(frameCtx);
+                        lastChunkId[j] = chunk.id;
+                    }
+                }
+            }
+        }
+
+        var endTime = Date.now();
+
+        var frameStats = this.stats.frame;
+        frameStats.renderTime = (endTime - startTime) / 1000.0;
+        frameStats.drawElements = frameCtx.drawElements;
+        frameStats.useProgram = frameCtx.useProgram;
+        frameStats.bindTexture = frameCtx.bindTexture;
+        frameStats.bindArray = frameCtx.bindArray;
+    };
+
 
     /**
      * Builds the draw list, which is the list of draw state-chunks to apply to WebGL
@@ -1045,97 +1190,131 @@
     };
 
     /**
-     * Attempts to pick an object at the given canvas coordinates.
+     * Attempts to pick an object.
      *
      * @param {*} params Picking params.
      * @returns {*} Hit result, if any.
      */
-    XEO.renderer.Renderer.prototype.pick = function (params) {
+    XEO.renderer.Renderer.prototype.pick = (function () {
 
-        var gl = this._canvas.gl;
+        var math = XEO.math;
 
-        var hit = null;
+        var tempVec3a = math.vec3();
+        var tempMat4a = math.mat4();
+        var up = math.vec3([0, 1, 0]);
 
-        var canvasX = params.canvasPos[0];
-        var canvasY = params.canvasPos[1];
+        return function (params) {
 
-        var pickBuf = this.pickBuf;
+            var gl = this._canvas.gl;
+            var hit = null;
+            var pickBuf = this.pickBuf;
 
-        if (!pickBuf) {
+            if (!pickBuf) {  // Lazy-create the pick buffer
+                pickBuf = new XEO.renderer.webgl.RenderBuffer({
+                    gl: this._canvas.gl,
+                    canvas: this._canvas.canvas
+                });
+                this.pickBuf = pickBuf;
+            }
 
-            // Lazy-create the pick buffer
+            // Do any pending render
+            this.render();
 
-            pickBuf = new XEO.renderer.webgl.RenderBuffer({
-                gl: this._canvas.gl,
-                canvas: this._canvas.canvas
+            pickBuf.bind();
+            pickBuf.clear();
+
+            var canvas = this._canvas.canvas;
+            var pickBufX;
+            var pickBufY;
+            var origin;
+            var direction;
+            var look;
+            var pickMatrix = null;
+
+            if (params.rayPick && !params.canvasPos) {
+
+                // Ray-picking with arbitrarily World-space ray
+
+                origin = params.origin || math.vec3([0, 0, 0]);
+                direction = params.direction || math.vec3([0, 0, 1]);
+                look = math.addVec3(origin, direction, tempVec3a);
+
+                pickMatrix = XEO.math.lookAtMat4v(origin, look, up, tempMat4a);
+
+                pickBufX = canvas.clientWidth * 0.5;
+                pickBufY = canvas.clientHeight * 0.5;
+
+            } else {
+
+                if (params.canvasPos) {
+                    pickBufX = params.canvasPos[0];
+                    pickBufY = params.canvasPos[1];
+
+                } else {
+                    pickBufX = canvas.clientWidth * 0.5;
+                    pickBufY = canvas.clientHeight * 0.5;
+                }
+            }
+
+            this._doDrawList({
+                pickObject: true,
+                clear: true,
+                pickMatrix: pickMatrix
             });
 
-            this.pickBuf = pickBuf;
-        }
+            //     gl.finish();
 
-        // Do any pending render
+            // Convert picked pixel color to object index
 
-        this.render();
+            var pix = pickBuf.read(pickBufX, pickBufY);
+            var pickedObjectIndex = pix[0] + pix[1] * 256 + pix[2] * 65536;
+            pickedObjectIndex = (pickedObjectIndex >= 1) ? pickedObjectIndex - 1 : -1;
 
-        pickBuf.bind();
+            var object = this._objectPickList[pickedObjectIndex];
 
-        pickBuf.clear();
+            if (object) {
 
-        this._doDrawList({
-            pickObject: true,
-            clear: true
-        });
+                // Object was picked
 
-        //     gl.finish();
+                hit = {
+                    entity: object.id
+                };
 
-        // Convert picked pixel color to object index
+                // Now do a primitive-pick if requested
 
-        var pix = pickBuf.read(canvasX, canvasY);
-        var pickedObjectIndex = pix[0] + pix[1] * 256 + pix[2] * 65536;
-        pickedObjectIndex = (pickedObjectIndex >= 1) ? pickedObjectIndex - 1 : -1;
+                if (params.rayPick) {
 
-        var object = this._objectPickList[pickedObjectIndex];
+                    pickBuf.clear();
 
-        if (object) {
+                    this._doDrawList({
+                        rayPick: true,
+                        object: object,
+                        pickMatrix: pickMatrix,
+                        clear: true
+                    });
 
-            // Object was picked
+                    gl.finish();
 
-            hit = {
-                entity: object.id,
-                canvasPos: [
-                    canvasX,
-                    canvasY
-                ]
-            };
+                    // Convert picked pixel color to primitive index
 
-            // Now do a primitive-pick if requested
+                    pix = pickBuf.read(pickBufX, pickBufY);
+                    var primIndex = pix[0] + (pix[1] * 256) + (pix[2] * 256 * 256) + (pix[3] * 256 * 256 * 256);
+                    primIndex *= 3; // Convert from triangle number to first vertex in indices
 
-            if (params.rayPick) {
+                    hit.primIndex = primIndex;
 
-                pickBuf.clear();
-
-                this._doDrawList({
-                    rayPick: true,
-                    object: object,
-                    clear: true
-                });
-
-                gl.finish();
-
-                // Convert picked pixel color to primitive index
-
-                pix = pickBuf.read(canvasX, canvasY);
-                var primIndex = pix[0] + (pix[1] * 256) + (pix[2] * 256 * 256) + (pix[3] * 256 * 256 * 256);
-                primIndex *= 3; // Convert from triangle number to first vertex in indices
-
-                hit.primIndex = primIndex;
+                    if (pickMatrix) {
+                        hit.origin = origin;
+                        hit.direction = direction;
+                    }
+                }
             }
-        }
 
-        pickBuf.unbind();
+            pickBuf.unbind();
 
-        return hit;
-    };
+            return hit;
+        };
+    })();
 
     /** Renders either the draw or pick list.
      *
@@ -1145,6 +1324,7 @@
      * @param {Boolean} params.rayPick
      * @param {Boolean} params.object
      * @param {Boolean} params.opaqueOnly
+     * @param {Boolean} params.pickMatrix
      * @private
      */
     XEO.renderer.Renderer.prototype._doDrawList = function (params) {
@@ -1189,6 +1369,7 @@
         frameCtx.bindArray = 0;
         frameCtx.pass = params.pass;
         frameCtx.bindOutputFramebuffer = this.bindOutputFramebuffer;
+        frameCtx.pickMatrix = params.pickMatrix;
 
         // The extensions needs to be re-queried in case the context was lost and has been recreated.
         if (XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {
@@ -1196,9 +1377,6 @@
         }
 
         var frameStats = this.stats.frame;
-
-        frameStats.setUniform = 0;
-        frameStats.setUniformCacheHits = 0;
 
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 
