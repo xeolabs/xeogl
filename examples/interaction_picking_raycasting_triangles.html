@@ -78,6 +78,30 @@
         };
     })();
 
+    //--------------------------------------------
+    // Create helper to show ray-Entity hits
+    //--------------------------------------------
+
+    var hitHelper = new (function () {
+
+        var entity = new XEO.Entity({
+            geometry: new XEO.SphereGeometry({radius: 0.2}),
+            material: new XEO.PhongMaterial({emissive: [1, 0, 0], diffuse: [0, 0, 0]}),
+            transform: new XEO.Translate(),
+            modes: new XEO.Modes({pickable: false}),
+            visibility: new XEO.Visibility({visible: false})
+        });
+
+        this.show = function (hit) {
+            entity.transform.xyz = hit.worldPos;
+            entity.visibility.visible = true;
+        };
+
+        this.hide = function () {
+            entity.visibility.visible = false;
+        };
+    })();
+
     //--------------------------------------------------------------------
 
     var rayOrigin = new Float32Array([169.20, 17.02, -20.0]);
@@ -87,19 +111,6 @@
     var i = 0;
 
     gearbox.on("loaded", function () {
-
-        // Ensure entities in our gearbox have unique materials
-        // so we can highlight the entities separately
-
-        gearbox.collection.iterate(function (c) {
-            if (c.isType("XEO.Entity")) {
-                c.material = c.material.clone();
-                gearbox.collection.add(c.material); // Ensure new materials get destroyed with gearbox
-            }
-        });
-
-        var lastEntity = null;
-        var lastEmissive = null;
 
         gearbox.scene.on("tick", function () {
 
@@ -120,31 +131,19 @@
             rayHelper.setRay(rayOrigin, rayDirection);
 
             var hit = scene.pick({
-                pickSurface: false, // Default
+                pickSurface: true,  // <<------ This causes picking to find the intersection point on the entity
                 origin: rayOrigin,
                 direction: rayDirection
             });
 
-            if (hit && (!lastEntity || hit.entity.id !== lastEntity.id)) {
+            if (hit && hit.worldPos) {
 
-                if (lastEntity) {
-                    lastEntity.material.emissive = lastEmissive;
-                }
-
-                lastEntity = hit.entity;
-                lastEmissive = hit.entity.material.emissive.slice();
-
-                hit.entity.material.emissive = [1, 0, 0];
-
+                hitHelper.show(hit);
                 rayHelper.setHighlighted(true);
 
             } else {
 
-                if (lastEntity) {
-                    lastEntity.material.emissive = lastEmissive;
-                    lastEntity = null;
-                }
-
+                hitHelper.hide();
                 rayHelper.setHighlighted(false);
             }
         });

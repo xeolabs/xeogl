@@ -34,7 +34,7 @@
     // We want the 3D World-space coordinates
     // of each location we pick
 
-    rayPick: true
+    pickSurface: true
  });
 
  // Handle picked Entities
@@ -58,7 +58,7 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this MousePickEntity.
- @param [rayPick=false] {Boolean} Indicates whether this MousePickEntity will find the 3D ray intersection whenever it picks a
+ @param [pickSurface=false] {Boolean} Indicates whether this MousePickEntity will find the 3D ray intersection whenever it picks a
  {{#crossLink "Entity"}}{{/crossLink}}.
  @param [cfg.active=true] {Boolean} Indicates whether or not this MousePickEntity is active.
  @extends Component
@@ -80,7 +80,7 @@
 
         _init: function (cfg) {
 
-            this.rayPick = cfg.rayPick;
+            this.pickSurface = cfg.pickSurface;
 
             this.active = cfg.active !== false;
         },
@@ -155,7 +155,7 @@
 
                                     var hit = self.scene.pick({
                                         canvasPos : canvasPos,
-                                        rayPick: self._rayPick
+                                        pickSurface: self._pickSurface
                                     });
 
                                     if (hit) {
@@ -165,8 +165,8 @@
                                          * @event picked
                                          * @param {String} entityId The ID of the picked {{#crossLink "Entity"}}Entity{{/crossLink}} within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
                                          * @param {Array of Number} canvasPos The Canvas-space coordinate that was picked.
-                                         * @param {Array of Number} worldPos When {{#crossLink "MousePickEntity/rayPick"}}{{/crossLink}} is true,
-                                         * provides the World-space coordinate that was ray-picked on the surface of the
+                                         * @param {Array of Number} worldPos When {{#crossLink "MousePickEntity/pickSurface"}}{{/crossLink}} is true,
+                                         * provides the World-space coordinate that was ray-picked on the pickSurface of the
                                          * {{#crossLink "Entity"}}Entity{{/crossLink}}.
                                          */
                                         self.fire("pick", hit);
@@ -212,33 +212,33 @@
              * When true, this MousePickEntity will try to return the primitive index in a
              * {{#crossLink "MousePickEntity/picked:event"}}{{/crossLink}} event.
              *
-             * Fires a {{#crossLink "MousePickEntity/rayPick:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "MousePickEntity/pickSurface:event"}}{{/crossLink}} event on change.
              *
-             * @property rayPick
+             * @property pickSurface
              * @type Boolean
              */
-            rayPick: {
+            pickSurface: {
 
                 set: function (value) {
 
                     value = !!value;
 
-                    if (this._rayPick === value) {
+                    if (this._pickSurface === value) {
                         return;
                     }
 
                     this._dirty = false;
 
                     /**
-                     * Fired whenever this MousePickEntity's {{#crossLink "MousePickEntity/rayPick:property"}}{{/crossLink}} property changes.
-                     * @event rayPick
+                     * Fired whenever this MousePickEntity's {{#crossLink "MousePickEntity/pickSurface:property"}}{{/crossLink}} property changes.
+                     * @event pickSurface
                      * @param value The property's new value
                      */
-                    this.fire('rayPick', this._rayPick = value);
+                    this.fire('pickSurface', this._pickSurface = value);
                 },
 
                 get: function () {
-                    return this._rayPick;
+                    return this._pickSurface;
                 }
             }
         },
@@ -246,7 +246,7 @@
         _getJSON: function () {
 
             var json = {
-                rayPick: this._rayPick,
+                pickSurface: this._pickSurface,
                 active: this._active
             };
 

@@ -9,7 +9,6 @@
  {{#crossLink "Camera/view:property"}}projection{{/crossLink}} transforms. This is because the ZSpace needs to directly update
  the matrices on those transforms as part of the stereo viewing effect. If those transforms are of a different type, then
  the ZSpace will temporarily replace them with {{#crossLink "Transform"}}Transforms{{/crossLink}}.</li>
- <li>you can use a {{#crossLink "ZSpaceStylusHelper"}}{{/crossLink}} to show the ZSpace's stylus as an object in the 3D view.</li>
  </ul>
 
  ## Examples
@@ -68,7 +67,6 @@
  });
  ````
 
-
  ## Detecting support
 
  The **ZSpace** will fire a "supported" event once it has determined whether or not the browser
@@ -90,12 +88,11 @@
 
  ## Handling stylus input
 
- Reading the current position and orientation of the stylus, along with the current stylus camera matrix:
+ Reading the current World-space position and direction of the stylus:
 
  ````javascript
- var stylusPos = zspace.stylusPos; // Position, as a three-element Float32Array
- var stylusOrientation = zspace.stylusOrientation; // Orientation quaternion, as a four-element Float32Array
- var stylusCameraMatrix = zspace.stylusCameraMatrix; // Sixteen-element Float32Array
+ var stylusPos = zspace.stylusPos;
+ var stylusDir = zspace.stylusDir;
  ````
 
  Note that these properties only have meaningful values once the ZSpace has fired at least one {{#crossLink "ZSpace/stylusMoved:event"}}{{/crossLink}} event.
@@ -104,9 +101,8 @@
 
  ````javascript
  zspace.on("stylusMoved", function() {
-     var stylusPos = this.stylusPos; // Position, as a three-element Float32Array
-     var stylusOrientation = this.stylusOrientation; // Orientation quaternion, as a four-element Float32Array
-     var stylusCameraMatrix = this.stylusCameraMatrix; // Sixteen-element Float32Array
+     var stylusPos = zspace.stylusPos;
+     var stylusDir = zspace.stylusDir;
      //...
  });
  ````
@@ -151,7 +147,7 @@
  zspace.on("stylusButton0", function() {
 
     var hit = zspace.scene.pick({
-        rayPick: true,
+        pickSurface: true,
         origin: zspace.stylusPos,
         direction: zspace.stylusOrientation
     });
@@ -185,7 +181,7 @@
  zspace.on("stylusMoved", function() {
 
     var hit = zspace.scene.pick({
-        rayPick: true,
+        pickSurface: true,
         origin: zspace.stylusPos,
         direction: zspace.stylusOrientation
     });
@@ -253,6 +249,9 @@
             this._stylusButton2 = false;
             this._stylusPos = math.vec3([0, 0, 0]);
             this._stylusOrientation = math.identityQuaternion();
+
+            this._stylusWorldPos = math.vec3([0, 0, 0]);
+            this._stylusWorldDir = math.vec3([0, 0, 0]);
 
             // WebVR devices
             this._leftViewDevice = null;
@@ -677,7 +676,7 @@
             },
 
             /**
-             * The current 3D position of the stylus.
+             * The current World-space position of the stylus.
              *
              * Fires a {{#crossLink "ZSpace/stylusMoved:event"}}{{/crossLink}} event on change.
              *
@@ -687,12 +686,12 @@
              */
             stylusPos: {
                 get: function () {
-                    return this._stylusPos;
+                    return this._stylusWorldPos;
                 }
             },
 
             /**
-             * The current 3D orientation of the stylus.
+             * The current World-space direction the stylus is pointing in.
              *
              * Fires a {{#crossLink "ZSpace/stylusMoved:event"}}{{/crossLink}} event on change.
              *
@@ -700,9 +699,9 @@
              * @type Float32Array
              * @final
              */
-            stylusOrientation: {
+            stylusDir: {
                 get: function () {
-                    return this._stylusOrientation;
+                    return this._stylusWorldDir;
                 }
             },
 
@@ -1026,6 +1025,10 @@
 
             var viewMat = math.lookAtMat4v([0.0, 3.45, 2.22], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
 
+            var invViewMatrix = math.mat4();
+            var stylusWorldMatrix = math.mat4();
+            var stylusLocalMatrix = math.mat4();
+
             return function () {
 
                 displayScaleFactorX = this._displaySize[0] / this._displayResolution[0];
@@ -1073,12 +1076,14 @@
 
                 var leftViewPose = this._leftViewDevice.getPose();
                 if (leftViewPose && leftViewPose.orientation && leftViewPose.position) {
+
                     math.transformPoint3(offsetTranslateMat, leftViewPose.position, tempVec3a);
                     math.transformPoint3(viewScaleMat, tempVec3a, tempVec3b);
+
                     var cameraMat = math.mat4();
                     math.rotationTranslationMat4(leftViewPose.orientation, tempVec3b, cameraMat);
-                    //math.mulMat4(cameraMat, viewMat, this._leftViewMatrix);
-                    math.mulMat4(viewMat, cameraMat, this._leftViewMatrix);
+                    math.mulMat4(viewMat, cameraMat, this._leftViewMatrix); // Post-concatenate with base viewing matrix
+
                 } else {
                     math.lookAtMat4v([-15, 0, -40], [-15, 0, 0], [0, 1, 0], this._leftViewMatrix);
                 }
@@ -1087,12 +1092,14 @@
 
                 var rightViewPose = this._rightViewDevice.getPose();
                 if (rightViewPose && rightViewPose.orientation && rightViewPose.position) {
+
                     math.transformPoint3(offsetTranslateMat, rightViewPose.position, tempVec3a);
                     math.transformPoint3(viewScaleMat, tempVec3a, tempVec3b);
+
                     var cameraMat = math.mat4();
                     math.rotationTranslationMat4(rightViewPose.orientation, tempVec3b, cameraMat);
-                    //math.mulMat4(cameraMat, viewMat, this._rightViewMatrix);
-                    math.mulMat4(viewMat, cameraMat, this._rightViewMatrix);
+                    math.mulMat4(viewMat, cameraMat, this._rightViewMatrix); // Post-concatenate with base viewing matrix
+
                 } else {
                     math.lookAtMat4v([15, 0, -40], [15, 0, 0], [0, 1, 0], this._rightViewMatrix);
                 }
@@ -1157,6 +1164,25 @@
                         this._stylusOrientation[2] = orientation[2];
                         this._stylusOrientation[3] = orientation[3];
                         stylusMoved = true;
+                    }
+
+                    if (stylusMoved) {
+
+                        var camera = this._attached.camera;
+                        var viewMatrix = camera.view.matrix;
+
+                        math.inverseMat4(viewMatrix, invViewMatrix);
+                        math.mulMat4(invViewMatrix, this._stylusCameraMatrix, stylusWorldMatrix);
+
+                        this._stylusWorldPos[0] = stylusWorldMatrix[12];
+                        this._stylusWorldPos[1] = stylusWorldMatrix[13];
+                        this._stylusWorldPos[2] = stylusWorldMatrix[14];
+
+                        this._stylusWorldDir[0] = -stylusWorldMatrix[8];
+                        this._stylusWorldDir[1] = -stylusWorldMatrix[9];
+                        this._stylusWorldDir[2] = -stylusWorldMatrix[10];
+
+                        math.normalizeVec3(this._stylusWorldDir);
                     }
 
                 } else {

@@ -769,7 +769,7 @@
             gl.getExtension("OES_element_index_uint");
         }
 
-        var outputFramebuffer = this.bindOutputFramebuffer && this.unbindOutputFramebuffer && !params.pickObject && !params.rayPick;
+        var outputFramebuffer = this.bindOutputFramebuffer && this.unbindOutputFramebuffer && !params.pickObject && !params.pickSurface;
 
         if (outputFramebuffer) {
             this.bindOutputFramebuffer(params.pass);
@@ -807,7 +807,7 @@
 
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 
-        if (this.transparent || params.pickObject || params.rayPick) {
+        if (this.transparent || params.pickObject || params.pickSurface) {
 
             // Canvas is transparent - set clear color with zero alpha
             // to allow background to show through
@@ -1231,7 +1231,7 @@
             var look;
             var pickMatrix = null;
 
-            if (params.rayPick && !params.canvasPos) {
+            if (!params.canvasPos) {
 
                 // Ray-picking with arbitrarily World-space ray
 
@@ -1282,12 +1282,12 @@
 
                 // Now do a primitive-pick if requested
 
-                if (params.rayPick) {
+                if (params.pickSurface) {
 
                     pickBuf.clear();
 
                     this._doDrawList({
-                        rayPick: true,
+                        pickSurface: true,
                         object: object,
                         pickMatrix: pickMatrix,
                         clear: true
@@ -1321,7 +1321,7 @@
      * @param {*} params
      * @param {Boolean} params.clear Set true to clear the color, depth and stencil buffers first
      * @param {Boolean} params.pickObject
-     * @param {Boolean} params.rayPick
+     * @param {Boolean} params.pickSurface
      * @param {Boolean} params.object
      * @param {Boolean} params.opaqueOnly
      * @param {Boolean} params.pickMatrix
@@ -1333,7 +1333,7 @@
         var i;
         var len;
 
-        var outputFramebuffer = this.bindOutputFramebuffer && this.unbindOutputFramebuffer && !params.pickObject && !params.rayPick;
+        var outputFramebuffer = this.bindOutputFramebuffer && this.unbindOutputFramebuffer && !params.pickObject && !params.pickSurface;
 
         if (outputFramebuffer) {
             this.bindOutputFramebuffer(params.pass);
@@ -1385,7 +1385,7 @@
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.BLEND);
 
-        if (this.transparent || params.pickObject || params.rayPick) {
+        if (this.transparent || params.pickObject || params.pickSurface) {
 
             // Canvas is transparent - set clear color with zero alpha
             // to allow background to show through
@@ -1413,7 +1413,7 @@
                 this._pickObjectChunkList[i].pickObject(frameCtx);
             }
 
-        } else if (params.rayPick) {
+        } else if (params.pickSurface) {
 
             // Pick a primitive of an object
 

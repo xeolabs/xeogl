@@ -228,7 +228,7 @@
              * @type MousePickEntity
              */
             this.mousePickEntity = this.create(XEO.MousePickEntity, {
-                rayPick: true
+                pickSurface: true
             });
 
             this.mousePickEntity.on("pick", this._entityPicked, this);

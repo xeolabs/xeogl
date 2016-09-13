@@ -202,7 +202,7 @@
 
                     pickHit = scene.pick({
                         canvasPos: canvasPos,
-                        rayPick: true
+                        pickSurface: true
                     });
 
                     if (pickHit) {
@@ -290,7 +290,7 @@
 
                         var hit = scene.pick({
                             canvasPos: canvasPos,
-                            rayPick: true
+                            pickSurface: true
                         });
 
                         if (hit) {

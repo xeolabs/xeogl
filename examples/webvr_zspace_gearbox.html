@@ -17,44 +17,60 @@
      style="left: 0; text-align: left; background: black; opacity: 0.7; padding: 8px; color: white; font-size: 14pt;">
     <span><a href="http://xeoengine.org" target="_home">xeoEngine</a><br>using a <a
             href="../docs/classes/ZSpace.html"
-            target="_docs">ZSpace</a> component to view a scene with zSpace VR</span><br>
+            target="_docs">ZSpace</a> component to view a glTF model with zSpace VR</span><br>
     <span id="log" style="color:red;font-size: 16px"></span>
 </div>
 
 <script>
 
-    // Create some scene entities
+    //----------------------------------------------------------------------------
+    // Load a glTF gearbox model into the default Scene, translating the model
+    // to center it at the World-space origin
+    //----------------------------------------------------------------------------
 
-    var geometry = new XEO.TorusGeometry({
-        radius: 1.0,
-        tube: 0.4,
-        radialSegments: 60,
-        tubeSegments: 60,
-        arc: Math.PI * 2.0
+    var rotate = new XEO.Rotate({
+        xyz: [0, 1, 0],
+        angle: 0
     });
 
-    var scene = geometry.scene;
-
-    var material = new XEO.PhongMaterial({
-        diffuseMap: new XEO.Texture({
-            src: "textures/diffuse/uvGrid2.jpg"
+    var gearbox = new XEO.Model({
+        src: "models/gltf/gearbox/gearbox_assy.gltf",
+        transform: new XEO.Translate({
+            xyz: [-159.20, -18, -3.21],
+            parent: new XEO.Scale({
+                xyz: [0.065, 0.065, 0.065],  // Big model, so scale down to fit zSpace
+                parent: rotate
+            })
         })
     });
 
-    for (var i = 0; i < 500; i++) {
+    var scene = gearbox.scene; // Everything's in the default scene - get it off the gearbox
 
-        new XEO.Entity({
-            geometry: geometry,
-            material: material,
-            transform: new XEO.Rotate({
-                xyz: [Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1],
-                angle: 0,
-                parent: new XEO.Translate({
-                    xyz: [Math.random() * 30 - 15, Math.random() * 30 - 15, Math.random() * 30 - 15]
-                })
+    //----------------------------------------------------------------------------
+    // Create a table top underneath the gearbox
+    //----------------------------------------------------------------------------
+
+    var tabletop = new XEO.Entity({
+        geometry: new XEO.PlaneGeometry({
+            primitive: "triangles",
+            xSize: 3,
+            zSize: 3,
+            xSegments: 2,
+            zSegments: 2
+        }),
+        material: new XEO.PhongMaterial({
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/UVCheckerMap11-1024.png"
             })
-        });
-    }
+        }),
+        modes: new XEO.Modes({
+            backfaces: true
+        }),
+        transform: new XEO.Translate({
+            xyz: [0, -.70, 0],
+            parent: rotate
+        })
+    });
 
     //----------------------------------------------------------------------------
     // Create a ZSpace effect
@@ -79,6 +95,8 @@
             document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. ";
 
             new XEO.CameraControl();
+
+            scene.camera.view.eye = [0, .7, -2];
 
         } else { // ZSpace detected
 
@@ -197,7 +215,6 @@
             });
         }
     });
-
 </script>
 </body>
 </html>
