@@ -24,13 +24,13 @@
 
         pickObject: function (frameCtx) {
             if (this._uViewMatrixPickObject) {
-                this._uViewMatrixPickObject.setValue(frameCtx.pickMatrix || this.state.getMatrix());
+                this._uViewMatrixPickObject.setValue(frameCtx.pickViewMatrix || this.state.getMatrix());
             }
         },
 
         pickPrimitive: function (frameCtx) {
             if (this._uViewMatrixPickPrimitive) {
-                this._uViewMatrixPickPrimitive.setValue(frameCtx.pickMatrix || this.state.getMatrix());
+                this._uViewMatrixPickPrimitive.setValue(frameCtx.pickViewMatrix || this.state.getMatrix());
             }
         }
     });

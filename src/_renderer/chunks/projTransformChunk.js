@@ -18,15 +18,15 @@
             }
         },
 
-        pickObject: function () {
+        pickObject: function (frameCtx) {
             if (this._uProjMatrixPickObject) {
-                this._uProjMatrixPickObject.setValue(this.state.getMatrix());
+                this._uProjMatrixPickObject.setValue(frameCtx.pickProjMatrix || this.state.getMatrix());
             }
         },
 
-        pickPrimitive: function () {
+        pickPrimitive: function (frameCtx) {
             if (this._uProjMatrixPickPrimitive) {
-                this._uProjMatrixPickPrimitive.setValue(this.state.getMatrix());
+                this._uProjMatrixPickPrimitive.setValue(frameCtx.pickProjMatrix || this.state.getMatrix());
             }
         }
     });

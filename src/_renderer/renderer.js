@@ -1229,7 +1229,8 @@
             var origin;
             var direction;
             var look;
-            var pickMatrix = null;
+            var pickViewMatrix = null;
+            var pickProjMatrix = null;
 
             if (!params.canvasPos) {
 
@@ -1239,7 +1240,8 @@
                 direction = params.direction || math.vec3([0, 0, 1]);
                 look = math.addVec3(origin, direction, tempVec3a);
 
-                pickMatrix = XEO.math.lookAtMat4v(origin, look, up, tempMat4a);
+                pickViewMatrix = math.lookAtMat4v(origin, look, up, tempMat4a);
+                //pickProjMatrix = math.orthoMat4c(left, right, bottom, top, this._near, this._far, XEO.math.mat4());
 
                 pickBufX = canvas.clientWidth * 0.5;
                 pickBufY = canvas.clientHeight * 0.5;
@@ -1259,7 +1261,8 @@
             this._doDrawList({
                 pickObject: true,
                 clear: true,
-                pickMatrix: pickMatrix
+                pickViewMatrix: pickViewMatrix,
+                pickProjMatrix: pickProjMatrix
             });
 
             //     gl.finish();
@@ -1289,7 +1292,7 @@
                     this._doDrawList({
                         pickSurface: true,
                         object: object,
-                        pickMatrix: pickMatrix,
+                        pickViewMatrix: pickViewMatrix,
                         clear: true
                     });
 
@@ -1303,7 +1306,7 @@
 
                     hit.primIndex = primIndex;
 
-                    if (pickMatrix) {
+                    if (pickViewMatrix) {
                         hit.origin = origin;
                         hit.direction = direction;
                     }
@@ -1324,7 +1327,7 @@
      * @param {Boolean} params.pickSurface
      * @param {Boolean} params.object
      * @param {Boolean} params.opaqueOnly
-     * @param {Boolean} params.pickMatrix
+     * @param {Boolean} params.pickViewMatrix
      * @private
      */
     XEO.renderer.Renderer.prototype._doDrawList = function (params) {
@@ -1369,7 +1372,8 @@
         frameCtx.bindArray = 0;
         frameCtx.pass = params.pass;
         frameCtx.bindOutputFramebuffer = this.bindOutputFramebuffer;
-        frameCtx.pickMatrix = params.pickMatrix;
+        frameCtx.pickViewMatrix = params.pickViewMatrix;
+        frameCtx.pickProjMatrix = params.pickProjMatrix;
 
         // The extensions needs to be re-queried in case the context was lost and has been recreated.
         if (XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {

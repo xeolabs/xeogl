@@ -8204,7 +8204,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1319,
+            "line": 1322,
             "params": [
                 {
                     "name": "params",
@@ -8237,7 +8237,7 @@
                             "type": "Boolean"
                         },
                         {
-                            "name": "pickMatrix",
+                            "name": "pickViewMatrix",
                             "description": "",
                             "type": "Boolean"
                         }
@@ -8250,7 +8250,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1475,
+            "line": 1479,
             "description": "Reads the colors of some pixels in the last rendered frame.",
             "params": [
                 {
@@ -8278,7 +8278,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1522,
+            "line": 1526,
             "description": "Destroys this Renderer.",
             "class": "CameraFlight"
         },
@@ -20914,7 +20914,7 @@
                     "props": [
                         {
                             "name": "pickSurface",
-                            "description": "Whether to ray-pick.",
+                            "description": "Whether to find the picked position on the surface of the Entity.",
                             "type": "Boolean",
                             "optional": true,
                             "optdefault": "false"
@@ -23535,15 +23535,15 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/_renderer/renderer.js:1319"
+            "line": " src/_renderer/renderer.js:1322"
         },
         {
             "message": "Missing item type\nReads the colors of some pixels in the last rendered frame.",
-            "line": " src/_renderer/renderer.js:1475"
+            "line": " src/_renderer/renderer.js:1479"
         },
         {
             "message": "Missing item type\nDestroys this Renderer.",
-            "line": " src/_renderer/renderer.js:1522"
+            "line": " src/_renderer/renderer.js:1526"
         },
         {
             "message": "Missing item type\nRenderer states",

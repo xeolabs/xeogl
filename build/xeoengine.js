@@ -5716,7 +5716,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             var origin;
             var direction;
             var look;
-            var pickMatrix = null;
+            var pickViewMatrix = null;
+            var pickProjMatrix = null;
 
             if (!params.canvasPos) {
 
@@ -5726,7 +5727,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 direction = params.direction || math.vec3([0, 0, 1]);
                 look = math.addVec3(origin, direction, tempVec3a);
 
-                pickMatrix = XEO.math.lookAtMat4v(origin, look, up, tempMat4a);
+                pickViewMatrix = math.lookAtMat4v(origin, look, up, tempMat4a);
+                //pickProjMatrix = math.orthoMat4c(left, right, bottom, top, this._near, this._far, XEO.math.mat4());
 
                 pickBufX = canvas.clientWidth * 0.5;
                 pickBufY = canvas.clientHeight * 0.5;
@@ -5746,7 +5748,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this._doDrawList({
                 pickObject: true,
                 clear: true,
-                pickMatrix: pickMatrix
+                pickViewMatrix: pickViewMatrix,
+                pickProjMatrix: pickProjMatrix
             });
 
             //     gl.finish();
@@ -5776,7 +5779,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     this._doDrawList({
                         pickSurface: true,
                         object: object,
-                        pickMatrix: pickMatrix,
+                        pickViewMatrix: pickViewMatrix,
                         clear: true
                     });
 
@@ -5790,7 +5793,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     hit.primIndex = primIndex;
 
-                    if (pickMatrix) {
+                    if (pickViewMatrix) {
                         hit.origin = origin;
                         hit.direction = direction;
                     }
@@ -5811,7 +5814,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
      * @param {Boolean} params.pickSurface
      * @param {Boolean} params.object
      * @param {Boolean} params.opaqueOnly
-     * @param {Boolean} params.pickMatrix
+     * @param {Boolean} params.pickViewMatrix
      * @private
      */
     XEO.renderer.Renderer.prototype._doDrawList = function (params) {
@@ -5856,7 +5859,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         frameCtx.bindArray = 0;
         frameCtx.pass = params.pass;
         frameCtx.bindOutputFramebuffer = this.bindOutputFramebuffer;
-        frameCtx.pickMatrix = params.pickMatrix;
+        frameCtx.pickViewMatrix = params.pickViewMatrix;
+        frameCtx.pickProjMatrix = params.pickProjMatrix;
 
         // The extensions needs to be re-queried in case the context was lost and has been recreated.
         if (XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {
@@ -10337,15 +10341,15 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             }
         },
 
-        pickObject: function () {
+        pickObject: function (frameCtx) {
             if (this._uProjMatrixPickObject) {
-                this._uProjMatrixPickObject.setValue(this.state.getMatrix());
+                this._uProjMatrixPickObject.setValue(frameCtx.pickProjMatrix || this.state.getMatrix());
             }
         },
 
-        pickPrimitive: function () {
+        pickPrimitive: function (frameCtx) {
             if (this._uProjMatrixPickPrimitive) {
-                this._uProjMatrixPickPrimitive.setValue(this.state.getMatrix());
+                this._uProjMatrixPickPrimitive.setValue(frameCtx.pickProjMatrix || this.state.getMatrix());
             }
         }
     });
@@ -10487,13 +10491,13 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
         pickObject: function (frameCtx) {
             if (this._uViewMatrixPickObject) {
-                this._uViewMatrixPickObject.setValue(frameCtx.pickMatrix || this.state.getMatrix());
+                this._uViewMatrixPickObject.setValue(frameCtx.pickViewMatrix || this.state.getMatrix());
             }
         },
 
         pickPrimitive: function (frameCtx) {
             if (this._uViewMatrixPickPrimitive) {
-                this._uViewMatrixPickPrimitive.setValue(frameCtx.pickMatrix || this.state.getMatrix());
+                this._uViewMatrixPickPrimitive.setValue(frameCtx.pickViewMatrix || this.state.getMatrix());
             }
         }
     });
@@ -13054,7 +13058,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          * @method pick
          *
          * @param {*} params Picking parameters.
-         * @param {Boolean} [params.pickSurface=false] Whether to ray-pick.
+         * @param {Boolean} [params.pickSurface=false] Whether to find the picked position on the surface of the Entity.
          * @param {Float32Array} [params.canvasPos] Canvas-space coordinates. When ray-picking, this will override the
          * **origin** and ** direction** parameters and will cause the ray to be fired through the canvas at this position,
          * directly along the negative View-space Z-axis.
