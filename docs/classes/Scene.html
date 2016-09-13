@@ -119,8 +119,9 @@
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
+                                <li><a href="../classes/XEO.ZSpace.html">XEO.ZSpace</a></li>
                                 <li><a href="../classes/ZSpace.html">ZSpace</a></li>
-                                <li><a href="../classes/ZSpaceStylusHelper.html">ZSpaceStylusHelper</a></li>
+                                <li><a href="../classes/ZSpaceStylus.html">ZSpaceStylus</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -821,7 +822,7 @@ if those arrays are huge.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_scene.js.html#l1764"><code>src&#x2F;scene.js:1764</code></a>
+        <a href="../files/src_scene.js.html#l1769"><code>src&#x2F;scene.js:1769</code></a>
         </p>
 
 
@@ -917,7 +918,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_scene.js.html#l1738"><code>src&#x2F;scene.js:1738</code></a>
+        <a href="../files/src_scene.js.html#l1743"><code>src&#x2F;scene.js:1743</code></a>
         </p>
 
 
@@ -1659,7 +1660,7 @@ if (hit) { // Picked an Entity
 <p><strong>Usage:</strong></p>
 <p>Picking the <a href="../classes/Entity.html" class="crosslink">Entity</a> that intersects a ray cast through the canvas:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var hit = scene.pick({
-    rayPick: true,
+    pickSurface: true,
     canvasPos: [23, 131]
  });
 
@@ -1682,7 +1683,7 @@ if (hit) { // Picked an Entity
 </code></pre>
 <p>Picking the <a href="../classes/Entity.html" class="crosslink">Entity</a> that intersects an arbitrarily-aligned World-space ray:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var hit = scene.pick({
-    rayPick: true,       // Picking with arbitrarily-positioned ray
+    pickSurface: true,       // Picking with arbitrarily-positioned ray
     origin: [0,0,-5],    // Ray origin
     direction: [0,0,1]   // Ray direction
 });
@@ -1723,7 +1724,7 @@ if (hit) { // Picked an Entity with the ray
 
                         <ul class="params-list">
                             <li class="param">
-                                    <code class="param-name optional">[rayPick=false]</code>
+                                    <code class="param-name optional">[pickSurface=false]</code>
                                     <span class="type">Boolean</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
 

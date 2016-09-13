@@ -79,9 +79,10 @@ YUI.add("yuidoc-meta", function(Y) {
         "Viewport",
         "Visibility",
         "XEO",
+        "XEO.ZSpace",
         "XEO.math.math",
         "ZSpace",
-        "ZSpaceStylusHelper"
+        "ZSpaceStylus"
     ],
     "modules": [
         "XEO",
@@ -229,7 +230,7 @@ YUI.add("yuidoc-meta", function(Y) {
         {
             "displayName": "webvr",
             "name": "webvr",
-            "description": "Components for Virtual Reality."
+            "description": "Components for Web-based Virtual Reality."
         },
         {
             "displayName": "XEO",

@@ -1019,10 +1019,12 @@
                 "XEO": 1
             }
         },
-        "examples/js/webvr/ZSpaceEffect.js": {
-            "name": "examples/js/webvr/ZSpaceEffect.js",
+        "examples/js/webvr/zspace/zSpace.js": {
+            "name": "examples/js/webvr/zspace/zSpace.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "XEO.ZSpace": 1
+            },
             "fors": {},
             "namespaces": {}
         },
@@ -1044,11 +1046,11 @@
             "fors": {},
             "namespaces": {}
         },
-        "examples/js/webvr/zSpaceStylusHelper.js": {
-            "name": "examples/js/webvr/zSpaceStylusHelper.js",
+        "examples/js/webvr/zSpaceStylus.js": {
+            "name": "examples/js/webvr/zSpaceStylus.js",
             "modules": {},
             "classes": {
-                "ZSpaceStylusHelper": 1
+                "ZSpaceStylus": 1
             },
             "fors": {},
             "namespaces": {}
@@ -1245,8 +1247,9 @@
                 "Component": 1,
                 "Scene": 1,
                 "XEO": 1,
+                "XEO.ZSpace": 1,
                 "ZSpace": 1,
-                "ZSpaceStylusHelper": 1,
+                "ZSpaceStylus": 1,
                 "Nintendo3DSGeometry": 1,
                 "OBJGeometry": 1,
                 "CubicBezierCurve": 1,
@@ -1633,17 +1636,18 @@
             "name": "webvr",
             "submodules": {},
             "classes": {
+                "XEO.ZSpace": 1,
                 "ZSpace": 1,
-                "ZSpaceStylusHelper": 1
+                "ZSpaceStylus": 1
             },
             "fors": {},
             "is_submodule": 1,
             "namespaces": {},
             "module": "XEO",
             "namespace": "",
-            "file": "examples/js/webvr/zSpaceStylusHelper.js",
+            "file": "examples/js/webvr/zSpaceStylus.js",
             "line": 1,
-            "description": "Components for Virtual Reality."
+            "description": "Components for Web-based Virtual Reality."
         },
         "curves": {
             "name": "curves",
@@ -2782,7 +2786,7 @@
             "namespace": "",
             "file": "src/controls/mousePickEntity.js",
             "line": 1,
-            "description": "A **MousePickEntity** picks {{#crossLink \"Entity\"}}Entities{{/crossLink}} with mouse clicks.\n\n## Examples\n\n<ul>\n<li>[MousePickEntity example](../../examples/#interaction_MousePickEntity)</li>\n<li>[CameraControl example](../../examples/#interaction_CameraControl)</li>\n</ul>\n\n## Usage\n\n````Javascript\n// Create some Entities\n\nvar entity1 = new XEO.Entity({\n   id: \"entity1\",\n   transform: new XEO.Translate(scene, { xyz: [-5, 0, 0] })\n});\n\nvar entity2 = new XEO.Entity({\n   id: \"entity2\",\n   transform: new XEO.Translate(scene, { xyz: [0, 0, 0] })\n});\n\nvar entity3 = new XEO.Entity({\n   id: \"entity3\",\n   transform: new XEO.Translate(scene, { xyz: [5, 0, 0] })\n});\n\n// Create a MousePickEntity\nvar mousePickEntity = new XEO.MousePickEntity({\n\n   // We want the 3D World-space coordinates\n   // of each location we pick\n\n   rayPick: true\n});\n\n// Handle picked Entities\nmousePickEntity.on(\"pick\", function(e) {\n   var entity = e.entity;\n   var canvasPos = e.canvasPos;\n   var primIndex = e.primIndex;\n});\n\n// Handle nothing picked\nmousePickEntity.on(\"nopick\", function(e) {\n   var canvasPos = e.canvasPos;\n});\n````",
+            "description": "A **MousePickEntity** picks {{#crossLink \"Entity\"}}Entities{{/crossLink}} with mouse clicks.\n\n## Examples\n\n<ul>\n<li>[MousePickEntity example](../../examples/#interaction_MousePickEntity)</li>\n<li>[CameraControl example](../../examples/#interaction_CameraControl)</li>\n</ul>\n\n## Usage\n\n````Javascript\n// Create some Entities\n\nvar entity1 = new XEO.Entity({\n   id: \"entity1\",\n   transform: new XEO.Translate(scene, { xyz: [-5, 0, 0] })\n});\n\nvar entity2 = new XEO.Entity({\n   id: \"entity2\",\n   transform: new XEO.Translate(scene, { xyz: [0, 0, 0] })\n});\n\nvar entity3 = new XEO.Entity({\n   id: \"entity3\",\n   transform: new XEO.Translate(scene, { xyz: [5, 0, 0] })\n});\n\n// Create a MousePickEntity\nvar mousePickEntity = new XEO.MousePickEntity({\n\n   // We want the 3D World-space coordinates\n   // of each location we pick\n\n   pickSurface: true\n});\n\n// Handle picked Entities\nmousePickEntity.on(\"pick\", function(e) {\n   var entity = e.entity;\n   var canvasPos = e.canvasPos;\n   var primIndex = e.primIndex;\n});\n\n// Handle nothing picked\nmousePickEntity.on(\"nopick\", function(e) {\n   var canvasPos = e.canvasPos;\n});\n````",
             "submodule": "controls",
             "is_constructor": 1,
             "params": [
@@ -2820,7 +2824,7 @@
                     ]
                 },
                 {
-                    "name": "rayPick",
+                    "name": "pickSurface",
                     "description": "Indicates whether this MousePickEntity will find the 3D ray intersection whenever it picks a\n{{#crossLink \"Entity\"}}{{/crossLink}}.",
                     "type": "Boolean",
                     "optional": true,
@@ -6261,8 +6265,8 @@
             "static": 1,
             "author": "xeolabs / http://xeolabs.com/"
         },
-        "ZSpace": {
-            "name": "ZSpace",
+        "XEO.ZSpace": {
+            "name": "XEO.ZSpace",
             "shortname": "ZSpace",
             "classitems": [],
             "plugins": [],
@@ -6270,10 +6274,10 @@
             "plugin_for": [],
             "extension_for": [],
             "module": "XEO",
-            "namespace": "",
-            "file": "examples/js/webvr/zSpace.js",
+            "namespace": "XEO",
+            "file": "examples/js/webvr/zspace/zSpace.js",
             "line": 1,
-            "description": "A **ZSpace** component makes its {{#crossLink \"Scene\"}}{{/crossLink}} viewable with a zSpace viewer.\n\n<ul>\n<li>a ZSpace requires WebGL2 and WebVR support, which you'll have if you're running on a zSpace viewer.</li>\n<li>a ZSpace is attached to a {{#crossLink \"Camera\"}}{{/crossLink}}</li>\n<li>a ZSpace requires its {{#crossLink \"Camera\"}}Camera{{/crossLink}} to have a {{#crossLink \"Transform\"}}{{/crossLink}}\n(and not a subclass) for each of it's {{#crossLink \"Camera/view:property\"}}{{/crossLink}} and\n{{#crossLink \"Camera/view:property\"}}projection{{/crossLink}} transforms. This is because the ZSpace needs to directly update\nthe matrices on those transforms as part of the stereo viewing effect. If those transforms are of a different type, then\nthe ZSpace will temporarily replace them with {{#crossLink \"Transform\"}}Transforms{{/crossLink}}.</li>\n<li>you can use a {{#crossLink \"ZSpaceStylusHelper\"}}{{/crossLink}} to show the ZSpace's stylus as an object in the 3D view.</li>\n</ul>\n\n## Examples\n\n<ul>\n<li>[zSpace with random geometries](../../examples/#webvr_zspace_geometries)</li>\n<li>[zSpace with glTF gearbox model](../../examples/#webvr_zspace_gltf_gearbox)</li>\n</ul>\n\n## Usage\n\nIn the example below, we'll create an {{#crossLink \"Entity\"}}{{/crossLink}} in xeoEngine's default\n{{#crossLink \"Scene\"}}{{/crossLink}}. Then we'll also create a {{#crossLink \"ZSpace\"}}{{/crossLink}}, which\nenables us to view and interact with the {{#crossLink \"Scene\"}}{{/crossLink}} using a ZSpace viewer.\n\n````javascript\n// Create an Entity\n\nnew XEO.Entity({\n    geometry: new XEO.TorusGeometry(),\n    material: new XEO.PhongMaterial({\n       diffuseMap: new XEO.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n       })\n    })\n});\n\n// Create a zSpace viewer\n\nvar zSpace = new XEO.ZSpace();\n````\n\nIn this example we didn't specify a {{#crossLink \"Camera\"}}{{/crossLink}} for our {{#crossLink \"Entity\"}}{{/crossLink}} and\nZSpace, which causes them attach to their {{#crossLink \"Scene\"}}Scene's{{/crossLink}} default\n{{#crossLink \"Camera\"}}{{/crossLink}}.\n\nNote however that the default {{#crossLink \"Camera\"}}{{/crossLink}} has a {{#crossLink \"Lookat\"}}{{/crossLink}} for its view transform\nand a {{#crossLink \"Perspective\"}}{{/crossLink}} for its projection. Therefore, whenever active, the ZSpace will\nreplace those with {{#crossLink \"Transform\"}}{{/crossLink}} components, which it will update in order to create\nthe stereo effect. If the ZSpace is later deactivated or destroyed, it will restore the\n{{#crossLink \"Camera\"}}Camera's{{/crossLink}} original {{#crossLink \"Lookat\"}}{{/crossLink}} and {{#crossLink \"Perspective\"}}{{/crossLink}}.\n\n## Sizing the zSpace viewer coordinate system\n\n````javascript\nvar zSpace = new XEO.ZSpace({\n   viewerScale: 30\n});\n````\n\nWe can also automatically fit the viewer coordinate system to whatever is in the {{#crossLink \"Scene\"}}{{/crossLink}}:\n\n````javascript\nvar zSpace = new XEO.ZSpace({\n   autoViewerScale: true\n});\n````\n\n\n## Detecting support\n\nThe **ZSpace** will fire a \"supported\" event once it has determined whether or not the browser\nsupports a zSpace viewer:\n\n````javascript\nzSpace.on(\"supported\", function (supported) {\n\n       if (!supported) {\n\n           // Not a zSpace device\n\n           this.error(\"This computer is not a ZSpace viewer!\"); // Log error on the XEO.ZSpace component\n\n           // At this point you could just destroy the XEO.ZSpace to make it detach from the Camera\n       }\n   });\n````\n\n## Handling stylus input\n\nReading the current position and orientation of the stylus, along with the current stylus camera matrix:\n\n````javascript\nvar stylusPos = zSpace.stylusPos; // Position, as a three-element Float32Array\nvar stylusOrientation = zSpace.stylusOrientation; // Orientation quaternion, as a four-element Float32Array\nvar stylusCameraMatrix = zSpace.stylusCameraMatrix; // Sixteen-element Float32Array\n````\n\nNote that these properties only have meaningful values once the ZSpace has fired at least one {{#crossLink \"ZSpace/stylusMoved:event\"}}{{/crossLink}} event.\n\nSubscribing to stylus movement:\n\n````javascript\nzSpace.on(\"stylusMoved\", function() {\n    var stylusPos = this.stylusPos; // Position, as a three-element Float32Array\n    var stylusOrientation = this.stylusOrientation; // Orientation quaternion, as a four-element Float32Array\n    var stylusCameraMatrix = this.stylusCameraMatrix; // Sixteen-element Float32Array\n    //...\n});\n````\n\nReading the current state of each stylus button:\n\n````javascript\nvar button0 = zSpace.stylusButton0; // Boolean\nvar button1 = zSpace.stylusButton1;\nvar button2 = zSpace.stylusButton2;\n````\n\nSubscribing to change of state of each stylus button:\n\n````javascript\nzSpace.on(\"stylusButton0\", function(value) { // Boolean value\n    this.log(\"stylusButton0 = \" + value);\n});\n\nzSpace.on(\"stylusButton1\", function(value) {\n    this.log(\"stylusButton1 = \" + value);\n});\n\nzSpace.on(\"stylusButton2\", function(value) {\n    this.log(\"stylusButton2 = \" + value);\n});\n````\n\nUsing a {{#crossLink \"ZSpaceStylusHelper\"}}{{/crossLink}} to render the stylus as an object in the 3D view:\n\n````javascript\nvar stylusHelper = new XEO.ZSpaceStylusHelper({\n    zSpace: zSpace,\n    visible: true,       // Default\n    color: [0.5,0.5,0.5] // Default\n});\n````\n\nPicking an {{#crossLink \"Entity\"}}{{/crossLink}} with the stylus when button 0 is pressed:\n\n````javascript\nzSpace.on(\"stylusButton0\", function() {\n\n   var hit = zSpace.scene.pick({\n       rayPick: true,\n       origin: zSpace.stylusPos,\n       direction: zSpace.stylusOrientation\n   });\n\n   if (hit) { // Picked an Entity\n\n       var entity = hit.entity;\n\n       // These properties are only on the hit result when we do a ray-pick:\n\n       var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n       var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n       var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n       var localPos = hit.localPos; // Float32Array containing the picked Local-space position within the triangle\n       var worldPos = hit.worldPos; // Float32Array containing the picked World-space position within the triangle\n       var viewPos = hit.viewPos; // Float32Array containing the picked View-space position within the triangle\n       var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n       var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n       var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n\n       //...\n   }\n});\n````\n\nWe can also dynamically pick {{#crossLink \"Entity\"}}Entities{{/crossLink}} with the stylus as we move it around. In this\nexample we'll highlight our {{#crossLink \"ZSpaceStylusHelper\"}}{{/crossLink}} whenever the stylus intersects\nan {{#crossLink \"Entity\"}}{{/crossLink}}:\n\n````javascript\nzSpace.on(\"stylusMoved\", function() {\n\n   var hit = zSpace.scene.pick({\n       rayPick: true,\n       origin: zSpace.stylusPos,\n       direction: zSpace.stylusOrientation\n   });\n\n   if (hit) { // Picked an Entity\n\n       stylusHelper.highlight = true;\n\n       // The hit properties are the same as those shown in the previous example\n\n   } else {\n\n       // Un-highlight our ZSPaceStylusHelper\n       stylusHelper.highlight = false;\n   }\n});\n````",
+            "description": "A **ZSpace** component makes its {{#crossLink \"Scene\"}}{{/crossLink}} viewable with a zSpace viewer.\n\n<ul>\n<li>a ZSpace requires WebGL2 and WebVR support, which you'll have if you're running on a zSpace viewer.</li>\n<li>a ZSpace is attached to a {{#crossLink \"Camera\"}}{{/crossLink}}</li>\n<li>a ZSpace requires its {{#crossLink \"Camera\"}}Camera{{/crossLink}} to have a {{#crossLink \"Transform\"}}{{/crossLink}}\n(and not a subclass) for each of it's {{#crossLink \"Camera/view:property\"}}{{/crossLink}} and\n{{#crossLink \"Camera/view:property\"}}projection{{/crossLink}} transforms. This is because the ZSpace needs to directly update\nthe matrices on those transforms as part of the stereo viewing effect. If those transforms are of a different type, then\nthe ZSpace will temporarily replace them with {{#crossLink \"Transform\"}}Transforms{{/crossLink}}.</li>\n</ul>\n\n## Examples\n\n<ul>\n<li>[zSpace with random geometries](../../examples/#webvr_zspace_geometries)</li>\n<li>[zSpace with glTF gearbox model](../../examples/#webvr_zspace_gltf_gearbox)</li>\n</ul>\n\n## Usage\n\nIn the example below, we'll create an {{#crossLink \"Entity\"}}{{/crossLink}} in xeoEngine's default\n{{#crossLink \"Scene\"}}{{/crossLink}}. Then we'll also create a {{#crossLink \"ZSpace\"}}{{/crossLink}}, which\nenables us to view and interact with the {{#crossLink \"Scene\"}}{{/crossLink}} using a ZSpace viewer.\n\n````javascript\n// Create an Entity\n\nnew XEO.Entity({\n    geometry: new XEO.TorusGeometry(),\n    material: new XEO.PhongMaterial({\n       diffuseMap: new XEO.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n       })\n    })\n});\n\n// Create a zSpace viewer\n\nvar zspace = new XEO.ZSpace();\n````\n\nIn this example we didn't specify a {{#crossLink \"Camera\"}}{{/crossLink}} for our {{#crossLink \"Entity\"}}{{/crossLink}} and\nZSpace, which causes them attach to their {{#crossLink \"Scene\"}}Scene's{{/crossLink}} default\n{{#crossLink \"Camera\"}}{{/crossLink}}.\n\nNote however that the default {{#crossLink \"Camera\"}}{{/crossLink}} has a {{#crossLink \"Lookat\"}}{{/crossLink}} for its view transform\nand a {{#crossLink \"Perspective\"}}{{/crossLink}} for its projection. Therefore, whenever active, the ZSpace will\nreplace those with {{#crossLink \"Transform\"}}{{/crossLink}} components, which it will update in order to create\nthe stereo effect. If the ZSpace is later deactivated or destroyed, it will restore the\n{{#crossLink \"Camera\"}}Camera's{{/crossLink}} original {{#crossLink \"Lookat\"}}{{/crossLink}} and {{#crossLink \"Perspective\"}}{{/crossLink}}.\n\n## Sizing the zSpace viewer coordinate system\n\n````javascript\nvar zspace = new XEO.ZSpace({\n   viewerScale: 30\n});\n````\n\nWe can also automatically fit the viewer coordinate system to whatever is in the {{#crossLink \"Scene\"}}{{/crossLink}}:\n\n````javascript\nvar zspace = new XEO.ZSpace({\n   autoViewerScale: true\n});\n````\n\n## Detecting support\n\nThe **ZSpace** will fire a \"supported\" event once it has determined whether or not the browser\nsupports a zSpace viewer:\n\n````javascript\nzspace.on(\"supported\", function (supported) {\n\n       if (!supported) {\n\n           // Not a zSpace device\n\n           this.error(\"This computer is not a ZSpace viewer!\"); // Log error on the XEO.ZSpace component\n\n           // At this point you could just destroy the XEO.ZSpace to make it detach from the Camera\n       }\n   });\n````\n\n## Handling stylus input\n\nReading the current World-space position and direction of the stylus:\n\n````javascript\nvar stylusPos = zspace.stylusPos;\nvar stylusDir = zspace.stylusDir;\n````\n\nNote that these properties only have meaningful values once the ZSpace has fired at least one {{#crossLink \"ZSpace/stylusMoved:event\"}}{{/crossLink}} event.\n\nSubscribing to stylus movement:\n\n````javascript\nzspace.on(\"stylusMoved\", function() {\n    var stylusPos = zspace.stylusPos;\n    var stylusDir = zspace.stylusDir;\n    //...\n});\n````\n\nReading the current state of each stylus button:\n\n````javascript\nvar button0 = zspace.stylusButton0; // Boolean\nvar button1 = zspace.stylusButton1;\nvar button2 = zspace.stylusButton2;\n````\n\nSubscribing to change of state of each stylus button:\n\n````javascript\nzspace.on(\"stylusButton0\", function(value) { // Boolean value\n    this.log(\"stylusButton0 = \" + value);\n});\n\nzspace.on(\"stylusButton1\", function(value) {\n    this.log(\"stylusButton1 = \" + value);\n});\n\nzspace.on(\"stylusButton2\", function(value) {\n    this.log(\"stylusButton2 = \" + value);\n});\n````\n\nUsing a {{#crossLink \"ZSpaceStylusHelper\"}}{{/crossLink}} to render the stylus as an object in the 3D view:\n\n````javascript\nvar stylusHelper = new XEO.ZSpaceStylusHelper({\n    zspace: zspace,\n    visible: true,       // Default\n    color: [0.5,0.5,0.5] // Default\n});\n````\n\nPicking an {{#crossLink \"Entity\"}}{{/crossLink}} with the stylus when button 0 is pressed:\n\n````javascript\nzspace.on(\"stylusButton0\", function() {\n\n   var hit = zspace.scene.pick({\n       pickSurface: true,\n       origin: zspace.stylusPos,\n       direction: zspace.stylusOrientation\n   });\n\n   if (hit) { // Picked an Entity\n\n       var entity = hit.entity;\n\n       // These properties are only on the hit result when we do a ray-pick:\n\n       var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n       var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n       var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n       var localPos = hit.localPos; // Float32Array containing the picked Local-space position within the triangle\n       var worldPos = hit.worldPos; // Float32Array containing the picked World-space position within the triangle\n       var viewPos = hit.viewPos; // Float32Array containing the picked View-space position within the triangle\n       var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n       var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n       var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n\n       //...\n   }\n});\n````\n\nWe can also dynamically pick {{#crossLink \"Entity\"}}Entities{{/crossLink}} with the stylus as we move it around. In this\nexample we'll highlight our {{#crossLink \"ZSpaceStylusHelper\"}}{{/crossLink}} whenever the stylus intersects\nan {{#crossLink \"Entity\"}}{{/crossLink}}:\n\n````javascript\nzspace.on(\"stylusMoved\", function() {\n\n   var hit = zspace.scene.pick({\n       pickSurface: true,\n       origin: zspace.stylusPos,\n       direction: zspace.stylusOrientation\n   });\n\n   if (hit) { // Picked an Entity\n\n       stylusHelper.highlight = true;\n\n       // The hit properties are the same as those shown in the previous example\n\n   } else {\n\n       // Un-highlight our ZSPaceStylusHelper\n       stylusHelper.highlight = false;\n   }\n});\n````",
             "submodule": "webvr",
             "is_constructor": 1,
             "params": [
@@ -6361,9 +6365,9 @@
             ],
             "extends": "Component"
         },
-        "ZSpaceStylusHelper": {
-            "name": "ZSpaceStylusHelper",
-            "shortname": "ZSpaceStylusHelper",
+        "ZSpace": {
+            "name": "ZSpace",
+            "shortname": "ZSpace",
             "classitems": [],
             "plugins": [],
             "extensions": [],
@@ -6371,15 +6375,15 @@
             "extension_for": [],
             "module": "XEO",
             "namespace": "",
-            "file": "examples/js/webvr/zSpaceStylusHelper.js",
+            "file": "examples/js/webvr/zSpace.js",
             "line": 1,
-            "description": "A **ZSpaceStylusHelper** shows a {{#crossLink \"ZSpace\"}}{{/crossLink}} stylus as an object within the 3D view.\n\n## Examples\n\n<ul>\n<li>[zSpace with random geometries](../../examples/#webvr_zspace_geometries)</li>\n<li>[zSpace with glTF gearbox model](../../examples/#webvr_zspace_gltf_gearbox)</li>\n</ul>\n\n## Usage\n\nIn the example below, we'll create an {{#crossLink \"Entity\"}}{{/crossLink}} in xeoEngine's default\n{{#crossLink \"Scene\"}}{{/crossLink}}. Then we'll also create a {{#crossLink \"ZSpace\"}}{{/crossLink}}, which\nenables us to view and interact with the {{#crossLink \"Scene\"}}{{/crossLink}} using a ZSpace viewer.\nFinally, we'll create a **ZSpaceStylusHelper** to access the viewer's stylus input.\n\n````javascript\n// Create an Entity\n\nnew XEO.Entity({\n    geometry: new XEO.TorusGeometry(),\n    material: new XEO.PhongMaterial({\n       diffuseMap: new XEO.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n       })\n    })\n});\n\n// View it with a ZSpace viewer\n\nvar zSpace = new XEO.ZSpace();\n\n// Create a ZSpaceStylusHelper to show the viewer's stylus as an object in the 3D view\n\nvar stylusHelper = new XEO.ZSpaceStylusHelperHelper({\n    zSpace: zSpace\n});\n\n// Make our ZSpaceStylusHelper glow whenever the stylus intersects an Entity\n\nzSpace.on(\"stylusMoved\", function() {\n\n       var hit = zSpace.scene.pick({\n           rayPick: true,\n           origin: zSpace.stylusPos,\n           direction: zSpace.stylusOrientation\n       });\n\n       if (hit) { // Picked an Entity\n\n           stylusHelper.highlighted = true;\n\n           // These properties are only on the hit result when we do a ray-pick:\n\n           var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n           var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n           var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n           var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n           var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n           var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n           var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n           var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n           var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n\n           //...\n\n       } else {\n\n           stylusHelper.highlighted = false;\n       }\n    });\n````",
+            "description": "A **ZSpace** component makes its {{#crossLink \"Scene\"}}{{/crossLink}} viewable with a zSpace viewer.\n\n<ul>\n<li>a ZSpace requires WebGL2 and WebVR support, which you'll have if you're running on a zSpace viewer.</li>\n<li>a ZSpace is attached to a {{#crossLink \"Camera\"}}{{/crossLink}}</li>\n<li>a ZSpace requires its {{#crossLink \"Camera\"}}Camera{{/crossLink}} to have a {{#crossLink \"Transform\"}}{{/crossLink}}\n(and not a subclass) for each of it's {{#crossLink \"Camera/view:property\"}}{{/crossLink}} and\n{{#crossLink \"Camera/view:property\"}}projection{{/crossLink}} transforms. This is because the ZSpace needs to directly update\nthe matrices on those transforms as part of the stereo viewing effect. If those transforms are of a different type, then\nthe ZSpace will temporarily replace them with {{#crossLink \"Transform\"}}Transforms{{/crossLink}}.</li>\n<li>a {{#crossLink \"ZSpaceStylus\"}}{{/crossLink}} can be used to track stylus input on a ZSpace.</li>\n</ul>\n\n## Examples\n\n<ul>\n<li>[zSpace with random geometries](../../examples/#webvr_zspace_geometries)</li>\n<li>[zSpace with glTF gearbox model](../../examples/#webvr_zspace_gltf_gearbox)</li>\n</ul>\n\n## Usage\n\nIn the example below, we'll create an {{#crossLink \"Entity\"}}{{/crossLink}} in xeoEngine's default\n{{#crossLink \"Scene\"}}{{/crossLink}}. Then we'll also create a {{#crossLink \"ZSpace\"}}{{/crossLink}}, which\nenables us to view and interact with the {{#crossLink \"Scene\"}}{{/crossLink}} using a ZSpace viewer.\n\n````javascript\n\n// Create an Entity\n\nnew XEO.Entity({\n    geometry: new XEO.TorusGeometry(),\n    material: new XEO.PhongMaterial({\n       diffuseMap: new XEO.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n       })\n    })\n});\n\n// Create a zSpace viewer\n\nvar zSpace = new XEO.ZSpace();\n````\n\nIn this example we didn't specify a {{#crossLink \"Camera\"}}{{/crossLink}} for our {{#crossLink \"Entity\"}}{{/crossLink}} and\nZSpace, which causes them attach to their {{#crossLink \"Scene\"}}Scene's{{/crossLink}} default\n{{#crossLink \"Camera\"}}{{/crossLink}}.\n\nNote however that the default {{#crossLink \"Camera\"}}{{/crossLink}} has a {{#crossLink \"Lookat\"}}{{/crossLink}} for its view transform\nand a {{#crossLink \"Perspective\"}}{{/crossLink}} for its projection. Therefore, whenever active, the ZSpace will\nreplace those with {{#crossLink \"Transform\"}}{{/crossLink}} components, which it will update in order to create\nthe stereo effect. If the ZSpace is later deactivated or destroyed, it will restore the\n{{#crossLink \"Camera\"}}Camera's{{/crossLink}} original {{#crossLink \"Lookat\"}}{{/crossLink}} and {{#crossLink \"Perspective\"}}{{/crossLink}}.\n\n## Sizing the zSpace viewer coordinate system\n\n````javascript\nvar zSpace = new XEO.ZSpace({\n   viewerScale: 30\n});\n````\n\nWe can also automatically fit the viewer coordinate system to whatever is in the {{#crossLink \"Scene\"}}{{/crossLink}}:\n\n````javascript\nvar zSpace = new XEO.ZSpace({\n   autoViewerScale: true\n});\n````\n\n\n## Detecting support\n\nThe **ZSpace** will fire a \"supported\" event once it has determined whether or not the browser\nsupports a zSpace viewer:\n\n````javascript\nzSpace.on(\"supported\", function (supported) {\n\n       if (!supported) {\n\n           // Not a zSpace device\n\n           this.error(\"This computer is not a ZSpace viewer!\"); // Log error on the XEO.ZSpace component\n\n           // At this point you could just destroy the XEO.ZSpace to make it detach from the Camera\n       }\n   });\n````\n\n## Handling stylus events\n\nReading the current position and orientation of the stylus, along with the current stylus camera matrix:\n\n````javascript\nvar stylusPos = zSpace.stylusPos; // Position, as a three-element Float32Array\nvar stylusOrientation = zSpace.stylusOrientation; // Orientation quaternion, as a four-element Float32Array\nvar stylusCameraMatrix = zSpace.stylusCameraMatrix; // Sixteen-element Float32Array\n````\n\nNote that these properties only have meaningful values once the **ZSpace** has fired at least one \"stylusMoved\" event.\n\nSubscribing to stylus movement:\n\n````javascript\nzSpace.on(\"stylusMoved\", function() {\n    var stylusPos = this.stylusPos; // Position, as a three-element Float32Array\n    var stylusOrientation = this.stylusOrientation; // Orientation quaternion, as a four-element Float32Array\n    var stylusCameraMatrix = this.stylusCameraMatrix; // Sixteen-element Float32Array\n    //...\n});\n````\n\nReading the current state of each stylus button:\n\n````javascript\nvar button0 = zSpace.stylusButton0; // Boolean\nvar button1 = zSpace.stylusButton1;\nvar button2 = zSpace.stylusButton2;\n````\n\nSubscribing to change of state of each stylus button:\n\n````javascript\nzSpace.on(\"stylusButton0\", function(value) { // Boolean value\n    this.log(\"stylusButton0 = \" + value);\n});\n\nzSpace.on(\"stylusButton1\", function(value) {\n    this.log(\"stylusButton1 = \" + value);\n});\n\nzSpace.on(\"stylusButton2\", function(value) {\n    this.log(\"stylusButton2 = \" + value);\n});\n````",
             "submodule": "webvr",
             "is_constructor": 1,
             "params": [
                 {
                     "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this ZSpaceStylusHelper in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this ZSpace in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
                     "type": "Scene",
                     "optional": true
                 },
@@ -6397,29 +6401,115 @@
                         },
                         {
                             "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this ZSpaceStylusHelper.",
+                            "description": "Optional map of user-defined metadata to attach to this ZSpace.",
                             "type": "String:Object",
                             "optional": true
                         },
                         {
-                            "name": "ZSpace",
-                            "description": "ID or instance of a {{#crossLink \"ZSpace\"}}{{/crossLink}} for this ZSpaceStylusHelper.\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this ZSpaceStylusHelper.",
-                            "type": "ZSpace",
+                            "name": "camera",
+                            "description": "ID or instance of a {{#crossLink \"Camera\"}}Camera{{/crossLink}} for this ZSpace.\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this ZSpace. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}}.",
+                            "type": "String|Camera",
                             "optional": true
                         },
                         {
-                            "name": "visible",
-                            "description": "Shows the ray as a line segment in the 3D view when true.",
+                            "name": "nearClip",
+                            "description": "Position of the near clipping plane on the View-space Z-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0.1"
+                        },
+                        {
+                            "name": "farClip",
+                            "description": "Position of the far clipping plane on the View-space Z-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "10000"
+                        },
+                        {
+                            "name": "viewerScale",
+                            "description": "The viewer scale factor.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1000"
+                        },
+                        {
+                            "name": "autoViewerScale",
+                            "description": "Set true to automatically size {{#crossLink \"ZSpace/viewerScale:property\"}}{{/crossLink}} to fit\neverything in the {{#crossLink \"Scene\"}}{{/crossLink}}.",
                             "type": "Boolean",
                             "optional": true,
                             "optdefault": "true"
                         },
                         {
-                            "name": "highlighted",
-                            "description": "When true, highlights this ZSPaceStylusHelper in the 3D view by making it glow a different color.",
+                            "name": "displaySize",
+                            "description": "The viewer display size.",
+                            "type": "Array of Number",
+                            "optional": true,
+                            "optdefault": "0.521,0.293"
+                        },
+                        {
+                            "name": "displayResolution",
+                            "description": "The viewer display resolution.",
+                            "type": "Array of Number",
+                            "optional": true,
+                            "optdefault": "1920,1080"
+                        },
+                        {
+                            "name": "active",
+                            "description": "Whether or not this ZSpace is initially active.",
                             "type": "Boolean",
                             "optional": true,
-                            "optdefault": "false"
+                            "optdefault": "true"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component"
+        },
+        "ZSpaceStylus": {
+            "name": "ZSpaceStylus",
+            "shortname": "ZSpaceStylus",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "examples/js/webvr/zSpaceStylus.js",
+            "line": 1,
+            "description": "A **ZSpaceStylus** component is used in combination with a {{#crossLink \"ZSpace\"}}ZSpace{{/crossLink}} to create a\nstylus pointer in VR that can pick and drag {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n## Examples\n\n<ul>\n<li>[zSpace with random geometries](../../examples/#webvr_zspace_geometries)</li>\n<li>[zSpace with glTF gearbox model](../../examples/#webvr_zspace_gltf_gearbox)</li>\n</ul>\n\n## Usage\n\nIn the example below, we'll create an {{#crossLink \"Entity\"}}{{/crossLink}} in xeoEngine's default\n{{#crossLink \"Scene\"}}{{/crossLink}}. Then we'll also create a {{#crossLink \"ZSpace\"}}{{/crossLink}}, which\nenables us to view and interact with the {{#crossLink \"Scene\"}}{{/crossLink}} using a ZSpace viewer.\nFinally, we'll create a **ZSpaceStylus** to access the viewer's stylus input.\n\n````javascript\n\n// Create an Entity\n\nnew XEO.Entity({\n    geometry: new XEO.TorusGeometry(),\n    material: new XEO.PhongMaterial({\n       diffuseMap: new XEO.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n       })\n    })\n});\n\n// Create a ZSpace viewer\n\nvar zSpace = new XEO.ZSpace();\n\n// Create a ZSpaceStylus to access the viewer's stylus input device\n\nvar stylus = new XEO.ZSpaceStylus({\n    zSpace: zSpace\n});\n\nstylus.on(\"picked\", function () {\n\n});````",
+            "submodule": "webvr",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this ZSpaceStylus in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this ZSpaceStylus.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "ZSpace",
+                            "description": "ID or instance of a {{#crossLink \"ZSpace\"}}{{/crossLink}} for this ZSpaceStylus.\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this ZSpaceStylus.",
+                            "type": "ZSpace",
+                            "optional": true
                         }
                     ]
                 }
@@ -8132,7 +8222,7 @@
                             "type": "Boolean"
                         },
                         {
-                            "name": "rayPick",
+                            "name": "pickSurface",
                             "description": "",
                             "type": "Boolean"
                         },
@@ -10076,7 +10166,7 @@
                 },
                 {
                     "name": "worldPos",
-                    "description": "When {{#crossLink \"MousePickEntity/rayPick\"}}{{/crossLink}} is true,\nprovides the World-space coordinate that was ray-picked on the surface of the\n{{#crossLink \"Entity\"}}Entity{{/crossLink}}.",
+                    "description": "When {{#crossLink \"MousePickEntity/pickSurface\"}}{{/crossLink}} is true,\nprovides the World-space coordinate that was ray-picked on the pickSurface of the\n{{#crossLink \"Entity\"}}Entity{{/crossLink}}.",
                     "type": "Array of Number"
                 }
             ],
@@ -10120,9 +10210,9 @@
         {
             "file": "src/controls/mousePickEntity.js",
             "line": 208,
-            "description": "Indicates whether this MousePickEntity will try to pick a {{#crossLink \"Geometry\"}}{{/crossLink}} primitive\nwhenever it picks an {{#crossLink \"Entity\"}}{{/crossLink}}.\n\nWhen true, this MousePickEntity will try to return the primitive index in a\n{{#crossLink \"MousePickEntity/picked:event\"}}{{/crossLink}} event.\n\nFires a {{#crossLink \"MousePickEntity/rayPick:event\"}}{{/crossLink}} event on change.",
+            "description": "Indicates whether this MousePickEntity will try to pick a {{#crossLink \"Geometry\"}}{{/crossLink}} primitive\nwhenever it picks an {{#crossLink \"Entity\"}}{{/crossLink}}.\n\nWhen true, this MousePickEntity will try to return the primitive index in a\n{{#crossLink \"MousePickEntity/picked:event\"}}{{/crossLink}} event.\n\nFires a {{#crossLink \"MousePickEntity/pickSurface:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
-            "name": "rayPick",
+            "name": "pickSurface",
             "type": "Boolean",
             "class": "MousePickEntity",
             "module": "XEO",
@@ -10131,9 +10221,9 @@
         {
             "file": "src/controls/mousePickEntity.js",
             "line": 232,
-            "description": "Fired whenever this MousePickEntity's {{#crossLink \"MousePickEntity/rayPick:property\"}}{{/crossLink}} property changes.",
+            "description": "Fired whenever this MousePickEntity's {{#crossLink \"MousePickEntity/pickSurface:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
-            "name": "rayPick",
+            "name": "pickSurface",
             "params": [
                 {
                     "name": "value",
@@ -20813,7 +20903,7 @@
         {
             "file": "src/scene.js",
             "line": 1363,
-            "description": "Attempts to pick an {{#crossLink \"Entity\"}}Entity{{/crossLink}} in this Scene.\n\nIgnores {{#crossLink \"Entity\"}}Entities{{/crossLink}} that are attached\nto either a {{#crossLink \"Stage\"}}Stage{{/crossLink}} with {{#crossLink \"Stage/pickable:property\"}}pickable{{/crossLink}}\nset *false* or a {{#crossLink \"Modes\"}}Modes{{/crossLink}} with {{#crossLink \"Modes/pickable:property\"}}pickable{{/crossLink}} set *false*.\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} at the given canvas coordinates:\n\n````javascript\nvar hit = scene.pick({\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n    var entity = hit.entity;\n}\n````\n\n**Usage:**\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects a ray cast through the canvas:\n\n````javascript\nvar hit = scene.pick({\n    rayPick: true,\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n\n    var entity = hit.entity;\n\n    // These properties are only on the hit result when we do a ray-pick:\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n}\n````\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects an arbitrarily-aligned World-space ray:\n\n````javascript\nvar hit = scene.pick({\n    rayPick: true,       // Picking with arbitrarily-positioned ray\n    origin: [0,0,-5],    // Ray origin\n    direction: [0,0,1]   // Ray direction\n});\n\nif (hit) { // Picked an Entity with the ray\n\n    var entity = hit.entity;\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n    var origin = hit.origin; // Float32Array containing the World-space ray origin\n    var direction = hit.direction; // Float32Array containing the World-space ray direction\n}\n````",
+            "description": "Attempts to pick an {{#crossLink \"Entity\"}}Entity{{/crossLink}} in this Scene.\n\nIgnores {{#crossLink \"Entity\"}}Entities{{/crossLink}} that are attached\nto either a {{#crossLink \"Stage\"}}Stage{{/crossLink}} with {{#crossLink \"Stage/pickable:property\"}}pickable{{/crossLink}}\nset *false* or a {{#crossLink \"Modes\"}}Modes{{/crossLink}} with {{#crossLink \"Modes/pickable:property\"}}pickable{{/crossLink}} set *false*.\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} at the given canvas coordinates:\n\n````javascript\nvar hit = scene.pick({\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n    var entity = hit.entity;\n}\n````\n\n**Usage:**\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects a ray cast through the canvas:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n\n    var entity = hit.entity;\n\n    // These properties are only on the hit result when we do a ray-pick:\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n}\n````\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects an arbitrarily-aligned World-space ray:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,       // Picking with arbitrarily-positioned ray\n    origin: [0,0,-5],    // Ray origin\n    direction: [0,0,1]   // Ray direction\n});\n\nif (hit) { // Picked an Entity with the ray\n\n    var entity = hit.entity;\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n    var origin = hit.origin; // Float32Array containing the World-space ray origin\n    var direction = hit.direction; // Float32Array containing the World-space ray direction\n}\n````",
             "itemtype": "method",
             "name": "pick",
             "params": [
@@ -20823,7 +20913,7 @@
                     "type": "*",
                     "props": [
                         {
-                            "name": "rayPick",
+                            "name": "pickSurface",
                             "description": "Whether to ray-pick.",
                             "type": "Boolean",
                             "optional": true,
@@ -20859,7 +20949,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1738,
+            "line": 1743,
             "description": "Resets this Scene to its default state.\n\nReferences to any components in this Scene will become invalid.",
             "itemtype": "method",
             "name": "clear",
@@ -20868,7 +20958,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1764,
+            "line": 1769,
             "description": "Convenience method for creating or reusing a Component within this Scene.\n\nYou would typically use this method to conveniently instantiate components that you'd want to\nshare (ie. \"instance\") among your {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe method is given a component type, share ID and constructor attributes, like so:\n\n````javascript\nvar material = myScene.getComponent(\"XEO.PhongMaterial\", \"myMaterial\", { diffuse: [1,0,0] });\n````\n\nThe first time you call this method for the given ````type```` and ````instanceId````, this method will create the\n{{#crossLink \"PhongMaterial\"}}{{/crossLink}}, passing the given  attributes to the component's constructor.\n\nIf you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same\ncomponent instance that it returned the first time, and will ignore the attributes:\n\n````javascript\nvar material2 = myScene.getComponent(\"XEO.PhongMaterial\", \"myMaterial\", { specular: [1,1,0] });\n````\n\nEach time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a\nreference count for the component instance. You can release the shared component instance with a call to\n{{#crossLink \"Scene/putSharedComponent:method\"}}{{/crossLink}}, and once you have released it as many\ntimes as you got it, the Scene will destroy the component.",
             "itemtype": "method",
             "name": "_getSharedComponent",
@@ -20901,7 +20991,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1860,
+            "line": 1865,
             "description": "Releases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -20915,7 +21005,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1888,
+            "line": 1893,
             "description": "Compiles and renders this Scene",
             "access": "private",
             "tagname": "",
@@ -21256,16 +21346,397 @@
             "namespace": "XEO"
         },
         {
-            "file": "examples/js/webvr/ZSpaceEffect.js",
-            "line": 1,
-            "description": "An Effect to enable zSpace Display",
-            "class": "ZSpace",
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 392,
+            "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} attached to this ZSpace component.\n\nThe ZSpace component will attach a {{#crossLink \"Projection\"}}{{/crossLink}} to its\n{{#crossLink \"Camera\"}}{{/crossLink}} if the {{#crossLink \"Camera\"}}Camera{{/crossLink}} does not have\none already, replacing whatever projection transform component was already attached.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this ZSpace component. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.\n\nNo other component should modify the state of the {{#crossLink \"Camera\"}}{{/crossLink}} while\nit's attached to this ZSpace component. There is no prevention or check for that, so if that\nhappens you'll get unexpected results.",
+            "itemtype": "property",
+            "name": "camera",
+            "type": "Camera",
+            "class": "XEO.ZSpace",
             "module": "XEO",
-            "namespace": "XEO"
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 414,
+            "description": "Fired whenever this ZSpace component's {{#crossLink \"ZSpace/camera:property\"}}{{/crossLink}}\nproperty changes.",
+            "itemtype": "event",
+            "name": "camera",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 434,
+            "description": "Position of this ZSpace's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"ZSpace/nearClip:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "nearClip",
+            "default": "0.1",
+            "type": "Number",
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 451,
+            "description": "Fired whenever this ZSpace's   {{#crossLink \"ZSpace/nearClip:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "nearClip",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 464,
+            "description": "Position of this ZSpace's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"ZSpace/farClip:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "farClip",
+            "default": "10000.0",
+            "type": "Number",
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 481,
+            "description": "Fired whenever this ZSpace's  {{#crossLink \"ZSpace/farClip:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "farClip",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 495,
+            "description": "The viewer scale.\n\nUpdates to this are ignored when {{#crossLink \"ZSpace/autoViewerScale:property\"}}{{/crossLink}} is true.\n\nFires a {{#crossLink \"ZSpace/viewerScale:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "viewerScale",
+            "default": "1",
+            "type": "Number",
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 525,
+            "description": "Fired whenever this ZSpace's {{#crossLink \"ZSpace/viewerScale:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "viewerScale",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 539,
+            "description": "Set true to automatically size {{#crossLink \"ZSpace/viewerScale:event\"}}{{/crossLink}} to fit\neverything in the {{#crossLink \"Scene\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"ZSpace/autoViewerScale:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "autoViewerScale",
+            "default": "true",
+            "type": "Boolean",
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 572,
+            "description": "Fired whenever this ZSpace's {{#crossLink \"ZSpace/autoViewerScale:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "autoViewerScale",
+            "type": "Boolean",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 586,
+            "description": "The World-space origin.\n\nFires a {{#crossLink \"ZSpace/viewerOrigin:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "viewerOrigin",
+            "default": "[0,0,0]",
+            "type": "Float32Array",
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 603,
+            "description": "Fired whenever this Translate's {{#crossLink \"Translate/viewerOrigin:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "viewerOrigin",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Float32Array"
+                }
+            ],
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 616,
+            "description": "The display resolution.\n\nFires a {{#crossLink \"ZSpace/displayResolution:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "viewerScale",
+            "default": "[1920, 1080]",
+            "type": "Float32Array",
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 633,
+            "description": "Fired whenever this ZSpace's {{#crossLink \"ZSpace/displayResolution:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "displayResolution",
+            "type": "Float32Array",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 647,
+            "description": "The display size.\n\nFires a {{#crossLink \"ZSpace/displaySize:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "viewerScale",
+            "default": "[0.521, 0.293]",
+            "type": "Float32Array",
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 664,
+            "description": "Fired whenever this ZSpace's {{#crossLink \"ZSpace/displaySize:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "displaySize",
+            "type": "Float32Array",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 678,
+            "description": "The current World-space position of the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusMoved:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "stylusPos",
+            "type": "Float32Array",
+            "final": 1,
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 693,
+            "description": "The current World-space direction the stylus is pointing in.\n\nFires a {{#crossLink \"ZSpace/stylusMoved:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "stylusOrientation",
+            "type": "Float32Array",
+            "final": 1,
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 708,
+            "description": "The current camera matrix for the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusMoved:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "stylusCameraMatrix",
+            "type": "Float32Array",
+            "final": 1,
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 723,
+            "description": "Whether or not the first button is down on the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusButton0:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "stylusButton0",
+            "default": "false",
+            "type": "Boolean",
+            "final": 1,
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 739,
+            "description": "Whether or not the second button is down on the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusButton1:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "stylusButton1",
+            "default": "false",
+            "type": "Boolean",
+            "final": 1,
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 755,
+            "description": "Whether or not the third button is down on the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusButton2:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "stylusButton2",
+            "default": "false",
+            "type": "Boolean",
+            "final": 1,
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 771,
+            "description": "Flag which indicates whether this ZSpace component is active or not.\n\nNote that this ZSpace component can still be activated when the browser does not support ZSpace.\n\nFires an {{#crossLink \"ZSpace/active:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "active",
+            "type": "Boolean",
+            "default": "true",
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 797,
+            "description": "Fired whenever this ZSpace component's {{#crossLink \"ZSpace/active:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "active",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 1222,
+            "description": "Fired whenever this ZSpace component's stylus moves.",
+            "itemtype": "event",
+            "name": "stylusMoved",
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 1232,
+            "description": "Fired whenever this ZSpace component's first button is pressed or released.",
+            "itemtype": "event",
+            "name": "stylusButton0",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "True if the button is down."
+                }
+            ],
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 1243,
+            "description": "Fired whenever this ZSpace component's second button is pressed or released.",
+            "itemtype": "event",
+            "name": "stylusButton1",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "True if the button is down."
+                }
+            ],
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zspace/zSpace.js",
+            "line": 1254,
+            "description": "Fired whenever this ZSpace component's third button is pressed or released.",
+            "itemtype": "event",
+            "name": "stylusButton2",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "True if the button is down."
+                }
+            ],
+            "class": "XEO.ZSpace",
+            "module": "XEO",
+            "submodule": "webvr"
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 396,
+            "line": 326,
             "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} attached to this ZSpace component.\n\nThe ZSpace component will attach a {{#crossLink \"Projection\"}}{{/crossLink}} to its\n{{#crossLink \"Camera\"}}{{/crossLink}} if the {{#crossLink \"Camera\"}}Camera{{/crossLink}} does not have\none already, replacing whatever projection transform component was already attached.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this ZSpace component. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.\n\nNo other component should modify the state of the {{#crossLink \"Camera\"}}{{/crossLink}} while\nit's attached to this ZSpace component. There is no prevention or check for that, so if that\nhappens you'll get unexpected results.",
             "itemtype": "property",
             "name": "camera",
@@ -21276,7 +21747,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 418,
+            "line": 348,
             "description": "Fired whenever this ZSpace component's {{#crossLink \"ZSpace/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
@@ -21292,7 +21763,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 438,
+            "line": 368,
             "description": "Position of this ZSpace's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"ZSpace/nearClip:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "nearClip",
@@ -21304,7 +21775,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 455,
+            "line": 385,
             "description": "Fired whenever this ZSpace's   {{#crossLink \"ZSpace/nearClip:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "nearClip",
@@ -21320,7 +21791,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 468,
+            "line": 398,
             "description": "Position of this ZSpace's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"ZSpace/farClip:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "farClip",
@@ -21332,7 +21803,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 485,
+            "line": 415,
             "description": "Fired whenever this ZSpace's  {{#crossLink \"ZSpace/farClip:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "farClip",
@@ -21348,7 +21819,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 499,
+            "line": 429,
             "description": "The viewer scale.\n\nUpdates to this are ignored when {{#crossLink \"ZSpace/autoViewerScale:property\"}}{{/crossLink}} is true.\n\nFires a {{#crossLink \"ZSpace/viewerScale:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "viewerScale",
@@ -21360,7 +21831,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 529,
+            "line": 459,
             "description": "Fired whenever this ZSpace's {{#crossLink \"ZSpace/viewerScale:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "viewerScale",
@@ -21377,7 +21848,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 543,
+            "line": 473,
             "description": "Set true to automatically size {{#crossLink \"ZSpace/viewerScale:event\"}}{{/crossLink}} to fit\neverything in the {{#crossLink \"Scene\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"ZSpace/autoViewerScale:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "autoViewerScale",
@@ -21389,7 +21860,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 576,
+            "line": 506,
             "description": "Fired whenever this ZSpace's {{#crossLink \"ZSpace/autoViewerScale:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "autoViewerScale",
@@ -21406,7 +21877,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 590,
+            "line": 520,
             "description": "The World-space origin.\n\nFires a {{#crossLink \"ZSpace/viewerOrigin:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "viewerOrigin",
@@ -21418,7 +21889,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 607,
+            "line": 537,
             "description": "Fired whenever this Translate's {{#crossLink \"Translate/viewerOrigin:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "viewerOrigin",
@@ -21435,7 +21906,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 620,
+            "line": 550,
             "description": "The display resolution.\n\nFires a {{#crossLink \"ZSpace/displayResolution:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "viewerScale",
@@ -21447,7 +21918,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 637,
+            "line": 567,
             "description": "Fired whenever this ZSpace's {{#crossLink \"ZSpace/displayResolution:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "displayResolution",
@@ -21464,7 +21935,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 651,
+            "line": 581,
             "description": "The display size.\n\nFires a {{#crossLink \"ZSpace/displaySize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "viewerScale",
@@ -21476,7 +21947,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 668,
+            "line": 598,
             "description": "Fired whenever this ZSpace's {{#crossLink \"ZSpace/displaySize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "displaySize",
@@ -21493,7 +21964,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 682,
+            "line": 612,
             "description": "The current 3D position of the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusMoved:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusPos",
@@ -21505,7 +21976,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 697,
+            "line": 627,
             "description": "The current 3D orientation of the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusMoved:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusOrientation",
@@ -21517,7 +21988,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 712,
+            "line": 642,
             "description": "The current camera matrix for the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusMoved:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusCameraMatrix",
@@ -21529,7 +22000,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 727,
+            "line": 657,
             "description": "Whether or not the first button is down on the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusButton0:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusButton0",
@@ -21542,7 +22013,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 743,
+            "line": 673,
             "description": "Whether or not the second button is down on the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusButton1:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusButton1",
@@ -21555,7 +22026,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 759,
+            "line": 689,
             "description": "Whether or not the third button is down on the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusButton2:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusButton2",
@@ -21568,7 +22039,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 775,
+            "line": 705,
             "description": "Flag which indicates whether this ZSpace component is active or not.\n\nNote that this ZSpace component can still be activated when the browser does not support ZSpace.\n\nFires an {{#crossLink \"ZSpace/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
@@ -21580,7 +22051,7 @@
         },
         {
             "file": "examples/js/webvr/zSpace.js",
-            "line": 801,
+            "line": 731,
             "description": "Fired whenever this ZSpace component's {{#crossLink \"ZSpace/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
@@ -21595,127 +22066,13 @@
             "submodule": "webvr"
         },
         {
-            "file": "examples/js/webvr/zSpace.js",
-            "line": 1195,
-            "description": "Fired whenever this ZSpace component's stylus moves.",
-            "itemtype": "event",
-            "name": "stylusMoved",
-            "class": "ZSpace",
-            "module": "XEO",
-            "submodule": "webvr"
-        },
-        {
-            "file": "examples/js/webvr/zSpace.js",
-            "line": 1205,
-            "description": "Fired whenever this ZSpace component's first button is pressed or released.",
-            "itemtype": "event",
-            "name": "stylusButton0",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "True if the button is down."
-                }
-            ],
-            "class": "ZSpace",
-            "module": "XEO",
-            "submodule": "webvr"
-        },
-        {
-            "file": "examples/js/webvr/zSpace.js",
-            "line": 1216,
-            "description": "Fired whenever this ZSpace component's second button is pressed or released.",
-            "itemtype": "event",
-            "name": "stylusButton1",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "True if the button is down."
-                }
-            ],
-            "class": "ZSpace",
-            "module": "XEO",
-            "submodule": "webvr"
-        },
-        {
-            "file": "examples/js/webvr/zSpace.js",
-            "line": 1227,
-            "description": "Fired whenever this ZSpace component's third button is pressed or released.",
-            "itemtype": "event",
-            "name": "stylusButton2",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "True if the button is down."
-                }
-            ],
-            "class": "ZSpace",
-            "module": "XEO",
-            "submodule": "webvr"
-        },
-        {
-            "file": "examples/js/webvr/zSpaceStylusHelper.js",
-            "line": 146,
-            "description": "The {{#crossLink \"ZSpace\"}}{{/crossLink}} this ZSpaceStylusHelper is currently connected to.\n\nFires a {{#crossLink \"ZSpaceStylusHelper/zSpace:event\"}}{{/crossLink}} event on change.",
+            "file": "examples/js/webvr/zSpaceStylus.js",
+            "line": 126,
+            "description": "The {{#crossLink \"ZSpace\"}}{{/crossLink}} this stylus is currently connected to.\n\nFires a {{#crossLink \"ZSpaceStylus/ZSpace:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "zSpace",
             "type": "ZSpace",
-            "class": "ZSpaceStylusHelper",
-            "module": "XEO",
-            "submodule": "webvr"
-        },
-        {
-            "file": "examples/js/webvr/zSpaceStylusHelper.js",
-            "line": 178,
-            "description": "Shows the ray as a line segment in the 3D view when true.\n\nFires an {{#crossLink \"ZSpaceStylusHelper/visible:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "visible",
-            "type": "Boolean",
-            "default": "true",
-            "class": "ZSpaceStylusHelper",
-            "module": "XEO",
-            "submodule": "webvr"
-        },
-        {
-            "file": "examples/js/webvr/zSpaceStylusHelper.js",
-            "line": 201,
-            "description": "Fired whenever this ZSpaceStylusHelper's {{#crossLink \"ZSpaceStylusHelper/visible:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "visible",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "ZSpaceStylusHelper",
-            "module": "XEO",
-            "submodule": "webvr"
-        },
-        {
-            "file": "examples/js/webvr/zSpaceStylusHelper.js",
-            "line": 214,
-            "description": "Whether to highlight this ZSpaceStylusHelper or not.\n\nFires an {{#crossLink \"ZSpaceStylusHelper/highlighted:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "highlighted",
-            "type": "Boolean",
-            "default": "false",
-            "class": "ZSpaceStylusHelper",
-            "module": "XEO",
-            "submodule": "webvr"
-        },
-        {
-            "file": "examples/js/webvr/zSpaceStylusHelper.js",
-            "line": 237,
-            "description": "Fired whenever this ZSpaceStylusHelper's {{#crossLink \"ZSpaceStylusHelper/highlighted:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "highlighted",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "ZSpaceStylusHelper",
+            "class": "ZSpaceStylus",
             "module": "XEO",
             "submodule": "webvr"
         },
@@ -22658,7 +23015,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1764"
+            "line": " src/scene.js:1769"
         },
         {
             "message": "unknown tag: demo",
@@ -23390,11 +23747,11 @@
         },
         {
             "message": "Missing item type\nReleases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
-            "line": " src/scene.js:1860"
+            "line": " src/scene.js:1865"
         },
         {
             "message": "Missing item type\nCompiles and renders this Scene",
-            "line": " src/scene.js:1888"
+            "line": " src/scene.js:1893"
         },
         {
             "message": "Missing item type\nInformation about available WebGL support",
@@ -23447,10 +23804,6 @@
         {
             "message": "Missing item type\nReturns the given ID as a string, in quotes if the ID was a string to begin with.\n\nThis is useful for logging IDs.",
             "line": " src/xeo.js:560"
-        },
-        {
-            "message": "Missing item type\nAn Effect to enable zSpace Display",
-            "line": " examples/js/webvr/ZSpaceEffect.js:1"
         },
         {
             "message": "Missing item type\nAdds a {{#crossLink \"Curve\"}}{{/crossLink}} to this Path.\n\nFires a {{#crossLink \"Path/curves:event\"}}{{/crossLink}} event on change.",

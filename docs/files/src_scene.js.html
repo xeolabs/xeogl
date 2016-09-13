@@ -119,8 +119,9 @@
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
+                                <li><a href="../classes/XEO.ZSpace.html">XEO.ZSpace</a></li>
                                 <li><a href="../classes/ZSpace.html">ZSpace</a></li>
-                                <li><a href="../classes/ZSpaceStylusHelper.html">ZSpaceStylusHelper</a></li>
+                                <li><a href="../classes/ZSpaceStylus.html">ZSpaceStylus</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -1573,7 +1574,7 @@
          *
          * &#x60;&#x60;&#x60;&#x60;javascript
          * var hit = scene.pick({
-         *     rayPick: true,
+         *     pickSurface: true,
          *     canvasPos: [23, 131]
          *  });
          *
@@ -1599,7 +1600,7 @@
          *
          * &#x60;&#x60;&#x60;&#x60;javascript
          * var hit = scene.pick({
-         *     rayPick: true,       // Picking with arbitrarily-positioned ray
+         *     pickSurface: true,       // Picking with arbitrarily-positioned ray
          *     origin: [0,0,-5],    // Ray origin
          *     direction: [0,0,1]   // Ray direction
          * });
@@ -1624,7 +1625,7 @@
          * @method pick
          *
          * @param {*} params Picking parameters.
-         * @param {Boolean} [params.rayPick=false] Whether to ray-pick.
+         * @param {Boolean} [params.pickSurface=false] Whether to ray-pick.
          * @param {Float32Array} [params.canvasPos] Canvas-space coordinates. When ray-picking, this will override the
          * **origin** and ** direction** parameters and will cause the ray to be fired through the canvas at this position,
          * directly along the negative View-space Z-axis.
@@ -1753,8 +1754,10 @@
 
                 params = params || {};
 
-                if (params.rayPick &amp;&amp; (!params.canvasPos &amp;&amp; (!params.origin || !params.direction))) {
-                    this.warn(&quot;ray picking without canvasPos or ray origin and direction&quot;);
+                params.pickSurface = params.pickSurface || params.rayPick; // Backwards compatibility
+
+                if (!params.canvasPos &amp;&amp; (!params.origin || !params.direction)) {
+                    this.warn(&quot;picking without canvasPos or ray origin and direction&quot;);
                 }
 
                 var hit = this._renderer.pick(params);
@@ -1765,155 +1768,158 @@
 
                     hit.entity = entity; // Swap string ID for XEO.Entity
 
-                    if (hit.primIndex !== undefined &amp;&amp; hit.primIndex &gt; -1) {
+                    if (params.pickSurface) {
 
-                        var geometry = entity.geometry;
+                        if (hit.primIndex !== undefined &amp;&amp; hit.primIndex &gt; -1) {
 
-                        if (geometry.primitive === &quot;triangles&quot;) {
+                            var geometry = entity.geometry;
 
-                            // Triangle picked; this only happens when the
-                            // Entity has a Geometry that has primitives of type &quot;triangle&quot;
+                            if (geometry.primitive === &quot;triangles&quot;) {
 
-                            hit.primitive = &quot;triangle&quot;;
+                                // Triangle picked; this only happens when the
+                                // Entity has a Geometry that has primitives of type &quot;triangle&quot;
 
-                            // Get the World-space positions of the triangle&#x27;s vertices
+                                hit.primitive = &quot;triangle&quot;;
 
-                            var i = hit.primIndex; // Indicates the first triangle index in the indices array
+                                // Get the World-space positions of the triangle&#x27;s vertices
 
-                            var indices = geometry.indices;
-                            var positions = geometry.positions;
+                                var i = hit.primIndex; // Indicates the first triangle index in the indices array
 
-                            var ia = indices[i];
-                            var ib = indices[i + 1];
-                            var ic = indices[i + 2];
+                                var indices = geometry.indices;
+                                var positions = geometry.positions;
 
-                            var ia3 = ia * 3;
-                            var ib3 = ib * 3;
-                            var ic3 = ic * 3;
+                                var ia = indices[i];
+                                var ib = indices[i + 1];
+                                var ic = indices[i + 2];
 
-                            //
-                            triangleVertices[0] = ia;
-                            triangleVertices[1] = ib;
-                            triangleVertices[2] = ic;
+                                var ia3 = ia * 3;
+                                var ib3 = ib * 3;
+                                var ic3 = ic * 3;
 
-                            hit.indices = triangleVertices;
+                                //
+                                triangleVertices[0] = ia;
+                                triangleVertices[1] = ib;
+                                triangleVertices[2] = ic;
 
-                            a[0] = positions[ia3];
-                            a[1] = positions[ia3 + 1];
-                            a[2] = positions[ia3 + 2];
+                                hit.indices = triangleVertices;
 
-                            b[0] = positions[ib3];
-                            b[1] = positions[ib3 + 1];
-                            b[2] = positions[ib3 + 2];
+                                a[0] = positions[ia3];
+                                a[1] = positions[ia3 + 1];
+                                a[2] = positions[ia3 + 2];
 
-                            c[0] = positions[ic3];
-                            c[1] = positions[ic3 + 1];
-                            c[2] = positions[ic3 + 2];
+                                b[0] = positions[ib3];
+                                b[1] = positions[ib3 + 1];
+                                b[2] = positions[ib3 + 2];
 
-                            // Attempt to ray-pick the triangle; in World-space, fire a ray
-                            // from the eye position through the mouse position
-                            // on the perspective projection plane
+                                c[0] = positions[ic3];
+                                c[1] = positions[ic3 + 1];
+                                c[2] = positions[ic3 + 2];
 
-                            var canvasPos;
+                                // Attempt to ray-pick the triangle; in World-space, fire a ray
+                                // from the eye position through the mouse position
+                                // on the perspective projection plane
 
-                            if (params.canvasPos) {
-                                canvasPos = params.canvasPos;
-                                hit.canvasPos = params.canvasPos;
-                                canvasPosToLocalRay(entity, canvasPos, localRayOrigin, localRayDir);
+                                var canvasPos;
 
-                            } else if (params.origin &amp;&amp; params.direction) {
-                                worldRayToLocalRay(entity, params.origin, params.direction, localRayOrigin, localRayDir);
-                            }
+                                if (params.canvasPos) {
+                                    canvasPos = params.canvasPos;
+                                    hit.canvasPos = params.canvasPos;
+                                    canvasPosToLocalRay(entity, canvasPos, localRayOrigin, localRayDir);
 
-                            math.normalizeVec3(localRayDir);
-                            math.rayTriangleIntersect(localRayOrigin, localRayDir, a, b, c, position);
+                                } else if (params.origin &amp;&amp; params.direction) {
+                                    worldRayToLocalRay(entity, params.origin, params.direction, localRayOrigin, localRayDir);
+                                }
 
-                            // Get Local-space cartesian coordinates of the ray-triangle intersection
+                                math.normalizeVec3(localRayDir);
+                                math.rayTriangleIntersect(localRayOrigin, localRayDir, a, b, c, position);
 
-                            hit.localPos = position;
-                            hit.position = position;
+                                // Get Local-space cartesian coordinates of the ray-triangle intersection
 
-                            // Get interpolated World-space coordinates
+                                hit.localPos = position;
+                                hit.position = position;
 
-                            // Need to transform homogeneous coords
+                                // Get interpolated World-space coordinates
 
-                            tempVec4a[0] = position[0];
-                            tempVec4a[1] = position[1];
-                            tempVec4a[2] = position[2];
-                            tempVec4a[3] = 1;
+                                // Need to transform homogeneous coords
 
-                            // Get World-space cartesian coordinates of the ray-triangle intersection
+                                tempVec4a[0] = position[0];
+                                tempVec4a[1] = position[1];
+                                tempVec4a[2] = position[2];
+                                tempVec4a[3] = 1;
 
-                            math.transformVec4(entity.transform.leafMatrix, tempVec4a, tempVec4b);
+                                // Get World-space cartesian coordinates of the ray-triangle intersection
 
-                            worldPos[0] = tempVec4b[0];
-                            worldPos[1] = tempVec4b[1];
-                            worldPos[2] = tempVec4b[2];
+                                math.transformVec4(entity.transform.leafMatrix, tempVec4a, tempVec4b);
 
-                            hit.worldPos = worldPos;
+                                worldPos[0] = tempVec4b[0];
+                                worldPos[1] = tempVec4b[1];
+                                worldPos[2] = tempVec4b[2];
 
-                            // Get View-space cartesian coordinates of the ray-triangle intersection
+                                hit.worldPos = worldPos;
 
-                            math.transformVec4(entity.camera.view.matrix, tempVec4b, tempVec4c);
+                                // Get View-space cartesian coordinates of the ray-triangle intersection
 
-                            viewPos[0] = tempVec4c[0];
-                            viewPos[1] = tempVec4c[1];
-                            viewPos[2] = tempVec4c[2];
+                                math.transformVec4(entity.camera.view.matrix, tempVec4b, tempVec4c);
 
-                            hit.viewPos = viewPos;
+                                viewPos[0] = tempVec4c[0];
+                                viewPos[1] = tempVec4c[1];
+                                viewPos[2] = tempVec4c[2];
 
-                            // Get barycentric coordinates of the ray-triangle intersection
+                                hit.viewPos = viewPos;
 
-                            math.cartesianToBarycentric2(position, a, b, c, bary);
+                                // Get barycentric coordinates of the ray-triangle intersection
 
-                            hit.bary = bary;
+                                math.cartesianToBarycentric2(position, a, b, c, bary);
 
-                            // Get interpolated normal vector
+                                hit.bary = bary;
 
-                            var normals = geometry.normals;
+                                // Get interpolated normal vector
 
-                            if (normals) {
+                                var normals = geometry.normals;
 
-                                na[0] = normals[ia3];
-                                na[1] = normals[ia3 + 1];
-                                na[2] = normals[ia3 + 2];
+                                if (normals) {
 
-                                nb[0] = normals[ib3];
-                                nb[1] = normals[ib3 + 1];
-                                nb[2] = normals[ib3 + 2];
+                                    na[0] = normals[ia3];
+                                    na[1] = normals[ia3 + 1];
+                                    na[2] = normals[ia3 + 2];
 
-                                nc[0] = normals[ic3];
-                                nc[1] = normals[ic3 + 1];
-                                nc[2] = normals[ic3 + 2];
+                                    nb[0] = normals[ib3];
+                                    nb[1] = normals[ib3 + 1];
+                                    nb[2] = normals[ib3 + 2];
 
-                                var normal = math.addVec3(math.addVec3(
-                                        math.mulVec3Scalar(na, bary[0], tempVec3),
-                                        math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
-                                    math.mulVec3Scalar(nc, bary[2], tempVec3d), tempVec3e);
+                                    nc[0] = normals[ic3];
+                                    nc[1] = normals[ic3 + 1];
+                                    nc[2] = normals[ic3 + 2];
 
-                                hit.normal = math.transformVec3(entity.transform.leafMatrix, normal, tempVec3f);
-                            }
+                                    var normal = math.addVec3(math.addVec3(
+                                            math.mulVec3Scalar(na, bary[0], tempVec3),
+                                            math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
+                                        math.mulVec3Scalar(nc, bary[2], tempVec3d), tempVec3e);
 
-                            // Get interpolated UV coordinates
+                                    hit.normal = math.transformVec3(entity.transform.leafMatrix, normal, tempVec3f);
+                                }
 
-                            var uvs = geometry.uv;
+                                // Get interpolated UV coordinates
 
-                            if (uvs) {
+                                var uvs = geometry.uv;
 
-                                uva[0] = uvs[(ia * 2)];
-                                uva[1] = uvs[(ia * 2) + 1];
+                                if (uvs) {
 
-                                uvb[0] = uvs[(ib * 2)];
-                                uvb[1] = uvs[(ib * 2) + 1];
+                                    uva[0] = uvs[(ia * 2)];
+                                    uva[1] = uvs[(ia * 2) + 1];
 
-                                uvc[0] = uvs[(ic * 2)];
-                                uvc[1] = uvs[(ic * 2) + 1];
+                                    uvb[0] = uvs[(ib * 2)];
+                                    uvb[1] = uvs[(ib * 2) + 1];
 
-                                hit.uv = math.addVec3(
-                                    math.addVec3(
-                                        math.mulVec2Scalar(uva, bary[0], tempVec3g),
-                                        math.mulVec2Scalar(uvb, bary[1], tempVec3h), tempVec3i),
-                                    math.mulVec2Scalar(uvc, bary[2], tempVec3j), tempVec3k);
+                                    uvc[0] = uvs[(ic * 2)];
+                                    uvc[1] = uvs[(ic * 2) + 1];
+
+                                    hit.uv = math.addVec3(
+                                        math.addVec3(
+                                            math.mulVec2Scalar(uva, bary[0], tempVec3g),
+                                            math.mulVec2Scalar(uvb, bary[1], tempVec3h), tempVec3i),
+                                        math.mulVec2Scalar(uvc, bary[2], tempVec3j), tempVec3k);
+                                }
                             }
                         }
                     }

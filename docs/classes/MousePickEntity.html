@@ -119,8 +119,9 @@
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
+                                <li><a href="../classes/XEO.ZSpace.html">XEO.ZSpace</a></li>
                                 <li><a href="../classes/ZSpace.html">ZSpace</a></li>
-                                <li><a href="../classes/ZSpaceStylusHelper.html">ZSpaceStylusHelper</a></li>
+                                <li><a href="../classes/ZSpaceStylus.html">ZSpaceStylus</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -231,7 +232,7 @@ var mousePickEntity = new XEO.MousePickEntity({
    // We want the 3D World-space coordinates
    // of each location we pick
 
-   rayPick: true
+   pickSurface: true
 });
 
 // Handle picked Entities
@@ -263,7 +264,7 @@ mousePickEntity.on("nopick", function(e) {
                                 <code class="optional">[cfg]</code>
                         </li>
                         <li class="arg">
-                                <code class="optional">[rayPick=false]</code>
+                                <code class="optional">[pickSurface=false]</code>
                         </li>
                     </ul><span class="paren">)</span>
                 </div>
@@ -354,7 +355,7 @@ mousePickEntity.on("nopick", function(e) {
                                 </ul>
                         </li>
                         <li class="param">
-                                <code class="param-name optional">[rayPick=false]</code>
+                                <code class="param-name optional">[pickSurface=false]</code>
                                 <span class="type">Boolean</span>
                                 <span class="flag optional" title="This parameter is optional.">optional</span>
         
@@ -463,7 +464,7 @@ mousePickEntity.on("nopick", function(e) {
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_rayPick">rayPick</a>
+                                <a href="#property_pickSurface">pickSurface</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -507,7 +508,7 @@ mousePickEntity.on("nopick", function(e) {
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_rayPick">rayPick</a>
+                                <a href="#event_pickSurface">pickSurface</a>
 
                             </li>
                     </ul>
@@ -1409,8 +1410,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_rayPick" class="property item">
-                        <h3 class="name"><code>rayPick</code></h3>
+                    <div id="property_pickSurface" class="property item">
+                        <h3 class="name"><code>pickSurface</code></h3>
                         <span class="type">Boolean</span>
                     
                     
@@ -1431,7 +1432,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     whenever it picks an <a href="../classes/Entity.html" class="crosslink">Entity</a>.</p>
                     <p>When true, this MousePickEntity will try to return the primitive index in a
                     <a href="../classes/MousePickEntity.html#event_picked" class="crosslink">picked</a> event.</p>
-                    <p>Fires a <a href="../classes/MousePickEntity.html#event_rayPick" class="crosslink">rayPick</a> event on change.</p>
+                    <p>Fires a <a href="../classes/MousePickEntity.html#event_pickSurface" class="crosslink">pickSurface</a> event on change.</p>
                     
                         </div>
                     
@@ -1723,8 +1724,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                                         <div class="param-description">
-                                            <p>When MousePickEntity/rayPick is true,
-                    provides the World-space coordinate that was ray-picked on the surface of the
+                                            <p>When MousePickEntity/pickSurface is true,
+                    provides the World-space coordinate that was ray-picked on the pickSurface of the
                     <a href="../classes/Entity.html" class="crosslink">Entity</a>.</p>
                     
                                         </div>
@@ -1735,8 +1736,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_rayPick" class="events item">
-                        <h3 class="name"><code>rayPick</code></h3>
+                    <div id="event_pickSurface" class="events item">
+                        <h3 class="name"><code>pickSurface</code></h3>
                         <span class="type"></span>
                     
                     
@@ -1753,7 +1754,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this MousePickEntity&#39;s <a href="../classes/MousePickEntity.html#property_rayPick" class="crosslink">rayPick</a> property changes.</p>
+                            <p>Fired whenever this MousePickEntity&#39;s <a href="../classes/MousePickEntity.html#property_pickSurface" class="crosslink">pickSurface</a> property changes.</p>
                     
                         </div>
                     

@@ -119,8 +119,9 @@
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
+                                <li><a href="../classes/XEO.ZSpace.html">XEO.ZSpace</a></li>
                                 <li><a href="../classes/ZSpace.html">ZSpace</a></li>
-                                <li><a href="../classes/ZSpaceStylusHelper.html">ZSpaceStylusHelper</a></li>
+                                <li><a href="../classes/ZSpaceStylus.html">ZSpaceStylus</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -222,7 +223,7 @@
     // We want the 3D World-space coordinates
     // of each location we pick
 
-    rayPick: true
+    pickSurface: true
  });
 
  // Handle picked Entities
@@ -246,7 +247,7 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this MousePickEntity.
- @param [rayPick=false] {Boolean} Indicates whether this MousePickEntity will find the 3D ray intersection whenever it picks a
+ @param [pickSurface=false] {Boolean} Indicates whether this MousePickEntity will find the 3D ray intersection whenever it picks a
  {{#crossLink &quot;Entity&quot;}}{{/crossLink}}.
  @param [cfg.active=true] {Boolean} Indicates whether or not this MousePickEntity is active.
  @extends Component
@@ -268,7 +269,7 @@
 
         _init: function (cfg) {
 
-            this.rayPick = cfg.rayPick;
+            this.pickSurface = cfg.pickSurface;
 
             this.active = cfg.active !== false;
         },
@@ -343,7 +344,7 @@
 
                                     var hit = self.scene.pick({
                                         canvasPos : canvasPos,
-                                        rayPick: self._rayPick
+                                        pickSurface: self._pickSurface
                                     });
 
                                     if (hit) {
@@ -353,8 +354,8 @@
                                          * @event picked
                                          * @param {String} entityId The ID of the picked {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}} within the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
                                          * @param {Array of Number} canvasPos The Canvas-space coordinate that was picked.
-                                         * @param {Array of Number} worldPos When {{#crossLink &quot;MousePickEntity/rayPick&quot;}}{{/crossLink}} is true,
-                                         * provides the World-space coordinate that was ray-picked on the surface of the
+                                         * @param {Array of Number} worldPos When {{#crossLink &quot;MousePickEntity/pickSurface&quot;}}{{/crossLink}} is true,
+                                         * provides the World-space coordinate that was ray-picked on the pickSurface of the
                                          * {{#crossLink &quot;Entity&quot;}}Entity{{/crossLink}}.
                                          */
                                         self.fire(&quot;pick&quot;, hit);
@@ -400,33 +401,33 @@
              * When true, this MousePickEntity will try to return the primitive index in a
              * {{#crossLink &quot;MousePickEntity/picked:event&quot;}}{{/crossLink}} event.
              *
-             * Fires a {{#crossLink &quot;MousePickEntity/rayPick:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink &quot;MousePickEntity/pickSurface:event&quot;}}{{/crossLink}} event on change.
              *
-             * @property rayPick
+             * @property pickSurface
              * @type Boolean
              */
-            rayPick: {
+            pickSurface: {
 
                 set: function (value) {
 
                     value = !!value;
 
-                    if (this._rayPick === value) {
+                    if (this._pickSurface === value) {
                         return;
                     }
 
                     this._dirty = false;
 
                     /**
-                     * Fired whenever this MousePickEntity&#x27;s {{#crossLink &quot;MousePickEntity/rayPick:property&quot;}}{{/crossLink}} property changes.
-                     * @event rayPick
+                     * Fired whenever this MousePickEntity&#x27;s {{#crossLink &quot;MousePickEntity/pickSurface:property&quot;}}{{/crossLink}} property changes.
+                     * @event pickSurface
                      * @param value The property&#x27;s new value
                      */
-                    this.fire(&#x27;rayPick&#x27;, this._rayPick = value);
+                    this.fire(&#x27;pickSurface&#x27;, this._pickSurface = value);
                 },
 
                 get: function () {
-                    return this._rayPick;
+                    return this._pickSurface;
                 }
             }
         },
@@ -434,7 +435,7 @@
         _getJSON: function () {
 
             var json = {
-                rayPick: this._rayPick,
+                pickSurface: this._pickSurface,
                 active: this._active
             };
 

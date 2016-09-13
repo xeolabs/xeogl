@@ -119,8 +119,9 @@
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
+                                <li><a href="../classes/XEO.ZSpace.html">XEO.ZSpace</a></li>
                                 <li><a href="../classes/ZSpace.html">ZSpace</a></li>
-                                <li><a href="../classes/ZSpaceStylusHelper.html">ZSpaceStylusHelper</a></li>
+                                <li><a href="../classes/ZSpaceStylus.html">ZSpaceStylus</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -197,7 +198,7 @@
  {{#crossLink &quot;Camera/view:property&quot;}}projection{{/crossLink}} transforms. This is because the ZSpace needs to directly update
  the matrices on those transforms as part of the stereo viewing effect. If those transforms are of a different type, then
  the ZSpace will temporarily replace them with {{#crossLink &quot;Transform&quot;}}Transforms{{/crossLink}}.&lt;/li&gt;
- &lt;li&gt;you can use a {{#crossLink &quot;ZSpaceStylusHelper&quot;}}{{/crossLink}} to show the ZSpace&#x27;s stylus as an object in the 3D view.&lt;/li&gt;
+ &lt;li&gt;a {{#crossLink &quot;ZSpaceStylus&quot;}}{{/crossLink}} can be used to track stylus input on a ZSpace.&lt;/li&gt;
  &lt;/ul&gt;
 
  ## Examples
@@ -214,6 +215,7 @@
  enables us to view and interact with the {{#crossLink &quot;Scene&quot;}}{{/crossLink}} using a ZSpace viewer.
 
  &#x60;&#x60;&#x60;&#x60;javascript
+
  // Create an Entity
 
  new XEO.Entity({
@@ -276,7 +278,7 @@
     });
  &#x60;&#x60;&#x60;&#x60;
 
- ## Handling stylus input
+ ## Handling stylus events
 
  Reading the current position and orientation of the stylus, along with the current stylus camera matrix:
 
@@ -286,7 +288,7 @@
  var stylusCameraMatrix = zSpace.stylusCameraMatrix; // Sixteen-element Float32Array
  &#x60;&#x60;&#x60;&#x60;
 
- Note that these properties only have meaningful values once the ZSpace has fired at least one {{#crossLink &quot;ZSpace/stylusMoved:event&quot;}}{{/crossLink}} event.
+ Note that these properties only have meaningful values once the **ZSpace** has fired at least one &quot;stylusMoved&quot; event.
 
  Subscribing to stylus movement:
 
@@ -322,77 +324,6 @@
      this.log(&quot;stylusButton2 = &quot; + value);
  });
  &#x60;&#x60;&#x60;&#x60;
-
- Using a {{#crossLink &quot;ZSpaceStylusHelper&quot;}}{{/crossLink}} to render the stylus as an object in the 3D view:
-
- &#x60;&#x60;&#x60;&#x60;javascript
- var stylusHelper = new XEO.ZSpaceStylusHelper({
-     zSpace: zSpace,
-     visible: true,       // Default
-     color: [0.5,0.5,0.5] // Default
- });
- &#x60;&#x60;&#x60;&#x60;
-
- Picking an {{#crossLink &quot;Entity&quot;}}{{/crossLink}} with the stylus when button 0 is pressed:
-
- &#x60;&#x60;&#x60;&#x60;javascript
- zSpace.on(&quot;stylusButton0&quot;, function() {
-
-    var hit = zSpace.scene.pick({
-        rayPick: true,
-        origin: zSpace.stylusPos,
-        direction: zSpace.stylusOrientation
-    });
-
-    if (hit) { // Picked an Entity
-
-        var entity = hit.entity;
-
-        // These properties are only on the hit result when we do a ray-pick:
-
-        var primitive = hit.primitive; // Type of primitive that was picked, usually &quot;triangles&quot;
-        var primIndex = hit.primIndex; // Position of triangle&#x27;s first index in the picked Entity&#x27;s Geometry&#x27;s indices array
-        var indices = hit.indices; // UInt32Array containing the triangle&#x27;s vertex indices
-        var localPos = hit.localPos; // Float32Array containing the picked Local-space position within the triangle
-        var worldPos = hit.worldPos; // Float32Array containing the picked World-space position within the triangle
-        var viewPos = hit.viewPos; // Float32Array containing the picked View-space position within the triangle
-        var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle
-        var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle
-        var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle
-
-        //...
-    }
- });
- &#x60;&#x60;&#x60;&#x60;
-
- We can also dynamically pick {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} with the stylus as we move it around. In this
- example we&#x27;ll highlight our {{#crossLink &quot;ZSpaceStylusHelper&quot;}}{{/crossLink}} whenever the stylus intersects
- an {{#crossLink &quot;Entity&quot;}}{{/crossLink}}:
-
- &#x60;&#x60;&#x60;&#x60;javascript
- zSpace.on(&quot;stylusMoved&quot;, function() {
-
-    var hit = zSpace.scene.pick({
-        rayPick: true,
-        origin: zSpace.stylusPos,
-        direction: zSpace.stylusOrientation
-    });
-
-    if (hit) { // Picked an Entity
-
-        stylusHelper.highlight = true;
-
-        // The hit properties are the same as those shown in the previous example
-
-    } else {
-
-        // Un-highlight our ZSPaceStylusHelper
-        stylusHelper.highlight = false;
-    }
- });
- &#x60;&#x60;&#x60;&#x60;
-
-
 
  @class ZSpace
  @module XEO
@@ -1027,7 +958,7 @@
                 if (!self._supported) { // Support not found yet
                     return;
                 }
-                self._bindFrameBuffer(pass); // pass will be 0 for left or 1 for right
+            //    self._bindFrameBuffer(pass); // pass will be 0 for left or 1 for right
             };
 
             this._renderer.unbindOutputFramebuffer = function (pass) {
@@ -1035,7 +966,7 @@
                     return;
                 }
                 if (pass === 1) { // Unbind after right eye pass
-                    self._unbindFrameBuffer();
+              //      self._unbindFrameBuffer();
                 }
             };
         },
@@ -1151,17 +1082,13 @@
                 return;
             }
 
+            // Update camera viewing and projection matrices for left or right eye
+
             switch (e.pass) {
 
                 case 0: // Left eye
 
                     this._buildMatrices(); // Build the matrices on first pass
-
-                    // Update camera viewing and projection matrices for left or right eye
-
-                    // This forces an update from the compositor (important!)
-                    var gl = this.scene.canvas.gl;
-                    gl.clear(gl.COLOR_BUFFER_BIT| gl.DEPTH_BUFFER_BIT);
 
                     camera.view.matrix = this._leftViewMatrix;
                     camera.project.matrix = this._leftProjectionMatrix;
@@ -1213,12 +1140,7 @@
             var left;
             var right;
 
-            var viewMat = math.lookAtMat4v([0.0, 3.45, 2.22], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0])
-
             return function () {
-
-                displayScaleFactorX = this._displaySize[0] / this._displayResolution[0];
-                displayScaleFactorY = this._displaySize[1] / this._displayResolution[1];
 
                 canvas = this.scene.canvas.canvas;
 
@@ -1229,6 +1151,9 @@
                 displayCenterY = this._displayResolution[1] * 0.5;
                 viewportCenterX = canvasPosition.x + (canvas.clientWidth * 0.5);
                 viewportCenterY = this._displayResolution[1] - (canvasPosition.y + (canvas.clientHeight * 0.5));
+
+                displayScaleFactorX = this._displaySize[0] / this._displayResolution[0];
+                displayScaleFactorY = this._displaySize[1] / this._displayResolution[1];
 
                 // View offset matrix
 
@@ -1264,9 +1189,7 @@
                 if (leftViewPose &amp;&amp; leftViewPose.orientation &amp;&amp; leftViewPose.position) {
                     math.transformPoint3(offsetTranslateMat, leftViewPose.position, tempVec3a);
                     math.transformPoint3(viewScaleMat, tempVec3a, tempVec3b);
-                    var cameraMat = math.mat4();
-                    math.rotationTranslationMat4(leftViewPose.orientation, tempVec3b, cameraMat);
-                    math.mulMat4(cameraMat,viewMat,  this._leftViewMatrix);
+                    math.rotationTranslationMat4(leftViewPose.orientation, tempVec3b, this._leftViewMatrix);
                 } else {
                     math.lookAtMat4v([-15, 0, -40], [-15, 0, 0], [0, 1, 0], this._leftViewMatrix);
                 }
@@ -1277,9 +1200,7 @@
                 if (rightViewPose &amp;&amp; rightViewPose.orientation &amp;&amp; rightViewPose.position) {
                     math.transformPoint3(offsetTranslateMat, rightViewPose.position, tempVec3a);
                     math.transformPoint3(viewScaleMat, tempVec3a, tempVec3b);
-                    var cameraMat = math.mat4();
-                    math.rotationTranslationMat4(rightViewPose.orientation, tempVec3b, cameraMat);
-                    math.mulMat4( cameraMat,viewMat, this._rightViewMatrix);
+                    math.rotationTranslationMat4(rightViewPose.orientation, tempVec3b, this._rightViewMatrix);
                 } else {
                     math.lookAtMat4v([15, 0, -40], [15, 0, 0], [0, 1, 0], this._rightViewMatrix);
                 }
@@ -1379,45 +1300,18 @@
                 // Fire batched update events
 
                 if (stylusMoved) {
-
-                    /**
-                     * Fired whenever this ZSpace component&#x27;s stylus moves.
-                     *
-                     * @event stylusMoved
-                     */
                     this.fire(&quot;stylusMoved&quot;, true);
                 }
 
                 if (stylusButton0Updated) {
-
-                    /**
-                     * Fired whenever this ZSpace component&#x27;s first button is pressed or released.
-                     *
-                     * @event stylusButton0
-                     * @param value True if the button is down.
-                     */
                     this.fire(&quot;stylusButton0&quot;, this._stylusButton0);
                 }
 
                 if (stylusButton1Updated) {
-
-                    /**
-                     * Fired whenever this ZSpace component&#x27;s second button is pressed or released.
-                     *
-                     * @event stylusButton1
-                     * @param value True if the button is down.
-                     */
                     this.fire(&quot;stylusButton1&quot;, this._stylusButton1);
                 }
 
                 if (stylusButton2Updated) {
-
-                    /**
-                     * Fired whenever this ZSpace component&#x27;s third button is pressed or released.
-                     *
-                     * @event stylusButton2
-                     * @param value True if the button is down.
-                     */
                     this.fire(&quot;stylusButton2&quot;, this._stylusButton2);
                 }
             };

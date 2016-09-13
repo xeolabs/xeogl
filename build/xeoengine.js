@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-09-06
+ * Built on 2016-09-13
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -5256,7 +5256,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             gl.getExtension("OES_element_index_uint");
         }
 
-        var outputFramebuffer = this.bindOutputFramebuffer && this.unbindOutputFramebuffer && !params.pickObject && !params.rayPick;
+        var outputFramebuffer = this.bindOutputFramebuffer && this.unbindOutputFramebuffer && !params.pickObject && !params.pickSurface;
 
         if (outputFramebuffer) {
             this.bindOutputFramebuffer(params.pass);
@@ -5294,7 +5294,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 
-        if (this.transparent || params.pickObject || params.rayPick) {
+        if (this.transparent || params.pickObject || params.pickSurface) {
 
             // Canvas is transparent - set clear color with zero alpha
             // to allow background to show through
@@ -5718,7 +5718,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             var look;
             var pickMatrix = null;
 
-            if (params.rayPick && !params.canvasPos) {
+            if (!params.canvasPos) {
 
                 // Ray-picking with arbitrarily World-space ray
 
@@ -5769,12 +5769,12 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 // Now do a primitive-pick if requested
 
-                if (params.rayPick) {
+                if (params.pickSurface) {
 
                     pickBuf.clear();
 
                     this._doDrawList({
-                        rayPick: true,
+                        pickSurface: true,
                         object: object,
                         pickMatrix: pickMatrix,
                         clear: true
@@ -5808,7 +5808,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
      * @param {*} params
      * @param {Boolean} params.clear Set true to clear the color, depth and stencil buffers first
      * @param {Boolean} params.pickObject
-     * @param {Boolean} params.rayPick
+     * @param {Boolean} params.pickSurface
      * @param {Boolean} params.object
      * @param {Boolean} params.opaqueOnly
      * @param {Boolean} params.pickMatrix
@@ -5820,7 +5820,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         var i;
         var len;
 
-        var outputFramebuffer = this.bindOutputFramebuffer && this.unbindOutputFramebuffer && !params.pickObject && !params.rayPick;
+        var outputFramebuffer = this.bindOutputFramebuffer && this.unbindOutputFramebuffer && !params.pickObject && !params.pickSurface;
 
         if (outputFramebuffer) {
             this.bindOutputFramebuffer(params.pass);
@@ -5872,7 +5872,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         gl.disable(gl.CULL_FACE);
         gl.disable(gl.BLEND);
 
-        if (this.transparent || params.pickObject || params.rayPick) {
+        if (this.transparent || params.pickObject || params.pickSurface) {
 
             // Canvas is transparent - set clear color with zero alpha
             // to allow background to show through
@@ -5900,7 +5900,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 this._pickObjectChunkList[i].pickObject(frameCtx);
             }
 
-        } else if (params.rayPick) {
+        } else if (params.pickSurface) {
 
             // Pick a primitive of an object
 
@@ -13003,7 +13003,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          *
          * ````javascript
          * var hit = scene.pick({
-         *     rayPick: true,
+         *     pickSurface: true,
          *     canvasPos: [23, 131]
          *  });
          *
@@ -13029,7 +13029,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          *
          * ````javascript
          * var hit = scene.pick({
-         *     rayPick: true,       // Picking with arbitrarily-positioned ray
+         *     pickSurface: true,       // Picking with arbitrarily-positioned ray
          *     origin: [0,0,-5],    // Ray origin
          *     direction: [0,0,1]   // Ray direction
          * });
@@ -13054,7 +13054,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          * @method pick
          *
          * @param {*} params Picking parameters.
-         * @param {Boolean} [params.rayPick=false] Whether to ray-pick.
+         * @param {Boolean} [params.pickSurface=false] Whether to ray-pick.
          * @param {Float32Array} [params.canvasPos] Canvas-space coordinates. When ray-picking, this will override the
          * **origin** and ** direction** parameters and will cause the ray to be fired through the canvas at this position,
          * directly along the negative View-space Z-axis.
@@ -13183,8 +13183,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                 params = params || {};
 
-                if (params.rayPick && (!params.canvasPos && (!params.origin || !params.direction))) {
-                    this.warn("ray picking without canvasPos or ray origin and direction");
+                params.pickSurface = params.pickSurface || params.rayPick; // Backwards compatibility
+
+                if (!params.canvasPos && (!params.origin || !params.direction)) {
+                    this.warn("picking without canvasPos or ray origin and direction");
                 }
 
                 var hit = this._renderer.pick(params);
@@ -13195,155 +13197,158 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                     hit.entity = entity; // Swap string ID for XEO.Entity
 
-                    if (hit.primIndex !== undefined && hit.primIndex > -1) {
+                    if (params.pickSurface) {
 
-                        var geometry = entity.geometry;
+                        if (hit.primIndex !== undefined && hit.primIndex > -1) {
 
-                        if (geometry.primitive === "triangles") {
+                            var geometry = entity.geometry;
 
-                            // Triangle picked; this only happens when the
-                            // Entity has a Geometry that has primitives of type "triangle"
+                            if (geometry.primitive === "triangles") {
 
-                            hit.primitive = "triangle";
+                                // Triangle picked; this only happens when the
+                                // Entity has a Geometry that has primitives of type "triangle"
 
-                            // Get the World-space positions of the triangle's vertices
+                                hit.primitive = "triangle";
 
-                            var i = hit.primIndex; // Indicates the first triangle index in the indices array
+                                // Get the World-space positions of the triangle's vertices
 
-                            var indices = geometry.indices;
-                            var positions = geometry.positions;
+                                var i = hit.primIndex; // Indicates the first triangle index in the indices array
 
-                            var ia = indices[i];
-                            var ib = indices[i + 1];
-                            var ic = indices[i + 2];
+                                var indices = geometry.indices;
+                                var positions = geometry.positions;
 
-                            var ia3 = ia * 3;
-                            var ib3 = ib * 3;
-                            var ic3 = ic * 3;
+                                var ia = indices[i];
+                                var ib = indices[i + 1];
+                                var ic = indices[i + 2];
 
-                            //
-                            triangleVertices[0] = ia;
-                            triangleVertices[1] = ib;
-                            triangleVertices[2] = ic;
+                                var ia3 = ia * 3;
+                                var ib3 = ib * 3;
+                                var ic3 = ic * 3;
 
-                            hit.indices = triangleVertices;
+                                //
+                                triangleVertices[0] = ia;
+                                triangleVertices[1] = ib;
+                                triangleVertices[2] = ic;
 
-                            a[0] = positions[ia3];
-                            a[1] = positions[ia3 + 1];
-                            a[2] = positions[ia3 + 2];
+                                hit.indices = triangleVertices;
 
-                            b[0] = positions[ib3];
-                            b[1] = positions[ib3 + 1];
-                            b[2] = positions[ib3 + 2];
+                                a[0] = positions[ia3];
+                                a[1] = positions[ia3 + 1];
+                                a[2] = positions[ia3 + 2];
 
-                            c[0] = positions[ic3];
-                            c[1] = positions[ic3 + 1];
-                            c[2] = positions[ic3 + 2];
+                                b[0] = positions[ib3];
+                                b[1] = positions[ib3 + 1];
+                                b[2] = positions[ib3 + 2];
 
-                            // Attempt to ray-pick the triangle; in World-space, fire a ray
-                            // from the eye position through the mouse position
-                            // on the perspective projection plane
+                                c[0] = positions[ic3];
+                                c[1] = positions[ic3 + 1];
+                                c[2] = positions[ic3 + 2];
 
-                            var canvasPos;
+                                // Attempt to ray-pick the triangle; in World-space, fire a ray
+                                // from the eye position through the mouse position
+                                // on the perspective projection plane
 
-                            if (params.canvasPos) {
-                                canvasPos = params.canvasPos;
-                                hit.canvasPos = params.canvasPos;
-                                canvasPosToLocalRay(entity, canvasPos, localRayOrigin, localRayDir);
+                                var canvasPos;
 
-                            } else if (params.origin && params.direction) {
-                                worldRayToLocalRay(entity, params.origin, params.direction, localRayOrigin, localRayDir);
-                            }
+                                if (params.canvasPos) {
+                                    canvasPos = params.canvasPos;
+                                    hit.canvasPos = params.canvasPos;
+                                    canvasPosToLocalRay(entity, canvasPos, localRayOrigin, localRayDir);
 
-                            math.normalizeVec3(localRayDir);
-                            math.rayTriangleIntersect(localRayOrigin, localRayDir, a, b, c, position);
+                                } else if (params.origin && params.direction) {
+                                    worldRayToLocalRay(entity, params.origin, params.direction, localRayOrigin, localRayDir);
+                                }
 
-                            // Get Local-space cartesian coordinates of the ray-triangle intersection
+                                math.normalizeVec3(localRayDir);
+                                math.rayTriangleIntersect(localRayOrigin, localRayDir, a, b, c, position);
 
-                            hit.localPos = position;
-                            hit.position = position;
+                                // Get Local-space cartesian coordinates of the ray-triangle intersection
 
-                            // Get interpolated World-space coordinates
+                                hit.localPos = position;
+                                hit.position = position;
 
-                            // Need to transform homogeneous coords
+                                // Get interpolated World-space coordinates
 
-                            tempVec4a[0] = position[0];
-                            tempVec4a[1] = position[1];
-                            tempVec4a[2] = position[2];
-                            tempVec4a[3] = 1;
+                                // Need to transform homogeneous coords
 
-                            // Get World-space cartesian coordinates of the ray-triangle intersection
+                                tempVec4a[0] = position[0];
+                                tempVec4a[1] = position[1];
+                                tempVec4a[2] = position[2];
+                                tempVec4a[3] = 1;
 
-                            math.transformVec4(entity.transform.leafMatrix, tempVec4a, tempVec4b);
+                                // Get World-space cartesian coordinates of the ray-triangle intersection
 
-                            worldPos[0] = tempVec4b[0];
-                            worldPos[1] = tempVec4b[1];
-                            worldPos[2] = tempVec4b[2];
+                                math.transformVec4(entity.transform.leafMatrix, tempVec4a, tempVec4b);
 
-                            hit.worldPos = worldPos;
+                                worldPos[0] = tempVec4b[0];
+                                worldPos[1] = tempVec4b[1];
+                                worldPos[2] = tempVec4b[2];
 
-                            // Get View-space cartesian coordinates of the ray-triangle intersection
+                                hit.worldPos = worldPos;
 
-                            math.transformVec4(entity.camera.view.matrix, tempVec4b, tempVec4c);
+                                // Get View-space cartesian coordinates of the ray-triangle intersection
 
-                            viewPos[0] = tempVec4c[0];
-                            viewPos[1] = tempVec4c[1];
-                            viewPos[2] = tempVec4c[2];
+                                math.transformVec4(entity.camera.view.matrix, tempVec4b, tempVec4c);
 
-                            hit.viewPos = viewPos;
+                                viewPos[0] = tempVec4c[0];
+                                viewPos[1] = tempVec4c[1];
+                                viewPos[2] = tempVec4c[2];
 
-                            // Get barycentric coordinates of the ray-triangle intersection
+                                hit.viewPos = viewPos;
 
-                            math.cartesianToBarycentric2(position, a, b, c, bary);
+                                // Get barycentric coordinates of the ray-triangle intersection
 
-                            hit.bary = bary;
+                                math.cartesianToBarycentric2(position, a, b, c, bary);
 
-                            // Get interpolated normal vector
+                                hit.bary = bary;
 
-                            var normals = geometry.normals;
+                                // Get interpolated normal vector
 
-                            if (normals) {
+                                var normals = geometry.normals;
 
-                                na[0] = normals[ia3];
-                                na[1] = normals[ia3 + 1];
-                                na[2] = normals[ia3 + 2];
+                                if (normals) {
 
-                                nb[0] = normals[ib3];
-                                nb[1] = normals[ib3 + 1];
-                                nb[2] = normals[ib3 + 2];
+                                    na[0] = normals[ia3];
+                                    na[1] = normals[ia3 + 1];
+                                    na[2] = normals[ia3 + 2];
 
-                                nc[0] = normals[ic3];
-                                nc[1] = normals[ic3 + 1];
-                                nc[2] = normals[ic3 + 2];
+                                    nb[0] = normals[ib3];
+                                    nb[1] = normals[ib3 + 1];
+                                    nb[2] = normals[ib3 + 2];
 
-                                var normal = math.addVec3(math.addVec3(
-                                        math.mulVec3Scalar(na, bary[0], tempVec3),
-                                        math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
-                                    math.mulVec3Scalar(nc, bary[2], tempVec3d), tempVec3e);
+                                    nc[0] = normals[ic3];
+                                    nc[1] = normals[ic3 + 1];
+                                    nc[2] = normals[ic3 + 2];
 
-                                hit.normal = math.transformVec3(entity.transform.leafMatrix, normal, tempVec3f);
-                            }
+                                    var normal = math.addVec3(math.addVec3(
+                                            math.mulVec3Scalar(na, bary[0], tempVec3),
+                                            math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
+                                        math.mulVec3Scalar(nc, bary[2], tempVec3d), tempVec3e);
 
-                            // Get interpolated UV coordinates
+                                    hit.normal = math.transformVec3(entity.transform.leafMatrix, normal, tempVec3f);
+                                }
 
-                            var uvs = geometry.uv;
+                                // Get interpolated UV coordinates
 
-                            if (uvs) {
+                                var uvs = geometry.uv;
 
-                                uva[0] = uvs[(ia * 2)];
-                                uva[1] = uvs[(ia * 2) + 1];
+                                if (uvs) {
 
-                                uvb[0] = uvs[(ib * 2)];
-                                uvb[1] = uvs[(ib * 2) + 1];
+                                    uva[0] = uvs[(ia * 2)];
+                                    uva[1] = uvs[(ia * 2) + 1];
 
-                                uvc[0] = uvs[(ic * 2)];
-                                uvc[1] = uvs[(ic * 2) + 1];
+                                    uvb[0] = uvs[(ib * 2)];
+                                    uvb[1] = uvs[(ib * 2) + 1];
 
-                                hit.uv = math.addVec3(
-                                    math.addVec3(
-                                        math.mulVec2Scalar(uva, bary[0], tempVec3g),
-                                        math.mulVec2Scalar(uvb, bary[1], tempVec3h), tempVec3i),
-                                    math.mulVec2Scalar(uvc, bary[2], tempVec3j), tempVec3k);
+                                    uvc[0] = uvs[(ic * 2)];
+                                    uvc[1] = uvs[(ic * 2) + 1];
+
+                                    hit.uv = math.addVec3(
+                                        math.addVec3(
+                                            math.mulVec2Scalar(uva, bary[0], tempVec3g),
+                                            math.mulVec2Scalar(uvb, bary[1], tempVec3h), tempVec3i),
+                                        math.mulVec2Scalar(uvc, bary[2], tempVec3j), tempVec3k);
+                                }
                             }
                         }
                     }
@@ -16351,7 +16356,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * @type MousePickEntity
              */
             this.mousePickEntity = this.create(XEO.MousePickEntity, {
-                rayPick: true
+                pickSurface: true
             });
 
             this.mousePickEntity.on("pick", this._entityPicked, this);
@@ -18593,7 +18598,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
     // We want the 3D World-space coordinates
     // of each location we pick
 
-    rayPick: true
+    pickSurface: true
  });
 
  // Handle picked Entities
@@ -18617,7 +18622,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this MousePickEntity.
- @param [rayPick=false] {Boolean} Indicates whether this MousePickEntity will find the 3D ray intersection whenever it picks a
+ @param [pickSurface=false] {Boolean} Indicates whether this MousePickEntity will find the 3D ray intersection whenever it picks a
  {{#crossLink "Entity"}}{{/crossLink}}.
  @param [cfg.active=true] {Boolean} Indicates whether or not this MousePickEntity is active.
  @extends Component
@@ -18639,7 +18644,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
         _init: function (cfg) {
 
-            this.rayPick = cfg.rayPick;
+            this.pickSurface = cfg.pickSurface;
 
             this.active = cfg.active !== false;
         },
@@ -18714,7 +18719,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                                     var hit = self.scene.pick({
                                         canvasPos : canvasPos,
-                                        rayPick: self._rayPick
+                                        pickSurface: self._pickSurface
                                     });
 
                                     if (hit) {
@@ -18724,8 +18729,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                                          * @event picked
                                          * @param {String} entityId The ID of the picked {{#crossLink "Entity"}}Entity{{/crossLink}} within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
                                          * @param {Array of Number} canvasPos The Canvas-space coordinate that was picked.
-                                         * @param {Array of Number} worldPos When {{#crossLink "MousePickEntity/rayPick"}}{{/crossLink}} is true,
-                                         * provides the World-space coordinate that was ray-picked on the surface of the
+                                         * @param {Array of Number} worldPos When {{#crossLink "MousePickEntity/pickSurface"}}{{/crossLink}} is true,
+                                         * provides the World-space coordinate that was ray-picked on the pickSurface of the
                                          * {{#crossLink "Entity"}}Entity{{/crossLink}}.
                                          */
                                         self.fire("pick", hit);
@@ -18771,33 +18776,33 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              * When true, this MousePickEntity will try to return the primitive index in a
              * {{#crossLink "MousePickEntity/picked:event"}}{{/crossLink}} event.
              *
-             * Fires a {{#crossLink "MousePickEntity/rayPick:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "MousePickEntity/pickSurface:event"}}{{/crossLink}} event on change.
              *
-             * @property rayPick
+             * @property pickSurface
              * @type Boolean
              */
-            rayPick: {
+            pickSurface: {
 
                 set: function (value) {
 
                     value = !!value;
 
-                    if (this._rayPick === value) {
+                    if (this._pickSurface === value) {
                         return;
                     }
 
                     this._dirty = false;
 
                     /**
-                     * Fired whenever this MousePickEntity's {{#crossLink "MousePickEntity/rayPick:property"}}{{/crossLink}} property changes.
-                     * @event rayPick
+                     * Fired whenever this MousePickEntity's {{#crossLink "MousePickEntity/pickSurface:property"}}{{/crossLink}} property changes.
+                     * @event pickSurface
                      * @param value The property's new value
                      */
-                    this.fire('rayPick', this._rayPick = value);
+                    this.fire('pickSurface', this._pickSurface = value);
                 },
 
                 get: function () {
-                    return this._rayPick;
+                    return this._pickSurface;
                 }
             }
         },
@@ -18805,7 +18810,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         _getJSON: function () {
 
             var json = {
-                rayPick: this._rayPick,
+                pickSurface: this._pickSurface,
                 active: this._active
             };
 
