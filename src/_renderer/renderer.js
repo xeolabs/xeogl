@@ -1202,6 +1202,7 @@
         var tempVec3a = math.vec3();
         var tempMat4a = math.mat4();
         var up = math.vec3([0, 1, 0]);
+        var pickFrustumMatrix = math.frustumMat4(-1, 1, -1, 1, 0.1, 10000);
 
         return function (params) {
 
@@ -1241,7 +1242,7 @@
                 look = math.addVec3(origin, direction, tempVec3a);
 
                 pickViewMatrix = math.lookAtMat4v(origin, look, up, tempMat4a);
-                //pickProjMatrix = math.orthoMat4c(left, right, bottom, top, this._near, this._far, XEO.math.mat4());
+                pickProjMatrix = pickFrustumMatrix;
 
                 pickBufX = canvas.clientWidth * 0.5;
                 pickBufY = canvas.clientHeight * 0.5;
@@ -1293,6 +1294,7 @@
                         pickSurface: true,
                         object: object,
                         pickViewMatrix: pickViewMatrix,
+                        pickProjMatrix: pickProjMatrix,
                         clear: true
                     });
 
