@@ -24,9 +24,9 @@
 
 <script>
 
-    //-----------------------------------------------------------------------------------------------------------------
-    // Viewing a box geometry with a zSpace viewer
-    //-----------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------
+    // Create a spinning cube
+    //---------------------------------------------------
 
     var cube = new XEO.Entity({
         geometry: new XEO.BoxGeometry({
@@ -54,21 +54,26 @@
         cube.transform.angle += 0.1;
     });
 
+    //---------------------------------------------------
     // Create a ZSpace effect
+    //---------------------------------------------------
 
     var zspace = new XEO.ZSpace({
-        viewerScale: .05 // Size viewer's coordinate space to the entities
+        viewerScale: .01 // Size viewer's coordinate space to the entities
     });
 
+    //---------------------------------------------------
     // Check if we're actually running on a ZSpace device
+    //---------------------------------------------------
 
     zspace.on("supported", function (supported) {
 
         if (!supported) {
 
+            //---------------------------------------------------
             // Not running on a ZSpace device
-
             // Fall back to a default camera control
+            //---------------------------------------------------
 
             document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. ";
 
@@ -117,9 +122,9 @@
                 };
             })();
 
-            //--------------------------------------------
-            // Create helper to show stylus-Entity hits
-            //--------------------------------------------
+            //----------------------------------------------------
+            // Create helper to show stylus-Entity intersections
+            //----------------------------------------------------
 
             var hitHelper = new (function () {
 
@@ -143,7 +148,7 @@
 
             //-------------------------------------------------------------
             // Update the ray helper whenever the stylus moves; highlight
-            // the ray helper when it intersects an entity
+            // the ray helper when it intersects with an entity
             //-------------------------------------------------------------
 
             zspace.on("stylusMoved", function () {

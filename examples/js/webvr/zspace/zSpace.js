@@ -2,9 +2,10 @@
  A **ZSpace** component makes its {{#crossLink "Scene"}}{{/crossLink}} viewable with a zSpace viewer.
 
  <ul>
- <li>a ZSpace requires WebGL2 and WebVR support, which you'll have if you're running on a zSpace viewer.</li>
- <li>a ZSpace is attached to a {{#crossLink "Camera"}}{{/crossLink}}</li>
- <li>a ZSpace requires its {{#crossLink "Camera"}}Camera{{/crossLink}} to have a {{#crossLink "Transform"}}{{/crossLink}}
+ <li>a ZSpace component requires WebGL2 and WebVR support, which you'll have if you're running on a zSpace viewer.</li>
+ <li>a ZSpace component is attached to a {{#crossLink "Camera"}}{{/crossLink}}</li>
+ <li> By default, a ZSpace component is attached to its parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/camera:property"}}{{/crossLink}}.</li>
+ <li>a ZSpace component requires its {{#crossLink "Camera"}}Camera{{/crossLink}} to have a {{#crossLink "Transform"}}{{/crossLink}}
  (and not a subclass) for each of it's {{#crossLink "Camera/view:property"}}{{/crossLink}} and
  {{#crossLink "Camera/view:property"}}projection{{/crossLink}} transforms. This is because the ZSpace needs to directly update
  the matrices on those transforms as part of the stereo viewing effect. If those transforms are of a different type, then
@@ -14,19 +15,17 @@
  ## Examples
 
  <ul>
- <li>[zSpace with random geometries](../../examples/#webvr_zspace_geometries)</li>
- <li>[zSpace with glTF gearbox model](../../examples/#webvr_zspace_gltf_gearbox)</li>
+ <li>[zSpace cube](../../examples/webvr_zspace_cube.html)</li>
+ <li>[zSpace with random geometries](../../examples/webvr_zspace_geometries.html)</li>
+ <li>[zSpace with gearbox model](../../examples/webvr_zspace_gearbox.html)</li>
  </ul>
 
  ## Usage
 
- In the example below, we'll create an {{#crossLink "Entity"}}{{/crossLink}} in xeoEngine's default
- {{#crossLink "Scene"}}{{/crossLink}}. Then we'll also create a {{#crossLink "ZSpace"}}{{/crossLink}}, which
- enables us to view and interact with the {{#crossLink "Scene"}}{{/crossLink}} using a ZSpace viewer.
+ In the example below, we'll create an {{#crossLink "Entity"}}{{/crossLink}} and a {{#crossLink "ZSpace"}}{{/crossLink}},
+ which will render a textured torus on a ZSpace viewer:
 
  ````javascript
- // Create an Entity
-
  new XEO.Entity({
      geometry: new XEO.TorusGeometry(),
      material: new XEO.PhongMaterial({
@@ -36,20 +35,18 @@
      })
  });
 
- // Create a zSpace viewer
-
  var zspace = new XEO.ZSpace();
  ````
 
- In this example we didn't specify a {{#crossLink "Camera"}}{{/crossLink}} for our {{#crossLink "Entity"}}{{/crossLink}} and
- ZSpace, which causes them attach to their {{#crossLink "Scene"}}Scene's{{/crossLink}} default
- {{#crossLink "Camera"}}{{/crossLink}}.
+ Both of these components are in the default {{#crossLink "Scene"}}{{/crossLink}} and are attached to
+ the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Camera"}}{{/crossLink}}.
 
- Note however that the default {{#crossLink "Camera"}}{{/crossLink}} has a {{#crossLink "Lookat"}}{{/crossLink}} for its view transform
+ The default {{#crossLink "Camera"}}{{/crossLink}} has a {{#crossLink "Lookat"}}{{/crossLink}} for its view transform
  and a {{#crossLink "Perspective"}}{{/crossLink}} for its projection. Therefore, whenever active, the ZSpace will
- replace those with {{#crossLink "Transform"}}{{/crossLink}} components, which it will update in order to create
- the stereo effect. If the ZSpace is later deactivated or destroyed, it will restore the
- {{#crossLink "Camera"}}Camera's{{/crossLink}} original {{#crossLink "Lookat"}}{{/crossLink}} and {{#crossLink "Perspective"}}{{/crossLink}}.
+ replace those with {{#crossLink "Transform"}}{{/crossLink}} components, which it will be able to update in order to create
+ the stereo effect. When the ZSpace is later deactivated or destroyed, it will restore the
+ {{#crossLink "Camera"}}Camera{{/crossLink}}'s original {{#crossLink "Lookat"}}{{/crossLink}}
+ and {{#crossLink "Perspective"}}{{/crossLink}} again.
 
  ## Sizing the zSpace viewer coordinate system
 
@@ -131,16 +128,6 @@
  });
  ````
 
- Using a {{#crossLink "ZSpaceStylusHelper"}}{{/crossLink}} to render the stylus as an object in the 3D view:
-
- ````javascript
- var stylusHelper = new XEO.ZSpaceStylusHelper({
-     zspace: zspace,
-     visible: true,       // Default
-     color: [0.5,0.5,0.5] // Default
- });
- ````
-
  Picking an {{#crossLink "Entity"}}{{/crossLink}} with the stylus when button 0 is pressed:
 
  ````javascript
@@ -156,7 +143,7 @@
 
         var entity = hit.entity;
 
-        // These properties are only on the hit result when we do a ray-pick:
+        // Other properties on the hit result:
 
         var primitive = hit.primitive; // Type of primitive that was picked, usually "triangles"
         var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array
@@ -169,33 +156,6 @@
         var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle
 
         //...
-    }
- });
- ````
-
- We can also dynamically pick {{#crossLink "Entity"}}Entities{{/crossLink}} with the stylus as we move it around. In this
- example we'll highlight our {{#crossLink "ZSpaceStylusHelper"}}{{/crossLink}} whenever the stylus intersects
- an {{#crossLink "Entity"}}{{/crossLink}}:
-
- ````javascript
- zspace.on("stylusMoved", function() {
-
-    var hit = zspace.scene.pick({
-        pickSurface: true,
-        origin: zspace.stylusPos,
-        direction: zspace.stylusOrientation
-    });
-
-    if (hit) { // Picked an Entity
-
-        stylusHelper.highlight = true;
-
-        // The hit properties are the same as those shown in the previous example
-
-    } else {
-
-        // Un-highlight our ZSPaceStylusHelper
-        stylusHelper.highlight = false;
     }
  });
  ````
@@ -1029,6 +989,8 @@
             var stylusWorldMatrix = math.mat4();
             var stylusLocalMatrix = math.mat4();
 
+            var cameraMat = math.mat4();
+
             return function () {
 
                 displayScaleFactorX = this._displaySize[0] / this._displayResolution[0];
@@ -1080,7 +1042,6 @@
                     math.transformPoint3(offsetTranslateMat, leftViewPose.position, tempVec3a);
                     math.transformPoint3(viewScaleMat, tempVec3a, tempVec3b);
 
-                    var cameraMat = math.mat4();
                     math.rotationTranslationMat4(leftViewPose.orientation, tempVec3b, cameraMat);
                     math.mulMat4(viewMat, cameraMat, this._leftViewMatrix); // Post-concatenate with base viewing matrix
 
@@ -1096,7 +1057,6 @@
                     math.transformPoint3(offsetTranslateMat, rightViewPose.position, tempVec3a);
                     math.transformPoint3(viewScaleMat, tempVec3a, tempVec3b);
 
-                    var cameraMat = math.mat4();
                     math.rotationTranslationMat4(rightViewPose.orientation, tempVec3b, cameraMat);
                     math.mulMat4(viewMat, cameraMat, this._rightViewMatrix); // Post-concatenate with base viewing matrix
 
