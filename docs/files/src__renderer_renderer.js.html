@@ -119,9 +119,7 @@
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
-                                <li><a href="../classes/XEO.ZSpace.html">XEO.ZSpace</a></li>
                                 <li><a href="../classes/ZSpace.html">ZSpace</a></li>
-                                <li><a href="../classes/ZSpaceStylus.html">ZSpaceStylus</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -1391,6 +1389,7 @@
         var tempVec3a = math.vec3();
         var tempMat4a = math.mat4();
         var up = math.vec3([0, 1, 0]);
+        var pickFrustumMatrix = math.frustumMat4(-1, 1, -1, 1, 0.1, 10000);
 
         return function (params) {
 
@@ -1430,7 +1429,7 @@
                 look = math.addVec3(origin, direction, tempVec3a);
 
                 pickViewMatrix = math.lookAtMat4v(origin, look, up, tempMat4a);
-                //pickProjMatrix = math.orthoMat4c(left, right, bottom, top, this._near, this._far, XEO.math.mat4());
+                pickProjMatrix = pickFrustumMatrix;
 
                 pickBufX = canvas.clientWidth * 0.5;
                 pickBufY = canvas.clientHeight * 0.5;
@@ -1482,6 +1481,7 @@
                         pickSurface: true,
                         object: object,
                         pickViewMatrix: pickViewMatrix,
+                        pickProjMatrix: pickProjMatrix,
                         clear: true
                     });
 

@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-09-13
+ * Built on 2016-09-19
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -275,9 +275,10 @@
 
             function render() {
                 var scenes = self.scenes;
+                var forceRender = false;
                 for (id in scenes) {
                     if (scenes.hasOwnProperty(id)) {
-                        scenes[id].render();
+                        scenes[id].render(forceRender);
                     }
                 }
             }
@@ -5689,6 +5690,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         var tempVec3a = math.vec3();
         var tempMat4a = math.mat4();
         var up = math.vec3([0, 1, 0]);
+        var pickFrustumMatrix = math.frustumMat4(-1, 1, -1, 1, 0.1, 10000);
 
         return function (params) {
 
@@ -5728,7 +5730,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 look = math.addVec3(origin, direction, tempVec3a);
 
                 pickViewMatrix = math.lookAtMat4v(origin, look, up, tempMat4a);
-                //pickProjMatrix = math.orthoMat4c(left, right, bottom, top, this._near, this._far, XEO.math.mat4());
+                pickProjMatrix = pickFrustumMatrix;
 
                 pickBufX = canvas.clientWidth * 0.5;
                 pickBufY = canvas.clientHeight * 0.5;
@@ -5780,6 +5782,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         pickSurface: true,
                         object: object,
                         pickViewMatrix: pickViewMatrix,
+                        pickProjMatrix: pickProjMatrix,
                         clear: true
                     });
 
@@ -12166,12 +12169,13 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         /**
          * Renders a single frame of this Scene.
          *
-         * This forces a render of this Scene, even if nothing has updated since the last render.
-         *
-         * This method is typically used when we want to synchronously take a snapshot of the canvas and need everything
-         * rendered right at that moment.
+         * The Scene will automatically call this method on itself to render after any updates, but you
+         * can call this method to force a render if required. This method is typically used when we want
+         * to synchronously take a snapshot of the canvas and need everything rendered right at that moment.
          *
          * @method render
+         * @param {Boolean} [forceRender=false] Forces a render when true, otherwise only renders if something has changed in this Scene
+         * since the last render.
          */
         render: (function () {
 
@@ -12180,7 +12184,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 pass: null
             };
 
-            return function () {
+            return function (forceRender) {
 
                 renderEvent.sceneId = this.id;
 
@@ -12188,8 +12192,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 var clearEachPass = this._clearEachPass;
                 var pass;
                 var clear;
-                //var forceRender = (passes > 1) && clearEachPass;
-                var forceRender = false;
 
                 for (pass = 0; pass < passes; pass++) {
 
@@ -27686,76 +27688,75 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                     return;
                 }
 
-                var i;
-                var len;
+                var collection = this.collection;
+                var scene = collection.scene;
 
                 if (node.matrix) {
                     var matrix = node.matrix;
-                    transform = new XEO.Transform(this.collection.scene, {
+                    transform = new XEO.Transform(scene, {
                         id: this._makeID(nodeId + ".transform"),
                         matrix: matrix,
                         parent: transform
                     });
-                    this.collection.add(transform);
+                    collection.add(transform);
                 }
 
                 if (node.translation) {
                     var translation = node.translation;
-                    transform = new XEO.Translate(this.collection.scene, {
+                    transform = new XEO.Translate(scene, {
                         id: this._makeID(nodeId + ".translation"),
                         xyz: [translation[0], translation[1], translation[2]],
                         parent: transform
                     });
-                    this.collection.add(transform);
+                    collection.add(transform);
                 }
 
                 if (node.rotation) {
                     var rotation = node.rotation;
-                    transform = new XEO.Rotate(this.collection.scene, {
+                    transform = new XEO.Rotate(scene, {
                         id: this._makeID(nodeId + ".rotation"),
                         xyz: [rotation[0], rotation[1], rotation[2]],
                         angle: rotation[3],
                         parent: transform
                     });
-                    this.collection.add(transform);
+                    collection.add(transform);
                 }
 
                 if (node.scale) {
                     var scale = node.scale;
-                    transform = new XEO.Scale(this.collection.scene, {
+                    transform = new XEO.Scale(scene, {
                         id: this._makeID(nodeId + ".scale"),
                         xyz: [scale[0], scale[1], scale[2]],
                         parent: transform
                     });
-                    this.collection.add(transform);
+                    collection.add(transform);
                 }
 
                 if (node.meshes) {
 
                     // One XEO.Visibility per mesh group
 
-                    var visibility = new XEO.Visibility(this.collection.scene, {
+                    var visibility = new XEO.Visibility(scene, {
                         id: this._makeID(nodeId + ".visibility")
                     });
 
-                    this.collection.add(visibility);
+                    collection.add(visibility);
 
                     // One XEO.Cull per mesh group
 
-                    var cull = new XEO.Cull(this.collection.scene, {
+                    var cull = new XEO.Cull(scene, {
                         id: this._makeID(nodeId + ".cull")
                     });
 
-                    this.collection.add(cull);
+                    collection.add(cull);
 
                     // One XEO.Modes per mesh group
 
-                    var modes = new XEO.Modes(this.collection.scene, {
+                    var modes = new XEO.Modes(scene, {
                         id: this._makeID(nodeId + ".modes")
                     });
 
-                    this.collection.add(cull);
-
+                    collection.add(cull);
 
                     // One XEO.Entity per mesh, each sharing the same
                     // XEO.Visibility, XEO.Cull and XEO.Nodes
@@ -27764,11 +27765,14 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                     var imeshes;
                     var lenMeshes = meshes.length;
                     var mesh;
+                    var i;
+                    var len;
                     var material;
                     var geometry;
+                    var entityId;
+                    var j;
+                    var entities = scene.types["XEO.Entity"];
                     var entity;
-                    var collection = this.collection;
-                    var scene = this.collection.scene;
 
                     for (imeshes = 0; imeshes < lenMeshes; imeshes++) {
 
@@ -27785,8 +27789,15 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                             material = mesh[i].material;
                             geometry = mesh[i].geometry;
 
+                            entityId = this._makeID(nodeId + ".entity." + i);
+
+                            //// Fake ID when clashing with existing entity ID
+                            //for  (j = 0; entities[entityId]; j++) {
+                            //    entityId = this._makeID(nodeId + ".entity." + i + "." + j);
+                            //}
+
                             entity = new XEO.Entity(scene, {
-                                id: this._makeID(nodeId + ".entity." + i),
+                                id: entityId,
                                 meta: {
                                     name: node.name
                                 },

@@ -544,12 +544,13 @@
         /**
          * Renders a single frame of this Scene.
          *
-         * This forces a render of this Scene, even if nothing has updated since the last render.
-         *
-         * This method is typically used when we want to synchronously take a snapshot of the canvas and need everything
-         * rendered right at that moment.
+         * The Scene will automatically call this method on itself to render after any updates, but you
+         * can call this method to force a render if required. This method is typically used when we want
+         * to synchronously take a snapshot of the canvas and need everything rendered right at that moment.
          *
          * @method render
+         * @param {Boolean} [forceRender=false] Forces a render when true, otherwise only renders if something has changed in this Scene
+         * since the last render.
          */
         render: (function () {
 
@@ -558,7 +559,7 @@
                 pass: null
             };
 
-            return function () {
+            return function (forceRender) {
 
                 renderEvent.sceneId = this.id;
 
@@ -566,8 +567,6 @@
                 var clearEachPass = this._clearEachPass;
                 var pass;
                 var clear;
-                //var forceRender = (passes > 1) && clearEachPass;
-                var forceRender = false;
 
                 for (pass = 0; pass < passes; pass++) {
 

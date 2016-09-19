@@ -261,9 +261,10 @@
 
             function render() {
                 var scenes = self.scenes;
+                var forceRender = false;
                 for (id in scenes) {
                     if (scenes.hasOwnProperty(id)) {
-                        scenes[id].render();
+                        scenes[id].render(forceRender);
                     }
                 }
             }

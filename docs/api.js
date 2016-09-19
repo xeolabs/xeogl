@@ -79,10 +79,8 @@ YUI.add("yuidoc-meta", function(Y) {
         "Viewport",
         "Visibility",
         "XEO",
-        "XEO.ZSpace",
         "XEO.math.math",
-        "ZSpace",
-        "ZSpaceStylus"
+        "ZSpace"
     ],
     "modules": [
         "XEO",
