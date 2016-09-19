@@ -450,76 +450,75 @@
                     return;
                 }
 
-                var i;
-                var len;
+                var collection = this.collection;
+                var scene = collection.scene;
 
                 if (node.matrix) {
                     var matrix = node.matrix;
-                    transform = new XEO.Transform(this.collection.scene, {
+                    transform = new XEO.Transform(scene, {
                         id: this._makeID(nodeId + ".transform"),
                         matrix: matrix,
                         parent: transform
                     });
-                    this.collection.add(transform);
+                    collection.add(transform);
                 }
 
                 if (node.translation) {
                     var translation = node.translation;
-                    transform = new XEO.Translate(this.collection.scene, {
+                    transform = new XEO.Translate(scene, {
                         id: this._makeID(nodeId + ".translation"),
                         xyz: [translation[0], translation[1], translation[2]],
                         parent: transform
                     });
-                    this.collection.add(transform);
+                    collection.add(transform);
                 }
 
                 if (node.rotation) {
                     var rotation = node.rotation;
-                    transform = new XEO.Rotate(this.collection.scene, {
+                    transform = new XEO.Rotate(scene, {
                         id: this._makeID(nodeId + ".rotation"),
                         xyz: [rotation[0], rotation[1], rotation[2]],
                         angle: rotation[3],
                         parent: transform
                     });
-                    this.collection.add(transform);
+                    collection.add(transform);
                 }
 
                 if (node.scale) {
                     var scale = node.scale;
-                    transform = new XEO.Scale(this.collection.scene, {
+                    transform = new XEO.Scale(scene, {
                         id: this._makeID(nodeId + ".scale"),
                         xyz: [scale[0], scale[1], scale[2]],
                         parent: transform
                     });
-                    this.collection.add(transform);
+                    collection.add(transform);
                 }
 
                 if (node.meshes) {
 
                     // One XEO.Visibility per mesh group
 
-                    var visibility = new XEO.Visibility(this.collection.scene, {
+                    var visibility = new XEO.Visibility(scene, {
                         id: this._makeID(nodeId + ".visibility")
                     });
 
-                    this.collection.add(visibility);
+                    collection.add(visibility);
 
                     // One XEO.Cull per mesh group
 
-                    var cull = new XEO.Cull(this.collection.scene, {
+                    var cull = new XEO.Cull(scene, {
                         id: this._makeID(nodeId + ".cull")
                     });
 
-                    this.collection.add(cull);
+                    collection.add(cull);
 
                     // One XEO.Modes per mesh group
 
-                    var modes = new XEO.Modes(this.collection.scene, {
+                    var modes = new XEO.Modes(scene, {
                         id: this._makeID(nodeId + ".modes")
                     });
 
-                    this.collection.add(cull);
-
+                    collection.add(cull);
 
                     // One XEO.Entity per mesh, each sharing the same
                     // XEO.Visibility, XEO.Cull and XEO.Nodes
@@ -528,11 +527,14 @@
                     var imeshes;
                     var lenMeshes = meshes.length;
                     var mesh;
+                    var i;
+                    var len;
                     var material;
                     var geometry;
+                    var entityId;
+                    var j;
+                    var entities = scene.types["XEO.Entity"];
                     var entity;
-                    var collection = this.collection;
-                    var scene = this.collection.scene;
 
                     for (imeshes = 0; imeshes < lenMeshes; imeshes++) {
 
@@ -549,8 +551,15 @@
                             material = mesh[i].material;
                             geometry = mesh[i].geometry;
 
+                            entityId = this._makeID(nodeId + ".entity." + i);
+
+                            //// Fake ID when clashing with existing entity ID
+                            //for  (j = 0; entities[entityId]; j++) {
+                            //    entityId = this._makeID(nodeId + ".entity." + i + "." + j);
+                            //}
+
                             entity = new XEO.Entity(scene, {
-                                id: this._makeID(nodeId + ".entity." + i),
+                                id: entityId,
                                 meta: {
                                     name: node.name
                                 },
