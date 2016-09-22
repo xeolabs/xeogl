@@ -3,11 +3,13 @@
 
  <ul>
  <li>Plug-and-play: just create a ZSpace component within your xeoEngine {{#crossLink "Scene"}}{{/crossLink}} to make it viewable with a ZSpace display.</li>
- <li>Activate or disable the ZSpace component at any time to switch between ZSpace mode and normal viewing mode.</li>
+ <li>Activate or disable the ZSpace component at any time to switch between zSpace mode and normal mono viewing mode.</li>
  <li>Requires WebGL2 and WebVR support, which you'll have if you're running on a zSpace viewer.</li>
- <li>Attaches to a {{#crossLink "Camera"}}{{/crossLink}}</li>
- <li>By default, a ZSpace component is attached to its parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/camera:property"}}{{/crossLink}}.</li>
- <li>Don't attach different view or projection components to the {{#crossLink "Camera"}}{{/crossLink}} while the ZSpace component is active.</li>
+ <li>Attaches to a {{#crossLink "Camera"}}{{/crossLink}}, defaults to its {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
+ {{#crossLink "Scene/camera:property"}}{{/crossLink}} if none is specified.</li>
+ <li>Don't attach different view or projection transform components to the {{#crossLink "Camera"}}{{/crossLink}} while the ZSpace component is active.</li>
+ <li>You can however update the {{#crossLink "Camera"}}{{/crossLink}}'s view transformation at any time, to move the
+ viewpoint around.
  </ul>
 
  <img src="../../../assets/images/ZSpace.png"></img>
@@ -47,7 +49,7 @@
 
  **2. Enable mouse/keyboard camera interaction**
 
-At this point we've got a textured torus floating in the middle of the canvas (which is also created automatically
+ At this point we've got a textured torus floating in the middle of the canvas (which is also created automatically
  since we didn't specify one). Now we'll create a
  {{#crossLink "CameraControl"}}{{/crossLink}}, which immediately allows us to move our viewpoint around with the mouse and
  keyboard. This component is also within xeoEngine's default {{#crossLink "Scene"}}{{/crossLink}} and connected to the
