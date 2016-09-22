@@ -48,22 +48,6 @@
  {{#crossLink "Camera"}}Camera{{/crossLink}}'s original {{#crossLink "Lookat"}}{{/crossLink}}
  and {{#crossLink "Perspective"}}{{/crossLink}} again.
 
- ## Sizing the zSpace viewer coordinate system
-
- ````javascript
- var zspace = new XEO.ZSpace({
-    viewerScale: 30
- });
- ````
-
- We can also automatically fit the viewer coordinate system to whatever is in the {{#crossLink "Scene"}}{{/crossLink}}:
-
- ````javascript
- var zspace = new XEO.ZSpace({
-    autoViewerScale: true
- });
- ````
-
  ## Detecting support
 
  The **ZSpace** will fire a "supported" event once it has determined whether or not the browser
@@ -174,9 +158,6 @@
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
  @param [cfg.nearClip=0.1] {Number} Position of the near clipping plane on the View-space Z-axis.
  @param [cfg.farClip=10000] {Number} Position of the far clipping plane on the View-space Z-axis.
- @param [cfg.viewerScale=1000] {Number} The viewer scale factor.
- @param [cfg.autoViewerScale=true] {Boolean} Set true to automatically size {{#crossLink "ZSpace/viewerScale:property"}}{{/crossLink}} to fit
- everything in the {{#crossLink "Scene"}}{{/crossLink}}.
  @param [cfg.displaySize=0.521,0.293] {Array of Number} The viewer display size.
  @param [cfg.displayResolution=1920,1080] {Array of Number} The viewer display resolution.
  @param [cfg.active=true] {Boolean} Whether or not this ZSpace is initially active.
@@ -201,9 +182,6 @@
             this._supported = false; // True as soon as zSpace support is detected
             this._displaySize = math.vec2([0.521, 0.293]);
             this._displayResolution = math.vec2([1920, 1080]);
-            this._viewerScale = 1.0;
-            this._autoViewerScale = false;
-            this._autoViewerScaleDirty = false;
             this._stylusButton0 = false;
             this._stylusButton1 = false;
             this._stylusButton2 = false;
@@ -333,15 +311,11 @@
                 }
             }
 
-
             // Set properties on this XEO.ZSpace (see _props below)
 
             this.camera = cfg.camera;
             this.nearClip = cfg.nearClip;
             this.farClip = cfg.farClip;
-            this.viewerScale = cfg.viewerScale;
-            this.autoViewerScale = cfg.autoViewerScale;
-            this.viewerOrigin = cfg.viewerOrigin;
             this.displaySize = cfg.displaySize;
             this.displayResolution = cfg.displayResolution;
             this.active = cfg.active;
@@ -453,132 +427,11 @@
             },
 
             /**
-             * The viewer scale.
-             *
-             * Updates to this are ignored when {{#crossLink "ZSpace/autoViewerScale:property"}}{{/crossLink}} is true.
-             *
-             * Fires a {{#crossLink "ZSpace/viewerScale:event"}}{{/crossLink}} event on change.
-             *
-             * @property viewerScale
-             * @default 1
-             * @type Number
-             */
-            viewerScale: {
-
-                set: function (value) {
-
-                    value = value || 1;
-
-                    if (this._viewerScale === value) {
-                        return;
-                    }
-
-                    if (value < 0) {
-                        this.warn("Negative viewerScale not allowed - will invert");
-                        value = -value;
-                    }
-
-                    this._viewerScale = value;
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     * Fired whenever this ZSpace's {{#crossLink "ZSpace/viewerScale:property"}}{{/crossLink}} property changes.
-                     * @event viewerScale
-                     * @type Number
-                     * @param value The property's new value
-                     */
-                    this.fire("viewerScale", this._viewerScale);
-                },
-
-                get: function () {
-                    return this._viewerScale;
-                }
-            },
-
-            /**
-             * Set true to automatically size {{#crossLink "ZSpace/viewerScale:event"}}{{/crossLink}} to fit
-             * everything in the {{#crossLink "Scene"}}{{/crossLink}}.
-             *
-             * Fires a {{#crossLink "ZSpace/autoViewerScale:event"}}{{/crossLink}} event on change.
-             *
-             * @property autoViewerScale
-             * @default true
-             * @type Boolean
-             */
-            autoViewerScale: {
-
-                set: function (value) {
-
-                    value = value !== false;
-
-                    if (this._autoViewerScale === value) {
-                        return;
-                    }
-
-                    if (value) {
-                        var self = this;
-                        this._onSceneBoundary = this.scene.worldBoundary.on("updated", function (boundary) {
-                            self._autoViewerScaleDirty = true;
-                        });
-                    } else {
-                        this.scene.worldBoundary.off(this._onSceneBoundary);
-                    }
-
-                    this._autoViewerScale = value;
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     * Fired whenever this ZSpace's {{#crossLink "ZSpace/autoViewerScale:property"}}{{/crossLink}} property changes.
-                     * @event autoViewerScale
-                     * @type Boolean
-                     * @param value The property's new value
-                     */
-                    this.fire("autoViewerScale", this._autoViewerScale);
-                },
-
-                get: function () {
-                    return this._autoViewerScale;
-                }
-            },
-
-            /**
-             * The World-space origin.
-             *
-             * Fires a {{#crossLink "ZSpace/viewerOrigin:event"}}{{/crossLink}} event on change.
-             *
-             * @property viewerOrigin
-             * @default [0,0,0]
-             * @type Float32Array
-             */
-            viewerOrigin: {
-
-                set: function (value) {
-
-                    (this._viewerOrigin = this._viewerOrigin || new XEO.math.vec3()).set(value || [0, 0, 0]);
-
-                    this._renderer.imageDirty = true;
-
-                    /**
-                     Fired whenever this Translate's {{#crossLink "Translate/viewerOrigin:property"}}{{/crossLink}} property changes.
-                     @event viewerOrigin
-                     @param value {Float32Array} The property's new value
-                     */
-                    this.fire("viewerOrigin", this._viewerOrigin);
-                },
-
-                get: function () {
-                    return this._viewerOrigin;
-                }
-            },
-
-            /**
              * The display resolution.
              *
              * Fires a {{#crossLink "ZSpace/displayResolution:event"}}{{/crossLink}} event on change.
              *
-             * @property viewerScale
+             * @property displayResolution
              * @default [1920, 1080]
              * @type Float32Array
              */
@@ -609,7 +462,7 @@
              *
              * Fires a {{#crossLink "ZSpace/displaySize:event"}}{{/crossLink}} event on change.
              *
-             * @property viewerScale
+             * @property displaySize
              * @default [0.521, 0.293]
              * @type Float32Array
              */
@@ -921,8 +774,6 @@
 
                     this._buildMatrices(); // Build the matrices on first pass
 
-                    // Update camera viewing and projection matrices for left or right eye
-
                     // This forces an update from the compositor (important!)
                     var gl = this.scene.canvas.gl;
                     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -980,14 +831,12 @@
             var stylusWorldMatrix = math.mat4();
             var stylusLocalMatrix = math.mat4();
 
-            var cameraMat = math.mat4();
-
             return function () {
 
                 // Automatically derive viewer scale from base view transform
                 var camera = this._attached.camera;
                 var len = math.lenVec3(math.subVec3(camera.view.look, camera.view.eye, vecEyeLook));
-                this._viewerScale = len / 0.41;
+                var viewerScale = len / 0.41;
 
                 displayScaleFactorX = this._displaySize[0] / this._displayResolution[0];
                 displayScaleFactorY = this._displaySize[1] / this._displayResolution[1];
@@ -995,8 +844,8 @@
                 canvas = this.scene.canvas.canvas;
 
                 canvasPosition = getPosition(canvas);
-                canvasWidth = canvas.clientWidth * displayScaleFactorX * this._viewerScale;
-                canvasHeight = canvas.clientHeight * displayScaleFactorY * this._viewerScale;
+                canvasWidth = canvas.clientWidth * displayScaleFactorX * viewerScale;
+                canvasHeight = canvas.clientHeight * displayScaleFactorY * viewerScale;
                 displayCenterX = this._displayResolution[0] * 0.5;
                 displayCenterY = this._displayResolution[1] * 0.5;
                 viewportCenterX = canvasPosition.x + (canvas.clientWidth * 0.5);
@@ -1010,9 +859,9 @@
 
                 // Viewer scale matrix
 
-                scale[0] = this._viewerScale;
-                scale[1] = this._viewerScale;
-                scale[2] = this._viewerScale;
+                scale[0] = viewerScale;
+                scale[1] = viewerScale;
+                scale[2] = viewerScale;
                 math.scalingMat4v(scale, viewScaleMat);
 
                 // Batches this component's outgoing update events for after all ZSpace device updates
@@ -1242,20 +1091,14 @@
                 nearClip: this._nearClip,
                 farClip: this._farClip
             };
-            if (this._autoViewerScale) {
-                json.autoViewerScale = this._autoViewerScale;
-            } else {
-                json.viewerScale = this._viewerScale;
-            }
             if (this._attached.camera) {
                 json.camera = this._attached.camera.id;
             }
             return json;
         },
 
-        _destroy: function () { // Destroys this component, deactivating it first
+        _destroy: function () { // Called on destruction of this component
             this.active = false;
-            this.autoViewerScale = false;
         }
     });
 

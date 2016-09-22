@@ -36,7 +36,7 @@
     "Custom shaders"
   ],
   "Animation and Transformation": [
-    "[[Dynamic transform hierarchies|transforms_model_hierarchy]]",
+    "[[Dynamic transform hierarchies|transforms_hierarchy]]",
     "[[Camera fly-to|animation_CameraFlight_Entity]]"
   ],
   "Importers and Tools": [
@@ -48,5 +48,8 @@
     "Billboarding ([[spherical|billboards_spherical]] and [[cylindrical|billboards_cylindrical]])",
     "[[Skyboxes|skyboxes_skybox]]",
     "Rendering layers"
+  ],
+  "WebVR": [
+    "[[zSpace support|webvr_zspace_gearbox_explorer]]"
   ]
 }
