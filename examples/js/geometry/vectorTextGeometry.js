@@ -4,7 +4,23 @@
  ## Example
 
  ````javascript
-
+ new XEO.Entity({
+     geometry: new XEO.VectorTextGeometry({
+         text: "Attack ships on fire off the Shoulder of Orion",
+         xSize: 2,
+         ySize: 2
+     }),
+     material: new XEO.PhongMaterial({
+         emissive: [0.5, 1.0, 1.0],
+         lineWidth: 2
+     }),
+     lights: new XEO.Lights({
+         lights: [] // No lights - rely on emissive color
+     }),
+     transform: new XEO.Translate({
+         xyz: [0, 40, 0]
+     })
+ });
  ````
 
  @class VectorTextGeometry

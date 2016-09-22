@@ -57,7 +57,8 @@ module.exports = function (grunt) {
                         'examples/js/webvr',
                         'examples/js/importing',
                         'examples/js/curves',
-                        'examples/js/skyboxes'
+                        'examples/js/skyboxes',
+                        'examples/js/geometry'
                     ],
 
                     outdir: './docs/',

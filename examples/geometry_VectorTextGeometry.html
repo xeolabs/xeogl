@@ -15,14 +15,11 @@
 <div id="infoLight">
     <a href="http://xeoengine.org">xeoEngine</a>
     <br><br>
-    <a href="js/geometry/vectorTextGeometry.js" target="_docs">XEO.VectorTextGeometry</a> showing the sourcecode for its
+    <a href="../docs/classes/VectorTextGeometry.html" target="_docs">XEO.VectorTextGeometry</a> showing the sourcecode for its
     scene definition
 </div>
 
 <script id="source">
-
-    // VectorTextGeometry Demo
-    // @xeolabs
 
     var entity = new XEO.Entity({
         geometry: new XEO.VectorTextGeometry({
@@ -36,7 +33,7 @@
 
         }),
         lights: new XEO.Lights({
-            lights: []
+            lights: [] // No lights - rely on emissive color
         }),
         transform: new XEO.Translate({
             xyz: [0, 40, 0]

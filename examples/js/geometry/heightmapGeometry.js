@@ -10,7 +10,27 @@
  ## Usage
 
  ````javascript
-
+ new XEO.Entity({
+     geometry: new XEO.HeightmapGeometry({
+         primitive: "triangles",
+         src: "textures/height/mountain.png",
+         xSize: 10,
+         ySize: 5,
+         zSize: 10,
+         xSegments: 70,
+         zSegments: 70,
+         lod: 1.0, // Default
+         autoNormals: true // Default
+     }),
+     material: new XEO.PhongMaterial({
+         diffuseMap: new XEO.Texture({
+             src: "textures/diffuse/uvGrid2.jpg"
+         })
+     }),
+     modes: new XEO.Modes({
+         backfaces: true
+     })
+ });
  ````
 
  @class HeightmapGeometry
