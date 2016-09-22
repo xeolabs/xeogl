@@ -151,6 +151,8 @@
  You only need to supply an ID if you need to be able to find the Transform by ID within the {{#crossLink "Scene"}}Scene{{/crossLink}}.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Transform.
  @param [cfg.parent] {String|Transform} ID or instance of a parent Transform within the same {{#crossLink "Scene"}}Scene{{/crossLink}}.
+ @param [cfg.postMultiply=true] {Boolean} Flag that indicates whether this Transform is post-multiplied (default) or
+ pre-multiplied by its {{#crossLink "Transform/parent:property"}}{{/crossLink}} Transform.
  @param [cfg.matrix=[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]] {Float32Array} One-dimensional, sixteen element array of elements for the Transform, an identity matrix by default.
  @extends Component
  */
@@ -198,6 +200,7 @@
 
             this.parent = cfg.parent;
             this.matrix = cfg.matrix;
+            this.postMultiply = cfg.postMultiply;
         },
 
         _parentUpdated: function () {
@@ -243,7 +246,11 @@
                 // Multiply parent's leaf matrix by this matrix,
                 // store result in this leaf matrix
 
-                XEO.math.mulMat4(this._parent.leafMatrix, this._matrix, this._leafMatrix);
+                if (this._postMultiply) {
+                    XEO.math.mulMat4(this._parent.leafMatrix, this._matrix, this._leafMatrix);
+                } else {
+                    XEO.math.mulMat4(this._matrix, this._parent.leafMatrix, this._leafMatrix);
+                }
             }
 
             this._renderer.imageDirty = true;
@@ -325,6 +332,47 @@
             },
 
             /**
+             * Flag that indicates whether this Transform is post-multiplied (default) or pre-multiplied by
+             * its {{#crossLink "Transform/parent:property"}}{{/crossLink}} Transform.
+             *
+             * Fires an {{#crossLink "Transform/postMultiply:event"}}{{/crossLink}} event on change.
+             *
+             * @property postMultiply
+             * @default true
+             * @type Boolean
+             */
+            postMultiply: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (this._postMultiply === value) {
+                        return;
+                    }
+
+                    this._postMultiply = value;
+
+                    this._leafMatrixDirty = true;
+
+                    this._renderer.imageDirty = true;
+
+                    this.fire("updated", true);
+
+                    /**
+                     * Fired whenever this Transform's {{#crossLink "Transform/postMultiply:property"}}{{/crossLink}} property changes.
+                     * @event postMultiply
+                     * @param value The property's new value
+                     */
+                    this.fire('postMultiply', this._postMultiply);
+                },
+
+                get: function () {
+                    return this._postMultiply;
+                }
+            },
+
+            /**
              * The Transform's local matrix.
              *
              * Fires a {{#crossLink "Transform/matrix:event"}}{{/crossLink}} event on change.
@@ -391,7 +439,8 @@
 
         _getJSON: function () {
             var json = {
-                matrix: Array.prototype.slice.call(this._matrix)
+                matrix: Array.prototype.slice.call(this._matrix),
+                postMultiply: this._postMultiply
             };
             if (this._parent) {
                 json.parent = this._parent.id;
