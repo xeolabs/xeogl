@@ -52,7 +52,7 @@
      * @class math
      * @static
      */
-    XEO.math = {
+    var math = XEO.math = {
 
         /**
          * The number of radiians in a degree (0.0174532925).
@@ -645,7 +645,7 @@
 
 
         sqLenVec4: function (v) { // TODO
-            return XEO.math.dotVec4(v, v);
+            return math.dotVec4(v, v);
         },
 
         /**
@@ -656,7 +656,7 @@
          * @return The length
          */
         lenVec4: function (v) {
-            return Math.sqrt(XEO.math.sqLenVec4(v));
+            return Math.sqrt(math.sqLenVec4(v));
         },
 
         /**
@@ -685,12 +685,12 @@
 
 
         sqLenVec3: function (v) {
-            return XEO.math.dotVec3(v, v);
+            return math.dotVec3(v, v);
         },
 
 
         sqLenVec2: function (v) {
-            return XEO.math.dotVec2(v, v);
+            return math.dotVec2(v, v);
         },
 
         /**
@@ -701,7 +701,7 @@
          * @return The length
          */
         lenVec3: function (v) {
-            return Math.sqrt(XEO.math.sqLenVec3(v));
+            return Math.sqrt(math.sqLenVec3(v));
         },
 
         /**
@@ -712,7 +712,7 @@
          * @return The length
          */
         lenVec2: function (v) {
-            return Math.sqrt(XEO.math.sqLenVec2(v));
+            return Math.sqrt(math.sqLenVec2(v));
         },
 
         /**
@@ -724,7 +724,7 @@
          *
          */
         rcpVec3: function (v, dest) {
-            return XEO.math.divScalarVec3(1.0, v, dest);
+            return math.divScalarVec3(1.0, v, dest);
         },
 
         /**
@@ -737,8 +737,8 @@
          *
          */
         normalizeVec4: function (v, dest) {
-            var f = 1.0 / XEO.math.lenVec4(v);
-            return XEO.math.mulVec4Scalar(v, f, dest);
+            var f = 1.0 / math.lenVec4(v);
+            return math.mulVec4Scalar(v, f, dest);
         },
 
         /**
@@ -747,8 +747,8 @@
          * @static
          */
         normalizeVec3: function (v, dest) {
-            var f = 1.0 / XEO.math.lenVec3(v);
-            return XEO.math.mulVec3Scalar(v, f, dest);
+            var f = 1.0 / math.lenVec3(v);
+            return math.mulVec3Scalar(v, f, dest);
         },
 
         /**
@@ -757,8 +757,8 @@
          * @static
          */
         normalizeVec2: function (v, dest) {
-            var f = 1.0 / XEO.math.lenVec2(v);
-            return XEO.math.mulVec2Scalar(v, f, dest);
+            var f = 1.0 / math.lenVec2(v);
+            return math.mulVec2Scalar(v, f, dest);
         },
 
         /**
@@ -803,7 +803,7 @@
          * @static
          */
         setMat4ToZeroes: function () {
-            return XEO.math.m4s(0.0);
+            return math.m4s(0.0);
         },
 
         /**
@@ -812,7 +812,7 @@
          * @static
          */
         setMat4ToOnes: function () {
-            return XEO.math.m4s(1.0);
+            return math.m4s(1.0);
         },
 
         /**
@@ -835,7 +835,7 @@
          * @static
          */
         diagonalMat4c: function (x, y, z, w) {
-            return XEO.math.diagonalMat4v([x, y, z, w]);
+            return math.diagonalMat4v([x, y, z, w]);
         },
 
         /**
@@ -844,7 +844,7 @@
          * @static
          */
         diagonalMat4s: function (s) {
-            return XEO.math.diagonalMat4c(s, s, s, s);
+            return math.diagonalMat4c(s, s, s, s);
         },
 
         /**
@@ -984,7 +984,7 @@
          * @static
          */
         addScalarMat4: function (s, m, dest) {
-            return XEO.math.addMat4Scalar(m, s, dest);
+            return math.addMat4Scalar(m, s, dest);
         },
 
         /**
@@ -1285,7 +1285,7 @@
          * @static
          */
         translationMat4v: function (v, dest) {
-            var m = dest || XEO.math.identityMat4();
+            var m = dest || math.identityMat4();
             m[12] = v[0];
             m[13] = v[1];
             m[14] = v[2];
@@ -1298,7 +1298,7 @@
          * @static
          */
         translationMat4c: function (x, y, z, dest) {
-            return XEO.math.translationMat4v([x, y, z], dest);
+            return math.translationMat4v([x, y, z], dest);
         },
 
         /**
@@ -1307,7 +1307,7 @@
          * @static
          */
         translationMat4s: function (s, dest) {
-            return XEO.math.translationMat4c(s, s, s, dest);
+            return math.translationMat4c(s, s, s, dest);
         },
 
         /**
@@ -1316,7 +1316,7 @@
          * @static
          */
         rotationMat4v: function (anglerad, axis, m) {
-            var ax = XEO.math.normalizeVec4([axis[0], axis[1], axis[2], 0.0], []);
+            var ax = math.normalizeVec4([axis[0], axis[1], axis[2], 0.0], []);
             var s = Math.sin(anglerad);
             var c = Math.cos(anglerad);
             var q = 1.0 - c;
@@ -1337,7 +1337,7 @@
             ys = y * s;
             zs = z * s;
 
-            m = m || XEO.math.mat4();
+            m = m || math.mat4();
 
             m[0] = (q * x * x) + c;
             m[1] = (q * xy) + zs;
@@ -1368,7 +1368,7 @@
          * @static
          */
         rotationMat4c: function (anglerad, x, y, z, mat) {
-            return XEO.math.rotationMat4v(anglerad, [x, y, z], mat);
+            return math.rotationMat4v(anglerad, [x, y, z], mat);
         },
 
         /**
@@ -1377,7 +1377,7 @@
          * @static
          */
         scalingMat4v: function (v, m) {
-            m = m || XEO.math.identityMat4();
+            m = m || math.identityMat4();
             m[0] = v[0];
             m[5] = v[1];
             m[10] = v[2];
@@ -1390,7 +1390,7 @@
          * @static
          */
         scalingMat4c: function (x, y, z) {
-            return XEO.math.scalingMat4v([x, y, z]);
+            return math.scalingMat4v([x, y, z]);
         },
 
         /**
@@ -1399,7 +1399,7 @@
          * @static
          */
         scalingMat4s: function (s) {
-            return XEO.math.scalingMat4c(s, s, s);
+            return math.scalingMat4c(s, s, s);
         },
 
         /**
@@ -1412,7 +1412,7 @@
          */
         rotationTranslationMat4: function (q, v, dest) {
 
-            dest = dest || XEO.math.mat4();
+            dest = dest || math.mat4();
 
             var x = q[0];
             var y = q[1];
@@ -1462,9 +1462,9 @@
          */
         mat4ToEuler: function (mat, order, dest) {
 
-            dest = dest || XEO.math.vec4();
+            dest = dest || math.vec4();
 
-            var clamp = XEO.math.clamp;
+            var clamp = math.clamp;
 
             // Assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
 
@@ -1561,7 +1561,7 @@
          */
         lookAtMat4v: function (pos, target, up, dest) {
             if (!dest) {
-                dest = XEO.math.mat4();
+                dest = math.mat4();
             }
 
             var posx = pos[0],
@@ -1575,7 +1575,7 @@
                 targetz = target[2];
 
             if (posx === targetx && posy === targety && posz === targetz) {
-                return XEO.math.identityMat4();
+                return math.identityMat4();
             }
 
             var z0, z1, z2, x0, x1, x2, y0, y1, y2, len;
@@ -1650,7 +1650,7 @@
          * @static
          */
         lookAtMat4c: function (posx, posy, posz, targetx, targety, targetz, upx, upy, upz) {
-            return XEO.math.lookAtMat4v([posx, posy, posz], [targetx, targety, targetz], [upx, upy, upz], []);
+            return math.lookAtMat4v([posx, posy, posz], [targetx, targety, targetz], [upx, upy, upz], []);
         },
 
         /**
@@ -1660,7 +1660,7 @@
          */
         orthoMat4c: function (left, right, bottom, top, near, far, dest) {
             if (!dest) {
-                dest = XEO.math.mat4();
+                dest = math.mat4();
             }
             var rl = (right - left);
             var tb = (top - bottom);
@@ -1697,14 +1697,14 @@
         frustumMat4v: function (fmin, fmax, m) {
 
             if (!m) {
-                m = XEO.math.mat4();
+                m = math.mat4();
             }
 
             var fmin4 = [fmin[0], fmin[1], fmin[2], 0.0];
             var fmax4 = [fmax[0], fmax[1], fmax[2], 0.0];
 
-            XEO.math.addVec4(fmax4, fmin4, tempMat1);
-            XEO.math.subVec4(fmax4, fmin4, tempMat2);
+            math.addVec4(fmax4, fmin4, tempMat1);
+            math.subVec4(fmax4, fmin4, tempMat2);
 
             var t = 2.0 * fmin4[2];
 
@@ -1740,7 +1740,7 @@
          */
         frustumMat4: function (left, right, bottom, top, near, far, dest) {
             if (!dest) {
-                dest = XEO.math.mat4();
+                dest = math.mat4();
             }
             var rl = (right - left);
             var tb = (top - bottom);
@@ -1782,7 +1782,7 @@
             pmax[0] = pmax[1] * aspectratio;
             pmin[0] = -pmax[0];
 
-            return XEO.math.frustumMat4v(pmin, pmax, m);
+            return math.frustumMat4v(pmin, pmax, m);
         },
 
         /**
@@ -1792,7 +1792,7 @@
          */
         transformPoint3: function (m, p, dest) {
 
-            dest = dest || XEO.math.vec3();
+            dest = dest || math.vec3();
 
             dest[0] = (m[0] * p[0]) + (m[4] * p[1]) + (m[8] * p[2]) + m[12];
             dest[1] = (m[1] * p[0]) + (m[5] * p[1]) + (m[9] * p[2]) + m[13];
@@ -1808,7 +1808,7 @@
          */
         transformPoint4: function (m, v, dest) {
 
-            dest = dest || XEO.math.vec4();
+            dest = dest || math.vec4();
 
             dest[0] = m[0] * v[0] + m[4] * v[1] + m[8] * v[2] + m[12] * v[3];
             dest[1] = m[1] * v[0] + m[5] * v[1] + m[9] * v[2] + m[13] * v[3];
@@ -1999,7 +1999,7 @@
          */
         projectVec4: function (p, q) {
             var f = 1.0 / p[3];
-            q = q || XEO.math.vec2();
+            q = q || math.vec2();
             q[0] = v[0] * f;
             q[1] = v[1] * f;
             return q;
@@ -2093,7 +2093,7 @@
          */
         collapseAABB3: function (aabb) {
 
-            aabb = aabb || XEO.math.AABB2();
+            aabb = aabb || math.AABB2();
 
             aabb.min[0] = 10000000;
             aabb.min[1] = 10000000;
@@ -2205,7 +2205,7 @@
          */
         positions3ToAABB3: function (positions, aabb) {
 
-            aabb = aabb || XEO.math.AABB3();
+            aabb = aabb || math.AABB3();
 
             var xmin = 100000;
             var ymin = 100000;
@@ -2268,7 +2268,7 @@
          */
         points3ToAABB3: function (points, aabb) {
 
-            aabb = aabb || XEO.math.AABB3();
+            aabb = aabb || math.AABB3();
 
             var xmin = 100000;
             var ymin = 100000;
@@ -2407,7 +2407,7 @@
          */
         collapseAABB2: function (aabb) {
 
-            aabb = aabb || XEO.math.AABB2();
+            aabb = aabb || math.AABB2();
 
             aabb.min[0] = 10000000;
             aabb.min[1] = 10000000;
@@ -2428,7 +2428,7 @@
          */
         points3ToAABB2: function (points, aabb) {
 
-            aabb = aabb || XEO.math.AABB2();
+            aabb = aabb || math.AABB2();
 
             var xmin = 10000000;
             var ymin = 10000000;
@@ -2565,7 +2565,7 @@
          */
         triangleNormal: function (a, b, c, normal) {
 
-            normal = normal || XEO.math.vec3();
+            normal = normal || math.vec3();
 
             var p1x = b[0] - a[0];
             var p1y = b[1] - a[1];
@@ -2623,10 +2623,10 @@
                 v2 = [positions[j1 * 3 + 0], positions[j1 * 3 + 1], positions[j1 * 3 + 2]];
                 v3 = [positions[j2 * 3 + 0], positions[j2 * 3 + 1], positions[j2 * 3 + 2]];
 
-                v2 = XEO.math.subVec3(v2, v1, [0, 0, 0]);
-                v3 = XEO.math.subVec3(v3, v1, [0, 0, 0]);
+                v2 = math.subVec3(v2, v1, [0, 0, 0]);
+                v3 = math.subVec3(v3, v1, [0, 0, 0]);
 
-                var n = XEO.math.normalizeVec3(XEO.math.cross3Vec3(v2, v3, [0, 0, 0]), [0, 0, 0]);
+                var n = math.normalizeVec3(math.cross3Vec3(v2, v3, [0, 0, 0]), [0, 0, 0]);
 
                 if (!nvecs[j0]) {
                     nvecs[j0] = [];
@@ -2877,32 +2877,32 @@
          */
         rayTriangleIntersect: function (origin, dir, a, b, c, isect) {
 
-            isect = isect || XEO.math.vec3();
+            isect = isect || math.vec3();
 
             var EPSILON = 0.000001;
 
-            var edge1 = XEO.math.subVec3(b, a, tempVec3);
-            var edge2 = XEO.math.subVec3(c, a, tempVec3b);
+            var edge1 = math.subVec3(b, a, tempVec3);
+            var edge2 = math.subVec3(c, a, tempVec3b);
 
-            var pvec = XEO.math.cross3Vec3(dir, edge2, tempVec3c);
-            var det = XEO.math.dotVec3(edge1, pvec);
+            var pvec = math.cross3Vec3(dir, edge2, tempVec3c);
+            var det = math.dotVec3(edge1, pvec);
             if (det < EPSILON) {
                 return null;
             }
 
-            var tvec = XEO.math.subVec3(origin, a, tempVec3d);
-            var u = XEO.math.dotVec3(tvec, pvec);
+            var tvec = math.subVec3(origin, a, tempVec3d);
+            var u = math.dotVec3(tvec, pvec);
             if (u < 0 || u > det) {
                 return null;
             }
 
-            var qvec = XEO.math.cross3Vec3(tvec, edge1, tempVec3e);
-            var v = XEO.math.dotVec3(dir, qvec);
+            var qvec = math.cross3Vec3(tvec, edge1, tempVec3e);
+            var v = math.dotVec3(dir, qvec);
             if (v < 0 || u + v > det) {
                 return null;
             }
 
-            var t = XEO.math.dotVec3(edge2, qvec) / det;
+            var t = math.dotVec3(edge2, qvec) / det;
             isect[0] = origin[0] + t * dir[0];
             isect[1] = origin[1] + t * dir[1];
             isect[2] = origin[2] + t * dir[2];
@@ -2963,18 +2963,18 @@
          */
         cartesianToBarycentric: function (cartesian, a, b, c, bary) {
 
-            var f1 = XEO.math.subVec3(a, cartesian, tempVec3);
-            var f2 = XEO.math.subVec3(b, cartesian, tempVec3b);
-            var f3 = XEO.math.subVec3(c, cartesian, tempVec3c);
+            var f1 = math.subVec3(a, cartesian, tempVec3);
+            var f2 = math.subVec3(b, cartesian, tempVec3b);
+            var f3 = math.subVec3(c, cartesian, tempVec3c);
 
-            var t1 = XEO.math.subVec3(a, b, tempVec3d);
-            var t2 = XEO.math.subVec3(a, c, tempVec3e);
+            var t1 = math.subVec3(a, b, tempVec3d);
+            var t2 = math.subVec3(a, c, tempVec3e);
 
-            var a0 = XEO.math.lenVec3(XEO.math.cross3Vec3(t1, t2, tempVec3f));
+            var a0 = math.lenVec3(math.cross3Vec3(t1, t2, tempVec3f));
 
-            bary[0] = XEO.math.lenVec3(XEO.math.cross3Vec3(f2, f3, tempVec3f)) / a0;
-            bary[1] = XEO.math.lenVec3(XEO.math.cross3Vec3(f3, f1, tempVec3f)) / a0;
-            bary[2] = XEO.math.lenVec3(XEO.math.cross3Vec3(f1, f2, tempVec3f)) / a0;
+            bary[0] = math.lenVec3(math.cross3Vec3(f2, f3, tempVec3f)) / a0;
+            bary[1] = math.lenVec3(math.cross3Vec3(f3, f1, tempVec3f)) / a0;
+            bary[2] = math.lenVec3(math.cross3Vec3(f1, f2, tempVec3f)) / a0;
 
             return bary;
         },
@@ -3047,7 +3047,7 @@
          */
         barycentricToCartesian2: function (bary, a, b, c, cartesian) {
 
-            cartesian = cartesian || XEO.math.vec3();
+            cartesian = cartesian || math.vec3();
 
             var u = bary[0];
             var v = bary[1];
@@ -3062,7 +3062,7 @@
 
 
         identityQuaternion: function (dest) {
-            dest = dest || XEO.math.vec4();
+            dest = dest || math.vec4();
             dest[0] = 0.0;
             dest[1] = 0.0;
             dest[2] = 0.0;
@@ -3080,7 +3080,7 @@
          */
         eulerToQuaternion: function (euler, order, dest) {
 
-            dest = dest || XEO.math.vec4();
+            dest = dest || math.vec4();
 
             // http://www.mathworks.com/matlabcentral/fileexchange/
             // 	20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/
@@ -3141,7 +3141,7 @@
 
         mat4ToQuaternion: function (m, dest) {
 
-            dest = dest || XEO.math.vec4();
+            dest = dest || math.vec4();
 
             // http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
 
@@ -3202,7 +3202,7 @@
 
         vec3PairToQuaternion: function (u, v, dest) {
 
-            dest = dest || XEO.math.vec4();
+            dest = dest || math.vec4();
 
             var math = XEO.math;
 
@@ -3241,7 +3241,7 @@
         },
 
         angleAxisToQuaternion: function (angleAxis, dest) {
-            dest = dest || XEO.math.vec4();
+            dest = dest || math.vec4();
             var halfAngle = angleAxis[3] / 2.0;
             var fsin = Math.sin(halfAngle);
             dest[0] = fsin * angleAxis[0];
@@ -3252,7 +3252,7 @@
         },
 
         quaternionToEuler: function (euler, order, dest) {
-            dest = dest || XEO.math.vec4();
+            dest = dest || math.vec4();
             var halfAngle = euler[3] / 2.0;
             var fsin = Math.sin(halfAngle);
             dest[0] = fsin * euler[0];
@@ -3263,7 +3263,7 @@
         },
 
         mulQuaternions: function (p, q, dest) {
-            dest = dest || XEO.math.vec4();
+            dest = dest || math.vec4();
             var p0 = p[0], p1 = p[1], p2 = p[2], p3 = p[3];
             var q0 = q[0], q1 = q[1], q2 = q[2], q3 = q[3];
             dest[0] = p3 * q0 + p0 * q3 + p1 * q2 - p2 * q1;
@@ -3275,7 +3275,7 @@
 
         vec3ApplyQuaternion: function (q, vec, dest) {
 
-            dest = dest || XEO.math.vec3();
+            dest = dest || math.vec3();
 
             var x = vec[0];
             var y = vec[1];
@@ -3304,7 +3304,7 @@
 
         quaternionToMat4: function (q, dest) {
 
-            dest = XEO.math.identityMat4(dest);
+            dest = math.identityMat4(dest);
 
             var q0 = q[0];  //x
             var q1 = q[1];  //y
@@ -3345,7 +3345,7 @@
 
         normalizeQuaternion: function (q, dest) {
             dest = dest || q;
-            var len = XEO.math.lenVec4([q[0], q[1], q[2], q[3]]);
+            var len = math.lenVec4([q[0], q[1], q[2], q[3]]);
             dest[0] = q[0] / len;
             dest[1] = q[1] / len;
             dest[2] = q[2] / len;
@@ -3363,12 +3363,12 @@
         },
 
         inverseQuaternion: function (q, dest) {
-            return XEO.math.normalizeQuaternion(XEO.math.conjugateQuaternion(q, dest));
+            return math.normalizeQuaternion(math.conjugateQuaternion(q, dest));
         },
 
         quaternionToAngleAxis: function (q, angleAxis) {
-            angleAxis = angleAxis || XEO.math.vec4();
-            q = XEO.math.normalizeQuaternion(q, tempVec4);
+            angleAxis = angleAxis || math.vec4();
+            q = math.normalizeQuaternion(q, tempVec4);
             var q3 = q[3];
             var angle = 2 * Math.acos(q3);
             var s = Math.sqrt(1 - q3 * q3);
