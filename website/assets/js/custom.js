@@ -65,9 +65,9 @@ function addFeatures() {
                                 needUL = false;
                             }
 
-                            str.push("<li>");
+                            str.push("<li><span style='margin-left:-1em;'>");
                             str.push(parse(feature));
-                            str.push("</li>");
+                            str.push("</span></li>");
                         }
                     }
 
