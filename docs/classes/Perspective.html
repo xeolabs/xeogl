@@ -70,6 +70,7 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
                                 <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
@@ -111,10 +112,12 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
+                                <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
                                 <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
                                 <li><a href="../classes/Transform.html">Transform</a></li>
                                 <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
@@ -486,6 +489,10 @@
 
                             </li>
                             <li class="index-item property inherited">
+                                <a href="#property_postMultiply">postMultiply</a>
+
+                            </li>
+                            <li class="index-item property inherited">
                                 <a href="#property_scene">scene</a>
 
                             </li>
@@ -531,6 +538,10 @@
                             </li>
                             <li class="index-item event inherited">
                                 <a href="#event_parent">parent</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_postMultiply">postMultiply</a>
 
                             </li>
                             <li class="index-item event inherited">
@@ -1453,7 +1464,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Transform
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_transforms_transform.js.html#l327"><code>src&#x2F;transforms&#x2F;transform.js:327</code></a>
+                            <a href="../files/src_transforms_transform.js.html#l375"><code>src&#x2F;transforms&#x2F;transform.js:375</code></a>
                             </p>
                     
                     
@@ -1532,7 +1543,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Transform.html#property_parent">Transform</a>:
-                            <a href="../files/src_transforms_transform.js.html#l271"><code>src&#x2F;transforms&#x2F;transform.js:271</code></a>
+                            <a href="../files/src_transforms_transform.js.html#l278"><code>src&#x2F;transforms&#x2F;transform.js:278</code></a>
                             </p>
                     
                     
@@ -1544,6 +1555,34 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
+                    
+                    
+                    </div>
+                    <div id="property_postMultiply" class="property item inherited">
+                        <h3 class="name"><code>postMultiply</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Transform.html#property_postMultiply">Transform</a>:
+                            <a href="../files/src_transforms_transform.js.html#l334"><code>src&#x2F;transforms&#x2F;transform.js:334</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Flag that indicates whether this Transform is post-multiplied (default) or pre-multiplied by
+                    its <a href="../classes/Transform.html#property_parent" class="crosslink">parent</a> Transform.</p>
+                    <p>Fires an <a href="../classes/Transform.html#event_postMultiply" class="crosslink">postMultiply</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> true</p>
                     
                     
                     </div>
@@ -1789,7 +1828,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Transform.html#event_matrix">Transform</a>:
-                            <a href="../files/src_transforms_transform.js.html#l346"><code>src&#x2F;transforms&#x2F;transform.js:346</code></a>
+                            <a href="../files/src_transforms_transform.js.html#l394"><code>src&#x2F;transforms&#x2F;transform.js:394</code></a>
                             </p>
                     
                     
@@ -1873,7 +1912,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Transform.html#event_parent">Transform</a>:
-                            <a href="../files/src_transforms_transform.js.html#l307"><code>src&#x2F;transforms&#x2F;transform.js:307</code></a>
+                            <a href="../files/src_transforms_transform.js.html#l314"><code>src&#x2F;transforms&#x2F;transform.js:314</code></a>
                             </p>
                     
                     
@@ -1881,6 +1920,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this Transform&#39;s <a href="../classes/Transform.html#property_parent" class="crosslink">parent</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_postMultiply" class="events item inherited">
+                        <h3 class="name"><code>postMultiply</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Transform.html#event_postMultiply">Transform</a>:
+                            <a href="../files/src_transforms_transform.js.html#l362"><code>src&#x2F;transforms&#x2F;transform.js:362</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Transform&#39;s <a href="../classes/Transform.html#property_postMultiply" class="crosslink">postMultiply</a> property changes.</p>
                     
                         </div>
                     
@@ -1915,7 +1996,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Transform.html#event_updated">Transform</a>:
-                            <a href="../files/src_transforms_transform.js.html#l207"><code>src&#x2F;transforms&#x2F;transform.js:207</code></a>
+                            <a href="../files/src_transforms_transform.js.html#l210"><code>src&#x2F;transforms&#x2F;transform.js:210</code></a>
                             </p>
                     
                     

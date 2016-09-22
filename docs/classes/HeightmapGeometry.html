@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Texture - xeoengine</title>
+    <title>HeightmapGeometry - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -184,97 +184,53 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>Texture</h1>
+<h1>HeightmapGeometry</h1>
 <div class="box meta">
 
         <div class="extends">
-            Extends <a href="../classes/Component.html" class="crosslink">Component</a>
+            Extends <a href="../classes/Geometry.html" class="crosslink">Geometry</a>
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_materials_texture.js.html#l1"><code>src&#x2F;materials&#x2F;texture.js:1</code></a>
+            Defined in: <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l1"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:1</code></a>
         </div>
 
-            Module: <a href="../modules/materials.html">materials</a><br>
+            Module: <a href="../modules/geometry.html">geometry</a><br>
             Parent Module: <a href="../modules/XEO.html">XEO</a>
 
 </div>
 
 
 <div class="box intro">
-    <p>A <strong>Texture</strong> specifies a texture map.</p>
-<ul>
-<li>Textures are grouped within <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterials</a>s, which are attached to
-<a href="../classes/Entity.html" class="crosslink">Entities</a>.</li>
-<li>To create a Texture from an image file, set the Texture&#39;s <a href="../classes/Texture.html#property_src" class="crosslink">src</a>
-property to the image file path.</li>
-<li>To create a Texture from an HTMLImageElement, set the Texture&#39;s <a href="../classes/Texture.html#property_image" class="crosslink">image</a>
-property to the HTMLImageElement.</li>
-<li>To render color images of <a href="../classes/Entity.html" class="crosslink">Entities</a> to a Texture, set the Texture&#39;s <a href="../classes/Texture.html#property_target" class="crosslink">target</a>
-property to a <a href="../classes/ColorTarget.html" class="crosslink">ColorTarget</a> that is attached to those <a href="../classes/Entity.html" class="crosslink">Entities</a>.</li>
-<li>Similarly, to render depth images of <a href="../classes/Entity.html" class="crosslink">Entities</a> to a Texture, set the Texture&#39;s <a href="../classes/Texture.html#property_target" class="crosslink">target</a>
-property to a <a href="../classes/DepthTarget.html" class="crosslink">DepthTarget</a> that is attached to those <a href="../classes/Entity.html" class="crosslink">Entities</a>.</li>
-<li>For special effects, we often use rendered Textures in combination with <a href="../classes/Shader.html" class="crosslink">Shaders</a> and <a href="../classes/Stage.html" class="crosslink">Stages</a>.</li>
-<li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Textures create within xeoEngine&#39;s shaders.</li>
-</ul>
-
-<p><img src="../../../assets/images/Texture.png"></img></p>
+    <p>A <strong>Heightmap</strong> defines height map geometry for attached <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
 <h2 id="examples">Examples</h2>
 <ul>
-<li><a href="../../examples/#materials_texture_diffuse">Diffuse Texture</a></li>
-<li><a href="../../examples/#materials_texture_specular">Specular Texture</a></li>
-<li><a href="../../examples/#materials_texture_opacity">Opacity Texture</a></li>
-<li><a href="../../examples/#materials_texture_emissive">Emissive Texture</a></li>
-<li><a href="../../examples/#materials_texture_reflectivity">Reflectivity Texture</a></li>
-<li><a href="../../examples/#materials_texture_normalMap">Normal map</a></li>
-<li><a href="../../examples/#materials_texture_video">Diffuse Video Texture</a></li>
-<li><a href="../../examples/#materials_texture_procedural">Diffuse Procedural Texture</a></li>
-<li><a href="../../examples/#materials_texture_animation">Texture Animation</a></li>
+<li><a href="../../examples/#geometry_HeightmapGeometry">Textured HeightmapGeometry</a></li>
 </ul>
 
 <h2 id="usage">Usage</h2>
-<p>In this example we have an Entity with</p>
-<ul>
-<li>a <a href="../classes/Lights.html" class="crosslink">Lights</a> containing an <a href="../classes/AmbientLight.html" class="crosslink">AmbientLight</a> and a <a href="../classes/DirLight.html" class="crosslink">DirLight</a>,</li>
-<li>a <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> which applies diffuse and specular <a href="../classes/Texture.html" class="crosslink">Textures</a>, and
-<li>a <a href="../classes/TorusGeometry.html" class="crosslink">TorusGeometry</a>.</li>
-</ul>
-
-<p>Note that xeoEngine will ignore the <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial&#39;s</a> <a href="../classes/PhongMaterial.html#property_diffuse" class="crosslink">diffuse</a>
-and <a href="../classes/PhongMaterial.html#property_specular" class="crosslink">specular</a> properties, since we assigned <a href="../classes/Texture.html" class="crosslink">Textures</a> to the <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial&#39;s</a> <a href="../classes/PhongMaterial.html#property_diffuseMap" class="crosslink">diffuseMap</a> and
-<a href="../classes/PhongMaterial.html#property_specularMap" class="crosslink">specularMap</a> properties. The <a href="../classes/Texture.html" class="crosslink">Textures&#39;</a> pixel
-colors directly provide the diffuse and specular components for each fragment across the <a href="../classes/Geometry.html" class="crosslink">Geometry</a> surface.</p>
-<pre class="code prettyprint"><code class="lang-javascript">var entity = new XEO.Entity({
-
-   lights: new XEO.Lights({
-       lights: [
-           new XEO.AmbientLight({
-               color: [0.7, 0.7, 0.7]
-           }),
-           new XEO.DirLight({
-               dir: [-1, -1, -1],
-               color: [0.5, 0.7, 0.5],
-               intensity: [1.0, 1.0, 1.0],
-               space: "view"
-           })
-       ]
-   }),
-
-   material: new XEO.PhongMaterial({
-       ambient: [0.3, 0.3, 0.3],
-       diffuse: [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below
-       specular: [1.0, 1.0, 1.0],   // Ignored, since we have assigned a Texture to specularMap, below
-       diffuseMap: new XEO.Texture({
-           src: "diffuseMap.jpg"
-       }),
-       specularMap: new XEO.Fresnel({
-           src: "diffuseMap.jpg"
-       }),
-       shininess: 80, // Default
-       opacity: 1.0 // Default
-   }),
-
-   geometry: new XEO.TorusGeometry()
+<pre class="code prettyprint"><code class="lang-javascript">new XEO.Entity({
+    geometry: new XEO.HeightmapGeometry({
+        primitive: "triangles",
+        src: "textures/height/mountain.png",
+        xSize: 10,
+        ySize: 5,
+        zSize: 10,
+        xSegments: 70,
+        zSegments: 70,
+        lod: 1.0, // Default
+        autoNormals: true // Default
+    }),
+    material: new XEO.PhongMaterial({
+        diffuseMap: new XEO.Texture({
+            src: "textures/diffuse/uvGrid2.jpg"
+        }),
+        lineWidth: 3,
+        pointSize: 5
+    }),
+    modes: new XEO.Modes({
+        backfaces: true
+    })
 });
 </code></pre>
 
@@ -282,8 +238,8 @@ colors directly provide the diffuse and specular components for each fragment ac
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Texture" class="method item">
-            <h3 class="name"><code>Texture</code></h3>
+        <div id="method_HeightmapGeometry" class="method item">
+            <h3 class="name"><code>HeightmapGeometry</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
@@ -307,7 +263,7 @@ colors directly provide the diffuse and specular components for each fragment ac
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_materials_texture.js.html#l1"><code>src&#x2F;materials&#x2F;texture.js:1</code></a>
+                <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l1"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:1</code></a>
                 </p>
         
         
@@ -329,7 +285,7 @@ colors directly provide the diffuse and specular components for each fragment ac
         
         
                             <div class="param-description">
-                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this Texture in the default
+                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this Heightmap in the default
         <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
         
                             </div>
@@ -353,7 +309,8 @@ colors directly provide the diffuse and specular components for each fragment ac
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional ID for this Texture, unique among all components in the parent scene, generated automatically when omitted.</p>
+                                            <p>Optional ID, unique among all components in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>,
+        generated automatically when omitted.</p>
         
                                         </div>
         
@@ -364,129 +321,106 @@ colors directly provide the diffuse and specular components for each fragment ac
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional map of user-defined metadata to attach to this Texture.</p>
+                                            <p>Optional map of user-defined metadata to attach to this Heightmap.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[src=null]</code>
+                                            <code class="param-name optional">[primitive=&quot;triangles&quot;]</code>
                                             <span class="type">String</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Path to image file to load into this Texture. See the <a href="../classes/Texture.html#property_src" class="crosslink">src</a> property for more info.</p>
+                                            <p>The primitive type. Accepted values are &#39;points&#39;, &#39;lines&#39;, &#39;line-loop&#39;, &#39;line-strip&#39;, &#39;triangles&#39;, &#39;triangle-strip&#39; and &#39;triangle-fan&#39;.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[image=null]</code>
+                                            <code class="param-name optional">[src=undefined]</code>
+                                            <span class="type">String</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Path to an image file to source this Heightmap from.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[image=undefined]</code>
                                             <span class="type">HTMLImageElement</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>HTML Image object to load into this Texture. See the <a href="../classes/Texture.html#property_image" class="crosslink">image</a> property for more info.</p>
+                                            <p>An HTML DOM Image object to source this Heightmap from.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[target=null]</code>
-                                            <span class="type">String | XEO.ColorTarget | XEO.DepthTarget</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Instance or ID of a <a href="../classes/ColorTarget.html" class="crosslink">ColorTarget</a> or
-        <a href="../classes/DepthTarget.html" class="crosslink">DepthTarget</a> to source this Texture from. See the <a href="../classes/Texture.html#property_target" class="crosslink">target</a> property for more info.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[minFilter=&quot;linearMipmapLinear&quot;]</code>
-                                            <span class="type">String</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>How the texture is sampled when a texel covers less than one pixel. See the <a href="../classes/Texture.html#property_minFilter" class="crosslink">minFilter</a> property for more info.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[magFilter=&quot;linear&quot;]</code>
-                                            <span class="type">String</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>How the texture is sampled when a texel covers more than one pixel. See the <a href="../classes/Texture.html#property_magFilter" class="crosslink">magFilter</a> property for more info.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[wrapS=&quot;repeat&quot;]</code>
-                                            <span class="type">String</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Wrap parameter for texture coordinate <em>S</em>. See the <a href="../classes/Texture.html#property_wrapS" class="crosslink">wrapS</a> property for more info.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[wrapT=&quot;repeat&quot;]</code>
-                                            <span class="type">String</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Wrap parameter for texture coordinate <em>S</em>. See the <a href="../classes/Texture.html#property_wrapT" class="crosslink">wrapT</a> property for more info.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[flipY=false]</code>
-                                            <span class="type">Boolean</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Flips this Texture&#39;s source data along its vertical axis when true.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[translate=[0,0]]</code>
-                                            <span class="type">Array of Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>2D translation vector that will be added to texture&#39;s <em>S</em> and <em>T</em> coordinates.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[scale=[1,1]]</code>
-                                            <span class="type">Array of Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>2D scaling vector that will be applied to texture&#39;s <em>S</em> and <em>T</em> coordinates.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[rotate=0]</code>
+                                            <code class="param-name optional">[xSize=1]</code>
                                             <span class="type">Number</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Rotation, in degrees, that will be applied to texture&#39;s <em>S</em> and <em>T</em> coordinates.</p>
+                                            <p>Dimension on the X-axis.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[ySize=0.25]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Dimension on the Y-axis.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[zSize=1]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Dimension (height) on the Z-axis.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[xSegments=1]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Number of segments on the X-axis (width).</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[zSegments=1]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Number of segments on the Z-axis (depth).</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[lod=1]  Level-of-detail, in range [0..1]</code>
+                                            <span class="type">Number</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>.</p>
         
                                         </div>
         
@@ -566,11 +500,15 @@ colors directly provide the diffuse and specular components for each fragment ac
 
                     <ul class="index-list properties extends">
                             <li class="index-item property inherited">
-                                <a href="#property_destroyed">destroyed</a>
+                                <a href="#property_autoNormals">autoNormals</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_flipY">flipY</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_colors">colors</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_destroyed">destroyed</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -582,6 +520,10 @@ colors directly provide the diffuse and specular components for each fragment ac
 
                             </li>
                             <li class="index-item property inherited">
+                                <a href="#property_indices">indices</a>
+
+                            </li>
+                            <li class="index-item property inherited">
                                 <a href="#property_isDefault">isDefault</a>
 
                             </li>
@@ -589,28 +531,28 @@ colors directly provide the diffuse and specular components for each fragment ac
                                 <a href="#property_json">json</a>
 
                             </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_localBoundary">localBoundary</a>
+
+                            </li>
                             <li class="index-item property">
-                                <a href="#property_magFilter">magFilter</a>
+                                <a href="#property_lod">lod</a>
 
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_metadata">metadata</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_minFilter">minFilter</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_normals">normals</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_pageTable">pageTable</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_positions">positions</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_rotate">rotate</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_scale">scale</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_primitive">primitive</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -629,24 +571,36 @@ colors directly provide the diffuse and specular components for each fragment ac
                                 <a href="#property_superTypes">superTypes</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_target">target</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_translate">translate</a>
-
-                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_type">type</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_wrapS">wrapS</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_usage">usage</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_uv">uv</a>
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_wrapT">wrapT</a>
+                                <a href="#property_xSegments">xSegments</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_xSize">xSize</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_ySize">ySize</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_zSegments">zSegments</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_zSize">zSize</a>
 
                             </li>
                     </ul>
@@ -658,19 +612,27 @@ colors directly provide the diffuse and specular components for each fragment ac
 
                     <ul class="index-list events extends">
                             <li class="index-item event inherited">
+                                <a href="#event_autoNormals">autoNormals</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_colors">colors</a>
+
+                            </li>
+                            <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_flipY">flipY</a>
-
-                            </li>
-                            <li class="index-item event">
                                 <a href="#event_image">image</a>
 
                             </li>
                             <li class="index-item event">
                                 <a href="#event_image">image</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_indices">indices</a>
 
                             </li>
                             <li class="index-item event">
@@ -678,43 +640,51 @@ colors directly provide the diffuse and specular components for each fragment ac
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_magFilter">magFilter</a>
+                                <a href="#event_lod">lod</a>
 
                             </li>
-                            <li class="index-item event">
-                                <a href="#event_minFilter">minFilter</a>
+                            <li class="index-item event inherited">
+                                <a href="#event_normals">normals</a>
 
                             </li>
-                            <li class="index-item event">
-                                <a href="#event_pageTable">pageTable</a>
+                            <li class="index-item event inherited inherited">
+                                <a href="#event_positions">positions</a>
 
                             </li>
-                            <li class="index-item event">
-                                <a href="#event_rotate">rotate</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_scale">scale</a>
+                            <li class="index-item event inherited">
+                                <a href="#event_primitive">primitive</a>
 
                             </li>
                             <li class="index-item event">
                                 <a href="#event_src">src</a>
 
                             </li>
-                            <li class="index-item event">
-                                <a href="#event_target">target</a>
+                            <li class="index-item event inherited">
+                                <a href="#event_usage">usage</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_uv">uv</a>
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_translate">translate</a>
+                                <a href="#event_xSegments">xSegments</a>
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_wrapS">wrapS</a>
+                                <a href="#event_xSize">xSize</a>
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_wrapT">wrapT</a>
+                                <a href="#event_ySize">ySize</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_zSegments">zSegments</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_zSize">zSize</a>
 
                             </li>
                     </ul>
@@ -765,18 +735,18 @@ colors directly provide the diffuse and specular components for each fragment ac
     <div class="description">
         <p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 <p>You would typically use this method to conveniently instantiate components that you&#39;d want to
-share (ie. "instance") among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+share (ie. &quot;instance&quot;) among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
 <p>The method is given a component type, configuration and optional instance ID, like so:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(XEO.PhongMaterial, {
      diffuse: [1,0,0],
      specular: [1,1,0]
-}, "myMaterial");
+}, &quot;myMaterial&quot;);
 </code></pre>
 <p>The first time you call this method for the given <code>type</code> and <code>instanceId</code>, this method will create the
 <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, passing the given  attributes to the component&#39;s constructor.</p>
 <p>If you call this method again, specifying the same <code>type</code> and <code>instanceId</code>, the method will return the same
 component instance that it returned the first time, and will ignore the configuration:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
+<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, &quot;myMaterial&quot;);
 </code></pre>
 <p>So in this example, our <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> will continue to have the red specular
 and diffuse color that we specified the first time.</p>
@@ -1055,12 +1025,12 @@ any subsequent notifications on that location as they are made.</p>
     </div>
 
     <div class="description">
-        <p>Tests if this component is of the given type, or is a subclass of the given type.</p>
-<p>The type may be given as either a string or a component constructor.</p>
-<p>This method works by walking up the inheritance type chain, which this component provides in
+        <p><p>Tests if this component is of the given type, or is a subclass of the given type.</p></p>
+<p><p>The type may be given as either a string or a component constructor.</p></p>
+<p><p>This method works by walking up the inheritance type chain, which this component provides in
 property <a href="../classes/Component.html#property_superTypes" class="crosslink">superTypes</a>, returning true as soon as one of the type strings in
-the chain matches the given type, of false if none match.</p>
-<h4 id="examples-">Examples:</h4>
+the chain matches the given type, of false if none match.</p></p>
+<p><h4 id="examples-">Examples:</h4></p>
 <pre class="code prettyprint"><code class="lang-javascript">var myRotate = new XEO.Rotate({ ... });
 
 myRotate.isType(XEO.Component); // Returns true for all XEO components
@@ -1463,6 +1433,63 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
+                    <div id="property_autoNormals" class="property item inherited">
+                        <h3 class="name"><code>autoNormals</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_autoNormals">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l1060"><code>src&#x2F;geometry&#x2F;geometry.js:1060</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Set true to make this Geometry automatically generate <a href="../classes/Geometry.html#property_normals" class="crosslink">normals</a> from
+                    <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a> and <a href="../classes/Geometry.html#property_indices" class="crosslink">indices</a>.</p>
+                    <p>When true, causes this Geometry to auto-generate its <a href="../classes/Geometry.html#property_normals" class="crosslink">normals</a> on the
+                    next <a href="../classes/Scene.html" class="crosslink">Scene</a> Scene/tick:event event.</p>
+                    <p>Fires an <a href="../classes/Geometry.html#event_autoNormals" class="crosslink">autoNormals</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> false</p>
+                    
+                    
+                    </div>
+                    <div id="property_colors" class="property item inherited">
+                        <h3 class="name"><code>colors</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_colors">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l887"><code>src&#x2F;geometry&#x2F;geometry.js:887</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Geometry&#39;s vertex colors array.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_colors" class="crosslink">colors</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
                     <div id="property_destroyed" class="property item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type">Boolean</span>
@@ -1485,33 +1512,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
-                    
-                    
-                    </div>
-                    <div id="property_flipY" class="property item">
-                        <h3 class="name"><code>flipY</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_texture.js.html#l931"><code>src&#x2F;materials&#x2F;texture.js:931</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Flips this Texture&#39;s source data along its vertical axis when true.</p>
-                    <p>Fires a <a href="../classes/Texture.html#event_flipY" class="crosslink">flipY</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> false</p>
                     
                     
                     </div>
@@ -1552,19 +1552,47 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l432"><code>src&#x2F;materials&#x2F;texture.js:432</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l402"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:402</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Indicates an HTML DOM Image object to source this Texture from.</p>
-                    <p>Alternatively, you could indicate the source via either of properties
-                    <a href="../classes/Texture.html#property_src" class="crosslink">src</a> or <a href="../classes/Texture.html#property_target" class="crosslink">target</a>.</p>
-                    <p>Fires an <a href="../classes/Texture.html#event_image" class="crosslink">image</a> event on change.</p>
-                    <p>Sets the <a href="../classes/Texture.html#property_src" class="crosslink">src</a> and
-                    <a href="../classes/Texture.html#property_target" class="crosslink">target</a> properties to null.</p>
+                            <p>Indicates an HTML DOM Image object to source this Heightmap from.</p>
+                    <p>Alternatively, you could indicate the source via the
+                    Heightmap/src:property property.</p>
+                    <p>Fires an Heightmap/image:event event on change.</p>
+                    <p>Sets the Heightmap/src:property to null.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
+                    <div id="property_indices" class="property item inherited">
+                        <h3 class="name"><code>indices</code></h3>
+                        <span class="type">Uint16Array | Uint32Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_indices">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l937"><code>src&#x2F;geometry&#x2F;geometry.js:937</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Geometry&#39;s indices array.</p>
+                    <p>If <code>XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS[&quot;OES_element_index_uint&quot;]</code> is true, then this can be
+                    a <code>Uint32Array</code>, otherwise it needs to be a <code>Uint16Array</code>.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_indices" class="crosslink">indices</a> event on change.</p>
                     
                         </div>
                     
@@ -1623,9 +1651,41 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_magFilter" class="property item">
-                        <h3 class="name"><code>magFilter</code></h3>
-                        <span class="type">String</span>
+                    <div id="property_localBoundary" class="property item inherited">
+                        <h3 class="name"><code>localBoundary</code></h3>
+                        <span class="type"><a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a></span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_localBoundary">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l1002"><code>src&#x2F;geometry&#x2F;geometry.js:1002</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Local-space 3D boundary enclosing the <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a> of this Geometry.</p>
+                    <p>The a <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> is lazy-instantiated the first time that this
+                    property is referenced. If <a href="../classes/Component.html#method_destroy" class="crosslink">destroy</a> is then called on it,
+                    then this property will be assigned to a fresh <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> instance next
+                    time it&#39;s referenced.</p>
+                    <p>The <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> will fire an <a href="../classes/Boundary3D.html#event_updated" class="crosslink">updated</a>
+                    event whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a> are updated.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_lod" class="property item">
+                        <h3 class="name"><code>lod</code></h3>
+                        <span class="type">Number</span>
                     
                     
                     
@@ -1634,27 +1694,19 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l777"><code>src&#x2F;materials&#x2F;texture.js:777</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l358"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:358</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>How this Texture is sampled when a texel covers more than one pixel.</p>
-                    <p>Options are:</p>
-                    <ul>
-                        <li><strong>"nearest"</strong> - Uses the value of the texture element that is nearest
-                        (in Manhattan distance) to the center of the pixel being textured.</li>
-                        <li><strong>"linear"</strong> - <strong>(default)</strong> - Uses the weighted average of the four texture elements that are
-                        closest to the center of the pixel being textured.</li>
-                    </ul>
-                    
-                    <p>Fires a <a href="../classes/Texture.html#event_magFilter" class="crosslink">magFilter</a> event on change.</p>
+                            <p>The Heightmap&#39;s level-of-detail factor.</p>
+                    <p>Fires a Heightmap/lod:event event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> &quot;linear&quot;</p>
+                            <p><strong>Default:</strong> 1</p>
                     
                     
                     </div>
@@ -1683,65 +1735,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_minFilter" class="property item">
-                        <h3 class="name"><code>minFilter</code></h3>
-                        <span class="type">String</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_texture.js.html#l700"><code>src&#x2F;materials&#x2F;texture.js:700</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>How this Texture is sampled when a texel covers less than one pixel.</p>
-                    <p>Options are:</p>
-                    <ul>
-                        <li><strong>"nearest"</strong> - Uses the value of the texture element that is nearest
-                        (in Manhattan distance) to the center of the pixel being textured.</li>
-                    
-                        <li><strong>"linear"</strong> - Uses the weighted average of the four texture elements that are
-                        closest to the center of the pixel being textured.</li>
-                    
-                        <li><strong>"nearestMipmapNearest"</strong> - Chooses the mipmap that most closely matches the
-                        size of the pixel being textured and uses the "nearest" criterion (the texture
-                        element nearest to the center of the pixel) to produce a texture value.</li>
-                    
-                        <li><strong>"linearMipmapNearest"</strong> - Chooses the mipmap that most closely matches the size of
-                        the pixel being textured and uses the "linear" criterion (a weighted average of the
-                        four texture elements that are closest to the center of the pixel) to produce a
-                        texture value.</li>
-                    
-                        <li><strong>"nearestMipmapLinear"</strong> - Chooses the two mipmaps that most closely
-                        match the size of the pixel being textured and uses the "nearest" criterion
-                        (the texture element nearest to the center of the pixel) to produce a texture
-                        value from each mipmap. The final texture value is a weighted average of those two
-                        values.</li>
-                    
-                        <li><strong>"linearMipmapLinear"</strong> - <strong>(default)</strong> - Chooses the two mipmaps that most closely match the size
-                        of the pixel being textured and uses the "linear" criterion (a weighted average
-                        of the four texture elements that are closest to the center of the pixel) to
-                        produce a texture value from each mipmap. The final texture value is a weighted
-                        average of those two values.</li>
-                    </ul>
-                    
-                    <p>Fires a <a href="../classes/Texture.html#event_minFilter" class="crosslink">minFilter</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> &quot;linearMipmapLinear&quot;</p>
-                    
-                    
-                    </div>
-                    <div id="property_pageTable" class="property item">
-                        <h3 class="name"><code>pageTable</code></h3>
+                    <div id="property_normals" class="property item inherited">
+                        <h3 class="name"><code>normals</code></h3>
                         <span class="type">Float32Array</span>
                     
                     
@@ -1749,17 +1744,17 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_texture.js.html#l571"><code>src&#x2F;materials&#x2F;texture.js:571</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_normals">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l787"><code>src&#x2F;geometry&#x2F;geometry.js:787</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Page table for sparse virtual texturing.</p>
-                    <p>Fires an <a href="../classes/Texture.html#event_pageTable" class="crosslink">pageTable</a> event on change.</p>
+                            <p>The Geometry&#39;s normal vectors array.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_normals" class="crosslink">normals</a> event on change.</p>
                     
                         </div>
                     
@@ -1767,57 +1762,60 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_rotate" class="property item">
-                        <h3 class="name"><code>rotate</code></h3>
-                        <span class="type">Number</span>
+                    <div id="property_positions" class="property item inherited">
+                        <h3 class="name"><code>positions</code></h3>
+                        <span class="type">Float32Array</span>
                     
                     
                     
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_texture.js.html#l663"><code>src&#x2F;materials&#x2F;texture.js:663</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_positions">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l722"><code>src&#x2F;geometry&#x2F;geometry.js:722</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Rotation, in degrees, that will be applied to this Texture&#39;s <em>S</em> and <em>T</em> coordinates.</p>
-                    <p>Fires a <a href="../classes/Texture.html#event_rotate" class="crosslink">rotate</a> event on change.</p>
+                            <p>The Geometry&#39;s positions array.</p>
+                    <p>This property is a one-dimensional array - use  XEO.math/flatten:method to
+                    convert two-dimensional arrays for assignment to this property.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_positions" class="crosslink">positions</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> 0</p>
+                            <p><strong>Default:</strong> null</p>
                     
                     
                     </div>
-                    <div id="property_scale" class="property item">
-                        <h3 class="name"><code>scale</code></h3>
-                        <span class="type">Array(Number)</span>
+                    <div id="property_primitive" class="property item inherited">
+                        <h3 class="name"><code>primitive</code></h3>
+                        <span class="type">String</span>
                     
                     
                     
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_texture.js.html#l632"><code>src&#x2F;materials&#x2F;texture.js:632</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_primitive">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l664"><code>src&#x2F;geometry&#x2F;geometry.js:664</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>2D scaling vector that will be applied to this Texture&#39;s <em>S</em> and <em>T</em> coordinates.</p>
-                    <p>Fires a <a href="../classes/Texture.html#event_scale" class="crosslink">scale</a> event on change.</p>
+                            <p>The Geometry&#39;s primitive type.</p>
+                    <p>Valid types are: &#39;points&#39;, &#39;lines&#39;, &#39;line-loop&#39;, &#39;line-strip&#39;, &#39;triangles&#39;, &#39;triangle-strip&#39; and &#39;triangle-fan&#39;.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_primitive" class="crosslink">primitive</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> [1, 1]</p>
+                            <p><strong>Default:</strong> &quot;triangles&quot;</p>
                     
                     
                     </div>
@@ -1858,19 +1856,18 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l473"><code>src&#x2F;materials&#x2F;texture.js:473</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l442"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:442</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Indicates a path to an image file to source this Texture from.</p>
-                    <p>Alternatively, you could indicate the source via either of properties
-                    <a href="../classes/Texture.html#property_image" class="crosslink">image</a> or <a href="../classes/Texture.html#property_target" class="crosslink">target</a>.</p>
-                    <p>Fires a <a href="../classes/Texture.html#event_src" class="crosslink">src</a> event on change.</p>
-                    <p>Sets the <a href="../classes/Texture.html#property_image" class="crosslink">image</a> and
-                    <a href="../classes/Texture.html#property_target" class="crosslink">target</a> properties to null.</p>
+                            <p>Indicates a path to an image file to source this Heightmap from.</p>
+                    <p>Alternatively, you could indicate the source via the
+                    Heightmap/image:property property.</p>
+                    <p>Fires a Heightmap/src:event event on change.</p>
+                    <p>Sets the Heightmap/image:property to null.</p>
                     
                         </div>
                     
@@ -1930,71 +1927,12 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     <p>For example, if this component is a <a href="../classes/Rotate.html" class="crosslink">Rotate</a>, which
                     extends <a href="../classes/Transform.html" class="crosslink">Transform</a>, which in turn extends <a href="../classes/Component.html" class="crosslink">Component</a>,
                     then this property will have the value:</p>
-                    <pre class="code prettyprint"><code class="lang-json">["XEO.Component", "XEO.Transform"]
+                    <pre class="code prettyprint"><code class="lang-json">[&quot;XEO.Component&quot;, &quot;XEO.Transform&quot;]
                     </code></pre>
                     <p>Note that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.</p>
                     
                         </div>
                     
-                    
-                    
-                    </div>
-                    <div id="property_target" class="property item">
-                        <h3 class="name"><code>target</code></h3>
-                        <span class="type">String | XEO.ColorTarget | XEO.DepthTarget</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_texture.js.html#l515"><code>src&#x2F;materials&#x2F;texture.js:515</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Instance or ID of a <a href="../classes/ColorTarget.html" class="crosslink">ColorTarget</a> or
-                    <a href="../classes/DepthTarget.html" class="crosslink">DepthTarget</a> to source this Texture from.</p>
-                    <p>Alternatively, you could indicate the source via either of properties
-                    <a href="../classes/Texture.html#property_src" class="crosslink">src</a> or <a href="../classes/Texture.html#property_image" class="crosslink">image</a>.</p>
-                    <p>Fires a <a href="../classes/Texture.html#event_target" class="crosslink">target</a> event on change.</p>
-                    <p>Sets the <a href="../classes/Texture.html#property_src" class="crosslink">src</a> and
-                    <a href="../classes/Texture.html#property_image" class="crosslink">image</a> properties to null.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> null</p>
-                    
-                    
-                    </div>
-                    <div id="property_translate" class="property item">
-                        <h3 class="name"><code>translate</code></h3>
-                        <span class="type">Array(Number)</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_texture.js.html#l601"><code>src&#x2F;materials&#x2F;texture.js:601</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>2D translation vector that will be added to this Texture&#39;s <em>S</em> and <em>T</em> coordinates.</p>
-                    <p>Fires a <a href="../classes/Texture.html#event_translate" class="crosslink">translate</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> [0, 0]</p>
                     
                     
                     </div>
@@ -2027,8 +1965,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_wrapS" class="property item">
-                        <h3 class="name"><code>wrapS</code></h3>
+                    <div id="property_usage" class="property item inherited">
+                        <h3 class="name"><code>usage</code></h3>
                         <span class="type">String</span>
                     
                     
@@ -2036,37 +1974,55 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_texture.js.html#l827"><code>src&#x2F;materials&#x2F;texture.js:827</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_usage">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l619"><code>src&#x2F;geometry&#x2F;geometry.js:619</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Wrap parameter for this Texture&#39;s <em>S</em> coordinate.</p>
-                    <p>Options are:</p>
-                    <ul>
-                        <li><strong>"clampToEdge"</strong> -  causes <em>S</em> coordinates to be clamped to the size of the texture.</li>
-                        <li><strong>"mirroredRepeat"</strong> - causes the <em>S</em> coordinate to be set to the fractional part of the texture coordinate
-                        if the integer part of <em>S</em> is even; if the integer part of <em>S</em> is odd, then the <em>S</em> texture coordinate is
-                        set to <em>1 - frac ⁡ S</em> , where <em>frac ⁡ S</em> represents the fractional part of <em>S</em>.</li>
-                        <li><strong>"repeat"</strong> - <strong>(default)</strong> - causes the integer part of the <em>S</em> coordinate to be ignored; xeoEngine uses only the
-                        fractional part, thereby creating a repeating pattern.</li>
-                    </ul>
-                    
-                    <p>Fires a <a href="../classes/Texture.html#event_wrapS" class="crosslink">wrapS</a> event on change.</p>
+                            <p>The Geometry&#39;s usage type.</p>
+                    <p>Valid types are: &#39;static&#39;, &#39;lines&#39;, &#39;line-loop&#39;, &#39;line-strip&#39;, &#39;triangles&#39;, &#39;triangle-strip&#39; and &#39;triangle-fan&#39;.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_usage" class="crosslink">usage</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> &quot;repeat&quot;</p>
+                            <p><strong>Default:</strong> &quot;triangles&quot;</p>
                     
                     
                     </div>
-                    <div id="property_wrapT" class="property item">
-                        <h3 class="name"><code>wrapT</code></h3>
-                        <span class="type">String</span>
+                    <div id="property_uv" class="property item inherited">
+                        <h3 class="name"><code>uv</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_uv">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l837"><code>src&#x2F;geometry&#x2F;geometry.js:837</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Geometry&#39;s UV coordinate array.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_uv" class="crosslink">uv</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
+                    <div id="property_xSegments" class="property item">
+                        <h3 class="name"><code>xSegments</code></h3>
+                        <span class="type">Number</span>
                     
                     
                     
@@ -2075,29 +2031,127 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l879"><code>src&#x2F;materials&#x2F;texture.js:879</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l615"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:615</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Wrap parameter for this Texture&#39;s <em>T</em> coordinate.</p>
-                    <p>Options are:</p>
-                    <ul>
-                        <li><strong>"clampToEdge"</strong> -  Causes <em>T</em> coordinates to be clamped to the size of the texture.</li>
-                        <li><strong>"mirroredRepeat"</strong> - Causes the <em>T</em> coordinate to be set to the fractional part of the texture coordinate
-                        if the integer part of <em>T</em> is even; if the integer part of <em>T</em> is odd, then the <em>T</em> texture coordinate is
-                        set to <em>1 - frac ⁡ S</em> , where <em>frac ⁡ S</em> represents the fractional part of <em>T</em>.</li>
-                        <li><strong>"repeat"</strong> - <strong>(default)</strong> - Causes the integer part of the <em>T</em> coordinate to be ignored; xeoEngine uses only the
-                        fractional part, thereby creating a repeating pattern.</li>
-                    </ul>
-                    
-                    <p>Fires a <a href="../classes/Texture.html#event_wrapT" class="crosslink">wrapT</a> event on change.</p>
+                            <p>The Heightmap&#39;s number of segments on the X-axis.</p>
+                    <p>Fires a Heightmap/xSegments:event event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> &quot;repeat&quot;</p>
+                            <p><strong>Default:</strong> 100</p>
+                    
+                    
+                    </div>
+                    <div id="property_xSize" class="property item">
+                        <h3 class="name"><code>xSize</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l483"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:483</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Heightmap&#39;s dimension on the X-axis.</p>
+                    <p>Fires a Heightmap/xSize:event event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 1</p>
+                    
+                    
+                    </div>
+                    <div id="property_ySize" class="property item">
+                        <h3 class="name"><code>ySize</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l527"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:527</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Heightmap&#39;s dimension on the Y-axis.</p>
+                    <p>Fires a Heightmap/ySize:event event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 0.25</p>
+                    
+                    
+                    </div>
+                    <div id="property_zSegments" class="property item">
+                        <h3 class="name"><code>zSegments</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l659"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:659</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Heightmap&#39;s number of segments on the Z-axis.</p>
+                    <p>Fires a Heightmap/zSegments:event event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 100</p>
+                    
+                    
+                    </div>
+                    <div id="property_zSize" class="property item">
+                        <h3 class="name"><code>zSize</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l571"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:571</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Heightmap&#39;s dimension (height) on the Z-axis.</p>
+                    <p>Fires a Heightmap/zSize:event event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 1.0</p>
                     
                     
                     </div>
@@ -2107,6 +2161,90 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
+                    <div id="event_autoNormals" class="events item inherited">
+                        <h3 class="name"><code>autoNormals</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_autoNormals">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l1089"><code>src&#x2F;geometry&#x2F;geometry.js:1089</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_autoNormals" class="crosslink">autoNormals</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_colors" class="events item inherited">
+                        <h3 class="name"><code>colors</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_colors">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l917"><code>src&#x2F;geometry&#x2F;geometry.js:917</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_colors" class="crosslink">colors</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_destroyed" class="events item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type"></span>
@@ -2132,48 +2270,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_flipY" class="events item">
-                        <h3 class="name"><code>flipY</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_texture.js.html#l955"><code>src&#x2F;materials&#x2F;texture.js:955</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Texture&#39;s  <a href="../classes/Texture.html#property_flipY" class="crosslink">flipY</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">String</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
                     <div id="event_image" class="events item">
                         <h3 class="name"><code>image</code></h3>
                         <span class="type"></span>
@@ -2185,14 +2281,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l460"><code>src&#x2F;materials&#x2F;texture.js:460</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l429"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:429</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Texture&#39;s  <a href="../classes/Texture.html#property_image" class="crosslink">image</a> property changes.</p>
+                            <p>Fired whenever this Heightmap&#39;s  Heightmap/image:property property changes.</p>
                     
                         </div>
                     
@@ -2227,14 +2323,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l387"><code>src&#x2F;materials&#x2F;texture.js:387</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l317"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:317</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Texture&#39;s  <a href="../classes/Texture.html#property_image" class="crosslink">image</a> property changes.</p>
+                            <p>Fired whenever this Heightmap&#39;s  Heightmap/image:property property changes.</p>
                     
                         </div>
                     
@@ -2245,6 +2341,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     <li class="param">
                                             <code class="param-name">value</code>
                                             <span class="type">HTML Image</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_indices" class="events item inherited">
+                        <h3 class="name"><code>indices</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_indices">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l982"><code>src&#x2F;geometry&#x2F;geometry.js:982</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_indices" class="crosslink">indices</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
                     
                     
                                         <div class="param-description">
@@ -2269,15 +2407,15 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l394"><code>src&#x2F;materials&#x2F;texture.js:394</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l273"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:273</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Texture has loaded the
-                    image file that its <a href="../classes/Texture.html#property_src" class="crosslink">src</a> property currently points to.</p>
+                            <p>Fired whenever this HeightmapGeometry has rebuilt itself after an update to the
+                    Heightmap/src:property or Heightmap/image:property properties.</p>
                     
                         </div>
                     
@@ -2287,11 +2425,11 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                 <ul class="params-list">
                                     <li class="param">
                                             <code class="param-name">value</code>
-                                            <span class="type">HTML Image</span>
+                                            <span class="type">Heightmap</span>
                     
                     
                                         <div class="param-description">
-                                            <p>The value of the <a href="../classes/Texture.html#property_src" class="crosslink">src</a> property</p>
+                                            <p>This Heightmap</p>
                     
                                         </div>
                     
@@ -2301,9 +2439,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_magFilter" class="events item">
-                        <h3 class="name"><code>magFilter</code></h3>
-                        <span class="type"></span>
+                    <div id="event_lod" class="events item">
+                        <h3 class="name"><code>lod</code></h3>
+                        <span class="type">Number</span>
                     
                     
                     
@@ -2312,14 +2450,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l814"><code>src&#x2F;materials&#x2F;texture.js:814</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l388"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:388</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Texture&#39;s  <a href="../classes/Texture.html#property_magFilter" class="crosslink">magFilter</a> property changes.</p>
+                            <p>Fired whenever this Heightmap&#39;s Heightmap/lod:property property changes.</p>
                     
                         </div>
                     
@@ -2329,49 +2467,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                 <ul class="params-list">
                                     <li class="param">
                                             <code class="param-name">value</code>
-                                            <span class="type">String</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_minFilter" class="events item">
-                        <h3 class="name"><code>minFilter</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_texture.js.html#l764"><code>src&#x2F;materials&#x2F;texture.js:764</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Texture&#39;s  <a href="../classes/Texture.html#property_minFilter" class="crosslink">minFilter</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">String</span>
+                                            <span class="type">Object</span>
                     
                     
                                         <div class="param-description">
@@ -2385,8 +2481,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_pageTable" class="events item">
-                        <h3 class="name"><code>pageTable</code></h3>
+                    <div id="event_normals" class="events item inherited">
+                        <h3 class="name"><code>normals</code></h3>
                         <span class="type"></span>
                     
                     
@@ -2394,16 +2490,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_texture.js.html#l588"><code>src&#x2F;materials&#x2F;texture.js:588</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_normals">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l817"><code>src&#x2F;geometry&#x2F;geometry.js:817</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Texture&#39;s  <a href="../classes/Texture.html#property_pageTable" class="crosslink">pageTable</a> property changes.</p>
+                            <p>Fired whenever this Geometry&#39;s Geometry/ normals:property property changes.</p>
                     
                         </div>
                     
@@ -2413,7 +2509,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                 <ul class="params-list">
                                     <li class="param">
                                             <code class="param-name">value</code>
-                                            <span class="type">Float32Array</span>
+                                            <span class="type">Object</span>
                     
                     
                                         <div class="param-description">
@@ -2427,8 +2523,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_rotate" class="events item">
-                        <h3 class="name"><code>rotate</code></h3>
+                    <div id="event_positions" class="events item inherited">
+                        <h3 class="name"><code>positions</code></h3>
                         <span class="type"></span>
                     
                     
@@ -2436,16 +2532,19 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_texture.js.html#l687"><code>src&#x2F;materials&#x2F;texture.js:687</code></a>
+                                <p>Inherited from
+                                <a href="../classes/Geometry.html#event_positions">
+                                    Geometry
+                                </a>
+                                but overwritten in
+                            <a href="../files/src_geometry_geometry.js.html#l755"><code>src&#x2F;geometry&#x2F;geometry.js:755</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Texture&#39;s  <a href="../classes/Texture.html#property_rotate" class="crosslink">rotate</a> property changes.</p>
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a> property changes.</p>
                     
                         </div>
                     
@@ -2455,7 +2554,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                 <ul class="params-list">
                                     <li class="param">
                                             <code class="param-name">value</code>
-                                            <span class="type">Number</span>
+                                            <span class="type">Object</span>
                     
                     
                                         <div class="param-description">
@@ -2469,25 +2568,25 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_scale" class="events item">
-                        <h3 class="name"><code>scale</code></h3>
-                        <span class="type"></span>
+                    <div id="event_primitive" class="events item inherited">
+                        <h3 class="name"><code>primitive</code></h3>
+                        <span class="type">String</span>
                     
                     
                     
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_texture.js.html#l650"><code>src&#x2F;materials&#x2F;texture.js:650</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_primitive">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l708"><code>src&#x2F;geometry&#x2F;geometry.js:708</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Texture&#39;s   <a href="../classes/Texture.html#property_scale" class="crosslink">scale</a> property changes.</p>
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_primitive" class="crosslink">primitive</a> property changes.</p>
                     
                         </div>
                     
@@ -2497,7 +2596,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                 <ul class="params-list">
                                     <li class="param">
                                             <code class="param-name">value</code>
-                                            <span class="type">Array(Number)</span>
+                                            <span class="type">Object</span>
                     
                     
                                         <div class="param-description">
@@ -2522,14 +2621,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l501"><code>src&#x2F;materials&#x2F;texture.js:501</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l469"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:469</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Texture&#39;s <a href="../classes/Texture.html#property_src" class="crosslink">src</a> property changes.</p>
+                            <p>Fired whenever this Heightmap&#39;s Heightmap/src:property property changes.</p>
                     
                         </div>
                     
@@ -2553,25 +2652,25 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_target" class="events item">
-                        <h3 class="name"><code>target</code></h3>
-                        <span class="type">String | XEO.ColorTarget | XEO.DepthTarget</span>
+                    <div id="event_usage" class="events item inherited">
+                        <h3 class="name"><code>usage</code></h3>
+                        <span class="type">String</span>
                     
                     
                     
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_texture.js.html#l557"><code>src&#x2F;materials&#x2F;texture.js:557</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_usage">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l650"><code>src&#x2F;geometry&#x2F;geometry.js:650</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Texture&#39;s   <a href="../classes/Texture.html#property_target" class="crosslink">target</a> property changes.</p>
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_usage" class="crosslink">usage</a> property changes.</p>
                     
                         </div>
                     
@@ -2595,8 +2694,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_translate" class="events item">
-                        <h3 class="name"><code>translate</code></h3>
+                    <div id="event_uv" class="events item inherited">
+                        <h3 class="name"><code>uv</code></h3>
                         <span class="type"></span>
                     
                     
@@ -2604,16 +2703,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_materials_texture.js.html#l619"><code>src&#x2F;materials&#x2F;texture.js:619</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_uv">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l867"><code>src&#x2F;geometry&#x2F;geometry.js:867</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Texture&#39;s   <a href="../classes/Texture.html#property_translate" class="crosslink">translate</a> property changes.</p>
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_uv" class="crosslink">uv</a> property changes.</p>
                     
                         </div>
                     
@@ -2623,7 +2722,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                 <ul class="params-list">
                                     <li class="param">
                                             <code class="param-name">value</code>
-                                            <span class="type">Array(Number)</span>
+                                            <span class="type">Object</span>
                     
                     
                                         <div class="param-description">
@@ -2637,9 +2736,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_wrapS" class="events item">
-                        <h3 class="name"><code>wrapS</code></h3>
-                        <span class="type"></span>
+                    <div id="event_xSegments" class="events item">
+                        <h3 class="name"><code>xSegments</code></h3>
+                        <span class="type">Number</span>
                     
                     
                     
@@ -2648,14 +2747,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l866"><code>src&#x2F;materials&#x2F;texture.js:866</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l645"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:645</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Texture&#39;s  <a href="../classes/Texture.html#property_wrapS" class="crosslink">wrapS</a> property changes.</p>
+                            <p>Fired whenever this Heightmap&#39;s Heightmap/xSegments:property property changes.</p>
                     
                         </div>
                     
@@ -2665,7 +2764,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                 <ul class="params-list">
                                     <li class="param">
                                             <code class="param-name">value</code>
-                                            <span class="type">String</span>
+                                            <span class="type">Object</span>
                     
                     
                                         <div class="param-description">
@@ -2679,9 +2778,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_wrapT" class="events item">
-                        <h3 class="name"><code>wrapT</code></h3>
-                        <span class="type"></span>
+                    <div id="event_xSize" class="events item">
+                        <h3 class="name"><code>xSize</code></h3>
+                        <span class="type">Number</span>
                     
                     
                     
@@ -2690,14 +2789,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_materials_texture.js.html#l918"><code>src&#x2F;materials&#x2F;texture.js:918</code></a>
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l513"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:513</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this Texture&#39;s  <a href="../classes/Texture.html#property_wrapT" class="crosslink">wrapT</a> property changes.</p>
+                            <p>Fired whenever this Heightmap&#39;s Heightmap/xSize:property property changes.</p>
                     
                         </div>
                     
@@ -2707,7 +2806,133 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                 <ul class="params-list">
                                     <li class="param">
                                             <code class="param-name">value</code>
-                                            <span class="type">String</span>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_ySize" class="events item">
+                        <h3 class="name"><code>ySize</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l557"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:557</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Heightmap&#39;s Heightmap/ySize:property property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_zSegments" class="events item">
+                        <h3 class="name"><code>zSegments</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l689"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:689</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Heightmap&#39;s Heightmap/zSegments:property property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_zSize" class="events item">
+                        <h3 class="name"><code>zSize</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_geometry_heightmapGeometry.js.html#l601"><code>examples&#x2F;js&#x2F;geometry&#x2F;heightmapGeometry.js:601</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Heightmap&#39;s Heightmap/zSize:property property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
                     
                     
                                         <div class="param-description">

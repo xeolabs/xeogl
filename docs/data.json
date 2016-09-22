@@ -1126,6 +1126,40 @@
             },
             "fors": {},
             "namespaces": {}
+        },
+        "examples/js/geometry/_module.js": {
+            "name": "examples/js/geometry/_module.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "examples/js/geometry/heightmapGeometry.js": {
+            "name": "examples/js/geometry/heightmapGeometry.js",
+            "modules": {},
+            "classes": {
+                "HeightmapGeometry": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "examples/js/geometry/teapotGeometry.js": {
+            "name": "examples/js/geometry/teapotGeometry.js",
+            "modules": {},
+            "classes": {
+                "TeapotGeometry": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "examples/js/geometry/vectorTextGeometry.js": {
+            "name": "examples/js/geometry/vectorTextGeometry.js",
+            "modules": {},
+            "classes": {
+                "VectorTextGeometry": 1
+            },
+            "fors": {},
+            "namespaces": {}
         }
     },
     "modules": {
@@ -1237,7 +1271,10 @@
                 "Path": 1,
                 "QuadraticBezierCurve": 1,
                 "SplineCurve": 1,
-                "Skybox": 1
+                "Skybox": 1,
+                "HeightmapGeometry": 1,
+                "TeapotGeometry": 1,
+                "VectorTextGeometry": 1
             },
             "fors": {},
             "namespaces": {
@@ -1245,7 +1282,7 @@
                 "XEO": 1
             },
             "tag": "main",
-            "file": "examples/js/skyboxes/skybox.js",
+            "file": "examples/js/geometry/vectorTextGeometry.js",
             "line": 1,
             "description": "The xeoEngine namespace.",
             "is_constructor": 1,
@@ -1452,15 +1489,18 @@
                 "SphereGeometry": 1,
                 "TorusGeometry": 1,
                 "Nintendo3DSGeometry": 1,
-                "OBJGeometry": 1
+                "OBJGeometry": 1,
+                "HeightmapGeometry": 1,
+                "TeapotGeometry": 1,
+                "VectorTextGeometry": 1
             },
             "fors": {},
             "is_submodule": 1,
             "namespaces": {},
             "module": "XEO",
             "namespace": "",
-            "file": "examples/js/importing/objGeometry.js",
-            "line": 5,
+            "file": "examples/js/geometry/vectorTextGeometry.js",
+            "line": 1,
             "description": "Components for defining geometry."
         },
         "importing": {
@@ -6037,6 +6077,13 @@
                             "optional": true
                         },
                         {
+                            "name": "postMultiply",
+                            "description": "Flag that indicates whether this Transform is post-multiplied (default) or\npre-multiplied by its {{#crossLink \"Transform/parent:property\"}}{{/crossLink}} Transform.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        },
+                        {
                             "name": "matrix",
                             "description": "One-dimensional, sixteen element array of elements for the Transform, an identity matrix by default.",
                             "type": "Float32Array",
@@ -6813,6 +6860,211 @@
                 }
             ],
             "extends": "Component"
+        },
+        "HeightmapGeometry": {
+            "name": "HeightmapGeometry",
+            "shortname": "HeightmapGeometry",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "examples/js/geometry/heightmapGeometry.js",
+            "line": 1,
+            "description": "A **Heightmap** defines height map geometry for attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n## Examples\n\n<ul>\n<li>[Textured HeightmapGeometry](../../examples/#geometry_HeightmapGeometry)</li>\n</ul>\n\n## Usage\n\n````javascript\nnew XEO.Entity({\n    geometry: new XEO.HeightmapGeometry({\n        primitive: \"triangles\",\n        src: \"textures/height/mountain.png\",\n        xSize: 10,\n        ySize: 5,\n        zSize: 10,\n        xSegments: 70,\n        zSegments: 70,\n        lod: 1.0, // Default\n        autoNormals: true // Default\n    }),\n    material: new XEO.PhongMaterial({\n        diffuseMap: new XEO.Texture({\n            src: \"textures/diffuse/uvGrid2.jpg\"\n        }),\n        lineWidth: 3,\n        pointSize: 5\n    }),\n    modes: new XEO.Modes({\n        backfaces: true\n    })\n});\n````",
+            "submodule": "geometry",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Heightmap in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Heightmap.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "primitive",
+                            "description": "The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"triangles\""
+                        },
+                        {
+                            "name": "src",
+                            "description": "Path to an image file to source this Heightmap from.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "undefined"
+                        },
+                        {
+                            "name": "image",
+                            "description": "An HTML DOM Image object to source this Heightmap from.",
+                            "type": "HTMLImageElement",
+                            "optional": true,
+                            "optdefault": "undefined"
+                        },
+                        {
+                            "name": "xSize",
+                            "description": "Dimension on the X-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1"
+                        },
+                        {
+                            "name": "ySize",
+                            "description": "Dimension on the Y-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0.25"
+                        },
+                        {
+                            "name": "zSize",
+                            "description": "Dimension (height) on the Z-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1"
+                        },
+                        {
+                            "name": "xSegments",
+                            "description": "Number of segments on the X-axis (width).",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1"
+                        },
+                        {
+                            "name": "zSegments",
+                            "description": "Number of segments on the Z-axis (depth).",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1"
+                        },
+                        {
+                            "name": "lod",
+                            "description": ".",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1]  Level-of-detail, in range [0..1"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Geometry"
+        },
+        "TeapotGeometry": {
+            "name": "TeapotGeometry",
+            "shortname": "TeapotGeometry",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "examples/js/geometry/teapotGeometry.js",
+            "line": 1,
+            "description": "A **TeapotGeometry** defines a [Utah Teapot](https://en.wikipedia.org/wiki/Utah_teapot) geometry for attached\n{{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n## Examples\n\n<ul>\n<li>[TeapotGeometry example](../../examples/#geometry_TeapotGeometry)</li>\n</ul>\n\n## Usage\n\nAn {{#crossLink \"Entity\"}}{{/crossLink}} with a TeapotGeometry, transformed with a {{#crossLink \"Rotate\"}}{{/crossLink}}\nand {{#crossLink \"Translate\"}}{{/crossLink}}, colored with a {{#crossLink \"PhongMaterial\"}}{{/crossLink}}, and with a\n{{#crossLink \"Camera\"}}{{/crossLink}} positioned to arrange it within the view:\n````javascript\nvar entity = new XEO.Entity({\n    geometry: new XEO.TeapotGeometry(),\n    material: new XEO.PhongMaterial({\n        ambient: [0.9, 0.3, 0.9],\n        diffuse: [0.4, 0.4, 0.9],\n        shininess: 30\n    }),\n    transform: new XEO.Rotate({\n        xyz: [1,0,0],\n        angle: -90,\n        parent: new XEO.Translate({\n            xyz: [0,-20,0]\n        })\n    })\n});\n\nentity.scene.camera.view.eye = [0, 0, -80];\n````",
+            "submodule": "geometry",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this TeapotGeometry in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this TeapotGeometry.",
+                            "type": "String:Object",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "extends": "Geometry"
+        },
+        "VectorTextGeometry": {
+            "name": "VectorTextGeometry",
+            "shortname": "VectorTextGeometry",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "examples/js/geometry/vectorTextGeometry.js",
+            "line": 1,
+            "description": "A **VectorTextGeometry** defines vector text geometry for attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n## Example\n\n````javascript\nnew XEO.Entity({\n    geometry: new XEO.VectorTextGeometry({\n        text: \"Attack ships on fire off the Shoulder of Orion\",\n        xSize: 2,\n        ySize: 2\n    }),\n    material: new XEO.PhongMaterial({\n        emissive: [0.5, 1.0, 1.0],\n        lineWidth: 2\n    }),\n    lights: new XEO.Lights({\n        lights: [] // No lights - rely on emissive color\n    }),\n    transform: new XEO.Translate({\n        xyz: [0, 40, 0]\n    })\n});\n````",
+            "submodule": "geometry",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this VectorTextGeometry in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this VectorTextGeometry.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "text",
+                            "description": "The text.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"\""
+                        }
+                    ]
+                }
+            ],
+            "extends": "Geometry"
         }
     },
     "classitems": [
@@ -19580,7 +19832,7 @@
         },
         {
             "file": "src/transforms/transform.js",
-            "line": 207,
+            "line": 210,
             "description": "Fired whenever this Transform's {{#crossLink \"Transform/leafMatrix:property\"}}{{/crossLink}} property changes.\n\nThis event does not carry the updated property value. Instead, subscribers will need to read\nthat property again to get its updated value (which may be lazy-computed then).",
             "itemtype": "event",
             "name": "updated",
@@ -19590,7 +19842,7 @@
         },
         {
             "file": "src/transforms/transform.js",
-            "line": 271,
+            "line": 278,
             "description": "The parent Transform.\n\nFires a {{#crossLink \"Transform/parent:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "parent",
@@ -19601,7 +19853,7 @@
         },
         {
             "file": "src/transforms/transform.js",
-            "line": 307,
+            "line": 314,
             "description": "Fired whenever this Transform's {{#crossLink \"Transform/parent:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "parent",
@@ -19617,7 +19869,35 @@
         },
         {
             "file": "src/transforms/transform.js",
-            "line": 327,
+            "line": 334,
+            "description": "Flag that indicates whether this Transform is post-multiplied (default) or pre-multiplied by\nits {{#crossLink \"Transform/parent:property\"}}{{/crossLink}} Transform.\n\nFires an {{#crossLink \"Transform/postMultiply:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "postMultiply",
+            "default": "true",
+            "type": "Boolean",
+            "class": "Transform",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/transform.js",
+            "line": 362,
+            "description": "Fired whenever this Transform's {{#crossLink \"Transform/postMultiply:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "postMultiply",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Transform",
+            "module": "XEO",
+            "submodule": "transforms"
+        },
+        {
+            "file": "src/transforms/transform.js",
+            "line": 375,
             "description": "The Transform's local matrix.\n\nFires a {{#crossLink \"Transform/matrix:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "matrix",
@@ -19629,7 +19909,7 @@
         },
         {
             "file": "src/transforms/transform.js",
-            "line": 346,
+            "line": 394,
             "description": "Fired whenever this Transform's {{#crossLink \"Transform/matrix:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "matrix",
@@ -19645,7 +19925,7 @@
         },
         {
             "file": "src/transforms/transform.js",
-            "line": 366,
+            "line": 414,
             "description": "Returns the product of all {{#crossLink \"Transform/matrix:property\"}}{{/crossLink}}'s on Transforms\non the path via {{#crossLink \"Transform/parent:property\"}}{{/crossLink}} up to the root.\n\nThe value of this property will have a fresh value after each\n{{#crossLink \"Transform/updated:property\"}}{{/crossLink}} event, which is fired whenever any Transform\non the path receives an update for its {{#crossLink \"Transform/matrix:property\"}}{{/crossLink}} or\n{{#crossLink \"Transform/matrix:property\"}}{{/crossLink}} property.",
             "itemtype": "property",
             "name": "matrix",
@@ -21183,7 +21463,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 352,
+            "line": 358,
             "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} attached to this ZSpace component.\n\nThe ZSpace component will attach a {{#crossLink \"Projection\"}}{{/crossLink}} to its\n{{#crossLink \"Camera\"}}{{/crossLink}} if the {{#crossLink \"Camera\"}}Camera{{/crossLink}} does not have\none already, replacing whatever projection transform component was already attached.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this ZSpace component. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.\n\nNo other component should modify the state of the {{#crossLink \"Camera\"}}{{/crossLink}} while\nit's attached to this ZSpace component. There is no prevention or check for that, so if that\nhappens you'll get unexpected results.",
             "itemtype": "property",
             "name": "camera",
@@ -21194,7 +21474,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 374,
+            "line": 380,
             "description": "Fired whenever this ZSpace component's {{#crossLink \"ZSpace/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
@@ -21210,7 +21490,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 394,
+            "line": 400,
             "description": "Position of this ZSpace's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"ZSpace/nearClip:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "nearClip",
@@ -21222,7 +21502,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 411,
+            "line": 417,
             "description": "Fired whenever this ZSpace's   {{#crossLink \"ZSpace/nearClip:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "nearClip",
@@ -21238,7 +21518,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 424,
+            "line": 430,
             "description": "Position of this ZSpace's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"ZSpace/farClip:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "farClip",
@@ -21250,7 +21530,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 441,
+            "line": 447,
             "description": "Fired whenever this ZSpace's  {{#crossLink \"ZSpace/farClip:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "farClip",
@@ -21266,7 +21546,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 455,
+            "line": 461,
             "description": "The viewer scale.\n\nUpdates to this are ignored when {{#crossLink \"ZSpace/autoViewerScale:property\"}}{{/crossLink}} is true.\n\nFires a {{#crossLink \"ZSpace/viewerScale:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "viewerScale",
@@ -21278,7 +21558,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 485,
+            "line": 491,
             "description": "Fired whenever this ZSpace's {{#crossLink \"ZSpace/viewerScale:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "viewerScale",
@@ -21295,7 +21575,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 499,
+            "line": 505,
             "description": "Set true to automatically size {{#crossLink \"ZSpace/viewerScale:event\"}}{{/crossLink}} to fit\neverything in the {{#crossLink \"Scene\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"ZSpace/autoViewerScale:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "autoViewerScale",
@@ -21307,7 +21587,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 532,
+            "line": 538,
             "description": "Fired whenever this ZSpace's {{#crossLink \"ZSpace/autoViewerScale:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "autoViewerScale",
@@ -21324,7 +21604,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 546,
+            "line": 552,
             "description": "The World-space origin.\n\nFires a {{#crossLink \"ZSpace/viewerOrigin:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "viewerOrigin",
@@ -21336,7 +21616,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 563,
+            "line": 569,
             "description": "Fired whenever this Translate's {{#crossLink \"Translate/viewerOrigin:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "viewerOrigin",
@@ -21353,7 +21633,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 576,
+            "line": 582,
             "description": "The display resolution.\n\nFires a {{#crossLink \"ZSpace/displayResolution:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "viewerScale",
@@ -21365,7 +21645,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 593,
+            "line": 599,
             "description": "Fired whenever this ZSpace's {{#crossLink \"ZSpace/displayResolution:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "displayResolution",
@@ -21382,7 +21662,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 607,
+            "line": 613,
             "description": "The display size.\n\nFires a {{#crossLink \"ZSpace/displaySize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "viewerScale",
@@ -21394,7 +21674,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 624,
+            "line": 630,
             "description": "Fired whenever this ZSpace's {{#crossLink \"ZSpace/displaySize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "displaySize",
@@ -21411,7 +21691,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 638,
+            "line": 644,
             "description": "The current World-space position of the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusMoved:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusPos",
@@ -21423,7 +21703,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 653,
+            "line": 659,
             "description": "The current World-space direction the stylus is pointing in.\n\nFires a {{#crossLink \"ZSpace/stylusMoved:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusOrientation",
@@ -21435,7 +21715,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 668,
+            "line": 674,
             "description": "The current camera matrix for the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusMoved:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusCameraMatrix",
@@ -21447,7 +21727,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 683,
+            "line": 689,
             "description": "Whether or not the first button is down on the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusButton0:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusButton0",
@@ -21460,7 +21740,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 699,
+            "line": 705,
             "description": "Whether or not the second button is down on the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusButton1:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusButton1",
@@ -21473,7 +21753,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 715,
+            "line": 721,
             "description": "Whether or not the third button is down on the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusButton2:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusButton2",
@@ -21486,7 +21766,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 731,
+            "line": 737,
             "description": "Flag which indicates whether this ZSpace component is active or not.\n\nNote that this ZSpace component can still be activated when the browser does not support ZSpace.\n\nFires an {{#crossLink \"ZSpace/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
@@ -21498,7 +21778,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 757,
+            "line": 763,
             "description": "Fired whenever this ZSpace component's {{#crossLink \"ZSpace/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
@@ -21514,7 +21794,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 1182,
+            "line": 1233,
             "description": "Fired whenever this ZSpace component's stylus moves.",
             "itemtype": "event",
             "name": "stylusMoved",
@@ -21524,7 +21804,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 1192,
+            "line": 1243,
             "description": "Fired whenever this ZSpace component's first button is pressed or released.",
             "itemtype": "event",
             "name": "stylusButton0",
@@ -21540,7 +21820,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 1203,
+            "line": 1254,
             "description": "Fired whenever this ZSpace component's second button is pressed or released.",
             "itemtype": "event",
             "name": "stylusButton1",
@@ -21556,7 +21836,7 @@
         },
         {
             "file": "examples/js/webvr/zspace/zSpace.js",
-            "line": 1214,
+            "line": 1265,
             "description": "Fired whenever this ZSpace component's third button is pressed or released.",
             "itemtype": "event",
             "name": "stylusButton2",
@@ -22320,6 +22600,379 @@
             "class": "Skybox",
             "module": "XEO",
             "submodule": "skyboxes"
+        },
+        {
+            "file": "examples/js/geometry/heightmapGeometry.js",
+            "line": 101,
+            "description": "Implement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",
+            "access": "protected",
+            "tagname": "",
+            "class": "HeightmapGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/heightmapGeometry.js",
+            "line": 273,
+            "description": "Fired whenever this HeightmapGeometry has rebuilt itself after an update to the\n{{#crossLink \"Heightmap/src:property\"}}{{/crossLink}} or {{#crossLink \"Heightmap/image:property\"}}{{/crossLink}} properties.",
+            "itemtype": "event",
+            "name": "loaded",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "This Heightmap",
+                    "type": "Heightmap"
+                }
+            ],
+            "class": "HeightmapGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/heightmapGeometry.js",
+            "line": 317,
+            "description": "Fired whenever this Heightmap's  {{#crossLink \"Heightmap/image:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "image",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "HTML Image"
+                }
+            ],
+            "class": "HeightmapGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/heightmapGeometry.js",
+            "line": 358,
+            "description": "The Heightmap's level-of-detail factor.\n\nFires a {{#crossLink \"Heightmap/lod:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "lod",
+            "default": "1",
+            "type": "Number",
+            "class": "HeightmapGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/heightmapGeometry.js",
+            "line": 388,
+            "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/lod:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "lod",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "HeightmapGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/heightmapGeometry.js",
+            "line": 402,
+            "description": "Indicates an HTML DOM Image object to source this Heightmap from.\n\nAlternatively, you could indicate the source via the\n{{#crossLink \"Heightmap/src:property\"}}{{/crossLink}} property.\n\nFires an {{#crossLink \"Heightmap/image:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Heightmap/src:property\"}}{{/crossLink}} to null.",
+            "itemtype": "property",
+            "name": "image",
+            "default": "null",
+            "type": "{HTMLImageElement}",
+            "class": "HeightmapGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/heightmapGeometry.js",
+            "line": 429,
+            "description": "Fired whenever this Heightmap's  {{#crossLink \"Heightmap/image:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "image",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "HTML Image"
+                }
+            ],
+            "class": "HeightmapGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/heightmapGeometry.js",
+            "line": 442,
+            "description": "Indicates a path to an image file to source this Heightmap from.\n\nAlternatively, you could indicate the source via the\n{{#crossLink \"Heightmap/image:property\"}}{{/crossLink}} property.\n\nFires a {{#crossLink \"Heightmap/src:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Heightmap/image:property\"}}{{/crossLink}} to null.",
+            "itemtype": "property",
+            "name": "src",
+            "default": "null",
+            "type": "String",
+            "class": "HeightmapGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/heightmapGeometry.js",
+            "line": 469,
+            "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/src:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "src",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "type": "String",
+            "class": "HeightmapGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/heightmapGeometry.js",
+            "line": 483,
+            "description": "The Heightmap's dimension on the X-axis.\n\nFires a {{#crossLink \"Heightmap/xSize:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "xSize",
+            "default": "1",
+            "type": "Number",
+            "class": "HeightmapGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/heightmapGeometry.js",
+            "line": 513,
+            "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/xSize:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "xSize",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "HeightmapGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/heightmapGeometry.js",
+            "line": 527,
+            "description": "The Heightmap's dimension on the Y-axis.\n\nFires a {{#crossLink \"Heightmap/ySize:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "ySize",
+            "default": "0.25",
+            "type": "Number",
+            "class": "HeightmapGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/heightmapGeometry.js",
+            "line": 557,
+            "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/ySize:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "ySize",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "HeightmapGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/heightmapGeometry.js",
+            "line": 571,
+            "description": "The Heightmap's dimension (height) on the Z-axis.\n\nFires a {{#crossLink \"Heightmap/zSize:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "zSize",
+            "default": "1.0",
+            "type": "Number",
+            "class": "HeightmapGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/heightmapGeometry.js",
+            "line": 601,
+            "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/zSize:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "zSize",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "HeightmapGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/heightmapGeometry.js",
+            "line": 615,
+            "description": "The Heightmap's number of segments on the X-axis.\n\nFires a {{#crossLink \"Heightmap/xSegments:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "xSegments",
+            "default": "100",
+            "type": "Number",
+            "class": "HeightmapGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/heightmapGeometry.js",
+            "line": 645,
+            "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/xSegments:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "xSegments",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "HeightmapGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/heightmapGeometry.js",
+            "line": 659,
+            "description": "The Heightmap's number of segments on the Z-axis.\n\nFires a {{#crossLink \"Heightmap/zSegments:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "zSegments",
+            "default": "100",
+            "type": "Number",
+            "class": "HeightmapGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/heightmapGeometry.js",
+            "line": 689,
+            "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/zSegments:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "zSegments",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "HeightmapGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/vectorTextGeometry.js",
+            "line": 59,
+            "description": "Implement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",
+            "access": "protected",
+            "tagname": "",
+            "class": "VectorTextGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/vectorTextGeometry.js",
+            "line": 161,
+            "description": "The text for this VectorText\n\nFires a {{#crossLink \"VectorTextGeometry/text:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "text",
+            "default": "\"\"",
+            "type": "String",
+            "class": "VectorTextGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/vectorTextGeometry.js",
+            "line": 184,
+            "description": "Fired whenever this VectorTextGeometry's {{#crossLink \"VectorTextGeometry/text:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "text",
+            "type": "Boolean",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "VectorTextGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/vectorTextGeometry.js",
+            "line": 198,
+            "description": "The VectorText's size on the X-axis.\n\nFires a {{#crossLink \"VectorText/xSize:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "xSize",
+            "default": "1",
+            "type": "Number",
+            "class": "VectorTextGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/vectorTextGeometry.js",
+            "line": 226,
+            "description": "Fired whenever this VectorText's {{#crossLink \"VectorText/xSize:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "xSize",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "VectorTextGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/vectorTextGeometry.js",
+            "line": 240,
+            "description": "The VectorText's size on the Y-axis.\n\nFires a {{#crossLink \"VectorText/ySize:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "ySize",
+            "default": "1.0",
+            "type": "Number",
+            "class": "VectorTextGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/vectorTextGeometry.js",
+            "line": 268,
+            "description": "Fired whenever this VectorText's {{#crossLink \"VectorText/ySize:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "ySize",
+            "type": "Number",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "VectorTextGeometry",
+            "module": "XEO",
+            "submodule": "geometry"
         }
     ],
     "warnings": [
@@ -23306,6 +23959,14 @@
         {
             "message": "Missing item type\nGets a point on this Path corresponding to the given progress position.",
             "line": " examples/js/curves/path.js:352"
+        },
+        {
+            "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",
+            "line": " examples/js/geometry/heightmapGeometry.js:101"
+        },
+        {
+            "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",
+            "line": " examples/js/geometry/vectorTextGeometry.js:59"
         }
     ]
 }

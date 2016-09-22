@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Component - xeoengine</title>
+    <title>TeapotGeometry - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -184,157 +184,60 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>Component</h1>
+<h1>TeapotGeometry</h1>
 <div class="box meta">
 
-
-        <div class="foundat">
-            Defined in: <a href="../files/src_component.js.html#l1"><code>src&#x2F;component.js:1</code></a>
+        <div class="extends">
+            Extends <a href="../classes/Geometry.html" class="crosslink">Geometry</a>
         </div>
 
-            Module: <a href="../modules/XEO.html">XEO</a>
+        <div class="foundat">
+            Defined in: <a href="../files/examples_js_geometry_teapotGeometry.js.html#l1"><code>examples&#x2F;js&#x2F;geometry&#x2F;teapotGeometry.js:1</code></a>
+        </div>
+
+            Module: <a href="../modules/geometry.html">geometry</a><br>
+            Parent Module: <a href="../modules/XEO.html">XEO</a>
 
 </div>
 
 
 <div class="box intro">
-    <p><strong>Component</strong> is the base class for all xeoEngine components.</p>
-<h2 id="contents">Contents</h2>
-<p><Ul>
- <li><a href="#ids">Component IDs</a></li>
- <li><a href="#componentProps">Properties</a></li>
- <li><a href="#metadata">Metadata</a></li>
- <li><a href="#logging">Logging</a></li>
- <li><a href="#destruction">Destruction</a></li>
- </ul></p>
-<h2 id="-a-name-ids-component-ids-a-"><a name="ids">Component IDs</a></h2>
-<p>Every Component has an ID that&#39;s unique within the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>. xeoEngine generates
- the IDs automatically by default, however you can also specify them yourself. In the example below, we&#39;re creating a
- scene comprised of <a href="../classes/Scene.html" class="crosslink">Scene</a>, <a href="../classes/Material.html" class="crosslink">Material</a>, <a href="../classes/Geometry.html" class="crosslink">Geometry</a> and
- <a href="../classes/Entity.html" class="crosslink">Entity</a> components, while letting xeoEngine generate its own ID for
- the <a href="../classes/Geometry.html" class="crosslink">Geometry</a>:</p>
-<pre class="code prettyprint"><code class="lang-javascript"> // The Scene is a Component too
- var scene = new XEO.Scene({
-    id: "myScene"
+    <p>A <strong>TeapotGeometry</strong> defines a <a href="https://en.wikipedia.org/wiki/Utah_teapot">Utah Teapot</a> geometry for attached
+<a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+<h2 id="examples">Examples</h2>
+<ul>
+<li><a href="../../examples/#geometry_TeapotGeometry">TeapotGeometry example</a></li>
+</ul>
+
+<h2 id="usage">Usage</h2>
+<p>An <a href="../classes/Entity.html" class="crosslink">Entity</a> with a TeapotGeometry, transformed with a <a href="../classes/Rotate.html" class="crosslink">Rotate</a>
+and <a href="../classes/Translate.html" class="crosslink">Translate</a>, colored with a <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, and with a
+<a href="../classes/Camera.html" class="crosslink">Camera</a> positioned to arrange it within the view:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var entity = new XEO.Entity({
+    geometry: new XEO.TeapotGeometry(),
+    material: new XEO.PhongMaterial({
+        ambient: [0.9, 0.3, 0.9],
+        diffuse: [0.4, 0.4, 0.9],
+        shininess: 30
+    }),
+    transform: new XEO.Rotate({
+        xyz: [1,0,0],
+        angle: -90,
+        parent: new XEO.Translate({
+            xyz: [0,-20,0]
+        })
+    })
 });
-var material = new XEO.PhongMaterial(scene, {
-    id: "myMaterial"
-});
-var geometry = new XEO.Geometry(scene, {
-    id: "myGeometry"
-});
-// Let xeoEngine automatically generate the ID for our Entity
- var entity = new XEO.Entity(scene, {
-    material: material,
-    geometry: geometry
-});
+
+entity.scene.camera.view.eye = [0, 0, -80];
 </code></pre>
-<p>We can then find those components like this:</p>
-<pre class="code prettyprint"><code class="lang-javascript"> // Find the Scene
- var theScene = XEO.scenes["myScene"];
-// Find the Material
- var theMaterial = theScene.components["myMaterial"];
-</code></pre>
-<h2 id="-a-name-componentprops-properties-a-"><a name="componentProps">Properties</a></h2>
-<p>Almost every property on a xeoEngine Component fires a change event when you update it. For example, we can subscribe
- to the <a href="../classes/PhongMaterial.html#event_diffuse" class="crosslink">diffuse</a> event that a
- <a href="../classes/Material.html" class="crosslink">Material</a> fires when its <a href="../classes/PhongMaterial.html#property_diffuse" class="crosslink">diffuse</a>
- property is updated, like so:</p>
-<pre class="code prettyprint"><code class="lang-javascript"> // Bind a change callback to a property
- var handle = material.on("diffuse", function(diffuse) {
-    console.log("Material diffuse color has changed to: [" + diffuse[0] + ", " + diffuse[1] + "," + diffuse[2] + "]");
-});
-// Change the property value, which fires the callback
- material.diffuse = [ 0.0, 0.5, 0.5 ];
-// Unsubscribe from the property change event
- material.off(handle);
-</code></pre>
-<p>We can also subscribe to changes in the way components are attached to each other, since components are properties
- of other components. For example, we can subscribe to the &#39;<a href="../classes/Entity.html#event_material" class="crosslink">material</a>&#39; event that a
- <a href="../classes/Entity.html" class="crosslink">Entity</a> fires when its <a href="../classes/Entity.html#property_material" class="crosslink">material</a>
- property is set to a different <a href="../classes/Material.html" class="crosslink">Material</a>:</p>
-<pre class="code prettyprint"><code class="lang-javascript"> // Bind a change callback to the Entity&#39;s Material
- entity1.on("material", function(material) {
-    console.log("Entity&#39;s Material has changed to: " + material.id);
-});
-// Now replace that Material with another
- entity1.material = new XEO.PhongMaterial({
-    id: "myOtherMaterial",
-    diffuse: [ 0.3, 0.3, 0.6 ]
-    //..
-});
-</code></pre>
-<h2 id="-a-name-metadata-metadata-a-"><a name="metadata">Metadata</a></h2>
-<p>You can set optional <strong>metadata</strong> on your Components, which can be anything you like. These are intended
- to help manage your components within your application code or content pipeline. You could use metadata to attach
- authoring or version information, like this:</p>
-<pre class="code prettyprint"><code class="lang-javascript"> // Scene with authoring metadata
- var scene = new XEO.Scene({
-    id: "myScene",
-    meta: {
-        title: "My awesome 3D scene",
-        author: "@xeolabs",
-        date: "February 13 2015"
-    }
-});
-// Material with descriptive metadata
- var material = new XEO.PhongMaterial(scene, {
-    id: "myMaterial",
-    diffuse: [1, 0, 0],
-    meta: {
-        description: "Bright red color with no textures",
-        version: "0.1",
-        foo: "bar"
-    }
-});
-</code></pre>
-<p>As with all properties, you can subscribe and change the metadata like this:</p>
-<pre class="code prettyprint"><code class="lang-javascript"> // Subscribe to changes to the Material&#39;s metadata
- material.on("meta", function(value) {
-    console.log("Metadata changed: " + JSON.stringify(value));
-});
-// Change the Material&#39;s metadata, firing our change handler
- material.meta = {
-    description: "Bright red color with no textures",
-    version: "0.2",
-    foo: "baz"
-};
-</code></pre>
-<h2 id="-a-name-logging-logging-a-"><a name="logging">Logging</a></h2>
-<p>Components have methods to log ID-prefixed messages to the JavaScript console:</p>
-<pre class="code prettyprint"><code class="lang-javascript"> material.log("Everything is fine, situation normal.");
- material.warn("Wait, whats that red light?");
- material.error("Aw, snap!");
-</code></pre>
-<p>The logged messages will look like this in the console:</p>
-<pre class="code prettyprint"><code class="lang-text"> [LOG]   myMaterial: Everything is fine, situation normal.
- [WARN]  myMaterial: Wait, whats that red light..
- [ERROR] myMaterial: Aw, snap!
-</code></pre>
-<h2 id="-a-name-destruction-destruction-a-"><a name="destruction">Destruction</a></h2>
-<p>Get notification of destruction directly on the Components:</p>
-<pre class="code prettyprint"><code class="lang-javascript"> material.on("destroyed", function() {
-    this.log("Component was destroyed: " + this.id);
-});
-</code></pre>
-<p>Or get notification of destruction of any Component within its <a href="../classes/Scene.html" class="crosslink">Scene</a>, indiscriminately:</p>
-<pre class="code prettyprint"><code class="lang-javascript"> scene.on("componentDestroyed", function(component) {
-    this.log("Component was destroyed: " + component.id);
-});
-</code></pre>
-<p>Then destroy a component like this:</p>
-<pre class="code prettyprint"><code class="lang-javascript"> material.destroy();
-</code></pre>
-<p>Other Components that are linked to it will fall back on a default of some sort. For example, any
- <a href="../classes/Entity.html" class="crosslink">Entities</a> that were linked to our <a href="../classes/Material.html" class="crosslink">Material</a>
- will then automatically link to the <a href="../classes/Scene.html" class="crosslink">Scene&#39;s</a> default <a href="../classes/Scene.html#property_material" class="crosslink">material</a>.</p>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Component" class="method item">
-            <h3 class="name"><code>Component</code></h3>
+        <div id="method_TeapotGeometry" class="method item">
+            <h3 class="name"><code>TeapotGeometry</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
@@ -358,7 +261,7 @@ var geometry = new XEO.Geometry(scene, {
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/src_component.js.html#l1"><code>src&#x2F;component.js:1</code></a>
+                <a href="../files/examples_js_geometry_teapotGeometry.js.html#l1"><code>examples&#x2F;js&#x2F;geometry&#x2F;teapotGeometry.js:1</code></a>
                 </p>
         
         
@@ -380,8 +283,8 @@ var geometry = new XEO.Geometry(scene, {
         
         
                             <div class="param-description">
-                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this Component
-         within the default <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
+                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this TeapotGeometry in the default
+        <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
         
                             </div>
         
@@ -393,7 +296,7 @@ var geometry = new XEO.Geometry(scene, {
         
         
                             <div class="param-description">
-                                <p>DepthBuf configuration</p>
+                                <p>Configs</p>
         
                             </div>
         
@@ -404,7 +307,8 @@ var geometry = new XEO.Geometry(scene, {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional ID, unique among all components in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>, generated automatically when omitted.</p>
+                                            <p>Optional ID, unique among all components in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>,
+        generated automatically when omitted.</p>
         
                                         </div>
         
@@ -415,18 +319,7 @@ var geometry = new XEO.Geometry(scene, {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional map of user-defined metadata to attach to this Component.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[isDefault]</code>
-                                            <span class="type">Boolean</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Set true when this is one of xeoEngine&#39;s default components.</p>
+                                            <p>Optional map of user-defined metadata to attach to this TeapotGeometry.</p>
         
                                         </div>
         
@@ -457,44 +350,44 @@ var geometry = new XEO.Geometry(scene, {
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
-                    <ul class="index-list methods">
-                            <li class="index-item method">
+                    <ul class="index-list methods extends">
+                            <li class="index-item method inherited">
                                 <a href="#method_create">create</a>
 
                             </li>
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_destroy">destroy</a>
 
                             </li>
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_error">error</a>
 
                             </li>
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_fire">fire</a>
 
                             </li>
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_isType">isType</a>
 
                             </li>
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_log">log</a>
 
                             </li>
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_off">off</a>
 
                             </li>
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_on">on</a>
 
                             </li>
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_once">once</a>
 
                             </li>
-                            <li class="index-item method">
+                            <li class="index-item method inherited">
                                 <a href="#method_warn">warn</a>
 
                             </li>
@@ -504,45 +397,77 @@ var geometry = new XEO.Geometry(scene, {
                 <div class="index-section properties">
                     <h3>Properties</h3>
 
-                    <ul class="index-list properties">
-                            <li class="index-item property">
+                    <ul class="index-list properties extends">
+                            <li class="index-item property inherited">
+                                <a href="#property_autoNormals">autoNormals</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_colors">colors</a>
+
+                            </li>
+                            <li class="index-item property inherited">
                                 <a href="#property_destroyed">destroyed</a>
 
                             </li>
-                            <li class="index-item property">
+                            <li class="index-item property inherited">
                                 <a href="#property_id">id</a>
 
                             </li>
-                            <li class="index-item property">
+                            <li class="index-item property inherited">
+                                <a href="#property_indices">indices</a>
+
+                            </li>
+                            <li class="index-item property inherited">
                                 <a href="#property_isDefault">isDefault</a>
 
                             </li>
-                            <li class="index-item property">
+                            <li class="index-item property inherited">
                                 <a href="#property_json">json</a>
 
                             </li>
-                            <li class="index-item property">
+                            <li class="index-item property inherited">
+                                <a href="#property_localBoundary">localBoundary</a>
+
+                            </li>
+                            <li class="index-item property inherited">
                                 <a href="#property_metadata">metadata</a>
 
                             </li>
-                            <li class="index-item property">
+                            <li class="index-item property inherited">
+                                <a href="#property_normals">normals</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_positions">positions</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_primitive">primitive</a>
+
+                            </li>
+                            <li class="index-item property inherited">
                                 <a href="#property_scene">scene</a>
 
                             </li>
-                            <li class="index-item property">
+                            <li class="index-item property inherited inherited">
                                 <a href="#property_string">string</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_string">string</a>
-
-                            </li>
-                            <li class="index-item property">
+                            <li class="index-item property inherited">
                                 <a href="#property_superTypes">superTypes</a>
 
                             </li>
-                            <li class="index-item property">
+                            <li class="index-item property inherited">
                                 <a href="#property_type">type</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_usage">usage</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_uv">uv</a>
 
                             </li>
                     </ul>
@@ -552,9 +477,41 @@ var geometry = new XEO.Geometry(scene, {
                 <div class="index-section events">
                     <h3>Events</h3>
 
-                    <ul class="index-list events">
-                            <li class="index-item event">
+                    <ul class="index-list events extends">
+                            <li class="index-item event inherited">
+                                <a href="#event_autoNormals">autoNormals</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_colors">colors</a>
+
+                            </li>
+                            <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_indices">indices</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_normals">normals</a>
+
+                            </li>
+                            <li class="index-item event inherited inherited">
+                                <a href="#event_positions">positions</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_primitive">primitive</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_usage">usage</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_uv">uv</a>
 
                             </li>
                     </ul>
@@ -564,7 +521,7 @@ var geometry = new XEO.Geometry(scene, {
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
-<div id="method_create" class="method item">
+<div id="method_create" class="method item inherited">
     <h3 class="name"><code>create</code></h3>
 
         <div class="args">
@@ -593,8 +550,8 @@ var geometry = new XEO.Geometry(scene, {
 
 
     <div class="meta">
-                <p>
-                Defined in
+                <p>Inherited from
+                <a href="../classes/Component.html#method_create">Component</a>:
         <a href="../files/src_component.js.html#l831"><code>src&#x2F;component.js:831</code></a>
         </p>
 
@@ -605,18 +562,18 @@ var geometry = new XEO.Geometry(scene, {
     <div class="description">
         <p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 <p>You would typically use this method to conveniently instantiate components that you&#39;d want to
-share (ie. "instance") among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+share (ie. &quot;instance&quot;) among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
 <p>The method is given a component type, configuration and optional instance ID, like so:</p>
 <pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(XEO.PhongMaterial, {
      diffuse: [1,0,0],
      specular: [1,1,0]
-}, "myMaterial");
+}, &quot;myMaterial&quot;);
 </code></pre>
 <p>The first time you call this method for the given <code>type</code> and <code>instanceId</code>, this method will create the
 <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, passing the given  attributes to the component&#39;s constructor.</p>
 <p>If you call this method again, specifying the same <code>type</code> and <code>instanceId</code>, the method will return the same
 component instance that it returned the first time, and will ignore the configuration:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
+<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, &quot;myMaterial&quot;);
 </code></pre>
 <p>So in this example, our <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> will continue to have the red specular
 and diffuse color that we specified the first time.</p>
@@ -682,7 +639,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
 
 
 </div>
-<div id="method_destroy" class="method item">
+<div id="method_destroy" class="method item inherited">
     <h3 class="name"><code>destroy</code></h3>
 
         <span class="paren">()</span>
@@ -696,8 +653,8 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
 
 
     <div class="meta">
-                <p>
-                Defined in
+                <p>Inherited from
+                <a href="../classes/Component.html#method_destroy">Component</a>:
         <a href="../files/src_component.js.html#l1010"><code>src&#x2F;component.js:1010</code></a>
         </p>
 
@@ -718,7 +675,7 @@ defaults that this component overrode on them.</p>
 
 
 </div>
-<div id="method_error" class="method item">
+<div id="method_error" class="method item inherited">
     <h3 class="name"><code>error</code></h3>
 
         <div class="args">
@@ -738,8 +695,8 @@ defaults that this component overrode on them.</p>
 
 
     <div class="meta">
-                <p>
-                Defined in
+                <p>Inherited from
+                <a href="../classes/Component.html#method_error">Component</a>:
         <a href="../files/src_component.js.html#l579"><code>src&#x2F;component.js:579</code></a>
         </p>
 
@@ -776,7 +733,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 </div>
-<div id="method_fire" class="method item">
+<div id="method_fire" class="method item inherited">
     <h3 class="name"><code>fire</code></h3>
 
         <div class="args">
@@ -802,8 +759,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
     <div class="meta">
-                <p>
-                Defined in
+                <p>Inherited from
+                <a href="../classes/Component.html#method_fire">Component</a>:
         <a href="../files/src_component.js.html#l420"><code>src&#x2F;component.js:420</code></a>
         </p>
 
@@ -862,7 +819,7 @@ any subsequent notifications on that location as they are made.</p>
 
 
 </div>
-<div id="method_isType" class="method item">
+<div id="method_isType" class="method item inherited">
     <h3 class="name"><code>isType</code></h3>
 
         <div class="args">
@@ -885,8 +842,8 @@ any subsequent notifications on that location as they are made.</p>
 
 
     <div class="meta">
-                <p>
-                Defined in
+                <p>Inherited from
+                <a href="../classes/Component.html#method_isType">Component</a>:
         <a href="../files/src_component.js.html#l355"><code>src&#x2F;component.js:355</code></a>
         </p>
 
@@ -895,12 +852,12 @@ any subsequent notifications on that location as they are made.</p>
     </div>
 
     <div class="description">
-        <p>Tests if this component is of the given type, or is a subclass of the given type.</p>
-<p>The type may be given as either a string or a component constructor.</p>
-<p>This method works by walking up the inheritance type chain, which this component provides in
+        <p><p>Tests if this component is of the given type, or is a subclass of the given type.</p></p>
+<p><p>The type may be given as either a string or a component constructor.</p></p>
+<p><p>This method works by walking up the inheritance type chain, which this component provides in
 property <a href="../classes/Component.html#property_superTypes" class="crosslink">superTypes</a>, returning true as soon as one of the type strings in
-the chain matches the given type, of false if none match.</p>
-<h4 id="examples-">Examples:</h4>
+the chain matches the given type, of false if none match.</p></p>
+<p><h4 id="examples-">Examples:</h4></p>
 <pre class="code prettyprint"><code class="lang-javascript">var myRotate = new XEO.Rotate({ ... });
 
 myRotate.isType(XEO.Component); // Returns true for all XEO components
@@ -943,7 +900,7 @@ myRotate.isType(XEO.Entity); // Returns false, because XEO.Rotate does not (even
 
 
 </div>
-<div id="method_log" class="method item">
+<div id="method_log" class="method item inherited">
     <h3 class="name"><code>log</code></h3>
 
         <div class="args">
@@ -963,8 +920,8 @@ myRotate.isType(XEO.Entity); // Returns false, because XEO.Rotate does not (even
 
 
     <div class="meta">
-                <p>
-                Defined in
+                <p>Inherited from
+                <a href="../classes/Component.html#method_log">Component</a>:
         <a href="../files/src_component.js.html#l534"><code>src&#x2F;component.js:534</code></a>
         </p>
 
@@ -1001,7 +958,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 </div>
-<div id="method_off" class="method item">
+<div id="method_off" class="method item inherited">
     <h3 class="name"><code>off</code></h3>
 
         <div class="args">
@@ -1021,8 +978,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
     <div class="meta">
-                <p>
-                Defined in
+                <p>Inherited from
+                <a href="../classes/Component.html#method_off">Component</a>:
         <a href="../files/src_component.js.html#l491"><code>src&#x2F;component.js:491</code></a>
         </p>
 
@@ -1057,7 +1014,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 </div>
-<div id="method_on" class="method item">
+<div id="method_on" class="method item inherited">
     <h3 class="name"><code>on</code></h3>
 
         <div class="args">
@@ -1086,8 +1043,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
     <div class="meta">
-                <p>
-                Defined in
+                <p>Inherited from
+                <a href="../classes/Component.html#method_on">Component</a>:
         <a href="../files/src_component.js.html#l461"><code>src&#x2F;component.js:461</code></a>
         </p>
 
@@ -1154,7 +1111,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 </div>
-<div id="method_once" class="method item">
+<div id="method_once" class="method item inherited">
     <h3 class="name"><code>once</code></h3>
 
         <div class="args">
@@ -1180,8 +1137,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
     <div class="meta">
-                <p>
-                Defined in
+                <p>Inherited from
+                <a href="../classes/Component.html#method_once">Component</a>:
         <a href="../files/src_component.js.html#l513"><code>src&#x2F;component.js:513</code></a>
         </p>
 
@@ -1240,7 +1197,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 </div>
-<div id="method_warn" class="method item">
+<div id="method_warn" class="method item inherited">
     <h3 class="name"><code>warn</code></h3>
 
         <div class="args">
@@ -1260,8 +1217,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
     <div class="meta">
-                <p>
-                Defined in
+                <p>Inherited from
+                <a href="../classes/Component.html#method_warn">Component</a>:
         <a href="../files/src_component.js.html#l559"><code>src&#x2F;component.js:559</code></a>
         </p>
 
@@ -1303,7 +1260,64 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_destroyed" class="property item">
+                    <div id="property_autoNormals" class="property item inherited">
+                        <h3 class="name"><code>autoNormals</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_autoNormals">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l1060"><code>src&#x2F;geometry&#x2F;geometry.js:1060</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Set true to make this Geometry automatically generate <a href="../classes/Geometry.html#property_normals" class="crosslink">normals</a> from
+                    <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a> and <a href="../classes/Geometry.html#property_indices" class="crosslink">indices</a>.</p>
+                    <p>When true, causes this Geometry to auto-generate its <a href="../classes/Geometry.html#property_normals" class="crosslink">normals</a> on the
+                    next <a href="../classes/Scene.html" class="crosslink">Scene</a> Scene/tick:event event.</p>
+                    <p>Fires an <a href="../classes/Geometry.html#event_autoNormals" class="crosslink">autoNormals</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> false</p>
+                    
+                    
+                    </div>
+                    <div id="property_colors" class="property item inherited">
+                        <h3 class="name"><code>colors</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_colors">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l887"><code>src&#x2F;geometry&#x2F;geometry.js:887</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Geometry&#39;s vertex colors array.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_colors" class="crosslink">colors</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
+                    <div id="property_destroyed" class="property item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type">Boolean</span>
                     
@@ -1312,8 +1326,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_destroyed">Component</a>:
                             <a href="../files/src_component.js.html#l281"><code>src&#x2F;component.js:281</code></a>
                             </p>
                     
@@ -1328,7 +1342,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_id" class="property item">
+                    <div id="property_id" class="property item inherited">
                         <h3 class="name"><code>id</code></h3>
                         <span class="type">String</span>
                     
@@ -1338,8 +1352,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_id">Component</a>:
                             <a href="../files/src_component.js.html#l272"><code>src&#x2F;component.js:272</code></a>
                             </p>
                     
@@ -1354,7 +1368,36 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_isDefault" class="property item">
+                    <div id="property_indices" class="property item inherited">
+                        <h3 class="name"><code>indices</code></h3>
+                        <span class="type">Uint16Array | Uint32Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_indices">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l937"><code>src&#x2F;geometry&#x2F;geometry.js:937</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Geometry&#39;s indices array.</p>
+                    <p>If <code>XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS[&quot;OES_element_index_uint&quot;]</code> is true, then this can be
+                    a <code>Uint32Array</code>, otherwise it needs to be a <code>Uint16Array</code>.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_indices" class="crosslink">indices</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
+                    <div id="property_isDefault" class="property item inherited">
                         <h3 class="name"><code>isDefault</code></h3>
                         <span class="type">Boolean</span>
                     
@@ -1363,8 +1406,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_isDefault">Component</a>:
                             <a href="../files/src_component.js.html#l264"><code>src&#x2F;component.js:264</code></a>
                             </p>
                     
@@ -1379,7 +1422,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_json" class="property item">
+                    <div id="property_json" class="property item inherited">
                         <h3 class="name"><code>json</code></h3>
                         <span class="type">JSON</span>
                     
@@ -1389,8 +1432,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_json">Component</a>:
                             <a href="../files/src_component.js.html#l949"><code>src&#x2F;component.js:949</code></a>
                             </p>
                     
@@ -1405,7 +1448,39 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_metadata" class="property item">
+                    <div id="property_localBoundary" class="property item inherited">
+                        <h3 class="name"><code>localBoundary</code></h3>
+                        <span class="type"><a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a></span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_localBoundary">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l1002"><code>src&#x2F;geometry&#x2F;geometry.js:1002</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Local-space 3D boundary enclosing the <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a> of this Geometry.</p>
+                    <p>The a <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> is lazy-instantiated the first time that this
+                    property is referenced. If <a href="../classes/Component.html#method_destroy" class="crosslink">destroy</a> is then called on it,
+                    then this property will be assigned to a fresh <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> instance next
+                    time it&#39;s referenced.</p>
+                    <p>The <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> will fire an <a href="../classes/Boundary3D.html#event_updated" class="crosslink">updated</a>
+                    event whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a> are updated.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_metadata" class="property item inherited">
                         <h3 class="name"><code>metadata</code></h3>
                         <span class="type">Object</span>
                     
@@ -1414,8 +1489,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_metadata">Component</a>:
                             <a href="../files/src_component.js.html#l256"><code>src&#x2F;component.js:256</code></a>
                             </p>
                     
@@ -1430,7 +1505,91 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_scene" class="property item">
+                    <div id="property_normals" class="property item inherited">
+                        <h3 class="name"><code>normals</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_normals">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l787"><code>src&#x2F;geometry&#x2F;geometry.js:787</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Geometry&#39;s normal vectors array.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_normals" class="crosslink">normals</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
+                    <div id="property_positions" class="property item inherited">
+                        <h3 class="name"><code>positions</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_positions">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l722"><code>src&#x2F;geometry&#x2F;geometry.js:722</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Geometry&#39;s positions array.</p>
+                    <p>This property is a one-dimensional array - use  XEO.math/flatten:method to
+                    convert two-dimensional arrays for assignment to this property.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_positions" class="crosslink">positions</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
+                    <div id="property_primitive" class="property item inherited">
+                        <h3 class="name"><code>primitive</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_primitive">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l664"><code>src&#x2F;geometry&#x2F;geometry.js:664</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Geometry&#39;s primitive type.</p>
+                    <p>Valid types are: &#39;points&#39;, &#39;lines&#39;, &#39;line-loop&#39;, &#39;line-strip&#39;, &#39;triangles&#39;, &#39;triangle-strip&#39; and &#39;triangle-fan&#39;.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_primitive" class="crosslink">primitive</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> &quot;triangles&quot;</p>
+                    
+                    
+                    </div>
+                    <div id="property_scene" class="property item inherited">
                         <h3 class="name"><code>scene</code></h3>
                         <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
                     
@@ -1440,8 +1599,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_scene">Component</a>:
                             <a href="../files/src_component.js.html#l209"><code>src&#x2F;component.js:209</code></a>
                             </p>
                     
@@ -1456,7 +1615,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_string" class="property item">
+                    <div id="property_string" class="property item inherited">
                         <h3 class="name"><code>string</code></h3>
                         <span class="type">String</span>
                     
@@ -1466,8 +1625,11 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
+                                <p>Inherited from
+                                <a href="../classes/Component.html#property_string">
+                                    Component
+                                </a>
+                                but overwritten in
                             <a href="../files/src_component.js.html#l977"><code>src&#x2F;component.js:977</code></a>
                             </p>
                     
@@ -1482,33 +1644,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_string" class="property item">
-                        <h3 class="name"><code>string</code></h3>
-                        <span class="type">String</span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_component.js.html#l992"><code>src&#x2F;component.js:992</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Experimental: string containing a JavaScript expression that would instantiate this Component.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_superTypes" class="property item">
+                    <div id="property_superTypes" class="property item inherited">
                         <h3 class="name"><code>superTypes</code></h3>
                         <span class="type">Array of String</span>
                     
@@ -1518,8 +1654,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_superTypes">Component</a>:
                             <a href="../files/src_component.js.html#l336"><code>src&#x2F;component.js:336</code></a>
                             </p>
                     
@@ -1531,7 +1667,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     <p>For example, if this component is a <a href="../classes/Rotate.html" class="crosslink">Rotate</a>, which
                     extends <a href="../classes/Transform.html" class="crosslink">Transform</a>, which in turn extends <a href="../classes/Component.html" class="crosslink">Component</a>,
                     then this property will have the value:</p>
-                    <pre class="code prettyprint"><code class="lang-json">["XEO.Component", "XEO.Transform"]
+                    <pre class="code prettyprint"><code class="lang-json">[&quot;XEO.Component&quot;, &quot;XEO.Transform&quot;]
                     </code></pre>
                     <p>Note that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.</p>
                     
@@ -1540,7 +1676,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_type" class="property item">
+                    <div id="property_type" class="property item inherited">
                         <h3 class="name"><code>type</code></h3>
                         <span class="type">String</span>
                     
@@ -1550,8 +1686,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_type">Component</a>:
                             <a href="../files/src_component.js.html#l322"><code>src&#x2F;component.js:322</code></a>
                             </p>
                     
@@ -1569,13 +1705,152 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_usage" class="property item inherited">
+                        <h3 class="name"><code>usage</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_usage">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l619"><code>src&#x2F;geometry&#x2F;geometry.js:619</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Geometry&#39;s usage type.</p>
+                    <p>Valid types are: &#39;static&#39;, &#39;lines&#39;, &#39;line-loop&#39;, &#39;line-strip&#39;, &#39;triangles&#39;, &#39;triangle-strip&#39; and &#39;triangle-fan&#39;.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_usage" class="crosslink">usage</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> &quot;triangles&quot;</p>
+                    
+                    
+                    </div>
+                    <div id="property_uv" class="property item inherited">
+                        <h3 class="name"><code>uv</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#property_uv">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l837"><code>src&#x2F;geometry&#x2F;geometry.js:837</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Geometry&#39;s UV coordinate array.</p>
+                    <p>Fires a <a href="../classes/Geometry.html#event_uv" class="crosslink">uv</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
             </div>
 
 
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
-                    <div id="event_destroyed" class="events item">
+                    <div id="event_autoNormals" class="events item inherited">
+                        <h3 class="name"><code>autoNormals</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_autoNormals">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l1089"><code>src&#x2F;geometry&#x2F;geometry.js:1089</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_autoNormals" class="crosslink">autoNormals</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_colors" class="events item inherited">
+                        <h3 class="name"><code>colors</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_colors">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l917"><code>src&#x2F;geometry&#x2F;geometry.js:917</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_colors" class="crosslink">colors</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_destroyed" class="events item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type"></span>
                     
@@ -1584,8 +1859,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#event_destroyed">Component</a>:
                             <a href="../files/src_component.js.html#l1068"><code>src&#x2F;component.js:1068</code></a>
                             </p>
                     
@@ -1597,6 +1872,261 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
+                    
+                    
+                    </div>
+                    <div id="event_indices" class="events item inherited">
+                        <h3 class="name"><code>indices</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_indices">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l982"><code>src&#x2F;geometry&#x2F;geometry.js:982</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_indices" class="crosslink">indices</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_normals" class="events item inherited">
+                        <h3 class="name"><code>normals</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_normals">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l817"><code>src&#x2F;geometry&#x2F;geometry.js:817</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s Geometry/ normals:property property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_positions" class="events item inherited">
+                        <h3 class="name"><code>positions</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                <p>Inherited from
+                                <a href="../classes/Geometry.html#event_positions">
+                                    Geometry
+                                </a>
+                                but overwritten in
+                            <a href="../files/src_geometry_geometry.js.html#l755"><code>src&#x2F;geometry&#x2F;geometry.js:755</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_primitive" class="events item inherited">
+                        <h3 class="name"><code>primitive</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_primitive">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l708"><code>src&#x2F;geometry&#x2F;geometry.js:708</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_primitive" class="crosslink">primitive</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_usage" class="events item inherited">
+                        <h3 class="name"><code>usage</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_usage">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l650"><code>src&#x2F;geometry&#x2F;geometry.js:650</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_usage" class="crosslink">usage</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_uv" class="events item inherited">
+                        <h3 class="name"><code>uv</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Geometry.html#event_uv">Geometry</a>:
+                            <a href="../files/src_geometry_geometry.js.html#l867"><code>src&#x2F;geometry&#x2F;geometry.js:867</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_uv" class="crosslink">uv</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
                     
                     
                     </div>
