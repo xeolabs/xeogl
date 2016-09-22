@@ -25,6 +25,16 @@
 
 <script>
 
+    //---------------------------------------------------------------------------------------
+    // In this demo, we:
+    // 1. load a gearbox model from glTF format,
+    // 2. enable display of the scene on a ZSpace device,
+    // 3. if ZSpace device detected, then
+    // 3.1 create a couple of helper entities to show the location of the ZSpace stylus in
+    //      the 3D scene and the points at which it intersects entities as we move it around
+    // 3.2 subscribe to stylus movement and buttons, so that we can use it to pick entities
+    //---------------------------------------------------------------------------------------
+
     //----------------------------------------------------------------------------
     // Load a glTF gearbox model into the default Scene, translating the model
     // to center it at the World-space origin
@@ -34,7 +44,9 @@
         src: "models/gltf/gearbox/gearbox_assy.gltf"
     });
 
+    //----------------------------------------------------------------------------
     // Set initial camera position
+    //----------------------------------------------------------------------------
 
     var view = gearbox.scene.camera.view;
 
@@ -52,6 +64,10 @@
         viewerScale: 20 // Size viewer's coordinate space to the entities
     });
 
+    //----------------------------------------------------------------------------
+    // Allow camera control with keyboard and mouse
+    //----------------------------------------------------------------------------
+
     new XEO.CameraControl();
 
     //----------------------------------------------------------------------------
@@ -62,15 +78,17 @@
 
         if (!supported) {
 
-            // ZSpace not detected
+            //----------------------------------------------------------------------------
+            // ZSpace not detected, show a messsage
+            //----------------------------------------------------------------------------
 
             document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. ";
 
         } else { // ZSpace detected
 
-            //--------------------------------------------
+            //----------------------------------------------------------------------------
             // Create helper to show stylus position
-            //--------------------------------------------
+            //----------------------------------------------------------------------------
 
             var rayHelper = new (function () {
 
@@ -107,9 +125,9 @@
                 };
             })();
 
-            //--------------------------------------------
+            //----------------------------------------------------------------------------
             // Create helper to show stylus-Entity hits
-            //--------------------------------------------
+            //----------------------------------------------------------------------------
 
             var hitHelper = new (function () {
 
@@ -131,10 +149,10 @@
                 };
             })();
 
-            //-------------------------------------------------------------
+            //----------------------------------------------------------------------------
             // Update the ray helper whenever the stylus moves; highlight
             // the ray helper when it intersects an entity
-            //-------------------------------------------------------------
+            //----------------------------------------------------------------------------
 
             zspace.on("stylusMoved", function () {
 
@@ -158,11 +176,11 @@
                 }
             });
 
-            //-------------------------------------------------------------
+            //----------------------------------------------------------------------------
             // Attempt to select a point on the surface of an entity when
             // the first button is clicked on the stylus; use the hit
             // helper to show the intersection if successful
-            //-------------------------------------------------------------
+            //----------------------------------------------------------------------------
 
             zspace.on("stylusButton0", function () {
 

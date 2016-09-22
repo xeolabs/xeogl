@@ -2,15 +2,15 @@
  A **ZSpace** component makes its {{#crossLink "Scene"}}{{/crossLink}} viewable with a zSpace viewer.
 
  <ul>
- <li>a ZSpace component requires WebGL2 and WebVR support, which you'll have if you're running on a zSpace viewer.</li>
- <li>a ZSpace component is attached to a {{#crossLink "Camera"}}{{/crossLink}}</li>
- <li> By default, a ZSpace component is attached to its parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/camera:property"}}{{/crossLink}}.</li>
- <li>a ZSpace component requires its {{#crossLink "Camera"}}Camera{{/crossLink}} to have a {{#crossLink "Transform"}}{{/crossLink}}
- (and not a subclass) for each of it's {{#crossLink "Camera/view:property"}}{{/crossLink}} and
- {{#crossLink "Camera/view:property"}}projection{{/crossLink}} transforms. This is because the ZSpace needs to directly update
- the matrices on those transforms as part of the stereo viewing effect. If those transforms are of a different type, then
- the ZSpace will temporarily replace them with {{#crossLink "Transform"}}Transforms{{/crossLink}}.</li>
+ <li>Plug-and-play: just create a ZSpace component within your xeoEngine {{#crossLink "Scene"}}{{/crossLink}} to make it viewable with a ZSpace display.</li>
+ <li>Activate or disable the ZSpace component at any time to switch between ZSpace mode and normal viewing mode.</li>
+ <li>Requires WebGL2 and WebVR support, which you'll have if you're running on a zSpace viewer.</li>
+ <li>Attaches to a {{#crossLink "Camera"}}{{/crossLink}}</li>
+ <li>By default, a ZSpace component is attached to its parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/camera:property"}}{{/crossLink}}.</li>
+ <li>Don't attach different view or projection components to the {{#crossLink "Camera"}}{{/crossLink}} while the ZSpace component is active.</li>
  </ul>
+
+ <img src="../../../assets/images/ZSpace.png"></img>
 
  ## Examples
 
@@ -18,15 +18,24 @@
  <li>[zSpace cube](../../examples/webvr_zspace_cube.html)</li>
  <li>[zSpace with random geometries](../../examples/webvr_zspace_geometries.html)</li>
  <li>[zSpace with gearbox model](../../examples/webvr_zspace_gearbox.html)</li>
+ <li>[zSpace with gearbox model and entity explorer](../../examples/webvr_zspace_gearbox_explorer.html)</li>
  </ul>
 
  ## Usage
 
- In the example below, we'll create an {{#crossLink "Entity"}}{{/crossLink}} and a {{#crossLink "ZSpace"}}{{/crossLink}},
- which will render a textured torus on a ZSpace viewer:
+ In the following example we're going to set up a ZSpace-viewable scene with xeoEngine, defining the scene step-by-step to
+ emphasize the plug-and-play design of xeoEngine's API.
+
+ **1. Create an entity**
+
+ First we'll create a simple torus-shaped {{#crossLink "Entity"}}{{/crossLink}}, which will be within xeoEngine's default
+ {{#crossLink "Scene"}}{{/crossLink}}, since we're not defining the {{#crossLink "Scene"}}{{/crossLink}} component
+ explicitly. Our {{#crossLink "Entity"}}{{/crossLink}} is also implicitly connected to the
+ {{#crossLink "Scene"}}{{/crossLink}}'s default {{#crossLink "Camera"}}{{/crossLink}}, since we didn't explicitly create
+ a {{#crossLink "Camera"}}{{/crossLink}} for it either.
 
  ````javascript
- new XEO.Entity({
+ var entity = new XEO.Entity({
      geometry: new XEO.TorusGeometry(),
      material: new XEO.PhongMaterial({
         diffuseMap: new XEO.Texture({
@@ -34,19 +43,39 @@
         })
      })
  });
-
- var zspace = new XEO.ZSpace();
  ````
 
- Both of these components are in the default {{#crossLink "Scene"}}{{/crossLink}} and are attached to
- the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Camera"}}{{/crossLink}}.
+ **2. Enable mouse/keyboard camera interaction**
 
- The default {{#crossLink "Camera"}}{{/crossLink}} has a {{#crossLink "Lookat"}}{{/crossLink}} for its view transform
- and a {{#crossLink "Perspective"}}{{/crossLink}} for its projection. Therefore, whenever active, the ZSpace will
- replace those with {{#crossLink "Transform"}}{{/crossLink}} components, which it will be able to update in order to create
- the stereo effect. When the ZSpace is later deactivated or destroyed, it will restore the
- {{#crossLink "Camera"}}Camera{{/crossLink}}'s original {{#crossLink "Lookat"}}{{/crossLink}}
- and {{#crossLink "Perspective"}}{{/crossLink}} again.
+At this point we've got a textured torus floating in the middle of the canvas (which is also created automatically
+ since we didn't specify one). Now we'll create a
+ {{#crossLink "CameraControl"}}{{/crossLink}}, which immediately allows us to move our viewpoint around with the mouse and
+ keyboard. This component is also within xeoEngine's default {{#crossLink "Scene"}}{{/crossLink}} and connected to the
+ {{#crossLink "Scene"}}{{/crossLink}}'s default {{#crossLink "Camera"}}{{/crossLink}}.
+
+ ````javascript
+ new CameraControl();
+ ````
+
+ **3. Enable ZSpace viewing**
+
+ Now we can orbit, pan and zoom around the torus with the mouse and keyboard. Let's view it on a ZSpace display by
+ dropping a ZSPace component into our default {{#crossLink "Scene"}}{{/crossLink}}.
+
+ ````javascript
+ var zspace = new ZSpace();
+ ````
+
+ The ZSpace component immediately activates, so at this point if we're running on a ZSpace device we'll have a stereo
+ view of the torus, which we can view with the stereo glasses.
+
+ At any point we can always disable the ZSpace effect to switch between normal WebGL mono viewing mode:
+
+ ````javascript
+ zspace.active = false; // Back to normal mono viewing..
+ zspace.active = true; // ..and then back to ZSpace stereo mode.
+
+ ````
 
  ## Detecting support
 

@@ -22,7 +22,8 @@
     <br>
     using a <a
         href="../docs/classes/ZSpace.html"
-        target="_docs">ZSpace</a> component to view a glTF model with zSpace VR<br>
+        target="_docs">ZSpace</a> component to view a glTF <a href="../docs/classes/Model.html"
+                                                              target="_docs">Model</a> with zSpace VR<br>
 
     click a node in the explorer below to fly to its <a href="../docs/classes/Entity.html"
                                                         target="_docs">Entity</a><br><br>
@@ -39,9 +40,18 @@
 
 <script>
 
+    //---------------------------------------------------------------------------------------
+    // In this demo, we:
+    // 1. load a gearbox model from glTF format,
+    // 2. build an explorer UI which can be used to navigate the entities in the gearbox, and
+    // 3. enable display of the scene on a ZSpace device.
+    //---------------------------------------------------------------------------------------
+
     $(document).ready(function () {
 
-        // Load glTF model
+        //---------------------------------------------------------------------------------------
+        // Load glTF gearbox model into the default scene
+        //---------------------------------------------------------------------------------------
 
         var gearbox = new XEO.Model({
             src: "models/gltf/gearbox/gearbox_assy.gltf"
@@ -49,7 +59,9 @@
 
         var scene = gearbox.scene;
 
-        // Set initial camera position
+        //---------------------------------------------------------------------------------------
+        // Set initial position of the scene's default camera
+        //---------------------------------------------------------------------------------------
 
         var view = scene.camera.view;
 
@@ -57,9 +69,10 @@
         view.look = [159.20, 17.02, 3.21];
         view.up = [-0.15, 0.97, 0.13];
 
-        // Yellow wireframe box entity, indicates the
-        // World-space axis-aligned bounding box (AABB)
-        // of each entity we fly to
+        //---------------------------------------------------------------------------------------
+        // Create a wireframe boundary entity to indicate the World-space
+        // axis-aligned boundary of each entity we fly to as we click it in the explorer
+        //---------------------------------------------------------------------------------------
 
         var orientedBoundary = new XEO.Entity({
             id: "myOBB",
@@ -82,17 +95,22 @@
             })
         });
 
-        // Allow user camera control
+        //----------------------------------------------------------------------------
+        // Allow camera control with keyboard and mouse
+        //----------------------------------------------------------------------------
 
         new XEO.CameraControl();
 
-        // Camera flight animation, flies the default camera 
-        // to each Entity as we select it in the explorer
+        //---------------------------------------------------------------------------------------
+        // Create a camera flight animation, which flies the default camera to each Entity
+        // as we select it in the explorer
+        //---------------------------------------------------------------------------------------
 
         var cameraFlight = new XEO.CameraFlight();
 
         gearbox.on("loaded", function () {
 
+            //---------------------------------------------------------------------------------------
             // When the Model has loaded, iterate over all the Entities in the Model:
             //
             // 1. Ensure that they each have their own Material and Modes components, so that
@@ -103,6 +121,7 @@
             // destroyed whenever the Model is destroyed or reloaded.
             //
             // 2. Add an item to the JSON data we'll build our explorer from.
+            //---------------------------------------------------------------------------------------
 
             var data = [];
             var entities = gearbox.collection.types["XEO.Entity"];
@@ -138,8 +157,10 @@
                 }
             }
 
+            //---------------------------------------------------------------------------------------
             // Build explorer (using JSTree), bind a selection handler
             // that flies to the selected Entity
+            //---------------------------------------------------------------------------------------
 
             var nextObject; // Next entity we'll fly to
             var lastObject; // Last entity we flew to
@@ -182,26 +203,20 @@
                     });
         });
 
-        //---------------------------------------------------
+        //---------------------------------------------------------------------------------------
         // Create a ZSpace effect
-        //---------------------------------------------------
+        //---------------------------------------------------------------------------------------
 
         var zspace = new XEO.ZSpace();
 
-        //---------------------------------------------------
-        // Check if we're actually running on a ZSpace device
-        //---------------------------------------------------
+        //---------------------------------------------------------------------------------------
+        // Display a message if we're not running on a ZSpace device; everything else still
+        // works if we're not
+        //---------------------------------------------------------------------------------------
 
         zspace.on("supported", function (supported) {
-
             if (!supported) {
-
-                //---------------------------------------------------
-                // Not running on a ZSpace device
-                //---------------------------------------------------
-
                 document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. ";
-
             }
         });
     });
