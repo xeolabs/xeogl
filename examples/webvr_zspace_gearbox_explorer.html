@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="./js/libs/jquery-1.8.3.min.js"></script>
+
+    <link rel="stylesheet" href="./js/libs/jstree/themes/default/style.min.css"/>
+    <script src="./js/libs/jstree/jstree.min.js"></script>
+
+    <script src="js/webvr/zspace/zSpace.js"></script>
+
+<body>
+
+<div id="infoLight" style="margin: 0; left:5px;">
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a>
+    <br>
+    using a <a
+        href="../docs/classes/ZSpace.html"
+        target="_docs">ZSpace</a> component to view a glTF model with zSpace VR<br>
+
+    click a node in the explorer below to fly to its <a href="../docs/classes/Entity.html"
+                                                        target="_docs">Entity</a><br><br>
+
+    <div><span id="log" style="color:red;font-size: 16px"></span></div>
+</div>
+
+
+<div id="explorerPanel"
+     style="margin: 0; top: 160px; left:25px; opacity: 0.7;background: white; z-index:10000000; width: 300px; height:60%; position:absolute; overflow-y: scroll; overflow-x: hidden;">
+    <div id="explorer" style=""></div>
+</div>
+
+
+<script>
+
+    $(document).ready(function () {
+
+        // Load glTF model
+
+        var gearbox = new XEO.Model({
+            src: "models/gltf/gearbox/gearbox_assy.gltf"
+        });
+
+        var scene = gearbox.scene;
+
+        // Set initial camera position
+
+        var view = scene.camera.view;
+
+        view.eye = [184.21, 10.54, -7.03];
+        view.look = [159.20, 17.02, 3.21];
+        view.up = [-0.15, 0.97, 0.13];
+
+        // Yellow wireframe box entity, indicates the
+        // World-space axis-aligned bounding box (AABB)
+        // of each entity we fly to
+
+        var orientedBoundary = new XEO.Entity({
+            id: "myOBB",
+            geometry: new XEO.BoundaryGeometry(),
+            material: new XEO.PhongMaterial({
+                diffuse: [0, 0, 0],
+                ambient: [0, 0, 0],
+                specular: [0, 0, 0],
+                emissive: [1.0, 1.0, 0.5],
+                lineWidth: 3
+            }),
+            visibility: new XEO.Visibility({ // Boundary is initially invisible
+                visible: false
+            }),
+            modes: new XEO.Modes({
+
+                // Does not contribute to the size of any enclosing boundaries
+                // that might be calculated by xeoEngine, eg. like that returned by XEO.Scene#worldBoundary
+                collidable: false
+            })
+        });
+
+        // Allow user camera control
+
+        new XEO.CameraControl();
+
+        // Camera flight animation, flies the default camera 
+        // to each Entity as we select it in the explorer
+
+        var cameraFlight = new XEO.CameraFlight();
+
+        gearbox.on("loaded", function () {
+
+            // When the Model has loaded, iterate over all the Entities in the Model:
+            //
+            // 1. Ensure that they each have their own Material and Modes components, so that
+            // we can set them transparent individually. This is quick-and-dirty, where we
+            // may be creating excess Materials and Modes, while needlessly keeping unused ones.
+            //
+            // 2. Add the Material and Modes to the Model's Collection so that they get
+            // destroyed whenever the Model is destroyed or reloaded.
+            //
+            // 2. Add an item to the JSON data we'll build our explorer from.
+
+            var data = [];
+            var entities = gearbox.collection.types["XEO.Entity"];
+            var entity;
+
+            for (var entityId in entities) {
+                if (entities.hasOwnProperty(entityId)) {
+
+                    entity = entities[entityId];
+
+                    // Ensure the Entity has its own unique Material and Modes
+
+                    entity.material = entity.material.clone();
+                    entity.material.opacity = 0.4;
+
+                    entity.modes = entity.modes.clone();
+                    entity.modes.transparent = true;
+
+                    // Add the Material and Modes to the Model's Collection
+                    // so that they get destroyed automatically
+
+                    gearbox.collection.add(entity.material);
+                    gearbox.collection.add(entity.modes);
+
+                    // To each Entity it loads, a Model will attach metadata
+                    // containing a human-readable name - use that to list a
+                    // human-readable name in the explorer.
+
+                    data.push({
+                        id: entity.id,
+                        text: entity.meta.name || "unnamed"
+                    })
+                }
+            }
+
+            // Build explorer (using JSTree), bind a selection handler
+            // that flies to the selected Entity
+
+            var nextObject; // Next entity we'll fly to
+            var lastObject; // Last entity we flew to
+
+            // Build explorer tree
+            $('#explorer').jstree({
+                'core': {
+                    'data': data
+                }
+            })
+                // Bind selection handler
+                    .on("changed.jstree",
+                    function (e, data) {
+                        if (data.selected.length) {
+
+                            var entityId = data.instance.get_node(data.selected[0]).id;
+
+                            nextObject = scene.components[entityId];
+
+                            if (lastObject) {
+                                lastObject.modes.transparent = true;
+                            }
+
+                            nextObject.modes.transparent = false;
+
+                            orientedBoundary.geometry.obb = nextObject.worldBoundary.obb;
+                            orientedBoundary.visibility.visible = true;
+
+                            cameraFlight.flyTo({
+                                        aabb: nextObject.worldBoundary.aabb, // Fly to entity's AABB
+                                        stopFOV: 75, // Make sure the camera stops far enough back from the entity
+                                        duration: 1.0 // One second flight time to each entity
+                                    },
+                                    function () {
+                                        // Camera has arrived at entity
+                                    });
+
+                            lastObject = nextObject;
+                        }
+                    });
+        });
+
+        //---------------------------------------------------
+        // Create a ZSpace effect
+        //---------------------------------------------------
+
+        var zspace = new XEO.ZSpace();
+
+        //---------------------------------------------------
+        // Check if we're actually running on a ZSpace device
+        //---------------------------------------------------
+
+        zspace.on("supported", function (supported) {
+
+            if (!supported) {
+
+                //---------------------------------------------------
+                // Not running on a ZSpace device
+                //---------------------------------------------------
+
+                document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. ";
+
+            }
+        });
+    });
+</script>
+</body>
+</html>

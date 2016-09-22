@@ -7,7 +7,7 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeoengine.js"></script>
+    <script src="../build/xeoengine.min.js"></script>
 
     <script src="js/webvr/zspace/zSpace.js"></script>
 
@@ -62,9 +62,7 @@
     // Create a ZSpace effect
     //----------------------------------------------------------------------------
 
-    var zspace = new XEO.ZSpace({
-        viewerScale: .1 // Size viewer's coordinate space to the entities
-    });
+    var zspace = new XEO.ZSpace();
 
     //----------------------------------------------------------------------------
     // Check if we're actually running on a ZSpace device

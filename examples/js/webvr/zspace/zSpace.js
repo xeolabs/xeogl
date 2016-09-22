@@ -900,13 +900,9 @@
                 camera.project = camera.create(XEO.Transform);
             }
 
-            if (camera.view.type !== "XEO.Transform") {
-                this.warn("Replacing camera's viewing transform with a XEO.Transform (needed for ZSpace)");
-                this._oldView = camera.view; // Save so we can restore on deactivation
-                camera.view = camera.create(XEO.Transform);
-                camera.view.parent = camera.create(XEO.Translate, {
-                    xyz: this._viewerOrigin
-                })
+            if (!camera.view.parent) {
+                camera.view.postMultiply = true;
+                camera.view.parent = camera.create(XEO.Transform);
             }
 
             // If we have not yet configured the scene to do two passes per frame,
@@ -931,19 +927,15 @@
                     var gl = this.scene.canvas.gl;
                     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-                    camera.view.matrix = this._leftViewMatrix;
+                    camera.view.parent.matrix = this._leftViewMatrix;
                     camera.project.matrix = this._leftProjectionMatrix;
-
-                    //   console.log("leftViewMatrix = " + JSON.stringify(this._leftViewMatrix));
 
                     break;
 
                 case 1: // Right eye
 
-                    camera.view.matrix = this._rightViewMatrix;
+                    camera.view.parent.matrix = this._rightViewMatrix;
                     camera.project.matrix = this._rightProjectionMatrix;
-
-                    // console.log("rightViewMatrix = " + JSON.stringify(this._rightViewMatrix));
 
                     break;
             }
@@ -972,6 +964,7 @@
 
             var tempVec3a = math.vec3();
             var tempVec3b = math.vec3();
+            var vecEyeLook = math.vec3();
 
             var leftProjectionPose;
             var rightProjectionPose;
@@ -983,8 +976,6 @@
 
             // Viewer is looking down at model as if it were on a table
 
-            var viewMat = math.lookAtMat4v([0.0, 3.45, 2.22], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
-
             var invViewMatrix = math.mat4();
             var stylusWorldMatrix = math.mat4();
             var stylusLocalMatrix = math.mat4();
@@ -992,6 +983,11 @@
             var cameraMat = math.mat4();
 
             return function () {
+
+                // Automatically derive viewer scale from base view transform
+                var camera = this._attached.camera;
+                var len = math.lenVec3(math.subVec3(camera.view.look, camera.view.eye, vecEyeLook));
+                this._viewerScale = len / 0.41;
 
                 displayScaleFactorX = this._displaySize[0] / this._displayResolution[0];
                 displayScaleFactorY = this._displaySize[1] / this._displayResolution[1];
@@ -1014,13 +1010,6 @@
 
                 // Viewer scale matrix
 
-                //if (this._autoViewerScaleDirty) {
-                //    this._autoViewerScaleDirty = false;
-                //    var boundary = this.scene.worldBoundary;
-                //    // this.viewerOrigin = boundary.center;
-                //    this.viewerScale = math.getAABBDiag(boundary.aabb); // Fire update events etc.
-                //}
-
                 scale[0] = this._viewerScale;
                 scale[1] = this._viewerScale;
                 scale[2] = this._viewerScale;
@@ -1041,9 +1030,7 @@
 
                     math.transformPoint3(offsetTranslateMat, leftViewPose.position, tempVec3a);
                     math.transformPoint3(viewScaleMat, tempVec3a, tempVec3b);
-
-                    math.rotationTranslationMat4(leftViewPose.orientation, tempVec3b, cameraMat);
-                    math.mulMat4(viewMat, cameraMat, this._leftViewMatrix); // Post-concatenate with base viewing matrix
+                    math.rotationTranslationMat4(leftViewPose.orientation, tempVec3b, this._leftViewMatrix);
 
                 } else {
                     math.lookAtMat4v([-15, 0, -40], [-15, 0, 0], [0, 1, 0], this._leftViewMatrix);
@@ -1056,9 +1043,7 @@
 
                     math.transformPoint3(offsetTranslateMat, rightViewPose.position, tempVec3a);
                     math.transformPoint3(viewScaleMat, tempVec3a, tempVec3b);
-
-                    math.rotationTranslationMat4(rightViewPose.orientation, tempVec3b, cameraMat);
-                    math.mulMat4(viewMat, cameraMat, this._rightViewMatrix); // Post-concatenate with base viewing matrix
+                    math.rotationTranslationMat4(rightViewPose.orientation, tempVec3b, this._rightViewMatrix);
 
                 } else {
                     math.lookAtMat4v([15, 0, -40], [15, 0, 0], [0, 1, 0], this._rightViewMatrix);
@@ -1118,7 +1103,11 @@
                         stylusMoved = true;
                     }
 
-                    if (this._stylusOrientation[0] !== orientation[0] && this._stylusOrientation[1] !== orientation[1] && this._stylusOrientation[2] !== orientation[2] && this._stylusOrientation[3] !== orientation[3]) {
+                    if (this._stylusOrientation[0] !== orientation[0] &&
+                        this._stylusOrientation[1] !== orientation[1] &&
+                        this._stylusOrientation[2] !== orientation[2] &&
+                        this._stylusOrientation[3] !== orientation[3]) {
+
                         this._stylusOrientation[0] = orientation[0];
                         this._stylusOrientation[1] = orientation[1];
                         this._stylusOrientation[2] = orientation[2];
@@ -1128,7 +1117,6 @@
 
                     if (stylusMoved) {
 
-                        var camera = this._attached.camera;
                         var viewMatrix = camera.view.matrix;
 
                         math.inverseMat4(viewMatrix, invViewMatrix);

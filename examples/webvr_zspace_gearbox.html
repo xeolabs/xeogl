@@ -7,7 +7,7 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeoengine.js"></script>
+    <script src="../build/xeoengine.min.js"></script>
 
     <script src="js/webvr/zspace/zSpace.js"></script>
 
@@ -17,7 +17,9 @@
      style="left: 0; text-align: left; background: black; opacity: 0.7; padding: 8px; color: white; font-size: 14pt;">
     <span><a href="http://xeoengine.org" target="_home">xeoEngine</a><br>using a <a
             href="../docs/classes/ZSpace.html"
-            target="_docs">ZSpace</a> component to view a glTF model with zSpace VR</span><br>
+            target="_docs">ZSpace</a> component to view a glTF <a
+            href="../docs/classes/Model.html"
+            target="_docs">Model</a> with zSpace VR</span><br>
     <span id="log" style="color:red;font-size: 16px"></span>
 </div>
 
@@ -28,57 +30,29 @@
     // to center it at the World-space origin
     //----------------------------------------------------------------------------
 
-    var rotate = new XEO.Rotate({
-        xyz: [0, 1, 0],
-        angle: 0
-    });
-
     var gearbox = new XEO.Model({
-        src: "models/gltf/gearbox/gearbox_assy.gltf",
-        transform: new XEO.Translate({
-            xyz: [-159.20, -18, -3.21],
-            parent: new XEO.Scale({
-                xyz: [0.065, 0.065, 0.065],  // Big model, so scale down to fit zSpace
-                parent: rotate
-            })
-        })
+        src: "models/gltf/gearbox/gearbox_assy.gltf"
     });
 
-    var scene = gearbox.scene; // Everything's in the default scene - get it off the gearbox
+    // Set initial camera position
 
-    //----------------------------------------------------------------------------
-    // Create a table top underneath the gearbox
-    //----------------------------------------------------------------------------
+    var view = gearbox.scene.camera.view;
 
-    var tabletop = new XEO.Entity({
-        geometry: new XEO.PlaneGeometry({
-            primitive: "triangles",
-            xSize: 3,
-            zSize: 3,
-            xSegments: 2,
-            zSegments: 2
-        }),
-        material: new XEO.PhongMaterial({
-            diffuseMap: new XEO.Texture({
-                src: "textures/diffuse/UVCheckerMap11-1024.png"
-            })
-        }),
-        modes: new XEO.Modes({
-            backfaces: true
-        }),
-        transform: new XEO.Translate({
-            xyz: [0, -.70, 0],
-            parent: rotate
-        })
-    });
+    view.eye = [184.21, 10.54, -7.03];
+    view.look = [159.20, 17.02, 3.21];
+    view.up = [-0.15, 0.97, 0.13];
+
+    var scene = gearbox.scene;
 
     //----------------------------------------------------------------------------
     // Create a ZSpace effect
     //----------------------------------------------------------------------------
 
     var zspace = new XEO.ZSpace({
-        viewerScale: .1 // Size viewer's coordinate space to the entities
+        viewerScale: 20 // Size viewer's coordinate space to the entities
     });
+
+    new XEO.CameraControl();
 
     //----------------------------------------------------------------------------
     // Check if we're actually running on a ZSpace device
@@ -90,13 +64,7 @@
 
             // ZSpace not detected
 
-            // Fall back to a default camera control
-
             document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. ";
-
-            new XEO.CameraControl();
-
-            scene.camera.view.eye = [0, .7, -2];
 
         } else { // ZSpace detected
 
