@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-09-22
+ * Built on 2016-09-23
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -3694,8 +3694,6 @@ var Canvas2Image = (function () {
          */
         buildTangents: function (positions, indices, uv) {
 
-            var math = XEO.math;
-
             var tangents = new Float32Array(positions.length);
 
             // The vertex arrays needs to be calculated
@@ -3942,8 +3940,6 @@ var Canvas2Image = (function () {
          */
         rayPlaneIntersect: function (origin, dir, a, b, c, isect) {
 
-            var math = XEO.math;
-
             isect = isect || math.vec3();
 
             dir = math.normalizeVec3(dir, tempVec3);
@@ -3997,7 +3993,6 @@ var Canvas2Image = (function () {
         },
 
         cartesianToBarycentric2: function (cartesian, a, b, c, dest) {
-            var math = XEO.math;
 
             var v0 = math.subVec3(c, a, tempVec3);
             var v1 = math.subVec3(b, a, tempVec3b);
@@ -4220,8 +4215,6 @@ var Canvas2Image = (function () {
         vec3PairToQuaternion: function (u, v, dest) {
 
             dest = dest || math.vec4();
-
-            var math = XEO.math;
 
             var norm_u_norm_v = Math.sqrt(math.dotVec3(u, u) * math.dotVec3(v, v));
             var real_part = norm_u_norm_v + math.dotVec3(u, v);
