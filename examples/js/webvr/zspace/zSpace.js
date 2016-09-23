@@ -62,7 +62,7 @@
  **3. Enable ZSpace viewing**
 
  Now we can orbit, pan and zoom around the torus with the mouse and keyboard. Let's view it on a ZSpace display by
- dropping a ZSPace component into our default {{#crossLink "Scene"}}{{/crossLink}}.
+ dropping a ZSpace component into our default {{#crossLink "Scene"}}{{/crossLink}}.
 
  ````javascript
  var zspace = new ZSpace();
@@ -151,7 +151,7 @@
     var hit = zspace.scene.pick({
         pickSurface: true,
         origin: zspace.stylusPos,
-        direction: zspace.stylusOrientation
+        direction: zspace.stylusDir
     });
 
     if (hit) { // Picked an Entity
@@ -258,7 +258,7 @@
 
             } else {
 
-                // Find ZSPace display(s)
+                // Find ZSpace display(s)
 
                 if (!navigator.getVRDisplays) {
 
@@ -319,7 +319,7 @@
                             || !self._rightProjectionDevice
                             || !self._stylusDevice
                             || !self._stylusButtonsDevice) {
-                            self.log("ZSPace WebVR display(s) not found");
+                            self.log("ZSpace WebVR display(s) not found");
                             self.fire("supported", self._supported = false, false);
                             return;
                         }
