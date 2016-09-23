@@ -43,7 +43,7 @@
         })
     });
 
-    for (var i = 0; i < 500; i++) {
+    for (var i = 0; i < 200; i++) {
 
         new XEO.Entity({
             geometry: geometry,
@@ -78,19 +78,17 @@
 
         if (!supported) {
 
-            // ZSpace not detected
-
-            // Fall back to a default camera control
+            //----------------------------------------------------------------------------
+            // ZSpace not detected, show a messsage
+            //----------------------------------------------------------------------------
 
             document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. ";
 
-            new XEO.CameraControl();
-
         } else { // ZSpace detected
 
-            //--------------------------------------------
+            //----------------------------------------------------------------------------
             // Create helper to show stylus position
-            //--------------------------------------------
+            //----------------------------------------------------------------------------
 
             var rayHelper = new (function () {
 
@@ -127,9 +125,9 @@
                 };
             })();
 
-            //--------------------------------------------
+            //----------------------------------------------------------------------------
             // Create helper to show stylus-Entity hits
-            //--------------------------------------------
+            //----------------------------------------------------------------------------
 
             var hitHelper = new (function () {
 
@@ -151,19 +149,22 @@
                 };
             })();
 
-            //-------------------------------------------------------------
+            //----------------------------------------------------------------------------
             // Update the ray helper whenever the stylus moves; highlight
             // the ray helper when it intersects an entity
-            //-------------------------------------------------------------
+            //----------------------------------------------------------------------------
 
             zspace.on("stylusMoved", function () {
 
-                rayHelper.setPosition(zspace.stylusPos, zspace.stylusDir);
+                var stylusPos = zspace.stylusPos;
+                var stylusDir = XEO.math.mulVec3Scalar(zspace.stylusDir, 100, []);
+
+                rayHelper.setPosition(stylusPos, stylusDir);
 
                 var hit = scene.pick({
                     pickSurface: false, // Default
-                    origin: zspace.stylusPos,
-                    direction: zspace.stylusDir
+                    origin: stylusPos,
+                    direction: stylusDir
                 });
 
                 if (hit) { // Stylus hits an Entity
@@ -178,18 +179,21 @@
                 }
             });
 
-            //-------------------------------------------------------------
+            //----------------------------------------------------------------------------
             // Attempt to select a point on the surface of an entity when
             // the first button is clicked on the stylus; use the hit
             // helper to show the intersection if successful
-            //-------------------------------------------------------------
+            //----------------------------------------------------------------------------
 
             zspace.on("stylusButton0", function () {
 
+                var stylusPos = zspace.stylusPos;
+                var stylusDir = XEO.math.mulVec3Scalar(zspace.stylusDir, 100, []);
+
                 var hit = scene.pick({
-                    pickSurface: true, // <<-------------- Picking point on surface
-                    origin: zspace.stylusPos,
-                    direction: zspace.stylusDir
+                    pickSurface: true, // <<----- Picking point on surface
+                    origin: stylusPos,
+                    direction: stylusDir
                 });
 
                 if (hit) { // Stylus hits an Entity

@@ -209,14 +209,141 @@
 
         var zspace = new XEO.ZSpace();
 
-        //---------------------------------------------------------------------------------------
-        // Display a message if we're not running on a ZSpace device; everything else still
-        // works if we're not
-        //---------------------------------------------------------------------------------------
+        //----------------------------------------------------------------------------
+        // Check if we're actually running on a ZSpace device
+        //----------------------------------------------------------------------------
 
         zspace.on("supported", function (supported) {
+
             if (!supported) {
+
+                //----------------------------------------------------------------------------
+                // ZSpace not detected, show a messsage
+                //----------------------------------------------------------------------------
+
                 document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. ";
+
+            } else { // ZSpace detected
+
+                //----------------------------------------------------------------------------
+                // Create helper to show stylus position
+                //----------------------------------------------------------------------------
+
+                var rayHelper = new (function () {
+
+                    var entity = new XEO.Entity({
+                        geometry: new XEO.Geometry({
+                            primitive: "lines",
+                            positions: [0, 0, 0, 0, 0, 0],
+                            indices: [0, 1]
+                        }),
+                        material: new XEO.PhongMaterial({
+                            emissive: [1, 0.3, 0.3],
+                            diffuse: [0, 0, 0],
+                            ambient: [0, 0, 0],
+                            lineWidth: 2
+                        }),
+                        modes: new XEO.Modes({pickable: false})
+                    });
+
+                    var positions = new Float32Array(6);
+
+                    this.setPosition = function (pos, dir) {
+                        positions[0] = pos[0]; // Origin
+                        positions[1] = pos[1];
+                        positions[2] = pos[2];
+                        positions[3] = pos[0] + dir[0]; // Direction
+                        positions[4] = pos[1] + dir[1];
+                        positions[5] = pos[2] + dir[2];
+                        entity.geometry.positions = positions;
+                    };
+
+                    this.setHighlighted = function (highlighted) {
+                        entity.material.emissive = highlighted ? [1.0, 0.5, 0.5] : [0.5, 0.3, 0.3];
+                        entity.material.lineWidth = highlighted ? 4 : 2;
+                    };
+                })();
+
+                //----------------------------------------------------------------------------
+                // Create helper to show stylus-Entity hits
+                //----------------------------------------------------------------------------
+
+                var hitHelper = new (function () {
+
+                    var entity = new XEO.Entity({
+                        geometry: new XEO.SphereGeometry({radius: 0.05}),
+                        material: new XEO.PhongMaterial({emissive: [1, 0, 0], diffuse: [0, 0, 0]}),
+                        transform: new XEO.Translate(),
+                        modes: new XEO.Modes({pickable: false}),
+                        visibility: new XEO.Visibility({visible: false})
+                    });
+
+                    this.show = function (hit) {
+                        entity.transform.xyz = hit.worldPos;
+                        entity.visibility.visible = true;
+                    };
+
+                    this.hide = function () {
+                        entity.visibility.visible = false;
+                    };
+                })();
+
+                //----------------------------------------------------------------------------
+                // Update the ray helper whenever the stylus moves; highlight
+                // the ray helper when it intersects an entity
+                //----------------------------------------------------------------------------
+
+                zspace.on("stylusMoved", function () {
+
+                    var stylusPos = zspace.stylusPos;
+                    var stylusDir = XEO.math.mulVec3Scalar(zspace.stylusDir, 100, []);
+
+                    rayHelper.setPosition(stylusPos, stylusDir);
+
+                    var hit = scene.pick({
+                        pickSurface: false, // Default
+                        origin: stylusPos,
+                        direction: stylusDir
+                    });
+
+                    if (hit) { // Stylus hits an Entity
+
+                        rayHelper.setHighlighted(true);
+                        hitHelper.show(hit);
+
+                    } else { // Stylus hits nothing
+
+                        rayHelper.setHighlighted(false);
+                        hitHelper.hide();
+                    }
+                });
+
+                //----------------------------------------------------------------------------
+                // Attempt to select a point on the surface of an entity when
+                // the first button is clicked on the stylus; use the hit
+                // helper to show the intersection if successful
+                //----------------------------------------------------------------------------
+
+                zspace.on("stylusButton0", function () {
+
+                    var stylusPos = zspace.stylusPos;
+                    var stylusDir = XEO.math.mulVec3Scalar(zspace.stylusDir, 100, []);
+
+                    var hit = scene.pick({
+                        pickSurface: true, // <<----- Picking point on surface
+                        origin: stylusPos,
+                        direction: stylusDir
+                    });
+
+                    if (hit) { // Stylus hits an Entity
+
+                        hitHelper.show(hit);
+
+                    } else { // Stylus hits nothing
+
+                        hitHelper.hide();
+                    }
+                });
             }
         });
     });
