@@ -2677,8 +2677,6 @@
          */
         buildTangents: function (positions, indices, uv) {
 
-            var math = XEO.math;
-
             var tangents = new Float32Array(positions.length);
 
             // The vertex arrays needs to be calculated
@@ -2925,8 +2923,6 @@
          */
         rayPlaneIntersect: function (origin, dir, a, b, c, isect) {
 
-            var math = XEO.math;
-
             isect = isect || math.vec3();
 
             dir = math.normalizeVec3(dir, tempVec3);
@@ -2980,7 +2976,6 @@
         },
 
         cartesianToBarycentric2: function (cartesian, a, b, c, dest) {
-            var math = XEO.math;
 
             var v0 = math.subVec3(c, a, tempVec3);
             var v1 = math.subVec3(b, a, tempVec3b);
@@ -3203,8 +3198,6 @@
         vec3PairToQuaternion: function (u, v, dest) {
 
             dest = dest || math.vec4();
-
-            var math = XEO.math;
 
             var norm_u_norm_v = Math.sqrt(math.dotVec3(u, u) * math.dotVec3(v, v));
             var real_part = norm_u_norm_v + math.dotVec3(u, v);
