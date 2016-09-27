@@ -9,7 +9,7 @@
 
     <script src="../build/xeoengine.min.js"></script>
 
-    <script src="js/webvr/zspace/zSpace.js"></script>
+    <script src="js/webvr/zSpace.js"></script>
 
 <body>
 
@@ -91,7 +91,7 @@
             // Create helper to show stylus position
             //--------------------------------------------
 
-            var rayHelper = new (function () {
+            var stylusHelper = new (function () {
 
                 var entity = new XEO.Entity({
                     geometry: new XEO.Geometry({
@@ -157,7 +157,7 @@
 
             zspace.on("stylusMoved", function () {
 
-                rayHelper.setPosition(zspace.stylusPos, zspace.stylusDir);
+                stylusHelper.setPosition(zspace.stylusPos, zspace.stylusDir);
 
                 var hit = scene.pick({
                     pickSurface: false, // Default
@@ -167,12 +167,12 @@
 
                 if (hit) { // Stylus hits an Entity
 
-                    rayHelper.setHighlighted(true);
+                    stylusHelper.setHighlighted(true);
                     hitHelper.show(hit);
 
                 } else { // Stylus hits nothing
 
-                    rayHelper.setHighlighted(false);
+                    stylusHelper.setHighlighted(false);
                     hitHelper.hide();
                 }
             });

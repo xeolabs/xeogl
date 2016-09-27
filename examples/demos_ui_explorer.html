@@ -152,8 +152,8 @@
                     // Build explorer (using JSTree), bind a selection handler
                     // that flies to the selected Entity
 
-                    var nextObject; // Next entity we'll fly to
-                    var lastObject; // Last entity we flew to
+                    var nextEntity; // Next entity we'll fly to
+                    var lastEntity; // Last entity we flew to
 
                     // Build explorer tree
                     $('#explorer').jstree({
@@ -168,19 +168,19 @@
 
                                     var entityId = data.instance.get_node(data.selected[0]).id;
 
-                                    nextObject = scene.components[entityId];
+                                    nextEntity = scene.components[entityId];
 
-                                    if (lastObject) {
-                                        lastObject.modes.transparent = true;
+                                    if (lastEntity) {
+                                        lastEntity.modes.transparent = true;
                                     }
 
-                                    nextObject.modes.transparent = false;
+                                    nextEntity.modes.transparent = false;
 
-                                    orientedBoundary.geometry.obb = nextObject.worldBoundary.obb;
+                                    orientedBoundary.geometry.obb = nextEntity.worldBoundary.obb;
                                     orientedBoundary.visibility.visible = true;
 
                                     cameraFlight.flyTo({
-                                                aabb: nextObject.worldBoundary.aabb, // Fly to entity's AABB
+                                                aabb: nextEntity.worldBoundary.aabb, // Fly to entity's AABB
                                                 stopFOV: 45, // Make sure the camera stops far enough back from the entity
                                                 duration: 1.0 // One second flight time to each entity
                                             },
@@ -188,7 +188,7 @@
                                                 // Camera has arrived at entity
                                             });
 
-                                    lastObject = nextObject;
+                                    lastEntity = nextEntity;
                                 }
                             });
                 });

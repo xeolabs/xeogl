@@ -1019,8 +1019,8 @@
                 "XEO": 1
             }
         },
-        "examples/js/webvr/zspace/_module.js": {
-            "name": "examples/js/webvr/zspace/_module.js",
+        "examples/js/webvr/_module.js": {
+            "name": "examples/js/webvr/_module.js",
             "modules": {
                 "webvr": 1
             },
@@ -1028,8 +1028,17 @@
             "fors": {},
             "namespaces": {}
         },
-        "examples/js/webvr/zspace/zSpace.js": {
-            "name": "examples/js/webvr/zspace/zSpace.js",
+        "examples/js/webvr/cardboard.js": {
+            "name": "examples/js/webvr/cardboard.js",
+            "modules": {},
+            "classes": {
+                "Cardboard": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "examples/js/webvr/zSpace.js": {
+            "name": "examples/js/webvr/zSpace.js",
             "modules": {},
             "classes": {
                 "ZSpace": 1
@@ -1263,6 +1272,7 @@
                 "Component": 1,
                 "Scene": 1,
                 "XEO": 1,
+                "Cardboard": 1,
                 "ZSpace": 1,
                 "Nintendo3DSGeometry": 1,
                 "OBJGeometry": 1,
@@ -1656,6 +1666,7 @@
             "name": "webvr",
             "submodules": {},
             "classes": {
+                "Cardboard": 1,
                 "ZSpace": 1
             },
             "fors": {},
@@ -1663,7 +1674,7 @@
             "namespaces": {},
             "module": "XEO",
             "namespace": "",
-            "file": "examples/js/webvr/zspace/zSpace.js",
+            "file": "examples/js/webvr/zSpace.js",
             "line": 1,
             "description": "Components for Web-based Virtual Reality."
         },
@@ -6290,6 +6301,88 @@
             "static": 1,
             "author": "xeolabs / http://xeolabs.com/"
         },
+        "Cardboard": {
+            "name": "Cardboard",
+            "shortname": "Cardboard",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "examples/js/webvr/cardboard.js",
+            "line": 1,
+            "description": "A **Cardboard** sets up a Google Cardboard effect for its Scene.\n\n## Examples\n\n<ul>\n<li>[Cardboard cube](../../examples/webvr_cardboard_cube.html)</li>\n<li>[Cardboard with glTF gearbox model](../../examples/webvr_cardboard_gearbox.html)</li>\n</ul>\n\n## Usage\n\nIn the following example we're going to set up a Cardboard-viewable scene with xeoEngine, creating the scene incrementally to\nemphasize the plug-and-play design of xeoEngine's API.\n\nFirst we'll create a simple torus-shaped {{#crossLink \"Entity\"}}{{/crossLink}}, which will be within xeoEngine's default\n{{#crossLink \"Scene\"}}{{/crossLink}}, since we're not defining the {{#crossLink \"Scene\"}}{{/crossLink}} component\nexplicitly. Our {{#crossLink \"Entity\"}}{{/crossLink}} is also implicitly connected to the\n{{#crossLink \"Scene\"}}{{/crossLink}}'s default {{#crossLink \"Camera\"}}{{/crossLink}}, since we didn't explicitly create\na {{#crossLink \"Camera\"}}{{/crossLink}} for it either.\n\n````javascript\nvar entity = new XEO.Entity({\n    geometry: new XEO.TorusGeometry(),\n    material: new XEO.PhongMaterial({\n       diffuseMap: new XEO.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n       })\n    })\n});\n````\n\nAt this point we've got a textured torus floating in the middle of the canvas (which is also created automatically\nsince we didn't specify one).\n\nLet's view it on Cardboard by dropping a Cardboard component into our default {{#crossLink \"Scene\"}}{{/crossLink}}:\n\n````javascript\nvar cardboard = new Cardboard();\n````\n\nThe Cardboard component immediately activates, so at this point we'll have a stereo\nview of the torus, which we can view with Cardboard glasses.\n\nAt any point we can always disable the Cardboard effect to switch between normal WebGL mono viewing mode:\n\n````javascript\ncardboard.active = false; // Back to normal mono viewing..\ncardboard.active = true; // ..and then back to Cardboard stereo mode.\n````",
+            "submodule": "webvr",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Cardboard component in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Cardboard component.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "camera",
+                            "description": "ID or instance of a {{#crossLink \"Camera\"}}Camera{{/crossLink}} for this Cardboard component.\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Cardboard component. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}}.",
+                            "type": "String|Camera",
+                            "optional": true
+                        },
+                        {
+                            "name": "viewport",
+                            "description": "ID or instance of a {{#crossLink \"Viewport\"}}Viewport{{/crossLink}} for this Cardboard component.\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this Cardboard component. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/viewport:property\"}}viewport{{/crossLink}}.",
+                            "type": "String|Viewport",
+                            "optional": true
+                        },
+                        {
+                            "name": "eyeSep",
+                            "description": "Number Eye separation distance.",
+                            "optional": true,
+                            "optdefault": "0.2"
+                        },
+                        {
+                            "name": "focalLength",
+                            "description": "Focal length.",
+                            "optional": true,
+                            "optdefault": "20"
+                        },
+                        {
+                            "name": "aperture",
+                            "description": "Aperture angle in degrees.",
+                            "optional": true,
+                            "optdefault": "45"
+                        },
+                        {
+                            "name": "active",
+                            "description": "Whether or not this Cardboard component is active.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Entity"
+        },
         "ZSpace": {
             "name": "ZSpace",
             "shortname": "ZSpace",
@@ -6300,9 +6393,9 @@
             "extension_for": [],
             "module": "XEO",
             "namespace": "",
-            "file": "examples/js/webvr/zspace/zSpace.js",
+            "file": "examples/js/webvr/zSpace.js",
             "line": 1,
-            "description": "A **ZSpace** component makes its {{#crossLink \"Scene\"}}{{/crossLink}} viewable with a zSpace viewer.\n\n<ul>\n<li>Plug-and-play: just create a ZSpace component within your xeoEngine {{#crossLink \"Scene\"}}{{/crossLink}} to make it viewable with a ZSpace display.</li>\n<li>Activate or disable the ZSpace component at any time to switch between zSpace mode and normal mono viewing mode.</li>\n<li>Requires WebGL2 and WebVR support, which you'll have if you're running on a zSpace viewer.</li>\n<li>Attaches to a {{#crossLink \"Camera\"}}{{/crossLink}}, defaults to its {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default\n{{#crossLink \"Scene/camera:property\"}}{{/crossLink}} if none is specified.</li>\n<li>Don't attach different view or projection transform components to the {{#crossLink \"Camera\"}}{{/crossLink}} while the ZSpace component is active.</li>\n<li>You can however update the {{#crossLink \"Camera\"}}{{/crossLink}}'s view transformation at any time, to move the\nviewpoint around.\n</ul>\n\n<img src=\"../../../assets/images/ZSpace.png\"></img>\n\n## Examples\n\n<ul>\n<li>[zSpace cube](../../examples/webvr_zspace_cube.html)</li>\n<li>[zSpace with random geometries](../../examples/webvr_zspace_geometries.html)</li>\n<li>[zSpace with gearbox model](../../examples/webvr_zspace_gearbox.html)</li>\n<li>[zSpace with gearbox model and entity explorer](../../examples/webvr_zspace_gearbox_explorer.html)</li>\n</ul>\n\n## Usage\n\nIn the following example we're going to set up a ZSpace-viewable scene with xeoEngine, defining the scene step-by-step to\nemphasize the plug-and-play design of xeoEngine's API.\n\n**1. Create an entity**\n\nFirst we'll create a simple torus-shaped {{#crossLink \"Entity\"}}{{/crossLink}}, which will be within xeoEngine's default\n{{#crossLink \"Scene\"}}{{/crossLink}}, since we're not defining the {{#crossLink \"Scene\"}}{{/crossLink}} component\nexplicitly. Our {{#crossLink \"Entity\"}}{{/crossLink}} is also implicitly connected to the\n{{#crossLink \"Scene\"}}{{/crossLink}}'s default {{#crossLink \"Camera\"}}{{/crossLink}}, since we didn't explicitly create\na {{#crossLink \"Camera\"}}{{/crossLink}} for it either.\n\n````javascript\nvar entity = new XEO.Entity({\n    geometry: new XEO.TorusGeometry(),\n    material: new XEO.PhongMaterial({\n       diffuseMap: new XEO.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n       })\n    })\n});\n````\n\n**2. Enable mouse/keyboard camera interaction**\n\nAt this point we've got a textured torus floating in the middle of the canvas (which is also created automatically\nsince we didn't specify one). Now we'll create a\n{{#crossLink \"CameraControl\"}}{{/crossLink}}, which immediately allows us to move our viewpoint around with the mouse and\nkeyboard. This component is also within xeoEngine's default {{#crossLink \"Scene\"}}{{/crossLink}} and connected to the\n{{#crossLink \"Scene\"}}{{/crossLink}}'s default {{#crossLink \"Camera\"}}{{/crossLink}}.\n\n````javascript\nnew CameraControl();\n````\n\n**3. Enable ZSpace viewing**\n\nNow we can orbit, pan and zoom around the torus with the mouse and keyboard. Let's view it on a ZSpace display by\ndropping a ZSpace component into our default {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n````javascript\nvar zspace = new ZSpace();\n````\n\nThe ZSpace component immediately activates, so at this point if we're running on a ZSpace device we'll have a stereo\nview of the torus, which we can view with the stereo glasses.\n\nAt any point we can always disable the ZSpace effect to switch between normal WebGL mono viewing mode:\n\n````javascript\nzspace.active = false; // Back to normal mono viewing..\nzspace.active = true; // ..and then back to ZSpace stereo mode.\n\n````\n\n## Detecting support\n\nThe **ZSpace** will fire a \"supported\" event once it has determined whether or not the browser\nsupports a zSpace viewer:\n\n````javascript\nzspace.on(\"supported\", function (supported) {\n\n       if (!supported) {\n\n           // Not a zSpace device\n\n           this.error(\"This computer is not a ZSpace viewer!\"); // Log error on the XEO.ZSpace component\n\n           // At this point you could just destroy the XEO.ZSpace to make it detach from the Camera\n       }\n   });\n````\n\n## Handling stylus input\n\nReading the current World-space position and direction of the stylus:\n\n````javascript\nvar stylusPos = zspace.stylusPos;\nvar stylusDir = zspace.stylusDir;\n````\n\nNote that these properties only have meaningful values once the ZSpace has fired at least one {{#crossLink \"ZSpace/stylusMoved:event\"}}{{/crossLink}} event.\n\nSubscribing to stylus movement:\n\n````javascript\nzspace.on(\"stylusMoved\", function() {\n    var stylusPos = zspace.stylusPos;\n    var stylusDir = zspace.stylusDir;\n    //...\n});\n````\n\nReading the current state of each stylus button:\n\n````javascript\nvar button0 = zspace.stylusButton0; // Boolean\nvar button1 = zspace.stylusButton1;\nvar button2 = zspace.stylusButton2;\n````\n\nSubscribing to change of state of each stylus button:\n\n````javascript\nzspace.on(\"stylusButton0\", function(value) { // Boolean value\n    this.log(\"stylusButton0 = \" + value);\n});\n\nzspace.on(\"stylusButton1\", function(value) {\n    this.log(\"stylusButton1 = \" + value);\n});\n\nzspace.on(\"stylusButton2\", function(value) {\n    this.log(\"stylusButton2 = \" + value);\n});\n````\n\nPicking an {{#crossLink \"Entity\"}}{{/crossLink}} with the stylus when button 0 is pressed:\n\n````javascript\nzspace.on(\"stylusButton0\", function() {\n\n   var hit = zspace.scene.pick({\n       pickSurface: true,\n       origin: zspace.stylusPos,\n       direction: zspace.stylusDir\n   });\n\n   if (hit) { // Picked an Entity\n\n       var entity = hit.entity;\n\n       // Other properties on the hit result:\n\n       var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n       var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n       var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n       var localPos = hit.localPos; // Float32Array containing the picked Local-space position within the triangle\n       var worldPos = hit.worldPos; // Float32Array containing the picked World-space position within the triangle\n       var viewPos = hit.viewPos; // Float32Array containing the picked View-space position within the triangle\n       var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n       var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n       var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n\n       //...\n   }\n});\n````",
+            "description": "A **ZSpace** component makes its {{#crossLink \"Scene\"}}{{/crossLink}} viewable with a zSpace viewer.\n\n<ul>\n<li>Plug-and-play: just create a ZSpace component within your xeoEngine {{#crossLink \"Scene\"}}{{/crossLink}} to make it viewable with a ZSpace display.</li>\n<li>Activate or disable the ZSpace component at any time to switch between zSpace mode and normal mono viewing mode.</li>\n<li>Requires WebGL2 and WebVR support, which you'll have if you're running on a zSpace viewer.</li>\n<li>Attaches to a {{#crossLink \"Camera\"}}{{/crossLink}}, defaults to its {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default\n{{#crossLink \"Scene/camera:property\"}}{{/crossLink}} if none is specified.</li>\n<li>Don't attach different view or projection transform components to the {{#crossLink \"Camera\"}}{{/crossLink}} while the ZSpace component is active.</li>\n<li>You can however update the {{#crossLink \"Camera\"}}{{/crossLink}}'s view transformation at any time, to move the\nviewpoint around.\n</ul>\n\n<img src=\"../../../assets/images/ZSpace.png\"></img>\n\n## Examples\n\n<ul>\n<li>[zSpace cube](../../examples/webvr_zspace_cube.html)</li>\n<li>[zSpace with random geometries](../../examples/webvr_zspace_geometries.html)</li>\n<li>[zSpace with glTF gearbox model](../../examples/webvr_zspace_gearbox.html)</li>\n<li>[zSpace with glTF gearbox model and entity explorer](../../examples/webvr_zspace_gearbox_explorer.html)</li>\n</ul>\n\n## Usage\n\nIn the following example we're going to set up a ZSpace-viewable scene with xeoEngine, defining the scene step-by-step to\nemphasize the plug-and-play design of xeoEngine's API.\n\n**1. Create an entity**\n\nFirst we'll create a simple torus-shaped {{#crossLink \"Entity\"}}{{/crossLink}}, which will be within xeoEngine's default\n{{#crossLink \"Scene\"}}{{/crossLink}}, since we're not defining the {{#crossLink \"Scene\"}}{{/crossLink}} component\nexplicitly. Our {{#crossLink \"Entity\"}}{{/crossLink}} is also implicitly connected to the\n{{#crossLink \"Scene\"}}{{/crossLink}}'s default {{#crossLink \"Camera\"}}{{/crossLink}}, since we didn't explicitly create\na {{#crossLink \"Camera\"}}{{/crossLink}} for it either.\n\n````javascript\nvar entity = new XEO.Entity({\n    geometry: new XEO.TorusGeometry(),\n    material: new XEO.PhongMaterial({\n       diffuseMap: new XEO.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n       })\n    })\n});\n````\n\n**2. Enable mouse/keyboard camera interaction**\n\nAt this point we've got a textured torus floating in the middle of the canvas (which is also created automatically\nsince we didn't specify one). Now we'll create a\n{{#crossLink \"CameraControl\"}}{{/crossLink}}, which immediately allows us to move our viewpoint around with the mouse and\nkeyboard. This component is also within xeoEngine's default {{#crossLink \"Scene\"}}{{/crossLink}} and connected to the\n{{#crossLink \"Scene\"}}{{/crossLink}}'s default {{#crossLink \"Camera\"}}{{/crossLink}}.\n\n````javascript\nnew CameraControl();\n````\n\n**3. Enable ZSpace viewing**\n\nNow we can orbit, pan and zoom around the torus with the mouse and keyboard. Let's view it on a ZSpace display by\ndropping a ZSpace component into our default {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n````javascript\nvar zspace = new ZSpace();\n````\n\nThe ZSpace component immediately activates, so at this point if we're running on a ZSpace device we'll have a stereo\nview of the torus, which we can view with the stereo glasses.\n\nAt any point we can always disable the ZSpace effect to switch between normal WebGL mono viewing mode:\n\n````javascript\nzspace.active = false; // Back to normal mono viewing..\nzspace.active = true; // ..and then back to ZSpace stereo mode.\n\n````\n\n## Detecting support\n\nThe **ZSpace** will fire a \"supported\" event once it has determined whether or not the browser\nsupports a zSpace viewer:\n\n````javascript\nzspace.on(\"supported\", function (supported) {\n\n       if (!supported) {\n\n           // Not a zSpace device\n\n           this.error(\"This computer is not a ZSpace viewer!\"); // Log error on the XEO.ZSpace component\n\n           // At this point you could just destroy the XEO.ZSpace to make it detach from the Camera\n       }\n   });\n````\n\n## Handling stylus input\n\nReading the current World-space position and direction of the stylus:\n\n````javascript\nvar stylusPos = zspace.stylusPos;\nvar stylusDir = zspace.stylusDir;\n````\n\nNote that these properties only have meaningful values once the ZSpace has fired at least one {{#crossLink \"ZSpace/stylusMoved:event\"}}{{/crossLink}} event.\n\nSubscribing to stylus movement:\n\n````javascript\nzspace.on(\"stylusMoved\", function() {\n    var stylusPos = zspace.stylusPos;\n    var stylusDir = zspace.stylusDir;\n    //...\n});\n````\n\nReading the current state of each stylus button:\n\n````javascript\nvar button0 = zspace.stylusButton0; // Boolean\nvar button1 = zspace.stylusButton1;\nvar button2 = zspace.stylusButton2;\n````\n\nSubscribing to change of state of each stylus button:\n\n````javascript\nzspace.on(\"stylusButton0\", function(value) { // Boolean value\n    this.log(\"stylusButton0 = \" + value);\n});\n\nzspace.on(\"stylusButton1\", function(value) {\n    this.log(\"stylusButton1 = \" + value);\n});\n\nzspace.on(\"stylusButton2\", function(value) {\n    this.log(\"stylusButton2 = \" + value);\n});\n````\n\nPicking an {{#crossLink \"Entity\"}}{{/crossLink}} with the stylus when button 0 is pressed:\n\n````javascript\nzspace.on(\"stylusButton0\", function() {\n\n   var hit = zspace.scene.pick({\n       pickSurface: true,\n       origin: zspace.stylusPos,\n       direction: zspace.stylusDir\n   });\n\n   if (hit) { // Picked an Entity\n\n       var entity = hit.entity;\n\n       // Other properties on the hit result:\n\n       var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n       var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n       var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n       var localPos = hit.localPos; // Float32Array containing the picked Local-space position within the triangle\n       var worldPos = hit.worldPos; // Float32Array containing the picked World-space position within the triangle\n       var viewPos = hit.viewPos; // Float32Array containing the picked View-space position within the triangle\n       var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n       var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n       var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n\n       //...\n   }\n});\n````",
             "submodule": "webvr",
             "is_constructor": 1,
             "params": [
@@ -21448,7 +21541,173 @@
             "namespace": "XEO"
         },
         {
-            "file": "examples/js/webvr/zspace/zSpace.js",
+            "file": "examples/js/webvr/cardboard.js",
+            "line": 106,
+            "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} attached to this Cardboard component.\n\nThis Cardboard component will attach a {{#crossLink \"Frustum\"}}{{/crossLink}} to its\n{{#crossLink \"Camera\"}}{{/crossLink}} if the {{#crossLink \"Camera\"}}Camera{{/crossLink}} does not have\none already, replacing the projection transform component that was already attached.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Cardboard. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.",
+            "itemtype": "property",
+            "name": "camera",
+            "type": "Camera",
+            "class": "Cardboard",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/cardboard.js",
+            "line": 124,
+            "description": "Fired whenever this Cardboard's {{#crossLink \"Cardboard/camera:property\"}}{{/crossLink}}\nproperty changes.",
+            "itemtype": "event",
+            "name": "camera",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Cardboard",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/cardboard.js",
+            "line": 153,
+            "description": "The {{#crossLink \"Viewport\"}}{{/crossLink}} attached to this Cardboard.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Cardboard. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/viewport:property\"}}Viewport{{/crossLink}} when set to\na null or undefined value.",
+            "itemtype": "property",
+            "name": "Viewport",
+            "type": "Viewport",
+            "class": "Cardboard",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/cardboard.js",
+            "line": 167,
+            "description": "Fired whenever this Cardboard's {{#crossLink \"Cardboard/Viewport:property\"}}{{/crossLink}}\nproperty changes.",
+            "itemtype": "event",
+            "name": "Viewport",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Cardboard",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/cardboard.js",
+            "line": 189,
+            "description": "Eye separation distance.\n\nFires an {{#crossLink \"Cardboard/eyeSep:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "eyeSep",
+            "type": "Number",
+            "default": "0.2",
+            "class": "Cardboard",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/cardboard.js",
+            "line": 210,
+            "description": "Fired whenever this Cardboard's {{#crossLink \"Cardboard/eyeSep:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "eyeSep",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Cardboard",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/cardboard.js",
+            "line": 223,
+            "description": "Focal length.\n\nFires an {{#crossLink \"Cardboard/focalLength:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "focalLength",
+            "type": "Number",
+            "default": "20",
+            "class": "Cardboard",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/cardboard.js",
+            "line": 244,
+            "description": "Fired whenever this Cardboard's {{#crossLink \"Cardboard/focalLength:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "focalLength",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Cardboard",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/cardboard.js",
+            "line": 257,
+            "description": "Aperture angle in degrees.\n\nFires an {{#crossLink \"Cardboard/aperture:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "aperture",
+            "type": "Number",
+            "default": "45",
+            "class": "Cardboard",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/cardboard.js",
+            "line": 278,
+            "description": "Fired whenever this Cardboard's {{#crossLink \"Cardboard/aperture:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "aperture",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Cardboard",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/cardboard.js",
+            "line": 291,
+            "description": "Flag which indicates whether this Cardboard component is active or not.\n\nFires an {{#crossLink \"Cardboard/active:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "active",
+            "type": "Boolean",
+            "default": "true",
+            "class": "Cardboard",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/cardboard.js",
+            "line": 314,
+            "description": "Fired whenever this Cardboard component's {{#crossLink \"Cardboard/active:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "active",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Cardboard",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/zSpace.js",
             "line": 357,
             "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} attached to this ZSpace component.\n\nThe ZSpace component will attach a {{#crossLink \"Projection\"}}{{/crossLink}} to its\n{{#crossLink \"Camera\"}}{{/crossLink}} if the {{#crossLink \"Camera\"}}Camera{{/crossLink}} does not have\none already, replacing whatever projection transform component was already attached.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this ZSpace component. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.\n\nNo other component should modify the state of the {{#crossLink \"Camera\"}}{{/crossLink}} while\nit's attached to this ZSpace component. There is no prevention or check for that, so if that\nhappens you'll get unexpected results.",
             "itemtype": "property",
@@ -21459,7 +21718,7 @@
             "submodule": "webvr"
         },
         {
-            "file": "examples/js/webvr/zspace/zSpace.js",
+            "file": "examples/js/webvr/zSpace.js",
             "line": 379,
             "description": "Fired whenever this ZSpace component's {{#crossLink \"ZSpace/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
@@ -21475,7 +21734,7 @@
             "submodule": "webvr"
         },
         {
-            "file": "examples/js/webvr/zspace/zSpace.js",
+            "file": "examples/js/webvr/zSpace.js",
             "line": 399,
             "description": "Position of this ZSpace's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"ZSpace/nearClip:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
@@ -21487,7 +21746,7 @@
             "submodule": "webvr"
         },
         {
-            "file": "examples/js/webvr/zspace/zSpace.js",
+            "file": "examples/js/webvr/zSpace.js",
             "line": 416,
             "description": "Fired whenever this ZSpace's   {{#crossLink \"ZSpace/nearClip:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
@@ -21503,7 +21762,7 @@
             "submodule": "webvr"
         },
         {
-            "file": "examples/js/webvr/zspace/zSpace.js",
+            "file": "examples/js/webvr/zSpace.js",
             "line": 429,
             "description": "Position of this ZSpace's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"ZSpace/farClip:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
@@ -21515,7 +21774,7 @@
             "submodule": "webvr"
         },
         {
-            "file": "examples/js/webvr/zspace/zSpace.js",
+            "file": "examples/js/webvr/zSpace.js",
             "line": 446,
             "description": "Fired whenever this ZSpace's  {{#crossLink \"ZSpace/farClip:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
@@ -21531,7 +21790,7 @@
             "submodule": "webvr"
         },
         {
-            "file": "examples/js/webvr/zspace/zSpace.js",
+            "file": "examples/js/webvr/zSpace.js",
             "line": 460,
             "description": "The display resolution.\n\nFires a {{#crossLink \"ZSpace/displayResolution:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
@@ -21543,7 +21802,7 @@
             "submodule": "webvr"
         },
         {
-            "file": "examples/js/webvr/zspace/zSpace.js",
+            "file": "examples/js/webvr/zSpace.js",
             "line": 477,
             "description": "Fired whenever this ZSpace's {{#crossLink \"ZSpace/displayResolution:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
@@ -21560,7 +21819,7 @@
             "submodule": "webvr"
         },
         {
-            "file": "examples/js/webvr/zspace/zSpace.js",
+            "file": "examples/js/webvr/zSpace.js",
             "line": 491,
             "description": "The display size.\n\nFires a {{#crossLink \"ZSpace/displaySize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
@@ -21572,7 +21831,7 @@
             "submodule": "webvr"
         },
         {
-            "file": "examples/js/webvr/zspace/zSpace.js",
+            "file": "examples/js/webvr/zSpace.js",
             "line": 508,
             "description": "Fired whenever this ZSpace's {{#crossLink \"ZSpace/displaySize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
@@ -21589,7 +21848,7 @@
             "submodule": "webvr"
         },
         {
-            "file": "examples/js/webvr/zspace/zSpace.js",
+            "file": "examples/js/webvr/zSpace.js",
             "line": 522,
             "description": "The current World-space position of the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusMoved:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
@@ -21601,7 +21860,7 @@
             "submodule": "webvr"
         },
         {
-            "file": "examples/js/webvr/zspace/zSpace.js",
+            "file": "examples/js/webvr/zSpace.js",
             "line": 537,
             "description": "The current World-space direction the stylus is pointing in.\n\nFires a {{#crossLink \"ZSpace/stylusMoved:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
@@ -21613,7 +21872,7 @@
             "submodule": "webvr"
         },
         {
-            "file": "examples/js/webvr/zspace/zSpace.js",
+            "file": "examples/js/webvr/zSpace.js",
             "line": 552,
             "description": "The current camera matrix for the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusMoved:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
@@ -21625,7 +21884,7 @@
             "submodule": "webvr"
         },
         {
-            "file": "examples/js/webvr/zspace/zSpace.js",
+            "file": "examples/js/webvr/zSpace.js",
             "line": 567,
             "description": "Whether or not the first button is down on the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusButton0:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
@@ -21638,7 +21897,7 @@
             "submodule": "webvr"
         },
         {
-            "file": "examples/js/webvr/zspace/zSpace.js",
+            "file": "examples/js/webvr/zSpace.js",
             "line": 583,
             "description": "Whether or not the second button is down on the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusButton1:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
@@ -21651,7 +21910,7 @@
             "submodule": "webvr"
         },
         {
-            "file": "examples/js/webvr/zspace/zSpace.js",
+            "file": "examples/js/webvr/zSpace.js",
             "line": 599,
             "description": "Whether or not the third button is down on the stylus.\n\nFires a {{#crossLink \"ZSpace/stylusButton2:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
@@ -21664,7 +21923,7 @@
             "submodule": "webvr"
         },
         {
-            "file": "examples/js/webvr/zspace/zSpace.js",
+            "file": "examples/js/webvr/zSpace.js",
             "line": 615,
             "description": "Flag which indicates whether this ZSpace component is active or not.\n\nNote that this ZSpace component can still be activated when the browser does not support ZSpace.\n\nFires an {{#crossLink \"ZSpace/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
@@ -21676,7 +21935,7 @@
             "submodule": "webvr"
         },
         {
-            "file": "examples/js/webvr/zspace/zSpace.js",
+            "file": "examples/js/webvr/zSpace.js",
             "line": 641,
             "description": "Fired whenever this ZSpace component's {{#crossLink \"ZSpace/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
@@ -21692,7 +21951,7 @@
             "submodule": "webvr"
         },
         {
-            "file": "examples/js/webvr/zspace/zSpace.js",
+            "file": "examples/js/webvr/zSpace.js",
             "line": 1050,
             "description": "Fired whenever this ZSpace component's stylus moves.",
             "itemtype": "event",
@@ -21702,7 +21961,7 @@
             "submodule": "webvr"
         },
         {
-            "file": "examples/js/webvr/zspace/zSpace.js",
+            "file": "examples/js/webvr/zSpace.js",
             "line": 1060,
             "description": "Fired whenever this ZSpace component's first button is pressed or released.",
             "itemtype": "event",
@@ -21718,7 +21977,7 @@
             "submodule": "webvr"
         },
         {
-            "file": "examples/js/webvr/zspace/zSpace.js",
+            "file": "examples/js/webvr/zSpace.js",
             "line": 1071,
             "description": "Fired whenever this ZSpace component's second button is pressed or released.",
             "itemtype": "event",
@@ -21734,7 +21993,7 @@
             "submodule": "webvr"
         },
         {
-            "file": "examples/js/webvr/zspace/zSpace.js",
+            "file": "examples/js/webvr/zSpace.js",
             "line": 1082,
             "description": "Fired whenever this ZSpace component's third button is pressed or released.",
             "itemtype": "event",

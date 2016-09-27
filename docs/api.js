@@ -12,6 +12,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "CameraController",
         "CameraFlight",
         "Canvas",
+        "Cardboard",
         "Clip",
         "Clips",
         "Collection",

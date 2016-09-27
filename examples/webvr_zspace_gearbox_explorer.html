@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="./js/libs/jstree/themes/default/style.min.css"/>
     <script src="./js/libs/jstree/jstree.min.js"></script>
 
-    <script src="js/webvr/zspace/zSpace.js"></script>
+    <script src="js/webvr/zSpace.js"></script>
 
 <body>
 
@@ -162,8 +162,8 @@
             // that flies to the selected Entity
             //---------------------------------------------------------------------------------------
 
-            var nextObject; // Next entity we'll fly to
-            var lastObject; // Last entity we flew to
+            var nextEntity; // Next entity we'll fly to
+            var lastEntity; // Last entity we flew to
 
             // Build explorer tree
             $('#explorer').jstree({
@@ -178,19 +178,19 @@
 
                             var entityId = data.instance.get_node(data.selected[0]).id;
 
-                            nextObject = scene.components[entityId];
+                            nextEntity = scene.components[entityId];
 
-                            if (lastObject) {
-                                lastObject.modes.transparent = true;
+                            if (lastEntity) {
+                                lastEntity.modes.transparent = true;
                             }
 
-                            nextObject.modes.transparent = false;
+                            nextEntity.modes.transparent = false;
 
-                            orientedBoundary.geometry.obb = nextObject.worldBoundary.obb;
+                            orientedBoundary.geometry.obb = nextEntity.worldBoundary.obb;
                             orientedBoundary.visibility.visible = true;
 
                             cameraFlight.flyTo({
-                                        aabb: nextObject.worldBoundary.aabb, // Fly to entity's AABB
+                                        aabb: nextEntity.worldBoundary.aabb, // Fly to entity's AABB
                                         stopFOV: 75, // Make sure the camera stops far enough back from the entity
                                         duration: 1.0 // One second flight time to each entity
                                     },
@@ -198,7 +198,7 @@
                                         // Camera has arrived at entity
                                     });
 
-                            lastObject = nextObject;
+                            lastEntity = nextEntity;
                         }
                     });
         });
@@ -229,7 +229,7 @@
                 // Create helper to show stylus position
                 //----------------------------------------------------------------------------
 
-                var rayHelper = new (function () {
+                var stylusHelper = new (function () {
 
                     var entity = new XEO.Entity({
                         geometry: new XEO.Geometry({
@@ -270,8 +270,10 @@
 
                 var hitHelper = new (function () {
 
+                    var lastEntityHit;
+
                     var entity = new XEO.Entity({
-                        geometry: new XEO.SphereGeometry({radius: 0.05}),
+                        geometry: new XEO.SphereGeometry({radius: 0.1}),
                         material: new XEO.PhongMaterial({emissive: [1, 0, 0], diffuse: [0, 0, 0]}),
                         transform: new XEO.Translate(),
                         modes: new XEO.Modes({pickable: false}),
@@ -279,12 +281,27 @@
                     });
 
                     this.show = function (hit) {
+
+                        if (lastEntityHit) {
+                            lastEntityHit.material.emissive = [0, 0, 0];
+                        }
+
                         entity.transform.xyz = hit.worldPos;
                         entity.visibility.visible = true;
+
+                        var entityHit = hit.entity;
+
+                        entityHit.material.emissive = [0, 0, 1];
+
+                        lastEntityHit = entityHit;
                     };
 
                     this.hide = function () {
                         entity.visibility.visible = false;
+                        if (lastEntityHit) {
+                            lastEntityHit.material.emissive = [0, 0, 0];
+                            lastEntityHit = null;
+                        }
                     };
                 })();
 
@@ -298,7 +315,7 @@
                     var stylusPos = zspace.stylusPos;
                     var stylusDir = XEO.math.mulVec3Scalar(zspace.stylusDir, 100, []);
 
-                    rayHelper.setPosition(stylusPos, stylusDir);
+                    stylusHelper.setPosition(stylusPos, stylusDir);
 
                     var hit = scene.pick({
                         pickSurface: false, // Default
@@ -308,12 +325,12 @@
 
                     if (hit) { // Stylus hits an Entity
 
-                        rayHelper.setHighlighted(true);
+                        stylusHelper.setHighlighted(true);
                         hitHelper.show(hit);
 
                     } else { // Stylus hits nothing
 
-                        rayHelper.setHighlighted(false);
+                        stylusHelper.setHighlighted(false);
                         hitHelper.hide();
                     }
                 });

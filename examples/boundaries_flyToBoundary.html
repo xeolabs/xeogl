@@ -174,43 +174,43 @@
                 // Each time we fly, show the World-space AABB, the World-space OBB
                 // and the Canvas-space AABB as yellow, red and blue boxes, respectively.
 
-                var nextObject; // Next entity we'll fly to
-                var lastObject; // Last entity we flew to
+                var nextEntity; // Next entity we'll fly to
+                var lastEntity; // Last entity we flew to
 
                 var lastHandler;// Subscribes to the Canvas AABB of the entity we're flying to, so we can dynamically update the blue box
 
                 setInterval(function () {
 
-                            if (lastObject) {
-                                lastObject.modes.transparent = true;
-                                lastObject.off(lastHandler);
+                            if (lastEntity) {
+                                lastEntity.modes.transparent = true;
+                                lastEntity.off(lastHandler);
                             }
 
-                            nextObject = entities[Math.floor(Math.random() * entities.length)];
+                            nextEntity = entities[Math.floor(Math.random() * entities.length)];
 
-                            nextObject.modes.transparent = false;
+                            nextEntity.modes.transparent = false;
 
-                            lastHandler = nextObject.canvasBoundary.on("updated", function () {
-                                showCanvasBoundary(nextObject)
+                            lastHandler = nextEntity.canvasBoundary.on("updated", function () {
+                                showCanvasBoundary(nextEntity)
                             });
 
-                            orientedBoundary.geometry.obb = nextObject.worldBoundary.obb;
+                            orientedBoundary.geometry.obb = nextEntity.worldBoundary.obb;
                             orientedBoundary.visibility.visible = true;
 
-                            axisBoundary.geometry.aabb = nextObject.worldBoundary.aabb;
+                            axisBoundary.geometry.aabb = nextEntity.worldBoundary.aabb;
                             axisBoundary.visibility.visible = true;
 
                             XEO.debug
-                                    .id("nextObject")
+                                    .id("nextEntity")
                                     .fillColor([1.0, 1.0, 0.3])
                                     .color([0, 0, 0])
-                                    .text("Entity id=" + nextObject.id)
-                                    .pos(nextObject.worldBoundary.obb[0])
+                                    .text("Entity id=" + nextEntity.id)
+                                    .pos(nextEntity.worldBoundary.obb[0])
                                     .label();
 
 
                             cameraFlight.flyTo({
-                                        aabb: nextObject.worldBoundary.aabb, // Fly to entity's oriented bounding box
+                                        aabb: nextEntity.worldBoundary.aabb, // Fly to entity's oriented bounding box
                                         stopFOV: 55, // Make sure the camera stops far enough back from the entity
                                         duration: 2.0 // One second flight time to each entity
                                     },
@@ -218,7 +218,7 @@
                                         // Camera has arrived at entity
                                     });
 
-                            lastObject = nextObject;
+                            lastEntity = nextEntity;
                         },
                         6000);
             });

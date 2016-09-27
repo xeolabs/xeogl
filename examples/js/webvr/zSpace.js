@@ -19,8 +19,8 @@
  <ul>
  <li>[zSpace cube](../../examples/webvr_zspace_cube.html)</li>
  <li>[zSpace with random geometries](../../examples/webvr_zspace_geometries.html)</li>
- <li>[zSpace with gearbox model](../../examples/webvr_zspace_gearbox.html)</li>
- <li>[zSpace with gearbox model and entity explorer](../../examples/webvr_zspace_gearbox_explorer.html)</li>
+ <li>[zSpace with glTF gearbox model](../../examples/webvr_zspace_gearbox.html)</li>
+ <li>[zSpace with glTF gearbox model and entity explorer](../../examples/webvr_zspace_gearbox_explorer.html)</li>
  </ul>
 
  ## Usage
