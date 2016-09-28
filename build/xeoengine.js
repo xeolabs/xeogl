@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-09-28
+ * Built on 2016-09-29
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -27859,6 +27859,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
      <li>[Model with entity explorer UI](../../examples/#demos_ui_explorer)</li>
      <li>[Fly camera to model entities](../../examples/#boundaries_flyToBoundary)</li>
      <li>[Ensuring individual materials on Model entities](../../examples/#importing_gltf_techniques_uniqueMaterials)</li>
+     <li>[Baking transform hierarchies](../../examples/#importing_gltf_techniques_bakeTransforms)</li>
      <li>[Attaching transforms to Models, via constructor](../../examples/#importing_gltf_techniques_configTransform)</li>
      <li>[Attaching transforms to Models, via property](../../examples/#importing_gltf_techniques_attachTransform)</li>
      </ul>
