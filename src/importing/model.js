@@ -29,6 +29,7 @@
      <li>[Model with entity explorer UI](../../examples/#demos_ui_explorer)</li>
      <li>[Fly camera to model entities](../../examples/#boundaries_flyToBoundary)</li>
      <li>[Ensuring individual materials on Model entities](../../examples/#importing_gltf_techniques_uniqueMaterials)</li>
+     <li>[Baking transform hierarchies](../../examples/#importing_gltf_techniques_bakeTransforms)</li>
      <li>[Attaching transforms to Models, via constructor](../../examples/#importing_gltf_techniques_configTransform)</li>
      <li>[Attaching transforms to Models, via property](../../examples/#importing_gltf_techniques_attachTransform)</li>
      </ul>
@@ -63,7 +64,7 @@
             // Dummy transform to make it easy to graft user-supplied
             // transforms above loaded entities
 
-            this._dummyRootTransform = this.create(XEO.Translate, {
+            this._dummyRootTransform = this.create(XEO.Transform, {
                 meta: "dummy"
             });
 

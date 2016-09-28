@@ -8,6 +8,7 @@
     <link href="css/styles.css" rel="stylesheet"/>
 
     <script src="../build/xeoengine.min.js"></script>
+    <script src="js/geometry/vectorTextGeometry.js"></script>
 
     <script src="js/webvr/zSpace.js"></script>
 
@@ -28,8 +29,8 @@
     //---------------------------------------------------
 
     var geometry = new XEO.TorusGeometry({
-        radius: 1.0,
-        tube: 0.4,
+        radius: 1.4,
+        tube: 1,
         radialSegments: 60,
         tubeSegments: 60,
         arc: Math.PI * 2.0
@@ -37,26 +38,28 @@
 
     var scene = geometry.scene;
 
-    var material = new XEO.PhongMaterial({
-        diffuseMap: new XEO.Texture({
-            src: "textures/diffuse/uvGrid2.jpg"
-        })
+    var diffuseMap = new XEO.Texture({
+        src: "textures/diffuse/uvGrid2.jpg"
     });
 
-    for (var i = 0; i < 200; i++) {
+    for (var i = 0; i < 100; i++) {
 
         new XEO.Entity({
             geometry: geometry,
-            material: material,
+            material: new XEO.PhongMaterial({
+                diffuseMap: diffuseMap
+            }),
             transform: new XEO.Rotate({
                 xyz: [Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1],
-                angle: 0,
+                angle: Math.random() * 360,
                 parent: new XEO.Translate({
                     xyz: [Math.random() * 30 - 15, Math.random() * 30 - 15, Math.random() * 30 - 15]
                 })
             })
         });
     }
+
+    scene.camera.view.eye = [0, 0, -50];
 
     //----------------------------------------------------------------------------
     // Allow camera control with keyboard and mouse
@@ -69,6 +72,10 @@
     //----------------------------------------------------------------------------
 
     var zspace = new XEO.ZSpace();
+
+    //----------------------------------------------------------------------------
+    // Check if we're actually running on a ZSpace device
+    //----------------------------------------------------------------------------
 
     //----------------------------------------------------------------------------
     // Check if we're actually running on a ZSpace device
@@ -87,12 +94,12 @@
         } else { // ZSpace detected
 
             //----------------------------------------------------------------------------
-            // Create helper to show stylus position
+            // Create helper to show stylus
             //----------------------------------------------------------------------------
 
             var stylusHelper = new (function () {
 
-                var entity = new XEO.Entity({
+                var ray = new XEO.Entity({
                     geometry: new XEO.Geometry({
                         primitive: "lines",
                         positions: [0, 0, 0, 0, 0, 0],
@@ -102,7 +109,7 @@
                         emissive: [1, 0.3, 0.3],
                         diffuse: [0, 0, 0],
                         ambient: [0, 0, 0],
-                        lineWidth: 2
+                        lineWidth: 3
                     }),
                     modes: new XEO.Modes({pickable: false})
                 });
@@ -116,95 +123,198 @@
                     positions[3] = pos[0] + dir[0]; // Direction
                     positions[4] = pos[1] + dir[1];
                     positions[5] = pos[2] + dir[2];
-                    entity.geometry.positions = positions;
+
+                    ray.geometry.positions = positions;
                 };
 
                 this.setHighlighted = function (highlighted) {
-                    entity.material.emissive = highlighted ? [1.0, 0.5, 0.5] : [0.5, 0.3, 0.3];
-                    entity.material.lineWidth = highlighted ? 4 : 2;
+                    ray.material.emissive = highlighted ? [0.3, 1.0, 0.3] : [1.0, 0.3, 0.3];
+                    ray.material.lineWidth = highlighted ? 5 : 3;
                 };
             })();
 
             //----------------------------------------------------------------------------
-            // Create helper to show stylus-Entity hits
+            // Create helper to show info
             //----------------------------------------------------------------------------
 
-            var hitHelper = new (function () {
+            var infoHelper = new (function () {
 
-                var entity = new XEO.Entity({
-                    geometry: new XEO.SphereGeometry({radius: 0.05}),
-                    material: new XEO.PhongMaterial({emissive: [1, 0, 0], diffuse: [0, 0, 0]}),
+                var info = new XEO.Entity({
+                    geometry: new XEO.VectorTextGeometry({text: "", xSize: 1, ySize: 1}),
+                    material: new XEO.PhongMaterial({emissive: [0.5, 1.0, 1.0], lineWidth: 3}),
+                    lights: new XEO.Lights({
+                        lights: [] // No lights - rely on emissive color
+                    }),
                     transform: new XEO.Translate(),
-                    modes: new XEO.Modes({pickable: false}),
-                    visibility: new XEO.Visibility({visible: false})
+                    visibility: new XEO.Visibility(),
+                    billboard: new XEO.Billboard()
                 });
 
-                this.show = function (hit) {
-                    entity.transform.xyz = hit.worldPos;
-                    entity.visibility.visible = true;
+                this.setPos = function (pos) {
+                    info.transform.xyz = pos;
+                    info.visibility.visible = true;
+                };
+
+                this.setInfo = function (text) {
+                    info.geometry.text = text;
+                    info.visibility.visible = true;
                 };
 
                 this.hide = function () {
-                    entity.visibility.visible = false;
+                    info.visibility.visible = false;
                 };
             })();
 
             //----------------------------------------------------------------------------
-            // Update the ray helper whenever the stylus moves; highlight
-            // the ray helper when it intersects an entity
+            //
             //----------------------------------------------------------------------------
 
-            zspace.on("stylusMoved", function () {
+            var draggingEntity = false;
+            var draggingStartPos = XEO.math.vec3();
+            var downStylusDir = XEO.math.vec3();
+            var stylusIsectLen;
 
-                var stylusPos = zspace.stylusPos;
-                var stylusDir = XEO.math.mulVec3Scalar(zspace.stylusDir, 100, []);
+            var translate;
+            var rotate;
 
-                stylusHelper.setPosition(stylusPos, stylusDir);
+            var pick = (function () {
 
-                var hit = scene.pick({
-                    pickSurface: false, // Default
-                    origin: stylusPos,
-                    direction: stylusDir
-                });
+                var stylusDir = XEO.math.vec3();
+                var stylusIsectDir = XEO.math.vec3();
 
-                if (hit) { // Stylus hits an Entity
+                return function () {
 
-                    stylusHelper.setHighlighted(true);
-                    hitHelper.show(hit);
+                    var stylusPos = zspace.stylusPos;
+                    XEO.math.mulVec3Scalar(zspace.stylusDir, 100, stylusDir);
 
-                } else { // Stylus hits nothing
+                    var hit = scene.pick({
+                        pickSurface: true, // <<----- Picking point on surface
+                        origin: stylusPos,
+                        direction: stylusDir
+                    });
 
-                    stylusHelper.setHighlighted(false);
-                    hitHelper.hide();
+                    if (hit) { // Stylus hits an Entity
+
+                        var entity = hit.entity;
+
+                        if (!entity.transform || !entity.transform.meta.stylusTransform) {
+
+                            var center = entity.worldBoundary.center;
+
+                            entity.transform = translate = new XEO.Translate({
+                                meta: {
+                                    stylusTransform: true
+                                },
+                                xyz: [0, 0, 0],
+                                postMultiply: false,
+                                parent: new XEO.Translate({
+                                    xyz: [center[0], center[1], center[2]],
+                                    postMultiply: false,
+                                    parent: rotate = new XEO.Quaternion({
+                                        parent: new XEO.Translate({
+                                            xyz: [-center[0], -center[1], -center[2]],
+                                            postMultiply: false,
+                                            parent: entity.transform
+                                        })
+                                    })
+                                })
+                            });
+                        }
+                        draggingEntity = entity;
+                        draggingEntity.material.emissive = [0.0, 1.0, 0.0];
+                        draggingStartPos.set(hit.worldPos);
+                        XEO.math.subVec3(hit.worldPos, stylusPos, stylusIsectDir);
+                        stylusIsectLen = XEO.math.lenVec3(stylusIsectDir);
+
+                        XEO.math.normalizeVec3(zspace.stylusDir, downStylusDir);
+
+                        infoHelper.setInfo("" + entity.id);
+                    }
+                };
+            })();
+
+            zspace.on("stylusButton0", function (down) {
+
+                if (!down) {
+                    if (draggingEntity) {
+                        draggingEntity.material.emissive = [0.0, 0.0, 0.0];
+                        draggingEntity = null;
+                    }
+                    return;
                 }
+
+                pick();
             });
 
+
             //----------------------------------------------------------------------------
-            // Attempt to select a point on the surface of an entity when
-            // the first button is clicked on the stylus; use the hit
-            // helper to show the intersection if successful
+            //
             //----------------------------------------------------------------------------
 
-            zspace.on("stylusButton0", function () {
+            zspace.on("stylusMoved", (function () {
 
-                var stylusPos = zspace.stylusPos;
-                var stylusDir = XEO.math.mulVec3Scalar(zspace.stylusDir, 100, []);
+                var stylusDir = XEO.math.vec3();
+                var stylusIsectDir = XEO.math.vec3();
+                var stylusIsect = XEO.math.vec3();
+                var xyz = XEO.math.vec3();
+                var lastEntityHighlighted = null;
 
-                var hit = scene.pick({
-                    pickSurface: true, // <<----- Picking point on surface
-                    origin: stylusPos,
-                    direction: stylusDir
-                });
+                return function () {
 
-                if (hit) { // Stylus hits an Entity
+                    var stylusPos = zspace.stylusPos;
 
-                    hitHelper.show(hit);
+                    XEO.math.mulVec3Scalar(zspace.stylusDir, 100, stylusDir);
 
-                } else { // Stylus hits nothing
+                    stylusHelper.setPosition(stylusPos, stylusDir);
 
-                    hitHelper.hide();
-                }
-            });
+                    if (!draggingEntity && zspace.stylusButton0) {
+                        pick();
+                    }
+
+                    if (draggingEntity) {
+
+                        XEO.math.mulVec3Scalar(zspace.stylusDir, stylusIsectLen, stylusIsectDir);
+                        XEO.math.addVec3(zspace.stylusPos, stylusIsectDir, stylusIsect);
+
+                        XEO.math.subVec3(stylusIsect, draggingStartPos, xyz);
+
+                        translate.xyz = xyz;
+                        rotate.xyzw = XEO.math.vec3PairToQuaternion(downStylusDir, XEO.math.normalizeVec3(zspace.stylusDir, XEO.math.vec3()), XEO.math.vec4());
+
+                        //infoHelper.setPos(stylusIsect);
+                        infoHelper.setPos(stylusPos);
+
+                    } else {
+
+                        infoHelper.hide();
+
+                        var hit = scene.pick({
+                            pickSurface: false, // Default
+                            origin: stylusPos,
+                            direction: stylusDir
+                        });
+
+                        if (lastEntityHighlighted) {
+                            if (!hit || (hit.entity.id !== lastEntityHighlighted.id)) {
+                                lastEntityHighlighted.material.emissive = [0, 0, 0];
+                            }
+                        }
+
+                        if (hit) {
+                            stylusHelper.setHighlighted(true);
+
+                            hit.entity.material.emissive = [0, 0.5, 0];
+                            lastEntityHighlighted = hit.entity;
+
+                            //  infoHelper.setPos(stylusPos);
+
+                        } else {
+                            stylusHelper.setHighlighted(false);
+                            lastEntityHighlighted = null;
+                        }
+                    }
+                };
+            })());
         }
     });
 

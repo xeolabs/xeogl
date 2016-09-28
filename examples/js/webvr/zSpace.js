@@ -14,6 +14,14 @@
 
  <img src="../../../assets/images/ZSpace.png"></img>
 
+ ## Limitations
+
+ <ul>
+ <li>Stylus tracking only works correctly when the browser window is maximized to fill the zSpace display. This is because
+ stylus tracking requires that we know the location of the window within the display, which is currently only possible
+ when the window is maximized.</li>
+ </ul>
+
  ## Examples
 
  <ul>
@@ -828,7 +836,7 @@
             // Cached vars
 
             var canvas;
-            var canvasPosition;
+            var canvasPosition = math.vec3();
             var canvasWidth;
             var canvasHeight;
             var displayCenterX;
@@ -874,13 +882,14 @@
 
                 canvas = this.scene.canvas.canvas;
 
-                canvasPosition = getPosition(canvas);
+                getCanvasPosition(canvas, canvasPosition);
+
                 canvasWidth = canvas.clientWidth * displayScaleFactorX * viewerScale;
                 canvasHeight = canvas.clientHeight * displayScaleFactorY * viewerScale;
                 displayCenterX = this._displayResolution[0] * 0.5;
                 displayCenterY = this._displayResolution[1] * 0.5;
-                viewportCenterX = canvasPosition.x + (canvas.clientWidth * 0.5);
-                viewportCenterY = this._displayResolution[1] - (canvasPosition.y + (canvas.clientHeight * 0.5));
+                viewportCenterX = canvasPosition[0] + (canvas.clientWidth * 0.5);
+                viewportCenterY = this._displayResolution[1] - (canvasPosition[1] + (canvas.clientHeight * 0.5));
 
                 // View offset matrix
 
@@ -1133,12 +1142,10 @@
         }
     });
 
-    function getPosition(canvas) { // Helper function to get an element's exact position
+    function getCanvasPosition(canvas, canvasPosition) { // Helper function to get an element's exact position
         var canvasOffset = [0, 0];
-        return {
-            x: window.screenX + canvas.offsetLeft - screen.availLeft + canvasOffset[0],
-            y: window.screenY + canvas.offsetTop + 75 + canvasOffset[1]
-        };
+        canvasPosition[0] = window.screenX + canvas.offsetLeft - screen.availLeft + canvasOffset[0];
+        canvasPosition[1] = window.screenY + canvas.offsetTop + 75 + canvasOffset[1];
     }
 
     function makeProjectionMatrix(up, down, left, right, nearClip, farClip, out) {

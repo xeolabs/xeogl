@@ -71,10 +71,10 @@
 
         //---------------------------------------------------------------------------------------
         // Create a wireframe boundary entity to indicate the World-space
-        // axis-aligned boundary of each entity we fly to as we click it in the explorer
+        // axis-aligned boundary of each entity we select in the explorer or drag with the stylus
         //---------------------------------------------------------------------------------------
 
-        var orientedBoundary = new XEO.Entity({
+        var boundingBox = new XEO.Entity({
             id: "myOBB",
             geometry: new XEO.BoundaryGeometry(),
             material: new XEO.PhongMaterial({
@@ -84,13 +84,10 @@
                 emissive: [1.0, 1.0, 0.5],
                 lineWidth: 3
             }),
-            visibility: new XEO.Visibility({ // Boundary is initially invisible
+            visibility: new XEO.Visibility({
                 visible: false
             }),
             modes: new XEO.Modes({
-
-                // Does not contribute to the size of any enclosing boundaries
-                // that might be calculated by xeoEngine, eg. like that returned by XEO.Scene#worldBoundary
                 collidable: false
             })
         });
@@ -146,6 +143,24 @@
                     gearbox.collection.add(entity.material);
                     gearbox.collection.add(entity.modes);
 
+                    // Flatten modelling transform hierarchies
+
+                    if (entity.transform && entity.transform.parent) {
+
+                        // If an entity has a transform that has a parent, then the entity's
+                        // transform hierarchy needs collapsing. Bake the hierarchy into
+                        // a matrix on a single XEO.Transform and set that as the entity's new transform.
+
+                        entity.transform =  new XEO.Transform({
+                            matrix: entity.transform.leafMatrix
+                        });
+
+                        // Store the new transform in the Model's Collection so that
+                        // it gets destroyed when the Model is destroyed or reloaded
+
+                        gearbox.collection.add(entity.transform);
+                    }
+
                     // To each Entity it loads, a Model will attach metadata
                     // containing a human-readable name - use that to list a
                     // human-readable name in the explorer.
@@ -186,8 +201,8 @@
 
                             nextEntity.modes.transparent = false;
 
-                            orientedBoundary.geometry.obb = nextEntity.worldBoundary.obb;
-                            orientedBoundary.visibility.visible = true;
+                            boundingBox.geometry.obb = nextEntity.worldBoundary.obb;
+                            boundingBox.visibility.visible = true;
 
                             cameraFlight.flyTo({
                                         aabb: nextEntity.worldBoundary.aabb, // Fly to entity's AABB
@@ -241,7 +256,7 @@
                             emissive: [1, 0.3, 0.3],
                             diffuse: [0, 0, 0],
                             ambient: [0, 0, 0],
-                            lineWidth: 2
+                            lineWidth: 3
                         }),
                         modes: new XEO.Modes({pickable: false})
                     });
@@ -259,108 +274,120 @@
                     };
 
                     this.setHighlighted = function (highlighted) {
-                        entity.material.emissive = highlighted ? [1.0, 0.5, 0.5] : [0.5, 0.3, 0.3];
-                        entity.material.lineWidth = highlighted ? 4 : 2;
+                        entity.material.emissive = highlighted ? [0.3, 1.0, 0.3] : [1.0, 0.3, 0.3];
+                        entity.material.lineWidth = highlighted ? 5 : 3;
                     };
                 })();
 
                 //----------------------------------------------------------------------------
-                // Create helper to show stylus-Entity hits
+                //
                 //----------------------------------------------------------------------------
 
-                var hitHelper = new (function () {
+                var draggingEntity = false;
+                var draggingStartPos = XEO.math.vec3();
+                var stylusIsectLen;
 
-                    var lastEntityHit;
+                zspace.on("stylusButton0", (function () {
 
-                    var entity = new XEO.Entity({
-                        geometry: new XEO.SphereGeometry({radius: 0.1}),
-                        material: new XEO.PhongMaterial({emissive: [1, 0, 0], diffuse: [0, 0, 0]}),
-                        transform: new XEO.Translate(),
-                        modes: new XEO.Modes({pickable: false}),
-                        visibility: new XEO.Visibility({visible: false})
-                    });
+                    var stylusDir = XEO.math.vec3();
+                    var stylusIsectDir = XEO.math.vec3();
 
-                    this.show = function (hit) {
+                    return function (down) {
 
-                        if (lastEntityHit) {
-                            lastEntityHit.material.emissive = [0, 0, 0];
+                        if (!down) {
+                            if (draggingEntity) {
+                                draggingEntity.material.emissive = [0.0, 0.0, 0.0];
+                                boundingBox.visibility.visible = false;
+                                draggingEntity = null;
+                            }
+                            return;
                         }
 
-                        entity.transform.xyz = hit.worldPos;
-                        entity.visibility.visible = true;
+                        var stylusPos = zspace.stylusPos;
+                        XEO.math.mulVec3Scalar(zspace.stylusDir, 100, stylusDir);
 
-                        var entityHit = hit.entity;
+                        var hit = scene.pick({
+                            pickSurface: true, // <<----- Picking point on surface
+                            origin: stylusPos,
+                            direction: stylusDir
+                        });
 
-                        entityHit.material.emissive = [0, 0, 1];
+                        if (hit) { // Stylus hits an Entity
 
-                        lastEntityHit = entityHit;
-                    };
+                            var entity = hit.entity;
 
-                    this.hide = function () {
-                        entity.visibility.visible = false;
-                        if (lastEntityHit) {
-                            lastEntityHit.material.emissive = [0, 0, 0];
-                            lastEntityHit = null;
+                            if (!entity.transform || !entity.transform.meta.stylusTransform) {
+                                entity.transform = new XEO.Translate({
+                                    meta: {
+                                        stylusTransform: true
+                                    },
+                                    xyz: [0, 0, 0],
+                                    parent: entity.transform,
+                                    postMultiply: false
+                                });
+                            }
+                            draggingEntity = entity;
+                            draggingEntity.material.emissive = [0.3, 1.0, 0.3];
+                            draggingStartPos.set(hit.worldPos);
+                            XEO.math.subVec3(hit.worldPos, stylusPos, stylusIsectDir);
+                            stylusIsectLen = XEO.math.lenVec3(stylusIsectDir);
+
+                            boundingBox.geometry.obb = draggingEntity.worldBoundary.obb;
+                            boundingBox.visibility.visible = true;
+
+                            console.log("1: " + hit.worldPos);
                         }
                     };
-                })();
+                })());
 
                 //----------------------------------------------------------------------------
-                // Update the ray helper whenever the stylus moves; highlight
-                // the ray helper when it intersects an entity
+                //
                 //----------------------------------------------------------------------------
 
-                zspace.on("stylusMoved", function () {
+                zspace.on("stylusMoved", (function () {
 
-                    var stylusPos = zspace.stylusPos;
-                    var stylusDir = XEO.math.mulVec3Scalar(zspace.stylusDir, 100, []);
+                    var stylusDir = XEO.math.vec3();
+                    var stylusIsectDir = XEO.math.vec3();
+                    var stylusIsect = XEO.math.vec3();
+                    var xyz = XEO.math.vec3();
 
-                    stylusHelper.setPosition(stylusPos, stylusDir);
+                    return function () {
 
-                    var hit = scene.pick({
-                        pickSurface: false, // Default
-                        origin: stylusPos,
-                        direction: stylusDir
-                    });
+                        var stylusPos = zspace.stylusPos;
 
-                    if (hit) { // Stylus hits an Entity
+                        XEO.math.mulVec3Scalar(zspace.stylusDir, 100, stylusDir);
 
-                        stylusHelper.setHighlighted(true);
-                        hitHelper.show(hit);
+                        stylusHelper.setPosition(stylusPos, stylusDir);
 
-                    } else { // Stylus hits nothing
+                        if (draggingEntity) {
 
-                        stylusHelper.setHighlighted(false);
-                        hitHelper.hide();
-                    }
-                });
+                            XEO.math.mulVec3Scalar(zspace.stylusDir, stylusIsectLen, stylusIsectDir);
+                            XEO.math.addVec3(zspace.stylusPos, stylusIsectDir, stylusIsect);
 
-                //----------------------------------------------------------------------------
-                // Attempt to select a point on the surface of an entity when
-                // the first button is clicked on the stylus; use the hit
-                // helper to show the intersection if successful
-                //----------------------------------------------------------------------------
+                            XEO.math.subVec3(stylusIsect, draggingStartPos, xyz);
 
-                zspace.on("stylusButton0", function () {
+                            draggingEntity.transform.xyz = xyz;
 
-                    var stylusPos = zspace.stylusPos;
-                    var stylusDir = XEO.math.mulVec3Scalar(zspace.stylusDir, 100, []);
+                            console.log("2: " + stylusIsect);
 
-                    var hit = scene.pick({
-                        pickSurface: true, // <<----- Picking point on surface
-                        origin: stylusPos,
-                        direction: stylusDir
-                    });
+                        } else {
 
-                    if (hit) { // Stylus hits an Entity
+                            var hit = scene.pick({
+                                pickSurface: false, // Default
+                                origin: stylusPos,
+                                direction: stylusDir
+                            });
 
-                        hitHelper.show(hit);
+                            if (hit) {
+                                stylusHelper.setHighlighted(true);
 
-                    } else { // Stylus hits nothing
+                            } else {
+                                stylusHelper.setHighlighted(false);
+                            }
+                        }
+                    };
+                })());
 
-                        hitHelper.hide();
-                    }
-                });
             }
         });
     });
