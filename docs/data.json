@@ -1031,8 +1031,31 @@
         "examples/js/webvr/cardboard.js": {
             "name": "examples/js/webvr/cardboard.js",
             "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "examples/js/webvr/cardboardNEW.js": {
+            "name": "examples/js/webvr/cardboardNEW.js",
+            "modules": {},
             "classes": {
                 "Cardboard": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "examples/js/webvr/webvr-polyfill.js": {
+            "name": "examples/js/webvr/webvr-polyfill.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "examples/js/webvr/webvr.js": {
+            "name": "examples/js/webvr/webvr.js",
+            "modules": {},
+            "classes": {
+                "WebVR": 1
             },
             "fors": {},
             "namespaces": {}
@@ -1273,6 +1296,7 @@
                 "Scene": 1,
                 "XEO": 1,
                 "Cardboard": 1,
+                "WebVR": 1,
                 "ZSpace": 1,
                 "Nintendo3DSGeometry": 1,
                 "OBJGeometry": 1,
@@ -1667,6 +1691,7 @@
             "submodules": {},
             "classes": {
                 "Cardboard": 1,
+                "WebVR": 1,
                 "ZSpace": 1
             },
             "fors": {},
@@ -6311,7 +6336,7 @@
             "extension_for": [],
             "module": "XEO",
             "namespace": "",
-            "file": "examples/js/webvr/cardboard.js",
+            "file": "examples/js/webvr/cardboardNEW.js",
             "line": 1,
             "description": "A **Cardboard** sets up a Google Cardboard effect for its Scene.\n\n## Examples\n\n<ul>\n<li>[Cardboard cube](../../examples/webvr_cardboard_cube.html)</li>\n<li>[Cardboard with glTF gearbox model](../../examples/webvr_cardboard_gearbox.html)</li>\n</ul>\n\n## Usage\n\nIn the following example we're going to set up a Cardboard-viewable scene with xeoEngine, creating the scene incrementally to\nemphasize the plug-and-play design of xeoEngine's API.\n\nFirst we'll create a simple torus-shaped {{#crossLink \"Entity\"}}{{/crossLink}}, which will be within xeoEngine's default\n{{#crossLink \"Scene\"}}{{/crossLink}}, since we're not defining the {{#crossLink \"Scene\"}}{{/crossLink}} component\nexplicitly. Our {{#crossLink \"Entity\"}}{{/crossLink}} is also implicitly connected to the\n{{#crossLink \"Scene\"}}{{/crossLink}}'s default {{#crossLink \"Camera\"}}{{/crossLink}}, since we didn't explicitly create\na {{#crossLink \"Camera\"}}{{/crossLink}} for it either.\n\n````javascript\nvar entity = new XEO.Entity({\n    geometry: new XEO.TorusGeometry(),\n    material: new XEO.PhongMaterial({\n       diffuseMap: new XEO.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n       })\n    })\n});\n````\n\nAt this point we've got a textured torus floating in the middle of the canvas (which is also created automatically\nsince we didn't specify one).\n\nLet's view it on Cardboard by dropping a Cardboard component into our default {{#crossLink \"Scene\"}}{{/crossLink}}:\n\n````javascript\nvar cardboard = new Cardboard();\n````\n\nThe Cardboard component immediately activates, so at this point we'll have a stereo\nview of the torus, which we can view with Cardboard glasses.\n\nAt any point we can always disable the Cardboard effect to switch between normal WebGL mono viewing mode:\n\n````javascript\ncardboard.active = false; // Back to normal mono viewing..\ncardboard.active = true; // ..and then back to Cardboard stereo mode.\n````",
             "submodule": "webvr",
@@ -6382,6 +6407,92 @@
                 }
             ],
             "extends": "Entity"
+        },
+        "WebVR": {
+            "name": "WebVR",
+            "shortname": "WebVR",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "examples/js/webvr/webvr.js",
+            "line": 1,
+            "description": "A **WebVR** component makes its {{#crossLink \"Scene\"}}{{/crossLink}} viewable with a webVR viewer.\n\n<ul>\n<li>Plug-and-play: just create a WebVR component within your xeoEngine {{#crossLink \"Scene\"}}{{/crossLink}} to make it viewable with a WebVR display.</li>\n<li>Activate or disable the WebVR component at any time to switch between webVR mode and normal mono viewing mode.</li>\n<li>Requires WebGL2 and WebVR support, which you'll have if you're running on a webVR viewer.</li>\n<li>Attaches to a {{#crossLink \"Camera\"}}{{/crossLink}}, defaults to its {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default\n{{#crossLink \"Scene/camera:property\"}}{{/crossLink}} if none is specified.</li>\n<li>Don't attach different view or projection transform components to the {{#crossLink \"Camera\"}}{{/crossLink}} while the WebVR component is active.</li>\n<li>You can however update the {{#crossLink \"Camera\"}}{{/crossLink}}'s view transformation at any time, to move the\nviewpoint around.\n</ul>\n\n<img src=\"../../../assets/images/WebVR.png\"></img>\n\n## Examples\n\n<ul>\n<li>[webVR cube](../../examples/webvr_webvr_cube.html)</li>\n<li>[webVR with random geometries](../../examples/webvr_webvr_geometries.html)</li>\n<li>[webVR with glTF gearbox model](../../examples/webvr_webvr_gearbox.html)</li>\n<li>[webVR with glTF gearbox model and entity explorer](../../examples/webvr_webvr_gearbox_explorer.html)</li>\n</ul>\n\n## Usage\n\nIn the following example we're going to set up a WebVR-viewable scene with xeoEngine, defining the scene step-by-step to\nemphasize the plug-and-play design of xeoEngine's API.\n\n**1. Create an entity**\n\nFirst we'll create a simple torus-shaped {{#crossLink \"Entity\"}}{{/crossLink}}, which will be within xeoEngine's default\n{{#crossLink \"Scene\"}}{{/crossLink}}, since we're not defining the {{#crossLink \"Scene\"}}{{/crossLink}} component\nexplicitly. Our {{#crossLink \"Entity\"}}{{/crossLink}} is also implicitly connected to the\n{{#crossLink \"Scene\"}}{{/crossLink}}'s default {{#crossLink \"Camera\"}}{{/crossLink}}, since we didn't explicitly create\na {{#crossLink \"Camera\"}}{{/crossLink}} for it either.\n\n````javascript\nvar entity = new XEO.Entity({\n    geometry: new XEO.TorusGeometry(),\n    material: new XEO.PhongMaterial({\n       diffuseMap: new XEO.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n       })\n    })\n});\n````\n\n**2. Enable mouse/keyboard camera interaction**\n\nAt this point we've got a textured torus floating in the middle of the canvas (which is also created automatically\nsince we didn't specify one). Now we'll create a\n{{#crossLink \"CameraControl\"}}{{/crossLink}}, which immediately allows us to move our viewpoint around with the mouse and\nkeyboard. This component is also within xeoEngine's default {{#crossLink \"Scene\"}}{{/crossLink}} and connected to the\n{{#crossLink \"Scene\"}}{{/crossLink}}'s default {{#crossLink \"Camera\"}}{{/crossLink}}.\n\n````javascript\nnew CameraControl();\n````\n\n**3. Enable WebVR viewing**\n\nNow we can orbit, pan and zoom around the torus with the mouse and keyboard. Let's view it on a WebVR display by\ndropping a WebVR component into our default {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n````javascript\nvar webvr = new WebVR();\n````\n\nThe WebVR component immediately activates, so at this point if we're running on a WebVR device we'll have a stereo\nview of the torus, which we can view with the stereo glasses.\n\nAt any point we can always disable the WebVR effect to switch between normal WebGL mono viewing mode:\n\n````javascript\nwebvr.active = false; // Back to normal mono viewing..\nwebvr.active = true; // ..and then back to WebVR stereo mode.\n\n````\n\n## Detecting support\n\nThe **WebVR** will fire a \"supported\" event once it has determined whether or not the browser\nsupports a webVR viewer:\n\n````javascript\nwebvr.on(\"supported\", function (supported) {\n\n       if (!supported) {\n\n           // Not a webVR device\n\n           this.error(\"This computer is not a WebVR viewer!\"); // Log error on the XEO.WebVR component\n\n           // At this point you could just destroy the XEO.WebVR to make it detach from the Camera\n       }\n   });\n````",
+            "submodule": "webvr",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this WebVR in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this WebVR.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "camera",
+                            "description": "ID or instance of a {{#crossLink \"Camera\"}}Camera{{/crossLink}} for this WebVR.\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this WebVR. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}}.",
+                            "type": "String|Camera",
+                            "optional": true
+                        },
+                        {
+                            "name": "nearClip",
+                            "description": "Position of the near clipping plane on the View-space Z-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0.1"
+                        },
+                        {
+                            "name": "farClip",
+                            "description": "Position of the far clipping plane on the View-space Z-axis.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "10000"
+                        },
+                        {
+                            "name": "displaySize",
+                            "description": "The viewer display size.",
+                            "type": "Array of Number",
+                            "optional": true,
+                            "optdefault": "0.521,0.293"
+                        },
+                        {
+                            "name": "displayResolution",
+                            "description": "The viewer display resolution.",
+                            "type": "Array of Number",
+                            "optional": true,
+                            "optdefault": "1920,1080"
+                        },
+                        {
+                            "name": "active",
+                            "description": "Whether or not this WebVR is initially active.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component"
         },
         "ZSpace": {
             "name": "ZSpace",
@@ -21707,6 +21818,619 @@
             "submodule": "webvr"
         },
         {
+            "file": "examples/js/webvr/cardboardNEW.js",
+            "line": 106,
+            "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} attached to this Cardboard component.\n\nThis Cardboard component will attach a {{#crossLink \"Frustum\"}}{{/crossLink}} to its\n{{#crossLink \"Camera\"}}{{/crossLink}} if the {{#crossLink \"Camera\"}}Camera{{/crossLink}} does not have\none already, replacing the projection transform component that was already attached.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Cardboard. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.",
+            "itemtype": "property",
+            "name": "camera",
+            "type": "Camera",
+            "class": "Cardboard",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/cardboardNEW.js",
+            "line": 124,
+            "description": "Fired whenever this Cardboard's {{#crossLink \"Cardboard/camera:property\"}}{{/crossLink}}\nproperty changes.",
+            "itemtype": "event",
+            "name": "camera",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Cardboard",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/cardboardNEW.js",
+            "line": 156,
+            "description": "The {{#crossLink \"Viewport\"}}{{/crossLink}} attached to this Cardboard.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Cardboard. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/viewport:property\"}}Viewport{{/crossLink}} when set to\na null or undefined value.",
+            "itemtype": "property",
+            "name": "Viewport",
+            "type": "Viewport",
+            "class": "Cardboard",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/cardboardNEW.js",
+            "line": 170,
+            "description": "Fired whenever this Cardboard's {{#crossLink \"Cardboard/Viewport:property\"}}{{/crossLink}}\nproperty changes.",
+            "itemtype": "event",
+            "name": "Viewport",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Cardboard",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/cardboardNEW.js",
+            "line": 190,
+            "description": "Eye separation distance.\n\nFires an {{#crossLink \"Cardboard/eyeSep:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "eyeSep",
+            "type": "Number",
+            "default": "0.2",
+            "class": "Cardboard",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/cardboardNEW.js",
+            "line": 211,
+            "description": "Fired whenever this Cardboard's {{#crossLink \"Cardboard/eyeSep:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "eyeSep",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Cardboard",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/cardboardNEW.js",
+            "line": 224,
+            "description": "Focal length.\n\nFires an {{#crossLink \"Cardboard/focalLength:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "focalLength",
+            "type": "Number",
+            "default": "20",
+            "class": "Cardboard",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/cardboardNEW.js",
+            "line": 245,
+            "description": "Fired whenever this Cardboard's {{#crossLink \"Cardboard/focalLength:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "focalLength",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Cardboard",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/cardboardNEW.js",
+            "line": 258,
+            "description": "Aperture angle in degrees.\n\nFires an {{#crossLink \"Cardboard/aperture:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "aperture",
+            "type": "Number",
+            "default": "45",
+            "class": "Cardboard",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/cardboardNEW.js",
+            "line": 279,
+            "description": "Fired whenever this Cardboard's {{#crossLink \"Cardboard/aperture:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "aperture",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Cardboard",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/cardboardNEW.js",
+            "line": 292,
+            "description": "Flag which indicates whether this Cardboard component is active or not.\n\nFires an {{#crossLink \"Cardboard/active:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "active",
+            "type": "Boolean",
+            "default": "true",
+            "class": "Cardboard",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/cardboardNEW.js",
+            "line": 315,
+            "description": "Fired whenever this Cardboard component's {{#crossLink \"Cardboard/active:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "active",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Cardboard",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 112,
+            "description": "The base class for all VR displays.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 481,
+            "description": "The base class for all VR devices. (Deprecated)",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 491,
+            "description": "The base class for all VR HMD devices. (Deprecated)",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 498,
+            "description": "The base class for all VR position sensor devices. (Deprecated)",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 556,
+            "description": "A mesh-based distorter.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 635,
+            "description": "Tears down all the resources created by the distorter and removes any\npatches.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 665,
+            "description": "Resizes the backbuffer to match the canvas width and height.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 908,
+            "description": "Performs distortion pass on the injected backbuffer, rendering it to the real\nbackbuffer.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 1012,
+            "description": "Call when the deviceInfo has changed. At this point we need\nto re-calculate the distortion mesh.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 1036,
+            "description": "Build the distortion mesh vertices.\nBased on code from the Unity cardboard plugin.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 1096,
+            "description": "Build the distortion mesh indices.\nBased on code from the Unity cardboard plugin.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 1233,
+            "description": "Renders the alignment line and \"options\" gear. It is assumed that the canvas\nthis is rendered into covers the entire screen (or close to it.)",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 1259,
+            "description": "Tears down all the resources created by the UI renderer.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 1273,
+            "description": "Adds a listener to clicks on the gear and back icons",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 1295,
+            "description": "Builds the UI mesh.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 1388,
+            "description": "Performs distortion pass on the injected backbuffer, rendering it to the real\nbackbuffer.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 1477,
+            "description": "VRDisplay based on mobile device parameters and DeviceMotion APIs.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 1968,
+            "description": "Manages information about the device and the viewer.\n\ndeviceParams indicates the parameters of the device to use (generally\nobtained from dpdb.getDeviceParams()). Can be null to mean no device\nparams were found.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 2019,
+            "description": "Calculates field of view for the left eye.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 2052,
+            "description": "Calculates the tan-angles from the maximum FOV for the left eye for the\ncurrent device and screen parameters.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 2088,
+            "description": "Calculates the tan-angles from the maximum FOV for the left eye for the\ncurrent device and screen parameters, assuming no lenses.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 2124,
+            "description": "Calculates the screen rectangle visible from the left eye for the\ncurrent device and screen parameters.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 2162,
+            "description": "Calculates undistorted field of view for the left eye.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 2277,
+            "description": "Wraps a VRDisplay and exposes it as a HMDVRDevice",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 2317,
+            "description": "Wraps a VRDisplay and exposes it as a PositionSensorVRDevice",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 2351,
+            "description": "TODO(smus): Implement coefficient inversion.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 2358,
+            "description": "Calculates the inverse distortion for a radius.\n</p><p>\nAllows to compute the original undistorted radius from a distorted one.\nSee also getApproximateInverseDistortion() for a faster but potentially\nless accurate method.",
+            "params": [
+                {
+                    "name": "radius",
+                    "description": "Distorted radius from the lens center in tan-angle units.",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "The undistorted radius in tan-angle units.",
+                "type": "Number"
+            },
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 2383,
+            "description": "Distorts a radius by its distortion factor from the center of the lenses.",
+            "params": [
+                {
+                    "name": "radius",
+                    "description": "Radius from the lens center in tan-angle units.",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "The distorted radius in tan-angle units.",
+                "type": "Number"
+            },
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 2549,
+            "description": "DPDB cache.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 3528,
+            "description": "Calculates device parameters based on the DPDB (Device Parameter Database).\nInitially, uses the cached DPDB values.\n\nIf fetchOnline == true, then this object tries to fetch the online version\nof the DPDB and updates the device info if a better match is found.\nCalls the onDeviceParamsUpdated callback when there is an update to the\ndevice information.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 4202,
+            "description": "VRDisplay based on mouse and keyboard input. Designed for desktops/laptops\nwhere orientation events aren't supported. Cannot present.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 4279,
+            "description": "Start an animation to transition an angle from one value to another.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 4521,
+            "description": "An implementation of a simple complementary filter, which fuses gyroscope and\naccelerometer data from the 'devicemotion' event.\n\nAccelerometer data is very noisy, but stable over the long term.\nGyroscope data is smooth, but tends to drift over the long term.\n\nThis fusion is relatively simple:\n1. Get orientation estimates from accelerometer by applying a low-pass filter\n   on that data.\n2. Get orientation estimates from gyroscope by integrating over time.\n3. Combine the two estimates, weighing (1) in the long term, but (2) for the\n   short term.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 4690,
+            "description": "The pose sensor, implemented using DeviceMotion APIs.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 4872,
+            "description": "Given an orientation and the gyroscope data, predicts the future orientation\nof the head. This makes rendering appear faster.\n\nAlso see: http://msl.cs.uiuc.edu/~lavalle/papers/LavYerKatAnt14.pdf",
+            "params": [
+                {
+                    "name": "predictionTimeS",
+                    "description": "time from head movement to the appearance of\nthe corresponding image.",
+                    "type": "Number"
+                }
+            ],
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 4971,
+            "description": "Provides a quaternion responsible for pre-panning the scene before further\ntransformations due to device sensors.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 5274,
+            "description": "Creates a viewer selector with the options specified. Supports being shown\nand hidden. Generates events when viewer parameters change. Also supports\nsaving the currently selected index in localStorage.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 5344,
+            "description": "Creates the dialog.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 5469,
+            "description": "Android and iOS compatible wakelock implementation.\n\nRefactored thanks to dkovalev@.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr-polyfill.js",
+            "line": 5688,
+            "description": "Determine if a device is mobile.",
+            "class": "WebVR",
+            "module": "XEO"
+        },
+        {
+            "file": "examples/js/webvr/webvr.js",
+            "line": 172,
+            "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} attached to this WebVR component.\n\nThe WebVR component will attach a {{#crossLink \"Projection\"}}{{/crossLink}} to its\n{{#crossLink \"Camera\"}}{{/crossLink}} if the {{#crossLink \"Camera\"}}Camera{{/crossLink}} does not have\none already, replacing whatever projection transform component was already attached.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this WebVR component. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.\n\nNo other component should modify the state of the {{#crossLink \"Camera\"}}{{/crossLink}} while\nit's attached to this WebVR component. There is no prevention or check for that, so if that\nhappens you'll get unexpected results.",
+            "itemtype": "property",
+            "name": "camera",
+            "type": "Camera",
+            "class": "WebVR",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/webvr.js",
+            "line": 194,
+            "description": "Fired whenever this WebVR component's {{#crossLink \"WebVR/camera:property\"}}{{/crossLink}}\nproperty changes.",
+            "itemtype": "event",
+            "name": "camera",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "WebVR",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/webvr.js",
+            "line": 214,
+            "description": "The {{#crossLink \"Viewport\"}}{{/crossLink}} attached to this Webvr.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Webvr. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/viewport:property\"}}Viewport{{/crossLink}} when set to\na null or undefined value.",
+            "itemtype": "property",
+            "name": "Viewport",
+            "type": "Viewport",
+            "class": "WebVR",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/webvr.js",
+            "line": 228,
+            "description": "Fired whenever this Webvr's {{#crossLink \"Webvr/Viewport:property\"}}{{/crossLink}}\nproperty changes.",
+            "itemtype": "event",
+            "name": "Viewport",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "WebVR",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/webvr.js",
+            "line": 248,
+            "description": "Position of this WebVR's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"WebVR/nearClip:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "nearClip",
+            "default": "0.1",
+            "type": "Number",
+            "class": "WebVR",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/webvr.js",
+            "line": 265,
+            "description": "Fired whenever this WebVR's   {{#crossLink \"WebVR/nearClip:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "nearClip",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "WebVR",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/webvr.js",
+            "line": 278,
+            "description": "Position of this WebVR's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"WebVR/farClip:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "farClip",
+            "default": "10000.0",
+            "type": "Number",
+            "class": "WebVR",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/webvr.js",
+            "line": 295,
+            "description": "Fired whenever this WebVR's  {{#crossLink \"WebVR/farClip:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "farClip",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "WebVR",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/webvr.js",
+            "line": 309,
+            "description": "Flag which indicates whether this WebVR component is active or not.\n\nNote that this WebVR component can still be activated when the browser does not support WebVR.\n\nFires an {{#crossLink \"WebVR/active:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "active",
+            "type": "Boolean",
+            "default": "true",
+            "class": "WebVR",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
+            "file": "examples/js/webvr/webvr.js",
+            "line": 335,
+            "description": "Fired whenever this WebVR component's {{#crossLink \"WebVR/active:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "active",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "WebVR",
+            "module": "XEO",
+            "submodule": "webvr"
+        },
+        {
             "file": "examples/js/webvr/zSpace.js",
             "line": 357,
             "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} attached to this ZSpace component.\n\nThe ZSpace component will attach a {{#crossLink \"Projection\"}}{{/crossLink}} to its\n{{#crossLink \"Camera\"}}{{/crossLink}} if the {{#crossLink \"Camera\"}}Camera{{/crossLink}} does not have\none already, replacing whatever projection transform component was already attached.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this ZSpace component. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.\n\nNo other component should modify the state of the {{#crossLink \"Camera\"}}{{/crossLink}} while\nit's attached to this ZSpace component. There is no prevention or check for that, so if that\nhappens you'll get unexpected results.",
@@ -24109,6 +24833,166 @@
         {
             "message": "Missing item type\nReturns the given ID as a string, in quotes if the ID was a string to begin with.\n\nThis is useful for logging IDs.",
             "line": " src/xeo.js:561"
+        },
+        {
+            "message": "Missing item type\nThe base class for all VR displays.",
+            "line": " examples/js/webvr/webvr-polyfill.js:112"
+        },
+        {
+            "message": "Missing item type\nThe base class for all VR devices. (Deprecated)",
+            "line": " examples/js/webvr/webvr-polyfill.js:481"
+        },
+        {
+            "message": "Missing item type\nThe base class for all VR HMD devices. (Deprecated)",
+            "line": " examples/js/webvr/webvr-polyfill.js:491"
+        },
+        {
+            "message": "Missing item type\nThe base class for all VR position sensor devices. (Deprecated)",
+            "line": " examples/js/webvr/webvr-polyfill.js:498"
+        },
+        {
+            "message": "Missing item type\nA mesh-based distorter.",
+            "line": " examples/js/webvr/webvr-polyfill.js:556"
+        },
+        {
+            "message": "Missing item type\nTears down all the resources created by the distorter and removes any\npatches.",
+            "line": " examples/js/webvr/webvr-polyfill.js:635"
+        },
+        {
+            "message": "Missing item type\nResizes the backbuffer to match the canvas width and height.",
+            "line": " examples/js/webvr/webvr-polyfill.js:665"
+        },
+        {
+            "message": "Missing item type\nPerforms distortion pass on the injected backbuffer, rendering it to the real\nbackbuffer.",
+            "line": " examples/js/webvr/webvr-polyfill.js:908"
+        },
+        {
+            "message": "Missing item type\nCall when the deviceInfo has changed. At this point we need\nto re-calculate the distortion mesh.",
+            "line": " examples/js/webvr/webvr-polyfill.js:1012"
+        },
+        {
+            "message": "Missing item type\nBuild the distortion mesh vertices.\nBased on code from the Unity cardboard plugin.",
+            "line": " examples/js/webvr/webvr-polyfill.js:1036"
+        },
+        {
+            "message": "Missing item type\nBuild the distortion mesh indices.\nBased on code from the Unity cardboard plugin.",
+            "line": " examples/js/webvr/webvr-polyfill.js:1096"
+        },
+        {
+            "message": "Missing item type\nRenders the alignment line and \"options\" gear. It is assumed that the canvas\nthis is rendered into covers the entire screen (or close to it.)",
+            "line": " examples/js/webvr/webvr-polyfill.js:1233"
+        },
+        {
+            "message": "Missing item type\nTears down all the resources created by the UI renderer.",
+            "line": " examples/js/webvr/webvr-polyfill.js:1259"
+        },
+        {
+            "message": "Missing item type\nAdds a listener to clicks on the gear and back icons",
+            "line": " examples/js/webvr/webvr-polyfill.js:1273"
+        },
+        {
+            "message": "Missing item type\nBuilds the UI mesh.",
+            "line": " examples/js/webvr/webvr-polyfill.js:1295"
+        },
+        {
+            "message": "Missing item type\nPerforms distortion pass on the injected backbuffer, rendering it to the real\nbackbuffer.",
+            "line": " examples/js/webvr/webvr-polyfill.js:1388"
+        },
+        {
+            "message": "Missing item type\nVRDisplay based on mobile device parameters and DeviceMotion APIs.",
+            "line": " examples/js/webvr/webvr-polyfill.js:1477"
+        },
+        {
+            "message": "Missing item type\nManages information about the device and the viewer.\n\ndeviceParams indicates the parameters of the device to use (generally\nobtained from dpdb.getDeviceParams()). Can be null to mean no device\nparams were found.",
+            "line": " examples/js/webvr/webvr-polyfill.js:1968"
+        },
+        {
+            "message": "Missing item type\nCalculates field of view for the left eye.",
+            "line": " examples/js/webvr/webvr-polyfill.js:2019"
+        },
+        {
+            "message": "Missing item type\nCalculates the tan-angles from the maximum FOV for the left eye for the\ncurrent device and screen parameters.",
+            "line": " examples/js/webvr/webvr-polyfill.js:2052"
+        },
+        {
+            "message": "Missing item type\nCalculates the tan-angles from the maximum FOV for the left eye for the\ncurrent device and screen parameters, assuming no lenses.",
+            "line": " examples/js/webvr/webvr-polyfill.js:2088"
+        },
+        {
+            "message": "Missing item type\nCalculates the screen rectangle visible from the left eye for the\ncurrent device and screen parameters.",
+            "line": " examples/js/webvr/webvr-polyfill.js:2124"
+        },
+        {
+            "message": "Missing item type\nCalculates undistorted field of view for the left eye.",
+            "line": " examples/js/webvr/webvr-polyfill.js:2162"
+        },
+        {
+            "message": "Missing item type\nWraps a VRDisplay and exposes it as a HMDVRDevice",
+            "line": " examples/js/webvr/webvr-polyfill.js:2277"
+        },
+        {
+            "message": "Missing item type\nWraps a VRDisplay and exposes it as a PositionSensorVRDevice",
+            "line": " examples/js/webvr/webvr-polyfill.js:2317"
+        },
+        {
+            "message": "Missing item type\nTODO(smus): Implement coefficient inversion.",
+            "line": " examples/js/webvr/webvr-polyfill.js:2351"
+        },
+        {
+            "message": "Missing item type\nCalculates the inverse distortion for a radius.\n</p><p>\nAllows to compute the original undistorted radius from a distorted one.\nSee also getApproximateInverseDistortion() for a faster but potentially\nless accurate method.",
+            "line": " examples/js/webvr/webvr-polyfill.js:2358"
+        },
+        {
+            "message": "Missing item type\nDistorts a radius by its distortion factor from the center of the lenses.",
+            "line": " examples/js/webvr/webvr-polyfill.js:2383"
+        },
+        {
+            "message": "Missing item type\nDPDB cache.",
+            "line": " examples/js/webvr/webvr-polyfill.js:2549"
+        },
+        {
+            "message": "Missing item type\nCalculates device parameters based on the DPDB (Device Parameter Database).\nInitially, uses the cached DPDB values.\n\nIf fetchOnline == true, then this object tries to fetch the online version\nof the DPDB and updates the device info if a better match is found.\nCalls the onDeviceParamsUpdated callback when there is an update to the\ndevice information.",
+            "line": " examples/js/webvr/webvr-polyfill.js:3528"
+        },
+        {
+            "message": "Missing item type\nVRDisplay based on mouse and keyboard input. Designed for desktops/laptops\nwhere orientation events aren't supported. Cannot present.",
+            "line": " examples/js/webvr/webvr-polyfill.js:4202"
+        },
+        {
+            "message": "Missing item type\nStart an animation to transition an angle from one value to another.",
+            "line": " examples/js/webvr/webvr-polyfill.js:4279"
+        },
+        {
+            "message": "Missing item type\nAn implementation of a simple complementary filter, which fuses gyroscope and\naccelerometer data from the 'devicemotion' event.\n\nAccelerometer data is very noisy, but stable over the long term.\nGyroscope data is smooth, but tends to drift over the long term.\n\nThis fusion is relatively simple:\n1. Get orientation estimates from accelerometer by applying a low-pass filter\n   on that data.\n2. Get orientation estimates from gyroscope by integrating over time.\n3. Combine the two estimates, weighing (1) in the long term, but (2) for the\n   short term.",
+            "line": " examples/js/webvr/webvr-polyfill.js:4521"
+        },
+        {
+            "message": "Missing item type\nThe pose sensor, implemented using DeviceMotion APIs.",
+            "line": " examples/js/webvr/webvr-polyfill.js:4690"
+        },
+        {
+            "message": "Missing item type\nGiven an orientation and the gyroscope data, predicts the future orientation\nof the head. This makes rendering appear faster.\n\nAlso see: http://msl.cs.uiuc.edu/~lavalle/papers/LavYerKatAnt14.pdf",
+            "line": " examples/js/webvr/webvr-polyfill.js:4872"
+        },
+        {
+            "message": "Missing item type\nProvides a quaternion responsible for pre-panning the scene before further\ntransformations due to device sensors.",
+            "line": " examples/js/webvr/webvr-polyfill.js:4971"
+        },
+        {
+            "message": "Missing item type\nCreates a viewer selector with the options specified. Supports being shown\nand hidden. Generates events when viewer parameters change. Also supports\nsaving the currently selected index in localStorage.",
+            "line": " examples/js/webvr/webvr-polyfill.js:5274"
+        },
+        {
+            "message": "Missing item type\nCreates the dialog.",
+            "line": " examples/js/webvr/webvr-polyfill.js:5344"
+        },
+        {
+            "message": "Missing item type\nAndroid and iOS compatible wakelock implementation.\n\nRefactored thanks to dkovalev@.",
+            "line": " examples/js/webvr/webvr-polyfill.js:5469"
+        },
+        {
+            "message": "Missing item type\nDetermine if a device is mobile.",
+            "line": " examples/js/webvr/webvr-polyfill.js:5688"
         },
         {
             "message": "Missing item type\nAdds a {{#crossLink \"Curve\"}}{{/crossLink}} to this Path.\n\nFires a {{#crossLink \"Path/curves:event\"}}{{/crossLink}} event on change.",

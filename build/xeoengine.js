@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-09-26
+ * Built on 2016-09-28
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -27893,7 +27893,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             // Dummy transform to make it easy to graft user-supplied
             // transforms above loaded entities
 
-            this._dummyRootTransform = this.create(XEO.Translate, {
+            this._dummyRootTransform = this.create(XEO.Transform, {
                 meta: "dummy"
             });
 

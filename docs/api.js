@@ -82,6 +82,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "VectorTextGeometry",
         "Viewport",
         "Visibility",
+        "WebVR",
         "XEO",
         "XEO.math.math",
         "ZSpace"
