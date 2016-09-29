@@ -1641,7 +1641,7 @@
                                 }
 
                                 math.normalizeVec3(localRayDir);
-                                math.rayTriangleIntersect(localRayOrigin, localRayDir, a, b, c, position);
+                                math.rayPlaneIntersect(localRayOrigin, localRayDir, a, b, c, position);
 
                                 // Get Local-space cartesian coordinates of the ray-triangle intersection
 
