@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-09-29
+ * Built on 2016-09-30
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -13259,7 +13259,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                                 }
 
                                 math.normalizeVec3(localRayDir);
-                                math.rayTriangleIntersect(localRayOrigin, localRayDir, a, b, c, position);
+                                math.rayPlaneIntersect(localRayOrigin, localRayDir, a, b, c, position);
 
                                 // Get Local-space cartesian coordinates of the ray-triangle intersection
 
