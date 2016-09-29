@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeoengine.js"></script>
+    <script src="js/geometry/vectorTextGeometry.js"></script>
+
+    <script src="js/webvr/zSpace.js"></script>
+
+<body>
+
+<div id="infoLight"
+     style="left: 0; text-align: left; background: black; opacity: 0.7; padding: 8px; color: white; font-size: 14pt;">
+    <span><a href="http://xeoengine.org" target="_home">xeoEngine</a><br>using a <a
+            href="../docs/classes/ZSpace.html"
+            target="_docs">ZSpace</a> component to view a scene with zSpace VR</span><br>
+    <span id="log" style="color:red;font-size: 16px"></span>
+</div>
+
+<script>
+
+    // We're going to call lots of XEO math functions in this demo.
+    var math = XEO.math;
+
+    //---------------------------------------------------
+    // Create some torus entities
+    //---------------------------------------------------
+
+    var geometry = new XEO.TorusGeometry({
+        radius: 1.4,
+        tube: 1,
+        radialSegments: 60,
+        tubeSegments: 60,
+        arc: Math.PI * 2.0
+    });
+
+    var scene = geometry.scene;
+
+    var diffuseMap = new XEO.Texture({
+        src: "textures/diffuse/uvGrid2.jpg"
+    });
+
+    for (var i = 0; i < 100; i++) {
+
+        new XEO.Entity({
+            geometry: geometry,
+            material: new XEO.PhongMaterial({
+                diffuseMap: diffuseMap
+            }),
+            transform: new XEO.Rotate({
+                xyz: [Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1],
+                angle: Math.random() * 360,
+                parent: new XEO.Translate({
+                    xyz: [Math.random() * 30 - 15, Math.random() * 30 - 15, Math.random() * 30 - 15]
+                })
+            })
+        });
+    }
+
+    scene.camera.view.eye = [0, 0, -50];
+
+    //----------------------------------------------------------------------------
+    // Allow camera control with keyboard and mouse
+    //----------------------------------------------------------------------------
+
+    new XEO.CameraControl();
+
+    //----------------------------------------------------------------------------
+    // Create a ZSpace effect
+    //----------------------------------------------------------------------------
+
+    var zspace = new XEO.ZSpace();
+
+    //----------------------------------------------------------------------------
+    // Check if we're actually running on a ZSpace device
+    //----------------------------------------------------------------------------
+
+    //----------------------------------------------------------------------------
+    // Check if we're actually running on a ZSpace device
+    //----------------------------------------------------------------------------
+
+    zspace.on("supported", function (supported) {
+
+        if (!supported) {
+
+            //----------------------------------------------------------------------------
+            // ZSpace not detected, show a messsage
+            //----------------------------------------------------------------------------
+
+            document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. ";
+
+        } else { // ZSpace detected
+
+            //----------------------------------------------------------------------------
+            // Create helper to show stylus
+            //----------------------------------------------------------------------------
+
+            var stylusHelper = new (function () {
+
+                var ray = new XEO.Entity({
+                    geometry: new XEO.Geometry({
+                        primitive: "lines",
+                        positions: [0, 0, 0, 0, 0, 0],
+                        indices: [0, 1]
+                    }),
+                    material: new XEO.PhongMaterial({
+                        emissive: [1, 0.3, 0.3],
+                        diffuse: [0, 0, 0],
+                        ambient: [0, 0, 0],
+                        lineWidth: 3
+                    }),
+                    modes: new XEO.Modes({pickable: false})
+                });
+
+                var positions = new Float32Array(6);
+
+                this.setPosition = function (pos, dir) {
+                    positions[0] = pos[0]; // Origin
+                    positions[1] = pos[1];
+                    positions[2] = pos[2];
+                    positions[3] = pos[0] + dir[0]; // Direction
+                    positions[4] = pos[1] + dir[1];
+                    positions[5] = pos[2] + dir[2];
+
+                    ray.geometry.positions = positions;
+                };
+
+                this.setHighlighted = function (highlighted) {
+                    ray.material.emissive = highlighted ? [0.3, 1.0, 0.3] : [1.0, 0.3, 0.3];
+                    ray.material.lineWidth = highlighted ? 5 : 3;
+                };
+            })();
+
+            //----------------------------------------------------------------------------
+            // Create helper to show info
+            //----------------------------------------------------------------------------
+
+            var infoHelper = new (function () {
+
+                var info = new XEO.Entity({
+                    geometry: new XEO.VectorTextGeometry({text: "", xSize: 1, ySize: 1}),
+                    material: new XEO.PhongMaterial({emissive: [0.5, 1.0, 1.0], lineWidth: 3}),
+                    lights: new XEO.Lights({
+                        lights: [] // No lights - rely on emissive color
+                    }),
+                    transform: new XEO.Translate(),
+                    visibility: new XEO.Visibility(),
+                    billboard: new XEO.Billboard()
+                });
+
+                this.setPos = function (pos) {
+                    info.transform.xyz = pos;
+                    info.visibility.visible = true;
+                };
+
+                this.setInfo = function (text) {
+                    info.geometry.text = text;
+                    info.visibility.visible = true;
+                };
+
+                this.hide = function () {
+                    info.visibility.visible = false;
+                };
+            })();
+
+            //----------------------------------------------------------------------------
+            //
+            //----------------------------------------------------------------------------
+
+
+            var pickedEntity = false;
+            var pickedEntityOffset = math.vec3();
+            var pickedStylusPos = math.vec3();
+            var pickedEntityCenter = math.vec3();
+            var stylusIsectLen = 0;
+
+            var translate;
+            var rotate;
+
+            var pick = (function () {
+
+                var center = math.vec3();
+                var stylusDir = math.vec3();
+                var stylusIsect = math.vec3();
+
+                return function () {
+
+                    var stylusPos = zspace.stylusPos;
+
+                    math.mulVec3Scalar(zspace.stylusDir, 100, stylusDir);
+
+                    var hit = scene.pick({
+                        pickSurface: true, // <<----- Picking point on surface
+                        origin: stylusPos,
+                        direction: stylusDir
+                    });
+
+                    if (hit) { // Stylus hits an Entity
+
+                        pickedEntity = hit.entity;
+
+                        var center = pickedEntity.worldBoundary.center;
+
+
+                        if (!pickedEntity.transform || !pickedEntity.transform.meta.stylusTransform) {
+
+                            pickedEntity.transform = translate = new XEO.Translate({
+                                meta: {
+                                    stylusTransform: true
+                                },
+                                xyz: [0, 0, 0],
+                                postMultiply: false,
+                                parent: new XEO.Translate({
+                                    xyz: [center[0], center[1], center[2]],
+                                    postMultiply: false,
+                                    parent: rotate = new XEO.Quaternion({
+                                        parent: new XEO.Translate({
+                                            xyz: [-center[0], -center[1], -center[2]],
+                                            postMultiply: false,
+                                            parent: pickedEntity.transform
+                                        })
+                                    })
+                                })
+                            });
+                        }
+
+                        infoHelper.setInfo("" + pickedEntity.id);
+
+                        pickedEntity.material.emissive = [0.0, 1.0, 0.0];
+                        pickedEntityCenter.set(center);
+                        pickedStylusPos.set(stylusPos);
+                        math.subVec3(hit.worldPos, center, pickedEntityOffset);
+                        math.subVec3(hit.worldPos, stylusPos, stylusIsect);
+                        stylusIsectLen = math.lenVec3(stylusIsect);
+                    }
+                };
+            })();
+
+            zspace.on("stylusButton0", function (down) {
+
+                if (!down) {
+                    if (pickedEntity) {
+                        pickedEntity.material.emissive = [0.0, 0.0, 0.0];
+                        pickedEntity = null;
+                    }
+                    return;
+                }
+
+                pick();
+            });
+
+
+            //----------------------------------------------------------------------------
+            //
+            //----------------------------------------------------------------------------
+
+            zspace.on("stylusMoved", (function () {
+
+                var stylusDir = math.vec3();
+                var stylusDirNorm = math.vec3();
+                var stylusIsectDir = math.vec3();
+                var stylusIsect = math.vec3();
+                var draggedCenter = math.vec3();
+                var xyz = math.vec3();
+                var lastEntityHighlighted = null;
+
+                return function () {
+
+                    var stylusPos = zspace.stylusPos;
+
+                    math.mulVec3Scalar(zspace.stylusDir, 100, stylusDir);
+
+                    stylusHelper.setPosition(stylusPos, stylusDir);
+
+                    if (!pickedEntity && zspace.stylusButton0) {
+                        pick();
+                    }
+
+                    if (pickedEntity) {
+
+                        XEO.math.normalizeVec3(zspace.stylusDir, stylusDirNorm);
+                        XEO.math.mulVec3Scalar(stylusDirNorm, stylusIsectLen, stylusIsectDir);
+                        XEO.math.addVec3(zspace.stylusPos, stylusIsectDir, stylusIsect);
+                        XEO.math.subVec3(stylusIsect, pickedEntityOffset, draggedCenter);
+                        XEO.math.subVec3(draggedCenter, pickedEntityCenter, xyz);
+
+                        translate.xyz = xyz;
+
+                        infoHelper.setPos(stylusPos);
+
+                    } else {
+
+                        infoHelper.hide();
+
+                        var hit = scene.pick({
+                            pickSurface: false, // Default
+                            origin: stylusPos,
+                            direction: stylusDir
+                        });
+
+                        if (lastEntityHighlighted) {
+                            if (!hit || (hit.entity.id !== lastEntityHighlighted.id)) {
+                                lastEntityHighlighted.material.emissive = [0, 0, 0];
+                            }
+                        }
+
+                        if (hit) {
+                            stylusHelper.setHighlighted(true);
+
+                            hit.entity.material.emissive = [0, 0.5, 0];
+                            lastEntityHighlighted = hit.entity;
+
+                            //  infoHelper.setPos(stylusPos);
+
+                        } else {
+                            stylusHelper.setHighlighted(false);
+                            lastEntityHighlighted = null;
+                        }
+                    }
+                };
+            })());
+        }
+    });
+
+</script>
+</body>
+</html>
