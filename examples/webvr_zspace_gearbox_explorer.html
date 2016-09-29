@@ -17,26 +17,27 @@
 
 <body>
 
-<div id="infoLight" style="margin: 0; left:5px;">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a>
-    <br>
-    using a <a
-        href="../docs/classes/ZSpace.html"
-        target="_docs">ZSpace</a> component to view a glTF <a href="../docs/classes/Model.html"
-                                                              target="_docs">Model</a> with zSpace VR<br>
+<div id="infoLight"
+     style="left: 0; text-align: left; background: black; opacity: 0.7; padding: 8px; color: white; font-size: 14pt;">
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br>
+    <ul>
+        <li><span>using <a
+                href="../docs/classes/Model.html"
+                target="_docs">Model</a> and <a
+                href="../docs/classes/ZSpace.html"
+                target="_docs">ZSpace</a> components to view a glTF model in zSpace VR</span>
+        </li>
+        <li><span>click a node in the explorer below to fly to its <a href="../docs/classes/Entity.html"
+                                                                      target="_docs">Entity</a></span></li>
+    </ul>
 
-    click a node in the explorer below to fly to its <a href="../docs/classes/Entity.html"
-                                                        target="_docs">Entity</a><br><br>
-
-    <div><span id="log" style="color:red;font-size: 16px"></span></div>
+    <span id="log" style="color:red;font-size: 16px"></span>
 </div>
-
 
 <div id="explorerPanel"
      style="margin: 0; top: 160px; left:25px; opacity: 0.7;background: white; z-index:10000000; width: 300px; height:60%; position:absolute; overflow-y: scroll; overflow-x: hidden;">
     <div id="explorer" style=""></div>
 </div>
-
 
 <script>
 
@@ -110,17 +111,16 @@
             //---------------------------------------------------------------------------------------
             // When the Model has loaded, iterate over all the Entities in the Model:
             //
-            // 1. Ensure that they each have their own Material and Modes components, so that
-            // we can set them transparent individually. This is quick-and-dirty, where we
-            // may be creating excess Materials and Modes, while needlessly keeping unused ones.
+            // 1. Ensure that each Entity has its own Material and Modes components, so that
+            // we can set it transparent individually. Add the Material and Modes to the Model's
+            // Collection so that they get destroyed whenever the Model is destroyed or reloaded.
             //
-            // 2. Add the Material and Modes to the Model's Collection so that they get
-            // destroyed whenever the Model is destroyed or reloaded.
+            // 2. Flatten each Entity's transform hierarchy down to one Transform.
             //
-            // 2. Add an item to the JSON data we'll build our explorer from.
+            // 3. Create a node in the data structure from which we'll build our JSTree explorer UI.
             //---------------------------------------------------------------------------------------
 
-            var data = [];
+            var data = []; // JSTree data
             var entities = gearbox.collection.types["XEO.Entity"];
             var entity;
 
@@ -150,15 +150,12 @@
                         // If an entity has a transform that has a parent, then the entity's
                         // transform hierarchy needs collapsing. Bake the hierarchy into
                         // a matrix on a single XEO.Transform and set that as the entity's new transform.
-
-                        entity.transform =  new XEO.Transform({
-                            matrix: entity.transform.leafMatrix
-                        });
-
                         // Store the new transform in the Model's Collection so that
                         // it gets destroyed when the Model is destroyed or reloaded
 
-                        gearbox.collection.add(entity.transform);
+                        gearbox.collection.add(entity.transform = new XEO.Transform({
+                            matrix: entity.transform.leafMatrix
+                        }));
                     }
 
                     // To each Entity it loads, a Model will attach metadata
@@ -280,7 +277,7 @@
                 })();
 
                 //----------------------------------------------------------------------------
-                //
+                // Handle stylus interaction
                 //----------------------------------------------------------------------------
 
                 var draggingEntity = false;
@@ -340,10 +337,6 @@
                     };
                 })());
 
-                //----------------------------------------------------------------------------
-                //
-                //----------------------------------------------------------------------------
-
                 zspace.on("stylusMoved", (function () {
 
                     var stylusDir = XEO.math.vec3();
@@ -387,7 +380,6 @@
                         }
                     };
                 })());
-
             }
         });
     });

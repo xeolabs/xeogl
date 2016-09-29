@@ -15,25 +15,16 @@
 
 <div id="infoLight"
      style="left: 0; text-align: left; background: black; opacity: 0.7; padding: 8px; color: white; font-size: 14pt;">
-    <span><a href="http://xeoengine.org" target="_home">xeoEngine</a><br>using a <a
-            href="../docs/classes/ZSpace.html"
-            target="_docs">ZSpace</a> component to view a glTF <a
-            href="../docs/classes/Model.html"
-            target="_docs">Model</a> with zSpace VR</span><br>
+    <span><a href="http://xeoengine.org" target="_home">xeoEngine</a><br>
+        using <a
+                href="../docs/classes/Model.html"
+                target="_docs">Model</a> and <a
+                href="../docs/classes/ZSpace.html"
+                target="_docs">ZSpace</a> components to view a glTF model in zSpace VR</span><br>
     <span id="log" style="color:red;font-size: 16px"></span>
 </div>
 
 <script>
-
-    //---------------------------------------------------------------------------------------
-    // In this demo, we:
-    // 1. load a gearbox model from glTF format,
-    // 2. enable display of the scene on a ZSpace device,
-    // 3. if ZSpace device detected, then
-    // 3.1 create a couple of helper entities to show the location of the ZSpace stylus in
-    //      the 3D scene and the points at which it intersects entities as we move it around
-    // 3.2 subscribe to stylus movement and buttons, so that we can use it to pick entities
-    //---------------------------------------------------------------------------------------
 
     //----------------------------------------------------------------------------
     // Load a glTF gearbox model into the default Scene
@@ -48,14 +39,11 @@
         //---------------------------------------------------------------------------------------
         // When the Model has loaded, iterate over all the Entities in the Model:
         //
-        // 1. Ensure that they each have their own Material and Modes components, so that
-        // we can set them transparent individually. This is quick-and-dirty, where we
-        // may be creating excess Materials and Modes, while needlessly keeping unused ones.
+        // 1. Ensure that each Entity has its own Material and Modes components, so that
+        // we can set it transparent individually. Add the Material and Modes to the Model's
+        // Collection so that they get destroyed whenever the Model is destroyed or reloaded.
         //
-        // 2. Add the Material and Modes to the Model's Collection so that they get
-        // destroyed whenever the Model is destroyed or reloaded.
-        //
-        // 2. Add an item to the JSON data we'll build our explorer from.
+        // 2. Flatten each Entity's transform hierarchy down to one Transform.
         //---------------------------------------------------------------------------------------
 
         var entities = gearbox.collection.types["XEO.Entity"];
@@ -114,40 +102,6 @@
 
     new XEO.CameraControl();
 
-    //---------------------------------------------------------------------------------------
-    // Create a wireframe boundary entity to indicate the World-space
-    // axis-aligned boundary of each entity we drag with the stylus
-    //---------------------------------------------------------------------------------------
-
-    var boundaryHelper = new (function () {
-
-        var boundary = new XEO.Entity({
-            id: "myOBB",
-            geometry: new XEO.BoundaryGeometry(),
-            material: new XEO.PhongMaterial({
-                diffuse: [0, 0, 0],
-                ambient: [0, 0, 0],
-                specular: [0, 0, 0],
-                emissive: [1.0, 1.0, 0.5],
-                lineWidth: 3
-            }),
-            visibility: new XEO.Visibility({
-                visible: false
-            }),
-            modes: new XEO.Modes({
-                collidable: false
-            })
-        });
-
-        this.update = function (entity) {
-            boundary.visibility.visible = !!entity;
-            if (entity) {
-                boundary.geometry.obb = entity.worldBoundary.obb;
-            }
-        };
-    })();
-
-
     //----------------------------------------------------------------------------
     // Check if we're actually running on a ZSpace device
     //----------------------------------------------------------------------------
@@ -204,7 +158,7 @@
             })();
 
             //----------------------------------------------------------------------------
-            //
+            // Handle stylus interaction
             //----------------------------------------------------------------------------
 
             var draggingEntity = false;
@@ -259,10 +213,6 @@
                     }
                 };
             })());
-
-            //----------------------------------------------------------------------------
-            //
-            //----------------------------------------------------------------------------
 
             zspace.on("stylusMoved", (function () {
 
