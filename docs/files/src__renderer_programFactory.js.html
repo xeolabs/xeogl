@@ -229,7 +229,7 @@
 
             programState = new XEO.renderer.ProgramState({
                 program: program,
-                useCount: 1
+                useCount: 0
             });
 
             this._programStates[hash] = programState;
@@ -247,20 +247,20 @@
      */
     XEO.renderer.ProgramFactory.prototype.put = function (programState) {
 
-        var program = programState.program;
-
-        if (--program.useCount &lt;= 0) {
-
-            program.draw.destroy();
-            program.pickObject.destroy();
-            program.pickPrimitive.destroy();
-
-            XEO.renderer.ProgramSourceFactory.putSource(program.hash);
-
-            delete this._programStates[program.hash];
-
-            this.stats.memory.programs--;
-        }
+        //if (--programState.useCount &lt;= 0) {
+        //
+        //    var program = programState.program;
+        //
+        //    program.draw.destroy();
+        //    program.pickObject.destroy();
+        //    program.pickPrimitive.destroy();
+        //
+        //    XEO.renderer.ProgramSourceFactory.putSource(program.hash);
+        //
+        //    delete this._programStates[program.hash];
+        //
+        //    this.stats.memory.programs--;
+        //}
     };
 
     /**

@@ -122,7 +122,8 @@
 
                     this._state.pickable = value;
 
-                    this._renderer.drawListDirty = true;
+                    // No need to trigger a render;
+                    // state is only used when picking
 
                     /**
                      * Fired whenever this Modes' {{#crossLink "Modes/pickable:property"}}{{/crossLink}} property changes.

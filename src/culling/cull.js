@@ -100,7 +100,7 @@
 
                     this._state.culled = value;
 
-                    this._renderer.drawListDirty = true;
+                    this._renderer.imageDirty = true;
 
                     /**
                      Fired whenever this Cull's {{#crossLink "Cull/culled:property"}}{{/crossLink}} property changes.

@@ -94,7 +94,7 @@ visibility.destroy();
 
                     this._state.visible =  value !== false;
 
-                    this._renderer.drawListDirty = true;
+                    this._renderer.imageDirty = true;
 
                     /**
                      Fired whenever this Visibility's {{#crossLink "Visibility/visible:property"}}{{/crossLink}} property changes.

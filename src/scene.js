@@ -627,7 +627,7 @@
 
                     this._passes = value;
 
-                    this._renderer.drawListDirty = true;
+                    this._renderer.imageDirty = true;
 
                     /**
                      Fired whenever this Scene's {{#crossLink "Scene/passes:property"}}{{/crossLink}} property changes.
@@ -663,7 +663,7 @@
 
                     this._clearEachPass = value;
 
-                    this._renderer.drawListDirty = true;
+                    this._renderer.imageDirty = true;
 
                     /**
                      Fired whenever this Scene's {{#crossLink "Scene/clearEachPass:property"}}{{/crossLink}} property changes.

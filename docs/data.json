@@ -8088,26 +8088,26 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 96,
+            "line": 92,
             "description": "Indicates if the canvas is transparent",
             "type": "{boolean}",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 102,
+            "line": 98,
             "description": "Optional callback to fire when renderer wants to\nbind an output framebuffer. This is useful when we need to bind a stereo output buffer for WebVR.\n\nWhen this is missing, the renderer will implicitly bind\nWebGL's default framebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 116,
+            "line": 112,
             "description": "Optional callback to fire when renderer wants to\nunbind any output drawing framebuffer that was\npreviously bound with #bindOutputFramebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.unbindOutputFramebuffer = function(pass) { .. });\n\nCallback takes no parameters.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 186,
+            "line": 165,
             "description": "Visibility render state.",
             "itemtype": "property",
             "name": "visibility",
@@ -8116,7 +8116,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 193,
+            "line": 172,
             "description": "Culling render state.",
             "itemtype": "property",
             "name": "cull",
@@ -8125,7 +8125,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 200,
+            "line": 179,
             "description": "Modes render state.",
             "itemtype": "property",
             "name": "modes",
@@ -8134,7 +8134,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 207,
+            "line": 186,
             "description": "Render state for an effects layer.",
             "itemtype": "property",
             "name": "layer",
@@ -8143,7 +8143,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 214,
+            "line": 193,
             "description": "Render state for an effects pipeline stage.",
             "itemtype": "property",
             "name": "stage",
@@ -8152,7 +8152,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 221,
+            "line": 200,
             "description": "Depth buffer render state.",
             "itemtype": "property",
             "name": "depthBuf",
@@ -8161,7 +8161,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 228,
+            "line": 207,
             "description": "Color buffer render state.",
             "itemtype": "property",
             "name": "colorBuf",
@@ -8170,7 +8170,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 235,
+            "line": 214,
             "description": "Lights render state.",
             "itemtype": "property",
             "name": "lights",
@@ -8179,7 +8179,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 242,
+            "line": 221,
             "description": "Material render state.",
             "itemtype": "property",
             "name": "material",
@@ -8188,7 +8188,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 249,
+            "line": 228,
             "description": "Environmental reflection render state.",
             "itemtype": "property",
             "name": "reflection",
@@ -8197,7 +8197,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 256,
+            "line": 235,
             "description": "Modelling transform render state.",
             "itemtype": "property",
             "name": "modelTransform",
@@ -8206,7 +8206,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 263,
+            "line": 242,
             "description": "View transform render state.",
             "itemtype": "property",
             "name": "viewTransform",
@@ -8215,7 +8215,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 270,
+            "line": 249,
             "description": "Projection transform render state.",
             "itemtype": "property",
             "name": "projTransform",
@@ -8224,7 +8224,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 277,
+            "line": 256,
             "description": "Billboard render state.",
             "itemtype": "property",
             "name": "billboard",
@@ -8233,7 +8233,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 284,
+            "line": 263,
             "description": "Stationary render state.",
             "itemtype": "property",
             "name": "stationary",
@@ -8242,7 +8242,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 291,
+            "line": 270,
             "description": "Color target render state.",
             "itemtype": "property",
             "name": "colorTarget",
@@ -8251,7 +8251,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 298,
+            "line": 277,
             "description": "Depth target render state.",
             "itemtype": "property",
             "name": "depthTarget",
@@ -8260,7 +8260,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 305,
+            "line": 284,
             "description": "Cross-section planes render state.",
             "itemtype": "property",
             "name": "clips",
@@ -8269,7 +8269,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 312,
+            "line": 291,
             "description": "Morph targets render state.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -8278,7 +8278,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 319,
+            "line": 298,
             "description": "Custom shader render state.",
             "itemtype": "property",
             "name": "shader",
@@ -8287,7 +8287,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 326,
+            "line": 305,
             "description": "Render state providing custom shader params.",
             "itemtype": "property",
             "name": "shaderParams",
@@ -8296,7 +8296,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 333,
+            "line": 312,
             "description": "Geometry render state.",
             "itemtype": "property",
             "name": "geometry",
@@ -8305,7 +8305,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 340,
+            "line": 319,
             "description": "Viewport render state.",
             "itemtype": "property",
             "name": "viewport",
@@ -8314,48 +8314,41 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 350,
+            "line": 329,
             "description": "Flags the object list as needing to be rebuilt from renderer objects\non the next call to {@link #render} or {@link #pick}. Setting this\nwill cause the rendering pipeline to be executed from stage #2\n(see class comment), causing object list rebuild, state order\ndetermination, state sort, draw list construction and image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 360,
+            "line": 339,
             "description": "Flags the object list as needing state orders to be (re)computed on the\nnext call to {@link #render} or {@link #pick}. Setting this will cause\nthe rendering pipeline to be executed from stage #3 (see class comment),\ncausing state order determination, state sort, draw list construction\nand image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 370,
+            "line": 349,
             "description": "Flags the object list as needing to be state-sorted on the next call\nto {@link #render} or {@link #pick}.Setting this will cause the\nrendering pipeline to be executed from stage #4 (see class comment),\ncausing state sort, draw list construction and image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 379,
-            "description": "Flags the draw list as needing to be rebuilt from the object list on\nthe next call to {@link #render} or {@link #pick}.  Setting this will\ncause the rendering pipeline to be executed from stage #5\n(see class comment), causing draw list construction and image render.",
-            "type": "Boolean",
-            "class": "CameraFlight"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 388,
+            "line": 358,
             "description": "Flags the image as needing to be redrawn from the draw list on the\nnext call to {@link #render} or {@link #pick}. Setting this will\ncause the rendering pipeline to be executed from stage #6\n(see class comment), causing the image render.",
             "type": "Boolean",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 398,
+            "line": 368,
             "description": "Reallocates WebGL resources for objects within this renderer.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 422,
+            "line": 392,
             "description": "Internally creates (or updates) a {@link XEO.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link XEO.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
             "params": [
                 {
@@ -8368,12 +8361,12 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 550,
+            "line": 516,
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 608,
+            "line": 566,
             "description": "Removes an object from this Renderer",
             "params": [
                 {
@@ -8386,77 +8379,31 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 644,
+            "line": 602,
             "description": "Renders a new frame, if neccessary.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 692,
+            "line": 638,
             "description": "Builds the object list from the object map",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 704,
+            "line": 650,
             "description": "Generates object state sort keys",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 725,
+            "line": 671,
             "description": "State-sorts the object list",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 735,
-            "description": "Logs the object list",
-            "class": "CameraFlight"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 879,
-            "description": "Builds the draw list, which is the list of draw state-chunks to apply to WebGL\nto render the visible objects in the object list for the next frame.\nPreserves the state sort order of the object list among the draw chunks.",
-            "class": "CameraFlight"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 1064,
-            "description": "Appends an object to the draw and pick lists.",
-            "params": [
-                {
-                    "name": "object",
-                    "description": ""
-                },
-                {
-                    "name": "pickable",
-                    "description": ""
-                }
-            ],
-            "access": "private",
-            "tagname": "",
-            "class": "CameraFlight"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 1133,
-            "description": "Logs the contents of the draw list to the console.",
-            "access": "private",
-            "tagname": "",
-            "class": "CameraFlight"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 1163,
-            "description": "Logs the contents of the pick list to the console.",
-            "access": "private",
-            "tagname": "",
-            "class": "CameraFlight"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 1192,
+            "line": 907,
             "description": "Attempts to pick an object.",
             "params": [
                 {
@@ -8473,53 +8420,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1324,
-            "params": [
-                {
-                    "name": "params",
-                    "description": "",
-                    "type": "*",
-                    "props": [
-                        {
-                            "name": "clear",
-                            "description": "Set true to clear the color, depth and stencil buffers first",
-                            "type": "Boolean"
-                        },
-                        {
-                            "name": "pickObject",
-                            "description": "",
-                            "type": "Boolean"
-                        },
-                        {
-                            "name": "pickSurface",
-                            "description": "",
-                            "type": "Boolean"
-                        },
-                        {
-                            "name": "object",
-                            "description": "",
-                            "type": "Boolean"
-                        },
-                        {
-                            "name": "opaqueOnly",
-                            "description": "",
-                            "type": "Boolean"
-                        },
-                        {
-                            "name": "pickViewMatrix",
-                            "description": "",
-                            "type": "Boolean"
-                        }
-                    ]
-                }
-            ],
-            "access": "private",
-            "tagname": "",
-            "class": "CameraFlight"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 1481,
+            "line": 1039,
             "description": "Reads the colors of some pixels in the last rendered frame.",
             "params": [
                 {
@@ -8547,7 +8448,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1528,
+            "line": 1086,
             "description": "Destroys this Renderer.",
             "class": "CameraFlight"
         },
@@ -18838,7 +18739,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 127,
+            "line": 128,
             "description": "Fired whenever this Modes' {{#crossLink \"Modes/pickable:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "pickable",
@@ -18854,7 +18755,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 141,
+            "line": 142,
             "description": "Whether this Modes enables clippable of attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nclippable is done by {{#crossLink \"Clips\"}}{{/crossLink}} that are also attached to\nthe {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires a {{#crossLink \"Modes/clippable:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "clippable",
@@ -18866,7 +18767,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 167,
+            "line": 168,
             "description": "Fired whenever this Modes' {{#crossLink \"Modes/clippable:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "clippable",
@@ -18882,7 +18783,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 181,
+            "line": 182,
             "description": "Whether this Modes sets attached {{#crossLink \"Entity\"}}Entities{{/crossLink}} transparent.\n\nWhen true. this property will set attached {{#crossLink \"Entity\"}}Entities{{/crossLink}} transparent (ie. to be rendered in a\ntransparency pass with blending enabled etc), while\nthe {{#crossLink \"PhongMaterial/opacity:property\"}}{{/crossLink}} will be used to indicate the **degree** of their transparency\n(ie. where opacity of 0.0 indicates maximum translucency and opacity of 1.0 indicates minimum translucency).\n\nFires a {{#crossLink \"Modes/transparent:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "transparent",
@@ -18894,7 +18795,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 209,
+            "line": 210,
             "description": "Fired whenever this Modes' {{#crossLink \"Modes/transparent:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "transparent",
@@ -18910,7 +18811,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 223,
+            "line": 224,
             "description": "Whether this Modes enables backfaces to be visible on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe backfaces will belong to {{#crossLink \"Geometry\"}}{{/crossLink}} compoents that are also attached to\nthe {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires a {{#crossLink \"Modes/backfaces:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "backfaces",
@@ -18922,7 +18823,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 249,
+            "line": 250,
             "description": "Fired whenever this Modes' {{#crossLink \"Modes/backfaces:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "backfaces",
@@ -18938,7 +18839,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 263,
+            "line": 264,
             "description": "Indicates the winding direction of front faces on attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe faces will belong to {{#crossLink \"Geometry\"}}{{/crossLink}} components that are also attached to\nthe {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires a {{#crossLink \"Modes/frontface:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "frontface",
@@ -18950,7 +18851,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 289,
+            "line": 290,
             "description": "Fired whenever this Modes' {{#crossLink \"Modes/frontface:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "frontface",
@@ -18966,7 +18867,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 303,
+            "line": 304,
             "description": "Whether attached {{#crossLink \"Entity\"}}Entities{{/crossLink}} are included\nin boundary-related calculations.\n\nSet this false if the\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} are things like helpers or indicators that should not be included in boundary calculations.\n\nFor example, when set false, the {{#crossLink \"Entity/worldBoundary:property\"}}World-space boundary{{/crossLink}} of all attached {{#crossLink \"Entity\"}}Entities{{/crossLink}} would not be considered when calculating the {{#crossLink \"Scene/worldBoundary:property\"}}World-space boundary{{/crossLink}} of their\n{{#crossLink \"Scene\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"Modes/collidable:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "collidable",
@@ -18978,7 +18879,7 @@
         },
         {
             "file": "src/rendering/modes.js",
-            "line": 331,
+            "line": 332,
             "description": "Fired whenever this Modes' {{#crossLink \"Modes/collidable:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "collidable",
@@ -19034,7 +18935,7 @@
         },
         {
             "file": "src/rendering/stage.js",
-            "line": 160,
+            "line": 167,
             "description": "Fired whenever this Stage's\n{{#crossLink \"Stage/pickable:pickable\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "pickable",
@@ -21351,7 +21252,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 140,
+            "line": 139,
             "description": "Existing {{#crossLink \"Scene\"}}Scene{{/crossLink}}s , mapped to their IDs",
             "itemtype": "property",
             "name": "scenes",
@@ -21362,7 +21263,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 245,
+            "line": 244,
             "description": "Fired on each game loop iteration.",
             "itemtype": "event",
             "name": "tick",
@@ -21399,7 +21300,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 281,
+            "line": 280,
             "description": "The default {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\nComponents created without an explicit parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} will be created within this\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} by default.\n\nxeoEngine creates the default {{#crossLink \"Scene\"}}Scene{{/crossLink}} as soon as you either\nreference this property for the first time, or create your first {{#crossLink \"Entity\"}}Entity{{/crossLink}} without\na specified {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "property",
             "name": "scene",
@@ -21411,7 +21312,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 306,
+            "line": 305,
             "description": "Registers a scene on xeoEngine.\nThis is called within the XEO.Scene constructor.",
             "itemtype": "method",
             "name": "_addScene",
@@ -21430,7 +21331,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 353,
+            "line": 352,
             "description": "Schedule a task for xeoEngine to run at the next frame.\n\nInternally, this pushes the task to a FIFO queue. Within each frame interval, xeoEngine processes the queue\nfor a certain period of time, popping tasks and running them. After each frame interval, tasks that did not\nget a chance to run during the task are left in the queue to be run next time.",
             "itemtype": "method",
             "name": "schedule",
@@ -21453,7 +21354,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 402,
+            "line": 401,
             "description": "Destroys all user-created {{#crossLink \"Scene\"}}Scenes{{/crossLink}} and\nclears the default {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "clear",
@@ -21464,7 +21365,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 431,
+            "line": 430,
             "description": "Tests if the given object is an array",
             "access": "private",
             "tagname": "",
@@ -21474,7 +21375,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 439,
+            "line": 438,
             "description": "Tests if the given value is a string",
             "params": [
                 {
@@ -21494,7 +21395,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 450,
+            "line": 449,
             "description": "Tests if the given value is a number",
             "params": [
                 {
@@ -21514,7 +21415,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 460,
+            "line": 459,
             "description": "Tests if the given value is an ID",
             "params": [
                 {
@@ -21534,7 +21435,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 470,
+            "line": 469,
             "description": "Tests if the given components are the same, where the components can be either IDs or instances.",
             "params": [
                 {
@@ -21558,7 +21459,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 489,
+            "line": 488,
             "description": "Tests if the given value is a function",
             "params": [
                 {
@@ -21578,21 +21479,21 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 499,
+            "line": 498,
             "class": "XEO",
             "module": "XEO",
             "namespace": "XEO"
         },
         {
             "file": "src/xeo.js",
-            "line": 505,
+            "line": 504,
             "class": "XEO",
             "module": "XEO",
             "namespace": "XEO"
         },
         {
             "file": "src/xeo.js",
-            "line": 516,
+            "line": 515,
             "description": "Add non-null/defined properties of o to o2",
             "access": "private",
             "tagname": "",
@@ -21602,7 +21503,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 531,
+            "line": 530,
             "description": "Add properties of o to o2 where undefined or null on o2",
             "access": "private",
             "tagname": "",
@@ -21612,7 +21513,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 546,
+            "line": 545,
             "description": "Returns true if the given map is empty.",
             "params": [
                 {
@@ -21632,7 +21533,7 @@
         },
         {
             "file": "src/xeo.js",
-            "line": 561,
+            "line": 560,
             "description": "Returns the given ID as a string, in quotes if the ID was a string to begin with.\n\nThis is useful for logging IDs.",
             "params": [
                 {
@@ -23864,7 +23765,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/_renderer/renderer.js:1192"
+            "line": " src/_renderer/renderer.js:907"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -24048,35 +23949,35 @@
         },
         {
             "message": "unknown tag: demo",
-            "line": " src/xeo.js:402"
+            "line": " src/xeo.js:401"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:439"
+            "line": " src/xeo.js:438"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:450"
+            "line": " src/xeo.js:449"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:460"
+            "line": " src/xeo.js:459"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:470"
+            "line": " src/xeo.js:469"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:489"
+            "line": " src/xeo.js:488"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:546"
+            "line": " src/xeo.js:545"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/xeo.js:561"
+            "line": " src/xeo.js:560"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -24476,103 +24377,75 @@
         },
         {
             "message": "Missing item type\nIndicates if the canvas is transparent",
-            "line": " src/_renderer/renderer.js:96"
+            "line": " src/_renderer/renderer.js:92"
         },
         {
             "message": "Missing item type\nOptional callback to fire when renderer wants to\nbind an output framebuffer. This is useful when we need to bind a stereo output buffer for WebVR.\n\nWhen this is missing, the renderer will implicitly bind\nWebGL's default framebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });",
-            "line": " src/_renderer/renderer.js:102"
+            "line": " src/_renderer/renderer.js:98"
         },
         {
             "message": "Missing item type\nOptional callback to fire when renderer wants to\nunbind any output drawing framebuffer that was\npreviously bound with #bindOutputFramebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.unbindOutputFramebuffer = function(pass) { .. });\n\nCallback takes no parameters.",
-            "line": " src/_renderer/renderer.js:116"
+            "line": " src/_renderer/renderer.js:112"
         },
         {
             "message": "Missing item type\nFlags the object list as needing to be rebuilt from renderer objects\non the next call to {@link #render} or {@link #pick}. Setting this\nwill cause the rendering pipeline to be executed from stage #2\n(see class comment), causing object list rebuild, state order\ndetermination, state sort, draw list construction and image render.",
-            "line": " src/_renderer/renderer.js:350"
+            "line": " src/_renderer/renderer.js:329"
         },
         {
             "message": "Missing item type\nFlags the object list as needing state orders to be (re)computed on the\nnext call to {@link #render} or {@link #pick}. Setting this will cause\nthe rendering pipeline to be executed from stage #3 (see class comment),\ncausing state order determination, state sort, draw list construction\nand image render.",
-            "line": " src/_renderer/renderer.js:360"
+            "line": " src/_renderer/renderer.js:339"
         },
         {
             "message": "Missing item type\nFlags the object list as needing to be state-sorted on the next call\nto {@link #render} or {@link #pick}.Setting this will cause the\nrendering pipeline to be executed from stage #4 (see class comment),\ncausing state sort, draw list construction and image render.",
-            "line": " src/_renderer/renderer.js:370"
-        },
-        {
-            "message": "Missing item type\nFlags the draw list as needing to be rebuilt from the object list on\nthe next call to {@link #render} or {@link #pick}.  Setting this will\ncause the rendering pipeline to be executed from stage #5\n(see class comment), causing draw list construction and image render.",
-            "line": " src/_renderer/renderer.js:379"
+            "line": " src/_renderer/renderer.js:349"
         },
         {
             "message": "Missing item type\nFlags the image as needing to be redrawn from the draw list on the\nnext call to {@link #render} or {@link #pick}. Setting this will\ncause the rendering pipeline to be executed from stage #6\n(see class comment), causing the image render.",
-            "line": " src/_renderer/renderer.js:388"
+            "line": " src/_renderer/renderer.js:358"
         },
         {
             "message": "Missing item type\nReallocates WebGL resources for objects within this renderer.",
-            "line": " src/_renderer/renderer.js:398"
+            "line": " src/_renderer/renderer.js:368"
         },
         {
             "message": "Missing item type\nInternally creates (or updates) a {@link XEO.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link XEO.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
-            "line": " src/_renderer/renderer.js:422"
+            "line": " src/_renderer/renderer.js:392"
         },
         {
             "message": "Missing item type",
-            "line": " src/_renderer/renderer.js:550"
+            "line": " src/_renderer/renderer.js:516"
         },
         {
             "message": "Missing item type\nRemoves an object from this Renderer",
-            "line": " src/_renderer/renderer.js:608"
+            "line": " src/_renderer/renderer.js:566"
         },
         {
             "message": "Missing item type\nRenders a new frame, if neccessary.",
-            "line": " src/_renderer/renderer.js:644"
+            "line": " src/_renderer/renderer.js:602"
         },
         {
             "message": "Missing item type\nBuilds the object list from the object map",
-            "line": " src/_renderer/renderer.js:692"
+            "line": " src/_renderer/renderer.js:638"
         },
         {
             "message": "Missing item type\nGenerates object state sort keys",
-            "line": " src/_renderer/renderer.js:704"
+            "line": " src/_renderer/renderer.js:650"
         },
         {
             "message": "Missing item type\nState-sorts the object list",
-            "line": " src/_renderer/renderer.js:725"
-        },
-        {
-            "message": "Missing item type\nLogs the object list",
-            "line": " src/_renderer/renderer.js:735"
-        },
-        {
-            "message": "Missing item type\nBuilds the draw list, which is the list of draw state-chunks to apply to WebGL\nto render the visible objects in the object list for the next frame.\nPreserves the state sort order of the object list among the draw chunks.",
-            "line": " src/_renderer/renderer.js:879"
-        },
-        {
-            "message": "Missing item type\nAppends an object to the draw and pick lists.",
-            "line": " src/_renderer/renderer.js:1064"
-        },
-        {
-            "message": "Missing item type\nLogs the contents of the draw list to the console.",
-            "line": " src/_renderer/renderer.js:1133"
-        },
-        {
-            "message": "Missing item type\nLogs the contents of the pick list to the console.",
-            "line": " src/_renderer/renderer.js:1163"
+            "line": " src/_renderer/renderer.js:671"
         },
         {
             "message": "Missing item type\nAttempts to pick an object.",
-            "line": " src/_renderer/renderer.js:1192"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/_renderer/renderer.js:1324"
+            "line": " src/_renderer/renderer.js:907"
         },
         {
             "message": "Missing item type\nReads the colors of some pixels in the last rendered frame.",
-            "line": " src/_renderer/renderer.js:1481"
+            "line": " src/_renderer/renderer.js:1039"
         },
         {
             "message": "Missing item type\nDestroys this Renderer.",
-            "line": " src/_renderer/renderer.js:1528"
+            "line": " src/_renderer/renderer.js:1086"
         },
         {
             "message": "Missing item type\nRenderer states",
@@ -24788,51 +24661,51 @@
         },
         {
             "message": "Missing item type\nTests if the given object is an array",
-            "line": " src/xeo.js:431"
+            "line": " src/xeo.js:430"
         },
         {
             "message": "Missing item type\nTests if the given value is a string",
-            "line": " src/xeo.js:439"
+            "line": " src/xeo.js:438"
         },
         {
             "message": "Missing item type\nTests if the given value is a number",
-            "line": " src/xeo.js:450"
+            "line": " src/xeo.js:449"
         },
         {
             "message": "Missing item type\nTests if the given value is an ID",
-            "line": " src/xeo.js:460"
+            "line": " src/xeo.js:459"
         },
         {
             "message": "Missing item type\nTests if the given components are the same, where the components can be either IDs or instances.",
-            "line": " src/xeo.js:470"
+            "line": " src/xeo.js:469"
         },
         {
             "message": "Missing item type\nTests if the given value is a function",
-            "line": " src/xeo.js:489"
+            "line": " src/xeo.js:488"
         },
         {
             "message": "Missing item type",
-            "line": " src/xeo.js:499"
+            "line": " src/xeo.js:498"
         },
         {
             "message": "Missing item type",
-            "line": " src/xeo.js:505"
+            "line": " src/xeo.js:504"
         },
         {
             "message": "Missing item type\nAdd non-null/defined properties of o to o2",
-            "line": " src/xeo.js:516"
+            "line": " src/xeo.js:515"
         },
         {
             "message": "Missing item type\nAdd properties of o to o2 where undefined or null on o2",
-            "line": " src/xeo.js:531"
+            "line": " src/xeo.js:530"
         },
         {
             "message": "Missing item type\nReturns true if the given map is empty.",
-            "line": " src/xeo.js:546"
+            "line": " src/xeo.js:545"
         },
         {
             "message": "Missing item type\nReturns the given ID as a string, in quotes if the ID was a string to begin with.\n\nThis is useful for logging IDs.",
-            "line": " src/xeo.js:561"
+            "line": " src/xeo.js:560"
         },
         {
             "message": "Missing item type\nThe base class for all VR displays.",

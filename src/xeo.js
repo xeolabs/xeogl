@@ -123,7 +123,6 @@
                 bindTexture: 0,
                 bindArray: 0,
                 drawElements: 0,
-                drawChunks: 0,
                 tasksRun: 0,
                 tasksScheduled: 0
             }

@@ -37,7 +37,7 @@
 
             programState = new XEO.renderer.ProgramState({
                 program: program,
-                useCount: 1
+                useCount: 0
             });
 
             this._programStates[hash] = programState;
@@ -55,9 +55,9 @@
      */
     XEO.renderer.ProgramFactory.prototype.put = function (programState) {
 
-        var program = programState.program;
+        if (--programState.useCount <= 0) {
 
-        if (--program.useCount <= 0) {
+            var program = programState.program;
 
             program.draw.destroy();
             program.pickObject.destroy();

@@ -153,9 +153,16 @@
 
                 set: function (value) {
 
-                    this._state.pickable = value !== false;
+                    value = value !== false;
 
-                    this._renderer.drawListDirty = true;
+                    if (this._state.pickable === value) {
+                        return;
+                    }
+
+                    this._state.pickable = value;
+
+                    // No need to trigger a render;
+                    // state is only used when picking
 
                     /**
                      * Fired whenever this Stage's

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeoengine.min.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight" style="left: 0; text-align: left; background: black; opacity: 0.6; color: white;">
+    <a href="http://xeoengine.org">xeoEngine</a>
+    <br><br>
+    getting a <a href="../docs/classes/Scene.html"
+                 target="_docs">Scene's</a> runtime statistics
+    <pre id="infoTxt"
+         style="left: 0; text-align: left; background: black; opacity: 0.6; color: white; font-size: 14pt;">
+    </pre>
+</div>
+
+<script>
+
+    var geometries = [
+        new XEO.TorusGeometry({
+            radius: 2.0,
+            tube: 0.8
+        }),
+        new XEO.SphereGeometry({
+            radius: 1.0
+        }),
+        new XEO.BoxGeometry({
+            xSize: 2, ySize: 2, zSize: 2
+        }),
+        new XEO.CylinderGeometry({
+            radiusTop: 2.0,
+            radiusBottom: 2.0,
+            height: 5.0,
+            radialSegments: 20,
+            heightSegments: 1,
+            openEnded: false
+        })
+    ];
+
+    var materials = [
+        new XEO.PhongMaterial({
+            ambient: [0.3, 0.3, 0.3],
+            diffuse: [0.3, 0.5, 0.5],
+            shininess: 30,
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/uvGrid2.jpg",
+                minFilter: "linearMipmapLinear",
+                magFiler: "linear",
+                wrapS: "repeat",
+                wrapT: "repeat",
+                translate: [0, 0],
+                scale: [1, 1],
+                rotate: 0,
+                flipY: false // Default
+            })
+        }),
+        new XEO.PhongMaterial({
+            diffuse: [1.0, 0.3, 0.3]
+        }),
+        new XEO.PhongMaterial({
+            diffuse: [0.3, 1.0, 0.3]
+        }),
+        new XEO.PhongMaterial({
+            diffuse: [0.3, 0.3, 1.0]
+        })
+    ];
+
+    var entities = [];
+    var entityGeometry = [];
+    var entityMaterial = [];
+
+    var gi = 0;
+    var mi = 0;
+    var sqrtNum = 14;
+    var diffuse = [0, 0, 0];
+    var specular = [0, 0, 0];
+    var inc = 1.0 / sqrtNum;
+    var width = 150;
+    var halfWidth = width / 2;
+    var entity;
+
+    for (var y = 0; y <= 1.0; y += inc) {
+
+        for (var x = 0; x <= 1.0; x += inc) {
+
+            gi = Math.round(Math.random() * 4);
+            mi = Math.round(Math.random() * 4);
+
+            for (var z = 0; z <= 1.0; z += inc) {
+
+                entity = new XEO.Entity({
+                    geometry: geometries[gi < 3 ? ++gi : gi = 0],
+                    material: materials[mi < 3 ? ++mi : mi = 0],
+                    transform: new XEO.Translate({
+                        xyz: [(x * width) - halfWidth, (y * width) - halfWidth, (z * width) - halfWidth]
+                    })
+                });
+
+                entities.push(entity);
+                entityGeometry.push(gi);
+                entityMaterial.push(mi);
+            }
+        }
+    }
+
+
+    var scene = XEO.scene;
+
+    scene.camera.view.zoom(190);
+
+    // Spin camera
+    // Log statistics
+
+    var numEntities = entities.length;
+    var count = 0;
+    var lower = 0;
+    var batchLen = Math.floor((numEntities) / 10);
+    var upper = batchLen;
+
+
+    scene.on("tick",
+            function () {
+
+                if (++count > 5) {
+
+                    count = 0;
+
+                    for (var i = lower; i < upper; i++) {
+
+                        entity = entities[i];
+
+                        gi = entityGeometry[i];
+                        entityGeometry[i] = gi = (gi < 3 ? gi + 1 : 0);
+                        entity.geometry = geometries[gi];
+
+                        mi = entityMaterial[i];
+                        entityMaterial[i] = mi = (mi < 3 ? mi + 1 : 0);
+                        entity.material = materials[mi];
+                    }
+
+                    if (lower + (batchLen * 2) < numEntities) {
+                        lower += batchLen;
+                    } else {
+                        lower = 0;
+                    }
+                    upper = lower + batchLen;
+                }
+
+                // Spin camera
+
+                var view = scene.camera.view;
+
+                view.rotateEyeY(0.5);
+                view.rotateEyeX(0.3);
+
+                // Get stats from xeoEngine and log them
+
+                var stats = XEO.stats;
+
+                logJSON(stats);
+            });
+
+    function logJSON(json) {
+        document.getElementById("infoTxt").innerHTML = JSON.stringify(json, null, 4);
+    }
+
+</script>
+</body>
+</html>

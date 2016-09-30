@@ -1441,7 +1441,7 @@
 
         },
 
-        __compile: function () {
+        _compile: function () {
 
             var self = this;
 
@@ -1471,7 +1471,7 @@
             }
         },
 
-        _compile: function () {
+        __compile: function () {
 
             var attached = this._attached;
 
