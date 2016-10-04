@@ -2,7 +2,9 @@
 
     "use strict";
 
-    XEO.renderer.webgl.RenderBuffer = function (cfg) {
+    XEO.renderer.webgl.RenderBuffer = function (canvas, gl, options) {
+
+        options = options || {};
 
         /**
          * True as soon as this buffer is allocated and ready to go
@@ -12,12 +14,12 @@
         /**
          * The HTMLCanvasElement
          */
-        this.canvas = cfg.canvas;
+        this.canvas = canvas;
 
         /**
          * WebGL context
          */
-        this.gl = cfg.gl;
+        this.gl = gl;
 
         /**
          * Buffer resources, set up in #_touch
@@ -32,7 +34,7 @@
         /**
          * Optional explicit buffer size - when omitted, buffer defaults to canvas size
          */
-        this.size = cfg.size;
+        this.size = options.size;
     };
 
     /**

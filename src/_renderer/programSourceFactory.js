@@ -16,12 +16,16 @@
         var normals; // True when rendering state contains normals
         var normalMapping; // True when rendering state contains tangents
         var reflection; // True when rendering state contains reflections
-
         var diffuseFresnel;
         var specularFresnel;
         var opacityFresnel;
         var reflectivityFresnel;
         var emissiveFresnel;
+
+        var vertexPickObjectSrc;
+        var fragmentPickObjectSrc;
+        var vertexPickPrimSrc;
+        var fragmentPickPrimSrc;
 
         /**
          * Get source code for a program to render the given states.
@@ -42,7 +46,6 @@
             normals = hasNormals();
             normalMapping = hasNormalMap();
             reflection = hasReflection();
-
             diffuseFresnel = states.material.diffuseFresnel;
             specularFresnel = states.material.specularFresnel;
             opacityFresnel = states.material.opacityFresnel;
@@ -113,6 +116,9 @@
         // composed from state, in the same manner as the draw shaders.
 
         function vertexPickObject() {
+            if (vertexPickObjectSrc) {
+                return vertexPickObjectSrc;
+            }
             begin();
             add("// Object picking vertex shader");
             add("attribute vec3 xeo_aPosition;");
@@ -128,21 +134,27 @@
             add("   xeo_vViewPosition = xeo_uViewMatrix * xeo_vWorldPosition;");
             add("   gl_Position = xeo_uProjMatrix * xeo_vViewPosition;");
             add("}");
-            return end();
+            return vertexPickObjectSrc = end();
         }
 
         function fragmentPickObject() {
+            if (fragmentPickObjectSrc) {
+                return fragmentPickObjectSrc;
+            }
             begin();
             add("// Object picking fragment shader");
-            add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
+            add("precision " + getFSFloatPrecision(states.gl) + " float;");
             add("uniform vec4 xeo_uPickColor;");
             add("void main(void) {");
             add("   gl_FragColor = xeo_uPickColor; ");
             add("}");
-            return end();
+            return fragmentPickObjectSrc = end();
         }
 
         function vertexPickPrimitive() {
+            if (vertexPickPrimSrc) {
+                return vertexPickPrimSrc;
+            }
             begin();
             add("// Triangle picking vertex shader");
             add("attribute vec3 xeo_aPosition;");
@@ -161,18 +173,21 @@
             add("   xeo_vColor = xeo_aColor;");
             add("   gl_Position = xeo_uProjMatrix * viewPosition;");
             add("}");
-            return end();
+            return vertexPickPrimSrc = end();
         }
 
         function fragmentPickPrimitive() {
+            if (fragmentPickPrimSrc) {
+                return fragmentPickPrimSrc;
+            }
             begin();
             add("// Triangle picking fragment shader");
-            add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
+            add("precision " + getFSFloatPrecision(states.gl) + " float;");
             add("varying vec4 xeo_vColor;");
             add("void main(void) {");
             add("   gl_FragColor = xeo_vColor;");
             add("}");
-            return end();
+            return fragmentPickPrimSrc = end();
         }
 
         function vertexDraw() {
@@ -414,7 +429,7 @@
                             if (normalMapping) {
 
                                 // Transform light vector to Tangent space
-                               add("   tmpVec3 *= TBN;");
+                                add("   tmpVec3 *= TBN;");
                             }
 
                         } else {
@@ -487,7 +502,7 @@
 
             add("// Drawing fragment shader");
 
-            add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
+            add("precision " + getFSFloatPrecision(states.gl) + " float;");
             add();
 
             if (normals) {
@@ -502,7 +517,7 @@
             }
 
             if (normalMapping) {
-            //    add("varying vec3 xeo_vTangent;");
+                //    add("varying vec3 xeo_vTangent;");
             }
 
             add("uniform vec3 xeo_uEmissive;");

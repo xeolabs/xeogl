@@ -262,7 +262,7 @@
 
                 if (this._uSpecularFresnelPower) {
                     this._uSpecularFresnelPower.setValue(state.specularFresnel.power);
-                }
+            }
             }
 
             if (state.opacityFresnel) {

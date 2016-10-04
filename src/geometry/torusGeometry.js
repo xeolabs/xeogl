@@ -46,7 +46,7 @@
  @param [cfg.tube=0.3] {Number} The tube radius of the TorusGeometry.
  @param [cfg.radialSegments=32] {Number} The number of radial segments that make up the TorusGeometry.
  @param [cfg.tubeSegments=24] {Number} The number of tubular segments that make up the TorusGeometry.
- @param [cfg.arc=Math.PI / 2.0] {Number} The length of the TorusGeometry's arc in degrees, where 360 is closed torus.
+ @param [cfg.arc=Math.PI / 2.0] {Number} The length of the TorusGeometry's arc in in radians, where Math.PI*2 is a closed torus.
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
  */
@@ -382,7 +382,7 @@
             },
 
             /**
-             * The length of the TorusGeometry's arc in degrees, where 360 is closed torus.
+             * The length of the TorusGeometry's arc in radians, where Math.PI*2 is a closed torus.
              *
              * Fires a {{#crossLink "TorusGeometry/arc:event"}}{{/crossLink}} event on change.
              *

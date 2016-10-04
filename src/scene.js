@@ -315,8 +315,7 @@
                     alert("xeoEngine failed to find WebGL!");
                 });
 
-            this._renderer = new XEO.renderer.Renderer(XEO.stats, {
-                canvas: this.canvas,
+            this._renderer = new XEO.renderer.Renderer(XEO.stats, this.canvas.canvas, this.canvas.gl, {
                 transparent: cfg.transparent
             });
 

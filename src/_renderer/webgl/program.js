@@ -232,15 +232,6 @@
         return this.attributes[name];
     };
 
-    //XEO.renderer.webgl.Program.prototype.bindFloatArrayBuffer = function (name, buffer) {
-    //
-    //    if (!this.allocated) {
-    //        return;
-    //    }
-    //
-    //    return this.attributes[name];
-    //};
-
     XEO.renderer.webgl.Program.prototype.bindTexture = function (name, texture, unit) {
 
         if (!this.allocated) {

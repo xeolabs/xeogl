@@ -5,95 +5,26 @@
     XEO.renderer = XEO.renderer || {};
 
     /**
-     *  Renderer compiled from a {@link SceneJS.Scene}, providing methods to render and pick.
      *
-     * <p>A Renderer is a container of {@link XEO.renderer.Object}s which are created (or updated) by a depth-first
-     * <b>compilation traversal</b> of a {@link SceneJS.Scene}.</b>
-     *
-     * <h2>Rendering Pipeline</h2>
-     *
-     * <p>Conceptually, a Renderer implements a pipeline with the following stages:</p>
-     *
-     * <ol>
-     * <li>Create or update {@link XEO.renderer.Object}s during scene compilation</li>
-     * <li>Organise the {@link XEO.renderer.Object} into an <b>object list</b></li>
-     * <li>Determine the GL state sort order for the object list</li>
-     * <li>State sort the object list</li>
-     * <li>Create a <b>draw list</b> containing {@link XEO.renderer.Chunk}s belonging to the {@link XEO.renderer.Object}s in the object list</li>
-     * <li>Render the draw list to draw the image</li>
-     * </ol>
-     *
-     * <p>An update to the scene causes the pipeline to be re-executed from one of these stages, and SceneJS is designed
-     * so that the pipeline is always re-executed from the latest stage possible to avoid redoing work.</p>
-     *
-     * <p>For example:</p>
-     *
-     * <ul>
-     * <li>when an object is created or updated, we need to (re)do stages 2, 3, 4, 5 and 6</li>
-     * <li>when an object is made invisible, we need to redo stages 5 and 6</li>
-     * <li>when an object is assigned to a different scene render layer (works like a render bin), we need to redo
-     *   stages 3, 4, 5, and 6</li>
-     *<li>when the colour of an object changes, or maybe when the viewpoint changes, we simplt redo stage 6</li>
-     * </ul>
-     *
-     * <h2>Object Creation</h2>
-     * <p>The object soup (stage 1) is constructed by a depth-first traversal of the scene graph, which we think of as
-     * "compiling" the scene graph into the Renderer. As traversal visits each scene component, the component's state core is
-     * set on the Renderer (such as {@link #flags}, {@link #layer}, {@link #renderer} etc), which we think of as the
-     * cores that are active at that instant during compilation. Each of the scene's leaf components is always
-     * a {@link SceneJS.Geometry}, and when traversal visits one of those it calls {@link #buildObject} to create an
-     * object in the soup. For each of the currently active cores, the object is given a {@link XEO.renderer.Chunk}
-     * containing the WebGL calls for rendering it.</p>
-     *
-     * <p>The object also gets a shader (implemented by {@link XEO.renderer.Program}), taylored to render those state cores.</p>
-     *
-     * <p>Limited re-compilation may also be done on portions of a scene that have been added or sufficiently modified. When
-     * traversal visits a {@link SceneJS.Geometry} for which an object already exists in the display, {@link #buildObject}
-     * may update the {@link XEO.renderer.Chunk}s on the object as required for any changes in the core soup since the
-     * last time the object was built. If differences among the cores require it, then {@link #buildObject} may also replace
-     * the object's {@link XEO.renderer.Program} in order to render the new core soup configuration.</p>
-     *
-     * <p>So in summary, to each {@link XEO.renderer.Object} it builds, {@link #buildObject} creates a list of
-     * {@link XEO.renderer.Chunk}s to render the set of component state cores that are currently set on the {@link XEO.Renderer}.
-     * When {@link #buildObject} is re-building an existing object, it may replace one or more {@link XEO.renderer.Chunk}s
-     * for state cores that have changed from the last time the object was built or re-built.</p>
-
-     * <h2>Object Destruction</h2>
-     * <p>Destruction of a scene graph branch simply involves a call to {@link #removeObject} for each {@link SceneJS.Geometry}
-     * in the branch.</p>
-     *
-     * <h2>Draw List</h2>
-     * <p>The draw list is actually comprised of two lists of state chunks: a "pick" list to render a pick buffer
-     * for colour-indexed GPU picking, along with a "draw" list for normal image rendering. The chunks in these lists
-     * are held in the state-sorted order of their objects in #_objectList, with runs of duplicate states removed.</p>
-     *
-     * <p>After a scene update, we set a flag on the display to indicate the stage we will need to redo from. The pipeline is
-     * then lazy-redone on the next call to #render or #pick.</p>
      */
-    XEO.renderer.Renderer = function (stats, cfg) {
+    XEO.renderer.Renderer = function (stats, canvas, gl, options) {
 
-        // Collects runtime statistics
+        options = options || {};
+
         this.stats = stats || {};
 
-        // Renderer is bound to the lifetime of an HTML5 canvas
-        this._canvas = cfg.canvas;
+        this.gl = gl;
+        this.canvas = canvas;
 
-        // Factory which creates and recycles XEO.renderer.Program instances
-        this._programFactory = new XEO.renderer.ProgramFactory(this.stats, {
-            canvas: cfg.canvas
-        });
-
-        // Factory which creates and recycles XEO.renderer.Object instances
+        this._programFactory = new XEO.renderer.ProgramFactory(this.stats, gl);
         this._objectFactory = new XEO.renderer.ObjectFactory();
-
-        // Factory which creates and recycles XEO.renderer.Chunk instances
         this._chunkFactory = new XEO.renderer.ChunkFactory();
 
         /**
          * Indicates if the canvas is transparent
          * @type {boolean}
          */
-        this.transparent = cfg.transparent === true;
+        this.transparent = options.transparent === true;
 
         /**
          * Optional callback to fire when renderer wants to
@@ -123,23 +54,25 @@
          */
         this.unbindOutputFramebuffer = null;
 
-        // The objects in the render
+        // Objects mapped to their IDs
         this.objects = {};
 
-        // Ambient color
+        // The current ambient color, if available
         this._ambient = null;
 
+        // Objects in a list, ordered by state
         this._objectList = [];
         this._objectListLen = 0;
 
+        // List of objects that were rendered in the last picking pass,
+        // for indexing when using color-index picking
         this._objectPickList = [];
         this._objectPickListLen = 0;
 
         // The frame context holds state shared across a single render of the
         // draw list, along with any results of the render, such as pick hits
         this._frameCtx = {
-            pickObjects: [], // Pick names of objects hit during pick render
-            canvas: this._canvas,
+            canvas: this.canvas,
             renderTarget: null,
             renderBuf: null,
             depthbufEnabled: null,
@@ -148,7 +81,6 @@
             blendEnabled: false,
             backfaces: true,
             frontface: true, // true = "ccw" else "cw"
-            pickIndex: 0, // Indexes this._pickObjects
             textureUnit: 0,
             transparent: false, // True while rendering transparency bin
             ambientColor: null,
@@ -157,7 +89,8 @@
             bindTexture: 0,
             bindArray: null,
             pass: null,
-            bindOutputFramebuffer: null
+            bindOutputFramebuffer: null,
+            pickIndex: 0
         };
 
         //----------------- Render states --------------------------------------
@@ -289,13 +222,6 @@
         this.clips = null;
 
         /**
-         Morph targets render state.
-         @property morphTargets
-         @type {renderer.MorphTargets}
-         */
-        this.morphTargets = null;
-
-        /**
          Custom shader render state.
          @property shader
          @type {renderer.Shader}
@@ -323,44 +249,25 @@
          */
         this.viewport = null;
 
-
         //----------------- Renderer dirty flags -------------------------------
 
         /**
-         * Flags the object list as needing to be rebuilt from renderer objects
-         * on the next call to {@link #render} or {@link #pick}. Setting this
-         * will cause the rendering pipeline to be executed from stage #2
-         * (see class comment), causing object list rebuild, state order
-         * determination, state sort, draw list construction and image render.
-         * @type Boolean
+         * Flags the object list as needing to be rebuilt from the object map.
          */
         this.objectListDirty = true;
 
         /**
-         * Flags the object list as needing state orders to be (re)computed on the
-         * next call to {@link #render} or {@link #pick}. Setting this will cause
-         * the rendering pipeline to be executed from stage #3 (see class comment),
-         * causing state order determination, state sort, draw list construction
-         * and image render.
-         * @type Boolean
+         * Flags the object list as needing state orders to be recomputed.
          */
         this.stateOrderDirty = true;
 
         /**
-         * Flags the object list as needing to be state-sorted on the next call
-         * to {@link #render} or {@link #pick}.Setting this will cause the
-         * rendering pipeline to be executed from stage #4 (see class comment),
-         * causing state sort, draw list construction and image render.
-         * @type Boolean
+         * Flags the object list as needing to be state-sorted.
          */
         this.stateSortDirty = true;
 
         /**
-         * Flags the image as needing to be redrawn from the draw list on the
-         * next call to {@link #render} or {@link #pick}. Setting this will
-         * cause the rendering pipeline to be executed from stage #6
-         * (see class comment), causing the image render.
-         * @type Boolean
+         * Flags the image as needing to be redrawn from the object list.
          */
         this.imageDirty = true;
     };
@@ -368,15 +275,15 @@
     /**
      * Reallocates WebGL resources for objects within this renderer.
      */
-    XEO.renderer.Renderer.prototype.webglRestored = function () {
+    XEO.renderer.Renderer.prototype.webglRestored = function (gl) {
+
+        this.gl = gl;
 
         // Re-allocate programs
-        this._programFactory.webglRestored();
+        this._programFactory.webglRestored(gl);
 
         // Re-bind chunks to the programs
         this._chunkFactory.webglRestored();
-
-        var gl = this._canvas.gl;
 
         // Rebuild pick buffer
 
@@ -443,6 +350,8 @@
 
         ]).join(";");
 
+        var newProgram = false;
+
         if (hash !== object.hash) {
 
             // Get new program for object
@@ -453,20 +362,22 @@
 
             object.program = this._programFactory.get(hash, this);
             object.hash = hash;
-        }
 
-        // Handle shader error
+            newProgram = true;
 
-        var programState = object.program;
-        if (programState) {
-            var program = programState.program;
-            if (!program.allocated || !program.compiled || !program.validated || !program.linked) {
-                if (this.objects[objectId]) {
-                    this.removeObject(objectId); // Don't keep faulty objects in the renderer
-                }
-                return {
-                    error: true,
-                    errorLog: program.errorLog
+            // Handle shader error
+
+            var programState = object.program;
+            if (programState) {
+                var program = programState.program;
+                if (!program.allocated || !program.compiled || !program.validated || !program.linked) {
+                    if (this.objects[objectId]) {
+                        this.removeObject(objectId); // Don't keep faulty objects in the renderer
+                    }
+                    return {
+                        error: true,
+                        errorLog: program.errorLog
+                    }
                 }
             }
         }
@@ -680,7 +591,7 @@
 
     XEO.renderer.Renderer.prototype._renderObjectList = function (params) {
 
-        var gl = this._canvas.gl;
+        var gl = this.gl;
 
         // The extensions needs to be re-queried in case the context was lost and has been recreated.
         if (XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {
@@ -698,6 +609,7 @@
         }
 
         var frameCtx = this._frameCtx;
+
         frameCtx.renderTarget = null;
         frameCtx.renderBuf = null;
         frameCtx.depthbufEnabled = null;
@@ -706,7 +618,6 @@
         frameCtx.blendEnabled = false;
         frameCtx.backfaces = true;
         frameCtx.frontface = true; // true == "ccw" else "cw"
-        frameCtx.pickIndex = 0; // Indexes this._pickObjects
         frameCtx.textureUnit = 0;
         frameCtx.transparent = false; // True while rendering transparency bin
         frameCtx.ambientColor = ambientColor;
@@ -718,6 +629,7 @@
         frameCtx.bindOutputFramebuffer = this.bindOutputFramebuffer;
         frameCtx.pickViewMatrix = params.pickViewMatrix;
         frameCtx.pickProjMatrix = params.pickProjMatrix;
+        frameCtx.pickIndex = 0;
 
         // The extensions needs to be re-queried in case the context was lost and has been recreated.
         if (XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {
@@ -737,9 +649,6 @@
             gl.clearColor(ambientColor[0], ambientColor[1], ambientColor[2], 1.0);
         }
 
-        if (params.clear) {
-            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        }
 
         gl.enable(gl.DEPTH_TEST);
         gl.frontFace(gl.CCW);
@@ -761,6 +670,8 @@
         if (params.pickObject) {
 
             // Pick an object
+
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
             this._objectPickListLen = 0;
 
@@ -810,96 +721,100 @@
                 }
             }
 
+        } else if (params.pickSurface) {
+
+            // Pick a triangle on an object
+
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+            if (params.object) {
+
+                chunks = params.object.chunks;
+
+                for (i = 0, len = chunks.length; i < len; i++) {
+                    chunk = chunks[i];
+                    if (chunk.pickPrimitive) {
+                        chunk.pickPrimitive(frameCtx);
+                    }
+                }
+            }
+
         } else {
 
-            if (params.pickSurface) {
+            // Render all objects
 
-                // Pick a triangle on an object
+            var startTime = (new Date()).getTime();
 
-                if (params.object) {
+            if (this.bindOutputFramebuffer) {
+                this.bindOutputFramebuffer(params.pass);
+            }
 
-                    chunks = params.object.chunks;
+            if (params.clear) {
+                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+            }
 
-                    for (i = 0, len = chunks.length; i < len; i++) {
-                        chunk = chunks[i];
-                        if (chunk.pickPrimitive) {
-                            chunk.pickPrimitive(frameCtx);
+            for (i = 0, len = this._objectListLen; i < len; i++) {
+
+                object = this._objectList[i];
+
+                if (!object.compiled) {
+                    continue;
+                }
+
+                if (object.cull.culled === true) {
+                    continue;
+                }
+
+                if (object.visibility.visible === false) {
+                    continue;
+                }
+
+                chunks = object.chunks;
+
+                for (j = 0, lenj = chunks.length; j < lenj; j++) {
+
+                    chunk = chunks[j];
+
+                    if (chunk) {
+
+                        // As we apply the state chunk lists we track the ID of most types
+                        // of chunk in order to cull redundant re-applications of runs
+                        // of the same chunk - except for those chunks with a 'unique' flag,
+                        // because we don't want to collapse runs of draw chunks because
+                        // they contain the GL drawElements calls which render the objects.
+
+                        if (chunk.draw && (chunk.unique || lastChunkId[j] !== chunk.id)) {
+                            chunk.draw(frameCtx);
+                            lastChunkId[j] = chunk.id;
                         }
                     }
                 }
+            }
 
-            } else {
+            var endTime = Date.now();
 
-                // Render all objects
+            var frameStats = this.stats.frame;
 
-                var startTime = (new Date()).getTime();
+            frameStats.renderTime = (endTime - startTime) / 1000.0;
+            frameStats.drawElements = frameCtx.drawElements;
+            frameStats.useProgram = frameCtx.useProgram;
+            frameStats.bindTexture = frameCtx.bindTexture;
+            frameStats.bindArray = frameCtx.bindArray;
 
-                if (this.bindOutputFramebuffer) {
-                    this.bindOutputFramebuffer(params.pass);
-                }
+            if (frameCtx.renderBuf) {
+                frameCtx.renderBuf.unbind();
+            }
 
-                for (i = 0, len = this._objectListLen; i < len; i++) {
+            var numTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
 
-                    object = this._objectList[i];
+            for (var ii = 0; ii < numTextureUnits; ++ii) {
+                gl.activeTexture(gl.TEXTURE0 + ii);
+                gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+                gl.bindTexture(gl.TEXTURE_2D, null);
+            }
 
-                    if (!object.compiled) {
-                        continue;
-                    }
-
-                    if (object.cull.culled === true) {
-                        continue;
-                    }
-
-                    if (object.visibility.visible === false) {
-                        continue;
-                    }
-
-                    chunks = object.chunks;
-
-                    for (j = 0, lenj = chunks.length; j < lenj; j++) {
-
-                        chunk = chunks[j];
-
-                        if (chunk) {
-
-                            // As we apply the state chunk lists we track the ID of most types
-                            // of chunk in order to cull redundant re-applications of runs
-                            // of the same chunk - except for those chunks with a 'unique' flag,
-                            // because we don't want to collapse runs of draw chunks because
-                            // they contain the GL drawElements calls which render the objects.
-
-                            if (chunk.draw && (chunk.unique || lastChunkId[j] !== chunk.id)) {
-                                chunk.draw(frameCtx);
-                                lastChunkId[j] = chunk.id;
-                            }
-                        }
-                    }
-                }
-
-                var endTime = Date.now();
-
-                var frameStats = this.stats.frame;
-                frameStats.renderTime = (endTime - startTime) / 1000.0;
-                frameStats.drawElements = frameCtx.drawElements;
-                frameStats.useProgram = frameCtx.useProgram;
-                frameStats.bindTexture = frameCtx.bindTexture;
-                frameStats.bindArray = frameCtx.bindArray;
-
-                if (frameCtx.renderBuf) {
-                    frameCtx.renderBuf.unbind();
-                }
-
-                var numTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
-
-                for (var ii = 0; ii < numTextureUnits; ++ii) {
-                    gl.activeTexture(gl.TEXTURE0 + ii);
-                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-                    gl.bindTexture(gl.TEXTURE_2D, null);
-                }
-
-                if (this.unbindOutputFramebuffer) {
-                    this.unbindOutputFramebuffer(params.pass);
-                }
+            if (this.unbindOutputFramebuffer) {
+                this.unbindOutputFramebuffer(params.pass);
             }
         }
     };
@@ -921,15 +836,11 @@
 
         return function (params) {
 
-            var gl = this._canvas.gl;
             var hit = null;
             var pickBuf = this.pickBuf;
 
             if (!pickBuf) {  // Lazy-create the pick buffer
-                pickBuf = new XEO.renderer.webgl.RenderBuffer({
-                    gl: this._canvas.gl,
-                    canvas: this._canvas.canvas
-                });
+                pickBuf = new XEO.renderer.webgl.RenderBuffer(this.canvas, this.gl);
                 this.pickBuf = pickBuf;
             }
 
@@ -939,7 +850,7 @@
             pickBuf.bind();
             pickBuf.clear();
 
-            var canvas = this._canvas.canvas;
+
             var pickBufX;
             var pickBufY;
             var origin;
@@ -959,8 +870,8 @@
                 pickViewMatrix = math.lookAtMat4v(origin, look, up, tempMat4a);
                 pickProjMatrix = pickFrustumMatrix;
 
-                pickBufX = canvas.clientWidth * 0.5;
-                pickBufY = canvas.clientHeight * 0.5;
+                pickBufX = this.canvas.clientWidth * 0.5;
+                pickBufY = this.canvas.clientHeight * 0.5;
 
             } else {
 
@@ -969,8 +880,8 @@
                     pickBufY = params.canvasPos[1];
 
                 } else {
-                    pickBufX = canvas.clientWidth * 0.5;
-                    pickBufY = canvas.clientHeight * 0.5;
+                    pickBufX = this.canvas.clientWidth * 0.5;
+                    pickBufY = this.canvas.clientHeight * 0.5;
                 }
             }
 
@@ -1013,7 +924,7 @@
                         clear: true
                     });
 
-                    gl.finish();
+                    this.gl.finish();
 
                     // Convert picked pixel color to primitive index
 
@@ -1047,10 +958,7 @@
     XEO.renderer.Renderer.prototype.readPixels = function (pixels, colors, len, opaqueOnly) {
 
         if (!this._readPixelBuf) {
-            this._readPixelBuf = new XEO.renderer.webgl.RenderBuffer({
-                gl: this._canvas.gl,
-                canvas: this._canvas.canvas
-            });
+            this._readPixelBuf = new XEO.renderer.webgl.RenderBuffer(this.canvas, this.gl);
         }
 
         this._readPixelBuf.bind();

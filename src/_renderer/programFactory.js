@@ -5,13 +5,13 @@
     /**
      *  Manages {@link XEO.renderer.ProgramState} instances.
      * @param stats Collects runtime statistics
-     * @param cfg Configs
+     * @param gl WebGL context
      */
-    XEO.renderer.ProgramFactory = function (stats, cfg) {
+    XEO.renderer.ProgramFactory = function (stats, gl) {
 
         this.stats = stats;
 
-        this._canvas = cfg.canvas;
+        this._gl = gl;
 
         this._programStates = {};
     };
@@ -33,7 +33,7 @@
 
             var source = XEO.renderer.ProgramSourceFactory.getSource(hash, states);
 
-            var program = new XEO.renderer.Program(this.stats, hash, source, this._canvas.gl);
+            var program = new XEO.renderer.Program(this.stats, hash, source, this._gl);
 
             programState = new XEO.renderer.ProgramState({
                 program: program,
@@ -74,9 +74,9 @@
     /**
      * Rebuild all programs in the pool after WebGL context was lost and restored.
      */
-    XEO.renderer.ProgramFactory.prototype.webglRestored = function () {
+    XEO.renderer.ProgramFactory.prototype.webglRestored = function (gl) {
 
-        var gl = this._canvas.gl;
+        this._gl = gl;
 
         for (var id in this._programStates) {
             if (this._programStates.hasOwnProperty(id)) {

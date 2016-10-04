@@ -34,15 +34,13 @@
 
             if (this._uPickColorObject) {
 
-                frameCtx.pickObjects[frameCtx.pickIndex++] = this.object;
+                frameCtx.pickIndex++;
 
                 var b = frameCtx.pickIndex >> 16 & 0xFF;
                 var g = frameCtx.pickIndex >> 8 & 0xFF;
                 var r = frameCtx.pickIndex & 0xFF;
 
                 this._uPickColorObject.setValue([r / 255, g / 255, b / 255, 1]);
-
-                //frameCtx.pickIndex++
             }
 
             if (state.indices) {

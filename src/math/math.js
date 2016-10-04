@@ -1881,7 +1881,7 @@
          */
         transformVec4: function (m, v, dest) {
             var v0 = v[0], v1 = v[1], v2 = v[2], v3 = v[3];
-            dest = dest || this.vec4();
+            dest = dest || math.vec4();
             dest[0] = m[0] * v0 + m[4] * v1 + m[8] * v2 + m[12] * v3;
             dest[1] = m[1] * v0 + m[5] * v1 + m[9] * v2 + m[13] * v3;
             dest[2] = m[2] * v0 + m[6] * v1 + m[10] * v2 + m[14] * v3;
@@ -2011,7 +2011,7 @@
          * @static
          */
         lerpVec3: function (t, t1, t2, p1, p2, dest) {
-            var result = dest || this.vec3();
+            var result = dest || math.vec3();
             var f = (t - t1) / (t2 - t1);
             result[0] = p1[0] + (f * (p2[0] - p1[0]));
             result[1] = p1[1] + (f * (p2[1] - p1[1]));
@@ -2025,8 +2025,8 @@
          * @static
          */
         getAABBDiag: function (aabb) {
-            this.subVec3(aabb.max, aabb.min, tempVec3c);
-            return Math.abs(this.lenVec3(tempVec3c));
+            math.subVec3(aabb.max, aabb.min, tempVec3c);
+            return Math.abs(math.lenVec3(tempVec3c));
         },
 
         /**
@@ -2037,7 +2037,7 @@
          */
         getAABBDiagPoint: function (aabb, p) {
 
-            var diagVec = this.subVec3(aabb.max, aabb.min, tempVec3c);
+            var diagVec = math.subVec3(aabb.max, aabb.min, tempVec3c);
 
             var xneg = p[0] - aabb.min[0];
             var xpos = aabb.max[0] - p[0];
@@ -2050,7 +2050,7 @@
             diagVec[1] += (yneg > ypos) ? yneg : ypos;
             diagVec[2] += (zneg > zpos) ? zneg : zpos;
 
-            return Math.abs(this.lenVec3(diagVec));
+            return Math.abs(math.lenVec3(diagVec));
         },
 
         /**
@@ -2059,7 +2059,7 @@
          * @static
          */
         getAABBCenter: function (aabb, dest) {
-            var r = dest || this.vec3();
+            var r = dest || math.vec3();
 
             r[0] = (aabb.max[0] + aabb.min[0] ) * 0.5;
             r[1] = (aabb.max[1] + aabb.min[1] ) * 0.5;
@@ -2074,7 +2074,7 @@
          * @static
          */
         getAABB2Center: function (aabb, dest) {
-            var r = dest || this.vec2();
+            var r = dest || math.vec2();
 
             r[0] = (aabb.max[0] + aabb.min[0] ) / 2;
             r[1] = (aabb.max[1] + aabb.min[1] ) / 2;
