@@ -83,14 +83,24 @@ body {
 
 #infoTxt {
     position: relative;
-    top: 0px;
+    top: 0;
     padding: 5px;
-    padding-top: 20px;
     z-index: 100;
     font-size: 20px;
     text-align: center;
     color: #333;
-    border: 1px gray solid;
+    border: 1px white solid;
+}
+
+.infoTxtLight {
+    position: relative;
+    top: 0;
+    padding: 5px;
+    z-index: 100;
+    font-size: 14px;
+    text-align: left;
+    color: #FFFFFF;
+    border: 1px white solid;
 }
 
 #dat-gui-container {
