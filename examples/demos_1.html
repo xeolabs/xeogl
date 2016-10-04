@@ -8,8 +8,6 @@
     <script src="../build/xeoengine.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="js/debug/debug.js"></script>
-
 <body>
 
 <script>
@@ -243,52 +241,9 @@
 
             });
 
-    // Whenever mouse moves, attempt to pick a triangle on a Entity,
-    // then show the cartesian coordinates at the picked position within
-    // the triangle, along with the interpolated normal vector and UV coordinates
-    // at the picked position.
-
-
-    var scene = solidTorus.scene;
-
-    scene.input.on("mousemove", function (coords) {
-
-        lastCoords = coords;
-    });
-
-    function pick(coords) {
-
-        XEO.debug.hide("cone");
-
-        // Pick a primitive on some Entity
-
-        var hit = scene.pick({
-            canvasPos: coords,
-            pickSurface: true
-        });
-
-        if (hit) {
-
-            // Entity picked
-
-            if (hit.worldPos && hit.normal) {
-
-                XEO.debug
-                        .id("cone")
-                        .pos(hit.worldPos)
-                        .dir([-hit.normal[0], -hit.normal[1], -hit.normal[2]])
-                        .radius(0.3)
-                        .cone();
-            }
-
-
-        } else {
-
-            // No Triangle picked
-        }
-    }
-
     new XEO.MouseRotateCamera();
+
+
 
 </script>
 </body>
