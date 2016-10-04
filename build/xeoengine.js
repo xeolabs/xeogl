@@ -9666,11 +9666,26 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             }
 
             if (state.specularFresnel) {
+
+                if (this._uSpecularFresnelEdgeBias) {
                     this._uSpecularFresnelEdgeBias.setValue(state.specularFresnel.edgeBias);
+                }
+
+                if (this._uSpecularFresnelCenterBias) {
                     this._uSpecularFresnelCenterBias.setValue(state.specularFresnel.centerBias);
+                }
+
+                if (this._uSpecularFresnelEdgeColor) {
                     this._uSpecularFresnelEdgeColor.setValue(state.specularFresnel.edgeColor);
+                }
+
+                if (this._uSpecularFresnelCenterColor) {
                     this._uSpecularFresnelCenterColor.setValue(state.specularFresnel.centerColor);
+                }
+
+                if (this._uSpecularFresnelPower) {
                     this._uSpecularFresnelPower.setValue(state.specularFresnel.power);
+            }
             }
 
             if (state.opacityFresnel) {
