@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-09-30
+ * Built on 2016-10-04
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -2897,7 +2897,7 @@ var Canvas2Image = (function () {
          */
         transformVec4: function (m, v, dest) {
             var v0 = v[0], v1 = v[1], v2 = v[2], v3 = v[3];
-            dest = dest || this.vec4();
+            dest = dest || math.vec4();
             dest[0] = m[0] * v0 + m[4] * v1 + m[8] * v2 + m[12] * v3;
             dest[1] = m[1] * v0 + m[5] * v1 + m[9] * v2 + m[13] * v3;
             dest[2] = m[2] * v0 + m[6] * v1 + m[10] * v2 + m[14] * v3;
@@ -3027,7 +3027,7 @@ var Canvas2Image = (function () {
          * @static
          */
         lerpVec3: function (t, t1, t2, p1, p2, dest) {
-            var result = dest || this.vec3();
+            var result = dest || math.vec3();
             var f = (t - t1) / (t2 - t1);
             result[0] = p1[0] + (f * (p2[0] - p1[0]));
             result[1] = p1[1] + (f * (p2[1] - p1[1]));
@@ -3041,8 +3041,8 @@ var Canvas2Image = (function () {
          * @static
          */
         getAABBDiag: function (aabb) {
-            this.subVec3(aabb.max, aabb.min, tempVec3c);
-            return Math.abs(this.lenVec3(tempVec3c));
+            math.subVec3(aabb.max, aabb.min, tempVec3c);
+            return Math.abs(math.lenVec3(tempVec3c));
         },
 
         /**
@@ -3053,7 +3053,7 @@ var Canvas2Image = (function () {
          */
         getAABBDiagPoint: function (aabb, p) {
 
-            var diagVec = this.subVec3(aabb.max, aabb.min, tempVec3c);
+            var diagVec = math.subVec3(aabb.max, aabb.min, tempVec3c);
 
             var xneg = p[0] - aabb.min[0];
             var xpos = aabb.max[0] - p[0];
@@ -3066,7 +3066,7 @@ var Canvas2Image = (function () {
             diagVec[1] += (yneg > ypos) ? yneg : ypos;
             diagVec[2] += (zneg > zpos) ? zneg : zpos;
 
-            return Math.abs(this.lenVec3(diagVec));
+            return Math.abs(math.lenVec3(diagVec));
         },
 
         /**
@@ -3075,7 +3075,7 @@ var Canvas2Image = (function () {
          * @static
          */
         getAABBCenter: function (aabb, dest) {
-            var r = dest || this.vec3();
+            var r = dest || math.vec3();
 
             r[0] = (aabb.max[0] + aabb.min[0] ) * 0.5;
             r[1] = (aabb.max[1] + aabb.min[1] ) * 0.5;
@@ -3090,7 +3090,7 @@ var Canvas2Image = (function () {
          * @static
          */
         getAABB2Center: function (aabb, dest) {
-            var r = dest || this.vec2();
+            var r = dest || math.vec2();
 
             r[0] = (aabb.max[0] + aabb.min[0] ) / 2;
             r[1] = (aabb.max[1] + aabb.min[1] ) / 2;
@@ -4485,95 +4485,26 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
     XEO.renderer = XEO.renderer || {};
 
     /**
-     *  Renderer compiled from a {@link SceneJS.Scene}, providing methods to render and pick.
      *
-     * <p>A Renderer is a container of {@link XEO.renderer.Object}s which are created (or updated) by a depth-first
-     * <b>compilation traversal</b> of a {@link SceneJS.Scene}.</b>
-     *
-     * <h2>Rendering Pipeline</h2>
-     *
-     * <p>Conceptually, a Renderer implements a pipeline with the following stages:</p>
-     *
-     * <ol>
-     * <li>Create or update {@link XEO.renderer.Object}s during scene compilation</li>
-     * <li>Organise the {@link XEO.renderer.Object} into an <b>object list</b></li>
-     * <li>Determine the GL state sort order for the object list</li>
-     * <li>State sort the object list</li>
-     * <li>Create a <b>draw list</b> containing {@link XEO.renderer.Chunk}s belonging to the {@link XEO.renderer.Object}s in the object list</li>
-     * <li>Render the draw list to draw the image</li>
-     * </ol>
-     *
-     * <p>An update to the scene causes the pipeline to be re-executed from one of these stages, and SceneJS is designed
-     * so that the pipeline is always re-executed from the latest stage possible to avoid redoing work.</p>
-     *
-     * <p>For example:</p>
-     *
-     * <ul>
-     * <li>when an object is created or updated, we need to (re)do stages 2, 3, 4, 5 and 6</li>
-     * <li>when an object is made invisible, we need to redo stages 5 and 6</li>
-     * <li>when an object is assigned to a different scene render layer (works like a render bin), we need to redo
-     *   stages 3, 4, 5, and 6</li>
-     *<li>when the colour of an object changes, or maybe when the viewpoint changes, we simplt redo stage 6</li>
-     * </ul>
-     *
-     * <h2>Object Creation</h2>
-     * <p>The object soup (stage 1) is constructed by a depth-first traversal of the scene graph, which we think of as
-     * "compiling" the scene graph into the Renderer. As traversal visits each scene component, the component's state core is
-     * set on the Renderer (such as {@link #flags}, {@link #layer}, {@link #renderer} etc), which we think of as the
-     * cores that are active at that instant during compilation. Each of the scene's leaf components is always
-     * a {@link SceneJS.Geometry}, and when traversal visits one of those it calls {@link #buildObject} to create an
-     * object in the soup. For each of the currently active cores, the object is given a {@link XEO.renderer.Chunk}
-     * containing the WebGL calls for rendering it.</p>
-     *
-     * <p>The object also gets a shader (implemented by {@link XEO.renderer.Program}), taylored to render those state cores.</p>
-     *
-     * <p>Limited re-compilation may also be done on portions of a scene that have been added or sufficiently modified. When
-     * traversal visits a {@link SceneJS.Geometry} for which an object already exists in the display, {@link #buildObject}
-     * may update the {@link XEO.renderer.Chunk}s on the object as required for any changes in the core soup since the
-     * last time the object was built. If differences among the cores require it, then {@link #buildObject} may also replace
-     * the object's {@link XEO.renderer.Program} in order to render the new core soup configuration.</p>
-     *
-     * <p>So in summary, to each {@link XEO.renderer.Object} it builds, {@link #buildObject} creates a list of
-     * {@link XEO.renderer.Chunk}s to render the set of component state cores that are currently set on the {@link XEO.Renderer}.
-     * When {@link #buildObject} is re-building an existing object, it may replace one or more {@link XEO.renderer.Chunk}s
-     * for state cores that have changed from the last time the object was built or re-built.</p>
-
-     * <h2>Object Destruction</h2>
-     * <p>Destruction of a scene graph branch simply involves a call to {@link #removeObject} for each {@link SceneJS.Geometry}
-     * in the branch.</p>
-     *
-     * <h2>Draw List</h2>
-     * <p>The draw list is actually comprised of two lists of state chunks: a "pick" list to render a pick buffer
-     * for colour-indexed GPU picking, along with a "draw" list for normal image rendering. The chunks in these lists
-     * are held in the state-sorted order of their objects in #_objectList, with runs of duplicate states removed.</p>
-     *
-     * <p>After a scene update, we set a flag on the display to indicate the stage we will need to redo from. The pipeline is
-     * then lazy-redone on the next call to #render or #pick.</p>
      */
-    XEO.renderer.Renderer = function (stats, cfg) {
+    XEO.renderer.Renderer = function (stats, canvas, gl, options) {
 
-        // Collects runtime statistics
+        options = options || {};
+
         this.stats = stats || {};
 
-        // Renderer is bound to the lifetime of an HTML5 canvas
-        this._canvas = cfg.canvas;
+        this.gl = gl;
+        this.canvas = canvas;
 
-        // Factory which creates and recycles XEO.renderer.Program instances
-        this._programFactory = new XEO.renderer.ProgramFactory(this.stats, {
-            canvas: cfg.canvas
-        });
-
-        // Factory which creates and recycles XEO.renderer.Object instances
+        this._programFactory = new XEO.renderer.ProgramFactory(this.stats, gl);
         this._objectFactory = new XEO.renderer.ObjectFactory();
-
-        // Factory which creates and recycles XEO.renderer.Chunk instances
         this._chunkFactory = new XEO.renderer.ChunkFactory();
 
         /**
          * Indicates if the canvas is transparent
          * @type {boolean}
          */
-        this.transparent = cfg.transparent === true;
+        this.transparent = options.transparent === true;
 
         /**
          * Optional callback to fire when renderer wants to
@@ -4603,23 +4534,25 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          */
         this.unbindOutputFramebuffer = null;
 
-        // The objects in the render
+        // Objects mapped to their IDs
         this.objects = {};
 
-        // Ambient color
+        // The current ambient color, if available
         this._ambient = null;
 
+        // Objects in a list, ordered by state
         this._objectList = [];
         this._objectListLen = 0;
 
+        // List of objects that were rendered in the last picking pass,
+        // for indexing when using color-index picking
         this._objectPickList = [];
         this._objectPickListLen = 0;
 
         // The frame context holds state shared across a single render of the
         // draw list, along with any results of the render, such as pick hits
         this._frameCtx = {
-            pickObjects: [], // Pick names of objects hit during pick render
-            canvas: this._canvas,
+            canvas: this.canvas,
             renderTarget: null,
             renderBuf: null,
             depthbufEnabled: null,
@@ -4628,7 +4561,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             blendEnabled: false,
             backfaces: true,
             frontface: true, // true = "ccw" else "cw"
-            pickIndex: 0, // Indexes this._pickObjects
             textureUnit: 0,
             transparent: false, // True while rendering transparency bin
             ambientColor: null,
@@ -4637,7 +4569,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             bindTexture: 0,
             bindArray: null,
             pass: null,
-            bindOutputFramebuffer: null
+            bindOutputFramebuffer: null,
+            pickIndex: 0
         };
 
         //----------------- Render states --------------------------------------
@@ -4769,13 +4702,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         this.clips = null;
 
         /**
-         Morph targets render state.
-         @property morphTargets
-         @type {renderer.MorphTargets}
-         */
-        this.morphTargets = null;
-
-        /**
          Custom shader render state.
          @property shader
          @type {renderer.Shader}
@@ -4803,44 +4729,25 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          */
         this.viewport = null;
 
-
         //----------------- Renderer dirty flags -------------------------------
 
         /**
-         * Flags the object list as needing to be rebuilt from renderer objects
-         * on the next call to {@link #render} or {@link #pick}. Setting this
-         * will cause the rendering pipeline to be executed from stage #2
-         * (see class comment), causing object list rebuild, state order
-         * determination, state sort, draw list construction and image render.
-         * @type Boolean
+         * Flags the object list as needing to be rebuilt from the object map.
          */
         this.objectListDirty = true;
 
         /**
-         * Flags the object list as needing state orders to be (re)computed on the
-         * next call to {@link #render} or {@link #pick}. Setting this will cause
-         * the rendering pipeline to be executed from stage #3 (see class comment),
-         * causing state order determination, state sort, draw list construction
-         * and image render.
-         * @type Boolean
+         * Flags the object list as needing state orders to be recomputed.
          */
         this.stateOrderDirty = true;
 
         /**
-         * Flags the object list as needing to be state-sorted on the next call
-         * to {@link #render} or {@link #pick}.Setting this will cause the
-         * rendering pipeline to be executed from stage #4 (see class comment),
-         * causing state sort, draw list construction and image render.
-         * @type Boolean
+         * Flags the object list as needing to be state-sorted.
          */
         this.stateSortDirty = true;
 
         /**
-         * Flags the image as needing to be redrawn from the draw list on the
-         * next call to {@link #render} or {@link #pick}. Setting this will
-         * cause the rendering pipeline to be executed from stage #6
-         * (see class comment), causing the image render.
-         * @type Boolean
+         * Flags the image as needing to be redrawn from the object list.
          */
         this.imageDirty = true;
     };
@@ -4848,15 +4755,15 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
     /**
      * Reallocates WebGL resources for objects within this renderer.
      */
-    XEO.renderer.Renderer.prototype.webglRestored = function () {
+    XEO.renderer.Renderer.prototype.webglRestored = function (gl) {
+
+        this.gl = gl;
 
         // Re-allocate programs
-        this._programFactory.webglRestored();
+        this._programFactory.webglRestored(gl);
 
         // Re-bind chunks to the programs
         this._chunkFactory.webglRestored();
-
-        var gl = this._canvas.gl;
 
         // Rebuild pick buffer
 
@@ -4923,6 +4830,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
         ]).join(";");
 
+        var newProgram = false;
+
         if (hash !== object.hash) {
 
             // Get new program for object
@@ -4933,20 +4842,22 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             object.program = this._programFactory.get(hash, this);
             object.hash = hash;
-        }
 
-        // Handle shader error
+            newProgram = true;
 
-        var programState = object.program;
-        if (programState) {
-            var program = programState.program;
-            if (!program.allocated || !program.compiled || !program.validated || !program.linked) {
-                if (this.objects[objectId]) {
-                    this.removeObject(objectId); // Don't keep faulty objects in the renderer
-                }
-                return {
-                    error: true,
-                    errorLog: program.errorLog
+            // Handle shader error
+
+            var programState = object.program;
+            if (programState) {
+                var program = programState.program;
+                if (!program.allocated || !program.compiled || !program.validated || !program.linked) {
+                    if (this.objects[objectId]) {
+                        this.removeObject(objectId); // Don't keep faulty objects in the renderer
+                    }
+                    return {
+                        error: true,
+                        errorLog: program.errorLog
+                    }
                 }
             }
         }
@@ -5160,7 +5071,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
     XEO.renderer.Renderer.prototype._renderObjectList = function (params) {
 
-        var gl = this._canvas.gl;
+        var gl = this.gl;
 
         // The extensions needs to be re-queried in case the context was lost and has been recreated.
         if (XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {
@@ -5178,6 +5089,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         }
 
         var frameCtx = this._frameCtx;
+
         frameCtx.renderTarget = null;
         frameCtx.renderBuf = null;
         frameCtx.depthbufEnabled = null;
@@ -5186,7 +5098,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         frameCtx.blendEnabled = false;
         frameCtx.backfaces = true;
         frameCtx.frontface = true; // true == "ccw" else "cw"
-        frameCtx.pickIndex = 0; // Indexes this._pickObjects
         frameCtx.textureUnit = 0;
         frameCtx.transparent = false; // True while rendering transparency bin
         frameCtx.ambientColor = ambientColor;
@@ -5198,6 +5109,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         frameCtx.bindOutputFramebuffer = this.bindOutputFramebuffer;
         frameCtx.pickViewMatrix = params.pickViewMatrix;
         frameCtx.pickProjMatrix = params.pickProjMatrix;
+        frameCtx.pickIndex = 0;
 
         // The extensions needs to be re-queried in case the context was lost and has been recreated.
         if (XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {
@@ -5217,9 +5129,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             gl.clearColor(ambientColor[0], ambientColor[1], ambientColor[2], 1.0);
         }
 
-        if (params.clear) {
-            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        }
 
         gl.enable(gl.DEPTH_TEST);
         gl.frontFace(gl.CCW);
@@ -5241,6 +5150,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         if (params.pickObject) {
 
             // Pick an object
+
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
             this._objectPickListLen = 0;
 
@@ -5290,96 +5201,100 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 }
             }
 
+        } else if (params.pickSurface) {
+
+            // Pick a triangle on an object
+
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+            if (params.object) {
+
+                chunks = params.object.chunks;
+
+                for (i = 0, len = chunks.length; i < len; i++) {
+                    chunk = chunks[i];
+                    if (chunk.pickPrimitive) {
+                        chunk.pickPrimitive(frameCtx);
+                    }
+                }
+            }
+
         } else {
 
-            if (params.pickSurface) {
+            // Render all objects
 
-                // Pick a triangle on an object
+            var startTime = (new Date()).getTime();
 
-                if (params.object) {
+            if (this.bindOutputFramebuffer) {
+                this.bindOutputFramebuffer(params.pass);
+            }
 
-                    chunks = params.object.chunks;
+            if (params.clear) {
+                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+            }
 
-                    for (i = 0, len = chunks.length; i < len; i++) {
-                        chunk = chunks[i];
-                        if (chunk.pickPrimitive) {
-                            chunk.pickPrimitive(frameCtx);
+            for (i = 0, len = this._objectListLen; i < len; i++) {
+
+                object = this._objectList[i];
+
+                if (!object.compiled) {
+                    continue;
+                }
+
+                if (object.cull.culled === true) {
+                    continue;
+                }
+
+                if (object.visibility.visible === false) {
+                    continue;
+                }
+
+                chunks = object.chunks;
+
+                for (j = 0, lenj = chunks.length; j < lenj; j++) {
+
+                    chunk = chunks[j];
+
+                    if (chunk) {
+
+                        // As we apply the state chunk lists we track the ID of most types
+                        // of chunk in order to cull redundant re-applications of runs
+                        // of the same chunk - except for those chunks with a 'unique' flag,
+                        // because we don't want to collapse runs of draw chunks because
+                        // they contain the GL drawElements calls which render the objects.
+
+                        if (chunk.draw && (chunk.unique || lastChunkId[j] !== chunk.id)) {
+                            chunk.draw(frameCtx);
+                            lastChunkId[j] = chunk.id;
                         }
                     }
                 }
+            }
 
-            } else {
+            var endTime = Date.now();
 
-                // Render all objects
+            var frameStats = this.stats.frame;
 
-                var startTime = (new Date()).getTime();
+            frameStats.renderTime = (endTime - startTime) / 1000.0;
+            frameStats.drawElements = frameCtx.drawElements;
+            frameStats.useProgram = frameCtx.useProgram;
+            frameStats.bindTexture = frameCtx.bindTexture;
+            frameStats.bindArray = frameCtx.bindArray;
 
-                if (this.bindOutputFramebuffer) {
-                    this.bindOutputFramebuffer(params.pass);
-                }
+            if (frameCtx.renderBuf) {
+                frameCtx.renderBuf.unbind();
+            }
 
-                for (i = 0, len = this._objectListLen; i < len; i++) {
+            var numTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
 
-                    object = this._objectList[i];
+            for (var ii = 0; ii < numTextureUnits; ++ii) {
+                gl.activeTexture(gl.TEXTURE0 + ii);
+                gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+                gl.bindTexture(gl.TEXTURE_2D, null);
+            }
 
-                    if (!object.compiled) {
-                        continue;
-                    }
-
-                    if (object.cull.culled === true) {
-                        continue;
-                    }
-
-                    if (object.visibility.visible === false) {
-                        continue;
-                    }
-
-                    chunks = object.chunks;
-
-                    for (j = 0, lenj = chunks.length; j < lenj; j++) {
-
-                        chunk = chunks[j];
-
-                        if (chunk) {
-
-                            // As we apply the state chunk lists we track the ID of most types
-                            // of chunk in order to cull redundant re-applications of runs
-                            // of the same chunk - except for those chunks with a 'unique' flag,
-                            // because we don't want to collapse runs of draw chunks because
-                            // they contain the GL drawElements calls which render the objects.
-
-                            if (chunk.draw && (chunk.unique || lastChunkId[j] !== chunk.id)) {
-                                chunk.draw(frameCtx);
-                                lastChunkId[j] = chunk.id;
-                            }
-                        }
-                    }
-                }
-
-                var endTime = Date.now();
-
-                var frameStats = this.stats.frame;
-                frameStats.renderTime = (endTime - startTime) / 1000.0;
-                frameStats.drawElements = frameCtx.drawElements;
-                frameStats.useProgram = frameCtx.useProgram;
-                frameStats.bindTexture = frameCtx.bindTexture;
-                frameStats.bindArray = frameCtx.bindArray;
-
-                if (frameCtx.renderBuf) {
-                    frameCtx.renderBuf.unbind();
-                }
-
-                var numTextureUnits = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
-
-                for (var ii = 0; ii < numTextureUnits; ++ii) {
-                    gl.activeTexture(gl.TEXTURE0 + ii);
-                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-                    gl.bindTexture(gl.TEXTURE_2D, null);
-                }
-
-                if (this.unbindOutputFramebuffer) {
-                    this.unbindOutputFramebuffer(params.pass);
-                }
+            if (this.unbindOutputFramebuffer) {
+                this.unbindOutputFramebuffer(params.pass);
             }
         }
     };
@@ -5401,15 +5316,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
         return function (params) {
 
-            var gl = this._canvas.gl;
             var hit = null;
             var pickBuf = this.pickBuf;
 
             if (!pickBuf) {  // Lazy-create the pick buffer
-                pickBuf = new XEO.renderer.webgl.RenderBuffer({
-                    gl: this._canvas.gl,
-                    canvas: this._canvas.canvas
-                });
+                pickBuf = new XEO.renderer.webgl.RenderBuffer(this.canvas, this.gl);
                 this.pickBuf = pickBuf;
             }
 
@@ -5419,7 +5330,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             pickBuf.bind();
             pickBuf.clear();
 
-            var canvas = this._canvas.canvas;
+
             var pickBufX;
             var pickBufY;
             var origin;
@@ -5439,8 +5350,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 pickViewMatrix = math.lookAtMat4v(origin, look, up, tempMat4a);
                 pickProjMatrix = pickFrustumMatrix;
 
-                pickBufX = canvas.clientWidth * 0.5;
-                pickBufY = canvas.clientHeight * 0.5;
+                pickBufX = this.canvas.clientWidth * 0.5;
+                pickBufY = this.canvas.clientHeight * 0.5;
 
             } else {
 
@@ -5449,8 +5360,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     pickBufY = params.canvasPos[1];
 
                 } else {
-                    pickBufX = canvas.clientWidth * 0.5;
-                    pickBufY = canvas.clientHeight * 0.5;
+                    pickBufX = this.canvas.clientWidth * 0.5;
+                    pickBufY = this.canvas.clientHeight * 0.5;
                 }
             }
 
@@ -5493,7 +5404,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         clear: true
                     });
 
-                    gl.finish();
+                    this.gl.finish();
 
                     // Convert picked pixel color to primitive index
 
@@ -5527,10 +5438,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
     XEO.renderer.Renderer.prototype.readPixels = function (pixels, colors, len, opaqueOnly) {
 
         if (!this._readPixelBuf) {
-            this._readPixelBuf = new XEO.renderer.webgl.RenderBuffer({
-                gl: this._canvas.gl,
-                canvas: this._canvas.canvas
-            });
+            this._readPixelBuf = new XEO.renderer.webgl.RenderBuffer(this.canvas, this.gl);
         }
 
         this._readPixelBuf.bind();
@@ -6046,15 +5954,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         return this.attributes[name];
     };
 
-    //XEO.renderer.webgl.Program.prototype.bindFloatArrayBuffer = function (name, buffer) {
-    //
-    //    if (!this.allocated) {
-    //        return;
-    //    }
-    //
-    //    return this.attributes[name];
-    //};
-
     XEO.renderer.webgl.Program.prototype.bindTexture = function (name, texture, unit) {
 
         if (!this.allocated) {
@@ -6094,7 +5993,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
     "use strict";
 
-    XEO.renderer.webgl.RenderBuffer = function (cfg) {
+    XEO.renderer.webgl.RenderBuffer = function (canvas, gl, options) {
+
+        options = options || {};
 
         /**
          * True as soon as this buffer is allocated and ready to go
@@ -6104,12 +6005,12 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         /**
          * The HTMLCanvasElement
          */
-        this.canvas = cfg.canvas;
+        this.canvas = canvas;
 
         /**
          * WebGL context
          */
-        this.gl = cfg.gl;
+        this.gl = gl;
 
         /**
          * Buffer resources, set up in #_touch
@@ -6124,7 +6025,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         /**
          * Optional explicit buffer size - when omitted, buffer defaults to canvas size
          */
-        this.size = cfg.size;
+        this.size = options.size;
     };
 
     /**
@@ -7536,13 +7437,13 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
     /**
      *  Manages {@link XEO.renderer.ProgramState} instances.
      * @param stats Collects runtime statistics
-     * @param cfg Configs
+     * @param gl WebGL context
      */
-    XEO.renderer.ProgramFactory = function (stats, cfg) {
+    XEO.renderer.ProgramFactory = function (stats, gl) {
 
         this.stats = stats;
 
-        this._canvas = cfg.canvas;
+        this._gl = gl;
 
         this._programStates = {};
     };
@@ -7564,7 +7465,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             var source = XEO.renderer.ProgramSourceFactory.getSource(hash, states);
 
-            var program = new XEO.renderer.Program(this.stats, hash, source, this._canvas.gl);
+            var program = new XEO.renderer.Program(this.stats, hash, source, this._gl);
 
             programState = new XEO.renderer.ProgramState({
                 program: program,
@@ -7586,28 +7487,28 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
      */
     XEO.renderer.ProgramFactory.prototype.put = function (programState) {
 
-        //if (--programState.useCount <= 0) {
-        //
-        //    var program = programState.program;
-        //
-        //    program.draw.destroy();
-        //    program.pickObject.destroy();
-        //    program.pickPrimitive.destroy();
-        //
-        //    XEO.renderer.ProgramSourceFactory.putSource(program.hash);
-        //
-        //    delete this._programStates[program.hash];
-        //
-        //    this.stats.memory.programs--;
-        //}
+        if (--programState.useCount <= 0) {
+
+            var program = programState.program;
+
+            program.draw.destroy();
+            program.pickObject.destroy();
+            program.pickPrimitive.destroy();
+
+            XEO.renderer.ProgramSourceFactory.putSource(program.hash);
+
+            delete this._programStates[program.hash];
+
+            this.stats.memory.programs--;
+        }
     };
 
     /**
      * Rebuild all programs in the pool after WebGL context was lost and restored.
      */
-    XEO.renderer.ProgramFactory.prototype.webglRestored = function () {
+    XEO.renderer.ProgramFactory.prototype.webglRestored = function (gl) {
 
-        var gl = this._canvas.gl;
+        this._gl = gl;
 
         for (var id in this._programStates) {
             if (this._programStates.hasOwnProperty(id)) {
@@ -7710,12 +7611,16 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         var normals; // True when rendering state contains normals
         var normalMapping; // True when rendering state contains tangents
         var reflection; // True when rendering state contains reflections
-
         var diffuseFresnel;
         var specularFresnel;
         var opacityFresnel;
         var reflectivityFresnel;
         var emissiveFresnel;
+
+        var vertexPickObjectSrc;
+        var fragmentPickObjectSrc;
+        var vertexPickPrimSrc;
+        var fragmentPickPrimSrc;
 
         /**
          * Get source code for a program to render the given states.
@@ -7736,7 +7641,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             normals = hasNormals();
             normalMapping = hasNormalMap();
             reflection = hasReflection();
-
             diffuseFresnel = states.material.diffuseFresnel;
             specularFresnel = states.material.specularFresnel;
             opacityFresnel = states.material.opacityFresnel;
@@ -7807,6 +7711,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         // composed from state, in the same manner as the draw shaders.
 
         function vertexPickObject() {
+            if (vertexPickObjectSrc) {
+                return vertexPickObjectSrc;
+            }
             begin();
             add("// Object picking vertex shader");
             add("attribute vec3 xeo_aPosition;");
@@ -7822,21 +7729,27 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             add("   xeo_vViewPosition = xeo_uViewMatrix * xeo_vWorldPosition;");
             add("   gl_Position = xeo_uProjMatrix * xeo_vViewPosition;");
             add("}");
-            return end();
+            return vertexPickObjectSrc = end();
         }
 
         function fragmentPickObject() {
+            if (fragmentPickObjectSrc) {
+                return fragmentPickObjectSrc;
+            }
             begin();
             add("// Object picking fragment shader");
-            add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
+            add("precision " + getFSFloatPrecision(states.gl) + " float;");
             add("uniform vec4 xeo_uPickColor;");
             add("void main(void) {");
             add("   gl_FragColor = xeo_uPickColor; ");
             add("}");
-            return end();
+            return fragmentPickObjectSrc = end();
         }
 
         function vertexPickPrimitive() {
+            if (vertexPickPrimSrc) {
+                return vertexPickPrimSrc;
+            }
             begin();
             add("// Triangle picking vertex shader");
             add("attribute vec3 xeo_aPosition;");
@@ -7855,18 +7768,21 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             add("   xeo_vColor = xeo_aColor;");
             add("   gl_Position = xeo_uProjMatrix * viewPosition;");
             add("}");
-            return end();
+            return vertexPickPrimSrc = end();
         }
 
         function fragmentPickPrimitive() {
+            if (fragmentPickPrimSrc) {
+                return fragmentPickPrimSrc;
+            }
             begin();
             add("// Triangle picking fragment shader");
-            add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
+            add("precision " + getFSFloatPrecision(states.gl) + " float;");
             add("varying vec4 xeo_vColor;");
             add("void main(void) {");
             add("   gl_FragColor = xeo_vColor;");
             add("}");
-            return end();
+            return fragmentPickPrimSrc = end();
         }
 
         function vertexDraw() {
@@ -8108,7 +8024,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                             if (normalMapping) {
 
                                 // Transform light vector to Tangent space
-                               add("   tmpVec3 *= TBN;");
+                                add("   tmpVec3 *= TBN;");
                             }
 
                         } else {
@@ -8181,7 +8097,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             add("// Drawing fragment shader");
 
-            add("precision " + getFSFloatPrecision(states._canvas.gl) + " float;");
+            add("precision " + getFSFloatPrecision(states.gl) + " float;");
             add();
 
             if (normals) {
@@ -8196,7 +8112,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             }
 
             if (normalMapping) {
-            //    add("varying vec3 xeo_vTangent;");
+                //    add("varying vec3 xeo_vTangent;");
             }
 
             add("uniform vec3 xeo_uEmissive;");
@@ -8819,7 +8735,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
     /**
      * Restores the chunks in this factory after a WebGL context recovery.
      */
-    XEO.renderer.ChunkFactory.prototype.webglRestored = function () {
+    XEO.renderer.ChunkFactory.prototype.webglRestored = function (gl) {
 
         var types = this.types;
         var chunkType;
@@ -9111,15 +9027,13 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             if (this._uPickColorObject) {
 
-                frameCtx.pickObjects[frameCtx.pickIndex++] = this.object;
+                frameCtx.pickIndex++;
 
                 var b = frameCtx.pickIndex >> 16 & 0xFF;
                 var g = frameCtx.pickIndex >> 8 & 0xFF;
                 var r = frameCtx.pickIndex & 0xFF;
 
                 this._uPickColorObject.setValue([r / 255, g / 255, b / 255, 1]);
-
-                //frameCtx.pickIndex++
             }
 
             if (state.indices) {
@@ -9752,26 +9666,11 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             }
 
             if (state.specularFresnel) {
-
-                if (this._uSpecularFresnelEdgeBias) {
                     this._uSpecularFresnelEdgeBias.setValue(state.specularFresnel.edgeBias);
-                }
-
-                if (this._uSpecularFresnelCenterBias) {
                     this._uSpecularFresnelCenterBias.setValue(state.specularFresnel.centerBias);
-                }
-
-                if (this._uSpecularFresnelEdgeColor) {
                     this._uSpecularFresnelEdgeColor.setValue(state.specularFresnel.edgeColor);
-                }
-
-                if (this._uSpecularFresnelCenterColor) {
                     this._uSpecularFresnelCenterColor.setValue(state.specularFresnel.centerColor);
-                }
-
-                if (this._uSpecularFresnelPower) {
                     this._uSpecularFresnelPower.setValue(state.specularFresnel.power);
-                }
             }
 
             if (state.opacityFresnel) {
@@ -11490,8 +11389,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     alert("xeoEngine failed to find WebGL!");
                 });
 
-            this._renderer = new XEO.renderer.Renderer(XEO.stats, {
-                canvas: this.canvas,
+            this._renderer = new XEO.renderer.Renderer(XEO.stats, this.canvas.canvas, this.canvas.gl, {
                 transparent: cfg.transparent
             });
 
@@ -20859,7 +20757,7 @@ visibility.destroy();
  @param [cfg.tube=0.3] {Number} The tube radius of the TorusGeometry.
  @param [cfg.radialSegments=32] {Number} The number of radial segments that make up the TorusGeometry.
  @param [cfg.tubeSegments=24] {Number} The number of tubular segments that make up the TorusGeometry.
- @param [cfg.arc=Math.PI / 2.0] {Number} The length of the TorusGeometry's arc in degrees, where 360 is closed torus.
+ @param [cfg.arc=Math.PI / 2.0] {Number} The length of the TorusGeometry's arc in in radians, where Math.PI*2 is a closed torus.
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
  */
@@ -21195,7 +21093,7 @@ visibility.destroy();
             },
 
             /**
-             * The length of the TorusGeometry's arc in degrees, where 360 is closed torus.
+             * The length of the TorusGeometry's arc in radians, where Math.PI*2 is a closed torus.
              *
              * Fires a {{#crossLink "TorusGeometry/arc:event"}}{{/crossLink}} event on change.
              *
@@ -30429,7 +30327,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
  * @module XEO
  * @submodule entities
  */;/**
- A **Entity** is an object within a xeoEngine {{#crossLink "Scene"}}Scene{{/crossLink}}.
+ An **Entity** is an object within a xeoEngine {{#crossLink "Scene"}}Scene{{/crossLink}}.
 
  ## Overview
 

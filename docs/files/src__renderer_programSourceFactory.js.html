@@ -102,6 +102,7 @@
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Render.html">Render</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
@@ -208,12 +209,16 @@
         var normals; // True when rendering state contains normals
         var normalMapping; // True when rendering state contains tangents
         var reflection; // True when rendering state contains reflections
-
         var diffuseFresnel;
         var specularFresnel;
         var opacityFresnel;
         var reflectivityFresnel;
         var emissiveFresnel;
+
+        var vertexPickObjectSrc;
+        var fragmentPickObjectSrc;
+        var vertexPickPrimSrc;
+        var fragmentPickPrimSrc;
 
         /**
          * Get source code for a program to render the given states.
@@ -234,7 +239,6 @@
             normals = hasNormals();
             normalMapping = hasNormalMap();
             reflection = hasReflection();
-
             diffuseFresnel = states.material.diffuseFresnel;
             specularFresnel = states.material.specularFresnel;
             opacityFresnel = states.material.opacityFresnel;
@@ -305,6 +309,9 @@
         // composed from state, in the same manner as the draw shaders.
 
         function vertexPickObject() {
+            if (vertexPickObjectSrc) {
+                return vertexPickObjectSrc;
+            }
             begin();
             add(&quot;// Object picking vertex shader&quot;);
             add(&quot;attribute vec3 xeo_aPosition;&quot;);
@@ -320,21 +327,27 @@
             add(&quot;   xeo_vViewPosition = xeo_uViewMatrix * xeo_vWorldPosition;&quot;);
             add(&quot;   gl_Position = xeo_uProjMatrix * xeo_vViewPosition;&quot;);
             add(&quot;}&quot;);
-            return end();
+            return vertexPickObjectSrc = end();
         }
 
         function fragmentPickObject() {
+            if (fragmentPickObjectSrc) {
+                return fragmentPickObjectSrc;
+            }
             begin();
             add(&quot;// Object picking fragment shader&quot;);
-            add(&quot;precision &quot; + getFSFloatPrecision(states._canvas.gl) + &quot; float;&quot;);
+            add(&quot;precision &quot; + getFSFloatPrecision(states.gl) + &quot; float;&quot;);
             add(&quot;uniform vec4 xeo_uPickColor;&quot;);
             add(&quot;void main(void) {&quot;);
             add(&quot;   gl_FragColor = xeo_uPickColor; &quot;);
             add(&quot;}&quot;);
-            return end();
+            return fragmentPickObjectSrc = end();
         }
 
         function vertexPickPrimitive() {
+            if (vertexPickPrimSrc) {
+                return vertexPickPrimSrc;
+            }
             begin();
             add(&quot;// Triangle picking vertex shader&quot;);
             add(&quot;attribute vec3 xeo_aPosition;&quot;);
@@ -353,18 +366,21 @@
             add(&quot;   xeo_vColor = xeo_aColor;&quot;);
             add(&quot;   gl_Position = xeo_uProjMatrix * viewPosition;&quot;);
             add(&quot;}&quot;);
-            return end();
+            return vertexPickPrimSrc = end();
         }
 
         function fragmentPickPrimitive() {
+            if (fragmentPickPrimSrc) {
+                return fragmentPickPrimSrc;
+            }
             begin();
             add(&quot;// Triangle picking fragment shader&quot;);
-            add(&quot;precision &quot; + getFSFloatPrecision(states._canvas.gl) + &quot; float;&quot;);
+            add(&quot;precision &quot; + getFSFloatPrecision(states.gl) + &quot; float;&quot;);
             add(&quot;varying vec4 xeo_vColor;&quot;);
             add(&quot;void main(void) {&quot;);
             add(&quot;   gl_FragColor = xeo_vColor;&quot;);
             add(&quot;}&quot;);
-            return end();
+            return fragmentPickPrimSrc = end();
         }
 
         function vertexDraw() {
@@ -606,7 +622,7 @@
                             if (normalMapping) {
 
                                 // Transform light vector to Tangent space
-                               add(&quot;   tmpVec3 *= TBN;&quot;);
+                                add(&quot;   tmpVec3 *= TBN;&quot;);
                             }
 
                         } else {
@@ -679,7 +695,7 @@
 
             add(&quot;// Drawing fragment shader&quot;);
 
-            add(&quot;precision &quot; + getFSFloatPrecision(states._canvas.gl) + &quot; float;&quot;);
+            add(&quot;precision &quot; + getFSFloatPrecision(states.gl) + &quot; float;&quot;);
             add();
 
             if (normals) {
@@ -694,7 +710,7 @@
             }
 
             if (normalMapping) {
-            //    add(&quot;varying vec3 xeo_vTangent;&quot;);
+                //    add(&quot;varying vec3 xeo_vTangent;&quot;);
             }
 
             add(&quot;uniform vec3 xeo_uEmissive;&quot;);

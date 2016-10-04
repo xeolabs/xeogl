@@ -102,6 +102,7 @@
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Render.html">Render</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
@@ -197,13 +198,13 @@
     /**
      *  Manages {@link XEO.renderer.ProgramState} instances.
      * @param stats Collects runtime statistics
-     * @param cfg Configs
+     * @param gl WebGL context
      */
-    XEO.renderer.ProgramFactory = function (stats, cfg) {
+    XEO.renderer.ProgramFactory = function (stats, gl) {
 
         this.stats = stats;
 
-        this._canvas = cfg.canvas;
+        this._gl = gl;
 
         this._programStates = {};
     };
@@ -225,7 +226,7 @@
 
             var source = XEO.renderer.ProgramSourceFactory.getSource(hash, states);
 
-            var program = new XEO.renderer.Program(this.stats, hash, source, this._canvas.gl);
+            var program = new XEO.renderer.Program(this.stats, hash, source, this._gl);
 
             programState = new XEO.renderer.ProgramState({
                 program: program,
@@ -247,28 +248,28 @@
      */
     XEO.renderer.ProgramFactory.prototype.put = function (programState) {
 
-        //if (--programState.useCount &lt;= 0) {
-        //
-        //    var program = programState.program;
-        //
-        //    program.draw.destroy();
-        //    program.pickObject.destroy();
-        //    program.pickPrimitive.destroy();
-        //
-        //    XEO.renderer.ProgramSourceFactory.putSource(program.hash);
-        //
-        //    delete this._programStates[program.hash];
-        //
-        //    this.stats.memory.programs--;
-        //}
+        if (--programState.useCount &lt;= 0) {
+
+            var program = programState.program;
+
+            program.draw.destroy();
+            program.pickObject.destroy();
+            program.pickPrimitive.destroy();
+
+            XEO.renderer.ProgramSourceFactory.putSource(program.hash);
+
+            delete this._programStates[program.hash];
+
+            this.stats.memory.programs--;
+        }
     };
 
     /**
      * Rebuild all programs in the pool after WebGL context was lost and restored.
      */
-    XEO.renderer.ProgramFactory.prototype.webglRestored = function () {
+    XEO.renderer.ProgramFactory.prototype.webglRestored = function (gl) {
 
-        var gl = this._canvas.gl;
+        this._gl = gl;
 
         for (var id in this._programStates) {
             if (this._programStates.hasOwnProperty(id)) {

@@ -470,6 +470,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/culling/render.js": {
+            "name": "src/culling/render.js",
+            "modules": {},
+            "classes": {
+                "Render": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "src/culling/visibility.js": {
             "name": "src/culling/visibility.js",
             "modules": {},
@@ -1247,6 +1256,7 @@
                 "MouseRotateCamera": 1,
                 "MouseZoomCamera": 1,
                 "Cull": 1,
+                "Render": 1,
                 "Visibility": 1,
                 "Entity": 1,
                 "BoundaryGeometry": 1,
@@ -1483,6 +1493,7 @@
             "submodules": {},
             "classes": {
                 "Cull": 1,
+                "Render": 1,
                 "Visibility": 1
             },
             "fors": {},
@@ -3076,6 +3087,58 @@
             ],
             "extends": "Component"
         },
+        "Render": {
+            "name": "Render",
+            "shortname": "Render",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "XEO",
+            "namespace": "",
+            "file": "src/culling/render.js",
+            "line": 1,
+            "description": "A **Render** toggles the render of attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n<ul>\n<li>An {{#crossLink \"Entity\"}}{{/crossLink}} is rendering when its Render's {{#crossLink \"Render/rendering:property\"}}{{/crossLink}}\nproperty is true and {{#crossLink \"Cull\"}}Cull's{{/crossLink}} {{#crossLink \"Cull/culled:property\"}}{{/crossLink}} property is false.</li>\n<li>Render components are intended for users to control the render of {{#crossLink \"Entity\"}}Entities{{/crossLink}} via UIs.</li>\n<li>{{#crossLink \"Cull\"}}{{/crossLink}} components are intended for **render culling systems** to control the render of {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>A Render may be shared among multiple {{#crossLink \"Entity\"}}Entities{{/crossLink}} to toggle\ntheir render as a group.</li>\n</ul>\n\n<img src=\"../../../assets/images/Render.png\"></img>\n\n## Usage\n\nThis example creates a Render that toggles the render of\ntwo {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n````javascript\nvar render = new XEO.Render({\n   rendering: true\n});\n\n// Create two Entities whose render will be controlled by our Render\n\nvar entity1 = new XEO.Entity({\n   render: render\n});\n\nvar entity2 = new XEO.Entity({\n   render: render\n});\n\n// Subscribe to change on the Render's \"rendering\" property\nvar handle = render.on(\"rendering\", function(value) {\n   //...\n});\n\n// Hide our Entities by flipping the Render's \"rendering\" property,\n// which will also call our handler\nrender.rendering = false;\n\n// Unsubscribe from the Render again\nrender.off(handle);\n\n// When we destroy our Render, the Entities will fall back\n// on the Scene's default Render instance\nrender.destroy();\n````",
+            "submodule": "culling",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Render in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent scene, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Render.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "rendering",
+                            "description": "Flag which controls render of the attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component"
+        },
         "Visibility": {
             "name": "Visibility",
             "shortname": "Visibility",
@@ -3140,7 +3203,7 @@
             "namespace": "",
             "file": "src/entities/entity.js",
             "line": 1,
-            "description": "A **Entity** is an object within a xeoEngine {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\n## Overview\n\nSee the {{#crossLink \"Scene\"}}Scene{{/crossLink}} class documentation for more information on Entities.</li>\n\n<img src=\"../../../assets/images/Entity.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Minimal Entity example](../../examples/#entities_minimal)</li>\n</ul>\n\n## Boundaries\n\n#### Local-space\n\nA Entity provides its Local-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry\"}}{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}}.</li>\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar geometry = new XEO.Geometry(myScene, {\n     //...\n });\n\nvar entity = new XEO.Entity(myScene, {\n      geometry: myGeometry,\n      transform: translate\n });\n\n// Get the Local-space Boundary3D\nvar localBoundary = entity.localBoundary;\n\n// Get Local-space entity-aligned bounding box (OBB),\n// which is an array of eight vertices that describes\n// the box that is aligned with the Entity's Geometry\nvar obb = localBoundary.obb;\n\n// Get the Local-space axis-aligned bounding box (ABB),\n// which contains the extents of the boundary on each axis\nvar aabb = localBoundary.aabb;\n\n// get the Local-space center of the Entity:\nvar center = localBoundary.center;\n\n````\n\n#### World-space\n\nA Entity provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry\"}}{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} after\ntransformation by the Entity's {{#crossLink \"Entity/transform:property\"}}Modelling transform{{/crossLink}}.</li>\n\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar geometry = new XEO.Geometry(myScene, {\n     //...\n });\n\nvar translate = new XEO.Translate(scene, {\n   xyz: [-5, 0, 0] // Translate along -X axis\n});\n\nvar entity = new XEO.Entity(myScene, {\n      geometry: myGeometry,\n      transform: translate\n });\n\n// Get the World-space Boundary3D\nvar worldBoundary = entity.worldBoundary;\n\n// Get World-space entity-aligned bounding box (OBB),\n// which is an array of eight vertices that describes\n// the box that is aligned with the Entity\nvar obb = worldBoundary.obb;\n\n// Get the World-space axis-aligned bounding box (ABB),\n// which contains the extents of the boundary on each axis\nvar aabb = worldBoundary.aabb;\n\n// get the World-space center of the Entity:\nvar center = worldBoundary.center;\n\n````\n\n#### View-space\n\nA Entity also provides its View-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry/positions:property\"}}Geometry positions{{/crossLink}} after\ntheir transformation by the {{#crossLink \"Camera/view:property\"}}View{{/crossLink}} and\n{{#crossLink \"Entity/transform:property\"}}Modelling{{/crossLink}} transforms.</li>\n\n```` javascript\n// Get the View-space Boundary3D\nvar viewBoundary = entity.viewBoundary;\n\n// Get View-space entity-aligned bounding box (OBB),\n// which is an array of eight vertices that describes\n// the box that is aligned with the Entity\nvar obb = viewBoundary.obb;\n\n// Get the View-space axis-aligned bounding box (ABB),\n// which contains the extents of the boundary on each axis\nvar aabb = viewBoundary.aabb;\n\n// get the View-space center of the Entity:\nvar center = viewBoundary.center;\n\n````\n\n#### View-space\n\nA Entity also provides its Canvas-space boundary as a {{#crossLink \"Boundary2D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry/positions:property\"}}Geometry positions{{/crossLink}} after\ntheir transformation by the {{#crossLink \"Entity/transform:property\"}}Modelling{{/crossLink}},\n{{#crossLink \"Camera/view:property\"}}View{{/crossLink}} and {{#crossLink \"Camera/project:property\"}}Projection{{/crossLink}} transforms.</li>\n\n```` javascript\n// Get the Canvas-space Boundary2D\nvar canvasBoundary = entity.canvasBoundary;\n\n// Get the Canvas-space axis-aligned bounding box (ABB),\n// which contains the extents of the boundary on each axis\nvar aabb = canvasBoundary.aabb;\n\n// get the Canvas-space center of the Entity:\nvar center = canvasBoundary.center;\n\n````",
+            "description": "An **Entity** is an object within a xeoEngine {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\n## Overview\n\nSee the {{#crossLink \"Scene\"}}Scene{{/crossLink}} class documentation for more information on Entities.</li>\n\n<img src=\"../../../assets/images/Entity.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Minimal Entity example](../../examples/#entities_minimal)</li>\n</ul>\n\n## Boundaries\n\n#### Local-space\n\nA Entity provides its Local-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry\"}}{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}}.</li>\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar geometry = new XEO.Geometry(myScene, {\n     //...\n });\n\nvar entity = new XEO.Entity(myScene, {\n      geometry: myGeometry,\n      transform: translate\n });\n\n// Get the Local-space Boundary3D\nvar localBoundary = entity.localBoundary;\n\n// Get Local-space entity-aligned bounding box (OBB),\n// which is an array of eight vertices that describes\n// the box that is aligned with the Entity's Geometry\nvar obb = localBoundary.obb;\n\n// Get the Local-space axis-aligned bounding box (ABB),\n// which contains the extents of the boundary on each axis\nvar aabb = localBoundary.aabb;\n\n// get the Local-space center of the Entity:\nvar center = localBoundary.center;\n\n````\n\n#### World-space\n\nA Entity provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry\"}}{{/crossLink}} {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} after\ntransformation by the Entity's {{#crossLink \"Entity/transform:property\"}}Modelling transform{{/crossLink}}.</li>\n\n\n```` javascript\nvar scene = new XEO.Scene();\n\nvar geometry = new XEO.Geometry(myScene, {\n     //...\n });\n\nvar translate = new XEO.Translate(scene, {\n   xyz: [-5, 0, 0] // Translate along -X axis\n});\n\nvar entity = new XEO.Entity(myScene, {\n      geometry: myGeometry,\n      transform: translate\n });\n\n// Get the World-space Boundary3D\nvar worldBoundary = entity.worldBoundary;\n\n// Get World-space entity-aligned bounding box (OBB),\n// which is an array of eight vertices that describes\n// the box that is aligned with the Entity\nvar obb = worldBoundary.obb;\n\n// Get the World-space axis-aligned bounding box (ABB),\n// which contains the extents of the boundary on each axis\nvar aabb = worldBoundary.aabb;\n\n// get the World-space center of the Entity:\nvar center = worldBoundary.center;\n\n````\n\n#### View-space\n\nA Entity also provides its View-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry/positions:property\"}}Geometry positions{{/crossLink}} after\ntheir transformation by the {{#crossLink \"Camera/view:property\"}}View{{/crossLink}} and\n{{#crossLink \"Entity/transform:property\"}}Modelling{{/crossLink}} transforms.</li>\n\n```` javascript\n// Get the View-space Boundary3D\nvar viewBoundary = entity.viewBoundary;\n\n// Get View-space entity-aligned bounding box (OBB),\n// which is an array of eight vertices that describes\n// the box that is aligned with the Entity\nvar obb = viewBoundary.obb;\n\n// Get the View-space axis-aligned bounding box (ABB),\n// which contains the extents of the boundary on each axis\nvar aabb = viewBoundary.aabb;\n\n// get the View-space center of the Entity:\nvar center = viewBoundary.center;\n\n````\n\n#### View-space\n\nA Entity also provides its Canvas-space boundary as a {{#crossLink \"Boundary2D\"}}{{/crossLink}} that encloses\nthe {{#crossLink \"Geometry/positions:property\"}}Geometry positions{{/crossLink}} after\ntheir transformation by the {{#crossLink \"Entity/transform:property\"}}Modelling{{/crossLink}},\n{{#crossLink \"Camera/view:property\"}}View{{/crossLink}} and {{#crossLink \"Camera/project:property\"}}Projection{{/crossLink}} transforms.</li>\n\n```` javascript\n// Get the Canvas-space Boundary2D\nvar canvasBoundary = entity.canvasBoundary;\n\n// Get the Canvas-space axis-aligned bounding box (ABB),\n// which contains the extents of the boundary on each axis\nvar aabb = canvasBoundary.aabb;\n\n// get the Canvas-space center of the Entity:\nvar center = canvasBoundary.center;\n\n````",
             "submodule": "entities",
             "is_constructor": 1,
             "params": [
@@ -3958,7 +4021,7 @@
                         },
                         {
                             "name": "arc",
-                            "description": "The length of the TorusGeometry's arc in degrees, where 360 is closed torus.",
+                            "description": "The length of the TorusGeometry's arc in in radians, where Math.PI*2 is a closed torus.",
                             "type": "Number",
                             "optional": true,
                             "optdefault": "Math.PI / 2.0"
@@ -7598,43 +7661,43 @@
         },
         {
             "file": "src/_renderer/webgl/renderBuffer.js",
-            "line": 7,
+            "line": 9,
             "description": "True as soon as this buffer is allocated and ready to go",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/webgl/renderBuffer.js",
-            "line": 12,
+            "line": 14,
             "description": "The HTMLCanvasElement",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/webgl/renderBuffer.js",
-            "line": 17,
+            "line": 19,
             "description": "WebGL context",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/webgl/renderBuffer.js",
-            "line": 22,
+            "line": 24,
             "description": "Buffer resources, set up in #_touch",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/webgl/renderBuffer.js",
-            "line": 27,
+            "line": 29,
             "description": "True while this buffer is bound",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/webgl/renderBuffer.js",
-            "line": 32,
+            "line": 34,
             "description": "Optional explicit buffer size - when omitted, buffer defaults to canvas size",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/webgl/renderBuffer.js",
-            "line": 38,
+            "line": 40,
             "description": "Sets custom dimensions for this buffer.\n\nBuffer dynamically re-sizes to canvas when size is null.",
             "params": [
                 {
@@ -7647,42 +7710,42 @@
         },
         {
             "file": "src/_renderer/webgl/renderBuffer.js",
-            "line": 49,
+            "line": 51,
             "description": "Called after WebGL context is restored.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/webgl/renderBuffer.js",
-            "line": 59,
+            "line": 61,
             "description": "Binds this buffer",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/webgl/renderBuffer.js",
-            "line": 182,
+            "line": 184,
             "description": "Clears this renderbuffer",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/webgl/renderBuffer.js",
-            "line": 193,
+            "line": 195,
             "description": "Reads buffer pixel at given coordinates",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/webgl/renderBuffer.js",
-            "line": 204,
+            "line": 206,
             "description": "Unbinds this renderbuffer",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/webgl/renderBuffer.js",
-            "line": 212,
+            "line": 214,
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/webgl/renderBuffer.js",
-            "line": 240,
+            "line": 242,
             "class": "CameraFlight"
         },
         {
@@ -7939,8 +8002,8 @@
                     "description": "Collects runtime statistics"
                 },
                 {
-                    "name": "cfg",
-                    "description": "Configs"
+                    "name": "gl",
+                    "description": "WebGL context"
                 }
             ],
             "class": "CameraFlight"
@@ -8070,44 +8133,43 @@
         },
         {
             "file": "src/_renderer/programSourceFactory.js",
-            "line": 26,
+            "line": 30,
             "description": "Get source code for a program to render the given states.\nAttempts to reuse cached source code for the given hash.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/programSourceFactory.js",
-            "line": 99,
+            "line": 102,
             "description": "Releases program source code back to this factory.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
             "line": 7,
-            "description": "Renderer compiled from a {@link SceneJS.Scene}, providing methods to render and pick.\n\n <p>A Renderer is a container of {@link XEO.renderer.Object}s which are created (or updated) by a depth-first\n <b>compilation traversal</b> of a {@link SceneJS.Scene}.</b>\n\n <h2>Rendering Pipeline</h2>\n\n <p>Conceptually, a Renderer implements a pipeline with the following stages:</p>\n\n <ol>\n <li>Create or update {@link XEO.renderer.Object}s during scene compilation</li>\n <li>Organise the {@link XEO.renderer.Object} into an <b>object list</b></li>\n <li>Determine the GL state sort order for the object list</li>\n <li>State sort the object list</li>\n <li>Create a <b>draw list</b> containing {@link XEO.renderer.Chunk}s belonging to the {@link XEO.renderer.Object}s in the object list</li>\n <li>Render the draw list to draw the image</li>\n </ol>\n\n <p>An update to the scene causes the pipeline to be re-executed from one of these stages, and SceneJS is designed\n so that the pipeline is always re-executed from the latest stage possible to avoid redoing work.</p>\n\n <p>For example:</p>\n\n <ul>\n <li>when an object is created or updated, we need to (re)do stages 2, 3, 4, 5 and 6</li>\n <li>when an object is made invisible, we need to redo stages 5 and 6</li>\n <li>when an object is assigned to a different scene render layer (works like a render bin), we need to redo\n stages 3, 4, 5, and 6</li>\n<li>when the colour of an object changes, or maybe when the viewpoint changes, we simplt redo stage 6</li>\n </ul>\n\n <h2>Object Creation</h2>\n <p>The object soup (stage 1) is constructed by a depth-first traversal of the scene graph, which we think of as\n \"compiling\" the scene graph into the Renderer. As traversal visits each scene component, the component's state core is\n set on the Renderer (such as {@link #flags}, {@link #layer}, {@link #renderer} etc), which we think of as the\n cores that are active at that instant during compilation. Each of the scene's leaf components is always\n a {@link SceneJS.Geometry}, and when traversal visits one of those it calls {@link #buildObject} to create an\n object in the soup. For each of the currently active cores, the object is given a {@link XEO.renderer.Chunk}\n containing the WebGL calls for rendering it.</p>\n\n <p>The object also gets a shader (implemented by {@link XEO.renderer.Program}), taylored to render those state cores.</p>\n\n <p>Limited re-compilation may also be done on portions of a scene that have been added or sufficiently modified. When\n traversal visits a {@link SceneJS.Geometry} for which an object already exists in the display, {@link #buildObject}\n may update the {@link XEO.renderer.Chunk}s on the object as required for any changes in the core soup since the\n last time the object was built. If differences among the cores require it, then {@link #buildObject} may also replace\n the object's {@link XEO.renderer.Program} in order to render the new core soup configuration.</p>\n\n <p>So in summary, to each {@link XEO.renderer.Object} it builds, {@link #buildObject} creates a list of\n {@link XEO.renderer.Chunk}s to render the set of component state cores that are currently set on the {@link XEO.Renderer}.\n When {@link #buildObject} is re-building an existing object, it may replace one or more {@link XEO.renderer.Chunk}s\n for state cores that have changed from the last time the object was built or re-built.</p>\n\n <h2>Object Destruction</h2>\n <p>Destruction of a scene graph branch simply involves a call to {@link #removeObject} for each {@link SceneJS.Geometry}\n in the branch.</p>\n\n <h2>Draw List</h2>\n <p>The draw list is actually comprised of two lists of state chunks: a \"pick\" list to render a pick buffer\n for colour-indexed GPU picking, along with a \"draw\" list for normal image rendering. The chunks in these lists\n are held in the state-sorted order of their objects in #_objectList, with runs of duplicate states removed.</p>\n\n <p>After a scene update, we set a flag on the display to indicate the stage we will need to redo from. The pipeline is\n then lazy-redone on the next call to #render or #pick.</p>",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 92,
+            "line": 23,
             "description": "Indicates if the canvas is transparent",
             "type": "{boolean}",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 98,
+            "line": 29,
             "description": "Optional callback to fire when renderer wants to\nbind an output framebuffer. This is useful when we need to bind a stereo output buffer for WebVR.\n\nWhen this is missing, the renderer will implicitly bind\nWebGL's default framebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 112,
+            "line": 43,
             "description": "Optional callback to fire when renderer wants to\nunbind any output drawing framebuffer that was\npreviously bound with #bindOutputFramebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.unbindOutputFramebuffer = function(pass) { .. });\n\nCallback takes no parameters.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 165,
+            "line": 98,
             "description": "Visibility render state.",
             "itemtype": "property",
             "name": "visibility",
@@ -8116,7 +8178,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 172,
+            "line": 105,
             "description": "Culling render state.",
             "itemtype": "property",
             "name": "cull",
@@ -8125,7 +8187,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 179,
+            "line": 112,
             "description": "Modes render state.",
             "itemtype": "property",
             "name": "modes",
@@ -8134,7 +8196,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 186,
+            "line": 119,
             "description": "Render state for an effects layer.",
             "itemtype": "property",
             "name": "layer",
@@ -8143,7 +8205,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 193,
+            "line": 126,
             "description": "Render state for an effects pipeline stage.",
             "itemtype": "property",
             "name": "stage",
@@ -8152,7 +8214,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 200,
+            "line": 133,
             "description": "Depth buffer render state.",
             "itemtype": "property",
             "name": "depthBuf",
@@ -8161,7 +8223,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 207,
+            "line": 140,
             "description": "Color buffer render state.",
             "itemtype": "property",
             "name": "colorBuf",
@@ -8170,7 +8232,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 214,
+            "line": 147,
             "description": "Lights render state.",
             "itemtype": "property",
             "name": "lights",
@@ -8179,7 +8241,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 221,
+            "line": 154,
             "description": "Material render state.",
             "itemtype": "property",
             "name": "material",
@@ -8188,7 +8250,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 228,
+            "line": 161,
             "description": "Environmental reflection render state.",
             "itemtype": "property",
             "name": "reflection",
@@ -8197,7 +8259,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 235,
+            "line": 168,
             "description": "Modelling transform render state.",
             "itemtype": "property",
             "name": "modelTransform",
@@ -8206,7 +8268,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 242,
+            "line": 175,
             "description": "View transform render state.",
             "itemtype": "property",
             "name": "viewTransform",
@@ -8215,7 +8277,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 249,
+            "line": 182,
             "description": "Projection transform render state.",
             "itemtype": "property",
             "name": "projTransform",
@@ -8224,7 +8286,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 256,
+            "line": 189,
             "description": "Billboard render state.",
             "itemtype": "property",
             "name": "billboard",
@@ -8233,7 +8295,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 263,
+            "line": 196,
             "description": "Stationary render state.",
             "itemtype": "property",
             "name": "stationary",
@@ -8242,7 +8304,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 270,
+            "line": 203,
             "description": "Color target render state.",
             "itemtype": "property",
             "name": "colorTarget",
@@ -8251,7 +8313,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 277,
+            "line": 210,
             "description": "Depth target render state.",
             "itemtype": "property",
             "name": "depthTarget",
@@ -8260,7 +8322,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 284,
+            "line": 217,
             "description": "Cross-section planes render state.",
             "itemtype": "property",
             "name": "clips",
@@ -8269,16 +8331,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 291,
-            "description": "Morph targets render state.",
-            "itemtype": "property",
-            "name": "morphTargets",
-            "type": "{renderer.MorphTargets}",
-            "class": "CameraFlight"
-        },
-        {
-            "file": "src/_renderer/renderer.js",
-            "line": 298,
+            "line": 224,
             "description": "Custom shader render state.",
             "itemtype": "property",
             "name": "shader",
@@ -8287,7 +8340,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 305,
+            "line": 231,
             "description": "Render state providing custom shader params.",
             "itemtype": "property",
             "name": "shaderParams",
@@ -8296,7 +8349,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 312,
+            "line": 238,
             "description": "Geometry render state.",
             "itemtype": "property",
             "name": "geometry",
@@ -8305,7 +8358,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 319,
+            "line": 245,
             "description": "Viewport render state.",
             "itemtype": "property",
             "name": "viewport",
@@ -8314,41 +8367,37 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 329,
-            "description": "Flags the object list as needing to be rebuilt from renderer objects\non the next call to {@link #render} or {@link #pick}. Setting this\nwill cause the rendering pipeline to be executed from stage #2\n(see class comment), causing object list rebuild, state order\ndetermination, state sort, draw list construction and image render.",
-            "type": "Boolean",
+            "line": 254,
+            "description": "Flags the object list as needing to be rebuilt from the object map.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 339,
-            "description": "Flags the object list as needing state orders to be (re)computed on the\nnext call to {@link #render} or {@link #pick}. Setting this will cause\nthe rendering pipeline to be executed from stage #3 (see class comment),\ncausing state order determination, state sort, draw list construction\nand image render.",
-            "type": "Boolean",
+            "line": 259,
+            "description": "Flags the object list as needing state orders to be recomputed.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 349,
-            "description": "Flags the object list as needing to be state-sorted on the next call\nto {@link #render} or {@link #pick}.Setting this will cause the\nrendering pipeline to be executed from stage #4 (see class comment),\ncausing state sort, draw list construction and image render.",
-            "type": "Boolean",
+            "line": 264,
+            "description": "Flags the object list as needing to be state-sorted.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 358,
-            "description": "Flags the image as needing to be redrawn from the draw list on the\nnext call to {@link #render} or {@link #pick}. Setting this will\ncause the rendering pipeline to be executed from stage #6\n(see class comment), causing the image render.",
-            "type": "Boolean",
+            "line": 269,
+            "description": "Flags the image as needing to be redrawn from the object list.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 368,
+            "line": 275,
             "description": "Reallocates WebGL resources for objects within this renderer.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 392,
+            "line": 299,
             "description": "Internally creates (or updates) a {@link XEO.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link XEO.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
             "params": [
                 {
@@ -8361,12 +8410,12 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 516,
+            "line": 427,
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 566,
+            "line": 477,
             "description": "Removes an object from this Renderer",
             "params": [
                 {
@@ -8379,31 +8428,31 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 602,
+            "line": 513,
             "description": "Renders a new frame, if neccessary.",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 638,
+            "line": 549,
             "description": "Builds the object list from the object map",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 650,
+            "line": 561,
             "description": "Generates object state sort keys",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 671,
+            "line": 582,
             "description": "State-sorts the object list",
             "class": "CameraFlight"
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 907,
+            "line": 822,
             "description": "Attempts to pick an object.",
             "params": [
                 {
@@ -8420,7 +8469,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1039,
+            "line": 950,
             "description": "Reads the colors of some pixels in the last rendered frame.",
             "params": [
                 {
@@ -8448,7 +8497,7 @@
         },
         {
             "file": "src/_renderer/renderer.js",
-            "line": 1086,
+            "line": 994,
             "description": "Destroys this Renderer.",
             "class": "CameraFlight"
         },
@@ -10650,6 +10699,35 @@
             "submodule": "culling"
         },
         {
+            "file": "src/culling/render.js",
+            "line": 82,
+            "description": "Indicates whether this Render makes attached {{#crossLink \"Entity\"}}Entities{{/crossLink}} rendering or not.\n\nFires a {{#crossLink \"Render/rendering:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "rendering",
+            "default": "true",
+            "type": "Boolean",
+            "class": "Render",
+            "module": "XEO",
+            "submodule": "culling"
+        },
+        {
+            "file": "src/culling/render.js",
+            "line": 99,
+            "description": "Fired whenever this Render's {{#crossLink \"Render/rendering:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "rendering",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Boolean"
+                }
+            ],
+            "class": "Render",
+            "module": "XEO",
+            "submodule": "culling"
+        },
+        {
             "file": "src/culling/visibility.js",
             "line": 82,
             "description": "Indicates whether this Visibility makes attached {{#crossLink \"Entity\"}}Entities{{/crossLink}} visible or not.\n\nFires a {{#crossLink \"Visibility/visible:event\"}}{{/crossLink}} event on change.",
@@ -12605,7 +12683,7 @@
         {
             "file": "src/geometry/torusGeometry.js",
             "line": 384,
-            "description": "The length of the TorusGeometry's arc in degrees, where 360 is closed torus.\n\nFires a {{#crossLink \"TorusGeometry/arc:event\"}}{{/crossLink}} event on change.",
+            "description": "The length of the TorusGeometry's arc in radians, where Math.PI*2 is a closed torus.\n\nFires a {{#crossLink \"TorusGeometry/arc:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "arc",
             "default": "Math.PI * 2",
@@ -20677,7 +20755,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 323,
+            "line": 322,
             "description": "Publishes input events that occur on this Scene's canvas.",
             "final": 1,
             "itemtype": "property",
@@ -20688,7 +20766,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 465,
+            "line": 464,
             "description": "Fired whenever a component has been created within this Scene.",
             "itemtype": "event",
             "name": "componentCreated",
@@ -20704,7 +20782,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 509,
+            "line": 508,
             "description": "Fired whenever a component within this Scene has been destroyed.",
             "itemtype": "event",
             "name": "componentDestroyed",
@@ -20720,7 +20798,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 544,
+            "line": 543,
             "description": "Renders a single frame of this Scene.\n\nThe Scene will automatically call this method on itself to render after any updates, but you\ncan call this method to force a render if required. This method is typically used when we want\nto synchronously take a snapshot of the canvas and need everything rendered right at that moment.",
             "itemtype": "method",
             "name": "render",
@@ -20738,7 +20816,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 575,
+            "line": 574,
             "description": "Fired when about to render a frame for a Scene.",
             "itemtype": "event",
             "name": "rendering",
@@ -20759,7 +20837,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 588,
+            "line": 587,
             "description": "Fired when we have just rendered a frame for a Scene.",
             "itemtype": "event",
             "name": "rendering",
@@ -20780,7 +20858,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 602,
+            "line": 601,
             "description": "The number of times this Scene renders per frame.",
             "itemtype": "property",
             "name": "passes",
@@ -20791,7 +20869,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 632,
+            "line": 631,
             "description": "Fired whenever this Scene's {{#crossLink \"Scene/passes:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "passes",
@@ -20807,7 +20885,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 646,
+            "line": 645,
             "description": "When doing multiple passes per frame, specifies whether to clear the\ncanvas before each pass (true) or just before the first pass (false).",
             "itemtype": "property",
             "name": "clearEachPass",
@@ -20818,7 +20896,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 668,
+            "line": 667,
             "description": "Fired whenever this Scene's {{#crossLink \"Scene/clearEachPass:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "clearEachPass",
@@ -20834,7 +20912,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 683,
+            "line": 682,
             "description": "The default projection transform provided by this Scene, which is\na {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}.\n\nThis {{#crossLink \"Perspective\"}}Perspective{{/crossLink}} has an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to\n\"default.project\", with all other properties set to their default\nvalues.\n\n{{#crossLink \"Camera\"}}Cameras{{/crossLink}} within this Scene\nare attached to this {{#crossLink \"Perspective\"}}Perspective{{/crossLink}}\nby default.",
             "itemtype": "property",
             "name": "project",
@@ -20845,7 +20923,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 711,
+            "line": 710,
             "description": "The default viewing transform provided by this Scene, which is a {{#crossLink \"Lookat\"}}Lookat{{/crossLink}}.\n\nThis {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.view\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Camera\"}}Cameras{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Lookat\"}}Lookat{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "view",
@@ -20856,7 +20934,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 734,
+            "line": 733,
             "description": "The default {{#crossLink \"Camera\"}}Camera{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Camera\"}}Camera{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.camera\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Camera\"}}Camera{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "camera",
@@ -20867,7 +20945,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 759,
+            "line": 758,
             "description": "The default modelling {{#crossLink \"Transform\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Transform\"}}{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.transform\",\nwith all other properties initialised to their default values (ie. an identity matrix).\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to\nthis {{#crossLink \"Transform\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "transform",
@@ -20878,7 +20956,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 783,
+            "line": 782,
             "description": "The default {{#crossLink \"Billboard\"}}Billboard{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Billboard\"}}Billboard{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.billboard\"\nand an {{#crossLink \"Billboard/active:property\"}}{{/crossLink}} property set to false, to disable it.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Billboard\"}}Billboard{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "billboard",
@@ -20889,7 +20967,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 807,
+            "line": 806,
             "description": "The default {{#crossLink \"Stationary\"}}Stationary{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Stationary\"}}Stationary{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.stationary\"\nand an {{#crossLink \"Stationary/active:property\"}}{{/crossLink}} property set to false, to disable it.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Stationary\"}}Stationary{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "stationary",
@@ -20900,7 +20978,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 831,
+            "line": 830,
             "description": "The default {{#crossLink \"Clips\"}}Clips{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Clips\"}}Clips{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.clips\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Clips\"}}Clips{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "clips",
@@ -20911,7 +20989,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 854,
+            "line": 853,
             "description": "The default {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.colorBuf\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ColorBuf\"}}ColorBuf{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "colorBuf",
@@ -20922,7 +21000,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 877,
+            "line": 876,
             "description": "The default {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} provided by this Scene.\n\nThe {{#crossLink \"ColorTarget\"}}DepthTarget{{/crossLink}} is\n{{#crossLink \"ColorTarget/active:property\"}}inactive{{/crossLink}} by default and will have an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthTarget\".\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "colorTarget",
@@ -20933,7 +21011,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 901,
+            "line": 900,
             "description": "The default {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthBuf\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"DepthBuf\"}}DepthBuf{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "depthBuf",
@@ -20944,7 +21022,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 925,
+            "line": 924,
             "description": "The default {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} provided by this Scene.\n\nThe {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} is\n{{#crossLink \"DepthTarget/active:property\"}}inactive{{/crossLink}} by default and has an\n{{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.depthTarget\".\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "depthTarget",
@@ -20955,7 +21033,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 949,
+            "line": 948,
             "description": "The default {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Visibility\"}}Visibility{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.visibility\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Visibility\"}}Visibility{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "visibility",
@@ -20966,7 +21044,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 972,
+            "line": 971,
             "description": "The default {{#crossLink \"Cull\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Cull\"}}cull{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.cull\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Cull\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "cull",
@@ -20977,7 +21055,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 995,
+            "line": 994,
             "description": "The default {{#crossLink \"Modes\"}}Modes{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Modes\"}}Modes{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.modes\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Modes\"}}Modes{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "modes",
@@ -20988,7 +21066,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1017,
+            "line": 1016,
             "description": "The default geometry provided by this Scene, which is a {{#crossLink \"BoxGeometry\"}}BoxGeometry{{/crossLink}}.\n\nThis {{#crossLink \"BoxGeometry\"}}BoxGeometry{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.geometry\".\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Geometry\"}}Geometry{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "geometry",
@@ -20999,7 +21077,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1038,
+            "line": 1037,
             "description": "The default {{#crossLink \"Layer\"}}Layer{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Layer\"}}Layer{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.layer\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Layer\"}}Layer{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "layer",
@@ -21010,7 +21088,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1061,
+            "line": 1060,
             "description": "The default {{#crossLink \"Lights\"}}Lights{{/crossLink}} provided\nby this Scene.\n\nThis {{#crossLink \"Lights\"}}Lights{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to *````\"default.lights\"````*,\nwith all other properties initialised to their default values (ie. the default set of light sources for a {{#crossLink \"Lights\"}}Lights{{/crossLink}}).\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Lights\"}}Lights{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "lights",
@@ -21021,7 +21099,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1116,
+            "line": 1115,
             "description": "The {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} provided as the default material by this Scene.\n\nThis {{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.material\", with all\nother properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"PhongMaterial\"}}PhongMaterial{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "material",
@@ -21032,7 +21110,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1139,
+            "line": 1138,
             "description": "The default {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.morphTargets\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"MorphTargets\"}}MorphTargets{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "morphTargets",
@@ -21043,7 +21121,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1161,
+            "line": 1160,
             "description": "The default {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} provided by this Scene,\n(which is initially an empty {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} that has no effect).\n\nThis {{#crossLink \"Reflect\"}}Reflect{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.reflect\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Reflect\"}}Reflect{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "reflect",
@@ -21054,7 +21132,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1184,
+            "line": 1183,
             "description": "The default {{#crossLink \"Shader\"}}Shader{{/crossLink}} provided by this Scene\n(which is initially an empty {{#crossLink \"Shader\"}}Shader{{/crossLink}} that has no effect).\n\nThis {{#crossLink \"Shader\"}}Shader{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.shader\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Shader\"}}Shader{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "shader",
@@ -21065,7 +21143,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1207,
+            "line": 1206,
             "description": "The default {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"ShaderParams\"}}ShaderParams{{/crossLink}} has an {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.shaderParams\",\nwith all other properties initialised to their default values.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"ShaderParams\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "shaderParams",
@@ -21076,7 +21154,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1230,
+            "line": 1229,
             "description": "The default {{#crossLink \"Stage\"}}Stage{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Stage\"}}Stage{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.stage\" and\na {{#crossLink \"Stage/priority:property\"}}priority{{/crossLink}} equal to ````0````.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Stage\"}}Stage{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "stage",
@@ -21087,7 +21165,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1254,
+            "line": 1253,
             "description": "The default {{#crossLink \"Viewport\"}}{{/crossLink}} provided by this Scene.\n\nThis {{#crossLink \"Viewport\"}}{{/crossLink}} has\nan {{#crossLink \"Component/id:property\"}}id{{/crossLink}} equal to \"default.viewport\" and\n{{#crossLink \"Viewport/autoBoundary:property\"}}{{/crossLink}} set ````true````.\n\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} within this Scene are attached to this\n{{#crossLink \"Viewport\"}}{{/crossLink}} by default.",
             "itemtype": "property",
             "name": "viewport",
@@ -21098,7 +21176,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1279,
+            "line": 1278,
             "description": "The World-space 3D boundary of this Scene.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will be lazy-initialized the first time\nyou reference this property, and will persist on this Scene until you\ncall {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on the {{#crossLink \"Boundary3D\"}}{{/crossLink}}\nagain. The property will then be set to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance\nnext time you reference it.\n\n<h4>Performance</h4>\n\nTo minimize performance overhead, only reference this property if you need it, and destroy\nthe {{#crossLink \"Boundary3D\"}}{{/crossLink}} as soon as you don't need it anymore.",
             "itemtype": "property",
             "name": "worldBoundary",
@@ -21109,7 +21187,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1362,
+            "line": 1361,
             "description": "Attempts to pick an {{#crossLink \"Entity\"}}Entity{{/crossLink}} in this Scene.\n\nIgnores {{#crossLink \"Entity\"}}Entities{{/crossLink}} that are attached\nto either a {{#crossLink \"Stage\"}}Stage{{/crossLink}} with {{#crossLink \"Stage/pickable:property\"}}pickable{{/crossLink}}\nset *false* or a {{#crossLink \"Modes\"}}Modes{{/crossLink}} with {{#crossLink \"Modes/pickable:property\"}}pickable{{/crossLink}} set *false*.\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} at the given canvas coordinates:\n\n````javascript\nvar hit = scene.pick({\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n    var entity = hit.entity;\n}\n````\n\n**Usage:**\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects a ray cast through the canvas:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,\n    canvasPos: [23, 131]\n });\n\nif (hit) { // Picked an Entity\n\n    var entity = hit.entity;\n\n    // These properties are only on the hit result when we do a ray-pick:\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n}\n````\n\nPicking the {{#crossLink \"Entity\"}}{{/crossLink}} that intersects an arbitrarily-aligned World-space ray:\n\n````javascript\nvar hit = scene.pick({\n    pickSurface: true,       // Picking with arbitrarily-positioned ray\n    origin: [0,0,-5],    // Ray origin\n    direction: [0,0,1]   // Ray direction\n});\n\nif (hit) { // Picked an Entity with the ray\n\n    var entity = hit.entity;\n\n    var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n    var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n    var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n    var localPos = hit.localPos; // Float32Array containing the picked Local-space position on the triangle\n    var worldPos = hit.worldPos; // Float32Array containing the picked World-space position on the triangle\n    var viewPos = hit.viewPos; // Float32Array containing the picked View-space position on the triangle\n    var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n    var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n    var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n    var origin = hit.origin; // Float32Array containing the World-space ray origin\n    var direction = hit.direction; // Float32Array containing the World-space ray direction\n}\n````",
             "itemtype": "method",
             "name": "pick",
@@ -21156,7 +21234,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1742,
+            "line": 1741,
             "description": "Resets this Scene to its default state.\n\nReferences to any components in this Scene will become invalid.",
             "itemtype": "method",
             "name": "clear",
@@ -21165,7 +21243,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1768,
+            "line": 1767,
             "description": "Convenience method for creating or reusing a Component within this Scene.\n\nYou would typically use this method to conveniently instantiate components that you'd want to\nshare (ie. \"instance\") among your {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe method is given a component type, share ID and constructor attributes, like so:\n\n````javascript\nvar material = myScene.getComponent(\"XEO.PhongMaterial\", \"myMaterial\", { diffuse: [1,0,0] });\n````\n\nThe first time you call this method for the given ````type```` and ````instanceId````, this method will create the\n{{#crossLink \"PhongMaterial\"}}{{/crossLink}}, passing the given  attributes to the component's constructor.\n\nIf you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same\ncomponent instance that it returned the first time, and will ignore the attributes:\n\n````javascript\nvar material2 = myScene.getComponent(\"XEO.PhongMaterial\", \"myMaterial\", { specular: [1,1,0] });\n````\n\nEach time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a\nreference count for the component instance. You can release the shared component instance with a call to\n{{#crossLink \"Scene/putSharedComponent:method\"}}{{/crossLink}}, and once you have released it as many\ntimes as you got it, the Scene will destroy the component.",
             "itemtype": "method",
             "name": "_getSharedComponent",
@@ -21198,7 +21276,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1864,
+            "line": 1863,
             "description": "Releases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
             "params": [
                 {
@@ -21212,7 +21290,7 @@
         },
         {
             "file": "src/scene.js",
-            "line": 1892,
+            "line": 1891,
             "description": "Compiles and renders this Scene",
             "access": "private",
             "tagname": "",
@@ -23765,7 +23843,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/_renderer/renderer.js:907"
+            "line": " src/_renderer/renderer.js:822"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -23941,11 +24019,11 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1362"
+            "line": " src/scene.js:1361"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/scene.js:1768"
+            "line": " src/scene.js:1767"
         },
         {
             "message": "unknown tag: demo",
@@ -24125,59 +24203,59 @@
         },
         {
             "message": "Missing item type\nTrue as soon as this buffer is allocated and ready to go",
-            "line": " src/_renderer/webgl/renderBuffer.js:7"
+            "line": " src/_renderer/webgl/renderBuffer.js:9"
         },
         {
             "message": "Missing item type\nThe HTMLCanvasElement",
-            "line": " src/_renderer/webgl/renderBuffer.js:12"
+            "line": " src/_renderer/webgl/renderBuffer.js:14"
         },
         {
             "message": "Missing item type\nWebGL context",
-            "line": " src/_renderer/webgl/renderBuffer.js:17"
+            "line": " src/_renderer/webgl/renderBuffer.js:19"
         },
         {
             "message": "Missing item type\nBuffer resources, set up in #_touch",
-            "line": " src/_renderer/webgl/renderBuffer.js:22"
+            "line": " src/_renderer/webgl/renderBuffer.js:24"
         },
         {
             "message": "Missing item type\nTrue while this buffer is bound",
-            "line": " src/_renderer/webgl/renderBuffer.js:27"
+            "line": " src/_renderer/webgl/renderBuffer.js:29"
         },
         {
             "message": "Missing item type\nOptional explicit buffer size - when omitted, buffer defaults to canvas size",
-            "line": " src/_renderer/webgl/renderBuffer.js:32"
+            "line": " src/_renderer/webgl/renderBuffer.js:34"
         },
         {
             "message": "Missing item type\nSets custom dimensions for this buffer.\n\nBuffer dynamically re-sizes to canvas when size is null.",
-            "line": " src/_renderer/webgl/renderBuffer.js:38"
+            "line": " src/_renderer/webgl/renderBuffer.js:40"
         },
         {
             "message": "Missing item type\nCalled after WebGL context is restored.",
-            "line": " src/_renderer/webgl/renderBuffer.js:49"
+            "line": " src/_renderer/webgl/renderBuffer.js:51"
         },
         {
             "message": "Missing item type\nBinds this buffer",
-            "line": " src/_renderer/webgl/renderBuffer.js:59"
+            "line": " src/_renderer/webgl/renderBuffer.js:61"
         },
         {
             "message": "Missing item type\nClears this renderbuffer",
-            "line": " src/_renderer/webgl/renderBuffer.js:182"
+            "line": " src/_renderer/webgl/renderBuffer.js:184"
         },
         {
             "message": "Missing item type\nReads buffer pixel at given coordinates",
-            "line": " src/_renderer/webgl/renderBuffer.js:193"
+            "line": " src/_renderer/webgl/renderBuffer.js:195"
         },
         {
             "message": "Missing item type\nUnbinds this renderbuffer",
-            "line": " src/_renderer/webgl/renderBuffer.js:204"
+            "line": " src/_renderer/webgl/renderBuffer.js:206"
         },
         {
             "message": "Missing item type",
-            "line": " src/_renderer/webgl/renderBuffer.js:212"
+            "line": " src/_renderer/webgl/renderBuffer.js:214"
         },
         {
             "message": "Missing item type",
-            "line": " src/_renderer/webgl/renderBuffer.js:240"
+            "line": " src/_renderer/webgl/renderBuffer.js:242"
         },
         {
             "message": "Missing item type\nA vertex/fragment shader in a program",
@@ -24365,87 +24443,87 @@
         },
         {
             "message": "Missing item type\nGet source code for a program to render the given states.\nAttempts to reuse cached source code for the given hash.",
-            "line": " src/_renderer/programSourceFactory.js:26"
+            "line": " src/_renderer/programSourceFactory.js:30"
         },
         {
             "message": "Missing item type\nReleases program source code back to this factory.",
-            "line": " src/_renderer/programSourceFactory.js:99"
+            "line": " src/_renderer/programSourceFactory.js:102"
         },
         {
-            "message": "Missing item type\nRenderer compiled from a {@link SceneJS.Scene}, providing methods to render and pick.\n\n <p>A Renderer is a container of {@link XEO.renderer.Object}s which are created (or updated) by a depth-first\n <b>compilation traversal</b> of a {@link SceneJS.Scene}.</b>\n\n <h2>Rendering Pipeline</h2>\n\n <p>Conceptually, a Renderer implements a pipeline with the following stages:</p>\n\n <ol>\n <li>Create or update {@link XEO.renderer.Object}s during scene compilation</li>\n <li>Organise the {@link XEO.renderer.Object} into an <b>object list</b></li>\n <li>Determine the GL state sort order for the object list</li>\n <li>State sort the object list</li>\n <li>Create a <b>draw list</b> containing {@link XEO.renderer.Chunk}s belonging to the {@link XEO.renderer.Object}s in the object list</li>\n <li>Render the draw list to draw the image</li>\n </ol>\n\n <p>An update to the scene causes the pipeline to be re-executed from one of these stages, and SceneJS is designed\n so that the pipeline is always re-executed from the latest stage possible to avoid redoing work.</p>\n\n <p>For example:</p>\n\n <ul>\n <li>when an object is created or updated, we need to (re)do stages 2, 3, 4, 5 and 6</li>\n <li>when an object is made invisible, we need to redo stages 5 and 6</li>\n <li>when an object is assigned to a different scene render layer (works like a render bin), we need to redo\n stages 3, 4, 5, and 6</li>\n<li>when the colour of an object changes, or maybe when the viewpoint changes, we simplt redo stage 6</li>\n </ul>\n\n <h2>Object Creation</h2>\n <p>The object soup (stage 1) is constructed by a depth-first traversal of the scene graph, which we think of as\n \"compiling\" the scene graph into the Renderer. As traversal visits each scene component, the component's state core is\n set on the Renderer (such as {@link #flags}, {@link #layer}, {@link #renderer} etc), which we think of as the\n cores that are active at that instant during compilation. Each of the scene's leaf components is always\n a {@link SceneJS.Geometry}, and when traversal visits one of those it calls {@link #buildObject} to create an\n object in the soup. For each of the currently active cores, the object is given a {@link XEO.renderer.Chunk}\n containing the WebGL calls for rendering it.</p>\n\n <p>The object also gets a shader (implemented by {@link XEO.renderer.Program}), taylored to render those state cores.</p>\n\n <p>Limited re-compilation may also be done on portions of a scene that have been added or sufficiently modified. When\n traversal visits a {@link SceneJS.Geometry} for which an object already exists in the display, {@link #buildObject}\n may update the {@link XEO.renderer.Chunk}s on the object as required for any changes in the core soup since the\n last time the object was built. If differences among the cores require it, then {@link #buildObject} may also replace\n the object's {@link XEO.renderer.Program} in order to render the new core soup configuration.</p>\n\n <p>So in summary, to each {@link XEO.renderer.Object} it builds, {@link #buildObject} creates a list of\n {@link XEO.renderer.Chunk}s to render the set of component state cores that are currently set on the {@link XEO.Renderer}.\n When {@link #buildObject} is re-building an existing object, it may replace one or more {@link XEO.renderer.Chunk}s\n for state cores that have changed from the last time the object was built or re-built.</p>\n\n <h2>Object Destruction</h2>\n <p>Destruction of a scene graph branch simply involves a call to {@link #removeObject} for each {@link SceneJS.Geometry}\n in the branch.</p>\n\n <h2>Draw List</h2>\n <p>The draw list is actually comprised of two lists of state chunks: a \"pick\" list to render a pick buffer\n for colour-indexed GPU picking, along with a \"draw\" list for normal image rendering. The chunks in these lists\n are held in the state-sorted order of their objects in #_objectList, with runs of duplicate states removed.</p>\n\n <p>After a scene update, we set a flag on the display to indicate the stage we will need to redo from. The pipeline is\n then lazy-redone on the next call to #render or #pick.</p>",
+            "message": "Missing item type",
             "line": " src/_renderer/renderer.js:7"
         },
         {
             "message": "Missing item type\nIndicates if the canvas is transparent",
-            "line": " src/_renderer/renderer.js:92"
+            "line": " src/_renderer/renderer.js:23"
         },
         {
             "message": "Missing item type\nOptional callback to fire when renderer wants to\nbind an output framebuffer. This is useful when we need to bind a stereo output buffer for WebVR.\n\nWhen this is missing, the renderer will implicitly bind\nWebGL's default framebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.bindOutputFramebuffer = function(pass) { .. });",
-            "line": " src/_renderer/renderer.js:98"
+            "line": " src/_renderer/renderer.js:29"
         },
         {
             "message": "Missing item type\nOptional callback to fire when renderer wants to\nunbind any output drawing framebuffer that was\npreviously bound with #bindOutputFramebuffer.\n\nThe callback takes one parameter, which is the index of the current\nrendering pass in which the buffer is to be bound.\n\nUse like this: myRenderer.unbindOutputFramebuffer = function(pass) { .. });\n\nCallback takes no parameters.",
-            "line": " src/_renderer/renderer.js:112"
+            "line": " src/_renderer/renderer.js:43"
         },
         {
-            "message": "Missing item type\nFlags the object list as needing to be rebuilt from renderer objects\non the next call to {@link #render} or {@link #pick}. Setting this\nwill cause the rendering pipeline to be executed from stage #2\n(see class comment), causing object list rebuild, state order\ndetermination, state sort, draw list construction and image render.",
-            "line": " src/_renderer/renderer.js:329"
+            "message": "Missing item type\nFlags the object list as needing to be rebuilt from the object map.",
+            "line": " src/_renderer/renderer.js:254"
         },
         {
-            "message": "Missing item type\nFlags the object list as needing state orders to be (re)computed on the\nnext call to {@link #render} or {@link #pick}. Setting this will cause\nthe rendering pipeline to be executed from stage #3 (see class comment),\ncausing state order determination, state sort, draw list construction\nand image render.",
-            "line": " src/_renderer/renderer.js:339"
+            "message": "Missing item type\nFlags the object list as needing state orders to be recomputed.",
+            "line": " src/_renderer/renderer.js:259"
         },
         {
-            "message": "Missing item type\nFlags the object list as needing to be state-sorted on the next call\nto {@link #render} or {@link #pick}.Setting this will cause the\nrendering pipeline to be executed from stage #4 (see class comment),\ncausing state sort, draw list construction and image render.",
-            "line": " src/_renderer/renderer.js:349"
+            "message": "Missing item type\nFlags the object list as needing to be state-sorted.",
+            "line": " src/_renderer/renderer.js:264"
         },
         {
-            "message": "Missing item type\nFlags the image as needing to be redrawn from the draw list on the\nnext call to {@link #render} or {@link #pick}. Setting this will\ncause the rendering pipeline to be executed from stage #6\n(see class comment), causing the image render.",
-            "line": " src/_renderer/renderer.js:358"
+            "message": "Missing item type\nFlags the image as needing to be redrawn from the object list.",
+            "line": " src/_renderer/renderer.js:269"
         },
         {
             "message": "Missing item type\nReallocates WebGL resources for objects within this renderer.",
-            "line": " src/_renderer/renderer.js:368"
+            "line": " src/_renderer/renderer.js:275"
         },
         {
             "message": "Missing item type\nInternally creates (or updates) a {@link XEO.renderer.Object} of the given\nID from whatever component state cores are currently set on this {@link XEO.Renderer}.\nThe object is created if it does not already exist in the display, otherwise\nit is updated with the current states, possibly replacing states already\nreferenced by the object.",
-            "line": " src/_renderer/renderer.js:392"
+            "line": " src/_renderer/renderer.js:299"
         },
         {
             "message": "Missing item type",
-            "line": " src/_renderer/renderer.js:516"
+            "line": " src/_renderer/renderer.js:427"
         },
         {
             "message": "Missing item type\nRemoves an object from this Renderer",
-            "line": " src/_renderer/renderer.js:566"
+            "line": " src/_renderer/renderer.js:477"
         },
         {
             "message": "Missing item type\nRenders a new frame, if neccessary.",
-            "line": " src/_renderer/renderer.js:602"
+            "line": " src/_renderer/renderer.js:513"
         },
         {
             "message": "Missing item type\nBuilds the object list from the object map",
-            "line": " src/_renderer/renderer.js:638"
+            "line": " src/_renderer/renderer.js:549"
         },
         {
             "message": "Missing item type\nGenerates object state sort keys",
-            "line": " src/_renderer/renderer.js:650"
+            "line": " src/_renderer/renderer.js:561"
         },
         {
             "message": "Missing item type\nState-sorts the object list",
-            "line": " src/_renderer/renderer.js:671"
+            "line": " src/_renderer/renderer.js:582"
         },
         {
             "message": "Missing item type\nAttempts to pick an object.",
-            "line": " src/_renderer/renderer.js:907"
+            "line": " src/_renderer/renderer.js:822"
         },
         {
             "message": "Missing item type\nReads the colors of some pixels in the last rendered frame.",
-            "line": " src/_renderer/renderer.js:1039"
+            "line": " src/_renderer/renderer.js:950"
         },
         {
             "message": "Missing item type\nDestroys this Renderer.",
-            "line": " src/_renderer/renderer.js:1086"
+            "line": " src/_renderer/renderer.js:994"
         },
         {
             "message": "Missing item type\nRenderer states",
@@ -24649,11 +24727,11 @@
         },
         {
             "message": "Missing item type\nReleases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
-            "line": " src/scene.js:1864"
+            "line": " src/scene.js:1863"
         },
         {
             "message": "Missing item type\nCompiles and renders this Scene",
-            "line": " src/scene.js:1892"
+            "line": " src/scene.js:1891"
         },
         {
             "message": "Missing item type\nInformation about available WebGL support",

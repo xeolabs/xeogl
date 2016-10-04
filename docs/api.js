@@ -63,6 +63,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "QuadraticBezierCurve",
         "Quaternion",
         "Reflect",
+        "Render",
         "Rotate",
         "Scale",
         "Scene",
