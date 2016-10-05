@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeoengine.min.js"></script>
+
+    <script src="js/webvr/zSpace.js"></script>
+
+<body>
+
+<div id="infoLight"
+     style="left: 0; text-align: left; background: black; opacity: 0.7; padding: 8px; color: white; font-size: 14pt;">
+    <span><a href="http://xeoengine.org" target="_home">xeoEngine</a><br>
+        using <a
+                href="../docs/classes/Model.html"
+                target="_docs">Model</a> and <a
+                href="../docs/classes/ZSpace.html"
+                target="_docs">ZSpace</a> components to view a glTF model in zSpace VR</span><br>
+    <span id="log" style="color:red;font-size: 16px"></span>
+</div>
+
+<script>
+
+    //----------------------------------------------------------------------------
+    // Load a glTF Saw model into the default Scene
+    //----------------------------------------------------------------------------
+
+    var model = new XEO.Model({
+        src: "models/gltf/Reciprocating_Saw/Reciprocating_Saw.gltf"
+    });
+
+    //----------------------------------------------------------------------------
+    // Set initial camera position
+    //----------------------------------------------------------------------------
+
+    var view = model.scene.camera.view;
+
+    view.eye = [
+        -36.588294982910156,
+        400.0135898590088,
+        2.269908905029297
+    ];
+    view.look = [
+        -102.97843933105469,
+        21.8548526763916,
+        19.366687774658203
+    ];
+
+    view.up = [
+        0.005581565201282501,
+        -0.11480721831321716,
+        -0.9933723211288452
+    ];
+
+    view.gimbalLockY = false; // Free rotation for this model
+
+    model.on("loaded", function () {
+
+        //---------------------------------------------------------------------------------------
+        // When the Model has loaded, iterate over all the Entities in the Model:
+        //
+        // 1. Ensure that each Entity has its own Material and Modes components, so that
+        // we can set it transparent individually. Add the Material and Modes to the Model's
+        // Collection so that they get destroyed whenever the Model is destroyed or reloaded.
+        //
+        // 2. Flatten each Entity's transform hierarchy down to one Transform.
+        //---------------------------------------------------------------------------------------
+
+        var entities = model.collection.types["XEO.Entity"];
+        var entity;
+
+        for (var entityId in entities) {
+            if (entities.hasOwnProperty(entityId)) {
+
+                entity = entities[entityId];
+
+                // Ensure the Entity has its own unique Material
+                // Add the Material and Modes to the Model's Collection
+                // so that they get destroyed automatically
+
+                model.collection.add(entity.material = entity.material.clone());
+
+                // Flatten modelling transform hierarchies
+
+                if (entity.transform && entity.transform.parent) {
+
+                    // If an entity has a transform that has a parent, then the entity's
+                    // transform hierarchy needs collapsing. Bake the hierarchy into
+                    // a matrix on a single XEO.Transform and set that as the entity's new transform.
+                    // Store the new transform in the Model's Collection so that
+                    // it gets destroyed when the Model is destroyed or reloaded
+
+                    model.collection.add(entity.transform = new XEO.Transform({
+                        matrix: entity.transform.leafMatrix
+                    }));
+                }
+            }
+        }
+    });
+
+    //----------------------------------------------------------------------------
+    // Set initial camera position
+    //----------------------------------------------------------------------------
+
+    //----------------------------------------------------------------------------
+    // Create a ZSpace effect
+    //----------------------------------------------------------------------------
+
+    var zspace = new XEO.ZSpace();
+
+    //----------------------------------------------------------------------------
+    // Allow camera control with keyboard and mouse
+    //----------------------------------------------------------------------------
+
+    var cameraControl = new XEO.CameraControl();
+    cameraControl.mouseZoom.sensitivity = 3;
+
+    //----------------------------------------------------------------------------
+    // Check if we're actually running on a ZSpace device
+    //----------------------------------------------------------------------------
+
+    zspace.on("supported", function (supported) {
+
+        if (!supported) {
+
+            //----------------------------------------------------------------------------
+            // ZSpace not detected, show a messsage
+            //----------------------------------------------------------------------------
+
+            document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. ";
+
+        } else { // ZSpace detected
+
+            //----------------------------------------------------------------------------
+            // Create helper to show stylus position
+            //----------------------------------------------------------------------------
+
+            var stylusHelper = new (function () {
+
+                var entity = new XEO.Entity({
+                    geometry: new XEO.Geometry({
+                        primitive: "lines",
+                        positions: [0, 0, 0, 0, 0, 0],
+                        indices: [0, 1]
+                    }),
+                    material: new XEO.PhongMaterial({
+                        emissive: [1, 0.3, 0.3],
+                        diffuse: [0, 0, 0],
+                        ambient: [0, 0, 0],
+                        lineWidth: 3
+                    }),
+                    modes: new XEO.Modes({pickable: false})
+                });
+
+                var positions = new Float32Array(6);
+
+                this.setPosition = function (pos, dir) {
+                    positions[0] = pos[0]; // Origin
+                    positions[1] = pos[1];
+                    positions[2] = pos[2];
+                    positions[3] = pos[0] + dir[0]; // Direction
+                    positions[4] = pos[1] + dir[1];
+                    positions[5] = pos[2] + dir[2];
+                    entity.geometry.positions = positions;
+                };
+
+                this.setHighlighted = function (highlighted) {
+                    entity.material.emissive = highlighted ? [0.3, 1.0, 0.3] : [1.0, 0.3, 0.3];
+                    entity.material.lineWidth = highlighted ? 5 : 3;
+                };
+            })();
+
+            //----------------------------------------------------------------------------
+            // Handle stylus interaction
+            //----------------------------------------------------------------------------
+
+            var draggingEntity = false;
+            var draggingStartPos = XEO.math.vec3();
+            var stylusIsectLen;
+
+            zspace.on("stylusButton0", (function () {
+
+                var stylusDir = XEO.math.vec3();
+                var stylusIsectDir = XEO.math.vec3();
+
+                return function (down) {
+
+                    if (!down) {
+                        if (draggingEntity) {
+                            draggingEntity.material.emissive = [0.0, 0.0, 0.0];
+                            draggingEntity = null;
+                        }
+                        return;
+                    }
+
+                    var stylusPos = zspace.stylusPos;
+                    XEO.math.mulVec3Scalar(zspace.stylusDir, 100, stylusDir);
+
+                    var hit = model.scene.pick({
+                        pickSurface: true, // <<----- Picking point on surface
+                        origin: stylusPos,
+                        direction: stylusDir
+                    });
+
+                    if (hit) { // Stylus hits an Entity
+
+                        var entity = hit.entity;
+
+                        if (!entity.transform || !entity.transform.meta.stylusTransform) {
+                            entity.transform = new XEO.Translate({
+                                meta: {
+                                    stylusTransform: true
+                                },
+                                xyz: [0, 0, 0],
+                                parent: entity.transform,
+                                postMultiply: false
+                            });
+                        }
+                        draggingEntity = entity;
+                        draggingEntity.material.emissive = [0.0, 1.0, 0.0];
+                        draggingStartPos.set(hit.worldPos);
+                        XEO.math.subVec3(hit.worldPos, stylusPos, stylusIsectDir);
+                        stylusIsectLen = XEO.math.lenVec3(stylusIsectDir);
+
+                        console.log("1: " + hit.worldPos);
+                    }
+                };
+            })());
+
+            zspace.on("stylusMoved", (function () {
+
+                var stylusDir = XEO.math.vec3();
+                var stylusIsectDir = XEO.math.vec3();
+                var stylusIsect = XEO.math.vec3();
+                var xyz = XEO.math.vec3();
+                var lastEntityHighlighted = null;
+
+                return function () {
+
+                    var stylusPos = zspace.stylusPos;
+
+                    XEO.math.mulVec3Scalar(zspace.stylusDir, 200, stylusDir);
+
+                    stylusHelper.setPosition(stylusPos, stylusDir);
+
+                    if (draggingEntity) {
+
+                        XEO.math.mulVec3Scalar(zspace.stylusDir, stylusIsectLen, stylusIsectDir);
+                        XEO.math.addVec3(zspace.stylusPos, stylusIsectDir, stylusIsect);
+
+                        XEO.math.subVec3(stylusIsect, draggingStartPos, xyz);
+
+                        draggingEntity.transform.xyz = xyz;
+
+                    } else {
+
+                        var hit = model.scene.pick({
+                            pickSurface: false, // Default
+                            origin: stylusPos,
+                            direction: stylusDir
+                        });
+
+                        if (lastEntityHighlighted) {
+                            if (!hit || (hit.entity.id !== lastEntityHighlighted.id)) {
+                                lastEntityHighlighted.material.emissive = [0, 0, 0];
+                            }
+                        }
+
+                        if (hit) {
+                            stylusHelper.setHighlighted(true);
+                            hit.entity.material.emissive = [0, 0.5, 0];
+                            lastEntityHighlighted = hit.entity;
+
+                        } else {
+                            stylusHelper.setHighlighted(false);
+                            lastEntityHighlighted = null;
+                        }
+                    }
+                };
+            })());
+        }
+    });
+
+</script>
+</body>
+</html>
