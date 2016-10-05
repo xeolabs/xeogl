@@ -183,13 +183,7 @@
              * @type {{}|*}
              */
             this.contextAttr = cfg.contextAttr || {};
-
             this.contextAttr.alpha = this.transparent;
-            this.contextAttr.depth = true; // Need depth buffer
-            this.contextAttr.preMultipliedAlpha = true;
-            this.contextAttr.preserveDrawingbuffer = false;
-            this.contextAttr.antialias = true;  // TODO
-            //this.contextAttr.stencil = true; // Request stencil buffer
 
             if (!cfg.canvas) {
 
