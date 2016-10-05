@@ -52,7 +52,7 @@
     var scene = cube.scene;
 
     scene.camera.view.eye = [0, 2, -10];
-    scene.camera.view.look = [0, 0,0];
+    scene.camera.view.look = [0, 0, 0];
 
     scene.on("tick", function () {
         cube.transform.angle += 0.1;
@@ -70,26 +70,25 @@
 
     new XEO.CameraControl();
 
-    //---------------------------------------------------
+    //----------------------------------------------------------------------------
     // Check if we're actually running on a ZSpace device
-    //---------------------------------------------------
+    //----------------------------------------------------------------------------
 
     zspace.on("supported", function (supported) {
 
         if (!supported) {
 
-            //---------------------------------------------------
-            // Not running on a ZSpace device
-            // Fall back to a default camera control
-            //---------------------------------------------------
+            //----------------------------------------------------------------------------
+            // ZSpace not detected, show a messsage
+            //----------------------------------------------------------------------------
 
             document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. ";
 
         } else { // ZSpace detected
 
-            //--------------------------------------------
+            //----------------------------------------------------------------------------
             // Create helper to show stylus position
-            //--------------------------------------------
+            //----------------------------------------------------------------------------
 
             var stylusHelper = new (function () {
 
@@ -103,7 +102,7 @@
                         emissive: [1, 0.3, 0.3],
                         diffuse: [0, 0, 0],
                         ambient: [0, 0, 0],
-                        lineWidth: 2
+                        lineWidth: 3
                     }),
                     modes: new XEO.Modes({pickable: false})
                 });
@@ -121,85 +120,119 @@
                 };
 
                 this.setHighlighted = function (highlighted) {
-                    entity.material.emissive = highlighted ? [1.0, 0.5, 0.5] : [0.5, 0.3, 0.3];
-                    entity.material.lineWidth = highlighted ? 4 : 2;
+                    entity.material.emissive = highlighted ? [0.3, 1.0, 0.3] : [1.0, 0.3, 0.3];
+                    entity.material.lineWidth = highlighted ? 5 : 3;
                 };
             })();
 
-            //----------------------------------------------------
-            // Create helper to show stylus-Entity intersections
-            //----------------------------------------------------
+            //----------------------------------------------------------------------------
+            // Handle stylus interaction
+            //----------------------------------------------------------------------------
 
-            var hitHelper = new (function () {
+            var draggingEntity = false;
+            var draggingStartPos = XEO.math.vec3();
+            var stylusIsectLen;
 
-                var entity = new XEO.Entity({
-                    geometry: new XEO.SphereGeometry({radius: 0.05}),
-                    material: new XEO.PhongMaterial({emissive: [1, 0, 0], diffuse: [0, 0, 0]}),
-                    transform: new XEO.Translate(),
-                    modes: new XEO.Modes({pickable: false}),
-                    visibility: new XEO.Visibility({visible: false})
-                });
+            zspace.on("stylusButton0", (function () {
 
-                this.show = function (hit) {
-                    entity.transform.xyz = hit.worldPos;
-                    entity.visibility.visible = true;
+                var stylusDir = XEO.math.vec3();
+                var stylusIsectDir = XEO.math.vec3();
+
+                return function (down) {
+
+                    if (!down) {
+                        if (draggingEntity) {
+                            draggingEntity.material.emissive = [0.0, 0.0, 0.0];
+                            draggingEntity = null;
+                        }
+                        return;
+                    }
+
+                    var stylusPos = zspace.stylusPos;
+                    XEO.math.mulVec3Scalar(zspace.stylusDir, 100, stylusDir);
+
+                    var hit = scene.pick({
+                        pickSurface: true, // <<----- Picking point on surface
+                        origin: stylusPos,
+                        direction: stylusDir
+                    });
+
+                    if (hit) { // Stylus hits an Entity
+
+                        var entity = hit.entity;
+
+                        if (!entity.transform || !entity.transform.meta.stylusTransform) {
+                            entity.transform = new XEO.Translate({
+                                meta: {
+                                    stylusTransform: true
+                                },
+                                xyz: [0, 0, 0],
+                                parent: entity.transform,
+                                postMultiply: false
+                            });
+                        }
+                        draggingEntity = entity;
+                        draggingEntity.material.emissive = [0.0, 1.0, 0.0];
+                        draggingStartPos.set(hit.worldPos);
+                        XEO.math.subVec3(hit.worldPos, stylusPos, stylusIsectDir);
+                        stylusIsectLen = XEO.math.lenVec3(stylusIsectDir);
+
+                        console.log("1: " + hit.worldPos);
+                    }
                 };
+            })());
 
-                this.hide = function () {
-                    entity.visibility.visible = false;
+            zspace.on("stylusMoved", (function () {
+
+                var stylusDir = XEO.math.vec3();
+                var stylusIsectDir = XEO.math.vec3();
+                var stylusIsect = XEO.math.vec3();
+                var xyz = XEO.math.vec3();
+                var lastEntityHighlighted = null;
+
+                return function () {
+
+                    var stylusPos = zspace.stylusPos;
+
+                    XEO.math.mulVec3Scalar(zspace.stylusDir, 100, stylusDir);
+
+                    stylusHelper.setPosition(stylusPos, stylusDir);
+
+                    if (draggingEntity) {
+
+                        XEO.math.mulVec3Scalar(zspace.stylusDir, stylusIsectLen, stylusIsectDir);
+                        XEO.math.addVec3(zspace.stylusPos, stylusIsectDir, stylusIsect);
+
+                        XEO.math.subVec3(stylusIsect, draggingStartPos, xyz);
+
+                        draggingEntity.transform.xyz = xyz;
+
+                    } else {
+
+                        var hit = scene.pick({
+                            pickSurface: false, // Default
+                            origin: stylusPos,
+                            direction: stylusDir
+                        });
+
+                        if (lastEntityHighlighted) {
+                            if (!hit || (hit.entity.id !== lastEntityHighlighted.id)) {
+                                lastEntityHighlighted.material.emissive = [0, 0, 0];
+                            }
+                        }
+
+                        if (hit) {
+                            stylusHelper.setHighlighted(true);
+                            hit.entity.material.emissive = [0, 0.5, 0];
+                            lastEntityHighlighted = hit.entity;
+
+                        } else {
+                            stylusHelper.setHighlighted(false);
+                            lastEntityHighlighted = null;
+                        }
+                    }
                 };
-            })();
-
-            //-------------------------------------------------------------
-            // Update the ray helper whenever the stylus moves; highlight
-            // the ray helper when it intersects with an entity
-            //-------------------------------------------------------------
-
-            zspace.on("stylusMoved", function () {
-
-                stylusHelper.setPosition(zspace.stylusPos, zspace.stylusDir);
-
-                var hit = scene.pick({
-                    pickSurface: false, // Default
-                    origin: zspace.stylusPos,
-                    direction: zspace.stylusDir
-                });
-
-                if (hit) { // Stylus hits an Entity
-
-                    stylusHelper.setHighlighted(true);
-                    hitHelper.show(hit);
-
-                } else { // Stylus hits nothing
-
-                    stylusHelper.setHighlighted(false);
-                    hitHelper.hide();
-                }
-            });
-
-            //-------------------------------------------------------------
-            // Attempt to select a point on the surface of an entity when
-            // the first button is clicked on the stylus; use the hit
-            // helper to show the intersection if successful
-            //-------------------------------------------------------------
-
-            zspace.on("stylusButton0", function () {
-
-                var hit = scene.pick({
-                    pickSurface: true, // <<-------------- Picking point on surface
-                    origin: zspace.stylusPos,
-                    direction: zspace.stylusDir
-                });
-
-                if (hit) { // Stylus hits an Entity
-
-                    hitHelper.show(hit);
-
-                } else { // Stylus hits nothing
-
-                    hitHelper.hide();
-                }
-            });
+            })());
         }
     });
 
