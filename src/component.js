@@ -287,20 +287,22 @@
             this.destroyed = false;
 
             /// Attached components with names.
-            this._attached = {};
+            this._attached = {}; // Protected
 
             // Attached components keyed to IDs
-            this._attachments = {};
+            this._attachments = null; // Lazy-instantiated map
 
-            // Events
-            this._handleMap = new XEO.utils.Map(); // Subscription handle pool
-            this._handleEvents = {}; // Subscription handles mapped to event names
-            this._eventSubs = {}; // Event names mapped to subscribers
-            this._events = {}; // Maps names to events
+            // Event support - lazy creating these properties because
+            // they are expensive to have around if not using them
+            this._events = null;
+            this._handleMap = null; // Subscription handle pool
+            this._handleEvents = null; // Subscription handles mapped to event names
+            this._eventSubs = null; // Event names mapped to subscribers
+            this._events = null; // Maps names to events
             this._eventCallDepth = 0; // Helps us catch stack overflows from recursive events
 
             // Components created with #create
-            this._sharedComponents = {};
+            this._sharedComponents = null; // Lazy-instantiated map
 
             if (this.scene && this.type !== "XEO.Scene") { // HACK: Don't add scene to itself
 
@@ -430,6 +432,14 @@
          */
         fire: function (event, value, forget) {
 
+            if (!this._events) {
+                this._events = {};
+            }
+
+            if (!this._eventSubs) {
+                this._eventSubs = {};
+            }
+
             if (forget !== true) {
                 this._events[event] = value; // Save notification
             }
@@ -470,6 +480,19 @@
          * @return {String} Handle to the subscription, which may be used to unsubscribe with {@link #off}.
          */
         on: function (event, callback, scope) {
+
+            if (!this._events) {
+                this._events = {};
+            }
+            if (!this._handleMap) {
+                this._handleMap = new XEO.utils.Map(); // Subscription handle pool
+            }
+            if (!this._handleEvents) {
+                this._handleEvents = {};
+            }
+            if (!this._eventSubs) {
+                this._eventSubs = {};
+            }
             var subs = this._eventSubs[event];
             if (!subs) {
                 subs = {};
@@ -487,7 +510,7 @@
             }
             return handle;
         },
-        
+
         /**
          * Cancels an event subscription that was previously made with {{#crossLink "Component/on:method"}}{{/crossLink}} or
          * {{#crossLink "Component/once:method"}}{{/crossLink}}.
@@ -497,6 +520,9 @@
          */
         off: function (handle) {
             if (handle === undefined || handle === null) {
+                return;
+            }
+            if (!this._handleEvents) {
                 return;
             }
             var event = this._handleEvents[handle];
@@ -711,6 +737,10 @@
                 }
             }
 
+            if (!this._attachments) {
+                this._attachments = {};
+            }
+
             var oldComponent = this._attached[name];
             var subs;
             var i;
@@ -882,6 +912,10 @@
                 // Register component on this component so that we can
                 // automatically destroy it when we destroy this component
 
+                if (!this._sharedComponents) {
+                    this._sharedComponents = {};
+                }
+
                 if (!this._sharedComponents[component.id]) {
                     this._sharedComponents[component.id] = component;
                 }
@@ -1030,32 +1064,36 @@
             var i;
             var len;
 
-            for (id in this._attachments) {
-                if (this._attachments.hasOwnProperty(id)) {
+            if (!this._attachments) {
+                for (id in this._attachments) {
+                    if (this._attachments.hasOwnProperty(id)) {
 
-                    attachment = this._attachments[id];
-                    component = attachment.component;
+                        attachment = this._attachments[id];
+                        component = attachment.component;
 
-                    // Unsubscribe from properties on the child
+                        // Unsubscribe from properties on the child
 
-                    subs = attachment.subs;
+                        subs = attachment.subs;
 
-                    for (i = 0, len = subs.length; i < len; i++) {
-                        component.off(subs[i]);
+                        for (i = 0, len = subs.length; i < len; i++) {
+                            component.off(subs[i]);
+                        }
                     }
                 }
             }
 
             // Release components created with #create
 
-            for (id in this._sharedComponents) {
-                if (this._sharedComponents.hasOwnProperty(id)) {
+            if (this._sharedComponents) {
+                for (id in this._sharedComponents) {
+                    if (this._sharedComponents.hasOwnProperty(id)) {
 
-                    component = this._sharedComponents[id];
+                        component = this._sharedComponents[id];
 
-                    delete this._sharedComponents[id];
+                        delete this._sharedComponents[id];
 
-                    this.scene._putSharedComponent(component);
+                        this.scene._putSharedComponent(component);
+                    }
                 }
             }
 
@@ -1082,5 +1120,4 @@
         _destroy: function () {
         }
     });
-})
-();
+})();
