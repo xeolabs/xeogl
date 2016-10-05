@@ -10290,20 +10290,22 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this.destroyed = false;
 
             /// Attached components with names.
-            this._attached = {};
+            this._attached = {}; // Protected
 
             // Attached components keyed to IDs
-            this._attachments = {};
+            this._attachments = null; // Lazy-instantiated map
 
-            // Events
-            this._handleMap = new XEO.utils.Map(); // Subscription handle pool
-            this._handleEvents = {}; // Subscription handles mapped to event names
-            this._eventSubs = {}; // Event names mapped to subscribers
-            this._events = {}; // Maps names to events
+            // Event support - lazy creating these properties because
+            // they are expensive to have around if not using them
+            this._events = null;
+            this._handleMap = null; // Subscription handle pool
+            this._handleEvents = null; // Subscription handles mapped to event names
+            this._eventSubs = null; // Event names mapped to subscribers
+            this._events = null; // Maps names to events
             this._eventCallDepth = 0; // Helps us catch stack overflows from recursive events
 
             // Components created with #create
-            this._sharedComponents = {};
+            this._sharedComponents = null; // Lazy-instantiated map
 
             if (this.scene && this.type !== "XEO.Scene") { // HACK: Don't add scene to itself
 
@@ -10433,6 +10435,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          */
         fire: function (event, value, forget) {
 
+            if (!this._events) {
+                this._events = {};
+            }
+
+            if (!this._eventSubs) {
+                this._eventSubs = {};
+            }
+
             if (forget !== true) {
                 this._events[event] = value; // Save notification
             }
@@ -10473,6 +10483,19 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          * @return {String} Handle to the subscription, which may be used to unsubscribe with {@link #off}.
          */
         on: function (event, callback, scope) {
+
+            if (!this._events) {
+                this._events = {};
+            }
+            if (!this._handleMap) {
+                this._handleMap = new XEO.utils.Map(); // Subscription handle pool
+            }
+            if (!this._handleEvents) {
+                this._handleEvents = {};
+            }
+            if (!this._eventSubs) {
+                this._eventSubs = {};
+            }
             var subs = this._eventSubs[event];
             if (!subs) {
                 subs = {};
@@ -10490,7 +10513,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             }
             return handle;
         },
-        
+
         /**
          * Cancels an event subscription that was previously made with {{#crossLink "Component/on:method"}}{{/crossLink}} or
          * {{#crossLink "Component/once:method"}}{{/crossLink}}.
@@ -10500,6 +10523,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          */
         off: function (handle) {
             if (handle === undefined || handle === null) {
+                return;
+            }
+            if (!this._handleEvents) {
                 return;
             }
             var event = this._handleEvents[handle];
@@ -10714,6 +10740,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 }
             }
 
+            if (!this._attachments) {
+                this._attachments = {};
+            }
+
             var oldComponent = this._attached[name];
             var subs;
             var i;
@@ -10885,6 +10915,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 // Register component on this component so that we can
                 // automatically destroy it when we destroy this component
 
+                if (!this._sharedComponents) {
+                    this._sharedComponents = {};
+                }
+
                 if (!this._sharedComponents[component.id]) {
                     this._sharedComponents[component.id] = component;
                 }
@@ -11033,32 +11067,36 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             var i;
             var len;
 
-            for (id in this._attachments) {
-                if (this._attachments.hasOwnProperty(id)) {
+            if (!this._attachments) {
+                for (id in this._attachments) {
+                    if (this._attachments.hasOwnProperty(id)) {
 
-                    attachment = this._attachments[id];
-                    component = attachment.component;
+                        attachment = this._attachments[id];
+                        component = attachment.component;
 
-                    // Unsubscribe from properties on the child
+                        // Unsubscribe from properties on the child
 
-                    subs = attachment.subs;
+                        subs = attachment.subs;
 
-                    for (i = 0, len = subs.length; i < len; i++) {
-                        component.off(subs[i]);
+                        for (i = 0, len = subs.length; i < len; i++) {
+                            component.off(subs[i]);
+                        }
                     }
                 }
             }
 
             // Release components created with #create
 
-            for (id in this._sharedComponents) {
-                if (this._sharedComponents.hasOwnProperty(id)) {
+            if (this._sharedComponents) {
+                for (id in this._sharedComponents) {
+                    if (this._sharedComponents.hasOwnProperty(id)) {
 
-                    component = this._sharedComponents[id];
+                        component = this._sharedComponents[id];
 
-                    delete this._sharedComponents[id];
+                        delete this._sharedComponents[id];
 
-                    this.scene._putSharedComponent(component);
+                        this.scene._putSharedComponent(component);
+                    }
                 }
             }
 
@@ -11085,8 +11123,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         _destroy: function () {
         }
     });
-})
-();
+})();
 ;/**
  A **Scene** models a 3D scene as a fully-editable and serializable <a href="http://gameprogrammingpatterns.com/component.html" target="_other">component-entity</a> graph.
 
@@ -14215,6 +14252,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              */
             this.contextAttr = cfg.contextAttr || {};
             this.contextAttr.alpha = this.transparent;
+            this.contextAttr.preserveDrawingBuffer = true;
 
             if (!cfg.canvas) {
 

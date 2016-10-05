@@ -9054,7 +9054,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 233,
+            "line": 234,
             "description": "Boundary of the Canvas in absolute browser window coordinates.\n\n### Usage:\n\n````javascript\nvar boundary = myScene.canvas.boundary;\n\nvar xmin = boundary[0];\nvar ymin = boundary[1];\nvar width = boundary[2];\nvar height = boundary[3];\n````",
             "itemtype": "property",
             "name": "boundary",
@@ -9066,7 +9066,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 270,
+            "line": 271,
             "description": "Fired whenever the WebGL context has been lost",
             "itemtype": "event",
             "name": "webglContextLost",
@@ -9076,7 +9076,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 283,
+            "line": 284,
             "description": "Fired whenever the WebGL context has been restored again after having previously being lost",
             "itemtype": "event",
             "name": "webglContextRestored",
@@ -9092,7 +9092,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 340,
+            "line": 341,
             "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/boundary:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "boundary",
@@ -9108,14 +9108,14 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 361,
+            "line": 362,
             "class": "Canvas",
             "module": "XEO",
             "submodule": "canvas"
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 369,
+            "line": 370,
             "description": "Creates a default canvas in the DOM.",
             "access": "private",
             "tagname": "",
@@ -9125,7 +9125,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 398,
+            "line": 399,
             "description": "Creates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
             "access": "private",
             "tagname": "",
@@ -9135,7 +9135,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 430,
+            "line": 431,
             "access": "private",
             "tagname": "",
             "class": "Canvas",
@@ -9144,7 +9144,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 460,
+            "line": 461,
             "description": "Initialises the WebGL context",
             "access": "private",
             "tagname": "",
@@ -9154,7 +9154,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 493,
+            "line": 494,
             "description": "Fired whenever the canvas failed to get a WebGL context, which probably means that WebGL\nis either unsupported or has been disabled.",
             "itemtype": "event",
             "name": "webglContextFailed",
@@ -9164,7 +9164,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 502,
+            "line": 503,
             "description": "Returns a snapshot of this Canvas as a Base64-encoded image.\n\n#### Usage:\n````javascript\nimageElement.src = myScene.canvas.getSnapshot({\n    width: 500, // Defaults to size of canvas\n    height: 500,\n    format: \"png\" // Options are \"jpeg\" (default), \"png\" and \"bmp\"\n});\n````",
             "itemtype": "method",
             "name": "getSnapshot",
@@ -9207,7 +9207,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 560,
+            "line": 561,
             "description": "Reads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
             "params": [
                 {
@@ -9237,7 +9237,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 588,
+            "line": 589,
             "description": "The busy {{#crossLink \"Spinner\"}}{{/crossLink}} for this Canvas.",
             "itemtype": "property",
             "name": "spinner",
@@ -20187,7 +20187,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 322,
+            "line": 324,
             "description": "JavaScript class name for this Component.\n\nThis is used when <a href=\"Scene.html#savingAndLoading\">loading Scenes from JSON</a>, and is included in the JSON\nrepresentation of this Component, so that this class may be instantiated when loading it from the JSON representation.\n\nFor example: \"XEO.AmbientLight\", \"XEO.ColorTarget\", \"XEO.Lights\" etc.",
             "itemtype": "property",
             "name": "type",
@@ -20198,7 +20198,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 336,
+            "line": 338,
             "description": "An array of strings that indicates the chain of super-types within this component's inheritance hierarchy.\n\nFor example, if this component is a {{#crossLink \"Rotate\"}}{{/crossLink}}, which\nextends {{#crossLink \"Transform\"}}{{/crossLink}}, which in turn extends {{#crossLink \"Component\"}}{{/crossLink}},\nthen this property will have the value:\n\n````json\n[\"XEO.Component\", \"XEO.Transform\"]\n````\n\nNote that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.",
             "itemtype": "property",
             "name": "superTypes",
@@ -20209,7 +20209,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 355,
+            "line": 357,
             "description": "Tests if this component is of the given type, or is a subclass of the given type.\n\nThe type may be given as either a string or a component constructor.\n\nThis method works by walking up the inheritance type chain, which this component provides in\nproperty {{#crossLink \"Component/superTypes:property\"}}{{/crossLink}}, returning true as soon as one of the type strings in\nthe chain matches the given type, of false if none match.\n\n#### Examples:\n\n````javascript\nvar myRotate = new XEO.Rotate({ ... });\n\nmyRotate.isType(XEO.Component); // Returns true for all XEO components\nmyRotate.isType(\"XEO.Component\"); // Returns true for all XEO components\nmyRotate.isType(XEO.Rotate); // Returns true\nmyRotate.isType(XEO.Transform); // Returns true\nmyRotate.isType(\"XEO.Transform\"); // Returns true\nmyRotate.isType(XEO.Entity); // Returns false, because XEO.Rotate does not (even indirectly) extend XEO.Entity\n````",
             "itemtype": "method",
             "name": "isType",
@@ -20229,7 +20229,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 412,
+            "line": 414,
             "description": "Initializes this component",
             "params": [
                 {
@@ -20244,7 +20244,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 420,
+            "line": 422,
             "description": "Fires an event on this component.\n\nNotifies existing subscribers to the event, retains the event to give to\nany subsequent notifications on that location as they are made.",
             "itemtype": "method",
             "name": "fire",
@@ -20272,7 +20272,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 461,
+            "line": 471,
             "description": "Subscribes to an event on this component.\n\nThe callback is be called with this component as scope.",
             "itemtype": "method",
             "name": "on",
@@ -20304,7 +20304,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 491,
+            "line": 514,
             "description": "Cancels an event subscription that was previously made with {{#crossLink \"Component/on:method\"}}{{/crossLink}} or\n{{#crossLink \"Component/once:method\"}}{{/crossLink}}.",
             "itemtype": "method",
             "name": "off",
@@ -20320,7 +20320,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 513,
+            "line": 539,
             "description": "Subscribes to the next occurrence of the given event, then un-subscribes as soon as the event is handled.\n\nThis is equivalent to calling {{#crossLink \"Component/on:method\"}}{{/crossLink}}, and then calling\n{{#crossLink \"Component/off:method\"}}{{/crossLink}} inside the callback function.",
             "itemtype": "method",
             "name": "once",
@@ -20348,7 +20348,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 534,
+            "line": 560,
             "description": "Logs a console debugging message for this component.\n\nThe console message will have this format: *````[LOG] [<component type> <component id>: <message>````*\n\nAlso fires the message as a {{#crossLink \"Scene/log:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "log",
@@ -20364,7 +20364,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 559,
+            "line": 585,
             "description": "Logs a warning for this component to the JavaScript console.\n\nThe console message will have this format: *````[WARN] [<component type> =<component id>: <message>````*\n\nAlso fires the message as a {{#crossLink \"Scene/warn:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "warn",
@@ -20380,7 +20380,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 579,
+            "line": 605,
             "description": "Logs an error for this component to the JavaScript console.\n\nThe console message will have this format: *````[ERROR] [<component type> =<component id>: <message>````*\n\nAlso fires the message as an {{#crossLink \"Scene/error:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "error",
@@ -20396,7 +20396,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 599,
+            "line": 625,
             "description": "Creates a clone of this component.\n\nThe clone will have the same properties as the original, except where\noverridden in the given optional configs.\n\nThe clone will share (by reference) the components of the original, unless overridden.\n\nFor example, if this component is an {{#crossLink \"Entity\"}}{{/crossLink}}, then the clone\nwill be attached to the **same** instances of {{#crossLink \"PhoneMaterial\"}}{{/crossLink}},\n{{#crossLink \"Camera\"}}{{/crossLink}} etc as this component, unless it supplies its own\ninstances for those via the configs.",
             "params": [
                 {
@@ -20415,7 +20415,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 631,
+            "line": 657,
             "description": "Adds a child component to this.\nWhen component not given, attaches the scene's default instance for the given name (if any).\nPublishes the new child component on this component, keyed to the given name.",
             "params": [
                 {
@@ -20509,7 +20509,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 831,
+            "line": 861,
             "description": "Convenience method for creating a Component within this Component's {{#crossLink \"Scene\"}}{{/crossLink}}.\n\nYou would typically use this method to conveniently instantiate components that you'd want to\nshare (ie. \"instance\") among your {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe method is given a component type, configuration and optional instance ID, like so:\n\n````javascript\nvar material = myComponent.create(XEO.PhongMaterial, {\n     diffuse: [1,0,0],\n     specular: [1,1,0]\n}, \"myMaterial\");\n````\n\nThe first time you call this method for the given ````type```` and ````instanceId````, this method will create the\n{{#crossLink \"PhongMaterial\"}}{{/crossLink}}, passing the given  attributes to the component's constructor.\n\nIf you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same\ncomponent instance that it returned the first time, and will ignore the configuration:\n\n````javascript\nvar material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, \"myMaterial\");\n````\n\nSo in this example, our {{#crossLink \"PhongMaterial\"}}{{/crossLink}} will continue to have the red specular\nand diffuse color that we specified the first time.\n\nEach time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a\nreference count for the component instance. You can release the shared component instance with a call to\n{{#crossLink \"Scene/putSharedComponent:method\"}}{{/crossLink}}, and once you have released it as many\ntimes as you got it, the Scene will destroy the component.",
             "itemtype": "method",
             "name": "create",
@@ -20541,7 +20541,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 902,
+            "line": 936,
             "description": "Protected method, called by sub-classes to queue a call to _update().",
             "access": "protected",
             "tagname": "",
@@ -20559,7 +20559,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 918,
+            "line": 952,
             "access": "private",
             "tagname": "",
             "class": "Component",
@@ -20567,7 +20567,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 930,
+            "line": 964,
             "description": "Protected virtual template method, optionally implemented\nby sub-classes to perform a scheduled task.",
             "access": "protected",
             "tagname": "",
@@ -20576,7 +20576,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 938,
+            "line": 972,
             "description": "Protected template method, implemented by sub-classes to compile\ntheir state into their Scene's XEO.renderer.Renderer.",
             "access": "protected",
             "tagname": "",
@@ -20585,7 +20585,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 949,
+            "line": 983,
             "description": "JSON object containing the state of this Component.",
             "itemtype": "property",
             "name": "json",
@@ -20596,7 +20596,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 977,
+            "line": 1011,
             "description": "String containing the serialized JSON state of this Component.",
             "itemtype": "property",
             "name": "string",
@@ -20607,7 +20607,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 992,
+            "line": 1026,
             "description": "Experimental: string containing a JavaScript expression that would instantiate this Component.",
             "itemtype": "property",
             "name": "string",
@@ -20618,7 +20618,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1010,
+            "line": 1044,
             "description": "Destroys this component.\n\nFires a {{#crossLink \"Component/destroyed:event\"}}{{/crossLink}} event on this Component.\n\nAutomatically disassociates this component from other components, causing them to fall back on any\ndefaults that this component overrode on them.\n\nTODO: describe effect with respect to #create",
             "itemtype": "method",
             "name": "destroy",
@@ -20627,7 +20627,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1068,
+            "line": 1106,
             "description": "Fired when this Component is destroyed.",
             "itemtype": "event",
             "name": "destroyed",
@@ -20636,7 +20636,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1076,
+            "line": 1114,
             "description": "Protected template method, implemented by sub-classes\nto clean up just before the component is destroyed.",
             "access": "protected",
             "tagname": "",
@@ -23847,7 +23847,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/canvas/canvas.js:502"
+            "line": " src/canvas/canvas.js:503"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -24007,15 +24007,15 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/component.js:355"
+            "line": " src/component.js:357"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/component.js:599"
+            "line": " src/component.js:625"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/component.js:831"
+            "line": " src/component.js:861"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -24551,27 +24551,27 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/canvas/canvas.js:361"
+            "line": " src/canvas/canvas.js:362"
         },
         {
             "message": "Missing item type\nCreates a default canvas in the DOM.",
-            "line": " src/canvas/canvas.js:369"
+            "line": " src/canvas/canvas.js:370"
         },
         {
             "message": "Missing item type\nCreates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
-            "line": " src/canvas/canvas.js:398"
+            "line": " src/canvas/canvas.js:399"
         },
         {
             "message": "Missing item type",
-            "line": " src/canvas/canvas.js:430"
+            "line": " src/canvas/canvas.js:431"
         },
         {
             "message": "Missing item type\nInitialises the WebGL context",
-            "line": " src/canvas/canvas.js:460"
+            "line": " src/canvas/canvas.js:461"
         },
         {
             "message": "Missing item type\nReads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
-            "line": " src/canvas/canvas.js:560"
+            "line": " src/canvas/canvas.js:561"
         },
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",
@@ -24695,35 +24695,35 @@
         },
         {
             "message": "Missing item type\nInitializes this component",
-            "line": " src/component.js:412"
+            "line": " src/component.js:414"
         },
         {
             "message": "Missing item type\nCreates a clone of this component.\n\nThe clone will have the same properties as the original, except where\noverridden in the given optional configs.\n\nThe clone will share (by reference) the components of the original, unless overridden.\n\nFor example, if this component is an {{#crossLink \"Entity\"}}{{/crossLink}}, then the clone\nwill be attached to the **same** instances of {{#crossLink \"PhoneMaterial\"}}{{/crossLink}},\n{{#crossLink \"Camera\"}}{{/crossLink}} etc as this component, unless it supplies its own\ninstances for those via the configs.",
-            "line": " src/component.js:599"
+            "line": " src/component.js:625"
         },
         {
             "message": "Missing item type\nAdds a child component to this.\nWhen component not given, attaches the scene's default instance for the given name (if any).\nPublishes the new child component on this component, keyed to the given name.",
-            "line": " src/component.js:631"
+            "line": " src/component.js:657"
         },
         {
             "message": "Missing item type\nProtected method, called by sub-classes to queue a call to _update().",
-            "line": " src/component.js:902"
+            "line": " src/component.js:936"
         },
         {
             "message": "Missing item type",
-            "line": " src/component.js:918"
+            "line": " src/component.js:952"
         },
         {
             "message": "Missing item type\nProtected virtual template method, optionally implemented\nby sub-classes to perform a scheduled task.",
-            "line": " src/component.js:930"
+            "line": " src/component.js:964"
         },
         {
             "message": "Missing item type\nProtected template method, implemented by sub-classes to compile\ntheir state into their Scene's XEO.renderer.Renderer.",
-            "line": " src/component.js:938"
+            "line": " src/component.js:972"
         },
         {
             "message": "Missing item type\nProtected template method, implemented by sub-classes\nto clean up just before the component is destroyed.",
-            "line": " src/component.js:1076"
+            "line": " src/component.js:1114"
         },
         {
             "message": "Missing item type\nReleases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
