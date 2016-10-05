@@ -184,6 +184,7 @@
              */
             this.contextAttr = cfg.contextAttr || {};
             this.contextAttr.alpha = this.transparent;
+            this.contextAttr.preserveDrawingBuffer = true;
 
             if (!cfg.canvas) {
 
