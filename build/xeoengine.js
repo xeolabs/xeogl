@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-10-05
+ * Built on 2016-10-06
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -14252,7 +14252,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              */
             this.contextAttr = cfg.contextAttr || {};
             this.contextAttr.alpha = this.transparent;
-            this.contextAttr.preserveDrawingBuffer = true;
+        //    this.contextAttr.preserveDrawingBuffer = true;
 
             if (!cfg.canvas) {
 

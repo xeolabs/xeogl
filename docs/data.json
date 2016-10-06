@@ -1207,6 +1207,7 @@
         "XEO": {
             "name": "XEO",
             "submodules": {
+                "undefined": 1,
                 "animation": 1,
                 "boundaries": 1,
                 "camera": 1,
@@ -1233,6 +1234,9 @@
                 "skyboxes": 1
             },
             "classes": {
+                "Visibility": 1,
+                "PhongMaterial": 1,
+                "WebVR": 1,
                 "CameraFlight": 1,
                 "MorphTargets": 1,
                 "Boundary2D": 1,
@@ -1256,8 +1260,6 @@
                 "MouseRotateCamera": 1,
                 "MouseZoomCamera": 1,
                 "Cull": 1,
-                "Render": 1,
-                "Visibility": 1,
                 "Entity": 1,
                 "BoundaryGeometry": 1,
                 "BoxGeometry": 1,
@@ -1276,8 +1278,6 @@
                 "PointLight": 1,
                 "Fresnel": 1,
                 "Material": 1,
-                "MegaTexture": 1,
-                "PhongMaterial": 1,
                 "Reflect": 1,
                 "Texture": 1,
                 "XEO.math.math": 1,
@@ -1305,8 +1305,6 @@
                 "Component": 1,
                 "Scene": 1,
                 "XEO": 1,
-                "Cardboard": 1,
-                "WebVR": 1,
                 "ZSpace": 1,
                 "Nintendo3DSGeometry": 1,
                 "OBJGeometry": 1,
@@ -1504,6 +1502,21 @@
             "file": "src/culling/visibility.js",
             "line": 1,
             "description": "Components for controlling the visibility of Entities."
+        },
+        "xeogl": {
+            "name": "xeogl",
+            "submodules": {
+                "webvr": 1
+            },
+            "classes": {
+                "MegaTexture": 1,
+                "Cardboard": 1,
+                "Render": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "file": "examples/js/webvr/cardboardNEW.js",
+            "line": 1
         },
         "entities": {
             "name": "entities",
@@ -3095,11 +3108,11 @@
             "extensions": [],
             "plugin_for": [],
             "extension_for": [],
-            "module": "XEO",
+            "module": "xeogl",
             "namespace": "",
             "file": "src/culling/render.js",
             "line": 1,
-            "description": "A **Render** toggles the render of attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n<ul>\n<li>An {{#crossLink \"Entity\"}}{{/crossLink}} is rendering when its Render's {{#crossLink \"Render/rendering:property\"}}{{/crossLink}}\nproperty is true and {{#crossLink \"Cull\"}}Cull's{{/crossLink}} {{#crossLink \"Cull/culled:property\"}}{{/crossLink}} property is false.</li>\n<li>Render components are intended for users to control the render of {{#crossLink \"Entity\"}}Entities{{/crossLink}} via UIs.</li>\n<li>{{#crossLink \"Cull\"}}{{/crossLink}} components are intended for **render culling systems** to control the render of {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>A Render may be shared among multiple {{#crossLink \"Entity\"}}Entities{{/crossLink}} to toggle\ntheir render as a group.</li>\n</ul>\n\n<img src=\"../../../assets/images/Render.png\"></img>\n\n## Usage\n\nThis example creates a Render that toggles the render of\ntwo {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n````javascript\nvar render = new XEO.Render({\n   rendering: true\n});\n\n// Create two Entities whose render will be controlled by our Render\n\nvar entity1 = new XEO.Entity({\n   render: render\n});\n\nvar entity2 = new XEO.Entity({\n   render: render\n});\n\n// Subscribe to change on the Render's \"rendering\" property\nvar handle = render.on(\"rendering\", function(value) {\n   //...\n});\n\n// Hide our Entities by flipping the Render's \"rendering\" property,\n// which will also call our handler\nrender.rendering = false;\n\n// Unsubscribe from the Render again\nrender.off(handle);\n\n// When we destroy our Render, the Entities will fall back\n// on the Scene's default Render instance\nrender.destroy();\n````",
+            "description": "A **Render** toggles the render of attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n<ul>\n<li>An {{#crossLink \"Entity\"}}{{/crossLink}} is rendering when its Render's {{#crossLink \"Render/rendering:property\"}}{{/crossLink}}\nproperty is true and {{#crossLink \"Cull\"}}Cull's{{/crossLink}} {{#crossLink \"Cull/culled:property\"}}{{/crossLink}} property is false.</li>\n<li>Render components are intended for users to control the render of {{#crossLink \"Entity\"}}Entities{{/crossLink}} via UIs.</li>\n<li>{{#crossLink \"Cull\"}}{{/crossLink}} components are intended for **render culling systems** to control the render of {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>A Render may be shared among multiple {{#crossLink \"Entity\"}}Entities{{/crossLink}} to toggle\ntheir render as a group.</li>\n</ul>\n\n<img src=\"../../../assets/images/Render.png\"></img>\n\n## Usage\n\nThis example creates a Render that toggles the render of\ntwo {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n````javascript\nvar render = new xeogl.Render({\n   rendering: true\n});\n\n// Create two Entities whose render will be controlled by our Render\n\nvar entity1 = new xeogl.Entity({\n   render: render\n});\n\nvar entity2 = new xeogl.Entity({\n   render: render\n});\n\n// Subscribe to change on the Render's \"rendering\" property\nvar handle = render.on(\"rendering\", function(value) {\n   //...\n});\n\n// Hide our Entities by flipping the Render's \"rendering\" property,\n// which will also call our handler\nrender.rendering = false;\n\n// Unsubscribe from the Render again\nrender.off(handle);\n\n// When we destroy our Render, the Entities will fall back\n// on the Scene's default Render instance\nrender.destroy();\n````",
             "submodule": "culling",
             "is_constructor": 1,
             "params": [
@@ -4445,11 +4458,11 @@
             "extensions": [],
             "plugin_for": [],
             "extension_for": [],
-            "module": "XEO",
+            "module": "xeogl",
             "namespace": "",
             "file": "src/materials/megaTexture.js",
             "line": 1,
-            "description": "A **MegaTexture**\n\n## Overview\n\nTODO\n\n## Usage\n\nThe example below has:\n<ul>\n<li>three Reflects,</li>\n<li>a {{#crossLink \"PhongMaterial\"}}{{/crossLink}} which applies the {{#crossLink \"MegaTexture\"}}{{/crossLink}}s as diffuse, normal and specular maps,</li>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing an {{#crossLink \"AmbientLight\"}}{{/crossLink}} and a {{#crossLink \"PointLight\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that has the default box shape, and\n<li>an {{#crossLink \"Entity\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n```` javascript\nvar megaTexture = new XEO.MegaTexture({\n   //...\n});\n\nnew XEO.Entity({\n\n   material: new XEO.PhongMaterial({\n\n       diffuseMap: new XEO.Texture({\n           megaTexture: megaTexture,\n           src: \"diffuseMap.jpg\",\n       }),\n\n       specularMap: new XEO.Fresnel({\n           megaTexture: megaTexture,\n           src: \"diffuseMap.jpg\"\n       })\n   }),\n\n   geometry: new XEO.TorusGeometry()\n});\n````",
+            "description": "A **MegaTexture**\n\n## Overview\n\nTODO\n\n## Usage\n\nThe example below has:\n<ul>\n<li>three Reflects,</li>\n<li>a {{#crossLink \"PhongMaterial\"}}{{/crossLink}} which applies the {{#crossLink \"MegaTexture\"}}{{/crossLink}}s as diffuse, normal and specular maps,</li>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing an {{#crossLink \"AmbientLight\"}}{{/crossLink}} and a {{#crossLink \"PointLight\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that has the default box shape, and\n<li>an {{#crossLink \"Entity\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n```` javascript\nvar megaTexture = new xeogl.MegaTexture({\n   //...\n});\n\nnew xeogl.Entity({\n\n   material: new xeogl.PhongMaterial({\n\n       diffuseMap: new xeogl.Texture({\n           megaTexture: megaTexture,\n           src: \"diffuseMap.jpg\",\n       }),\n\n       specularMap: new xeogl.Fresnel({\n           megaTexture: megaTexture,\n           src: \"diffuseMap.jpg\"\n       })\n   }),\n\n   geometry: new xeogl.TorusGeometry()\n});\n````",
             "submodule": "materials",
             "is_constructor": 1,
             "params": [
@@ -6397,11 +6410,11 @@
             "extensions": [],
             "plugin_for": [],
             "extension_for": [],
-            "module": "XEO",
+            "module": "xeogl",
             "namespace": "",
             "file": "examples/js/webvr/cardboardNEW.js",
             "line": 1,
-            "description": "A **Cardboard** sets up a Google Cardboard effect for its Scene.\n\n## Examples\n\n<ul>\n<li>[Cardboard cube](../../examples/webvr_cardboard_cube.html)</li>\n<li>[Cardboard with glTF gearbox model](../../examples/webvr_cardboard_gearbox.html)</li>\n</ul>\n\n## Usage\n\nIn the following example we're going to set up a Cardboard-viewable scene with xeoEngine, creating the scene incrementally to\nemphasize the plug-and-play design of xeoEngine's API.\n\nFirst we'll create a simple torus-shaped {{#crossLink \"Entity\"}}{{/crossLink}}, which will be within xeoEngine's default\n{{#crossLink \"Scene\"}}{{/crossLink}}, since we're not defining the {{#crossLink \"Scene\"}}{{/crossLink}} component\nexplicitly. Our {{#crossLink \"Entity\"}}{{/crossLink}} is also implicitly connected to the\n{{#crossLink \"Scene\"}}{{/crossLink}}'s default {{#crossLink \"Camera\"}}{{/crossLink}}, since we didn't explicitly create\na {{#crossLink \"Camera\"}}{{/crossLink}} for it either.\n\n````javascript\nvar entity = new XEO.Entity({\n    geometry: new XEO.TorusGeometry(),\n    material: new XEO.PhongMaterial({\n       diffuseMap: new XEO.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n       })\n    })\n});\n````\n\nAt this point we've got a textured torus floating in the middle of the canvas (which is also created automatically\nsince we didn't specify one).\n\nLet's view it on Cardboard by dropping a Cardboard component into our default {{#crossLink \"Scene\"}}{{/crossLink}}:\n\n````javascript\nvar cardboard = new Cardboard();\n````\n\nThe Cardboard component immediately activates, so at this point we'll have a stereo\nview of the torus, which we can view with Cardboard glasses.\n\nAt any point we can always disable the Cardboard effect to switch between normal WebGL mono viewing mode:\n\n````javascript\ncardboard.active = false; // Back to normal mono viewing..\ncardboard.active = true; // ..and then back to Cardboard stereo mode.\n````",
+            "description": "A **Cardboard** sets up a Google Cardboard effect for its Scene.\n\n## Examples\n\n<ul>\n<li>[Cardboard cube](../../examples/webvr_cardboard_cube.html)</li>\n<li>[Cardboard with glTF gearbox model](../../examples/webvr_cardboard_gearbox.html)</li>\n</ul>\n\n## Usage\n\nIn the following example we're going to set up a Cardboard-viewable scene with xeogl, creating the scene incrementally to\nemphasize the plug-and-play design of xeogl's API.\n\nFirst we'll create a simple torus-shaped {{#crossLink \"Entity\"}}{{/crossLink}}, which will be within xeogl's default\n{{#crossLink \"Scene\"}}{{/crossLink}}, since we're not defining the {{#crossLink \"Scene\"}}{{/crossLink}} component\nexplicitly. Our {{#crossLink \"Entity\"}}{{/crossLink}} is also implicitly connected to the\n{{#crossLink \"Scene\"}}{{/crossLink}}'s default {{#crossLink \"Camera\"}}{{/crossLink}}, since we didn't explicitly create\na {{#crossLink \"Camera\"}}{{/crossLink}} for it either.\n\n````javascript\nvar entity = new xeogl.Entity({\n    geometry: new xeogl.TorusGeometry(),\n    material: new xeogl.PhongMaterial({\n       diffuseMap: new xeogl.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n       })\n    })\n});\n````\n\nAt this point we've got a textured torus floating in the middle of the canvas (which is also created automatically\nsince we didn't specify one).\n\nLet's view it on Cardboard by dropping a Cardboard component into our default {{#crossLink \"Scene\"}}{{/crossLink}}:\n\n````javascript\nvar cardboard = new Cardboard();\n````\n\nThe Cardboard component immediately activates, so at this point we'll have a stereo\nview of the torus, which we can view with Cardboard glasses.\n\nAt any point we can always disable the Cardboard effect to switch between normal WebGL mono viewing mode:\n\n````javascript\ncardboard.active = false; // Back to normal mono viewing..\ncardboard.active = true; // ..and then back to Cardboard stereo mode.\n````",
             "submodule": "webvr",
             "is_constructor": 1,
             "params": [
@@ -10707,7 +10720,7 @@
             "default": "true",
             "type": "Boolean",
             "class": "Render",
-            "module": "XEO",
+            "module": "xeogl",
             "submodule": "culling"
         },
         {
@@ -10724,7 +10737,7 @@
                 }
             ],
             "class": "Render",
-            "module": "XEO",
+            "module": "xeogl",
             "submodule": "culling"
         },
         {
@@ -21804,7 +21817,7 @@
             "name": "camera",
             "type": "Camera",
             "class": "Cardboard",
-            "module": "XEO",
+            "module": "xeogl",
             "submodule": "webvr"
         },
         {
@@ -21820,7 +21833,7 @@
                 }
             ],
             "class": "Cardboard",
-            "module": "XEO",
+            "module": "xeogl",
             "submodule": "webvr"
         },
         {
@@ -21831,7 +21844,7 @@
             "name": "Viewport",
             "type": "Viewport",
             "class": "Cardboard",
-            "module": "XEO",
+            "module": "xeogl",
             "submodule": "webvr"
         },
         {
@@ -21847,7 +21860,7 @@
                 }
             ],
             "class": "Cardboard",
-            "module": "XEO",
+            "module": "xeogl",
             "submodule": "webvr"
         },
         {
@@ -21859,7 +21872,7 @@
             "type": "Number",
             "default": "0.2",
             "class": "Cardboard",
-            "module": "XEO",
+            "module": "xeogl",
             "submodule": "webvr"
         },
         {
@@ -21875,7 +21888,7 @@
                 }
             ],
             "class": "Cardboard",
-            "module": "XEO",
+            "module": "xeogl",
             "submodule": "webvr"
         },
         {
@@ -21887,7 +21900,7 @@
             "type": "Number",
             "default": "20",
             "class": "Cardboard",
-            "module": "XEO",
+            "module": "xeogl",
             "submodule": "webvr"
         },
         {
@@ -21903,7 +21916,7 @@
                 }
             ],
             "class": "Cardboard",
-            "module": "XEO",
+            "module": "xeogl",
             "submodule": "webvr"
         },
         {
@@ -21915,7 +21928,7 @@
             "type": "Number",
             "default": "45",
             "class": "Cardboard",
-            "module": "XEO",
+            "module": "xeogl",
             "submodule": "webvr"
         },
         {
@@ -21931,7 +21944,7 @@
                 }
             ],
             "class": "Cardboard",
-            "module": "XEO",
+            "module": "xeogl",
             "submodule": "webvr"
         },
         {
@@ -21943,7 +21956,7 @@
             "type": "Boolean",
             "default": "true",
             "class": "Cardboard",
-            "module": "XEO",
+            "module": "xeogl",
             "submodule": "webvr"
         },
         {
@@ -21959,7 +21972,7 @@
                 }
             ],
             "class": "Cardboard",
-            "module": "XEO",
+            "module": "xeogl",
             "submodule": "webvr"
         },
         {
@@ -21967,182 +21980,182 @@
             "line": 112,
             "description": "The base class for all VR displays.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 481,
             "description": "The base class for all VR devices. (Deprecated)",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 491,
             "description": "The base class for all VR HMD devices. (Deprecated)",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 498,
             "description": "The base class for all VR position sensor devices. (Deprecated)",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 556,
             "description": "A mesh-based distorter.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 635,
             "description": "Tears down all the resources created by the distorter and removes any\npatches.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 665,
             "description": "Resizes the backbuffer to match the canvas width and height.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 908,
             "description": "Performs distortion pass on the injected backbuffer, rendering it to the real\nbackbuffer.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 1012,
             "description": "Call when the deviceInfo has changed. At this point we need\nto re-calculate the distortion mesh.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 1036,
             "description": "Build the distortion mesh vertices.\nBased on code from the Unity cardboard plugin.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 1096,
             "description": "Build the distortion mesh indices.\nBased on code from the Unity cardboard plugin.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 1233,
             "description": "Renders the alignment line and \"options\" gear. It is assumed that the canvas\nthis is rendered into covers the entire screen (or close to it.)",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 1259,
             "description": "Tears down all the resources created by the UI renderer.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 1273,
             "description": "Adds a listener to clicks on the gear and back icons",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 1295,
             "description": "Builds the UI mesh.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 1388,
             "description": "Performs distortion pass on the injected backbuffer, rendering it to the real\nbackbuffer.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 1477,
             "description": "VRDisplay based on mobile device parameters and DeviceMotion APIs.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 1968,
             "description": "Manages information about the device and the viewer.\n\ndeviceParams indicates the parameters of the device to use (generally\nobtained from dpdb.getDeviceParams()). Can be null to mean no device\nparams were found.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 2019,
             "description": "Calculates field of view for the left eye.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 2052,
             "description": "Calculates the tan-angles from the maximum FOV for the left eye for the\ncurrent device and screen parameters.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 2088,
             "description": "Calculates the tan-angles from the maximum FOV for the left eye for the\ncurrent device and screen parameters, assuming no lenses.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 2124,
             "description": "Calculates the screen rectangle visible from the left eye for the\ncurrent device and screen parameters.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 2162,
             "description": "Calculates undistorted field of view for the left eye.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 2277,
             "description": "Wraps a VRDisplay and exposes it as a HMDVRDevice",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 2317,
             "description": "Wraps a VRDisplay and exposes it as a PositionSensorVRDevice",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 2351,
             "description": "TODO(smus): Implement coefficient inversion.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
@@ -22160,7 +22173,7 @@
                 "type": "Number"
             },
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
@@ -22178,49 +22191,49 @@
                 "type": "Number"
             },
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 2549,
             "description": "DPDB cache.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 3528,
             "description": "Calculates device parameters based on the DPDB (Device Parameter Database).\nInitially, uses the cached DPDB values.\n\nIf fetchOnline == true, then this object tries to fetch the online version\nof the DPDB and updates the device info if a better match is found.\nCalls the onDeviceParamsUpdated callback when there is an update to the\ndevice information.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 4202,
             "description": "VRDisplay based on mouse and keyboard input. Designed for desktops/laptops\nwhere orientation events aren't supported. Cannot present.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 4279,
             "description": "Start an animation to transition an angle from one value to another.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 4521,
             "description": "An implementation of a simple complementary filter, which fuses gyroscope and\naccelerometer data from the 'devicemotion' event.\n\nAccelerometer data is very noisy, but stable over the long term.\nGyroscope data is smooth, but tends to drift over the long term.\n\nThis fusion is relatively simple:\n1. Get orientation estimates from accelerometer by applying a low-pass filter\n   on that data.\n2. Get orientation estimates from gyroscope by integrating over time.\n3. Combine the two estimates, weighing (1) in the long term, but (2) for the\n   short term.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 4690,
             "description": "The pose sensor, implemented using DeviceMotion APIs.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
@@ -22234,42 +22247,42 @@
                 }
             ],
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 4971,
             "description": "Provides a quaternion responsible for pre-panning the scene before further\ntransformations due to device sensors.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 5274,
             "description": "Creates a viewer selector with the options specified. Supports being shown\nand hidden. Generates events when viewer parameters change. Also supports\nsaving the currently selected index in localStorage.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 5344,
             "description": "Creates the dialog.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 5469,
             "description": "Android and iOS compatible wakelock implementation.\n\nRefactored thanks to dkovalev@.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr-polyfill.js",
             "line": 5688,
             "description": "Determine if a device is mobile.",
             "class": "WebVR",
-            "module": "XEO"
+            "module": "xeogl"
         },
         {
             "file": "examples/js/webvr/webvr.js",

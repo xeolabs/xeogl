@@ -154,6 +154,7 @@
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/webvr.html">webvr</a></li>
                                 <li><a href="..//modules/XEO.html">XEO</a></li>
+                                <li><a href="..//modules/xeogl.html">xeogl</a></li>
                             </ul>
                         </div>
                     </div>
@@ -199,7 +200,7 @@
         </div>
 
             Module: <a href="../modules/materials.html">materials</a><br>
-            Parent Module: <a href="../modules/XEO.html">XEO</a>
+            Parent Module: <a href="../modules/xeogl.html">xeogl</a>
 
 </div>
 
@@ -218,26 +219,26 @@
 <li>an <a href="../classes/Entity.html" class="crosslink">Entity</a> attached to all of the above.</li>
 </ul>
 
-<pre class="code prettyprint"><code class="lang-javascript">var megaTexture = new XEO.MegaTexture({
+<pre class="code prettyprint"><code class="lang-javascript">var megaTexture = new xeogl.MegaTexture({
    //...
 });
 
-new XEO.Entity({
+new xeogl.Entity({
 
-   material: new XEO.PhongMaterial({
+   material: new xeogl.PhongMaterial({
 
-       diffuseMap: new XEO.Texture({
+       diffuseMap: new xeogl.Texture({
            megaTexture: megaTexture,
            src: "diffuseMap.jpg",
        }),
 
-       specularMap: new XEO.Fresnel({
+       specularMap: new xeogl.Fresnel({
            megaTexture: megaTexture,
            src: "diffuseMap.jpg"
        })
    }),
 
-   geometry: new XEO.TorusGeometry()
+   geometry: new xeogl.TorusGeometry()
 });
 </code></pre>
 

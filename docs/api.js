@@ -113,7 +113,9 @@ YUI.add("yuidoc-meta", function(Y) {
         "shaders",
         "skyboxes",
         "transforms",
-        "webvr"
+        "webvr",
+        "webvr",
+        "xeogl"
     ],
     "allModules": [
         {
@@ -240,6 +242,10 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "XEO",
             "name": "XEO",
             "description": "The xeoEngine namespace."
+        },
+        {
+            "displayName": "xeogl",
+            "name": "xeogl"
         }
     ]
 } };

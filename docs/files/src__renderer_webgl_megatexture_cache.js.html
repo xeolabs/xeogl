@@ -154,6 +154,7 @@
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/webvr.html">webvr</a></li>
                                 <li><a href="..//modules/XEO.html">XEO</a></li>
+                                <li><a href="..//modules/xeogl.html">xeogl</a></li>
                             </ul>
                         </div>
                     </div>
@@ -195,7 +196,7 @@
 
     &quot;use strict&quot;;
 
-    var Cache = XEO.renderer.webgl.megaTexture.Cache = function (gl, tileSize, tileOverlap, tilesPerSide) {
+    var Cache = xeogl.renderer.webgl.megaTexture.Cache = function (gl, tileSize, tileOverlap, tilesPerSide) {
 
         this.gl = gl;
 
@@ -228,7 +229,7 @@
             this.freeTiles.push(n);
         }
 
-        // map of texture/level/x/y to XEO.renderer.webgl.megaTexture.MegaTextureRef
+        // map of texture/level/x/y to xeogl.renderer.webgl.megaTexture.MegaTextureRef
 
         this.tiles = {};
         this.tileList = [];
@@ -252,7 +253,7 @@
 
         this.megaTextures[megaTexture.id] = megaTexture;
 
-        megaTexture.lookup = new XEO.renderer.webgl.megaTexture.Lookup(this, megaTexture);
+        megaTexture.lookup = new xeogl.renderer.webgl.megaTexture.Lookup(this, megaTexture);
     };
 
 
@@ -397,7 +398,7 @@
 
         texture.destroy();
 
-        var tileRef = new XEO.renderer.webgl.megaTexture.MegaTextureRef(tile);
+        var tileRef = new xeogl.renderer.webgl.megaTexture.MegaTextureRef(tile);
 
         tileRef.bindToSlot(n, texture.width, texture.height);
         tileRef.touch(this.lastFrameNumber);

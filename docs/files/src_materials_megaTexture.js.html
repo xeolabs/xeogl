@@ -154,6 +154,7 @@
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/webvr.html">webvr</a></li>
                                 <li><a href="..//modules/XEO.html">XEO</a></li>
+                                <li><a href="..//modules/xeogl.html">xeogl</a></li>
                             </ul>
                         </div>
                     </div>
@@ -210,30 +211,30 @@
  &lt;/ul&gt;
 
  &#x60;&#x60;&#x60;&#x60; javascript
- var megaTexture = new XEO.MegaTexture({
+ var megaTexture = new xeogl.MegaTexture({
     //...
  });
 
- new XEO.Entity({
+ new xeogl.Entity({
 
-    material: new XEO.PhongMaterial({
+    material: new xeogl.PhongMaterial({
 
-        diffuseMap: new XEO.Texture({
+        diffuseMap: new xeogl.Texture({
             megaTexture: megaTexture,
             src: &quot;diffuseMap.jpg&quot;,
         }),
 
-        specularMap: new XEO.Fresnel({
+        specularMap: new xeogl.Fresnel({
             megaTexture: megaTexture,
             src: &quot;diffuseMap.jpg&quot;
         })
     }),
 
-    geometry: new XEO.TorusGeometry()
+    geometry: new xeogl.TorusGeometry()
 });
  &#x60;&#x60;&#x60;&#x60;
  @class MegaTexture
- @module XEO
+ @module xeogl
  @submodule materials
  @constructor
  @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this MegaTexture in the default
@@ -247,9 +248,9 @@
 
     &quot;use strict&quot;;
 
-    XEO.MegaTexture = XEO.Component.extend({
+    xeogl.MegaTexture = xeogl.Component.extend({
 
-        type: &quot;XEO.MegaTexture&quot;,
+        type: &quot;xeogl.MegaTexture&quot;,
 
         _init: function (cfg) {
 
@@ -257,8 +258,8 @@
             var tileOverlap = cfg.tileOverlap || 1;
             var tilesPerSide = cfg.tilesPerSide || 12;
 
-            this._cache = new XEO.webgl.megaTexture.Cache(this.scene.canvas.gl, tileSize, tileOverlap, tilesPerSide);
-            this._loader = new XEO.webgl.megaTexture.Loader();
+            this._cache = new xeogl.webgl.megaTexture.Cache(this.scene.canvas.gl, tileSize, tileOverlap, tilesPerSide);
+            this._loader = new xeogl.webgl.megaTexture.Loader();
         },
 
         _destroy: function () {

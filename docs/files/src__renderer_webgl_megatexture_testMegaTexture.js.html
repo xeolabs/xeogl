@@ -154,6 +154,7 @@
                                 <li><a href="..//modules/transforms.html">transforms</a></li>
                                 <li><a href="..//modules/webvr.html">webvr</a></li>
                                 <li><a href="..//modules/XEO.html">XEO</a></li>
+                                <li><a href="..//modules/xeogl.html">xeogl</a></li>
                             </ul>
                         </div>
                     </div>
@@ -195,8 +196,8 @@
 
     &quot;use strict&quot;;
 
-    var TestMegaTexture = XEO.renderer.webgl.megaTexture.TestMegaTexture = function (id, width, height, tileSize, tileOverlap) {
-        XEO.renderer.webgl.megaTexture.MegaTexture.call(this, id, width, height, tileSize, tileOverlap);
+    var TestMegaTexture = xeogl.renderer.webgl.megaTexture.TestMegaTexture = function (id, width, height, tileSize, tileOverlap) {
+        xeogl.renderer.webgl.megaTexture.MegaTexture.call(this, id, width, height, tileSize, tileOverlap);
     };
 
     /**
