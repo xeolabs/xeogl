@@ -33,7 +33,9 @@
  cameraFlight.flyTo({
     eye: [-5,-5,-5],
     look: [0,0,0]
-    up: [0,1,0]
+    up: [0,1,0],
+    stopFOV: 45, // Default, degrees
+    duration: 1 // Default, seconds
  }, function() {
     // Arrived
  });
@@ -50,7 +52,8 @@
  // the Camera to each specified target
  var cameraFlight = new XEO.CameraFlight({
     camera: camera,
-    duration: 20 // Seconds
+    stopFOV: 45, // Default, degrees
+    duration: 1 // Default, seconds
  });
 
  // Create a Entity, which gets all the default components
@@ -90,12 +93,14 @@
  @submodule animation
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
- @param [cfg] {String|Component|Boundary3D|Array of Number|*} Target - see class documentation above.
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CameraFlight.
  @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
  Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this CameraFlight. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
+ @param [cfg.stopFOV=45] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
+  fill the canvas when calling {{#crossLink "CameraFlight/flyTo:method"}}{{/crossLink}} or {{#crossLink "CameraFlight/jumpTo:method"}}{{/crossLink}}.
+ @param [cfg.duration=1] {Number} Flight duration, in seconds, when calling {{#crossLink "CameraFlight/flyTo:method"}}{{/crossLink}}.
  @extends Component
  */
 (function () {
@@ -185,7 +190,9 @@
          * @param [params.eye] {Array of Number} Position to fly the eye position to.
          * @param [params.look] {Array of Number} Position to fly the look position to.
          * @param [params.up] {Array of Number} Position to fly the up vector to.
-         * @param [params.stopFOV] {Number} How much of field-of-view, in degrees, that a target AABB should fill the canvas.
+         * @param [params.stopFOV=45] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
+         * fill the canvas on arrival.
+         * @param [params.duration=1] {Number} Flight duration in seconds.
          * @param [callback] {Function} Callback fired on arrival
          * @param [scope] {Object} Optional scope for callback
          */
@@ -385,7 +392,8 @@
          * @param [params.eye] {Array of Number} Position to fly the eye position to.
          * @param [params.look] {Array of Number} Position to fly the look position to.
          * @param [params.up] {Array of Number} Position to fly the up vector to.
-         * @param [params.stopFOV] {Number} How much of field-of-view, in degrees, that a target AABB should fill the canvas.
+         * @param [params.stopFOV] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
+         * fill the canvas on arrival.
          */
         jumpTo: function (params) {
 
@@ -622,10 +630,29 @@
                 }
             },
 
+            /**
+             * Flight duration, in seconds, when calling {{#crossLink "CameraFlight/flyTo:method"}}{{/crossLink}}.
+             *
+             * Stops any flight currently in progress.
+             *
+             * Fires a {{#crossLink "CameraFlight/duration:event"}}{{/crossLink}} event on change.
+             *
+             * @property duration
+             * @default 1
+             * @type Number
+             */
             duration: {
 
                 set: function (value) {
 
+                    value = value || 1.0;
+
+                    /**
+                     Fired whenever this CameraFlight's {{#crossLink "CameraFlight/duration:property"}}{{/crossLink}} property changes.
+
+                     @event duration
+                     @param value {Number} The property's new value
+                     */
                     this._duration = value * 1000.0;
 
                     this.stop();
@@ -634,12 +661,45 @@
                 get: function () {
                     return this._duration / 1000.0;
                 }
+            },
+
+            /**
+             * How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
+             * fill the canvas when calling {{#crossLink "CameraFlight/flyTo:method"}}{{/crossLink}} or {{#crossLink "CameraFlight/jumpTo:method"}}{{/crossLink}}.
+             *
+             * Fires a {{#crossLink "CameraFlight/stopFOV:event"}}{{/crossLink}} event on change.
+             *
+             * @property stopFOV
+             * @default 45
+             * @type Number
+             */
+            stopFOV: {
+
+                set: function (value) {
+
+                    value = value || 45;
+
+                    /**
+                     Fired whenever this CameraFlight's {{#crossLink "CameraFlight/stopFOV:property"}}{{/crossLink}} property changes.
+
+                     @event stopFOV
+                     @param value {Number} The property's new value
+                     */
+                    this._stopFOV = value;
+                },
+
+                get: function () {
+                    return this._stopFOV;
+                }
             }
         },
 
         _getJSON: function () {
 
-            var json = {};
+            var json = {
+                duration: this._duration,
+                stopFOV: this._stopFOV
+            };
 
             if (this._attached.camera) {
                 json.camera = this._attached.camera.id;

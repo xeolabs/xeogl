@@ -1789,7 +1789,7 @@
             "namespace": "",
             "file": "src/animation/cameraFlight.js",
             "line": 1,
-            "description": "A **CameraFlight** flies a {{#crossLink \"Camera\"}}{{/crossLink}} to a given target.\n\n<ul>\n<li>A CameraFlight animates the {{#crossLink \"Lookat\"}}{{/crossLink}} attached to its {{#crossLink \"Camera\"}}{{/crossLink}}.</li>\n<li>A CameraFlight can be attached to a different {{#crossLink \"Camera\"}}{{/crossLink}} at any time.</li>\n<li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>\n</ul>\n\nA target can be:\n\n<ul>\n<li>specific ````eye````, ````look```` and ````up```` positions,</li>\n<li>a World-space {{#crossLink \"Boundary3D\"}}{{/crossLink}},</li>\n<li>an instance or ID of any {{#crossLink \"Component\"}}{{/crossLink}} subtype that provides a World-space</li>\n{{#crossLink \"Boundary3D\"}}{{/crossLink}} in a \"worldBoundary\" property, or</li>\n<li>an axis-aligned World-space bounding box.</li>\n</ul>\n\n## Examples\n\n<ul>\n<li>[Flying to Entity](../../examples/#animation_CameraFlight_Entity)</li>\n<li>[Flying to Boundary3D](../../examples/#animation_CameraFlight_Boundary3D)</li>\n<li>[Flying to AABB](../../examples/#animation_CameraFlight_AABB)</li>\n</ul>\n\n## Flying to a position\n\nFlying the CameraFlight from the previous example to specified eye, look and up positions:\n\n````Javascript\ncameraFlight.flyTo({\n   eye: [-5,-5,-5],\n   look: [0,0,0]\n   up: [0,1,0]\n}, function() {\n   // Arrived\n});\n````\n## Flying to an Entity\n\nFlying to an {{#crossLink \"Entity\"}}{{/crossLink}} (which provides a World-space\n{{#crossLink \"Boundary3D\"}}{{/crossLink}} via its {{#crossLink \"Entity/worldBoundary:property\"}}{{/crossLink}} property):\n\n````Javascript\nvar camera = new XEO.Camera();\n\n// Create a CameraFlight that takes exactly twenty seconds to fly\n// the Camera to each specified target\nvar cameraFlight = new XEO.CameraFlight({\n   camera: camera,\n   duration: 20 // Seconds\n});\n\n// Create a Entity, which gets all the default components\nvar entity = new Entity();\n\n// Fly to the Entity's worldBoundary\ncameraFlight.flyTo(entity);\n````\n\n## Flying to a Boundary3D\n\nFlying the CameraFlight from the previous two examples explicitly to the World-space\n{{#crossLink \"Boundary3D\"}}{{/crossLink}} of the {{#crossLink \"Entity\"}}{{/crossLink}} property):\n\n````Javascript\nvar worldBoundary = entity.worldBoundary;\n\ncameraFlight.flyTo(worldBoundary);\n````\n\n## Flying to an AABB\n\nFlying the CameraFlight from the previous two examples explicitly to the {{#crossLink \"Boundary3D\"}}Boundary3D's{{/crossLink}}\naxis-aligned bounding box:\n\n````Javascript\nvar worldBoundary = entity.worldBoundary;\n\nvar aabb = worldBoundary.aabb;\n\ncameraFlight.flyTo(aabb);\n````",
+            "description": "A **CameraFlight** flies a {{#crossLink \"Camera\"}}{{/crossLink}} to a given target.\n\n<ul>\n<li>A CameraFlight animates the {{#crossLink \"Lookat\"}}{{/crossLink}} attached to its {{#crossLink \"Camera\"}}{{/crossLink}}.</li>\n<li>A CameraFlight can be attached to a different {{#crossLink \"Camera\"}}{{/crossLink}} at any time.</li>\n<li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>\n</ul>\n\nA target can be:\n\n<ul>\n<li>specific ````eye````, ````look```` and ````up```` positions,</li>\n<li>a World-space {{#crossLink \"Boundary3D\"}}{{/crossLink}},</li>\n<li>an instance or ID of any {{#crossLink \"Component\"}}{{/crossLink}} subtype that provides a World-space</li>\n{{#crossLink \"Boundary3D\"}}{{/crossLink}} in a \"worldBoundary\" property, or</li>\n<li>an axis-aligned World-space bounding box.</li>\n</ul>\n\n## Examples\n\n<ul>\n<li>[Flying to Entity](../../examples/#animation_CameraFlight_Entity)</li>\n<li>[Flying to Boundary3D](../../examples/#animation_CameraFlight_Boundary3D)</li>\n<li>[Flying to AABB](../../examples/#animation_CameraFlight_AABB)</li>\n</ul>\n\n## Flying to a position\n\nFlying the CameraFlight from the previous example to specified eye, look and up positions:\n\n````Javascript\ncameraFlight.flyTo({\n   eye: [-5,-5,-5],\n   look: [0,0,0]\n   up: [0,1,0],\n   stopFOV: 45, // Default, degrees\n   duration: 1 // Default, seconds\n}, function() {\n   // Arrived\n});\n````\n## Flying to an Entity\n\nFlying to an {{#crossLink \"Entity\"}}{{/crossLink}} (which provides a World-space\n{{#crossLink \"Boundary3D\"}}{{/crossLink}} via its {{#crossLink \"Entity/worldBoundary:property\"}}{{/crossLink}} property):\n\n````Javascript\nvar camera = new XEO.Camera();\n\n// Create a CameraFlight that takes exactly twenty seconds to fly\n// the Camera to each specified target\nvar cameraFlight = new XEO.CameraFlight({\n   camera: camera,\n   stopFOV: 45, // Default, degrees\n   duration: 1 // Default, seconds\n});\n\n// Create a Entity, which gets all the default components\nvar entity = new Entity();\n\n// Fly to the Entity's worldBoundary\ncameraFlight.flyTo(entity);\n````\n\n## Flying to a Boundary3D\n\nFlying the CameraFlight from the previous two examples explicitly to the World-space\n{{#crossLink \"Boundary3D\"}}{{/crossLink}} of the {{#crossLink \"Entity\"}}{{/crossLink}} property):\n\n````Javascript\nvar worldBoundary = entity.worldBoundary;\n\ncameraFlight.flyTo(worldBoundary);\n````\n\n## Flying to an AABB\n\nFlying the CameraFlight from the previous two examples explicitly to the {{#crossLink \"Boundary3D\"}}Boundary3D's{{/crossLink}}\naxis-aligned bounding box:\n\n````Javascript\nvar worldBoundary = entity.worldBoundary;\n\nvar aabb = worldBoundary.aabb;\n\ncameraFlight.flyTo(aabb);\n````",
             "submodule": "animation",
             "author": "xeolabs / http://xeolabs.org",
             "is_constructor": 1,
@@ -1801,30 +1801,36 @@
                     "optional": true
                 },
                 {
-                    "name": "cfg",
-                    "description": "Target - see class documentation above.",
-                    "type": "String|Component|Boundary3D|Array of Number|*",
+                    "name": "cfg.id",
+                    "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, generated automatically when omitted.",
+                    "type": "String",
+                    "optional": true
+                },
+                {
+                    "name": "cfg.meta",
+                    "description": "Optional map of user-defined metadata to attach to this CameraFlight.",
+                    "type": "String:Object",
+                    "optional": true
+                },
+                {
+                    "name": "cfg.camera",
+                    "description": "ID or instance of a {{#crossLink \"Camera\"}}Camera{{/crossLink}} to control.\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this CameraFlight. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}}.",
+                    "type": "String|Camera",
+                    "optional": true
+                },
+                {
+                    "name": "cfg.stopFOV",
+                    "description": "How much of field-of-view, in degrees, that a target {{#crossLink \"Entity\"}}{{/crossLink}} or its AABB should\n fill the canvas when calling {{#crossLink \"CameraFlight/flyTo:method\"}}{{/crossLink}} or {{#crossLink \"CameraFlight/jumpTo:method\"}}{{/crossLink}}.",
+                    "type": "Number",
                     "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, generated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this CameraFlight.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "camera",
-                            "description": "ID or instance of a {{#crossLink \"Camera\"}}Camera{{/crossLink}} to control.\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this CameraFlight. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}}.",
-                            "type": "String|Camera",
-                            "optional": true
-                        }
-                    ]
+                    "optdefault": "45"
+                },
+                {
+                    "name": "cfg.duration",
+                    "description": "Flight duration, in seconds, when calling {{#crossLink \"CameraFlight/flyTo:method\"}}{{/crossLink}}.",
+                    "type": "Number",
+                    "optional": true,
+                    "optdefault": "1"
                 }
             ],
             "extends": "Component"
@@ -8563,7 +8569,7 @@
         },
         {
             "file": "src/animation/cameraFlight.js",
-            "line": 113,
+            "line": 118,
             "description": "JavaScript class name for this Component.",
             "itemtype": "property",
             "name": "type",
@@ -8575,7 +8581,7 @@
         },
         {
             "file": "src/animation/cameraFlight.js",
-            "line": 170,
+            "line": 175,
             "description": "Begins flying this CameraFlight's {{#crossLink \"Camera\"}}{{/crossLink}} to the given target.\n\n<ul>\n    <li>When the target is a boundary, the {{#crossLink \"Camera\"}}{{/crossLink}} will fly towards the target\n    and stop when the target fills most of the canvas.</li>\n    <li>When the target is an explicit {{#crossLink \"Camera\"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````\n     vectors, then this CameraFlight will interpolate the {{#crossLink \"Camera\"}}{{/crossLink}} to that target and stop there.</li>",
             "itemtype": "method",
             "name": "flyTo",
@@ -8624,9 +8630,17 @@
                         },
                         {
                             "name": "stopFOV",
-                            "description": "How much of field-of-view, in degrees, that a target AABB should fill the canvas.",
+                            "description": "How much of field-of-view, in degrees, that a target {{#crossLink \"Entity\"}}{{/crossLink}} or its AABB should\nfill the canvas on arrival.",
                             "type": "Number",
-                            "optional": true
+                            "optional": true,
+                            "optdefault": "45"
+                        },
+                        {
+                            "name": "duration",
+                            "description": "Flight duration in seconds.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1"
                         }
                     ]
                 },
@@ -8649,7 +8663,7 @@
         },
         {
             "file": "src/animation/cameraFlight.js",
-            "line": 370,
+            "line": 377,
             "description": "Jumps this CameraFlight's {{#crossLink \"Camera\"}}{{/crossLink}} to the given target.\n\n<ul>\n    <li>When the target is a boundary, this CameraFlight will position the {{#crossLink \"Camera\"}}{{/crossLink}}\n    at where the target fills most of the canvas.</li>\n    <li>When the target is an explicit {{#crossLink \"Camera\"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````\n     vectors, then this CameraFlight will jump the {{#crossLink \"Camera\"}}{{/crossLink}} to that target.</li>",
             "itemtype": "method",
             "name": "flyTo",
@@ -8698,7 +8712,7 @@
                         },
                         {
                             "name": "stopFOV",
-                            "description": "How much of field-of-view, in degrees, that a target AABB should fill the canvas.",
+                            "description": "How much of field-of-view, in degrees, that a target {{#crossLink \"Entity\"}}{{/crossLink}} or its AABB should\nfill the canvas on arrival.",
                             "type": "Number",
                             "optional": true
                         }
@@ -8711,7 +8725,7 @@
         },
         {
             "file": "src/animation/cameraFlight.js",
-            "line": 540,
+            "line": 548,
             "description": "Stops an earlier flyTo, fires arrival callback.",
             "itemtype": "method",
             "name": "stop",
@@ -8721,7 +8735,7 @@
         },
         {
             "file": "src/animation/cameraFlight.js",
-            "line": 573,
+            "line": 581,
             "description": "Cancels an earlier flyTo without calling the arrival callback.",
             "itemtype": "method",
             "name": "cancel",
@@ -8731,7 +8745,7 @@
         },
         {
             "file": "src/animation/cameraFlight.js",
-            "line": 603,
+            "line": 611,
             "description": "Fired whenever this CameraFlight's {{#crossLink \"CameraFlight/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
@@ -8739,6 +8753,64 @@
                 {
                     "name": "value",
                     "description": "The property's new value"
+                }
+            ],
+            "class": "CameraFlight",
+            "module": "XEO",
+            "submodule": "animation"
+        },
+        {
+            "file": "src/animation/cameraFlight.js",
+            "line": 633,
+            "description": "Flight duration, in seconds, when calling {{#crossLink \"CameraFlight/flyTo:method\"}}{{/crossLink}}.\n\nStops any flight currently in progress.\n\nFires a {{#crossLink \"CameraFlight/duration:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "duration",
+            "default": "1",
+            "type": "Number",
+            "class": "CameraFlight",
+            "module": "XEO",
+            "submodule": "animation"
+        },
+        {
+            "file": "src/animation/cameraFlight.js",
+            "line": 650,
+            "description": "Fired whenever this CameraFlight's {{#crossLink \"CameraFlight/duration:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "duration",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Number"
+                }
+            ],
+            "class": "CameraFlight",
+            "module": "XEO",
+            "submodule": "animation"
+        },
+        {
+            "file": "src/animation/cameraFlight.js",
+            "line": 666,
+            "description": "How much of field-of-view, in degrees, that a target {{#crossLink \"Entity\"}}{{/crossLink}} or its AABB should\nfill the canvas when calling {{#crossLink \"CameraFlight/flyTo:method\"}}{{/crossLink}} or {{#crossLink \"CameraFlight/jumpTo:method\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"CameraFlight/stopFOV:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "stopFOV",
+            "default": "45",
+            "type": "Number",
+            "class": "CameraFlight",
+            "module": "XEO",
+            "submodule": "animation"
+        },
+        {
+            "file": "src/animation/cameraFlight.js",
+            "line": 682,
+            "description": "Fired whenever this CameraFlight's {{#crossLink \"CameraFlight/stopFOV:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "stopFOV",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Number"
                 }
             ],
             "class": "CameraFlight",
@@ -9067,7 +9139,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 234,
+            "line": 233,
             "description": "Boundary of the Canvas in absolute browser window coordinates.\n\n### Usage:\n\n````javascript\nvar boundary = myScene.canvas.boundary;\n\nvar xmin = boundary[0];\nvar ymin = boundary[1];\nvar width = boundary[2];\nvar height = boundary[3];\n````",
             "itemtype": "property",
             "name": "boundary",
@@ -9079,7 +9151,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 271,
+            "line": 270,
             "description": "Fired whenever the WebGL context has been lost",
             "itemtype": "event",
             "name": "webglContextLost",
@@ -9089,7 +9161,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 284,
+            "line": 283,
             "description": "Fired whenever the WebGL context has been restored again after having previously being lost",
             "itemtype": "event",
             "name": "webglContextRestored",
@@ -9105,7 +9177,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 341,
+            "line": 340,
             "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/boundary:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "boundary",
@@ -9121,14 +9193,14 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 362,
+            "line": 361,
             "class": "Canvas",
             "module": "XEO",
             "submodule": "canvas"
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 370,
+            "line": 369,
             "description": "Creates a default canvas in the DOM.",
             "access": "private",
             "tagname": "",
@@ -9138,7 +9210,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 399,
+            "line": 398,
             "description": "Creates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
             "access": "private",
             "tagname": "",
@@ -9148,7 +9220,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 431,
+            "line": 430,
             "access": "private",
             "tagname": "",
             "class": "Canvas",
@@ -9157,7 +9229,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 461,
+            "line": 460,
             "description": "Initialises the WebGL context",
             "access": "private",
             "tagname": "",
@@ -9167,7 +9239,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 494,
+            "line": 493,
             "description": "Fired whenever the canvas failed to get a WebGL context, which probably means that WebGL\nis either unsupported or has been disabled.",
             "itemtype": "event",
             "name": "webglContextFailed",
@@ -9177,7 +9249,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 503,
+            "line": 502,
             "description": "Returns a snapshot of this Canvas as a Base64-encoded image.\n\n#### Usage:\n````javascript\nimageElement.src = myScene.canvas.getSnapshot({\n    width: 500, // Defaults to size of canvas\n    height: 500,\n    format: \"png\" // Options are \"jpeg\" (default), \"png\" and \"bmp\"\n});\n````",
             "itemtype": "method",
             "name": "getSnapshot",
@@ -9220,7 +9292,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 561,
+            "line": 560,
             "description": "Reads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
             "params": [
                 {
@@ -9250,7 +9322,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 589,
+            "line": 588,
             "description": "The busy {{#crossLink \"Spinner\"}}{{/crossLink}} for this Canvas.",
             "itemtype": "property",
             "name": "spinner",
@@ -23860,7 +23932,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/canvas/canvas.js:503"
+            "line": " src/canvas/canvas.js:502"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -24564,27 +24636,27 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/canvas/canvas.js:362"
+            "line": " src/canvas/canvas.js:361"
         },
         {
             "message": "Missing item type\nCreates a default canvas in the DOM.",
-            "line": " src/canvas/canvas.js:370"
+            "line": " src/canvas/canvas.js:369"
         },
         {
             "message": "Missing item type\nCreates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
-            "line": " src/canvas/canvas.js:399"
+            "line": " src/canvas/canvas.js:398"
         },
         {
             "message": "Missing item type",
-            "line": " src/canvas/canvas.js:431"
+            "line": " src/canvas/canvas.js:430"
         },
         {
             "message": "Missing item type\nInitialises the WebGL context",
-            "line": " src/canvas/canvas.js:461"
+            "line": " src/canvas/canvas.js:460"
         },
         {
             "message": "Missing item type\nReads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
-            "line": " src/canvas/canvas.js:561"
+            "line": " src/canvas/canvas.js:560"
         },
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",

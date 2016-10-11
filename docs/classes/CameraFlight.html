@@ -234,7 +234,9 @@
 <pre class="code prettyprint"><code class="lang-Javascript">cameraFlight.flyTo({
    eye: [-5,-5,-5],
    look: [0,0,0]
-   up: [0,1,0]
+   up: [0,1,0],
+   stopFOV: 45, // Default, degrees
+   duration: 1 // Default, seconds
 }, function() {
    // Arrived
 });
@@ -248,7 +250,8 @@
 // the Camera to each specified target
 var cameraFlight = new XEO.CameraFlight({
    camera: camera,
-   duration: 20 // Seconds
+   stopFOV: 45, // Default, degrees
+   duration: 1 // Default, seconds
 });
 
 // Create a Entity, which gets all the default components
@@ -287,7 +290,19 @@ cameraFlight.flyTo(aabb);
                                 <code class="optional">[scene]</code>
                         </li>
                         <li class="arg">
-                                <code class="optional">[cfg]</code>
+                                <code class="optional">[cfg.id]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[cfg.meta]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[cfg.camera]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[cfg.stopFOV=45]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[cfg.duration=1]</code>
                         </li>
                     </ul><span class="paren">)</span>
                 </div>
@@ -331,53 +346,67 @@ cameraFlight.flyTo(aabb);
         
                         </li>
                         <li class="param">
-                                <code class="param-name optional">[cfg]</code>
-                                <span class="type">String | <a href="../classes/Component.html" class="crosslink">Component</a> | <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> | Array of Number | </span>
+                                <code class="param-name optional">[cfg.id]</code>
+                                <span class="type">String</span>
                                 <span class="flag optional" title="This parameter is optional.">optional</span>
         
         
                             <div class="param-description">
-                                <p>Target - see class documentation above.</p>
+                                <p>Optional ID, unique among all components in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>, generated automatically when omitted.</p>
         
                             </div>
         
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name optional">[id]</code>
-                                            <span class="type">String</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[cfg.meta]</code>
+                                <span class="type">String:Object</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
         
-                                        <div class="param-description">
-                                            <p>Optional ID, unique among all components in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>, generated automatically when omitted.</p>
         
-                                        </div>
+                            <div class="param-description">
+                                <p>Optional map of user-defined metadata to attach to this CameraFlight.</p>
         
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[meta]</code>
-                                            <span class="type">String:Object</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+                            </div>
         
-                                        <div class="param-description">
-                                            <p>Optional map of user-defined metadata to attach to this CameraFlight.</p>
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[cfg.camera]</code>
+                                <span class="type">String | <a href="../classes/Camera.html" class="crosslink">Camera</a></span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
         
-                                        </div>
         
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[camera]</code>
-                                            <span class="type">String | <a href="../classes/Camera.html" class="crosslink">Camera</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/Camera.html" class="crosslink">Camera</a> to control.
+                            <div class="param-description">
+                                <p>ID or instance of a <a href="../classes/Camera.html" class="crosslink">Camera</a> to control.
         Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this CameraFlight. Defaults to the
         parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance, <a href="../classes/Scene.html#property_camera" class="crosslink">camera</a>.</p>
         
-                                        </div>
+                            </div>
         
-                                    </li>
-                                </ul>
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[cfg.stopFOV=45]</code>
+                                <span class="type">Number</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>How much of field-of-view, in degrees, that a target <a href="../classes/Entity.html" class="crosslink">Entity</a> or its AABB should
+         fill the canvas when calling <a href="../classes/CameraFlight.html#method_flyTo" class="crosslink">flyTo</a> or CameraFlight/jumpTo:method.</p>
+        
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[cfg.duration=1]</code>
+                                <span class="type">Number</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>Flight duration, in seconds, when calling <a href="../classes/CameraFlight.html#method_flyTo" class="crosslink">flyTo</a>.</p>
+        
+                            </div>
+        
                         </li>
                     </ul>
                 </div>
@@ -509,6 +538,10 @@ cameraFlight.flyTo(aabb);
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_duration">duration</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_geometry">geometry</a>
 
                             </li>
@@ -576,6 +609,10 @@ cameraFlight.flyTo(aabb);
                                 <a href="#property_stationary">stationary</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_stopFOV">stopFOV</a>
+
+                            </li>
                             <li class="index-item property inherited inherited">
                                 <a href="#property_string">string</a>
 
@@ -616,6 +653,14 @@ cameraFlight.flyTo(aabb);
                                 <a href="#event_destroyed">destroyed</a>
 
                             </li>
+                            <li class="index-item event">
+                                <a href="#event_duration">duration</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_stopFOV">stopFOV</a>
+
+                            </li>
                     </ul>
                 </div>
         </div>
@@ -639,7 +684,7 @@ cameraFlight.flyTo(aabb);
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_animation_cameraFlight.js.html#l573"><code>src&#x2F;animation&#x2F;cameraFlight.js:573</code></a>
+        <a href="../files/src_animation_cameraFlight.js.html#l581"><code>src&#x2F;animation&#x2F;cameraFlight.js:581</code></a>
         </p>
 
 
@@ -1020,7 +1065,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_animation_cameraFlight.js.html#l370"><code>src&#x2F;animation&#x2F;cameraFlight.js:370</code></a>
+        <a href="../files/src_animation_cameraFlight.js.html#l377"><code>src&#x2F;animation&#x2F;cameraFlight.js:377</code></a>
         </p>
 
 
@@ -1126,7 +1171,8 @@ swing away from its Camera/eye:property position as it flies to the target.</p>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
 
                                 <div class="param-description">
-                                    <p>How much of field-of-view, in degrees, that a target AABB should fill the canvas.</p>
+                                    <p>How much of field-of-view, in degrees, that a target <a href="../classes/Entity.html" class="crosslink">Entity</a> or its AABB should
+fill the canvas on arrival.</p>
 
                                 </div>
 
@@ -1167,7 +1213,7 @@ swing away from its Camera/eye:property position as it flies to the target.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_animation_cameraFlight.js.html#l170"><code>src&#x2F;animation&#x2F;cameraFlight.js:170</code></a>
+        <a href="../files/src_animation_cameraFlight.js.html#l175"><code>src&#x2F;animation&#x2F;cameraFlight.js:175</code></a>
         </p>
 
 
@@ -1268,12 +1314,24 @@ swing away from its Camera/eye:property position as it flies to the target.</p>
 
                             </li>
                             <li class="param">
-                                    <code class="param-name optional">[stopFOV]</code>
+                                    <code class="param-name optional">[stopFOV=45]</code>
                                     <span class="type">Number</span>
                                     <span class="flag optional" title="This parameter is optional.">optional</span>
 
                                 <div class="param-description">
-                                    <p>How much of field-of-view, in degrees, that a target AABB should fill the canvas.</p>
+                                    <p>How much of field-of-view, in degrees, that a target <a href="../classes/Entity.html" class="crosslink">Entity</a> or its AABB should
+fill the canvas on arrival.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[duration=1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Flight duration in seconds.</p>
 
                                 </div>
 
@@ -1771,7 +1829,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_animation_cameraFlight.js.html#l540"><code>src&#x2F;animation&#x2F;cameraFlight.js:540</code></a>
+        <a href="../files/src_animation_cameraFlight.js.html#l548"><code>src&#x2F;animation&#x2F;cameraFlight.js:548</code></a>
         </p>
 
 
@@ -2047,6 +2105,34 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
+                    
+                    
+                    </div>
+                    <div id="property_duration" class="property item">
+                        <h3 class="name"><code>duration</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_animation_cameraFlight.js.html#l633"><code>src&#x2F;animation&#x2F;cameraFlight.js:633</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Flight duration, in seconds, when calling <a href="../classes/CameraFlight.html#method_flyTo" class="crosslink">flyTo</a>.</p>
+                    <p>Stops any flight currently in progress.</p>
+                    <p>Fires a <a href="../classes/CameraFlight.html#event_duration" class="crosslink">duration</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 1</p>
                     
                     
                     </div>
@@ -2478,6 +2564,34 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_stopFOV" class="property item">
+                        <h3 class="name"><code>stopFOV</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_animation_cameraFlight.js.html#l666"><code>src&#x2F;animation&#x2F;cameraFlight.js:666</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>How much of field-of-view, in degrees, that a target <a href="../classes/Entity.html" class="crosslink">Entity</a> or its AABB should
+                    fill the canvas when calling <a href="../classes/CameraFlight.html#method_flyTo" class="crosslink">flyTo</a> or CameraFlight/jumpTo:method.</p>
+                    <p>Fires a <a href="../classes/CameraFlight.html#event_stopFOV" class="crosslink">stopFOV</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 45</p>
+                    
+                    
+                    </div>
                     <div id="property_string" class="property item inherited">
                         <h3 class="name"><code>string</code></h3>
                         <span class="type">String</span>
@@ -2554,7 +2668,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_animation_cameraFlight.js.html#l113"><code>src&#x2F;animation&#x2F;cameraFlight.js:113</code></a>
+                            <a href="../files/src_animation_cameraFlight.js.html#l118"><code>src&#x2F;animation&#x2F;cameraFlight.js:118</code></a>
                             </p>
                     
                     
@@ -2660,7 +2774,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_animation_cameraFlight.js.html#l603"><code>src&#x2F;animation&#x2F;cameraFlight.js:603</code></a>
+                            <a href="../files/src_animation_cameraFlight.js.html#l611"><code>src&#x2F;animation&#x2F;cameraFlight.js:611</code></a>
                             </p>
                     
                     
@@ -2714,6 +2828,90 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
+                    
+                    
+                    </div>
+                    <div id="event_duration" class="events item">
+                        <h3 class="name"><code>duration</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_animation_cameraFlight.js.html#l650"><code>src&#x2F;animation&#x2F;cameraFlight.js:650</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this CameraFlight&#39;s <a href="../classes/CameraFlight.html#property_duration" class="crosslink">duration</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_stopFOV" class="events item">
+                        <h3 class="name"><code>stopFOV</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_animation_cameraFlight.js.html#l682"><code>src&#x2F;animation&#x2F;cameraFlight.js:682</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this CameraFlight&#39;s <a href="../classes/CameraFlight.html#property_stopFOV" class="crosslink">stopFOV</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
                     
                     
                     </div>
