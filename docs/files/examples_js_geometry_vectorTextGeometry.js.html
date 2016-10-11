@@ -1,0 +1,2079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>examples/js/geometry/vectorTextGeometry.js - xeoengine</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+
+                <h1 style="color:white;"><a href="../../">xeoEngine</a> / <a href="../../docs">API Docs</a></h1>
+
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 0.1.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
+                                <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
+                                <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
+                                <li><a href="../classes/Camera.html">Camera</a></li>
+                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraController.html">CameraController</a></li>
+                                <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
+                                <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/Cardboard.html">Cardboard</a></li>
+                                <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/Collection.html">Collection</a></li>
+                                <li><a href="../classes/CollectionBoundary.html">CollectionBoundary</a></li>
+                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
+                                <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
+                                <li><a href="../classes/Component.html">Component</a></li>
+                                <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+                                <li><a href="../classes/Cull.html">Cull</a></li>
+                                <li><a href="../classes/Curve.html">Curve</a></li>
+                                <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
+                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
+                                <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
+                                <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Entity.html">Entity</a></li>
+                                <li><a href="../classes/Fresnel.html">Fresnel</a></li>
+                                <li><a href="../classes/Frustum.html">Frustum</a></li>
+                                <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
+                                <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
+                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
+                                <li><a href="../classes/KeyboardRotateCamera.html">KeyboardRotateCamera</a></li>
+                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
+                                <li><a href="../classes/LatheGeometry.html">LatheGeometry</a></li>
+                                <li><a href="../classes/Layer.html">Layer</a></li>
+                                <li><a href="../classes/Lights.html">Lights</a></li>
+                                <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/MegaTexture.html">MegaTexture</a></li>
+                                <li><a href="../classes/Model.html">Model</a></li>
+                                <li><a href="../classes/Modes.html">Modes</a></li>
+                                <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
+                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
+                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
+                                <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
+                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
+                                <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
+                                <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
+                                <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Path.html">Path</a></li>
+                                <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
+                                <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
+                                <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Render.html">Render</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
+                                <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
+                                <li><a href="../classes/Skybox.html">Skybox</a></li>
+                                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
+                                <li><a href="../classes/Spinner.html">Spinner</a></li>
+                                <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/Stage.html">Stage</a></li>
+                                <li><a href="../classes/Stationary.html">Stationary</a></li>
+                                <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
+                                <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
+                                <li><a href="../classes/Viewport.html">Viewport</a></li>
+                                <li><a href="../classes/Visibility.html">Visibility</a></li>
+                                <li><a href="../classes/WebVR.html">WebVR</a></li>
+                                <li><a href="../classes/XEO.html">XEO</a></li>
+                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
+                                <li><a href="../classes/ZSpace.html">ZSpace</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="..//modules/animation.html">animation</a></li>
+                                <li><a href="..//modules/boundaries.html">boundaries</a></li>
+                                <li><a href="..//modules/camera.html">camera</a></li>
+                                <li><a href="..//modules/canvas.html">canvas</a></li>
+                                <li><a href="..//modules/clipping.html">clipping</a></li>
+                                <li><a href="..//modules/collections.html">collections</a></li>
+                                <li><a href="..//modules/configs.html">configs</a></li>
+                                <li><a href="..//modules/controls.html">controls</a></li>
+                                <li><a href="..//modules/culling.html">culling</a></li>
+                                <li><a href="..//modules/curves.html">curves</a></li>
+                                <li><a href="..//modules/entities.html">entities</a></li>
+                                <li><a href="..//modules/geometry.html">geometry</a></li>
+                                <li><a href="..//modules/importing.html">importing</a></li>
+                                <li><a href="..//modules/input.html">input</a></li>
+                                <li><a href="..//modules/interaction.html">interaction</a></li>
+                                <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/materials.html">materials</a></li>
+                                <li><a href="..//modules/math.html">math</a></li>
+                                <li><a href="..//modules/paths.html">paths</a></li>
+                                <li><a href="..//modules/rendering.html">rendering</a></li>
+                                <li><a href="..//modules/shaders.html">shaders</a></li>
+                                <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="..//modules/transforms.html">transforms</a></li>
+                                <li><a href="..//modules/webvr.html">webvr</a></li>
+                                <li><a href="..//modules/XEO.html">XEO</a></li>
+                                <li><a href="..//modules/xeogl.html">xeogl</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <!--<div id="api-options">-->
+                    <!--Show:-->
+                    <!--<label for="api-show-inherited">-->
+                        <!--<input type="checkbox" id="api-show-inherited" checked>-->
+                        <!--Inherited-->
+                    <!--</label>-->
+            
+                    <!--<label for="api-show-protected">-->
+                        <!--<input type="checkbox" id="api-show-protected">-->
+                        <!--Protected-->
+                    <!--</label>-->
+            
+                    <!--<label for="api-show-private">-->
+                        <!--<input type="checkbox" id="api-show-private">-->
+                        <!--Private-->
+                    <!--</label>-->
+                    <!--<label for="api-show-deprecated">-->
+                        <!--<input type="checkbox" id="api-show-deprecated">-->
+                        <!--Deprecated-->
+                    <!--</label>-->
+            
+                <!--</div>-->
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: examples/js/geometry/vectorTextGeometry.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ A **VectorTextGeometry** defines vector text geometry for attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
+
+ ## Example
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ new XEO.Entity({
+     geometry: new XEO.VectorTextGeometry({
+         text: &quot;Attack ships on fire off the Shoulder of Orion&quot;,
+         xSize: 2,
+         ySize: 2
+     }),
+     material: new XEO.PhongMaterial({
+         emissive: [0.5, 1.0, 1.0],
+         lineWidth: 2
+     }),
+     lights: new XEO.Lights({
+         lights: [] // No lights - rely on emissive color
+     }),
+     transform: new XEO.Translate({
+         xyz: [0, 40, 0]
+     })
+ });
+ &#x60;&#x60;&#x60;&#x60;
+
+ @class VectorTextGeometry
+ @module XEO
+ @submodule geometry
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this VectorTextGeometry in the default
+ {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this VectorTextGeometry.
+ @param [cfg.text=&quot;&quot;] {String} The text.
+ @extends Geometry
+ */
+(function () {
+
+    &quot;use strict&quot;;
+
+    var letters;
+
+    XEO.VectorTextGeometry = XEO.Geometry.extend({
+
+        type: &quot;XEO.VectorTextGeometry&quot;,
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this.text = cfg.text;
+
+            this.xSize = cfg.xSize;
+            this.ySize = cfg.ySize;
+        },
+
+        /**
+         * Implement protected virtual template method {{#crossLink &quot;Geometry/method:_update&quot;}}{{/crossLink}},
+         * to generate geometry data arrays.
+         *
+         * @protected
+         */
+        _update: function () {
+
+            if (!letters) {
+                letters = buildStrokeData();
+            }
+
+            var positions = [];
+            var indices = [];
+            var lines = this._text.split(&quot;\n&quot;);
+            var countVerts = 0;
+            var y = 0;
+            var x;
+            var str;
+            var len;
+            var c;
+            var mag = 1.0 / 25.0;
+            var penUp;
+            var p1;
+            var p2;
+            var needLine;
+            var pointsLen;
+            var a;
+
+            for (var iLine = 0; iLine &lt; lines.length; iLine++) {
+
+                x = 0;
+                str = lines[iLine];
+                len = str.length;
+
+                for (var i = 0; i &lt; len; i++) {
+
+                    c = letters[str.charAt(i)];
+
+                    if (c == &#x27;\n&#x27;) {
+                        //alert(&quot;newline&quot;);
+                    }
+
+                    if (!c) {
+                        continue;
+                    }
+
+                    penUp = 1;
+                    p1 = -1;
+                    p2 = -1;
+                    needLine = false;
+
+                    pointsLen = c.points.length;
+
+                    for (var j = 0; j &lt; pointsLen; j++) {
+                        a = c.points[j];
+
+                        if (a[0] == -1 &amp;&amp; a[1] == -1) {
+                            penUp = 1;
+                            needLine = false;
+                            continue;
+                        }
+
+                        positions.push(x + (a[0] * this._xSize) * mag);
+                        positions.push(y + (a[1] * this._ySize) * mag);
+                        positions.push(0);
+
+                        if (p1 == -1) {
+                            p1 = countVerts;
+                        } else if (p2 == -1) {
+                            p2 = countVerts;
+                        } else {
+                            p1 = p2;
+                            p2 = countVerts;
+                        }
+                        countVerts++;
+
+                        if (penUp) {
+                            penUp = false;
+
+                        } else {
+                            indices.push(p1);
+                            indices.push(p2);
+                        }
+
+                        needLine = true;
+                    }
+                    x += c.width * mag * this._xSize;
+
+                }
+                y -= 35 * mag * this._ySize;
+            }
+
+            this.primitive = &quot;lines&quot;;
+            this.positions = positions;
+            this.normals = null;
+            this.uv = null;
+            this.indices = indices;
+        },
+
+        _props: {
+
+            /**
+             * The text for this VectorText
+             *
+             * Fires a {{#crossLink &quot;VectorTextGeometry/text:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property text
+             * @default &quot;&quot;
+             * @type String
+             */
+            text: {
+
+                set: function (value) {
+
+                    value = value || &quot;&quot;;
+
+                    if (this._text === value) {
+                        return;
+                    }
+
+                    this._text = value;
+
+                    this._scheduleUpdate();
+
+                    /**
+                     * Fired whenever this VectorTextGeometry&#x27;s {{#crossLink &quot;VectorTextGeometry/text:property&quot;}}{{/crossLink}} property changes.
+                     * @event text
+                     * @type Boolean
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;text&quot;, this._text);
+                },
+
+                get: function () {
+                    return this._text;
+                }
+            },
+
+            /**
+             * The VectorText&#x27;s size on the X-axis.
+             *
+             * Fires a {{#crossLink &quot;VectorText/xSize:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property xSize
+             * @default 1
+             * @type Number
+             */
+            xSize: {
+
+                set: function (value) {
+
+                    value = value || 1;
+
+                    if (this._xSize === value) {
+                        return;
+                    }
+
+                    if (value &lt; 0) {
+                        this.warn(&quot;negative xSize not allowed - will invert&quot;);
+                        value = value * -1;
+                    }
+
+                    this._xSize = value;
+
+                    this._scheduleUpdate();
+
+                    /**
+                     * Fired whenever this VectorText&#x27;s {{#crossLink &quot;VectorText/xSize:property&quot;}}{{/crossLink}} property changes.
+                     * @event xSize
+                     * @type Number
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;xSize&quot;, this._xSize);
+                },
+
+                get: function () {
+                    return this._xSize;
+                }
+            },
+
+            /**
+             * The VectorText&#x27;s size on the Y-axis.
+             *
+             * Fires a {{#crossLink &quot;VectorText/ySize:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property ySize
+             * @default 1.0
+             * @type Number
+             */
+            ySize: {
+
+                set: function (value) {
+
+                    value = value || 1.0;
+
+                    if (this._ySize === value) {
+                        return;
+                    }
+
+                    if (value &lt; 0) {
+                        this.warn(&quot;negative ySize not allowed - will invert&quot;);
+                        value = value * -1;
+                    }
+
+                    this._ySize = value;
+
+                    this._scheduleUpdate();
+
+                    /**
+                     * Fired whenever this VectorText&#x27;s {{#crossLink &quot;VectorText/ySize:property&quot;}}{{/crossLink}} property changes.
+                     * @event ySize
+                     * @type Number
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;ySize&quot;, this._ySize);
+                },
+
+                get: function () {
+                    return this._ySize;
+                }
+            },
+
+            _getJSON: function () {
+                return {
+                    text: this._text
+                };
+            }
+        }
+    });
+
+    function buildStrokeData() {
+        return {
+            &#x27; &#x27;: {width: 16, points: []},
+            &#x27;!&#x27;: {
+                width: 10, points: [
+                    [5, 21],
+                    [5, 7],
+                    [-1, -1],
+                    [5, 2],
+                    [4, 1],
+                    [5, 0],
+                    [6, 1],
+                    [5, 2]
+                ]
+            },
+            &#x27;&quot;&#x27;: {
+                width: 16, points: [
+                    [4, 21],
+                    [4, 14],
+                    [-1, -1],
+                    [12, 21],
+                    [12, 14]
+                ]
+            },
+            &#x27;#&#x27;: {
+                width: 21, points: [
+                    [11, 25],
+                    [4, -7],
+                    [-1, -1],
+                    [17, 25],
+                    [10, -7],
+                    [-1, -1],
+                    [4, 12],
+                    [18, 12],
+                    [-1, -1],
+                    [3, 6],
+                    [17, 6]
+                ]
+            },
+            &#x27;$&#x27;: {
+                width: 20, points: [
+                    [8, 25],
+                    [8, -4],
+                    [-1, -1],
+                    [12, 25],
+                    [12, -4],
+                    [-1, -1],
+                    [17, 18],
+                    [15, 20],
+                    [12, 21],
+                    [8, 21],
+                    [5, 20],
+                    [3, 18],
+                    [3, 16],
+                    [4, 14],
+                    [5, 13],
+                    [7, 12],
+                    [13, 10],
+                    [15, 9],
+                    [16, 8],
+                    [17, 6],
+                    [17, 3],
+                    [15, 1],
+                    [12, 0],
+                    [8, 0],
+                    [5, 1],
+                    [3, 3]
+                ]
+            },
+            &#x27;%&#x27;: {
+                width: 24, points: [
+                    [21, 21],
+                    [3, 0],
+                    [-1, -1],
+                    [8, 21],
+                    [10, 19],
+                    [10, 17],
+                    [9, 15],
+                    [7, 14],
+                    [5, 14],
+                    [3, 16],
+                    [3, 18],
+                    [4, 20],
+                    [6, 21],
+                    [8, 21],
+                    [10, 20],
+                    [13, 19],
+                    [16, 19],
+                    [19, 20],
+                    [21, 21],
+                    [-1, -1],
+                    [17, 7],
+                    [15, 6],
+                    [14, 4],
+                    [14, 2],
+                    [16, 0],
+                    [18, 0],
+                    [20, 1],
+                    [21, 3],
+                    [21, 5],
+                    [19, 7],
+                    [17, 7]
+                ]
+            },
+            &#x27;&amp;&#x27;: {
+                width: 26, points: [
+                    [23, 12],
+                    [23, 13],
+                    [22, 14],
+                    [21, 14],
+                    [20, 13],
+                    [19, 11],
+                    [17, 6],
+                    [15, 3],
+                    [13, 1],
+                    [11, 0],
+                    [7, 0],
+                    [5, 1],
+                    [4, 2],
+                    [3, 4],
+                    [3, 6],
+                    [4, 8],
+                    [5, 9],
+                    [12, 13],
+                    [13, 14],
+                    [14, 16],
+                    [14, 18],
+                    [13, 20],
+                    [11, 21],
+                    [9, 20],
+                    [8, 18],
+                    [8, 16],
+                    [9, 13],
+                    [11, 10],
+                    [16, 3],
+                    [18, 1],
+                    [20, 0],
+                    [22, 0],
+                    [23, 1],
+                    [23, 2]
+                ]
+            },
+            &#x27;\&#x27;&#x27;: {
+                width: 10, points: [
+                    [5, 19],
+                    [4, 20],
+                    [5, 21],
+                    [6, 20],
+                    [6, 18],
+                    [5, 16],
+                    [4, 15]
+                ]
+            },
+            &#x27;(&#x27;: {
+                width: 14, points: [
+                    [11, 25],
+                    [9, 23],
+                    [7, 20],
+                    [5, 16],
+                    [4, 11],
+                    [4, 7],
+                    [5, 2],
+                    [7, -2],
+                    [9, -5],
+                    [11, -7]
+                ]
+            },
+            &#x27;)&#x27;: {
+                width: 14, points: [
+                    [3, 25],
+                    [5, 23],
+                    [7, 20],
+                    [9, 16],
+                    [10, 11],
+                    [10, 7],
+                    [9, 2],
+                    [7, -2],
+                    [5, -5],
+                    [3, -7]
+                ]
+            },
+            &#x27;*&#x27;: {
+                width: 16, points: [
+                    [8, 21],
+                    [8, 9],
+                    [-1, -1],
+                    [3, 18],
+                    [13, 12],
+                    [-1, -1],
+                    [13, 18],
+                    [3, 12]
+                ]
+            },
+            &#x27;+&#x27;: {
+                width: 26, points: [
+                    [13, 18],
+                    [13, 0],
+                    [-1, -1],
+                    [4, 9],
+                    [22, 9]
+                ]
+            },
+            &#x27;,&#x27;: {
+                width: 10, points: [
+                    [6, 1],
+                    [5, 0],
+                    [4, 1],
+                    [5, 2],
+                    [6, 1],
+                    [6, -1],
+                    [5, -3],
+                    [4, -4]
+                ]
+            },
+            &#x27;-&#x27;: {
+                width: 26, points: [
+                    [4, 9],
+                    [22, 9]
+                ]
+            },
+            &#x27;.&#x27;: {
+                width: 10, points: [
+                    [5, 2],
+                    [4, 1],
+                    [5, 0],
+                    [6, 1],
+                    [5, 2]
+                ]
+            },
+            &#x27;/&#x27;: {
+                width: 22, points: [
+                    [20, 25],
+                    [2, -7]
+                ]
+            },
+            &#x27;0&#x27;: {
+                width: 20, points: [
+                    [9, 21],
+                    [6, 20],
+                    [4, 17],
+                    [3, 12],
+                    [3, 9],
+                    [4, 4],
+                    [6, 1],
+                    [9, 0],
+                    [11, 0],
+                    [14, 1],
+                    [16, 4],
+                    [17, 9],
+                    [17, 12],
+                    [16, 17],
+                    [14, 20],
+                    [11, 21],
+                    [9, 21]
+                ]
+            },
+            &#x27;1&#x27;: {
+                width: 20, points: [
+                    [6, 17],
+                    [8, 18],
+                    [11, 21],
+                    [11, 0]
+                ]
+            },
+            &#x27;2&#x27;: {
+                width: 20, points: [
+                    [4, 16],
+                    [4, 17],
+                    [5, 19],
+                    [6, 20],
+                    [8, 21],
+                    [12, 21],
+                    [14, 20],
+                    [15, 19],
+                    [16, 17],
+                    [16, 15],
+                    [15, 13],
+                    [13, 10],
+                    [3, 0],
+                    [17, 0]
+                ]
+            },
+            &#x27;3&#x27;: {
+                width: 20, points: [
+                    [5, 21],
+                    [16, 21],
+                    [10, 13],
+                    [13, 13],
+                    [15, 12],
+                    [16, 11],
+                    [17, 8],
+                    [17, 6],
+                    [16, 3],
+                    [14, 1],
+                    [11, 0],
+                    [8, 0],
+                    [5, 1],
+                    [4, 2],
+                    [3, 4]
+                ]
+            },
+            &#x27;4&#x27;: {
+                width: 20, points: [
+                    [13, 21],
+                    [3, 7],
+                    [18, 7],
+                    [-1, -1],
+                    [13, 21],
+                    [13, 0]
+                ]
+            },
+            &#x27;5&#x27;: {
+                width: 20, points: [
+                    [15, 21],
+                    [5, 21],
+                    [4, 12],
+                    [5, 13],
+                    [8, 14],
+                    [11, 14],
+                    [14, 13],
+                    [16, 11],
+                    [17, 8],
+                    [17, 6],
+                    [16, 3],
+                    [14, 1],
+                    [11, 0],
+                    [8, 0],
+                    [5, 1],
+                    [4, 2],
+                    [3, 4]
+                ]
+            },
+            &#x27;6&#x27;: {
+                width: 20, points: [
+                    [16, 18],
+                    [15, 20],
+                    [12, 21],
+                    [10, 21],
+                    [7, 20],
+                    [5, 17],
+                    [4, 12],
+                    [4, 7],
+                    [5, 3],
+                    [7, 1],
+                    [10, 0],
+                    [11, 0],
+                    [14, 1],
+                    [16, 3],
+                    [17, 6],
+                    [17, 7],
+                    [16, 10],
+                    [14, 12],
+                    [11, 13],
+                    [10, 13],
+                    [7, 12],
+                    [5, 10],
+                    [4, 7]
+                ]
+            },
+            &#x27;7&#x27;: {
+                width: 20, points: [
+                    [17, 21],
+                    [7, 0],
+                    [-1, -1],
+                    [3, 21],
+                    [17, 21]
+                ]
+            },
+            &#x27;8&#x27;: {
+                width: 20, points: [
+                    [8, 21],
+                    [5, 20],
+                    [4, 18],
+                    [4, 16],
+                    [5, 14],
+                    [7, 13],
+                    [11, 12],
+                    [14, 11],
+                    [16, 9],
+                    [17, 7],
+                    [17, 4],
+                    [16, 2],
+                    [15, 1],
+                    [12, 0],
+                    [8, 0],
+                    [5, 1],
+                    [4, 2],
+                    [3, 4],
+                    [3, 7],
+                    [4, 9],
+                    [6, 11],
+                    [9, 12],
+                    [13, 13],
+                    [15, 14],
+                    [16, 16],
+                    [16, 18],
+                    [15, 20],
+                    [12, 21],
+                    [8, 21]
+                ]
+            },
+            &#x27;9&#x27;: {
+                width: 20, points: [
+                    [16, 14],
+                    [15, 11],
+                    [13, 9],
+                    [10, 8],
+                    [9, 8],
+                    [6, 9],
+                    [4, 11],
+                    [3, 14],
+                    [3, 15],
+                    [4, 18],
+                    [6, 20],
+                    [9, 21],
+                    [10, 21],
+                    [13, 20],
+                    [15, 18],
+                    [16, 14],
+                    [16, 9],
+                    [15, 4],
+                    [13, 1],
+                    [10, 0],
+                    [8, 0],
+                    [5, 1],
+                    [4, 3]
+                ]
+            },
+            &#x27;:&#x27;: {
+                width: 10, points: [
+                    [5, 14],
+                    [4, 13],
+                    [5, 12],
+                    [6, 13],
+                    [5, 14],
+                    [-1, -1],
+                    [5, 2],
+                    [4, 1],
+                    [5, 0],
+                    [6, 1],
+                    [5, 2]
+                ]
+            },
+            &#x27;;&#x27;: {
+                width: 10, points: [
+                    [5, 14],
+                    [4, 13],
+                    [5, 12],
+                    [6, 13],
+                    [5, 14],
+                    [-1, -1],
+                    [6, 1],
+                    [5, 0],
+                    [4, 1],
+                    [5, 2],
+                    [6, 1],
+                    [6, -1],
+                    [5, -3],
+                    [4, -4]
+                ]
+            },
+            &#x27;&lt;&#x27;: {
+                width: 24, points: [
+                    [20, 18],
+                    [4, 9],
+                    [20, 0]
+                ]
+            },
+            &#x27;=&#x27;: {
+                width: 26, points: [
+                    [4, 12],
+                    [22, 12],
+                    [-1, -1],
+                    [4, 6],
+                    [22, 6]
+                ]
+            },
+            &#x27;&gt;&#x27;: {
+                width: 24, points: [
+                    [4, 18],
+                    [20, 9],
+                    [4, 0]
+                ]
+            },
+            &#x27;?&#x27;: {
+                width: 18, points: [
+                    [3, 16],
+                    [3, 17],
+                    [4, 19],
+                    [5, 20],
+                    [7, 21],
+                    [11, 21],
+                    [13, 20],
+                    [14, 19],
+                    [15, 17],
+                    [15, 15],
+                    [14, 13],
+                    [13, 12],
+                    [9, 10],
+                    [9, 7],
+                    [-1, -1],
+                    [9, 2],
+                    [8, 1],
+                    [9, 0],
+                    [10, 1],
+                    [9, 2]
+                ]
+            },
+            &#x27;@&#x27;: {
+                width: 27, points: [
+                    [18, 13],
+                    [17, 15],
+                    [15, 16],
+                    [12, 16],
+                    [10, 15],
+                    [9, 14],
+                    [8, 11],
+                    [8, 8],
+                    [9, 6],
+                    [11, 5],
+                    [14, 5],
+                    [16, 6],
+                    [17, 8],
+                    [-1, -1],
+                    [12, 16],
+                    [10, 14],
+                    [9, 11],
+                    [9, 8],
+                    [10, 6],
+                    [11, 5],
+                    [-1, -1],
+                    [18, 16],
+                    [17, 8],
+                    [17, 6],
+                    [19, 5],
+                    [21, 5],
+                    [23, 7],
+                    [24, 10],
+                    [24, 12],
+                    [23, 15],
+                    [22, 17],
+                    [20, 19],
+                    [18, 20],
+                    [15, 21],
+                    [12, 21],
+                    [9, 20],
+                    [7, 19],
+                    [5, 17],
+                    [4, 15],
+                    [3, 12],
+                    [3, 9],
+                    [4, 6],
+                    [5, 4],
+                    [7, 2],
+                    [9, 1],
+                    [12, 0],
+                    [15, 0],
+                    [18, 1],
+                    [20, 2],
+                    [21, 3],
+                    [-1, -1],
+                    [19, 16],
+                    [18, 8],
+                    [18, 6],
+                    [19, 5]
+                ]
+            },
+            &#x27;A&#x27;: {
+                width: 18, points: [
+                    [9, 21],
+                    [1, 0],
+                    [-1, -1],
+                    [9, 21],
+                    [17, 0],
+                    [-1, -1],
+                    [4, 7],
+                    [14, 7]
+                ]
+            },
+            &#x27;B&#x27;: {
+                width: 21, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 21],
+                    [13, 21],
+                    [16, 20],
+                    [17, 19],
+                    [18, 17],
+                    [18, 15],
+                    [17, 13],
+                    [16, 12],
+                    [13, 11],
+                    [-1, -1],
+                    [4, 11],
+                    [13, 11],
+                    [16, 10],
+                    [17, 9],
+                    [18, 7],
+                    [18, 4],
+                    [17, 2],
+                    [16, 1],
+                    [13, 0],
+                    [4, 0]
+                ]
+            },
+            &#x27;C&#x27;: {
+                width: 21, points: [
+                    [18, 16],
+                    [17, 18],
+                    [15, 20],
+                    [13, 21],
+                    [9, 21],
+                    [7, 20],
+                    [5, 18],
+                    [4, 16],
+                    [3, 13],
+                    [3, 8],
+                    [4, 5],
+                    [5, 3],
+                    [7, 1],
+                    [9, 0],
+                    [13, 0],
+                    [15, 1],
+                    [17, 3],
+                    [18, 5]
+                ]
+            },
+            &#x27;D&#x27;: {
+                width: 21, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 21],
+                    [11, 21],
+                    [14, 20],
+                    [16, 18],
+                    [17, 16],
+                    [18, 13],
+                    [18, 8],
+                    [17, 5],
+                    [16, 3],
+                    [14, 1],
+                    [11, 0],
+                    [4, 0]
+                ]
+            },
+            &#x27;E&#x27;: {
+                width: 19, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 21],
+                    [17, 21],
+                    [-1, -1],
+                    [4, 11],
+                    [12, 11],
+                    [-1, -1],
+                    [4, 0],
+                    [17, 0]
+                ]
+            },
+            &#x27;F&#x27;: {
+                width: 18, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 21],
+                    [17, 21],
+                    [-1, -1],
+                    [4, 11],
+                    [12, 11]
+                ]
+            },
+            &#x27;G&#x27;: {
+                width: 21, points: [
+                    [18, 16],
+                    [17, 18],
+                    [15, 20],
+                    [13, 21],
+                    [9, 21],
+                    [7, 20],
+                    [5, 18],
+                    [4, 16],
+                    [3, 13],
+                    [3, 8],
+                    [4, 5],
+                    [5, 3],
+                    [7, 1],
+                    [9, 0],
+                    [13, 0],
+                    [15, 1],
+                    [17, 3],
+                    [18, 5],
+                    [18, 8],
+                    [-1, -1],
+                    [13, 8],
+                    [18, 8]
+                ]
+            },
+            &#x27;H&#x27;: {
+                width: 22, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [18, 21],
+                    [18, 0],
+                    [-1, -1],
+                    [4, 11],
+                    [18, 11]
+                ]
+            },
+            &#x27;I&#x27;: {
+                width: 8, points: [
+                    [4, 21],
+                    [4, 0]
+                ]
+            },
+            &#x27;J&#x27;: {
+                width: 16, points: [
+                    [12, 21],
+                    [12, 5],
+                    [11, 2],
+                    [10, 1],
+                    [8, 0],
+                    [6, 0],
+                    [4, 1],
+                    [3, 2],
+                    [2, 5],
+                    [2, 7]
+                ]
+            },
+            &#x27;K&#x27;: {
+                width: 21, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [18, 21],
+                    [4, 7],
+                    [-1, -1],
+                    [9, 12],
+                    [18, 0]
+                ]
+            },
+            &#x27;L&#x27;: {
+                width: 17, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 0],
+                    [16, 0]
+                ]
+            },
+            &#x27;M&#x27;: {
+                width: 24, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 21],
+                    [12, 0],
+                    [-1, -1],
+                    [20, 21],
+                    [12, 0],
+                    [-1, -1],
+                    [20, 21],
+                    [20, 0]
+                ]
+            },
+            &#x27;N&#x27;: {
+                width: 22, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 21],
+                    [18, 0],
+                    [-1, -1],
+                    [18, 21],
+                    [18, 0]
+                ]
+            },
+            &#x27;O&#x27;: {
+                width: 22, points: [
+                    [9, 21],
+                    [7, 20],
+                    [5, 18],
+                    [4, 16],
+                    [3, 13],
+                    [3, 8],
+                    [4, 5],
+                    [5, 3],
+                    [7, 1],
+                    [9, 0],
+                    [13, 0],
+                    [15, 1],
+                    [17, 3],
+                    [18, 5],
+                    [19, 8],
+                    [19, 13],
+                    [18, 16],
+                    [17, 18],
+                    [15, 20],
+                    [13, 21],
+                    [9, 21]
+                ]
+            },
+            &#x27;P&#x27;: {
+                width: 21, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 21],
+                    [13, 21],
+                    [16, 20],
+                    [17, 19],
+                    [18, 17],
+                    [18, 14],
+                    [17, 12],
+                    [16, 11],
+                    [13, 10],
+                    [4, 10]
+                ]
+            },
+            &#x27;Q&#x27;: {
+                width: 22, points: [
+                    [9, 21],
+                    [7, 20],
+                    [5, 18],
+                    [4, 16],
+                    [3, 13],
+                    [3, 8],
+                    [4, 5],
+                    [5, 3],
+                    [7, 1],
+                    [9, 0],
+                    [13, 0],
+                    [15, 1],
+                    [17, 3],
+                    [18, 5],
+                    [19, 8],
+                    [19, 13],
+                    [18, 16],
+                    [17, 18],
+                    [15, 20],
+                    [13, 21],
+                    [9, 21],
+                    [-1, -1],
+                    [12, 4],
+                    [18, -2]
+                ]
+            },
+            &#x27;R&#x27;: {
+                width: 21, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 21],
+                    [13, 21],
+                    [16, 20],
+                    [17, 19],
+                    [18, 17],
+                    [18, 15],
+                    [17, 13],
+                    [16, 12],
+                    [13, 11],
+                    [4, 11],
+                    [-1, -1],
+                    [11, 11],
+                    [18, 0]
+                ]
+            },
+            &#x27;S&#x27;: {
+                width: 20, points: [
+                    [17, 18],
+                    [15, 20],
+                    [12, 21],
+                    [8, 21],
+                    [5, 20],
+                    [3, 18],
+                    [3, 16],
+                    [4, 14],
+                    [5, 13],
+                    [7, 12],
+                    [13, 10],
+                    [15, 9],
+                    [16, 8],
+                    [17, 6],
+                    [17, 3],
+                    [15, 1],
+                    [12, 0],
+                    [8, 0],
+                    [5, 1],
+                    [3, 3]
+                ]
+            },
+            &#x27;T&#x27;: {
+                width: 16, points: [
+                    [8, 21],
+                    [8, 0],
+                    [-1, -1],
+                    [1, 21],
+                    [15, 21]
+                ]
+            },
+            &#x27;U&#x27;: {
+                width: 22, points: [
+                    [4, 21],
+                    [4, 6],
+                    [5, 3],
+                    [7, 1],
+                    [10, 0],
+                    [12, 0],
+                    [15, 1],
+                    [17, 3],
+                    [18, 6],
+                    [18, 21]
+                ]
+            },
+            &#x27;V&#x27;: {
+                width: 18, points: [
+                    [1, 21],
+                    [9, 0],
+                    [-1, -1],
+                    [17, 21],
+                    [9, 0]
+                ]
+            },
+            &#x27;W&#x27;: {
+                width: 24, points: [
+                    [2, 21],
+                    [7, 0],
+                    [-1, -1],
+                    [12, 21],
+                    [7, 0],
+                    [-1, -1],
+                    [12, 21],
+                    [17, 0],
+                    [-1, -1],
+                    [22, 21],
+                    [17, 0]
+                ]
+            },
+            &#x27;X&#x27;: {
+                width: 20, points: [
+                    [3, 21],
+                    [17, 0],
+                    [-1, -1],
+                    [17, 21],
+                    [3, 0]
+                ]
+            },
+            &#x27;Y&#x27;: {
+                width: 18, points: [
+                    [1, 21],
+                    [9, 11],
+                    [9, 0],
+                    [-1, -1],
+                    [17, 21],
+                    [9, 11]
+                ]
+            },
+            &#x27;Z&#x27;: {
+                width: 20, points: [
+                    [17, 21],
+                    [3, 0],
+                    [-1, -1],
+                    [3, 21],
+                    [17, 21],
+                    [-1, -1],
+                    [3, 0],
+                    [17, 0]
+                ]
+            },
+            &#x27;[&#x27;: {
+                width: 14, points: [
+                    [4, 25],
+                    [4, -7],
+                    [-1, -1],
+                    [5, 25],
+                    [5, -7],
+                    [-1, -1],
+                    [4, 25],
+                    [11, 25],
+                    [-1, -1],
+                    [4, -7],
+                    [11, -7]
+                ]
+            },
+            &#x27;\\&#x27;: {
+                width: 14, points: [
+                    [0, 21],
+                    [14, -3]
+                ]
+            },
+            &#x27;]&#x27;: {
+                width: 14, points: [
+                    [9, 25],
+                    [9, -7],
+                    [-1, -1],
+                    [10, 25],
+                    [10, -7],
+                    [-1, -1],
+                    [3, 25],
+                    [10, 25],
+                    [-1, -1],
+                    [3, -7],
+                    [10, -7]
+                ]
+            },
+            &#x27;^&#x27;: {
+                width: 16, points: [
+                    [6, 15],
+                    [8, 18],
+                    [10, 15],
+                    [-1, -1],
+                    [3, 12],
+                    [8, 17],
+                    [13, 12],
+                    [-1, -1],
+                    [8, 17],
+                    [8, 0]
+                ]
+            },
+            &#x27;_&#x27;: {
+                width: 16, points: [
+                    [0, -2],
+                    [16, -2]
+                ]
+            },
+            &#x27;&#x60;&#x27;: {
+                width: 10, points: [
+                    [6, 21],
+                    [5, 20],
+                    [4, 18],
+                    [4, 16],
+                    [5, 15],
+                    [6, 16],
+                    [5, 17]
+                ]
+            },
+            &#x27;a&#x27;: {
+                width: 19, points: [
+                    [15, 14],
+                    [15, 0],
+                    [-1, -1],
+                    [15, 11],
+                    [13, 13],
+                    [11, 14],
+                    [8, 14],
+                    [6, 13],
+                    [4, 11],
+                    [3, 8],
+                    [3, 6],
+                    [4, 3],
+                    [6, 1],
+                    [8, 0],
+                    [11, 0],
+                    [13, 1],
+                    [15, 3]
+                ]
+            },
+            &#x27;b&#x27;: {
+                width: 19, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 11],
+                    [6, 13],
+                    [8, 14],
+                    [11, 14],
+                    [13, 13],
+                    [15, 11],
+                    [16, 8],
+                    [16, 6],
+                    [15, 3],
+                    [13, 1],
+                    [11, 0],
+                    [8, 0],
+                    [6, 1],
+                    [4, 3]
+                ]
+            },
+            &#x27;c&#x27;: {
+                width: 18, points: [
+                    [15, 11],
+                    [13, 13],
+                    [11, 14],
+                    [8, 14],
+                    [6, 13],
+                    [4, 11],
+                    [3, 8],
+                    [3, 6],
+                    [4, 3],
+                    [6, 1],
+                    [8, 0],
+                    [11, 0],
+                    [13, 1],
+                    [15, 3]
+                ]
+            },
+            &#x27;d&#x27;: {
+                width: 19, points: [
+                    [15, 21],
+                    [15, 0],
+                    [-1, -1],
+                    [15, 11],
+                    [13, 13],
+                    [11, 14],
+                    [8, 14],
+                    [6, 13],
+                    [4, 11],
+                    [3, 8],
+                    [3, 6],
+                    [4, 3],
+                    [6, 1],
+                    [8, 0],
+                    [11, 0],
+                    [13, 1],
+                    [15, 3]
+                ]
+            },
+            &#x27;e&#x27;: {
+                width: 18, points: [
+                    [3, 8],
+                    [15, 8],
+                    [15, 10],
+                    [14, 12],
+                    [13, 13],
+                    [11, 14],
+                    [8, 14],
+                    [6, 13],
+                    [4, 11],
+                    [3, 8],
+                    [3, 6],
+                    [4, 3],
+                    [6, 1],
+                    [8, 0],
+                    [11, 0],
+                    [13, 1],
+                    [15, 3]
+                ]
+            },
+            &#x27;f&#x27;: {
+                width: 12, points: [
+                    [10, 21],
+                    [8, 21],
+                    [6, 20],
+                    [5, 17],
+                    [5, 0],
+                    [-1, -1],
+                    [2, 14],
+                    [9, 14]
+                ]
+            },
+            &#x27;g&#x27;: {
+                width: 19, points: [
+                    [15, 14],
+                    [15, -2],
+                    [14, -5],
+                    [13, -6],
+                    [11, -7],
+                    [8, -7],
+                    [6, -6],
+                    [-1, -1],
+                    [15, 11],
+                    [13, 13],
+                    [11, 14],
+                    [8, 14],
+                    [6, 13],
+                    [4, 11],
+                    [3, 8],
+                    [3, 6],
+                    [4, 3],
+                    [6, 1],
+                    [8, 0],
+                    [11, 0],
+                    [13, 1],
+                    [15, 3]
+                ]
+            },
+            &#x27;h&#x27;: {
+                width: 19, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 10],
+                    [7, 13],
+                    [9, 14],
+                    [12, 14],
+                    [14, 13],
+                    [15, 10],
+                    [15, 0]
+                ]
+            },
+            &#x27;i&#x27;: {
+                width: 8, points: [
+                    [3, 21],
+                    [4, 20],
+                    [5, 21],
+                    [4, 22],
+                    [3, 21],
+                    [-1, -1],
+                    [4, 14],
+                    [4, 0]
+                ]
+            },
+            &#x27;j&#x27;: {
+                width: 10, points: [
+                    [5, 21],
+                    [6, 20],
+                    [7, 21],
+                    [6, 22],
+                    [5, 21],
+                    [-1, -1],
+                    [6, 14],
+                    [6, -3],
+                    [5, -6],
+                    [3, -7],
+                    [1, -7]
+                ]
+            },
+            &#x27;k&#x27;: {
+                width: 17, points: [
+                    [4, 21],
+                    [4, 0],
+                    [-1, -1],
+                    [14, 14],
+                    [4, 4],
+                    [-1, -1],
+                    [8, 8],
+                    [15, 0]
+                ]
+            },
+            &#x27;l&#x27;: {
+                width: 8, points: [
+                    [4, 21],
+                    [4, 0]
+                ]
+            },
+            &#x27;m&#x27;: {
+                width: 30, points: [
+                    [4, 14],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 10],
+                    [7, 13],
+                    [9, 14],
+                    [12, 14],
+                    [14, 13],
+                    [15, 10],
+                    [15, 0],
+                    [-1, -1],
+                    [15, 10],
+                    [18, 13],
+                    [20, 14],
+                    [23, 14],
+                    [25, 13],
+                    [26, 10],
+                    [26, 0]
+                ]
+            },
+            &#x27;n&#x27;: {
+                width: 19, points: [
+                    [4, 14],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 10],
+                    [7, 13],
+                    [9, 14],
+                    [12, 14],
+                    [14, 13],
+                    [15, 10],
+                    [15, 0]
+                ]
+            },
+            &#x27;o&#x27;: {
+                width: 19, points: [
+                    [8, 14],
+                    [6, 13],
+                    [4, 11],
+                    [3, 8],
+                    [3, 6],
+                    [4, 3],
+                    [6, 1],
+                    [8, 0],
+                    [11, 0],
+                    [13, 1],
+                    [15, 3],
+                    [16, 6],
+                    [16, 8],
+                    [15, 11],
+                    [13, 13],
+                    [11, 14],
+                    [8, 14]
+                ]
+            },
+            &#x27;p&#x27;: {
+                width: 19, points: [
+                    [4, 14],
+                    [4, -7],
+                    [-1, -1],
+                    [4, 11],
+                    [6, 13],
+                    [8, 14],
+                    [11, 14],
+                    [13, 13],
+                    [15, 11],
+                    [16, 8],
+                    [16, 6],
+                    [15, 3],
+                    [13, 1],
+                    [11, 0],
+                    [8, 0],
+                    [6, 1],
+                    [4, 3]
+                ]
+            },
+            &#x27;q&#x27;: {
+                width: 19, points: [
+                    [15, 14],
+                    [15, -7],
+                    [-1, -1],
+                    [15, 11],
+                    [13, 13],
+                    [11, 14],
+                    [8, 14],
+                    [6, 13],
+                    [4, 11],
+                    [3, 8],
+                    [3, 6],
+                    [4, 3],
+                    [6, 1],
+                    [8, 0],
+                    [11, 0],
+                    [13, 1],
+                    [15, 3]
+                ]
+            },
+            &#x27;r&#x27;: {
+                width: 13, points: [
+                    [4, 14],
+                    [4, 0],
+                    [-1, -1],
+                    [4, 8],
+                    [5, 11],
+                    [7, 13],
+                    [9, 14],
+                    [12, 14]
+                ]
+            },
+            &#x27;s&#x27;: {
+                width: 17, points: [
+                    [14, 11],
+                    [13, 13],
+                    [10, 14],
+                    [7, 14],
+                    [4, 13],
+                    [3, 11],
+                    [4, 9],
+                    [6, 8],
+                    [11, 7],
+                    [13, 6],
+                    [14, 4],
+                    [14, 3],
+                    [13, 1],
+                    [10, 0],
+                    [7, 0],
+                    [4, 1],
+                    [3, 3]
+                ]
+            },
+            &#x27;t&#x27;: {
+                width: 12, points: [
+                    [5, 21],
+                    [5, 4],
+                    [6, 1],
+                    [8, 0],
+                    [10, 0],
+                    [-1, -1],
+                    [2, 14],
+                    [9, 14]
+                ]
+            },
+            &#x27;u&#x27;: {
+                width: 19, points: [
+                    [4, 14],
+                    [4, 4],
+                    [5, 1],
+                    [7, 0],
+                    [10, 0],
+                    [12, 1],
+                    [15, 4],
+                    [-1, -1],
+                    [15, 14],
+                    [15, 0]
+                ]
+            },
+            &#x27;v&#x27;: {
+                width: 16, points: [
+                    [2, 14],
+                    [8, 0],
+                    [-1, -1],
+                    [14, 14],
+                    [8, 0]
+                ]
+            },
+            &#x27;w&#x27;: {
+                width: 22, points: [
+                    [3, 14],
+                    [7, 0],
+                    [-1, -1],
+                    [11, 14],
+                    [7, 0],
+                    [-1, -1],
+                    [11, 14],
+                    [15, 0],
+                    [-1, -1],
+                    [19, 14],
+                    [15, 0]
+                ]
+            },
+            &#x27;x&#x27;: {
+                width: 17, points: [
+                    [3, 14],
+                    [14, 0],
+                    [-1, -1],
+                    [14, 14],
+                    [3, 0]
+                ]
+            },
+            &#x27;y&#x27;: {
+                width: 16, points: [
+                    [2, 14],
+                    [8, 0],
+                    [-1, -1],
+                    [14, 14],
+                    [8, 0],
+                    [6, -4],
+                    [4, -6],
+                    [2, -7],
+                    [1, -7]
+                ]
+            },
+            &#x27;z&#x27;: {
+                width: 17, points: [
+                    [14, 14],
+                    [3, 0],
+                    [-1, -1],
+                    [3, 14],
+                    [14, 14],
+                    [-1, -1],
+                    [3, 0],
+                    [14, 0]
+                ]
+            },
+            &#x27;{&#x27;: {
+                width: 14, points: [
+                    [9, 25],
+                    [7, 24],
+                    [6, 23],
+                    [5, 21],
+                    [5, 19],
+                    [6, 17],
+                    [7, 16],
+                    [8, 14],
+                    [8, 12],
+                    [6, 10],
+                    [-1, -1],
+                    [7, 24],
+                    [6, 22],
+                    [6, 20],
+                    [7, 18],
+                    [8, 17],
+                    [9, 15],
+                    [9, 13],
+                    [8, 11],
+                    [4, 9],
+                    [8, 7],
+                    [9, 5],
+                    [9, 3],
+                    [8, 1],
+                    [7, 0],
+                    [6, -2],
+                    [6, -4],
+                    [7, -6],
+                    [-1, -1],
+                    [6, 8],
+                    [8, 6],
+                    [8, 4],
+                    [7, 2],
+                    [6, 1],
+                    [5, -1],
+                    [5, -3],
+                    [6, -5],
+                    [7, -6],
+                    [9, -7]
+                ]
+            },
+            &#x27;|&#x27;: {
+                width: 8, points: [
+                    [4, 25],
+                    [4, -7]
+                ]
+            },
+            &#x27;}&#x27;: {
+                width: 14, points: [
+                    [5, 25],
+                    [7, 24],
+                    [8, 23],
+                    [9, 21],
+                    [9, 19],
+                    [8, 17],
+                    [7, 16],
+                    [6, 14],
+                    [6, 12],
+                    [8, 10],
+                    [-1, -1],
+                    [7, 24],
+                    [8, 22],
+                    [8, 20],
+                    [7, 18],
+                    [6, 17],
+                    [5, 15],
+                    [5, 13],
+                    [6, 11],
+                    [10, 9],
+                    [6, 7],
+                    [5, 5],
+                    [5, 3],
+                    [6, 1],
+                    [7, 0],
+                    [8, -2],
+                    [8, -4],
+                    [7, -6],
+                    [-1, -1],
+                    [8, 8],
+                    [6, 6],
+                    [6, 4],
+                    [7, 2],
+                    [8, 1],
+                    [9, -1],
+                    [9, -3],
+                    [8, -5],
+                    [7, -6],
+                    [5, -7]
+                ]
+            },
+            &#x27;~&#x27;: {
+                width: 24, points: [
+                    [3, 6],
+                    [3, 8],
+                    [4, 11],
+                    [6, 12],
+                    [8, 12],
+                    [10, 11],
+                    [14, 8],
+                    [16, 7],
+                    [18, 7],
+                    [20, 8],
+                    [21, 10],
+                    [-1, -1],
+                    [3, 8],
+                    [4, 10],
+                    [6, 11],
+                    [8, 11],
+                    [10, 10],
+                    [14, 7],
+                    [16, 6],
+                    [18, 6],
+                    [20, 7],
+                    [21, 10],
+                    [21, 12]
+                ]
+            }
+        };
+
+    }
+})();
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>
