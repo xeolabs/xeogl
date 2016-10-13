@@ -245,7 +245,7 @@
             this._state = new XEO.renderer.DepthBuf({
                 clearDepth: null,
                 depthFunc: null,
-                active: null
+                active: true
             });
 
             this.clearDepth = cfg.clearDepth;
@@ -347,16 +347,21 @@
              *
              * @property active
              * @type Boolean
+             * @default true
              */
             active: {
 
                 set: function (value) {
+
+                    value = value !== false;
 
                     if (this._state.active === value) {
                         return;
                     }
                     
                     this._state.active = value;
+
+                    this._renderer.imageDirty = true;
                     
                     /**
                      * Fired whenever this DepthBuf&#x27;s {{#crossLink &quot;DepthBuf/active:property&quot;}}{{/crossLink}} property changes.

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <link type="text/css" rel="stylesheet" href="css/dat-gui-swec.css">
+
+    <script src="../build/xeoengine.js"></script>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>
+    instantiating an <a href="../docs/classes/Entity.html" target="_docs">Entity</a> with child components given as
+    configuration objects
+</div>
+
+<script>
+
+    // Note how we provide this Entity with JavaScript configuration objects
+    // for its Geometry, Material, Transform and Modes child components, instead of
+    // supplying instances of those components. Note also that the Entity
+    // will instantiate those components and internally manage their life cycles,
+    // automatically destroying them when the Entity itself is destroyed.
+
+    var entity = new XEO.Entity({
+        geometry: {
+            type: "XEO.TorusGeometry",
+            radius: 3.0,
+            tube: 1,
+            radialSegments: 32,
+            tubeSegments: 24,
+            arc: Math.PI * 2.0
+        },
+        material: {
+            type: "XEO.PhongMaterial",
+            ambient: [0.9, 0.3, 0.9],
+            shininess: 30,
+            diffuseMap: {
+                type: "XEO.Texture",
+                src: "textures/diffuse/uvGrid2.jpg"
+            },
+            lineWidth: 2,
+            pointSize: 5
+        },
+        transform: {
+            type: "XEO.Rotate",
+            xyz: [0, 1, 0],
+            angle: 0
+        },
+        modes: {
+            frontface: "ccw" // Default
+        }
+    });
+
+    // We can also attach child components as config objects, which get
+    // auto-destroyed by the Entity in the same manner. We'll just replace
+    // the transform with one that rotates about a different axis.
+
+    entity.transform = {
+        type: "XEO.Rotate",
+        xyz: [1, 0, 0],
+        angle: 0
+    };
+
+    // When we don't provide a 'type' property on a child component configuration,
+    // then it will be inferred from which of the patent's properties we assign to it.
+
+    // We'll just replace the Modes component on our Entity, which will cause the Entity
+    // to destroy the Modes we gave to the Entity's constructor earlier:
+
+    entity.modes = {
+        frontface: "ccw" // Default
+    };
+
+    // Spin our entity:
+
+    entity.scene.on("tick", function () {
+        entity.transform.angle += 0.5;
+    });
+
+</script>
+</body>
+</html>

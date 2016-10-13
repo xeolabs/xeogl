@@ -392,23 +392,7 @@
                 }
             }
 
-            if (this.type === type) {
-                return true;
-            }
-
-            var superTypes = this.superTypes;
-
-            if (!superTypes) {
-                return false;
-            }
-
-            for (var i = superTypes.length - 1; i >= 0; i--) {
-                if (superTypes[i] === type) {
-                    return true;
-                }
-            }
-
-            return false;
+            return XEO._isComponentType(this.type, type);
         },
 
         /**
@@ -690,21 +674,51 @@
             var on = params.on;
             var recompiles = params.recompiles !== false;
 
-            if (component && XEO._isNumeric(component) || XEO._isString(component)) {
+            // True when child given as config object, where parent manages its instantiation and destruction
+            var managingLifecycle = false;
 
-                // Component ID given
-                // Both numeric and string IDs are supported
+            if (component) {
 
-                var id = component;
+                if (XEO._isNumeric(component) || XEO._isString(component)) {
 
-                component = this.scene.components[id];
+                    // Component ID given
+                    // Both numeric and string IDs are supported
 
-                if (!component) {
+                    var id = component;
 
-                    // Quote string IDs in errors
+                    component = this.scene.components[id];
 
-                    this.error("Component not found: " + XEO._inQuotes(id));
-                    return;
+                    if (!component) {
+
+                        // Quote string IDs in errors
+
+                        this.error("Component not found: " + XEO._inQuotes(id));
+                        return;
+                    }
+
+                } else if (XEO._isObject(component)) {
+
+                    // Component config given
+
+                    var componentCfg = component;
+                    var componentType = componentCfg.type || type || "XEO.Component";
+                    var componentClass = window[componentType];
+
+                    if (!componentClass) {
+                        this.error("Component type not found: " + componentType);
+                        return;
+                    }
+
+                    if (type) {
+                        if (!XEO._isComponentType(componentType, type)) {
+                            this.error("Expected a " + type + " type or subtype, not a " + componentType);
+                            return;
+                        }
+                    }
+
+                    component = new componentClass(componentCfg);
+
+                    managingLifecycle = true;
                 }
             }
 
@@ -718,7 +732,6 @@
                     this.error("Scene has no default component for '" + name + "'");
                     return null;
                 }
-
             }
 
             if (component) {
@@ -775,6 +788,14 @@
                         onDetached.scope ? onDetached.callback.call(onDetached.scope, component) : onDetached.callback(component);
                     }
                 }
+
+                if (oldAttachment.managingLifecycle) {
+
+                    // Note that we just unsubscribed from all events fired by the child
+                    // component, so destroying it won't fire events back at us now.
+
+                    component.destroy();
+                }
             }
 
             if (component) {
@@ -784,7 +805,8 @@
                 var attachment = {
                     params: params,
                     component: component,
-                    subs: []
+                    subs: [],
+                    managingLifecycle: managingLifecycle
                 };
 
                 attachment.subs.push(
@@ -1064,7 +1086,7 @@
             var i;
             var len;
 
-            if (!this._attachments) {
+            if (this._attachments) {
                 for (id in this._attachments) {
                     if (this._attachments.hasOwnProperty(id)) {
 
@@ -1077,6 +1099,14 @@
 
                         for (i = 0, len = subs.length; i < len; i++) {
                             component.off(subs[i]);
+                        }
+
+                        if (attachment.managingLifecycle) {
+
+                            // Note that we just unsubscribed from all events fired by the child
+                            // component, so destroying it won't fire events back at us now.
+
+                            component.destroy();
                         }
                     }
                 }

@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-10-11
+ * Built on 2016-10-13
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -157,6 +157,13 @@
          * @type {{String:XEO.Scene}}
          */
         this.scenes = {};
+
+        /**
+         *
+         * @type {{}}
+         * @private
+         */
+        this._superTypes = {};
 
         // Task queue, which is pumped on each frame;
         // tasks are pushed to it with calls to XEO.schedule
@@ -459,7 +466,6 @@
             return (typeof value === 'string' || value instanceof String);
         },
 
-
         /**
          * Tests if the given value is a number
          * @param value
@@ -508,6 +514,48 @@
         _isFunction: function (value) {
             return (typeof value === "function");
         },
+
+        /**
+         * Tests if the given value is a JavaScript JSON object, eg, ````{ foo: "bar" }````.
+         * @param value
+         * @returns {boolean}
+         * @private
+         */
+        _isObject: (function () {
+            var objectConstructor = {}.constructor;
+            return function (value) {
+                return (!!value && value.constructor === objectConstructor);
+            };
+        })(),
+
+        /**
+         * Tests if the given component type is a subtype of another component supertype.
+         * @param {String} type
+         * @param {String} superType
+         * @returns {boolean}
+         * @private
+         */
+        _isComponentType: function (type, superType) {
+
+            if (type === superType) {
+                return true;
+            }
+
+            var superTypes = this._superTypes[type];
+
+            if (!superTypes) {
+                return false;
+            }
+
+            for (var i = superTypes.length - 1; i >= 0; i--) {
+                if (superTypes[i] === superType) {
+                    return true;
+                }
+            }
+
+            return false;
+        },
+
 
         /** Returns a shallow copy
          */
@@ -887,13 +935,15 @@ var Canvas2Image = (function () {
                 })(name, prop[name]) : prop[name];
         }
 
-        if (!prop.type) {
-            prop.type = _super.type + "_" + createUUID();
-        }
-
         // Create array of type names to indicate inheritance chain,
         // to support "isType" queries on components
         prototype.superTypes = _super.superTypes ? _super.superTypes.concat(_super.type) : [];
+
+        if (!prop.type) {
+            prop.type = _super.type + "_" + createUUID();
+        } else {
+            XEO._superTypes[prop.type] = prototype.superTypes;
+        }
 
         // The dummy class constructor
         function Class() {
@@ -911,6 +961,8 @@ var Canvas2Image = (function () {
 
         // And make this class extendable
         Class.extend = arguments.callee;
+
+        window[prop.type] = Class;
 
         return Class;
     };
@@ -8960,7 +9012,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             if (frameCtx.depthbufEnabled !== active) {
 
-                if (!active) {
+                if (active) {
                     gl.enable(gl.DEPTH_TEST);
 
                 } else {
@@ -10395,23 +10447,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 }
             }
 
-            if (this.type === type) {
-                return true;
-            }
-
-            var superTypes = this.superTypes;
-
-            if (!superTypes) {
-                return false;
-            }
-
-            for (var i = superTypes.length - 1; i >= 0; i--) {
-                if (superTypes[i] === type) {
-                    return true;
-                }
-            }
-
-            return false;
+            return XEO._isComponentType(this.type, type);
         },
 
         /**
@@ -10693,21 +10729,51 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             var on = params.on;
             var recompiles = params.recompiles !== false;
 
-            if (component && XEO._isNumeric(component) || XEO._isString(component)) {
+            // True when child given as config object, where parent manages its instantiation and destruction
+            var managingLifecycle = false;
 
-                // Component ID given
-                // Both numeric and string IDs are supported
+            if (component) {
 
-                var id = component;
+                if (XEO._isNumeric(component) || XEO._isString(component)) {
 
-                component = this.scene.components[id];
+                    // Component ID given
+                    // Both numeric and string IDs are supported
 
-                if (!component) {
+                    var id = component;
 
-                    // Quote string IDs in errors
+                    component = this.scene.components[id];
 
-                    this.error("Component not found: " + XEO._inQuotes(id));
-                    return;
+                    if (!component) {
+
+                        // Quote string IDs in errors
+
+                        this.error("Component not found: " + XEO._inQuotes(id));
+                        return;
+                    }
+
+                } else if (XEO._isObject(component)) {
+
+                    // Component config given
+
+                    var componentCfg = component;
+                    var componentType = componentCfg.type || type || "XEO.Component";
+                    var componentClass = window[componentType];
+
+                    if (!componentClass) {
+                        this.error("Component type not found: " + componentType);
+                        return;
+                    }
+
+                    if (type) {
+                        if (!XEO._isComponentType(componentType, type)) {
+                            this.error("Expected a " + type + " type or subtype, not a " + componentType);
+                            return;
+                        }
+                    }
+
+                    component = new componentClass(componentCfg);
+
+                    managingLifecycle = true;
                 }
             }
 
@@ -10721,7 +10787,6 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     this.error("Scene has no default component for '" + name + "'");
                     return null;
                 }
-
             }
 
             if (component) {
@@ -10778,6 +10843,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         onDetached.scope ? onDetached.callback.call(onDetached.scope, component) : onDetached.callback(component);
                     }
                 }
+
+                if (oldAttachment.managingLifecycle) {
+
+                    // Note that we just unsubscribed from all events fired by the child
+                    // component, so destroying it won't fire events back at us now.
+
+                    component.destroy();
+                }
             }
 
             if (component) {
@@ -10787,7 +10860,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 var attachment = {
                     params: params,
                     component: component,
-                    subs: []
+                    subs: [],
+                    managingLifecycle: managingLifecycle
                 };
 
                 attachment.subs.push(
@@ -11067,7 +11141,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             var i;
             var len;
 
-            if (!this._attachments) {
+            if (this._attachments) {
                 for (id in this._attachments) {
                     if (this._attachments.hasOwnProperty(id)) {
 
@@ -11080,6 +11154,14 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
                         for (i = 0, len = subs.length; i < len; i++) {
                             component.off(subs[i]);
+                        }
+
+                        if (attachment.managingLifecycle) {
+
+                            // Note that we just unsubscribed from all events fired by the child
+                            // component, so destroying it won't fire events back at us now.
+
+                            component.destroy();
                         }
                     }
                 }
@@ -12042,7 +12124,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                         new XEO.DepthBuf(this, {
                             id: "default.depthBuf",
                             isDefault: true,
-                            active: false
+                            active: true
                         });
                 }
             },
@@ -32205,7 +32287,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             this._state = new XEO.renderer.DepthBuf({
                 clearDepth: null,
                 depthFunc: null,
-                active: null
+                active: true
             });
 
             this.clearDepth = cfg.clearDepth;
@@ -32307,16 +32389,21 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
              *
              * @property active
              * @type Boolean
+             * @default true
              */
             active: {
 
                 set: function (value) {
+
+                    value = value !== false;
 
                     if (this._state.active === value) {
                         return;
                     }
                     
                     this._state.active = value;
+
+                    this._renderer.imageDirty = true;
                     
                     /**
                      * Fired whenever this DepthBuf's {{#crossLink "DepthBuf/active:property"}}{{/crossLink}} property changes.

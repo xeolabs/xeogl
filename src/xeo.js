@@ -144,6 +144,13 @@
          */
         this.scenes = {};
 
+        /**
+         * For each component type, a list of its supertypes, ordered upwards in the hierarchy.
+         * @type {{}}
+         * @private
+         */
+        this._superTypes = {};
+
         // Task queue, which is pumped on each frame;
         // tasks are pushed to it with calls to XEO.schedule
 
@@ -445,7 +452,6 @@
             return (typeof value === 'string' || value instanceof String);
         },
 
-
         /**
          * Tests if the given value is a number
          * @param value
@@ -493,6 +499,47 @@
          */
         _isFunction: function (value) {
             return (typeof value === "function");
+        },
+
+        /**
+         * Tests if the given value is a JavaScript JSON object, eg, ````{ foo: "bar" }````.
+         * @param value
+         * @returns {boolean}
+         * @private
+         */
+        _isObject: (function () {
+            var objectConstructor = {}.constructor;
+            return function (value) {
+                return (!!value && value.constructor === objectConstructor);
+            };
+        })(),
+
+        /**
+         * Tests if the given component type is a subtype of another component supertype.
+         * @param {String} type
+         * @param {String} superType
+         * @returns {boolean}
+         * @private
+         */
+        _isComponentType: function (type, superType) {
+
+            if (type === superType) {
+                return true;
+            }
+
+            var superTypes = this._superTypes[type];
+
+            if (!superTypes) {
+                return false;
+            }
+
+            for (var i = superTypes.length - 1; i >= 0; i--) {
+                if (superTypes[i] === superType) {
+                    return true;
+                }
+            }
+
+            return false;
         },
 
         /** Returns a shallow copy

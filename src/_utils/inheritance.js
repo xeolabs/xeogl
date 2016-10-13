@@ -81,13 +81,15 @@
                 })(name, prop[name]) : prop[name];
         }
 
-        if (!prop.type) {
-            prop.type = _super.type + "_" + createUUID();
-        }
-
         // Create array of type names to indicate inheritance chain,
         // to support "isType" queries on components
         prototype.superTypes = _super.superTypes ? _super.superTypes.concat(_super.type) : [];
+
+        if (!prop.type) {
+            prop.type = _super.type + "_" + createUUID();
+        } else {
+            XEO._superTypes[prop.type] = prototype.superTypes;
+        }
 
         // The dummy class constructor
         function Class() {
@@ -105,6 +107,8 @@
 
         // And make this class extendable
         Class.extend = arguments.callee;
+
+        window[prop.type] = Class;
 
         return Class;
     };
