@@ -916,7 +916,7 @@
                         new XEO.DepthBuf(this, {
                             id: "default.depthBuf",
                             isDefault: true,
-                            active: false
+                            active: true
                         });
                 }
             },

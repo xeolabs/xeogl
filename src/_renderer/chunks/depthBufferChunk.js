@@ -22,7 +22,7 @@
 
             if (frameCtx.depthbufEnabled !== active) {
 
-                if (!active) {
+                if (active) {
                     gl.enable(gl.DEPTH_TEST);
 
                 } else {
