@@ -5,17 +5,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.js"></script>
-
-    <script src="js/effects/highlightEntityEffect.js"></script>
-
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="./js/libs/jquery-1.8.3.min.js"></script>
-
-    <link rel="stylesheet" href="./js/libs/jstree/themes/default/style.min.css"/>
-    <script src="./js/libs/jstree/jstree.min.js"></script>
-
+    <script src="../build/xeoengine.min.js"></script>
+    <script src="js/effects/highlightEntityEffect.js"></script>
 
 <body>
 
@@ -23,152 +16,132 @@
     <a href="http://xeoengine.org" target="_home">xeoEngine</a>
     <br><br>
     <ul>
-        <li>using an experimental <a href="../docs/classes/HighlightEntityEffect.html" target="_docs">HighlightEntityEffect</a>
-            to highlight individual <a href="../docs/classes/Entity.html" target="_docs">Entities</a></li>
-        <li>click a node in the explorer below to fly to its Entity and highlight it</li>
+        <li>In this demo we're using a custom <a href="../docs/classes/HighlightEntityEffect.html" target="_docs">HighlightEntityEffect</a>
+            component to highlight individual <a href="../docs/classes/Entity.html" target="_docs">Entities</a>.</li>
+        <li> This component works by by rendering a transparent glowing copy of the target Entity,<br>after
+            all other Entities have rendered, with depth testing disabled so that it's<br>
+            entirely visible even when other Entities obscure it.</li>
     </ul>
-    <br><br>
 </div>
-
-<div id="explorerPanel"
-     style="margin: 0; top: 120px; left:15px; opacity: 0.7;background: white; z-index:10000000; width: 300px; height:60%; position:absolute; overflow-y: scroll; overflow-x: hidden;">
-    <div id="explorer" style=""></div>
-</div>
-
 
 <script>
 
-    $(document).ready(function () {
+    // Model loaded from glTF
 
-        // Load glTF
+    var gearbox = new XEO.Model({
+        src: "models/gltf/gearbox/gearbox_assy.gltf"
+    });
 
-        var gearbox = new XEO.Model({
-            src: "models/gltf/gearbox/gearbox_assy.gltf"
-        });
+    var scene = gearbox.scene;
 
-        var scene = gearbox.scene;
+    // Set initial camera position
 
-        // Set initial camera position
+    var view = scene.camera.view;
 
-        var view = scene.camera.view;
+    view.eye = [
+        184.21467781066895,
+        10.54405164718628,
+        -7.033053398132324
+    ];
 
-        view.eye = [
-            184.21467781066895,
-            10.54405164718628,
-            -7.033053398132324
-        ];
+    view.look = [
+        159.20425415039062,
+        17.020320892333984,
+        3.210801124572754
+    ];
 
-        view.look = [
-            159.20425415039062,
-            17.020320892333984,
-            3.210801124572754
-        ];
+    view.up = [
+        -0.1590631604194641,
+        0.9774724245071411,
+        0.13872624933719635
+    ];
 
-        view.up = [
-            -0.1590631604194641,
-            0.9774724245071411,
-            0.13872624933719635
-        ];
+    // Create an Entity highlighting effect
 
-        var highlightEntityEffect = new XEO.HighlightEntityEffect();
+    var highlightEntityEffect = new XEO.HighlightEntityEffect();
 
-        // Allow user camera control
+    // Camera flight animation, flies the
+    // default camera to each entity
 
-        new XEO.CameraControl();
+    var cameraFlight = new XEO.CameraFlight();
 
-        // Camera flight animation, flies the default camera 
-        // to each Entity as we select it in the explorer
+    // Wait until the glTF model is loaded
 
-        var cameraFlight = new XEO.CameraFlight();
+    gearbox.on("loaded",
+            function () {
 
-        gearbox.on("loaded",
-                function () {
+                var entities = [];
+                var i = 0;
 
-                    // When the Model has loaded, iterate over all the Entities in the Model:
-                    //
-                    // 1. Ensure that they each have their own Material and Modes components, so that
-                    // we can set them transparent individually. This is quick-and-dirty, where we
-                    // may be creating excess Materials and Modes, while needlessly keeping unused ones.
-                    //
-                    // 2. Add the Material and Modes to the Model's Collection so that they get
-                    // destroyed whenever the Model is destroyed or reloaded.
-                    //
-                    // 2. Add an item to the JSON data we'll build our explorer from.
+                // Iterate over all the Entities in the Model and ensure that
+                // they each have their own Material and Modes components, so that
+                // we can set them transparent individually
 
-                    var data = [];
-                    var entities = gearbox.collection.types["XEO.Entity"];
-                    var entity;
+                gearbox.collection.iterate(function (c) {
 
-                    for (var entityId in entities) {
-                        if (entities.hasOwnProperty(entityId)) {
+                    if (c.type === "XEO.Entity") {
 
-                            entity = entities[entityId];
+                        c.material = c.material.clone();
+                        c.material.opacity = 0.4;
 
-                            // Ensure the Entity has its own unique Material and Modes
+                        c.modes = c.modes.clone();
+                        c.modes.transparent = true;
 
-                            entity.material = entity.material.clone();
-                            entity.material.opacity = 0.4;
+                        entities.push(c);
+                    }
+                });
 
-                            entity.modes = entity.modes.clone();
-                            entity.modes.transparent = true;
+                // Periodically fly the camera to the World-space AABB of a randomly-selected
+                // entity.
 
-                            // Add the Material and Modes to the Model's Collection
-                            // so that they get destroyed automatically
+                // Each time we fly, show the World-space AABB, the World-space OBB
+                // and the Canvas-space AABB as yellow, red and blue boxes, respectively.
 
-                            gearbox.collection.add(entity.material);
-                            gearbox.collection.add(entity.modes);
+                var nextEntity; // Next entity we'll fly to
+                var lastEntity; // Last entity we flew to
 
-                            // To each Entity it loads, a Model will attach metadata
-                            // containing a human-readable name - use that to list a 
-                            // human-readable name in the explorer.
+                var lastHandler;// Subscribes to the Canvas AABB of the entity we're flying to, so we can dynamically update the blue box
 
-                            data.push({
-                                id: entity.id,
-                                text: entity.meta.name || "unnamed"
-                            })
-                        }
+                setInterval(function () {
+
+                    if (lastEntity) {
+                        lastEntity.modes.transparent = true;
+                        lastEntity.off(lastHandler);
                     }
 
-                    // Build explorer (using JSTree), bind a selection handler
-                    // that flies to the selected Entity
+                    nextEntity = entities[Math.floor(Math.random() * entities.length)];
 
-                    var nextEntity; // Next entity we'll fly to
-                    var lastEntity; // Last entity we flew to
+                    nextEntity.modes.transparent = false;
 
-                    // Build explorer tree
-                    $('#explorer').jstree({
-                        'core': {
-                            'data': data
-                        }
-                    })
-                        // Bind selection handler
-                            .on("changed.jstree",
-                            function (e, data) {
-                                if (data.selected.length) {
-
-                                    var entityId = data.instance.get_node(data.selected[0]).id;
-
-                                    nextEntity = scene.components[entityId];
-
-                                    if (lastEntity) {
-                                        lastEntity.modes.transparent = true;
-                                    }
-
-                                    nextEntity.modes.transparent = false;
-
-                                    cameraFlight.flyTo({
-                                        aabb: nextEntity.worldBoundary.aabb, // Fly to entity's AABB
-                                        stopFOV: 45, // Make sure the camera stops far enough back from the entity
-                                        duration: 1.0 // One second flight time to each entity
-                                    });
-
-                                    highlightEntityEffect.entity = nextEntity;
-
-                                    lastEntity = nextEntity;
-                                }
+                    cameraFlight.flyTo({
+                                aabb: nextEntity.worldBoundary.aabb, // Fly to entity's oriented bounding box
+                                stopFOV: 55, // Make sure the camera stops far enough back from the entity
+                                duration: 2.0 // One second flight time to each entity
+                            },
+                            function () {
+                                // Camera has arrived at entity
                             });
-                });
-    });
+
+                    highlightEntityEffect.entity = nextEntity;
+
+                    lastEntity = nextEntity;
+                }, 3000);
+            });
+
+
+    // Allow user camera control
+
+    new XEO.CameraControl();
+
+    // Slowly orbit the camera
+
+    gearbox.scene.on("tick",
+            function () {
+                view.rotateEyeY(0.2);
+                view.rotateEyeX(0.05);
+            });
+
+
 </script>
 </body>
 </html>
