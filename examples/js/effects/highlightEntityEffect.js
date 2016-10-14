@@ -34,7 +34,7 @@
  var entityHighlight = new XEO.HighlightEntityEffect();
 
  entityHighlight.entity = entity;
- entityHighlight.active = true;
+ entityHighlight.active = true;  // Active by default
  ````
 
  @class HighlightEntityEffect
@@ -101,6 +101,7 @@
              *
              * @property entity
              * @type Entity
+             * @default null
              */
             entity: {
 

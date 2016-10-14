@@ -6476,7 +6476,7 @@
             "namespace": "",
             "file": "examples/js/effects/highlightEntityEffect.js",
             "line": 1,
-            "description": "An **HighlightEntityEffect** highlights a single target {{#crossLink \"Entity\"}}{{/crossLink}}.\n\n## Examples\n\n<ul>\n<li>[HighlightEntityEffect example](../../examples/#effects_HighlightEntityEffect)</li>\n</ul>\n\n## Usage\n\n````javascript\n\n// Create an entity\n\nvar entity = new XEO.Entity({\n    geometry: new XEO.TeapotGeometry(),\n    material: new XEO.PhongMaterial({\n        ambient: [0.9, 0.3, 0.9],\n        diffuse: [0.4, 0.4, 0.9],\n        shininess: 30\n    }),\n    transform: new XEO.Rotate({\n        xyz: [1, 0, 0],\n        angle: -90,\n        parent: new XEO.Translate({\n            xyz: [0, -20, 0]\n        })\n    }),\n    modes: new XEO.Modes({\n        backfaces: true  // Show backfaces, since the lid has a big gap around it\n    })\n});\n\n// Position the default camera\n\nvar view = entity.scene.camera.view;\nview.eye = [0, 40, -80];\n\n// Highlight the entity\n\nvar entityHighlight = new XEO.HighlightEntityEffect();\n\nentityHighlight.entity = entity;\nentityHighlight.active = true;\n````",
+            "description": "A **HighlightEntityEffect** highlights a single target {{#crossLink \"Entity\"}}{{/crossLink}}.\n\nThis component works by by rendering a transparent glowing copy of the {{#crossLink \"Entity\"}}{{/crossLink}}, after\nall other {{#crossLink \"Entity\"}}Entities{{/crossLink}} have rendered, with depth testing disabled so that it's\nentirely visible even when other {{#crossLink \"Entity\"}}Entities{{/crossLink}} overlap it.\n\n## Examples\n\n<ul>\n<li>[HighlightEntityEffect example](../../examples/#effects_HighlightEntityEffect)</li>\n</ul>\n\n## Usage\n\n````javascript\n\n// Create an entity\n\nvar entity = new XEO.Entity({\n    geometry: new XEO.TorusGeometry(),\n    material: new XEO.PhongMaterial({         \n        diffuse: [0.4, 0.4, 0.9]\n    })\n});\n\n// Position the default camera\n\nvar view = entity.scene.camera.view;\nview.eye = [0, 40, -80];\n\n// Highlight the entity\n\nvar entityHighlight = new XEO.HighlightEntityEffect();\n\nentityHighlight.entity = entity;\nentityHighlight.active = true;  // Active by default\n````",
             "submodule": "effects",
             "is_constructor": 1,
             "params": [
@@ -21970,18 +21970,19 @@
         },
         {
             "file": "examples/js/effects/highlightEntityEffect.js",
-            "line": 105,
+            "line": 97,
             "description": "ID or instance of the {{#crossLink \"Entity\"}}{{/crossLink}} to highlight with this HighlightEntityEffect.\n\nFires a {{#crossLink \"HighlightEntityEffect/entity:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "entity",
             "type": "Entity",
+            "default": "null",
             "class": "HighlightEntityEffect",
             "module": "xeo",
             "submodule": "effects"
         },
         {
             "file": "examples/js/effects/highlightEntityEffect.js",
-            "line": 119,
+            "line": 112,
             "description": "Fired whenever this Highlights's {{#crossLink \"HighlightEntityEffect/entity:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "entity",
@@ -21997,7 +21998,7 @@
         },
         {
             "file": "examples/js/effects/highlightEntityEffect.js",
-            "line": 162,
+            "line": 155,
             "description": "Flag which indicates whether this HighlightEntityEffect is active or not.\n\nFires an {{#crossLink \"HighlightEntityEffect/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
@@ -22009,7 +22010,7 @@
         },
         {
             "file": "examples/js/effects/highlightEntityEffect.js",
-            "line": 185,
+            "line": 178,
             "description": "Fired whenever this HighlightEntityEffect's {{#crossLink \"HighlightEntityEffect/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
