@@ -1,5 +1,9 @@
 /**
- An **HighlightEntityEffect** highlights a single target {{#crossLink "Entity"}}{{/crossLink}}.
+ A **HighlightEntityEffect** highlights a single target {{#crossLink "Entity"}}{{/crossLink}}.
+
+ This component works by by rendering a transparent glowing copy of the {{#crossLink "Entity"}}{{/crossLink}}, after
+ all other {{#crossLink "Entity"}}Entities{{/crossLink}} have rendered, with depth testing disabled so that it's
+ entirely visible even when other {{#crossLink "Entity"}}Entities{{/crossLink}} overlap it.
 
  ## Examples
 
@@ -12,33 +16,21 @@
  ````javascript
 
  // Create an entity
- 
+
  var entity = new XEO.Entity({
-     geometry: new XEO.TeapotGeometry(),
-     material: new XEO.PhongMaterial({
-         ambient: [0.9, 0.3, 0.9],
-         diffuse: [0.4, 0.4, 0.9],
-         shininess: 30
-     }),
-     transform: new XEO.Rotate({
-         xyz: [1, 0, 0],
-         angle: -90,
-         parent: new XEO.Translate({
-             xyz: [0, -20, 0]
-         })
-     }),
-     modes: new XEO.Modes({
-         backfaces: true  // Show backfaces, since the lid has a big gap around it
+     geometry: new XEO.TorusGeometry(),
+     material: new XEO.PhongMaterial({         
+         diffuse: [0.4, 0.4, 0.9]
      })
  });
 
  // Position the default camera
- 
+
  var view = entity.scene.camera.view;
  view.eye = [0, 40, -80];
- 
+
  // Highlight the entity
- 
+
  var entityHighlight = new XEO.HighlightEntityEffect();
 
  entityHighlight.entity = entity;
