@@ -254,7 +254,7 @@
 
                     math.positions3ToAABB3(positions, this._aabb);
                     math.AABB3ToOBB3(this._aabb, this._obb);
-                    this._obb = math.transformPoints3(matrix, this._obb);
+                    math.transformPoints3(matrix, this._obb);
                     math.points3ToAABB3(this._obb, this._aabb);
                     math.getAABBCenter(this._aabb, this._center);
 

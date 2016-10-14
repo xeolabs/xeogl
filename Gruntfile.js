@@ -54,6 +54,7 @@ module.exports = function (grunt) {
                     // Add paths here as we include more non-core components in API docs
                     paths: [
                         'src',
+                        'examples/js/effects',
                         'examples/js/webvr',
                         'examples/js/importing',
                         'examples/js/curves',

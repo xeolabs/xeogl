@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeoengine.js"></script>
+
+    <script src="js/effects/entityHighlightEffect.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="./js/libs/jquery-1.8.3.min.js"></script>
+
+    <link rel="stylesheet" href="./js/libs/jstree/themes/default/style.min.css"/>
+    <script src="./js/libs/jstree/jstree.min.js"></script>
+
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a>
+    <br><br>
+    <ul>
+        <li>using an experimental <a href="../docs/classes/EntityHighlightEffect.html" target="_docs">EntityHighlightEffect</a>
+            to highlight individual <a href="../docs/classes/Entity.html" target="_docs">Entities</a></li>
+        <li>click a node in the explorer below to fly to its Entity and highlight it</li>
+    </ul>
+    <br><br>
+</div>
+
+<div id="explorerPanel"
+     style="margin: 0; top: 120px; left:15px; opacity: 0.7;background: white; z-index:10000000; width: 300px; height:60%; position:absolute; overflow-y: scroll; overflow-x: hidden;">
+    <div id="explorer" style=""></div>
+</div>
+
+
+<script>
+
+    $(document).ready(function () {
+
+        // Load glTF
+
+        var gearbox = new XEO.Model({
+            src: "models/gltf/gearbox/gearbox_assy.gltf"
+        });
+
+        var scene = gearbox.scene;
+
+        // Set initial camera position
+
+        var view = scene.camera.view;
+
+        view.eye = [
+            184.21467781066895,
+            10.54405164718628,
+            -7.033053398132324
+        ];
+
+        view.look = [
+            159.20425415039062,
+            17.020320892333984,
+            3.210801124572754
+        ];
+
+        view.up = [
+            -0.1590631604194641,
+            0.9774724245071411,
+            0.13872624933719635
+        ];
+
+        var entityHighlight = new XEO.EntityHighlightEffect();
+
+        // Allow user camera control
+
+        new XEO.CameraControl();
+
+        // Camera flight animation, flies the default camera 
+        // to each Entity as we select it in the explorer
+
+        var cameraFlight = new XEO.CameraFlight();
+
+        gearbox.on("loaded",
+                function () {
+
+                    // When the Model has loaded, iterate over all the Entities in the Model:
+                    //
+                    // 1. Ensure that they each have their own Material and Modes components, so that
+                    // we can set them transparent individually. This is quick-and-dirty, where we
+                    // may be creating excess Materials and Modes, while needlessly keeping unused ones.
+                    //
+                    // 2. Add the Material and Modes to the Model's Collection so that they get
+                    // destroyed whenever the Model is destroyed or reloaded.
+                    //
+                    // 2. Add an item to the JSON data we'll build our explorer from.
+
+                    var data = [];
+                    var entities = gearbox.collection.types["XEO.Entity"];
+                    var entity;
+
+                    for (var entityId in entities) {
+                        if (entities.hasOwnProperty(entityId)) {
+
+                            entity = entities[entityId];
+
+                            // Ensure the Entity has its own unique Material and Modes
+
+                            entity.material = entity.material.clone();
+                            entity.material.opacity = 0.4;
+
+                            entity.modes = entity.modes.clone();
+                            entity.modes.transparent = true;
+
+                            // Add the Material and Modes to the Model's Collection
+                            // so that they get destroyed automatically
+
+                            gearbox.collection.add(entity.material);
+                            gearbox.collection.add(entity.modes);
+
+                            // To each Entity it loads, a Model will attach metadata
+                            // containing a human-readable name - use that to list a 
+                            // human-readable name in the explorer.
+
+                            data.push({
+                                id: entity.id,
+                                text: entity.meta.name || "unnamed"
+                            })
+                        }
+                    }
+
+                    // Build explorer (using JSTree), bind a selection handler
+                    // that flies to the selected Entity
+
+                    var nextEntity; // Next entity we'll fly to
+                    var lastEntity; // Last entity we flew to
+
+                    // Build explorer tree
+                    $('#explorer').jstree({
+                        'core': {
+                            'data': data
+                        }
+                    })
+                        // Bind selection handler
+                            .on("changed.jstree",
+                            function (e, data) {
+                                if (data.selected.length) {
+
+                                    var entityId = data.instance.get_node(data.selected[0]).id;
+
+                                    nextEntity = scene.components[entityId];
+
+                                    if (lastEntity) {
+                                        lastEntity.modes.transparent = true;
+                                    }
+
+                                    nextEntity.modes.transparent = false;
+
+                                    cameraFlight.flyTo({
+                                        aabb: nextEntity.worldBoundary.aabb, // Fly to entity's AABB
+                                        stopFOV: 45, // Make sure the camera stops far enough back from the entity
+                                        duration: 1.0 // One second flight time to each entity
+                                    });
+
+                                    entityHighlight.entity = nextEntity;
+
+                                    lastEntity = nextEntity;
+                                }
+                            });
+                });
+    });
+</script>
+</body>
+</html>

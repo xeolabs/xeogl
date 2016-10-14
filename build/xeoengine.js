@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-10-13
+ * Built on 2016-10-14
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -159,7 +159,7 @@
         this.scenes = {};
 
         /**
-         *
+         * For each component type, a list of its supertypes, ordered upwards in the hierarchy.
          * @type {{}}
          * @private
          */
@@ -555,7 +555,6 @@
 
             return false;
         },
-
 
         /** Returns a shallow copy
          */
@@ -34890,7 +34889,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
 
                     math.positions3ToAABB3(positions, this._aabb);
                     math.AABB3ToOBB3(this._aabb, this._obb);
-                    this._obb = math.transformPoints3(matrix, this._obb);
+                    math.transformPoints3(matrix, this._obb);
                     math.points3ToAABB3(this._obb, this._aabb);
                     math.getAABBCenter(this._aabb, this._center);
 

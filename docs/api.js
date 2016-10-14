@@ -29,6 +29,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "DepthTarget",
         "DirLight",
         "Entity",
+        "EntityHighlightEffect",
         "Fresnel",
         "Frustum",
         "Geometry",
@@ -75,6 +76,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "SplineCurve",
         "Stage",
         "Stationary",
+        "Stereo",
         "TeapotGeometry",
         "Texture",
         "TorusGeometry",
@@ -100,6 +102,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "controls",
         "culling",
         "curves",
+        "effects",
         "entities",
         "geometry",
         "importing",
@@ -115,6 +118,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "transforms",
         "webvr",
         "webvr",
+        "xeo",
         "xeogl"
     ],
     "allModules": [
@@ -167,6 +171,11 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "curves",
             "name": "curves",
             "description": "Components for defining 3D curves."
+        },
+        {
+            "displayName": "effects",
+            "name": "effects",
+            "description": "Components for viewing effects."
         },
         {
             "displayName": "entities",
@@ -237,6 +246,10 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "webvr",
             "name": "webvr",
             "description": "Components for Web-based Virtual Reality."
+        },
+        {
+            "displayName": "xeo",
+            "name": "xeo"
         },
         {
             "displayName": "XEO",
