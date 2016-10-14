@@ -7,7 +7,7 @@
 
     <script src="../build/xeoengine.js"></script>
 
-    <script src="js/effects/entityHighlightEffect.js"></script>
+    <script src="js/effects/highlightEntityEffect.js"></script>
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -23,7 +23,7 @@
     <a href="http://xeoengine.org" target="_home">xeoEngine</a>
     <br><br>
     <ul>
-        <li>using an experimental <a href="../docs/classes/EntityHighlightEffect.html" target="_docs">EntityHighlightEffect</a>
+        <li>using an experimental <a href="../docs/classes/HighlightEntityEffect.html" target="_docs">HighlightEntityEffect</a>
             to highlight individual <a href="../docs/classes/Entity.html" target="_docs">Entities</a></li>
         <li>click a node in the explorer below to fly to its Entity and highlight it</li>
     </ul>
@@ -70,7 +70,7 @@
             0.13872624933719635
         ];
 
-        var entityHighlight = new XEO.EntityHighlightEffect();
+        var highlightEntityEffect = new XEO.HighlightEntityEffect();
 
         // Allow user camera control
 
@@ -162,7 +162,7 @@
                                         duration: 1.0 // One second flight time to each entity
                                     });
 
-                                    entityHighlight.entity = nextEntity;
+                                    highlightEntityEffect.entity = nextEntity;
 
                                     lastEntity = nextEntity;
                                 }

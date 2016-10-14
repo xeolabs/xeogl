@@ -1,10 +1,10 @@
 /**
- An **EntityHighlightEffect** highlights a single {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ An **HighlightEntityEffect** highlights a single target {{#crossLink "Entity"}}{{/crossLink}}.
 
  ## Examples
 
  <ul>
- <li>[EntityHighlightEffect example](../../examples/#effects_EntityHighlightEffect)</li>
+ <li>[HighlightEntityEffect example](../../examples/#effects_HighlightEntityEffect)</li>
  </ul>
 
  ## Usage
@@ -39,33 +39,33 @@
  
  // Highlight the entity
  
- var entityHighlight = new XEO.EntityHighlightEffect();
+ var entityHighlight = new XEO.HighlightEntityEffect();
 
  entityHighlight.entity = entity;
  entityHighlight.active = true;
  ````
 
- @class EntityHighlightEffect
+ @class HighlightEntityEffect
  @module xeo
  @submodule effects
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this EntityHighlightEffect in the default
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this HighlightEntityEffect in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this EntityHighlightEffect.
- @param [cfg.entity] {String|Number|Entity} ID or instance of the {{#crossLink "Entity"}}{{/crossLink}} to highlight with this EntityHighlightEffect.
- @param [cfg.active=true] Flag which indicates whether this EntityHighlightEffect is active or not.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this HighlightEntityEffect.
+ @param [cfg.entity] {String|Number|Entity} ID or instance of the {{#crossLink "Entity"}}{{/crossLink}} to highlight with this HighlightEntityEffect.
+ @param [cfg.active=true] Flag which indicates whether this HighlightEntityEffect is active or not.
  @extends Entity
  */
 (function () {
 
     "use strict";
 
-    XEO.EntityHighlightEffect = XEO.Component.extend({
+    XEO.HighlightEntityEffect = XEO.Component.extend({
 
-        type: "XEO.EntityHighlightEffect",
+        type: "XEO.HighlightEntityEffect",
 
         _init: function (cfg) {
 
@@ -103,9 +103,9 @@
         _props: {
 
             /**
-             * ID or instance of the {{#crossLink "Entity"}}{{/crossLink}} to highlight with this EntityHighlightEffect.
+             * ID or instance of the {{#crossLink "Entity"}}{{/crossLink}} to highlight with this HighlightEntityEffect.
              *
-             * Fires a {{#crossLink "EntityHighlightEffect/entity:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "HighlightEntityEffect/entity:event"}}{{/crossLink}} event on change.
              *
              * @property entity
              * @type Entity
@@ -117,7 +117,7 @@
                     var helper = this._helper;
 
                     /**
-                     * Fired whenever this Highlights's {{#crossLink "EntityHighlightEffect/entity:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this Highlights's {{#crossLink "HighlightEntityEffect/entity:property"}}{{/crossLink}} property changes.
                      * @event entity
                      * @param value The property's new value
                      */
@@ -160,9 +160,9 @@
             },
 
             /**
-             * Flag which indicates whether this EntityHighlightEffect is active or not.
+             * Flag which indicates whether this HighlightEntityEffect is active or not.
              *
-             * Fires an {{#crossLink "EntityHighlightEffect/active:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "HighlightEntityEffect/active:event"}}{{/crossLink}} event on change.
              *
              * @property active
              * @type Boolean
@@ -183,7 +183,7 @@
                     this._helper.visibility.visible = this._active;
 
                     /**
-                     * Fired whenever this EntityHighlightEffect's {{#crossLink "EntityHighlightEffect/active:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this HighlightEntityEffect's {{#crossLink "HighlightEntityEffect/active:property"}}{{/crossLink}} property changes.
                      * @event active
                      * @param value The property's new value
                      */

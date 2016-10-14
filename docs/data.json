@@ -1037,11 +1037,11 @@
             "fors": {},
             "namespaces": {}
         },
-        "examples/js/effects/entityHighlightEffect.js": {
-            "name": "examples/js/effects/entityHighlightEffect.js",
+        "examples/js/effects/highlightEntityEffect.js": {
+            "name": "examples/js/effects/highlightEntityEffect.js",
             "modules": {},
             "classes": {
-                "EntityHighlightEffect": 1
+                "HighlightEntityEffect": 1
             },
             "fors": {},
             "namespaces": {}
@@ -1743,7 +1743,7 @@
             "name": "effects",
             "submodules": {},
             "classes": {
-                "EntityHighlightEffect": 1,
+                "HighlightEntityEffect": 1,
                 "Stereo": 1
             },
             "fors": {},
@@ -1759,11 +1759,11 @@
             "name": "xeo",
             "submodules": {},
             "classes": {
-                "EntityHighlightEffect": 1
+                "HighlightEntityEffect": 1
             },
             "fors": {},
             "namespaces": {},
-            "file": "examples/js/effects/entityHighlightEffect.js",
+            "file": "examples/js/effects/highlightEntityEffect.js",
             "line": 1
         },
         "webvr": {
@@ -6464,9 +6464,9 @@
             "static": 1,
             "author": "xeolabs / http://xeolabs.com/"
         },
-        "EntityHighlightEffect": {
-            "name": "EntityHighlightEffect",
-            "shortname": "EntityHighlightEffect",
+        "HighlightEntityEffect": {
+            "name": "HighlightEntityEffect",
+            "shortname": "HighlightEntityEffect",
             "classitems": [],
             "plugins": [],
             "extensions": [],
@@ -6474,15 +6474,15 @@
             "extension_for": [],
             "module": "xeo",
             "namespace": "",
-            "file": "examples/js/effects/entityHighlightEffect.js",
+            "file": "examples/js/effects/highlightEntityEffect.js",
             "line": 1,
-            "description": "An **EntityHighlightEffect** highlights a single {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n## Examples\n\n<ul>\n<li>[EntityHighlightEffect example](../../examples/#effects_EntityHighlightEffect)</li>\n</ul>\n\n## Usage\n\n````javascript\n\n// Create an entity\n\nvar entity = new XEO.Entity({\n    geometry: new XEO.TeapotGeometry(),\n    material: new XEO.PhongMaterial({\n        ambient: [0.9, 0.3, 0.9],\n        diffuse: [0.4, 0.4, 0.9],\n        shininess: 30\n    }),\n    transform: new XEO.Rotate({\n        xyz: [1, 0, 0],\n        angle: -90,\n        parent: new XEO.Translate({\n            xyz: [0, -20, 0]\n        })\n    }),\n    modes: new XEO.Modes({\n        backfaces: true  // Show backfaces, since the lid has a big gap around it\n    })\n});\n\n// Position the default camera\n\nvar view = entity.scene.camera.view;\nview.eye = [0, 40, -80];\n\n// Highlight the entity\n\nvar entityHighlight = new XEO.EntityHighlightEffect();\n\nentityHighlight.entity = entity;\nentityHighlight.active = true;\n````",
+            "description": "An **HighlightEntityEffect** highlights a single target {{#crossLink \"Entity\"}}{{/crossLink}}.\n\n## Examples\n\n<ul>\n<li>[HighlightEntityEffect example](../../examples/#effects_HighlightEntityEffect)</li>\n</ul>\n\n## Usage\n\n````javascript\n\n// Create an entity\n\nvar entity = new XEO.Entity({\n    geometry: new XEO.TeapotGeometry(),\n    material: new XEO.PhongMaterial({\n        ambient: [0.9, 0.3, 0.9],\n        diffuse: [0.4, 0.4, 0.9],\n        shininess: 30\n    }),\n    transform: new XEO.Rotate({\n        xyz: [1, 0, 0],\n        angle: -90,\n        parent: new XEO.Translate({\n            xyz: [0, -20, 0]\n        })\n    }),\n    modes: new XEO.Modes({\n        backfaces: true  // Show backfaces, since the lid has a big gap around it\n    })\n});\n\n// Position the default camera\n\nvar view = entity.scene.camera.view;\nview.eye = [0, 40, -80];\n\n// Highlight the entity\n\nvar entityHighlight = new XEO.HighlightEntityEffect();\n\nentityHighlight.entity = entity;\nentityHighlight.active = true;\n````",
             "submodule": "effects",
             "is_constructor": 1,
             "params": [
                 {
                     "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this EntityHighlightEffect in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this HighlightEntityEffect in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
                     "type": "Scene",
                     "optional": true
                 },
@@ -6500,19 +6500,19 @@
                         },
                         {
                             "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this EntityHighlightEffect.",
+                            "description": "Optional map of user-defined metadata to attach to this HighlightEntityEffect.",
                             "type": "String:Object",
                             "optional": true
                         },
                         {
                             "name": "entity",
-                            "description": "ID or instance of the {{#crossLink \"Entity\"}}{{/crossLink}} to highlight with this EntityHighlightEffect.",
+                            "description": "ID or instance of the {{#crossLink \"Entity\"}}{{/crossLink}} to highlight with this HighlightEntityEffect.",
                             "type": "String|Number|Entity",
                             "optional": true
                         },
                         {
                             "name": "active",
-                            "description": "Flag which indicates whether this EntityHighlightEffect is active or not.",
+                            "description": "Flag which indicates whether this HighlightEntityEffect is active or not.",
                             "optional": true,
                             "optdefault": "true"
                         }
@@ -21969,20 +21969,20 @@
             "namespace": "XEO"
         },
         {
-            "file": "examples/js/effects/entityHighlightEffect.js",
+            "file": "examples/js/effects/highlightEntityEffect.js",
             "line": 105,
-            "description": "ID or instance of the {{#crossLink \"Entity\"}}{{/crossLink}} to highlight with this EntityHighlightEffect.\n\nFires a {{#crossLink \"EntityHighlightEffect/entity:event\"}}{{/crossLink}} event on change.",
+            "description": "ID or instance of the {{#crossLink \"Entity\"}}{{/crossLink}} to highlight with this HighlightEntityEffect.\n\nFires a {{#crossLink \"HighlightEntityEffect/entity:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "entity",
             "type": "Entity",
-            "class": "EntityHighlightEffect",
+            "class": "HighlightEntityEffect",
             "module": "xeo",
             "submodule": "effects"
         },
         {
-            "file": "examples/js/effects/entityHighlightEffect.js",
+            "file": "examples/js/effects/highlightEntityEffect.js",
             "line": 119,
-            "description": "Fired whenever this Highlights's {{#crossLink \"EntityHighlightEffect/entity:property\"}}{{/crossLink}} property changes.",
+            "description": "Fired whenever this Highlights's {{#crossLink \"HighlightEntityEffect/entity:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "entity",
             "params": [
@@ -21991,26 +21991,26 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "EntityHighlightEffect",
+            "class": "HighlightEntityEffect",
             "module": "xeo",
             "submodule": "effects"
         },
         {
-            "file": "examples/js/effects/entityHighlightEffect.js",
+            "file": "examples/js/effects/highlightEntityEffect.js",
             "line": 162,
-            "description": "Flag which indicates whether this EntityHighlightEffect is active or not.\n\nFires an {{#crossLink \"EntityHighlightEffect/active:event\"}}{{/crossLink}} event on change.",
+            "description": "Flag which indicates whether this HighlightEntityEffect is active or not.\n\nFires an {{#crossLink \"HighlightEntityEffect/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
             "type": "Boolean",
             "default": "true",
-            "class": "EntityHighlightEffect",
+            "class": "HighlightEntityEffect",
             "module": "xeo",
             "submodule": "effects"
         },
         {
-            "file": "examples/js/effects/entityHighlightEffect.js",
+            "file": "examples/js/effects/highlightEntityEffect.js",
             "line": 185,
-            "description": "Fired whenever this EntityHighlightEffect's {{#crossLink \"EntityHighlightEffect/active:property\"}}{{/crossLink}} property changes.",
+            "description": "Fired whenever this HighlightEntityEffect's {{#crossLink \"HighlightEntityEffect/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
             "params": [
@@ -22019,7 +22019,7 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "EntityHighlightEffect",
+            "class": "HighlightEntityEffect",
             "module": "xeo",
             "submodule": "effects"
         },
