@@ -195,7 +195,7 @@
  @param [cfg.displaySize=0.521,0.293] {Array of Number} The viewer display size.
  @param [cfg.displayResolution=1920,1080] {Array of Number} The viewer display resolution.
  @param [cfg.canvasOffset=0,0] {Array of Number} The offset of the canvas' corner from the edge of the screen - needed for
- correct tracking of glasses and stylus. Leave this at ````[0,0]```` if the canvas is to fill the entire screen.
+ correct tracking of glasses and stylus. Leave this at its default value if the canvas is to fill the entire screen.
  @param [cfg.active=true] {Boolean} Whether or not this ZSpaceEffect is initially active.
  @extends Component
  */
@@ -404,7 +404,7 @@
             /**
              * The offset of the canvas' corner from the edge of the screen - needed for correct tracking of glasses and stylus.
              *
-             * Leave this at ````[0,0]```` if the canvas is to fill the entire screen.
+             * Leave this at it's default value of ````[0,0]```` if the canvas is to fill the entire screen.
              *
              * Fires a {{#crossLink "ZSpaceEffect/canvasOffset:event"}}{{/crossLink}} event on change.
              *

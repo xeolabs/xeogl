@@ -6794,6 +6794,13 @@
                             "optdefault": "1920,1080"
                         },
                         {
+                            "name": "canvasOffset",
+                            "description": "The offset of the canvas' corner from the edge of the screen - needed for\ncorrect tracking of glasses and stylus. Leave this at its default value if the canvas is to fill the entire screen.",
+                            "type": "Array of Number",
+                            "optional": true,
+                            "optdefault": "0,0"
+                        },
+                        {
                             "name": "active",
                             "description": "Whether or not this ZSpaceEffect is initially active.",
                             "type": "Boolean",
@@ -6801,11 +6808,6 @@
                             "optdefault": "true"
                         }
                     ]
-                },
-                {
-                    "name": "[cfg.canvasOffset=0,0]  The offset of the canvas' corner from the edge of the screen - needed for\ncorrect tracking of glasses and stylus. Leave this at ````[0,0]",
-                    "description": "```` if the canvas is to fill the entire screen.",
-                    "type": "Array of Number"
                 }
             ],
             "extends": "Component"
@@ -22563,7 +22565,7 @@
         {
             "file": "examples/js/effects/zSpaceEffect.js",
             "line": 404,
-            "description": "The offset of the canvas' corner from the edge of the screen - needed for correct tracking of glasses and stylus.\n\nLeave this at ````[0,0]```` if the canvas is to fill the entire screen.\n\nFires a {{#crossLink \"ZSpaceEffect/canvasOffset:event\"}}{{/crossLink}} event on change.",
+            "description": "The offset of the canvas' corner from the edge of the screen - needed for correct tracking of glasses and stylus.\n\nLeave this at it's default value of ````[0,0]```` if the canvas is to fill the entire screen.\n\nFires a {{#crossLink \"ZSpaceEffect/canvasOffset:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "canvasOffset",
             "default": "[0, 0]",
