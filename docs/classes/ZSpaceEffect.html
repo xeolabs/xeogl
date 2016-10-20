@@ -294,7 +294,7 @@ var stylusDir = zspaceEffect.stylusDir;
 </code></pre>
 <p>Note that these properties only have meaningful values once the ZSpaceEffect has fired at least one <a href="../classes/ZSpaceEffect.html#event_stylusMoved" class="crosslink">stylusMoved</a> event.</p>
 <p>Subscribing to stylus movement:</p>
-<pre class="code prettyprint"><code class="lang-javascript">zspace.on("stylusMoved", function() {
+<pre class="code prettyprint"><code class="lang-javascript">zspaceEffect.on("stylusMoved", function() {
     var stylusPos = zspaceEffect.stylusPos;
     var stylusDir = zspaceEffect.stylusDir;
     //...
@@ -321,10 +321,10 @@ zspaceEffect.on("stylusButton2", function(value) {
 <p>Picking an <a href="../classes/Entity.html" class="crosslink">Entity</a> with the stylus when button 0 is pressed:</p>
 <pre class="code prettyprint"><code class="lang-javascript">zspaceEffect.on("stylusButton0", function() {
 
-   var hit = zspace.scene.pick({
+   var hit = zspaceEffect.scene.pick({
        pickSurface: true,
-       origin: zspace.stylusPos,
-       direction: zspace.stylusDir
+       origin: zspaceEffect.stylusPos,
+       direction: zspaceEffect.stylusDir
    });
 
    if (hit) { // Picked an Entity

@@ -115,7 +115,7 @@
  Subscribing to stylus movement:
 
  ````javascript
- zspace.on("stylusMoved", function() {
+ zspaceEffect.on("stylusMoved", function() {
      var stylusPos = zspaceEffect.stylusPos;
      var stylusDir = zspaceEffect.stylusDir;
      //...
@@ -151,10 +151,10 @@
  ````javascript
  zspaceEffect.on("stylusButton0", function() {
 
-    var hit = zspace.scene.pick({
+    var hit = zspaceEffect.scene.pick({
         pickSurface: true,
-        origin: zspace.stylusPos,
-        direction: zspace.stylusDir
+        origin: zspaceEffect.stylusPos,
+        direction: zspaceEffect.stylusDir
     });
 
     if (hit) { // Picked an Entity
