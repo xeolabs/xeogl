@@ -10,6 +10,14 @@
     <script src="../build/xeoengine.min.js"></script>
     <script src="js/effects/highlightEntityEffect.js"></script>
 
+    <style>
+        body {
+            background-image: url(textures/diffuse/uvGrid2.jpg);
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+    </style>
+
 <body>
 
 <div id="infoLight">
@@ -81,11 +89,11 @@
 
                     if (c.type === "XEO.Entity") {
 
-                        c.material = c.material.clone();
-                        c.material.opacity = 0.4;
-
-                        c.modes = c.modes.clone();
-                        c.modes.transparent = true;
+//                        c.material = c.material.clone();
+//                        c.material.opacity = 0.4;
+//
+//                        c.modes = c.modes.clone();
+//                        c.modes.transparent = true;
 
                         entities.push(c);
                     }
@@ -111,11 +119,11 @@
 
                     nextEntity = entities[Math.floor(Math.random() * entities.length)];
 
-                    nextEntity.modes.transparent = false;
+              //      nextEntity.modes.transparent = false;
 
                     cameraFlight.flyTo({
                                 aabb: nextEntity.worldBoundary.aabb, // Fly to entity's oriented bounding box
-                                stopFOV: 55, // Make sure the camera stops far enough back from the entity
+                                stopFOV: 65, // Make sure the camera stops far enough back from the entity
                                 duration: 2.0 // One second flight time to each entity
                             },
                             function () {

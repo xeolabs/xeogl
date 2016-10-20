@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeoengine.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>custom stereo view<br><br>
+    <ul>
+        <li>Click in the right half-space to pick objects</li>
+    </ul>
+</div>
+
+<script>
+
+    // Load glTF model
+    var gearbox = new XEO.Model({
+        src: "models/gltf/gearbox/gearbox_assy.gltf"
+    });
+
+    var scene = gearbox.scene;
+
+    // Set initial camera position
+    var view = scene.camera.view;
+
+
+    view.eye = [184.21, 10.54, -7.03];
+    view.look = [159.20, 17.02, 3.21];
+    view.up = [-0.15, 0.97, 0.13];
+
+    scene.passes = 3;
+
+    var virtualCameras = [
+        {
+            viewport: [0,0, 0.0, 0.5, 1.0],
+            camera: new XEO.Camera({
+                view: {
+                    type: "XEO.Lookat",
+                    eye: [184.21, 10.54, 7.03],
+                    look: [159.20, 17.02, 3.21],
+                    up: [-0.15, 0.97, 0.13]
+                },
+                project: {
+                    type: "XEO.Perspective"
+                }
+            })
+        },
+        {
+            viewport: [0,5, 0.0, 1.0, 0.3],
+            camera: new XEO.Camera({
+                view: {
+                    type: "XEO.Lookat",
+                    eye: [184.21, 10.54, -7.03],
+                    look: [159.20, 17.02, 3.21],
+                    up: [-0.15, 0.97, 0.13]
+                },
+                project: {
+                    type: "XEO.Ortho"
+                }
+            })
+        },
+        {
+            viewport: [0,5, 0.3, 1.0, 0.3],
+            camera: new XEO.Camera({
+                view: {
+                    type: "XEO.Lookat",
+                    eye: [-184.21, 10.54, -7.03],
+                    look: [159.20, 17.02, 3.21],
+                    up: [-0.15, 0.97, 0.13]
+                },
+                project: {
+                    type: "XEO.Ortho"
+                }
+            })
+        },
+        {
+            viewport: [0,5, 0.6, 1.0, 1.0],
+            camera: new XEO.Camera({
+                view: {
+                    type: "XEO.Lookat",
+                    eye: [-184.21, 10.54, -7.03],
+                    look: [159.20, 17.02, 3.21],
+                    up: [-0.15, 0.97, 0.13]
+                },
+                project: {
+                    type: "XEO.Ortho"
+                }
+
+            })
+        }];
+
+    var realCamera = scene.camera;
+    realCamera.project = new XEO.Transform();
+    realCamera.view = new XEO.Transform();
+
+
+    var viewport = scene.viewport;
+    viewport.autoBoundary = false;
+    var canvas = scene.canvas;
+
+    var canvasBoundary;
+    var canvasWidth;
+    var canvasHeight;
+    var halfCanvasWidth;
+    var halfCanvasHeight;
+    var canvasAspectRatio;
+
+    // Intercept Scene before each render
+
+    scene.on("rendering",
+            function (e) {
+
+                canvasBoundary = canvas.boundary;
+
+                var canvasWidth = canvasBoundary[2];
+                var canvasHeight = canvasBoundary[3];
+                var halfCanvasWidth = Math.round(canvasWidth / 2);
+                var halfCanvasHeight = Math.round(canvasHeight / 2);
+                var canvasAspectRatio = canvasWidth / canvasHeight;
+
+                var eyeSep = 0.2; // Eye separation
+                var focalLength = 20.0;
+                var aperture = 45;
+                var near = 0.1;
+                var DTOR = 0.0174532925;
+                var radians = DTOR * aperture / 2;
+                var wd2 = near * Math.tan(radians);
+                var ndfl = near / focalLength;
+
+                var virtualCamera =virtualCameras[e.pass];
+
+                realCamera.project.matrix = virtualCamera.project.matrix;
+                realCamera.view.matrix = virtualCamera.view.matrix;
+
+                viewport.boundary = [0, 0, halfCanvasWidth, canvasHeight];
+
+                switch (e.pass) {
+
+                    case 0:
+
+                        realCamera.project.matrix = camera.project.matrix;
+                        realCamera.view.matrix = camera0.view.matrix;
+
+                        // Set projection frustum to left half of view space
+
+//                        frustum.left = -canvasAspectRatio * wd2 - 0.5 * eyeSep * ndfl;
+//                        frustum.right = canvasAspectRatio * wd2 - 0.5 * eyeSep * ndfl;
+//                        frustum.top = wd2 * 2;
+//                        frustum.bottom = -wd2 * 2;
+
+                        // Set viewport to left half of canvas
+                        viewport.boundary = [0, 0, halfCanvasWidth, canvasHeight];
+
+                        break;
+
+                    case 1:
+
+                        realCamera.project.matrix = camera1.project.matrix;
+                        realCamera.view.matrix = camera1.view.matrix;
+
+                        // Set viewport to right top half of canvas
+                        viewport.boundary = [halfCanvasWidth, 0, halfCanvasWidth, halfCanvasHeight];
+
+                        break;
+
+                    case 2:
+
+                        realCamera.project.matrix = virtualCamera.project.matrix;
+                        realCamera.view.matrix = virtualCamera.view.matrix;
+
+                        // Set viewport to bottom top half of canvas
+                        viewport.boundary = [halfCanvasWidth, halfCanvasHeight, halfCanvasWidth, halfCanvasHeight];
+
+                        break;
+                }
+            });
+
+    // Intercept Scene after each render
+    // After the second pass we'll restore the viewpoint
+
+    scene.on("rendered",
+            function (e) {
+
+                switch (e.pass) {
+                    case 1:
+
+                        break;
+                }
+            });
+
+    new XEO.CameraControl({
+        camera: camera0
+    });
+
+</script>
+</body>
+</html>

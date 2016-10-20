@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeoengine.min.js"></script>
+    <script src="js/geometry/heightmapGeometry.js"></script>
+    <script src="js/webvr/zSpaceEffect.js"></script>
+    <script src="js/webvr/zSpaceStylusControl.js"></script>
+    <script src="libs/gl-matrix-min.js"></script>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a>
+    <br><br><a href="js/geometry/heightmapGeometry.js"
+               target="_docs">XEO.HeightmapGeometry</a>
+</div>
+
+<script>
+
+    var galeCrater = new XEO.Entity({
+        geometry: new XEO.HeightmapGeometry({
+            primitive: "triangles",
+            src: "textures/height/gale-crater-mex-dem.png",
+            xSize: 15,
+            ySize: 1,
+            zSize: 15,
+            xSegments: 70,
+            zSegments: 70,
+            lod: 1.0, // Default
+            autoNormals: true // Default
+        }),
+        material: new XEO.PhongMaterial({
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/gale-crater-mex-color-2-8192.jpg"
+            }),
+            specular: [0, 0, 0]
+        }),
+        modes: new XEO.Modes({
+            backfaces: true
+        })
+    });
+
+    var scene = galeCrater.scene;
+    var view = scene.camera.view;
+    view.zoom(3);
+    view.rotateEyeX(60);
+    view.rotateEyeY(-20);
+
+    new XEO.CameraControl();
+
+    //---------------------------------------------------
+    // Create a zSpace effect and stylus control
+    //---------------------------------------------------
+
+    var zspaceEffect = new XEO.ZSpaceEffect({
+        canvasOffset: [310, 0]
+    });
+
+    var zspaceStylusControl = new XEO.ZSpaceStylusControl();
+
+    zspaceEffect.on("supported", function (supported) {
+        if (!supported) {
+            document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. ";
+        }
+    });
+
+
+</script>
+</body>
+</html>

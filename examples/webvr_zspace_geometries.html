@@ -7,7 +7,7 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeoengine.js"></script>
     <script src="js/geometry/vectorTextGeometry.js"></script>
 
     <script src="js/webvr/zSpace.js"></script>
@@ -23,6 +23,9 @@
 </div>
 
 <script>
+
+    // We'll use the xeoEngine math functions a lot, so we'll cache that module
+    var math = XEO.math;
 
     //---------------------------------------------------
     // Create some torus entities
@@ -71,7 +74,7 @@
     // Create a ZSpace effect
     //----------------------------------------------------------------------------
 
-    var zspace = new XEO.ZSpace();
+    var zspace = new XEO.ZSpaceEffect();
 
     //----------------------------------------------------------------------------
     // Check if we're actually running on a ZSpace device
@@ -131,6 +134,14 @@
                     ray.material.emissive = highlighted ? [0.3, 1.0, 0.3] : [1.0, 0.3, 0.3];
                     ray.material.lineWidth = highlighted ? 5 : 3;
                 };
+
+                this.grab = function(entity) {
+
+                };
+
+                this.release = function() {
+
+                };
             })();
 
             //----------------------------------------------------------------------------
@@ -169,82 +180,36 @@
             //
             //----------------------------------------------------------------------------
 
-            var draggingEntity = false;
-            var draggingStartPos = XEO.math.vec3();
-            var downStylusDir = XEO.math.vec3();
-            var stylusIsectLen;
+            var stylusEnd = math.vec4();
+
+            var stylusLength = 0.5 * zspace.viewerScale;
+            var draggingEntity;
 
             var translate;
             var rotate;
 
-            var pick = (function () {
+            var stylusHelperDir = math.vec3();
 
-                var stylusDir = XEO.math.vec3();
-                var stylusIsectDir = XEO.math.vec3();
+            var quat = math.identityQuaternion();
+            var invQuat = math.identityQuaternion();
 
-                return function () {
+            var worldMat = math.mat4();
+            var rotMat = math.mat4();
+            var startScale = math.vec3();
+            var objectLocalPos = math.vec4([0, 0, 0, 1]);
+            var objectWorldPos = math.vec4();
 
-                    var stylusPos = zspace.stylusPos;
-                    XEO.math.mulVec3Scalar(zspace.stylusDir, 100, stylusDir);
+            var offset = math.vec4();
+            var startOffset = math.vec4();
+            var rotQuat = math.identityQuaternion();
+            var invRotQuat = math.identityQuaternion();
+            var startRotQuat = math.identityQuaternion();
+            var newRotQuat = math.identityQuaternion();
+            var newOffset = math.vec4();
 
-                    var hit = scene.pick({
-                        pickSurface: true, // <<----- Picking point on surface
-                        origin: stylusPos,
-                        direction: stylusDir
-                    });
+            var newScale = math.vec3();
 
-                    if (hit) { // Stylus hits an Entity
-
-                        var entity = hit.entity;
-
-                        if (!entity.transform || !entity.transform.meta.stylusTransform) {
-
-                            var center = entity.worldBoundary.center;
-
-                            entity.transform = translate = new XEO.Translate({
-                                meta: {
-                                    stylusTransform: true
-                                },
-                                xyz: [0, 0, 0],
-                                postMultiply: false,
-                                parent: new XEO.Translate({
-                                    xyz: [center[0], center[1], center[2]],
-                                    postMultiply: false,
-                                    parent: rotate = new XEO.Quaternion({
-                                        parent: new XEO.Translate({
-                                            xyz: [-center[0], -center[1], -center[2]],
-                                            postMultiply: false,
-                                            parent: entity.transform
-                                        })
-                                    })
-                                })
-                            });
-                        }
-                        draggingEntity = entity;
-                        draggingEntity.material.emissive = [0.0, 1.0, 0.0];
-                        draggingStartPos.set(hit.worldPos);
-                        XEO.math.subVec3(hit.worldPos, stylusPos, stylusIsectDir);
-                        stylusIsectLen = XEO.math.lenVec3(stylusIsectDir);
-
-                        XEO.math.normalizeVec3(zspace.stylusDir, downStylusDir);
-
-                        infoHelper.setInfo("" + entity.id);
-                    }
-                };
-            })();
-
-            zspace.on("stylusButton0", function (down) {
-
-                if (!down) {
-                    if (draggingEntity) {
-                        draggingEntity.material.emissive = [0.0, 0.0, 0.0];
-                        draggingEntity = null;
-                    }
-                    return;
-                }
-
-                pick();
-            });
+            var button0Pressed = false;
 
 
             //----------------------------------------------------------------------------
@@ -253,64 +218,118 @@
 
             zspace.on("stylusMoved", (function () {
 
-                var stylusDir = XEO.math.vec3();
-                var stylusIsectDir = XEO.math.vec3();
-                var stylusIsect = XEO.math.vec3();
-                var xyz = XEO.math.vec3();
+
                 var lastEntityHighlighted = null;
+                var hit;
+                var scaledStylusDir = math.vec4();
 
                 return function () {
 
                     var stylusPos = zspace.stylusPos;
 
-                    XEO.math.mulVec3Scalar(zspace.stylusDir, 100, stylusDir);
+                    // Update stylus helper
 
-                    stylusHelper.setPosition(stylusPos, stylusDir);
+                    math.mulVec3Scalar(zspace.stylusDir, 100, stylusHelperDir);
+                    stylusHelper.setPosition(stylusPos, stylusHelperDir);
 
-                    if (!draggingEntity && zspace.stylusButton0) {
-                        pick();
-                    }
+                    math.mulVec3Scalar(zspace.stylusDir, stylusLength, scaledStylusDir);
 
-                    if (draggingEntity) {
+                    if (!draggingEntity) {
 
-                        XEO.math.mulVec3Scalar(zspace.stylusDir, stylusIsectLen, stylusIsectDir);
-                        XEO.math.addVec3(zspace.stylusPos, stylusIsectDir, stylusIsect);
+                        // Not dragging an entity
+                        // Pick an entity with the stylus
 
-                        XEO.math.subVec3(stylusIsect, draggingStartPos, xyz);
-
-                        translate.xyz = xyz;
-                        rotate.xyzw = XEO.math.vec3PairToQuaternion(downStylusDir, XEO.math.normalizeVec3(zspace.stylusDir, XEO.math.vec3()), XEO.math.vec4());
-
-                        //infoHelper.setPos(stylusIsect);
-                        infoHelper.setPos(stylusPos);
-
-                    } else {
-
-                        infoHelper.hide();
-
-                        var hit = scene.pick({
-                            pickSurface: false, // Default
+                        hit = scene.pick({
+                            pickSurface: true, // <<----- Picking point on surface
                             origin: stylusPos,
-                            direction: stylusDir
+                            direction: zspace.stylusDir
                         });
 
-                        if (lastEntityHighlighted) {
-                            if (!hit || (hit.entity.id !== lastEntityHighlighted.id)) {
-                                lastEntityHighlighted.material.emissive = [0, 0, 0];
-                            }
+                        if (hit && hit.entity) {
+                            infoHelper.setInfo("" + hit.entity.id);
                         }
+                    }
 
-                        if (hit) {
-                            stylusHelper.setHighlighted(true);
+                    if (zspace.stylusButton0 !== button0Pressed) {
 
-                            hit.entity.material.emissive = [0, 0.5, 0];
-                            lastEntityHighlighted = hit.entity;
+                        if (zspace.stylusButton0 && hit) {
 
-                            //  infoHelper.setPos(stylusPos);
+                            // Button 0 newly down and stylus hits an entity, begin dragging the entity
+
+                            var entity = hit.entity;
+
+                            math.mat4ToQuaternion(entity.transform.leafMatrix, quat);         // Get quaternion from entity's modelling matrix
+                            math.inverseQuaternion(quat, invQuat);                            // Invert the quaternion
+                            math.quaternionToMat4(invQuat, rotMat);                           // Get rotation matrix from quaternion
+
+                            math.vec3FromMat4Scale(entity.transform.leafMatrix, startScale);  // Get scale vector from entity's scale matrix
+
+                            math.transformVec4(entity.transform.leafMatrix, objectLocalPos, objectWorldPos);  // Get world-space entity position
+
+                            stylusEnd[0] = zspace.stylusPos[0] + scaledStylusDir[0];
+                            stylusEnd[1] = zspace.stylusPos[1] + scaledStylusDir[1];
+                            stylusEnd[2] = zspace.stylusPos[2] + scaledStylusDir[2];
+                            stylusEnd[3] = 1;
+
+                            math.subVec4(objectWorldPos, stylusEnd, offset);
+
+                            math.transformVec4(rotMat, offset, startOffset);
+
+                            math.mat4ToQuaternion(zspace.stylusWorldMatrix, rotQuat);
+                            math.inverseQuaternion(rotQuat, invRotQuat);
+
+                            math.mat4ToQuaternion(entity.transform.leafMatrix, quat);
+                            math.mulQuaternions(rotQuat, quat, startRotQuat);
+
+                            draggingEntity = entity;
 
                         } else {
-                            stylusHelper.setHighlighted(false);
-                            lastEntityHighlighted = null;
+
+                            // Button Release Event - just stop any drag operation.
+
+                            draggingEntity = null;
+                        }
+
+                        button0Pressed = zspace.stylusButton0;
+
+                    } else if (draggingEntity) {
+
+                        // Button state unchanged, but dragging entity
+
+                        stylusEnd[0] = zspace.stylusPos[0] + scaledStylusDir[0];
+                        stylusEnd[1] = zspace.stylusPos[1] + scaledStylusDir[1];
+                        stylusEnd[2] = zspace.stylusPos[2] + scaledStylusDir[2];
+                        stylusEnd[3] = 1;
+
+                        math.mat4ToQuaternion(zspace.stylusWorldMatrix, rotQuat);
+
+                        math.mulQuaternions(rotQuat, startRotQuat, newRotQuat);
+
+                        math.quaternionToMat4(newRotQuat, rotMat);
+
+                        math.transformVec4(rotMat, offset, startOffset);
+
+                        math.addVec4(offset, stylusEnd, newOffset);
+
+                        newScale.set(startScale);
+
+                        var parentTransform = draggingEntity.transform.parent;
+
+                        if (!!parentTransform) {
+
+                            var invParentMat = math.mat4();
+                            math.inverseMat4(parentTransform.leafMatrix, invParentMat);
+
+                            var mat = math.mat4();
+                            math.identityMat4(mat);
+                            math.quaternionToMat4(newRotQuat, mat);
+                            math.scaleMat4v(startScale, mat);
+                            math.translationMat4v(newOffset, mat);
+
+                            var localMat = math.mat4();
+                            math.mulMat4(invParentMat, mat, localMat);
+
+                            draggingEntity.transform.matrix = localMat;
                         }
                     }
                 };

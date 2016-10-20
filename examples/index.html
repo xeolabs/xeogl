@@ -325,12 +325,19 @@
 
         "Effects": [
 
-            "#Rendering effects",
+            "#Emphasis",
+            "effects_HighlightEntityEffect",
+
+            "#Stereo",
             "effects_stereo",
             "effects_stereo_custom",
 
-            "#Emphasis effects",
-            "effects_HighlightEntityEffect"
+            "#ZSpace",
+            "effects_zspace_cube",
+            "effects_zspace_geometries",
+            "effects_zspace_gearbox",
+            "effects_zspace_gearbox_explorer",
+            "effects_zspace_ReciprocatingSaw"
         ],
 
         "Entities": [
@@ -499,16 +506,6 @@
 
             "#modeling transforms",
             "transforms_model_transformHierarchy"
-        ],
-
-        "WebVR": [
-
-            "#ZSpace",
-            "webvr_zspace_cube",
-            "webvr_zspace_geometries",
-            "webvr_zspace_gearbox",
-            "webvr_zspace_gearbox_explorer",
-            "webvr_zspace_ReciprocatingSaw"
         ]
     };
 
@@ -654,6 +651,12 @@
     };
 
     var load = function (file) {
+
+        if (file.indexOf(".html", file.length - 5) !== -1) {
+            window.location = "./" + file + ".html";
+            return;
+        }
+
         if (selected !== null) divs[selected].className = 'link';
         divs[file].className = 'link selected';
         window.location.hash = file;

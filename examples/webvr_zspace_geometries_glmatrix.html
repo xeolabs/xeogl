@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeoengine.js"></script>
+    <script src="js/geometry/teapotGeometry.js"></script>
+
+    <script src="js/webvr/zSpace.js"></script>
+    <script src="libs/gl-matrix-min.js"></script>
+
+<body>
+
+<div id="infoLight"
+     style="left: 0; text-align: left; background: black; opacity: 0.7; padding: 8px; color: white; font-size: 14pt;">
+    <span><a href="http://xeoengine.org" target="_home">xeoEngine</a><br>using a <a
+            href="../docs/classes/ZSpace.html"
+            target="_docs">ZSpace</a> component to view a scene with zSpace VR</span><br>
+    <span id="log" style="color:red;font-size: 16px"></span>
+</div>
+
+<script>
+
+    // We'll use the xeoEngine math functions a lot, so we'll cache that module
+    var math = XEO.math;
+
+    //---------------------------------------------------
+    // Create some torus entities
+    //---------------------------------------------------
+
+    var geometry = new XEO.TorusGeometry({
+        radius: 2.0,
+        tube: 1.0,
+        radialSegments: 60,
+        tubeSegments: 60,
+        arc: Math.PI * 2.0
+    });
+
+    var scene = geometry.scene;
+
+    var diffuseMap = new XEO.Texture({
+        src: "textures/diffuse/uvGrid2.jpg"
+    });
+
+    var matrix = XEO.math.mat4();
+    var size = 50;
+    var halfSize = size / 2;
+
+    for (var i = 0; i < 100; i++) {
+
+        math.identityMat4(matrix);
+        math.rotationMat4v(Math.random() * 2 * Math.PI, [Math.random(), Math.random(), Math.random()], matrix);
+        math.translationMat4v([Math.random() * size - halfSize, Math.random() * size - halfSize, Math.random() * size - halfSize], matrix);
+
+        new XEO.Entity({
+            geometry: geometry,
+            material: new XEO.PhongMaterial({
+                diffuseMap: diffuseMap
+            }),
+            transform: new XEO.Transform({
+                matrix: matrix
+            })
+        });
+    }
+
+    scene.camera.view.eye = [0, 0, -100];
+
+    //----------------------------------------------------------------------------
+    // Allow camera control with keyboard and mouse
+    //----------------------------------------------------------------------------
+
+    new XEO.CameraControl();
+
+    //----------------------------------------------------------------------------
+    // Create a ZSpace effect
+    //----------------------------------------------------------------------------
+
+    var zspace = new XEO.ZSpaceEffect();
+
+    //----------------------------------------------------------------------------
+    // Check if we're actually running on a ZSpace device
+    //----------------------------------------------------------------------------
+
+    zspace.on("supported", function (supported) {
+
+        if (!supported) {
+
+            //----------------------------------------------------------------------------
+            // ZSpace not detected, show a messsage
+            //----------------------------------------------------------------------------
+
+            document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. ";
+
+        } else { // ZSpace detected
+
+            //----------------------------------------------------------------------------
+            // Create helper to show stylus
+            //----------------------------------------------------------------------------
+
+            var stylusHelper = new (function () {
+
+                var ray = new XEO.Entity({
+                    geometry: new XEO.Geometry({
+                        primitive: "lines",
+                        positions: [0, 0, 0, 0, 0, 0],
+                        indices: [0, 1]
+                    }),
+                    material: new XEO.PhongMaterial({
+                        emissive: [1, 0.3, 0.3],
+                        diffuse: [0, 0, 0],
+                        ambient: [0, 0, 0],
+                        lineWidth: 3
+                    }),
+                    modes: new XEO.Modes({pickable: false})
+                });
+
+                var positions = new Float32Array(6);
+
+                this.setPosition = function (pos, dir) {
+                    positions[0] = pos[0]; // Origin
+                    positions[1] = pos[1];
+                    positions[2] = pos[2];
+                    positions[3] = pos[0] + dir[0]; // Direction
+                    positions[4] = pos[1] + dir[1];
+                    positions[5] = pos[2] + dir[2];
+
+                    ray.geometry.positions = positions;
+                };
+
+                this.setHighlighted = function (highlighted) {
+                    ray.material.emissive = highlighted ? [0.3, 1.0, 0.3] : [1.0, 0.3, 0.3];
+                    ray.material.lineWidth = highlighted ? 5 : 3;
+                };
+
+                this.destroy = function () {
+                    ray.destroy();
+                };
+            })();
+
+            //----------------------------------------------------------------------------
+            // Handle stylus update
+            //----------------------------------------------------------------------------
+
+            zspace.on("stylusMoved", (function () {
+
+                var stylusLength = 0.5 * zspace.viewerScale;
+                var draggingEntity;
+                var stylusHelperDir = math.vec3();
+                var startOffset = vec4.create();
+                var startRotation = quat.create();
+                var button0Pressed = false;
+
+                var lastEntityHighlighted = null;
+                var hit;
+                var stylusPosition = vec3.create();
+                var stylusDirection = vec3.create();
+                var stylusP = vec4.create();
+                var stylusD = vec4.create();
+                var rotationMatrix = mat3.create();
+                var q = quat.create();
+                var matrix = mat4.create();
+                var stylusEnd = vec4.create();
+                var entityPosition = vec4.create();
+                var zero = vec4.create();
+                var offset = vec4.create();
+                var rotation = quat.create();
+                var entityRotation = quat.create();
+                var newRotation = quat.create();
+                var newOffset = vec4.create();
+
+                return function () {
+
+                    var stylusMatrix = zspace.stylusWorldMatrix;
+
+                    vec3.set(stylusPosition, stylusMatrix[12], stylusMatrix[13], stylusMatrix[14]);
+                    vec3.set(stylusDirection, -stylusMatrix[8], -stylusMatrix[9], -stylusMatrix[10]);
+
+                    vec4.set(stylusP, stylusPosition[0], stylusPosition[1], stylusPosition[2], 1.0);
+                    vec4.set(stylusD, stylusDirection[0], stylusDirection[1], stylusDirection[2], 1.0);
+
+                    // Update stylus helper
+
+                    math.mulVec3Scalar(stylusDirection, 100, stylusHelperDir);
+                    stylusHelper.setPosition(stylusPosition, stylusHelperDir);
+
+                    if (!draggingEntity) {
+
+                        // Not dragging an entity
+                        // Pick an entity with the stylus
+
+                        hit = scene.pick({
+                            pickSurface: true, // <<----- Picking point on surface
+                            origin: stylusPosition,
+                            direction: stylusDirection
+                        });
+
+                        if (lastEntityHighlighted) {
+                            if (!hit || (hit.entity.id !== lastEntityHighlighted.id)) {
+                                lastEntityHighlighted.material.emissive = [0, 0, 0];
+                            }
+                        }
+
+                        if (hit) {
+
+                            stylusHelper.setHighlighted(true);
+
+                            hit.entity.material.emissive = [0, 0.5, 0];
+                            lastEntityHighlighted = hit.entity;
+
+                        } else {
+                            stylusHelper.setHighlighted(false);
+                            lastEntityHighlighted = null;
+                        }
+                    }
+
+                    if (zspace.stylusButton0 !== button0Pressed) {
+
+                        if (zspace.stylusButton0 && hit) {
+
+                            // Button 0 down and stylus hits an entity
+                            // Grab entity and begin dragging it
+
+                            var entity = hit.entity;
+
+                            mat3.fromMat4(rotationMatrix, entity.transform.leafMatrix);
+                            quat.fromMat3(q, rotationMatrix);
+                            quat.invert(q, q);
+                            mat4.fromQuat(matrix, q);
+
+                            vec4.set(zero, 0.0, 0.0, 0.0, 1.0);
+                            vec4.transformMat4(entityPosition, zero, entity.transform.leafMatrix);
+                            vec4.scaleAndAdd(stylusEnd, stylusP, stylusD, stylusLength);
+
+                            vec4.subtract(offset, entityPosition, stylusEnd);
+                            vec4.transformMat4(startOffset, offset, matrix);
+
+                            mat3.fromMat4(rotationMatrix, stylusMatrix);
+                            quat.fromMat3(rotation, rotationMatrix);
+                            quat.invert(rotation, rotation);
+                            mat3.fromMat4(rotationMatrix, entity.transform.leafMatrix);
+                            quat.fromMat3(entityRotation, rotationMatrix);
+
+                            quat.multiply(startRotation, rotation, entityRotation);
+
+                            draggingEntity = entity;
+                            draggingEntity.material.emissive = [0.0, 1.0, 0.0];
+
+                        } else {
+
+                            // Button 0 released - release entity
+
+                            if (draggingEntity) {
+                                draggingEntity.material.emissive = [0.0, 0.0, 0.0];
+                                draggingEntity = null;
+                            }
+                        }
+
+                        button0Pressed = zspace.stylusButton0;
+
+                    } else if (draggingEntity) {
+
+                        // Continue dragging entity
+
+                        vec4.scaleAndAdd(stylusEnd, stylusP, stylusD, stylusLength);
+                        mat3.fromMat4(rotationMatrix, stylusMatrix);
+
+                        quat.fromMat3(rotation, rotationMatrix);
+                        quat.multiply(newRotation, rotation, startRotation);
+
+                        mat4.fromQuat(matrix, newRotation);
+                        vec4.transformMat4(offset, startOffset, matrix);
+
+                        vec4.add(newOffset, offset, stylusEnd);
+                        matrix[12] = newOffset[0];
+                        matrix[13] = newOffset[1];
+                        matrix[14] = newOffset[2];
+
+                        draggingEntity.transform.matrix = matrix;
+                    }
+                };
+            })());
+        }
+    });
+
+</script>
+</body>
+</html>

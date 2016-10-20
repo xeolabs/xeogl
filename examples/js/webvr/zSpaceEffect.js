@@ -1,18 +1,18 @@
 /**
- A **ZSpace** component makes its {{#crossLink "Scene"}}{{/crossLink}} viewable with a zSpace viewer.
+ A **ZSpaceEffect** makes its {{#crossLink "Scene"}}{{/crossLink}} viewable with a zSpace viewer.
 
  <ul>
- <li>Plug-and-play: just create a ZSpace component within your xeoEngine {{#crossLink "Scene"}}{{/crossLink}} to make it viewable with a ZSpace display.</li>
- <li>Activate or disable the ZSpace component at any time to switch between zSpace mode and normal mono viewing mode.</li>
+ <li>Plug-and-play: just create a ZSpaceEffect within your xeoEngine {{#crossLink "Scene"}}{{/crossLink}} to make it viewable with a ZSpace display.</li>
+ <li>Activate or disable the ZSpaceEffect at any time to switch between zSpace mode and normal mono viewing mode.</li>
  <li>Requires WebGL2 and WebVR support, which you'll have if you're running on a zSpace viewer.</li>
  <li>Attaches to a {{#crossLink "Camera"}}{{/crossLink}}, defaults to its {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
  {{#crossLink "Scene/camera:property"}}{{/crossLink}} if none is specified.</li>
- <li>Don't attach different view or projection transform components to the {{#crossLink "Camera"}}{{/crossLink}} while the ZSpace component is active.</li>
+ <li>Don't attach different view or projection transform components to the {{#crossLink "Camera"}}{{/crossLink}} while the ZSpaceEffect is active.</li>
  <li>You can however update the {{#crossLink "Camera"}}{{/crossLink}}'s view transformation at any time, to move the
  viewpoint around.
  </ul>
 
- <img src="../../../assets/images/ZSpace.png"></img>
+ <img src="../../../assets/images/ZSpaceEffect.png"></img>
 
  ## Limitations
 
@@ -70,16 +70,16 @@
  **3. Enable ZSpace viewing**
 
  Now we can orbit, pan and zoom around the torus with the mouse and keyboard. Let's view it on a ZSpace display by
- dropping a ZSpace component into our default {{#crossLink "Scene"}}{{/crossLink}}.
+ dropping a ZSpaceEffect into our default {{#crossLink "Scene"}}{{/crossLink}}.
 
  ````javascript
- var zspace = new ZSpace();
+ var zspace = new ZSpaceEffect();
  ````
 
- The ZSpace component immediately activates, so at this point if we're running on a ZSpace device we'll have a stereo
+ The ZSpaceEffect immediately activates, so at this point if we're running on a ZSpace device we'll have a stereo
  view of the torus, which we can view with the stereo glasses.
 
- At any point we can always disable the ZSpace effect to switch between normal WebGL mono viewing mode:
+ At any point we can always disable the ZSpaceEffect effect to switch between normal WebGL mono viewing mode:
 
  ````javascript
  zspace.active = false; // Back to normal mono viewing..
@@ -89,7 +89,7 @@
 
  ## Detecting support
 
- The **ZSpace** will fire a "supported" event once it has determined whether or not the browser
+ The **ZSpaceEffect** will fire a "supported" event once it has determined whether or not the browser
  supports a zSpace viewer:
 
  ````javascript
@@ -99,9 +99,9 @@
 
             // Not a zSpace device
 
-            this.error("This computer is not a ZSpace viewer!"); // Log error on the XEO.ZSpace component
+            this.error("This computer is not a ZSpace viewer!"); // Log error on the XEO.ZSpaceEffect
 
-            // At this point you could just destroy the XEO.ZSpace to make it detach from the Camera
+            // At this point you could just destroy the XEO.ZSpaceEffect to make it detach from the Camera
         }
     });
  ````
@@ -115,7 +115,7 @@
  var stylusDir = zspace.stylusDir;
  ````
 
- Note that these properties only have meaningful values once the ZSpace has fired at least one {{#crossLink "ZSpace/stylusMoved:event"}}{{/crossLink}} event.
+ Note that these properties only have meaningful values once the ZSpaceEffect has fired at least one {{#crossLink "ZSpaceEffect/stylusMoved:event"}}{{/crossLink}} event.
 
  Subscribing to stylus movement:
 
@@ -182,24 +182,24 @@
     }
  });
  ````
- @class ZSpace
+ @class ZSpaceEffect
  @module XEO
  @submodule webvr
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this ZSpace in the default
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this ZSpaceEffect in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ZSpace.
- @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} for this ZSpace.
- Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this ZSpace. Defaults to the
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ZSpaceEffect.
+ @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} for this ZSpaceEffect.
+ Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this ZSpaceEffect. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
  @param [cfg.nearClip=0.1] {Number} Position of the near clipping plane on the View-space Z-axis.
  @param [cfg.farClip=10000] {Number} Position of the far clipping plane on the View-space Z-axis.
  @param [cfg.displaySize=0.521,0.293] {Array of Number} The viewer display size.
  @param [cfg.displayResolution=1920,1080] {Array of Number} The viewer display resolution.
- @param [cfg.active=true] {Boolean} Whether or not this ZSpace is initially active.
+ @param [cfg.active=true] {Boolean} Whether or not this ZSpaceEffect is initially active.
  @extends Component
  */
 (function () {
@@ -208,9 +208,9 @@
 
     var math = XEO.math;
 
-    XEO.ZSpace = XEO.Component.extend({
+    XEO.ZSpaceEffect = XEO.Component.extend({
 
-        type: "XEO.ZSpace",
+        type: "XEO.ZSpaceEffect",
 
         _init: function (cfg) {
 
@@ -238,11 +238,9 @@
             this._stylusDevice = null;
             this._stylusButtonsDevice = null;
 
-            this._swapzSpace = false;
-            this._zspaceEnable = true;
-            this._stylusGamepad = null;
+            this._viewerScale = 1;
+
             this._canvasOffset = math.vec2([0, 0]);
-            this._canvasOffset = math.vec2([310, 0]);
 
             // Matrices
             this._leftViewMatrix = math.identityMat4();
@@ -250,6 +248,7 @@
             this._leftProjectionMatrix = math.identityMat4();
             this._rightProjectionMatrix = math.identityMat4();
             this._stylusCameraMatrix = math.identityMat4();
+            this._stylusWorldMatrix = math.identityMat4();
 
             // Stereo drawing framebuffer
             this._frameBufferAllocated = false; // True when allocated
@@ -350,9 +349,10 @@
                 }
             }
 
-            // Set properties on this XEO.ZSpace (see _props below)
+            // Set properties on this XEO.ZSpaceEffect (see _props below)
 
             this.camera = cfg.camera;
+            this.canvasOffset = cfg.canvasOffset;
             this.nearClip = cfg.nearClip;
             this.farClip = cfg.farClip;
             this.displaySize = cfg.displaySize;
@@ -363,18 +363,18 @@
         _props: {
 
             /**
-             * The {{#crossLink "Camera"}}{{/crossLink}} attached to this ZSpace component.
+             * The {{#crossLink "Camera"}}{{/crossLink}} attached to this ZSpaceEffect.
              *
-             * The ZSpace component will attach a {{#crossLink "Projection"}}{{/crossLink}} to its
+             * The ZSpaceEffect will attach a {{#crossLink "Projection"}}{{/crossLink}} to its
              * {{#crossLink "Camera"}}{{/crossLink}} if the {{#crossLink "Camera"}}Camera{{/crossLink}} does not have
              * one already, replacing whatever projection transform component was already attached.
              *
-             * Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this ZSpace component. Defaults to the parent
+             * Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this ZSpaceEffect. Defaults to the parent
              * {{#crossLink "Scene"}}Scene's{{/crossLink}} default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
              * a null or undefined value.
              *
              * No other component should modify the state of the {{#crossLink "Camera"}}{{/crossLink}} while
-             * it's attached to this ZSpace component. There is no prevention or check for that, so if that
+             * it's attached to this ZSpaceEffect. There is no prevention or check for that, so if that
              * happens you'll get unexpected results.
              *
              * @property camera
@@ -385,7 +385,7 @@
                 set: function (value) {
 
                     /**
-                     * Fired whenever this ZSpace component's {{#crossLink "ZSpace/camera:property"}}{{/crossLink}}
+                     * Fired whenever this ZSpaceEffect's {{#crossLink "ZSpaceEffect/camera:property"}}{{/crossLink}}
                      * property changes.
                      *
                      * @event camera
@@ -405,9 +405,40 @@
             },
 
             /**
-             * Position of this ZSpace's near plane on the positive View-space Z-axis.
+             * The canvas offset.
              *
-             * Fires a {{#crossLink "ZSpace/nearClip:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "ZSpaceEffect/canvasOffset:event"}}{{/crossLink}} event on change.
+             *
+             * @property canvasOffset
+             * @default [0, 0]
+             * @type Float32Array
+             */
+            canvasOffset: {
+
+                set: function (value) {
+
+                    (this._canvasOffset = this._canvasOffset || new XEO.math.vec2()).set(value || [0, 0]);
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this ZSpaceEffect's {{#crossLink "ZSpaceEffect/canvasOffset:property"}}{{/crossLink}} property changes.
+                     * @event canvasOffset
+                     * @type Float32Array
+                     * @param value The property's new value
+                     */
+                    this.fire("canvasOffset", this._canvasOffset);
+                },
+
+                get: function () {
+                    return this._canvasOffset;
+                }
+            },
+
+            /**
+             * Position of this ZSpaceEffect's near plane on the positive View-space Z-axis.
+             *
+             * Fires a {{#crossLink "ZSpaceEffect/nearClip:event"}}{{/crossLink}} event on change.
              *
              * @property nearClip
              * @default 0.1
@@ -422,7 +453,7 @@
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this ZSpace's   {{#crossLink "ZSpace/nearClip:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this ZSpaceEffect's   {{#crossLink "ZSpaceEffect/nearClip:property"}}{{/crossLink}} property changes.
                      * @event nearClip
                      * @param value The property's new value
                      */
@@ -435,9 +466,9 @@
             },
 
             /**
-             * Position of this ZSpace's far plane on the positive View-space Z-axis.
+             * Position of this ZSpaceEffect's far plane on the positive View-space Z-axis.
              *
-             * Fires a {{#crossLink "ZSpace/farClip:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "ZSpaceEffect/farClip:event"}}{{/crossLink}} event on change.
              *
              * @property farClip
              * @default 10000.0
@@ -452,7 +483,7 @@
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this ZSpace's  {{#crossLink "ZSpace/farClip:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this ZSpaceEffect's  {{#crossLink "ZSpaceEffect/farClip:property"}}{{/crossLink}} property changes.
                      *
                      * @event farClip
                      * @param value The property's new value
@@ -468,7 +499,7 @@
             /**
              * The display resolution.
              *
-             * Fires a {{#crossLink "ZSpace/displayResolution:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "ZSpaceEffect/displayResolution:event"}}{{/crossLink}} event on change.
              *
              * @property displayResolution
              * @default [1920, 1080]
@@ -483,7 +514,7 @@
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this ZSpace's {{#crossLink "ZSpace/displayResolution:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this ZSpaceEffect's {{#crossLink "ZSpaceEffect/displayResolution:property"}}{{/crossLink}} property changes.
                      * @event displayResolution
                      * @type Float32Array
                      * @param value The property's new value
@@ -499,7 +530,7 @@
             /**
              * The display size.
              *
-             * Fires a {{#crossLink "ZSpace/displaySize:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "ZSpaceEffect/displaySize:event"}}{{/crossLink}} event on change.
              *
              * @property displaySize
              * @default [0.521, 0.293]
@@ -514,7 +545,7 @@
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this ZSpace's {{#crossLink "ZSpace/displaySize:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this ZSpaceEffect's {{#crossLink "ZSpaceEffect/displaySize:property"}}{{/crossLink}} property changes.
                      * @event displaySize
                      * @type Float32Array
                      * @param value The property's new value
@@ -530,7 +561,7 @@
             /**
              * The current World-space position of the stylus.
              *
-             * Fires a {{#crossLink "ZSpace/stylusMoved:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "ZSpaceEffect/stylusMoved:event"}}{{/crossLink}} event on change.
              *
              * @property stylusPos
              * @type Float32Array
@@ -543,9 +574,9 @@
             },
 
             /**
-             * The current World-space direction the stylus is pointing in.
+             * The current World-space direction of the stylus.
              *
-             * Fires a {{#crossLink "ZSpace/stylusMoved:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "ZSpaceEffect/stylusMoved:event"}}{{/crossLink}} event on change.
              *
              * @property stylusOrientation
              * @type Float32Array
@@ -560,7 +591,7 @@
             /**
              * The current camera matrix for the stylus.
              *
-             * Fires a {{#crossLink "ZSpace/stylusMoved:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "ZSpaceEffect/stylusMoved:event"}}{{/crossLink}} event on change.
              *
              * @property stylusCameraMatrix
              * @type Float32Array
@@ -573,9 +604,24 @@
             },
 
             /**
+             * The current world matrix for the stylus.
+             *
+             * Fires a {{#crossLink "ZSpaceEffect/stylusMoved:event"}}{{/crossLink}} event on change.
+             *
+             * @property stylusCameraMatrix
+             * @type Float32Array
+             * @final
+             */
+            stylusWorldMatrix: {
+                get: function () {
+                    return this._stylusWorldMatrix;
+                }
+            },
+
+            /**
              * Whether or not the first button is down on the stylus.
              *
-             * Fires a {{#crossLink "ZSpace/stylusButton0:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "ZSpaceEffect/stylusButton0:event"}}{{/crossLink}} event on change.
              *
              * @property stylusButton0
              * @default false
@@ -591,7 +637,7 @@
             /**
              * Whether or not the second button is down on the stylus.
              *
-             * Fires a {{#crossLink "ZSpace/stylusButton1:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "ZSpaceEffect/stylusButton1:event"}}{{/crossLink}} event on change.
              *
              * @property stylusButton1
              * @default false
@@ -607,7 +653,7 @@
             /**
              * Whether or not the third button is down on the stylus.
              *
-             * Fires a {{#crossLink "ZSpace/stylusButton2:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "ZSpaceEffect/stylusButton2:event"}}{{/crossLink}} event on change.
              *
              * @property stylusButton2
              * @default false
@@ -621,11 +667,31 @@
             },
 
             /**
-             * Flag which indicates whether this ZSpace component is active or not.
+             * The current viewer scale factor.
              *
-             * Note that this ZSpace component can still be activated when the browser does not support ZSpace.
+             * The ZSpaceEffect automatically calculates this from the distance between
+             * the eye and the point of interest.
              *
-             * Fires an {{#crossLink "ZSpace/active:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "ZSpaceEffect/stylusButton2:event"}}{{/crossLink}} event on change.
+             *
+             * @property viewerScale
+             * @default 1
+             * @type Number
+             * @final
+             */
+            viewerScale: {
+                get: function () {
+                    return this._viewerScale;
+                }
+            },
+
+
+            /**
+             * Flag which indicates whether this ZSpaceEffect is active or not.
+             *
+             * Note that this ZSpaceEffect can still be activated when the browser does not support ZSpace.
+             *
+             * Fires an {{#crossLink "ZSpaceEffect/active:event"}}{{/crossLink}} event on change.
              *
              * @property active
              * @type Boolean
@@ -647,7 +713,7 @@
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this ZSpace component's {{#crossLink "ZSpace/active:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this ZSpaceEffect's {{#crossLink "ZSpaceEffect/active:property"}}{{/crossLink}} property changes.
                      * @event active
                      * @param value The property's new value
                      */
@@ -660,7 +726,7 @@
             }
         },
 
-        _activate: function () { // Activates this ZSpace component
+        _activate: function () { // Activates this ZSpaceEffect
 
             var self = this;
 
@@ -867,25 +933,24 @@
             // Viewer is looking down at model as if it were on a table
 
             var invViewMatrix = math.mat4();
-            var stylusWorldMatrix = math.mat4();
-            var stylusLocalMatrix = math.mat4();
 
             return function () {
 
                 // Automatically derive viewer scale from base view transform
                 var camera = this._attached.camera;
                 var len = math.lenVec3(math.subVec3(camera.view.look, camera.view.eye, vecEyeLook));
-                var viewerScale = len / 0.41;
+                this._viewerScale = len / 0.41;
 
                 displayScaleFactorX = this._displaySize[0] / this._displayResolution[0];
                 displayScaleFactorY = this._displaySize[1] / this._displayResolution[1];
 
                 canvas = this.scene.canvas.canvas;
 
-                getCanvasPosition(canvas, canvasPosition);
+                canvasPosition[0] = window.screenX + canvas.offsetLeft - screen.availLeft + this._canvasOffset[0];
+                canvasPosition[1] = window.screenY + canvas.offsetTop + 75 + this._canvasOffset[1];
 
-                canvasWidth = canvas.clientWidth * displayScaleFactorX * viewerScale;
-                canvasHeight = canvas.clientHeight * displayScaleFactorY * viewerScale;
+                canvasWidth = canvas.clientWidth * displayScaleFactorX * this._viewerScale;
+                canvasHeight = canvas.clientHeight * displayScaleFactorY * this._viewerScale;
                 displayCenterX = this._displayResolution[0] * 0.5;
                 displayCenterY = this._displayResolution[1] * 0.5;
                 viewportCenterX = canvasPosition[0] + (canvas.clientWidth * 0.5);
@@ -899,9 +964,9 @@
 
                 // Viewer scale matrix
 
-                scale[0] = viewerScale;
-                scale[1] = viewerScale;
-                scale[2] = viewerScale;
+                scale[0] = this._viewerScale;
+                scale[1] = this._viewerScale;
+                scale[2] = this._viewerScale;
                 math.scalingMat4v(scale, viewScaleMat);
 
                 // Batches this component's outgoing update events for after all ZSpace device updates
@@ -1009,17 +1074,17 @@
                         var viewMatrix = camera.view.matrix;
 
                         math.inverseMat4(viewMatrix, invViewMatrix);
-                        math.mulMat4(invViewMatrix, this._stylusCameraMatrix, stylusWorldMatrix);
+                        math.mulMat4(invViewMatrix, this._stylusCameraMatrix, this._stylusWorldMatrix);
 
-                        this._stylusWorldPos[0] = stylusWorldMatrix[12];
-                        this._stylusWorldPos[1] = stylusWorldMatrix[13];
-                        this._stylusWorldPos[2] = stylusWorldMatrix[14];
+                        this._stylusWorldPos[0] = this._stylusWorldMatrix[12];
+                        this._stylusWorldPos[1] = this._stylusWorldMatrix[13];
+                        this._stylusWorldPos[2] = this._stylusWorldMatrix[14];
 
-                        this._stylusWorldDir[0] = -stylusWorldMatrix[8];
-                        this._stylusWorldDir[1] = -stylusWorldMatrix[9];
-                        this._stylusWorldDir[2] = -stylusWorldMatrix[10];
+                        this._stylusWorldDir[0] = -this._stylusWorldMatrix[8];
+                        this._stylusWorldDir[1] = -this._stylusWorldMatrix[9];
+                        this._stylusWorldDir[2] = -this._stylusWorldMatrix[10];
 
-                        math.normalizeVec3(this._stylusWorldDir);
+                       // math.normalizeVec3(this._stylusWorldDir);
                     }
 
                 } else {
@@ -1057,7 +1122,7 @@
                 if (stylusMoved) {
 
                     /**
-                     * Fired whenever this ZSpace component's stylus moves.
+                     * Fired whenever this ZSpaceEffect's stylus moves.
                      *
                      * @event stylusMoved
                      */
@@ -1067,7 +1132,7 @@
                 if (stylusButton0Updated) {
 
                     /**
-                     * Fired whenever this ZSpace component's first button is pressed or released.
+                     * Fired whenever this ZSpaceEffect's first button is pressed or released.
                      *
                      * @event stylusButton0
                      * @param value True if the button is down.
@@ -1078,7 +1143,7 @@
                 if (stylusButton1Updated) {
 
                     /**
-                     * Fired whenever this ZSpace component's second button is pressed or released.
+                     * Fired whenever this ZSpaceEffect's second button is pressed or released.
                      *
                      * @event stylusButton1
                      * @param value True if the button is down.
@@ -1089,7 +1154,7 @@
                 if (stylusButton2Updated) {
 
                     /**
-                     * Fired whenever this ZSpace component's third button is pressed or released.
+                     * Fired whenever this ZSpaceEffect's third button is pressed or released.
                      *
                      * @event stylusButton2
                      * @param value True if the button is down.
@@ -1100,7 +1165,7 @@
 
         })(),
 
-        _deactivate: function () { // Deactivates this XEO.ZSpace
+        _deactivate: function () { // Deactivates this XEO.ZSpaceEffect
 
             var scene = this.scene;
 
@@ -1141,12 +1206,6 @@
             this.active = false;
         }
     });
-
-    function getCanvasPosition(canvas, canvasPosition) { // Helper function to get an element's exact position
-        var canvasOffset = [0, 0];
-        canvasPosition[0] = window.screenX + canvas.offsetLeft - screen.availLeft + canvasOffset[0];
-        canvasPosition[1] = window.screenY + canvas.offsetTop + 75 + canvasOffset[1];
-    }
 
     function makeProjectionMatrix(up, down, left, right, nearClip, farClip, out) {
         var o = Math.tan(up);

@@ -649,6 +649,7 @@
          * @param {String} [params.type] Optional expected type of base type of the child; when supplied, will
          * cause an exception if the given child is not the same type or a subtype of this.
          * @param {Boolean} [params.sceneDefault=false]
+         * @param {Boolean} [params.sceneSingleton=false]
          * @param {Function} [params.onAttached] Optional callback called when component attached
          * @param {Function} [params.onAttached.callback] Callback function
          * @param {Function} [params.onAttached.scope] Optional scope for callback
@@ -670,6 +671,7 @@
 
             var component = params.component;
             var sceneDefault = params.sceneDefault;
+            var sceneSingleton = params.sceneSingleton;
             var type = params.type;
             var on = params.on;
             var recompiles = params.recompiles !== false;
@@ -722,15 +724,36 @@
                 }
             }
 
-            if (!component && sceneDefault === true) {
 
-                // Using a default scene component
+            if (!component) {
 
-                component = this.scene[name];
+                if (sceneSingleton === true) {
 
-                if (!component) {
-                    this.error("Scene has no default component for '" + name + "'");
-                    return null;
+                    // Using the first instance of the component type we find
+
+                    var instances = this.scene.types[type];
+                    for (var id2 in instances) {
+                        if (instances.hasOwnProperty) {
+                            component = instances[id2];
+                            break;
+                        }
+                    }
+
+                    if (!component) {
+                        this.error("Scene has no default component for '" + name + "'");
+                        return null;
+                    }
+
+                } else if (sceneDefault === true) {
+
+                    // Using a default scene component
+
+                    component = this.scene[name];
+
+                    if (!component) {
+                        this.error("Scene has no default component for '" + name + "'");
+                        return null;
+                    }
                 }
             }
 

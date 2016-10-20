@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeoengine.min.js"></script>
+
+    <script src="js/webvr/zSpaceEffect.js"></script>
+    <script src="js/webvr/zSpaceStylusControl.js"></script>
+    <script src="libs/gl-matrix-min.js"></script>
+
+<body>
+
+<div id="infoLight"
+     style="left: 0; text-align: left; background: black; opacity: 0.7; padding: 8px; color: white; font-size: 14pt;">
+    <span><a href="http://xeoengine.org" target="_home">xeoEngine</a><br>
+        using a <a
+                href="../docs/classes/ZSpaceEffect.html"
+                target="_docs">ZSpaceEffect</a> to view a simple <a
+                href="../docs/classes/Entity.html"
+                target="_docs">Entity</a> in zSpace VR</span><br>
+    <span id="log" style="color:red;font-size: 16px"></span>
+</div>
+
+<script>
+
+    //---------------------------------------------------
+    // Create a cube entity
+    //---------------------------------------------------
+
+    var entity = new XEO.Entity({
+        geometry: new XEO.BoxGeometry({
+            xSize: .6,
+            ySize: .6,
+            zSize: .6
+        }),
+        material: new XEO.PhongMaterial({
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/UVCheckerMap11-1024.png"
+            })
+        }),
+        modes: new XEO.Modes({
+            backfaces: true
+        }),
+        transform: new XEO.Rotate({
+            xyz: [0, 1, 0],
+            angle: 0
+        })
+    });
+
+    //----------------------------------------------------------------------------
+    // Set initial camera position
+    //----------------------------------------------------------------------------
+
+    var scene = entity.scene;
+
+    scene.camera.view.eye = [0, 2, -10];
+    scene.camera.view.look = [0, 0, 0];
+
+    //----------------------------------------------------------------------------
+    // Allow camera control with keyboard and mouse
+    //----------------------------------------------------------------------------
+
+    var cameraControl = new XEO.CameraControl();
+
+    //---------------------------------------------------
+    // Create a zSpace effect and stylus control
+    //---------------------------------------------------
+
+    var zspaceEffect = new XEO.ZSpaceEffect({
+        canvasOffset: [310, 0]
+    });
+
+    var zspaceStylusControl = new XEO.ZSpaceStylusControl();
+
+    zspaceEffect.on("supported", function (supported) {
+        if (!supported) {
+            document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. ";
+        }
+    });
+
+</script>
+</body>
+</html>

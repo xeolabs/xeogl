@@ -5,29 +5,38 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeoengine.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
     <a href="http://xeoengine.org">xeoEngine</a> - <a href="../docs/classes/AmbientLight.html"
-                          target="_docs">AmbientLight</a>
+                                                      target="_docs">AmbientLight</a>
 </div>
 
 <script>
 
     var material = new XEO.PhongMaterial({
-        ambient: [0.7, 0.7, 0.7]
+        ambient: [0.0, 0.7, 0.7],
+        diffuse: [1, 1, 0]
     });
 
     var ambientLight = new XEO.AmbientLight({
-        color: [0.7, 0.7, 0.7]
+        color: [0.0, 0.3, 0.7]
+    });
+
+    var dirLight = new XEO.DirLight({
+        dir: [0.6, 0.6, -1.0],
+        color: [0.7, 0.7, 0.8],
+        intensity: 1.0,
+        space: "view"
     });
 
     var lights = new XEO.Lights({
         lights: [
-            ambientLight
+            ambientLight,
+            dirLight
         ]
     });
 
@@ -36,6 +45,8 @@
         geometry: new XEO.BoxGeometry(),
         material: material
     });
+
+    entity.scene.canvas.backgroundColor = [1,0,0,0]
 
     entity.scene.on("tick",
             function () {

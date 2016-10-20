@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeoEngine Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeoengine.js"></script>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>importing glTF using a <a
+        href="../docs/classes/Model.html" target="_docs">XEO.Model</a> component
+</div>
+
+<script>
+
+    var bg = [
+        "textures/diffuse/uvGrid2.jpg",
+        "textures/diffuse/chesterfieldDiffuseMap.png",
+        "textures/diffuse/UVCheckerMap16.jpg"
+    ];
+
+    var i = 0;
+
+    setInterval(function () {
+        gearbox.scene.canvas.backgroundImage = bg[i++ % bg.length];
+    }, 1000);
+
+    var entity = new XEO.Entity({
+        geometry: new XEO.TorusGeometry(),
+        material: new XEO.PhongMaterial({
+            diffuseMap: new XEO.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            })
+        }),
+        transform: new XEO.Rotate({
+            xyz: [0.8, 0.8, 0],
+            angle: 0
+        })
+    });
+
+    entity.scene.camera.view.eye = [0, 0, -4];
+
+    entity.scene.on("tick", function () {
+        entity.transform.angle += 0.3;
+    });
+
+</script>
+</body>
+</html>

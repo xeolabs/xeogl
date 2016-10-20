@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeoengine.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
     <style>
@@ -18,7 +18,6 @@
         canvas {
             display: inline-block;
             margin: 5px;
-            background-color: #333;
             box-shadow: 2px 2px 2px black;
         }
     </style>
@@ -42,8 +41,31 @@
     //-----------------------------
 
     var scene1 = new XEO.Scene({
-        canvas: "myCanvas1"
+        canvas: "myCanvas1",
+        backgroundColor: [0.3, 0.6, 0.9]
     });
+
+    scene1.lights = new XEO.Lights(scene1, [
+
+        new XEO.AmbientLight(scene1,  {
+            color: [0.3, 0.3, 0.9],
+            intensity: 0.9
+        }),
+
+        new XEO.DirLight(scene1,  {
+            dir: [-0.5, 0.5, -0.6],
+            color: [0.8, 0.8, 0.7],
+            intensity: 1.0,
+            space: "view"
+        }),
+
+        new XEO.DirLight(scene1,  {
+            dir: [0.5, -0.5, -0.6],
+            color: [0.8, 0.8, 0.8],
+            intensity: 1.0,
+            space: "view"
+        })
+    ]);
 
     new XEO.Entity(scene1, {
         geometry: new XEO.SphereGeometry(scene1),
