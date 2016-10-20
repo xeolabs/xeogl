@@ -107,6 +107,18 @@
         },
 
         /**
+         * Converts a 3x3 matrix to 4x4
+         * @method mat3ToMat4
+         * @param mat3 3x3 matrix.
+         * @param mat4 4x4 matrix
+         * @static
+         * @returns {Float32Array}
+         */
+        mat3ToMat4: function (mat3, mat4) { // TODO
+            //return new Float32Array(values || 9);
+        },
+
+        /**
          * Returns a new, uninitialized 4x4 matrix.
          * @method mat4
          * @param [values] Initial values.
@@ -115,6 +127,18 @@
          */
         mat4: function (values) {
             return new Float32Array(values || 16);
+        },
+
+        /**
+         * Converts a 4x4 matrix to 3x3
+         * @method mat4ToMat3
+         * @param mat4 4x4 matrix.
+         * @param mat3 3x3 matrix
+         * @static
+         * @returns {Float32Array}
+         */
+        mat4ToMat3: function (mat4, mat3) { // TODO
+            //return new Float32Array(values || 9);
         },
 
         /**
@@ -762,6 +786,39 @@
         },
 
         /**
+         * Creates a three-element vector from the rotation part of a sixteen-element matrix.
+         * @param m
+         * @param dest
+         */
+        vec3FromMat4Scale: (function () {
+
+            var tempVec3 = new Float32Array(3);
+
+            return function (m, dest) {
+
+                tempVec3[0] = m[0];
+                tempVec3[1] = m[1];
+                tempVec3[2] = m[2];
+
+                dest[0] = math.lenVec3(tempVec3);
+
+                tempVec3[0] = m[4];
+                tempVec3[1] = m[5];
+                tempVec3[2] = m[6];
+
+                dest[1] = math.lenVec3(tempVec3);
+
+                tempVec3[0] = m[8];
+                tempVec3[1] = m[9];
+                tempVec3[2] = m[10];
+
+                dest[2] = math.lenVec3(tempVec3);
+
+                return dest;
+            };
+        })(),
+
+        /**
          * Duplicates a 4x4 identity matrix.
          * @method dupMat4
          * @static
@@ -1310,6 +1367,7 @@
             return math.translationMat4c(s, s, s, dest);
         },
 
+
         /**
          * Returns 4x4 rotation matrix.
          * @method rotationMat4v
@@ -1391,6 +1449,28 @@
          */
         scalingMat4c: function (x, y, z) {
             return math.scalingMat4v([x, y, z]);
+        },
+        
+        scaleMat4v: function(v, m) {
+            
+            var x = v[0];
+            var y = v[1]; 
+            var z = v[2];
+
+            m[ 0 ] *= x;
+            m[ 4 ] *= y;
+            m[ 8 ] *= z;
+            m[ 1 ] *= x;
+            m[ 5 ] *= y;
+            m[ 9 ] *= z;
+            m[ 2 ] *= x;
+            m[ 6 ] *= y;
+            m[ 10 ] *= z;
+            m[ 3 ] *= x;
+            m[ 7 ] *= y;
+            m[ 11 ] *= z;
+
+            return m;
         },
 
         /**
@@ -3336,6 +3416,44 @@
             return dest;
         },
 
+        quaternionToRotationMat4: function (q, m) {
+
+            var x = q[0];
+            var y = q[1];
+            var z = q[2];
+            var w = q[3];
+
+            var x2 = x + x, y2 = y + y, z2 = z + z;
+            var xx = x * x2, xy = x * y2, xz = x * z2;
+            var yy = y * y2, yz = y * z2, zz = z * z2;
+            var wx = w * x2, wy = w * y2, wz = w * z2;
+
+            m[0] = 1 - ( yy + zz );
+            m[4] = xy - wz;
+            m[8] = xz + wy;
+
+            m[1] = xy + wz;
+            m[5] = 1 - ( xx + zz );
+            m[9] = yz - wx;
+
+            m[2] = xz - wy;
+            m[6] = yz + wx;
+            m[10] = 1 - ( xx + yy );
+
+            // last column
+            m[3] = 0;
+            m[7] = 0;
+            m[11] = 0;
+
+            // bottom row
+            m[12] = 0;
+            m[13] = 0;
+            m[14] = 0;
+            m[15] = 1;
+
+            return m;
+        },
+        
         normalizeQuaternion: function (q, dest) {
             dest = dest || q;
             var len = math.lenVec4([q[0], q[1], q[2], q[3]]);
