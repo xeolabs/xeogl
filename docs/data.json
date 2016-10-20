@@ -1783,14 +1783,15 @@
             "submodules": {},
             "classes": {
                 "HighlightEntityEffect": 1,
-                "StereoEffect": 1
+                "StereoEffect": 1,
+                "ZSpaceEffect": 1
             },
             "fors": {},
             "is_submodule": 1,
             "namespaces": {},
             "module": "XEO",
             "namespace": "",
-            "file": "examples/js/effects/stereoEffect.js",
+            "file": "examples/js/effects/zSpaceEffect.js",
             "line": 1,
             "description": "Components for viewing effects."
         },
@@ -1809,7 +1810,6 @@
             "name": "webvr",
             "submodules": {},
             "classes": {
-                "ZSpaceEffect": 1,
                 "Cardboard": 1,
                 "WebVR": 1
             },
@@ -6534,7 +6534,7 @@
             "namespace": "",
             "file": "examples/js/controls/zSpaceStylusControl.js",
             "line": 1,
-            "description": "A **ZSpaceStylusControl** component works in conjunction with a {{#crossLink \"ZSpaceEffect\"}}{{/crossLink}} to drag\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} around with a zSpace stylus input device.\n\n<img src=\"../../../assets/images/ZSpaceStylusControl.png\"></img>\n\n## Examples\n\n<ul>\n<li>[zSpace cube](../../examples/effects_zspace_cube.html)</li>\n<li>[zSpace with random geometries](../../examples/effects_zspace_geometries.html)</li>\n<li>[zSpace with glTF gearbox model](../../examples/effects_zspace_gearbox.html)</li>\n<li>[zSpace with glTF gearbox model and entity explorer](../../examples/effects_zspace_gearbox_explorer.html)</li>\n<li>[zSpace with glTF reciprocating saw model](../../examples/effects_zspace_ReciprocatingSaw.html)</li>\n</ul>",
+            "description": "A **ZSpaceStylusControl** component works in conjunction with a {{#crossLink \"ZSpaceEffect\"}}{{/crossLink}} to drag\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} around with a zSpace stylus input device.\n\n<img src=\"../../../assets/images/ZSpaceStylusControl.png\"></img>\n\n## Examples\n\n<ul>\n<li>[zSpace cube](../../examples/effects_zspace_cube.html)</li>\n<li>[zSpace with random geometries](../../examples/effects_zspace_geometries.html)</li>\n<li>[zSpace with glTF gearbox model](../../examples/effects_zspace_gearbox.html)</li>\n<li>[zSpace with glTF gearbox model and entity explorer](../../examples/effects_zspace_gearbox_explorer.html)</li>\n<li>[zSpace with glTF reciprocating saw model](../../examples/effects_zspace_ReciprocatingSaw.html)</li>\n</ul>\n\n## Usage\n\n````javascript\n// Create a textured cube entity\nvar entity = new XEO.Entity({\n    geometry: new XEO.BoxGeometry({\n        xSize: .6,\n        ySize: .6,\n        zSize: .6\n    }),\n    material: new XEO.PhongMaterial({\n        diffuseMap: new XEO.Texture({\n            src: \"textures/diffuse/UVCheckerMap11-1024.png\"\n        })\n    }),\n    modes: new XEO.Modes({\n        backfaces: true\n    }),\n    transform: new XEO.Rotate({\n        xyz: [0, 1, 0],\n        angle: 0\n    })\n});\n\n// Set initial camera position\nvar scene = entity.scene;\nscene.camera.view.eye = [0, 2, -10];\nscene.camera.view.look = [0, 0, 0];\n\n// Allow camera control with keyboard and mouse\nvar cameraControl = new XEO.CameraControl();\n\n// Create a ZSpaceEffect\nvar zspaceEffect = new XEO.ZSpaceEffect({\n    canvasOffset: [310, 0]\n});\n\n// Create a ZSpaceStylusControl\nvar zspaceStylusControl = new XEO.ZSpaceStylusControl();\n\n// Handle missing zSpace support\nzspaceEffect.on(\"supported\", function (supported) {\n    if (!supported) {\n        document.getElementById(\"log\").innerText = \"This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. \";\n    }\n});\n````",
             "submodule": "controls",
             "is_constructor": 1,
             "params": [
@@ -6731,8 +6731,8 @@
             "namespace": "",
             "file": "examples/js/effects/zSpaceEffect.js",
             "line": 1,
-            "description": "A **ZSpaceEffect** makes its {{#crossLink \"Scene\"}}{{/crossLink}} viewable with a zSpace viewer.\n\n<ul>\n<li>Plug-and-play: just create a ZSpaceEffect within your xeoEngine {{#crossLink \"Scene\"}}{{/crossLink}} to make it viewable with a ZSpace display.</li>\n<li>Activate or disable the ZSpaceEffect at any time to switch between zSpace mode and normal mono viewing mode.</li>\n<li>Requires WebGL2 and WebVR support, which you'll have if you're running on a zSpace viewer.</li>\n<li>Attaches to a {{#crossLink \"Camera\"}}{{/crossLink}}, defaults to its {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default\n{{#crossLink \"Scene/camera:property\"}}{{/crossLink}} if none is specified.</li>\n<li>Don't attach different view or projection transform components to the {{#crossLink \"Camera\"}}{{/crossLink}} while the ZSpaceEffect is active.</li>\n<li>You can however update the {{#crossLink \"Camera\"}}{{/crossLink}}'s view transformation at any time, to move the\nviewpoint around.</li>\n<li>Use a {{#crossLink \"ZSpaceStylusControl\"}}{{/crossLink}} to drag {{#crossLink \"Entity\"}}Entities{{/crossLink}}\naround with the stylus.</li>\n</ul>\n\n<img src=\"../../../assets/images/ZSpaceEffect.png\"></img>\n\n## Examples\n\n<ul>\n<li>[zSpace cube](../../examples/effects_zspace_cube.html)</li>\n<li>[zSpace with random geometries](../../examples/effects_zspace_geometries.html)</li>\n<li>[zSpace with glTF gearbox model](../../examples/effects_zspace_gearbox.html)</li>\n<li>[zSpace with glTF gearbox model and entity explorer](../../examples/effects_zspace_gearbox_explorer.html)</li>\n<li>[zSpace with glTF reciprocating saw model](../../examples/effects_zspace_ReciprocatingSaw.html)</li>\n</ul>\n\n## Usage\n\nIn the following example we're going to set up a ZSpace-viewable scene with xeoEngine, defining the scene step-by-step to\nemphasize the plug-and-play design of xeoEngine's API.\n\n**1. Create an entity**\n\nFirst we'll create a simple torus-shaped {{#crossLink \"Entity\"}}{{/crossLink}}, which will be within xeoEngine's default\n{{#crossLink \"Scene\"}}{{/crossLink}}, since we're not defining the {{#crossLink \"Scene\"}}{{/crossLink}} component\nexplicitly. Our {{#crossLink \"Entity\"}}{{/crossLink}} is also implicitly connected to the\n{{#crossLink \"Scene\"}}{{/crossLink}}'s default {{#crossLink \"Camera\"}}{{/crossLink}}, since we didn't explicitly create\na {{#crossLink \"Camera\"}}{{/crossLink}} for it either.\n\n````javascript\nvar entity = new XEO.Entity({\n    geometry: new XEO.TorusGeometry(),\n    material: new XEO.PhongMaterial({\n       diffuseMap: new XEO.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n       })\n    })\n});\n````\n\n**2. Enable mouse/keyboard camera interaction**\n\nAt this point we've got a textured torus floating in the middle of the canvas (which is also created automatically\nsince we didn't specify one). Now we'll create a\n{{#crossLink \"CameraControl\"}}{{/crossLink}}, which immediately allows us to move our viewpoint around with the mouse and\nkeyboard. This component is also within xeoEngine's default {{#crossLink \"Scene\"}}{{/crossLink}} and connected to the\n{{#crossLink \"Scene\"}}{{/crossLink}}'s default {{#crossLink \"Camera\"}}{{/crossLink}}.\n\n````javascript\nnew CameraControl();\n````\n\n**3. Enable ZSpace viewing**\n\nNow we can orbit, pan and zoom around the torus with the mouse and keyboard. Let's view it on a ZSpace display by\ndropping a ZSpaceEffect into our default {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n````javascript\nvar zspace = new ZSpaceEffect();\n````\n\nThe ZSpaceEffect immediately activates, so at this point if we're running on a ZSpace device we'll have a stereo\nview of the torus, which we can view with the stereo glasses.\n\nAt any point we can always disable the ZSpaceEffect effect to switch between normal WebGL mono viewing mode:\n\n````javascript\nzspace.active = false; // Back to normal mono viewing..\nzspace.active = true; // ..and then back to ZSpace stereo mode.\n\n````\n\n## Detecting support\n\nThe **ZSpaceEffect** will fire a \"supported\" event once it has determined whether or not the browser\nsupports a zSpace viewer:\n\n````javascript\nzspace.on(\"supported\", function (supported) {\n\n       if (!supported) {\n\n           // Not a zSpace device\n\n           this.error(\"This computer is not a ZSpace viewer!\"); // Log error on the XEO.ZSpaceEffect\n\n           // At this point you could just destroy the XEO.ZSpaceEffect to make it detach from the Camera\n       }\n   });\n````\n\n## Handling stylus input\n\nReading the current World-space position and direction of the stylus:\n\n````javascript\nvar stylusPos = zspace.stylusPos;\nvar stylusDir = zspace.stylusDir;\n````\n\nNote that these properties only have meaningful values once the ZSpaceEffect has fired at least one {{#crossLink \"ZSpaceEffect/stylusMoved:event\"}}{{/crossLink}} event.\n\nSubscribing to stylus movement:\n\n````javascript\nzspace.on(\"stylusMoved\", function() {\n    var stylusPos = zspace.stylusPos;\n    var stylusDir = zspace.stylusDir;\n    //...\n});\n````\n\nReading the current state of each stylus button:\n\n````javascript\nvar button0 = zspace.stylusButton0; // Boolean\nvar button1 = zspace.stylusButton1;\nvar button2 = zspace.stylusButton2;\n````\n\nSubscribing to change of state of each stylus button:\n\n````javascript\nzspace.on(\"stylusButton0\", function(value) { // Boolean value\n    this.log(\"stylusButton0 = \" + value);\n});\n\nzspace.on(\"stylusButton1\", function(value) {\n    this.log(\"stylusButton1 = \" + value);\n});\n\nzspace.on(\"stylusButton2\", function(value) {\n    this.log(\"stylusButton2 = \" + value);\n});\n````\n\nPicking an {{#crossLink \"Entity\"}}{{/crossLink}} with the stylus when button 0 is pressed:\n\n````javascript\nzspace.on(\"stylusButton0\", function() {\n\n   var hit = zspace.scene.pick({\n       pickSurface: true,\n       origin: zspace.stylusPos,\n       direction: zspace.stylusDir\n   });\n\n   if (hit) { // Picked an Entity\n\n       var entity = hit.entity;\n\n       // Other properties on the hit result:\n\n       var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n       var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n       var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n       var localPos = hit.localPos; // Float32Array containing the picked Local-space position within the triangle\n       var worldPos = hit.worldPos; // Float32Array containing the picked World-space position within the triangle\n       var viewPos = hit.viewPos; // Float32Array containing the picked View-space position within the triangle\n       var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n       var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n       var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n\n       //...\n   }\n});\n````",
-            "submodule": "webvr",
+            "description": "A **ZSpaceEffect** makes its {{#crossLink \"Scene\"}}{{/crossLink}} viewable with a zSpace viewer.\n\n<ul>\n<li>Plug-and-play: just create a ZSpaceEffect within your xeoEngine {{#crossLink \"Scene\"}}{{/crossLink}} to make it viewable with a ZSpace display.</li>\n<li>Activate or disable the ZSpaceEffect at any time to switch between zSpace mode and normal mono viewing mode.</li>\n<li>Requires WebGL2 and WebVR support, which you'll have if you're running on a zSpace viewer.</li>\n<li>Attaches to a {{#crossLink \"Camera\"}}{{/crossLink}}, defaults to its {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default\n{{#crossLink \"Scene/camera:property\"}}{{/crossLink}} if none is specified.</li>\n<li>Don't attach different view or projection transform components to the {{#crossLink \"Camera\"}}{{/crossLink}} while the ZSpaceEffect is active.</li>\n<li>You can however update the {{#crossLink \"Camera\"}}{{/crossLink}}'s view transformation at any time, to move the\nviewpoint around.</li>\n<li>Use a {{#crossLink \"ZSpaceStylusControl\"}}{{/crossLink}} to drag {{#crossLink \"Entity\"}}Entities{{/crossLink}}\naround with the stylus.</li>\n</ul>\n\n<img src=\"../../../assets/images/ZSpaceEffect.png\"></img>\n\n## Examples\n\n<ul>\n<li>[zSpace cube](../../examples/effects_zspace_cube.html)</li>\n<li>[zSpace with random geometries](../../examples/effects_zspace_geometries.html)</li>\n<li>[zSpace with glTF gearbox model](../../examples/effects_zspace_gearbox.html)</li>\n<li>[zSpace with glTF gearbox model and entity explorer](../../examples/effects_zspace_gearbox_explorer.html)</li>\n<li>[zSpace with glTF reciprocating saw model](../../examples/effects_zspace_ReciprocatingSaw.html)</li>\n</ul>\n\n## Usage\n\nIn the following example we're going to set up a ZSpace-viewable scene with xeoEngine, defining the scene step-by-step to\nemphasize the plug-and-play design of xeoEngine's API.\n\n**1. Create an entity**\n\nFirst we'll create a simple torus-shaped {{#crossLink \"Entity\"}}{{/crossLink}}, which will be within xeoEngine's default\n{{#crossLink \"Scene\"}}{{/crossLink}}, since we're not defining the {{#crossLink \"Scene\"}}{{/crossLink}} component\nexplicitly. Our {{#crossLink \"Entity\"}}{{/crossLink}} is also implicitly connected to the\n{{#crossLink \"Scene\"}}{{/crossLink}}'s default {{#crossLink \"Camera\"}}{{/crossLink}}, since we didn't explicitly create\na {{#crossLink \"Camera\"}}{{/crossLink}} for it either.\n\n````javascript\nvar entity = new XEO.Entity({\n    geometry: new XEO.TorusGeometry(),\n    material: new XEO.PhongMaterial({\n       diffuseMap: new XEO.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n       })\n    })\n});\n````\n\n**2. Enable mouse/keyboard camera interaction**\n\nAt this point we've got a textured torus floating in the middle of the canvas (which is also created automatically\nsince we didn't specify one). Now we'll create a\n{{#crossLink \"CameraControl\"}}{{/crossLink}}, which immediately allows us to move our viewpoint around with the mouse and\nkeyboard. This component is also within xeoEngine's default {{#crossLink \"Scene\"}}{{/crossLink}} and connected to the\n{{#crossLink \"Scene\"}}{{/crossLink}}'s default {{#crossLink \"Camera\"}}{{/crossLink}}.\n\n````javascript\nnew CameraControl();\n````\n\n**3. Enable ZSpace viewing**\n\nNow we can orbit, pan and zoom around the torus with the mouse and keyboard. Let's view it on a ZSpace display by\ndropping a ZSpaceEffect into our default {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n````javascript\nvar zspaceEffect = new ZSpaceEffect();\n````\n\nThe ZSpaceEffect immediately activates, so at this point if we're running on a ZSpace device we'll have a stereo\nview of the torus, which we can view with the stereo glasses.\n\nAt any point we can always disable the ZSpaceEffect effect to switch between normal WebGL mono viewing mode:\n\n````javascript\nzspaceEffect.active = false; // Back to normal mono viewing..\nzspaceEffect.active = true; // ..and then back to ZSpace stereo mode.\n\n````\n\n## Detecting support\n\nThe **ZSpaceEffect** will fire a \"supported\" event once it has determined whether or not the browser\nsupports a zSpace viewer:\n\n````javascript\nzspaceEffect.on(\"supported\", function (supported) {\n\n       if (!supported) {\n\n           // Not a zSpace device\n\n           this.error(\"This computer is not a ZSpace viewer!\"); // Log error on the XEO.ZSpaceEffect\n\n           // At this point you could just destroy the XEO.ZSpaceEffect to make it detach from the Camera\n       }\n   });\n````\n\n## Handling stylus input\n\nReading the current World-space position and direction of the stylus:\n\n````javascript\nvar stylusPos = zspaceEffect.stylusPos;\nvar stylusDir = zspaceEffect.stylusDir;\n````\n\nNote that these properties only have meaningful values once the ZSpaceEffect has fired at least one {{#crossLink \"ZSpaceEffect/stylusMoved:event\"}}{{/crossLink}} event.\n\nSubscribing to stylus movement:\n\n````javascript\nzspace.on(\"stylusMoved\", function() {\n    var stylusPos = zspaceEffect.stylusPos;\n    var stylusDir = zspaceEffect.stylusDir;\n    //...\n});\n````\n\nReading the current state of each stylus button:\n\n````javascript\nvar button0 = zspaceEffect.stylusButton0; // Boolean\nvar button1 = zspaceEffect.stylusButton1;\nvar button2 = zspaceEffect.stylusButton2;\n````\n\nSubscribing to change of state of each stylus button:\n\n````javascript\nzspaceEffect.on(\"stylusButton0\", function(value) { // Boolean value\n    this.log(\"stylusButton0 = \" + value);\n});\n\nzspaceEffect.on(\"stylusButton1\", function(value) {\n    this.log(\"stylusButton1 = \" + value);\n});\n\nzspaceEffect.on(\"stylusButton2\", function(value) {\n    this.log(\"stylusButton2 = \" + value);\n});\n````\n\nPicking an {{#crossLink \"Entity\"}}{{/crossLink}} with the stylus when button 0 is pressed:\n\n````javascript\nzspaceEffect.on(\"stylusButton0\", function() {\n\n   var hit = zspace.scene.pick({\n       pickSurface: true,\n       origin: zspace.stylusPos,\n       direction: zspace.stylusDir\n   });\n\n   if (hit) { // Picked an Entity\n\n       var entity = hit.entity;\n\n       // Other properties on the hit result:\n\n       var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n       var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n       var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n       var localPos = hit.localPos; // Float32Array containing the picked Local-space position within the triangle\n       var worldPos = hit.worldPos; // Float32Array containing the picked World-space position within the triangle\n       var viewPos = hit.viewPos; // Float32Array containing the picked View-space position within the triangle\n       var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n       var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n       var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n\n       //...\n   }\n});\n````",
+            "submodule": "effects",
             "is_constructor": 1,
             "params": [
                 {
@@ -22258,7 +22258,7 @@
         },
         {
             "file": "examples/js/controls/zSpaceStylusControl.js",
-            "line": 53,
+            "line": 101,
             "description": "The {{#crossLink \"ZSpaceEffect\"}}{{/crossLink}} attached to this ZSpaceStylusControl.\n\nThe ZSpaceStylusControl will attach a {{#crossLink \"Projection\"}}{{/crossLink}} to its\n{{#crossLink \"ZSpaceEffect\"}}{{/crossLink}} if the {{#crossLink \"ZSpaceEffect\"}}ZSpaceEffect{{/crossLink}} does not have\none already, replacing whatever projection transform component was already attached.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this ZSpaceStylusControl. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/zspaceEffect:property\"}}zspaceEffect{{/crossLink}} when set to\na null or undefined value.\n\nNo other component should modify the state of the {{#crossLink \"ZSpaceEffect\"}}{{/crossLink}} while\nit's attached to this ZSpaceStylusControl. There is no prevention or check for that, so if that\nhappens you'll get unexpected results.",
             "itemtype": "property",
             "name": "zspaceEffect",
@@ -22269,7 +22269,7 @@
         },
         {
             "file": "examples/js/controls/zSpaceStylusControl.js",
-            "line": 75,
+            "line": 123,
             "description": "Fired whenever this ZSpaceStylusControl's {{#crossLink \"ZSpaceStylusControl/zspaceEffect:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "zspaceEffect",
@@ -22285,7 +22285,7 @@
         },
         {
             "file": "examples/js/controls/zSpaceStylusControl.js",
-            "line": 95,
+            "line": 143,
             "description": "Flag which indicates whether this ZSpaceStylusControl is active or not.\n\nFires an {{#crossLink \"ZSpaceStylusControl/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
@@ -22297,7 +22297,7 @@
         },
         {
             "file": "examples/js/controls/zSpaceStylusControl.js",
-            "line": 119,
+            "line": 167,
             "description": "Fired whenever this ZSpaceStylusControl's {{#crossLink \"ZSpaceStylusControl/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
@@ -22542,7 +22542,7 @@
             "type": "Camera",
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22558,7 +22558,7 @@
             ],
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22570,7 +22570,7 @@
             "type": "Float32Array",
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22587,7 +22587,7 @@
             ],
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22599,7 +22599,7 @@
             "type": "Number",
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22615,7 +22615,7 @@
             ],
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22627,7 +22627,7 @@
             "type": "Number",
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22643,7 +22643,7 @@
             ],
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22655,7 +22655,7 @@
             "type": "Float32Array",
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22672,7 +22672,7 @@
             ],
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22684,7 +22684,7 @@
             "type": "Float32Array",
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22701,7 +22701,7 @@
             ],
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22713,7 +22713,7 @@
             "final": 1,
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22725,7 +22725,7 @@
             "final": 1,
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22737,7 +22737,7 @@
             "final": 1,
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22749,7 +22749,7 @@
             "final": 1,
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22762,7 +22762,7 @@
             "final": 1,
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22775,7 +22775,7 @@
             "final": 1,
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22788,7 +22788,7 @@
             "final": 1,
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22801,7 +22801,7 @@
             "final": 1,
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22813,7 +22813,7 @@
             "default": "true",
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22829,7 +22829,7 @@
             ],
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22839,7 +22839,7 @@
             "name": "stylusMoved",
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22855,7 +22855,7 @@
             ],
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22871,7 +22871,7 @@
             ],
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
@@ -22887,7 +22887,7 @@
             ],
             "class": "ZSpaceEffect",
             "module": "XEO",
-            "submodule": "webvr"
+            "submodule": "effects"
         },
         {
             "file": "examples/js/webvr/cardboard.js",

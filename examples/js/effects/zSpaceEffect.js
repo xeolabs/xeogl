@@ -68,7 +68,7 @@
  dropping a ZSpaceEffect into our default {{#crossLink "Scene"}}{{/crossLink}}.
 
  ````javascript
- var zspace = new ZSpaceEffect();
+ var zspaceEffect = new ZSpaceEffect();
  ````
 
  The ZSpaceEffect immediately activates, so at this point if we're running on a ZSpace device we'll have a stereo
@@ -77,8 +77,8 @@
  At any point we can always disable the ZSpaceEffect effect to switch between normal WebGL mono viewing mode:
 
  ````javascript
- zspace.active = false; // Back to normal mono viewing..
- zspace.active = true; // ..and then back to ZSpace stereo mode.
+ zspaceEffect.active = false; // Back to normal mono viewing..
+ zspaceEffect.active = true; // ..and then back to ZSpace stereo mode.
 
  ````
 
@@ -88,7 +88,7 @@
  supports a zSpace viewer:
 
  ````javascript
- zspace.on("supported", function (supported) {
+ zspaceEffect.on("supported", function (supported) {
 
         if (!supported) {
 
@@ -106,8 +106,8 @@
  Reading the current World-space position and direction of the stylus:
 
  ````javascript
- var stylusPos = zspace.stylusPos;
- var stylusDir = zspace.stylusDir;
+ var stylusPos = zspaceEffect.stylusPos;
+ var stylusDir = zspaceEffect.stylusDir;
  ````
 
  Note that these properties only have meaningful values once the ZSpaceEffect has fired at least one {{#crossLink "ZSpaceEffect/stylusMoved:event"}}{{/crossLink}} event.
@@ -116,8 +116,8 @@
 
  ````javascript
  zspace.on("stylusMoved", function() {
-     var stylusPos = zspace.stylusPos;
-     var stylusDir = zspace.stylusDir;
+     var stylusPos = zspaceEffect.stylusPos;
+     var stylusDir = zspaceEffect.stylusDir;
      //...
  });
  ````
@@ -125,23 +125,23 @@
  Reading the current state of each stylus button:
 
  ````javascript
- var button0 = zspace.stylusButton0; // Boolean
- var button1 = zspace.stylusButton1;
- var button2 = zspace.stylusButton2;
+ var button0 = zspaceEffect.stylusButton0; // Boolean
+ var button1 = zspaceEffect.stylusButton1;
+ var button2 = zspaceEffect.stylusButton2;
  ````
 
  Subscribing to change of state of each stylus button:
 
  ````javascript
- zspace.on("stylusButton0", function(value) { // Boolean value
+ zspaceEffect.on("stylusButton0", function(value) { // Boolean value
      this.log("stylusButton0 = " + value);
  });
 
- zspace.on("stylusButton1", function(value) {
+ zspaceEffect.on("stylusButton1", function(value) {
      this.log("stylusButton1 = " + value);
  });
 
- zspace.on("stylusButton2", function(value) {
+ zspaceEffect.on("stylusButton2", function(value) {
      this.log("stylusButton2 = " + value);
  });
  ````
@@ -149,7 +149,7 @@
  Picking an {{#crossLink "Entity"}}{{/crossLink}} with the stylus when button 0 is pressed:
 
  ````javascript
- zspace.on("stylusButton0", function() {
+ zspaceEffect.on("stylusButton0", function() {
 
     var hit = zspace.scene.pick({
         pickSurface: true,
@@ -179,7 +179,7 @@
  ````
  @class ZSpaceEffect
  @module XEO
- @submodule webvr
+ @submodule effects
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this ZSpaceEffect in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.

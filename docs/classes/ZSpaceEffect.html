@@ -204,7 +204,7 @@
             Defined in: <a href="../files/examples_js_effects_zSpaceEffect.js.html#l1"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:1</code></a>
         </div>
 
-            Module: <a href="../modules/webvr.html">webvr</a><br>
+            Module: <a href="../modules/effects.html">effects</a><br>
             Parent Module: <a href="../modules/XEO.html">XEO</a>
 
 </div>
@@ -264,18 +264,18 @@ keyboard. This component is also within xeoEngine&#39;s default <a href="../clas
 <p><strong>3. Enable ZSpace viewing</strong></p>
 <p>Now we can orbit, pan and zoom around the torus with the mouse and keyboard. Let&#39;s view it on a ZSpace display by
 dropping a ZSpaceEffect into our default <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
-<pre class="code prettyprint"><code class="lang-javascript">var zspace = new ZSpaceEffect();
+<pre class="code prettyprint"><code class="lang-javascript">var zspaceEffect = new ZSpaceEffect();
 </code></pre>
 <p>The ZSpaceEffect immediately activates, so at this point if we&#39;re running on a ZSpace device we&#39;ll have a stereo
 view of the torus, which we can view with the stereo glasses.</p>
 <p>At any point we can always disable the ZSpaceEffect effect to switch between normal WebGL mono viewing mode:</p>
-<pre class="code prettyprint"><code class="lang-javascript">zspace.active = false; // Back to normal mono viewing..
-zspace.active = true; // ..and then back to ZSpace stereo mode.
+<pre class="code prettyprint"><code class="lang-javascript">zspaceEffect.active = false; // Back to normal mono viewing..
+zspaceEffect.active = true; // ..and then back to ZSpace stereo mode.
 </code></pre>
 <h2 id="detecting-support">Detecting support</h2>
 <p>The <strong>ZSpaceEffect</strong> will fire a "supported" event once it has determined whether or not the browser
 supports a zSpace viewer:</p>
-<pre class="code prettyprint"><code class="lang-javascript">zspace.on("supported", function (supported) {
+<pre class="code prettyprint"><code class="lang-javascript">zspaceEffect.on("supported", function (supported) {
 
        if (!supported) {
 
@@ -289,37 +289,37 @@ supports a zSpace viewer:</p>
 </code></pre>
 <h2 id="handling-stylus-input">Handling stylus input</h2>
 <p>Reading the current World-space position and direction of the stylus:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var stylusPos = zspace.stylusPos;
-var stylusDir = zspace.stylusDir;
+<pre class="code prettyprint"><code class="lang-javascript">var stylusPos = zspaceEffect.stylusPos;
+var stylusDir = zspaceEffect.stylusDir;
 </code></pre>
 <p>Note that these properties only have meaningful values once the ZSpaceEffect has fired at least one <a href="../classes/ZSpaceEffect.html#event_stylusMoved" class="crosslink">stylusMoved</a> event.</p>
 <p>Subscribing to stylus movement:</p>
 <pre class="code prettyprint"><code class="lang-javascript">zspace.on("stylusMoved", function() {
-    var stylusPos = zspace.stylusPos;
-    var stylusDir = zspace.stylusDir;
+    var stylusPos = zspaceEffect.stylusPos;
+    var stylusDir = zspaceEffect.stylusDir;
     //...
 });
 </code></pre>
 <p>Reading the current state of each stylus button:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var button0 = zspace.stylusButton0; // Boolean
-var button1 = zspace.stylusButton1;
-var button2 = zspace.stylusButton2;
+<pre class="code prettyprint"><code class="lang-javascript">var button0 = zspaceEffect.stylusButton0; // Boolean
+var button1 = zspaceEffect.stylusButton1;
+var button2 = zspaceEffect.stylusButton2;
 </code></pre>
 <p>Subscribing to change of state of each stylus button:</p>
-<pre class="code prettyprint"><code class="lang-javascript">zspace.on("stylusButton0", function(value) { // Boolean value
+<pre class="code prettyprint"><code class="lang-javascript">zspaceEffect.on("stylusButton0", function(value) { // Boolean value
     this.log("stylusButton0 = " + value);
 });
 
-zspace.on("stylusButton1", function(value) {
+zspaceEffect.on("stylusButton1", function(value) {
     this.log("stylusButton1 = " + value);
 });
 
-zspace.on("stylusButton2", function(value) {
+zspaceEffect.on("stylusButton2", function(value) {
     this.log("stylusButton2 = " + value);
 });
 </code></pre>
 <p>Picking an <a href="../classes/Entity.html" class="crosslink">Entity</a> with the stylus when button 0 is pressed:</p>
-<pre class="code prettyprint"><code class="lang-javascript">zspace.on("stylusButton0", function() {
+<pre class="code prettyprint"><code class="lang-javascript">zspaceEffect.on("stylusButton0", function() {
 
    var hit = zspace.scene.pick({
        pickSurface: true,

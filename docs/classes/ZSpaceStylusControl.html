@@ -222,6 +222,53 @@
 <li><a href="../../examples/effects_zspace_gearbox_explorer.html">zSpace with glTF gearbox model and entity explorer</a></li>
 <li><a href="../../examples/effects_zspace_ReciprocatingSaw.html">zSpace with glTF reciprocating saw model</a></li>
 </ul>
+
+<h2 id="usage">Usage</h2>
+<pre class="code prettyprint"><code class="lang-javascript">// Create a textured cube entity
+var entity = new XEO.Entity({
+    geometry: new XEO.BoxGeometry({
+        xSize: .6,
+        ySize: .6,
+        zSize: .6
+    }),
+    material: new XEO.PhongMaterial({
+        diffuseMap: new XEO.Texture({
+            src: "textures/diffuse/UVCheckerMap11-1024.png"
+        })
+    }),
+    modes: new XEO.Modes({
+        backfaces: true
+    }),
+    transform: new XEO.Rotate({
+        xyz: [0, 1, 0],
+        angle: 0
+    })
+});
+
+// Set initial camera position
+var scene = entity.scene;
+scene.camera.view.eye = [0, 2, -10];
+scene.camera.view.look = [0, 0, 0];
+
+// Allow camera control with keyboard and mouse
+var cameraControl = new XEO.CameraControl();
+
+// Create a ZSpaceEffect
+var zspaceEffect = new XEO.ZSpaceEffect({
+    canvasOffset: [310, 0]
+});
+
+// Create a ZSpaceStylusControl
+var zspaceStylusControl = new XEO.ZSpaceStylusControl();
+
+// Handle missing zSpace support
+zspaceEffect.on("supported", function (supported) {
+    if (!supported) {
+        document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. ";
+    }
+});
+</code></pre>
+
 </div>
 
     <div class="constructor">
@@ -1233,7 +1280,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_controls_zSpaceStylusControl.js.html#l95"><code>examples&#x2F;js&#x2F;controls&#x2F;zSpaceStylusControl.js:95</code></a>
+                            <a href="../files/examples_js_controls_zSpaceStylusControl.js.html#l143"><code>examples&#x2F;js&#x2F;controls&#x2F;zSpaceStylusControl.js:143</code></a>
                             </p>
                     
                     
@@ -1503,7 +1550,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_controls_zSpaceStylusControl.js.html#l53"><code>examples&#x2F;js&#x2F;controls&#x2F;zSpaceStylusControl.js:53</code></a>
+                            <a href="../files/examples_js_controls_zSpaceStylusControl.js.html#l101"><code>examples&#x2F;js&#x2F;controls&#x2F;zSpaceStylusControl.js:101</code></a>
                             </p>
                     
                     
@@ -1543,7 +1590,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_controls_zSpaceStylusControl.js.html#l119"><code>examples&#x2F;js&#x2F;controls&#x2F;zSpaceStylusControl.js:119</code></a>
+                            <a href="../files/examples_js_controls_zSpaceStylusControl.js.html#l167"><code>examples&#x2F;js&#x2F;controls&#x2F;zSpaceStylusControl.js:167</code></a>
                             </p>
                     
                     
@@ -1610,7 +1657,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_controls_zSpaceStylusControl.js.html#l75"><code>examples&#x2F;js&#x2F;controls&#x2F;zSpaceStylusControl.js:75</code></a>
+                            <a href="../files/examples_js_controls_zSpaceStylusControl.js.html#l123"><code>examples&#x2F;js&#x2F;controls&#x2F;zSpaceStylusControl.js:123</code></a>
                             </p>
                     
                     

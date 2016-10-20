@@ -14,6 +14,54 @@
  <li>[zSpace with glTF reciprocating saw model](../../examples/effects_zspace_ReciprocatingSaw.html)</li>
  </ul>
 
+ ## Usage
+
+ ````javascript
+ // Create a textured cube entity
+ var entity = new XEO.Entity({
+     geometry: new XEO.BoxGeometry({
+         xSize: .6,
+         ySize: .6,
+         zSize: .6
+     }),
+     material: new XEO.PhongMaterial({
+         diffuseMap: new XEO.Texture({
+             src: "textures/diffuse/UVCheckerMap11-1024.png"
+         })
+     }),
+     modes: new XEO.Modes({
+         backfaces: true
+     }),
+     transform: new XEO.Rotate({
+         xyz: [0, 1, 0],
+         angle: 0
+     })
+ });
+
+ // Set initial camera position
+ var scene = entity.scene;
+ scene.camera.view.eye = [0, 2, -10];
+ scene.camera.view.look = [0, 0, 0];
+
+ // Allow camera control with keyboard and mouse
+ var cameraControl = new XEO.CameraControl();
+
+ // Create a ZSpaceEffect
+ var zspaceEffect = new XEO.ZSpaceEffect({
+     canvasOffset: [310, 0]
+ });
+
+ // Create a ZSpaceStylusControl
+ var zspaceStylusControl = new XEO.ZSpaceStylusControl();
+
+ // Handle missing zSpace support
+ zspaceEffect.on("supported", function (supported) {
+     if (!supported) {
+         document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. ";
+     }
+ });
+ ````
+
  @class ZSpaceStylusControl
  @module XEO
  @submodule controls
