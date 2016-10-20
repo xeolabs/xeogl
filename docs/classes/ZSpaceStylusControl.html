@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>ZSpace - xeoengine</title>
+    <title>ZSpaceStylusControl - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -127,7 +127,8 @@
                                 <li><a href="../classes/WebVR.html">WebVR</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
-                                <li><a href="../classes/ZSpace.html">ZSpace</a></li>
+                                <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
+                                <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -192,7 +193,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>ZSpace</h1>
+<h1>ZSpaceStylusControl</h1>
 <div class="box meta">
 
         <div class="extends">
@@ -200,7 +201,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/examples_js_webvr_zSpace.js.html#l1"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpace.js:1</code></a>
+            Defined in: <a href="../files/examples_js_webvr_zSpaceStylusControl.js.html#l1"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceStylusControl.js:1</code></a>
         </div>
 
             Module: <a href="../modules/webvr.html">webvr</a><br>
@@ -210,153 +211,15 @@
 
 
 <div class="box intro">
-    <p>A <strong>ZSpace</strong> component makes its <a href="../classes/Scene.html" class="crosslink">Scene</a> viewable with a zSpace viewer.</p>
-<ul>
-<li>Plug-and-play: just create a ZSpace component within your xeoEngine <a href="../classes/Scene.html" class="crosslink">Scene</a> to make it viewable with a ZSpace display.</li>
-<li>Activate or disable the ZSpace component at any time to switch between zSpace mode and normal mono viewing mode.</li>
-<li>Requires WebGL2 and WebVR support, which you&#39;ll have if you&#39;re running on a zSpace viewer.</li>
-<li>Attaches to a <a href="../classes/Camera.html" class="crosslink">Camera</a>, defaults to its <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default
-<a href="../classes/Scene.html#property_camera" class="crosslink">camera</a> if none is specified.</li>
-<li>Don&#39;t attach different view or projection transform components to the <a href="../classes/Camera.html" class="crosslink">Camera</a> while the ZSpace component is active.</li>
-<li>You can however update the <a href="../classes/Camera.html" class="crosslink">Camera</a>&#39;s view transformation at any time, to move the
-viewpoint around.
-</ul>
-
-<p><img src="../../../assets/images/ZSpace.png"></img></p>
-<h2 id="limitations">Limitations</h2>
-<ul>
-<li>Stylus tracking only works correctly when the browser window is maximized to fill the zSpace display. This is because
-stylus tracking requires that we know the location of the window within the display, which is currently only possible
-when the window is maximized.</li>
-</ul>
-
-<h2 id="examples">Examples</h2>
-<ul>
-<li><a href="../../examples/webvr_zspace_cube.html">zSpace cube</a></li>
-<li><a href="../../examples/webvr_zspace_geometries.html">zSpace with random geometries</a></li>
-<li><a href="../../examples/webvr_zspace_gearbox.html">zSpace with glTF gearbox model</a></li>
-<li><a href="../../examples/webvr_zspace_gearbox_explorer.html">zSpace with glTF gearbox model and entity explorer</a></li>
-</ul>
-
-<h2 id="usage">Usage</h2>
-<p>In the following example we&#39;re going to set up a ZSpace-viewable scene with xeoEngine, defining the scene step-by-step to
-emphasize the plug-and-play design of xeoEngine&#39;s API.</p>
-<p><strong>1. Create an entity</strong></p>
-<p>First we&#39;ll create a simple torus-shaped <a href="../classes/Entity.html" class="crosslink">Entity</a>, which will be within xeoEngine&#39;s default
-<a href="../classes/Scene.html" class="crosslink">Scene</a>, since we&#39;re not defining the <a href="../classes/Scene.html" class="crosslink">Scene</a> component
-explicitly. Our <a href="../classes/Entity.html" class="crosslink">Entity</a> is also implicitly connected to the
-<a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Camera.html" class="crosslink">Camera</a>, since we didn&#39;t explicitly create
-a <a href="../classes/Camera.html" class="crosslink">Camera</a> for it either.</p>
-<pre class="code prettyprint"><code class="lang-javascript">var entity = new XEO.Entity({
-    geometry: new XEO.TorusGeometry(),
-    material: new XEO.PhongMaterial({
-       diffuseMap: new XEO.Texture({
-           src: "textures/diffuse/uvGrid2.jpg"
-       })
-    })
-});
-</code></pre>
-<p><strong>2. Enable mouse/keyboard camera interaction</strong></p>
-<p>At this point we&#39;ve got a textured torus floating in the middle of the canvas (which is also created automatically
-since we didn&#39;t specify one). Now we&#39;ll create a
-<a href="../classes/CameraControl.html" class="crosslink">CameraControl</a>, which immediately allows us to move our viewpoint around with the mouse and
-keyboard. This component is also within xeoEngine&#39;s default <a href="../classes/Scene.html" class="crosslink">Scene</a> and connected to the
-<a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Camera.html" class="crosslink">Camera</a>.</p>
-<pre class="code prettyprint"><code class="lang-javascript">new CameraControl();
-</code></pre>
-<p><strong>3. Enable ZSpace viewing</strong></p>
-<p>Now we can orbit, pan and zoom around the torus with the mouse and keyboard. Let&#39;s view it on a ZSpace display by
-dropping a ZSpace component into our default <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
-<pre class="code prettyprint"><code class="lang-javascript">var zspace = new ZSpace();
-</code></pre>
-<p>The ZSpace component immediately activates, so at this point if we&#39;re running on a ZSpace device we&#39;ll have a stereo
-view of the torus, which we can view with the stereo glasses.</p>
-<p>At any point we can always disable the ZSpace effect to switch between normal WebGL mono viewing mode:</p>
-<pre class="code prettyprint"><code class="lang-javascript">zspace.active = false; // Back to normal mono viewing..
-zspace.active = true; // ..and then back to ZSpace stereo mode.
-</code></pre>
-<h2 id="detecting-support">Detecting support</h2>
-<p>The <strong>ZSpace</strong> will fire a "supported" event once it has determined whether or not the browser
-supports a zSpace viewer:</p>
-<pre class="code prettyprint"><code class="lang-javascript">zspace.on("supported", function (supported) {
-
-       if (!supported) {
-
-           // Not a zSpace device
-
-           this.error("This computer is not a ZSpace viewer!"); // Log error on the XEO.ZSpace component
-
-           // At this point you could just destroy the XEO.ZSpace to make it detach from the Camera
-       }
-   });
-</code></pre>
-<h2 id="handling-stylus-input">Handling stylus input</h2>
-<p>Reading the current World-space position and direction of the stylus:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var stylusPos = zspace.stylusPos;
-var stylusDir = zspace.stylusDir;
-</code></pre>
-<p>Note that these properties only have meaningful values once the ZSpace has fired at least one <a href="../classes/ZSpace.html#event_stylusMoved" class="crosslink">stylusMoved</a> event.</p>
-<p>Subscribing to stylus movement:</p>
-<pre class="code prettyprint"><code class="lang-javascript">zspace.on("stylusMoved", function() {
-    var stylusPos = zspace.stylusPos;
-    var stylusDir = zspace.stylusDir;
-    //...
-});
-</code></pre>
-<p>Reading the current state of each stylus button:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var button0 = zspace.stylusButton0; // Boolean
-var button1 = zspace.stylusButton1;
-var button2 = zspace.stylusButton2;
-</code></pre>
-<p>Subscribing to change of state of each stylus button:</p>
-<pre class="code prettyprint"><code class="lang-javascript">zspace.on("stylusButton0", function(value) { // Boolean value
-    this.log("stylusButton0 = " + value);
-});
-
-zspace.on("stylusButton1", function(value) {
-    this.log("stylusButton1 = " + value);
-});
-
-zspace.on("stylusButton2", function(value) {
-    this.log("stylusButton2 = " + value);
-});
-</code></pre>
-<p>Picking an <a href="../classes/Entity.html" class="crosslink">Entity</a> with the stylus when button 0 is pressed:</p>
-<pre class="code prettyprint"><code class="lang-javascript">zspace.on("stylusButton0", function() {
-
-   var hit = zspace.scene.pick({
-       pickSurface: true,
-       origin: zspace.stylusPos,
-       direction: zspace.stylusDir
-   });
-
-   if (hit) { // Picked an Entity
-
-       var entity = hit.entity;
-
-       // Other properties on the hit result:
-
-       var primitive = hit.primitive; // Type of primitive that was picked, usually "triangles"
-       var primIndex = hit.primIndex; // Position of triangle&#39;s first index in the picked Entity&#39;s Geometry&#39;s indices array
-       var indices = hit.indices; // UInt32Array containing the triangle&#39;s vertex indices
-       var localPos = hit.localPos; // Float32Array containing the picked Local-space position within the triangle
-       var worldPos = hit.worldPos; // Float32Array containing the picked World-space position within the triangle
-       var viewPos = hit.viewPos; // Float32Array containing the picked View-space position within the triangle
-       var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle
-       var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle
-       var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle
-
-       //...
-   }
-});
-</code></pre>
+    <p>A <strong>ZSpaceStylusControl</strong> component works in conjunction with a <a href="../classes/ZSpaceEffect.html" class="crosslink">ZSpaceEffect</a> to drag
+<a href="../classes/Entity.html" class="crosslink">Entities</a> around with a zSpace stylus input device.</p>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_ZSpace" class="method item">
-            <h3 class="name"><code>ZSpace</code></h3>
+        <div id="method_ZSpaceStylusControl" class="method item">
+            <h3 class="name"><code>ZSpaceStylusControl</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
@@ -380,7 +243,7 @@ zspace.on("stylusButton2", function(value) {
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/examples_js_webvr_zSpace.js.html#l1"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpace.js:1</code></a>
+                <a href="../files/examples_js_webvr_zSpaceStylusControl.js.html#l1"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceStylusControl.js:1</code></a>
                 </p>
         
         
@@ -402,7 +265,7 @@ zspace.on("stylusButton2", function(value) {
         
         
                             <div class="param-description">
-                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this ZSpace in the default
+                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this ZSpaceStylusControl in the default
         <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
         
                             </div>
@@ -438,64 +301,20 @@ zspace.on("stylusButton2", function(value) {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Optional map of user-defined metadata to attach to this ZSpace.</p>
+                                            <p>Optional map of user-defined metadata to attach to this ZSpaceStylusControl.</p>
         
                                         </div>
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[camera]</code>
-                                            <span class="type">String | <a href="../classes/Camera.html" class="crosslink">Camera</a></span>
+                                            <code class="param-name optional">[zspaceEffect]</code>
+                                            <span class="type">String | <a href="../classes/ZSpaceEffect.html" class="crosslink">ZSpaceEffect</a></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/Camera.html" class="crosslink">Camera</a> for this ZSpace.
-        Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this ZSpace. Defaults to the
-        parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance, <a href="../classes/Scene.html#property_camera" class="crosslink">camera</a>.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[nearClip=0.1]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Position of the near clipping plane on the View-space Z-axis.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[farClip=10000]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Position of the far clipping plane on the View-space Z-axis.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[displaySize=0.521,0.293]</code>
-                                            <span class="type">Array of Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>The viewer display size.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[displayResolution=1920,1080]</code>
-                                            <span class="type">Array of Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>The viewer display resolution.</p>
+                                            <p>ID or instance of a <a href="../classes/ZSpaceEffect.html" class="crosslink">ZSpaceEffect</a> for this ZSpaceStylusControl.
+        Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this ZSpaceStylusControl. Defaults to the first instance found in
+        the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
         
                                         </div>
         
@@ -506,7 +325,7 @@ zspace.on("stylusButton2", function(value) {
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Whether or not this ZSpace is initially active.</p>
+                                            <p>Whether or not this ZSpaceStylusControl is initially active.</p>
         
                                         </div>
         
@@ -589,24 +408,8 @@ zspace.on("stylusButton2", function(value) {
                                 <a href="#property_active">active</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_camera">camera</a>
-
-                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_destroyed">destroyed</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_displayResolution">displayResolution</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_displaySize">displaySize</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_farClip">farClip</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -625,10 +428,6 @@ zspace.on("stylusButton2", function(value) {
                                 <a href="#property_metadata">metadata</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_nearClip">nearClip</a>
-
-                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_scene">scene</a>
 
@@ -637,36 +436,16 @@ zspace.on("stylusButton2", function(value) {
                                 <a href="#property_string">string</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_stylusButton0">stylusButton0</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_stylusButton1">stylusButton1</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_stylusButton2">stylusButton2</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_stylusCameraMatrix">stylusCameraMatrix</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_stylusOrientation">stylusOrientation</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_stylusPos">stylusPos</a>
-
-                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_superTypes">superTypes</a>
 
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_type">type</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_zspaceEffect">zspaceEffect</a>
 
                             </li>
                     </ul>
@@ -681,44 +460,12 @@ zspace.on("stylusButton2", function(value) {
                                 <a href="#event_active">active</a>
 
                             </li>
-                            <li class="index-item event">
-                                <a href="#event_camera">camera</a>
-
-                            </li>
                             <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_displayResolution">displayResolution</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_displaySize">displaySize</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_farClip">farClip</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_nearClip">nearClip</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_stylusButton0">stylusButton0</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_stylusButton1">stylusButton1</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_stylusButton2">stylusButton2</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_stylusMoved">stylusMoved</a>
+                                <a href="#event_zspaceEffect">zspaceEffect</a>
 
                             </li>
                     </ul>
@@ -759,7 +506,7 @@ zspace.on("stylusButton2", function(value) {
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_create">Component</a>:
-        <a href="../files/src_component.js.html#l883"><code>src&#x2F;component.js:883</code></a>
+        <a href="../files/src_component.js.html#l906"><code>src&#x2F;component.js:906</code></a>
         </p>
 
 
@@ -862,7 +609,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l1066"><code>src&#x2F;component.js:1066</code></a>
+        <a href="../files/src_component.js.html#l1089"><code>src&#x2F;component.js:1089</code></a>
         </p>
 
 
@@ -1478,54 +1225,19 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpace.js.html#l623"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpace.js:623</code></a>
+                            <a href="../files/examples_js_webvr_zSpaceStylusControl.js.html#l84"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceStylusControl.js:84</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Flag which indicates whether this ZSpace component is active or not.</p>
-                    <p>Note that this ZSpace component can still be activated when the browser does not support ZSpace.</p>
-                    <p>Fires an <a href="../classes/ZSpace.html#event_active" class="crosslink">active</a> event on change.</p>
+                            <p>Flag which indicates whether this ZSpaceStylusControl is active or not.</p>
+                    <p>Fires an <a href="../classes/ZSpaceStylusControl.html#event_active" class="crosslink">active</a> event on change.</p>
                     
                         </div>
                     
                             <p><strong>Default:</strong> true</p>
-                    
-                    
-                    </div>
-                    <div id="property_camera" class="property item">
-                        <h3 class="name"><code>camera</code></h3>
-                        <span class="type"><a href="../classes/Camera.html" class="crosslink">Camera</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_zSpace.js.html#l365"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpace.js:365</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The <a href="../classes/Camera.html" class="crosslink">Camera</a> attached to this ZSpace component.</p>
-                    <p>The ZSpace component will attach a Projection to its
-                    <a href="../classes/Camera.html" class="crosslink">Camera</a> if the <a href="../classes/Camera.html" class="crosslink">Camera</a> does not have
-                    one already, replacing whatever projection transform component was already attached.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this ZSpace component. Defaults to the parent
-                    <a href="../classes/Scene.html" class="crosslink">Scene&#39;s</a> default <a href="../classes/Scene.html#property_camera" class="crosslink">camera</a> when set to
-                    a null or undefined value.</p>
-                    <p>No other component should modify the state of the <a href="../classes/Camera.html" class="crosslink">Camera</a> while
-                    it&#39;s attached to this ZSpace component. There is no prevention or check for that, so if that
-                    happens you&#39;ll get unexpected results.</p>
-                    
-                        </div>
-                    
                     
                     
                     </div>
@@ -1551,87 +1263,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
-                    
-                    
-                    </div>
-                    <div id="property_displayResolution" class="property item">
-                        <h3 class="name"><code>displayResolution</code></h3>
-                        <span class="type">Float32Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_zSpace.js.html#l468"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpace.js:468</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The display resolution.</p>
-                    <p>Fires a <a href="../classes/ZSpace.html#event_displayResolution" class="crosslink">displayResolution</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> [1920, 1080]</p>
-                    
-                    
-                    </div>
-                    <div id="property_displaySize" class="property item">
-                        <h3 class="name"><code>displaySize</code></h3>
-                        <span class="type">Float32Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_zSpace.js.html#l499"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpace.js:499</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The display size.</p>
-                    <p>Fires a <a href="../classes/ZSpace.html#event_displaySize" class="crosslink">displaySize</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> [0.521, 0.293]</p>
-                    
-                    
-                    </div>
-                    <div id="property_farClip" class="property item">
-                        <h3 class="name"><code>farClip</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_zSpace.js.html#l437"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpace.js:437</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Position of this ZSpace&#39;s far plane on the positive View-space Z-axis.</p>
-                    <p>Fires a <a href="../classes/ZSpace.html#event_farClip" class="crosslink">farClip</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 10000.0</p>
                     
                     
                     </div>
@@ -1698,7 +1329,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l1005"><code>src&#x2F;component.js:1005</code></a>
+                            <a href="../files/src_component.js.html#l1028"><code>src&#x2F;component.js:1028</code></a>
                             </p>
                     
                     
@@ -1734,33 +1365,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
-                    
-                    
-                    </div>
-                    <div id="property_nearClip" class="property item">
-                        <h3 class="name"><code>nearClip</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_zSpace.js.html#l407"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpace.js:407</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Position of this ZSpace&#39;s near plane on the positive View-space Z-axis.</p>
-                    <p>Fires a <a href="../classes/ZSpace.html#event_nearClip" class="crosslink">nearClip</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 0.1</p>
                     
                     
                     </div>
@@ -1805,7 +1409,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l1033"><code>src&#x2F;component.js:1033</code></a>
+                            <a href="../files/src_component.js.html#l1056"><code>src&#x2F;component.js:1056</code></a>
                             </p>
                     
                     
@@ -1813,171 +1417,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>String containing the serialized JSON state of this Component.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_stylusButton0" class="property item">
-                        <h3 class="name"><code>stylusButton0</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_zSpace.js.html#l575"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpace.js:575</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Whether or not the first button is down on the stylus.</p>
-                    <p>Fires a <a href="../classes/ZSpace.html#event_stylusButton0" class="crosslink">stylusButton0</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> false</p>
-                    
-                    
-                    </div>
-                    <div id="property_stylusButton1" class="property item">
-                        <h3 class="name"><code>stylusButton1</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_zSpace.js.html#l591"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpace.js:591</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Whether or not the second button is down on the stylus.</p>
-                    <p>Fires a <a href="../classes/ZSpace.html#event_stylusButton1" class="crosslink">stylusButton1</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> false</p>
-                    
-                    
-                    </div>
-                    <div id="property_stylusButton2" class="property item">
-                        <h3 class="name"><code>stylusButton2</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_zSpace.js.html#l607"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpace.js:607</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Whether or not the third button is down on the stylus.</p>
-                    <p>Fires a <a href="../classes/ZSpace.html#event_stylusButton2" class="crosslink">stylusButton2</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> false</p>
-                    
-                    
-                    </div>
-                    <div id="property_stylusCameraMatrix" class="property item">
-                        <h3 class="name"><code>stylusCameraMatrix</code></h3>
-                        <span class="type">Float32Array</span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_zSpace.js.html#l560"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpace.js:560</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The current camera matrix for the stylus.</p>
-                    <p>Fires a <a href="../classes/ZSpace.html#event_stylusMoved" class="crosslink">stylusMoved</a> event on change.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_stylusOrientation" class="property item">
-                        <h3 class="name"><code>stylusOrientation</code></h3>
-                        <span class="type">Float32Array</span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_zSpace.js.html#l545"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpace.js:545</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The current World-space direction the stylus is pointing in.</p>
-                    <p>Fires a <a href="../classes/ZSpace.html#event_stylusMoved" class="crosslink">stylusMoved</a> event on change.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_stylusPos" class="property item">
-                        <h3 class="name"><code>stylusPos</code></h3>
-                        <span class="type">Float32Array</span>
-                    
-                    
-                    
-                            <span class="flag final">final</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_zSpace.js.html#l530"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpace.js:530</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The current World-space position of the stylus.</p>
-                    <p>Fires a <a href="../classes/ZSpace.html#event_stylusMoved" class="crosslink">stylusMoved</a> event on change.</p>
                     
                         </div>
                     
@@ -2045,6 +1484,40 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_zspaceEffect" class="property item">
+                        <h3 class="name"><code>zspaceEffect</code></h3>
+                        <span class="type"><a href="../classes/ZSpaceEffect.html" class="crosslink">ZSpaceEffect</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_webvr_zSpaceStylusControl.js.html#l42"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceStylusControl.js:42</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The <a href="../classes/ZSpaceEffect.html" class="crosslink">ZSpaceEffect</a> attached to this ZSpaceStylusControl.</p>
+                    <p>The ZSpaceStylusControl will attach a Projection to its
+                    <a href="../classes/ZSpaceEffect.html" class="crosslink">ZSpaceEffect</a> if the <a href="../classes/ZSpaceEffect.html" class="crosslink">ZSpaceEffect</a> does not have
+                    one already, replacing whatever projection transform component was already attached.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this ZSpaceStylusControl. Defaults to the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene&#39;s</a> default Scene/zspaceEffect:property when set to
+                    a null or undefined value.</p>
+                    <p>No other component should modify the state of the <a href="../classes/ZSpaceEffect.html" class="crosslink">ZSpaceEffect</a> while
+                    it&#39;s attached to this ZSpaceStylusControl. There is no prevention or check for that, so if that
+                    happens you&#39;ll get unexpected results.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
             </div>
 
 
@@ -2062,57 +1535,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpace.js.html#l649"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpace.js:649</code></a>
+                            <a href="../files/examples_js_webvr_zSpaceStylusControl.js.html#l108"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceStylusControl.js:108</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this ZSpace component&#39;s <a href="../classes/ZSpace.html#property_active" class="crosslink">active</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_camera" class="events item">
-                        <h3 class="name"><code>camera</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_zSpace.js.html#l387"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpace.js:387</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this ZSpace component&#39;s <a href="../classes/ZSpace.html#property_camera" class="crosslink">camera</a>
-                    property changes.</p>
+                            <p>Fired whenever this ZSpaceStylusControl&#39;s <a href="../classes/ZSpaceStylusControl.html#property_active" class="crosslink">active</a> property changes.</p>
                     
                         </div>
                     
@@ -2147,7 +1577,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1136"><code>src&#x2F;component.js:1136</code></a>
+                            <a href="../files/src_component.js.html#l1159"><code>src&#x2F;component.js:1159</code></a>
                             </p>
                     
                     
@@ -2161,9 +1591,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_displayResolution" class="events item">
-                        <h3 class="name"><code>displayResolution</code></h3>
-                        <span class="type">Float32Array</span>
+                    <div id="event_zspaceEffect" class="events item">
+                        <h3 class="name"><code>zspaceEffect</code></h3>
+                        <span class="type"></span>
                     
                     
                     
@@ -2172,14 +1602,15 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpace.js.html#l485"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpace.js:485</code></a>
+                            <a href="../files/examples_js_webvr_zSpaceStylusControl.js.html#l64"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceStylusControl.js:64</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this ZSpace&#39;s <a href="../classes/ZSpace.html#property_displayResolution" class="crosslink">displayResolution</a> property changes.</p>
+                            <p>Fired whenever this ZSpaceStylusControl&#39;s <a href="../classes/ZSpaceStylusControl.html#property_zspaceEffect" class="crosslink">zspaceEffect</a>
+                    property changes.</p>
                     
                         </div>
                     
@@ -2200,283 +1631,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     </li>
                                 </ul>
                             </div>
-                    
-                    
-                    </div>
-                    <div id="event_displaySize" class="events item">
-                        <h3 class="name"><code>displaySize</code></h3>
-                        <span class="type">Float32Array</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_zSpace.js.html#l516"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpace.js:516</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this ZSpace&#39;s <a href="../classes/ZSpace.html#property_displaySize" class="crosslink">displaySize</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_farClip" class="events item">
-                        <h3 class="name"><code>farClip</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_zSpace.js.html#l454"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpace.js:454</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this ZSpace&#39;s  <a href="../classes/ZSpace.html#property_farClip" class="crosslink">farClip</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_nearClip" class="events item">
-                        <h3 class="name"><code>nearClip</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_zSpace.js.html#l424"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpace.js:424</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this ZSpace&#39;s   <a href="../classes/ZSpace.html#property_nearClip" class="crosslink">nearClip</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_stylusButton0" class="events item">
-                        <h3 class="name"><code>stylusButton0</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_zSpace.js.html#l1069"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpace.js:1069</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this ZSpace component&#39;s first button is pressed or released.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>True if the button is down.</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_stylusButton1" class="events item">
-                        <h3 class="name"><code>stylusButton1</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_zSpace.js.html#l1080"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpace.js:1080</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this ZSpace component&#39;s second button is pressed or released.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>True if the button is down.</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_stylusButton2" class="events item">
-                        <h3 class="name"><code>stylusButton2</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_zSpace.js.html#l1091"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpace.js:1091</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this ZSpace component&#39;s third button is pressed or released.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>True if the button is down.</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_stylusMoved" class="events item">
-                        <h3 class="name"><code>stylusMoved</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_zSpace.js.html#l1059"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpace.js:1059</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this ZSpace component&#39;s stylus moves.</p>
-                    
-                        </div>
-                    
                     
                     
                     </div>

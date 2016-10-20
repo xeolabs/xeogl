@@ -88,7 +88,8 @@ YUI.add("yuidoc-meta", function(Y) {
         "WebVR",
         "XEO",
         "XEO.math.math",
-        "ZSpace"
+        "ZSpaceEffect",
+        "ZSpaceStylusControl"
     ],
     "modules": [
         "XEO",

@@ -127,7 +127,8 @@
                                 <li><a href="../classes/WebVR.html">WebVR</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
-                                <li><a href="../classes/ZSpace.html">ZSpace</a></li>
+                                <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
+                                <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -360,6 +361,14 @@ if that&#39;s absent. If you just want WebGL 1, disable WebGL 2 like so:</p>
 
                     <ul class="index-list properties extends">
                             <li class="index-item property">
+                                <a href="#property_backgroundColor">backgroundColor</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_backgroundImage">backgroundImage</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_boundary">boundary</a>
 
                             </li>
@@ -432,6 +441,14 @@ if that&#39;s absent. If you just want WebGL 1, disable WebGL 2 like so:</p>
 
                     <ul class="index-list events extends">
                             <li class="index-item event">
+                                <a href="#event_backgroundColor">backgroundColor</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_backgroundImage">backgroundImage</a>
+
+                            </li>
+                            <li class="index-item event">
                                 <a href="#event_boundary">boundary</a>
 
                             </li>
@@ -489,7 +506,7 @@ if that&#39;s absent. If you just want WebGL 1, disable WebGL 2 like so:</p>
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_create">Component</a>:
-        <a href="../files/src_component.js.html#l883"><code>src&#x2F;component.js:883</code></a>
+        <a href="../files/src_component.js.html#l906"><code>src&#x2F;component.js:906</code></a>
         </p>
 
 
@@ -592,7 +609,7 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l1066"><code>src&#x2F;component.js:1066</code></a>
+        <a href="../files/src_component.js.html#l1089"><code>src&#x2F;component.js:1089</code></a>
         </p>
 
 
@@ -781,7 +798,7 @@ any subsequent notifications on that location as they are made.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_canvas_canvas.js.html#l502"><code>src&#x2F;canvas&#x2F;canvas.js:502</code></a>
+        <a href="../files/src_canvas_canvas.js.html#l557"><code>src&#x2F;canvas&#x2F;canvas.js:557</code></a>
         </p>
 
 
@@ -1307,6 +1324,61 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
+                    <div id="property_backgroundColor" class="property item">
+                        <h3 class="name"><code>backgroundColor</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_canvas_canvas.js.html#l643"><code>src&#x2F;canvas&#x2F;canvas.js:643</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>A background color for the canvas. This is overridden by <a href="../classes/Canvas.html#property_backgroundImage" class="crosslink">backgroundImage</a>.</p>
+                    <p>You can set this to a new color at any time.</p>
+                    <p>Fires a <a href="../classes/Canvas.html#event_backgroundColor" class="crosslink">backgroundColor</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> null</p>
+                    
+                    
+                    </div>
+                    <div id="property_backgroundImage" class="property item">
+                        <h3 class="name"><code>backgroundImage</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_canvas_canvas.js.html#l685"><code>src&#x2F;canvas&#x2F;canvas.js:685</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>URL of a background image for the canvas. This is overrided by Canvas/backgroundColor/property.</p>
+                    <p>You can set this to a new file path at any time.</p>
+                    <p>Fires a Canvas/background:event event on change.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_boundary" class="property item">
                         <h3 class="name"><code>boundary</code></h3>
                         <span class="type">Array of Number</span>
@@ -1319,7 +1391,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l233"><code>src&#x2F;canvas&#x2F;canvas.js:233</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l234"><code>src&#x2F;canvas&#x2F;canvas.js:234</code></a>
                             </p>
                     
                     
@@ -1516,7 +1588,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l1005"><code>src&#x2F;component.js:1005</code></a>
+                            <a href="../files/src_component.js.html#l1028"><code>src&#x2F;component.js:1028</code></a>
                             </p>
                     
                     
@@ -1593,7 +1665,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l588"><code>src&#x2F;canvas&#x2F;canvas.js:588</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l733"><code>src&#x2F;canvas&#x2F;canvas.js:733</code></a>
                             </p>
                     
                     
@@ -1622,7 +1694,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l1033"><code>src&#x2F;component.js:1033</code></a>
+                            <a href="../files/src_component.js.html#l1056"><code>src&#x2F;component.js:1056</code></a>
                             </p>
                     
                     
@@ -1691,6 +1763,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
+                            <p><strong>Default:</strong> {false}</p>
                     
                     
                     </div>
@@ -1755,6 +1828,90 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
+                    <div id="event_backgroundColor" class="events item">
+                        <h3 class="name"><code>backgroundColor</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_canvas_canvas.js.html#l672"><code>src&#x2F;canvas&#x2F;canvas.js:672</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Canvas&#39;s <a href="../classes/Canvas.html#property_backgroundColor" class="crosslink">backgroundColor</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_backgroundImage" class="events item">
+                        <h3 class="name"><code>backgroundImage</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_canvas_canvas.js.html#l720"><code>src&#x2F;canvas&#x2F;canvas.js:720</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Canvas&#39;s <a href="../classes/Canvas.html#property_backgroundImage" class="crosslink">backgroundImage</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_boundary" class="events item">
                         <h3 class="name"><code>boundary</code></h3>
                         <span class="type"></span>
@@ -1766,7 +1923,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l340"><code>src&#x2F;canvas&#x2F;canvas.js:340</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l346"><code>src&#x2F;canvas&#x2F;canvas.js:346</code></a>
                             </p>
                     
                     
@@ -1808,7 +1965,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1136"><code>src&#x2F;component.js:1136</code></a>
+                            <a href="../files/src_component.js.html#l1159"><code>src&#x2F;component.js:1159</code></a>
                             </p>
                     
                     
@@ -1833,7 +1990,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l493"><code>src&#x2F;canvas&#x2F;canvas.js:493</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l548"><code>src&#x2F;canvas&#x2F;canvas.js:548</code></a>
                             </p>
                     
                     
@@ -1859,7 +2016,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l270"><code>src&#x2F;canvas&#x2F;canvas.js:270</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l274"><code>src&#x2F;canvas&#x2F;canvas.js:274</code></a>
                             </p>
                     
                     
@@ -1884,7 +2041,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l283"><code>src&#x2F;canvas&#x2F;canvas.js:283</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l287"><code>src&#x2F;canvas&#x2F;canvas.js:287</code></a>
                             </p>
                     
                     

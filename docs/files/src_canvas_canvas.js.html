@@ -127,7 +127,8 @@
                                 <li><a href="../classes/WebVR.html">WebVR</a></li>
                                 <li><a href="../classes/XEO.html">XEO</a></li>
                                 <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
-                                <li><a href="../classes/ZSpace.html">ZSpace</a></li>
+                                <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
+                                <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
@@ -371,6 +372,7 @@
              *
              * @property transparent
              * @type {Boolean}
+             * @default {false}
              * @final
              */
             this.transparent = !!cfg.transparent;
@@ -451,7 +453,10 @@
                 this.canvas.clientWidth, this.canvas.clientHeight
             ];
 
+            this._createBackground();
             this._createOverlay();
+
+            this._resizeBackground();
             this._resizeOverlay();
 
             // Get WebGL context
@@ -507,6 +512,8 @@
                     if (newPosition || newSize) {
 
                         self._spinner._adjustPosition();
+
+                        self._resizeBackground();
                         self._resizeOverlay();
 
                         if (newSize) {
@@ -562,6 +569,10 @@
             this._spinner = new XEO.Spinner(this.scene, {
                 canvas: this.canvas
             });
+
+            // Set property, see definition further down
+            this.backgroundColor = cfg.backgroundColor;
+            this.backgroundImage = cfg.backgroundImage;
         },
 
         /**
@@ -579,11 +590,12 @@
             style.width = &quot;100%&quot;;
             style.padding = &quot;0&quot;;
             style.margin = &quot;0&quot;;
-            style.background = &quot;black&quot;;
+            style.background = &quot;rgba(0,0,0,0);&quot;;
             style.float = &quot;left&quot;;
             style.left = &quot;0&quot;;
             style.top = &quot;0&quot;;
             style.position = &quot;absolute&quot;;
+            style.opacity = &quot;1.0&quot;;
             style[&quot;z-index&quot;] = &quot;-10000&quot;;
 
             div.innerHTML += &#x27;&lt;canvas id=&quot;&#x27; + canvasId + &#x27;&quot; style=&quot;width: 100%; height: 100%; float: left; margin: 0; padding: 0;&quot;&gt;&lt;/canvas&gt;&#x27;;
@@ -594,34 +606,58 @@
         },
 
         /**
+         * Creates a image element behind the canvas, for purpose of showing a custom background.
+         * @private
+         */
+        _createBackground: function () {
+
+            var body = document.getElementsByTagName(&quot;body&quot;)[0];
+            var div = document.createElement(&#x27;div&#x27;);
+
+            var style = div.style;
+            style.padding = &quot;0&quot;;
+            style.margin = &quot;0&quot;;
+            style.background = null;
+            style.backgroundImage = null;
+            style.float = &quot;left&quot;;
+            style.left = &quot;0&quot;;
+            style.top = &quot;0&quot;;
+            style.width = &quot;0px&quot;;
+            style.height = &quot;0px&quot;;
+            style.position = &quot;absolute&quot;;
+            style.opacity = 1;
+            style[&quot;z-index&quot;] = &quot;-20000&quot;;
+
+            body.appendChild(div);
+
+            this._backgroundElement = div;
+        },
+
+        /**
          * Creates an invisible DIV over the canvas, for purpose of catching
          * input events without interfering with app-lever UI bits floating underneath.
          * @private
          */
         _createOverlay: function () {
 
-            var overlayId = &quot;XEO-overlay-&quot; + XEO.math.createUUID();
             var body = document.getElementsByTagName(&quot;body&quot;)[0];
             var div = document.createElement(&#x27;div&#x27;);
 
             var style = div.style;
-            //style.height = this.canvas.height + &quot;px&quot;;
-            //style.width = &quot;100%&quot;;
             style.padding = &quot;0&quot;;
             style.margin = &quot;0&quot;;
             style.background = &quot;black&quot;;
             style.float = &quot;left&quot;;
             style.left = &quot;0&quot;;
             style.top = &quot;0&quot;;
+            style.width = &quot;0px&quot;;
+            style.height = &quot;0px&quot;;
             style.position = &quot;absolute&quot;;
             style.opacity = 0;
             style[&quot;z-index&quot;] = &quot;100000&quot;;
 
-            //div.innerHTML += &#x27;&lt;div id=&quot;&#x27; + overlayId + &#x27;&quot; style=&quot;width: 100%; height: 100%; float: left; margin: 0; padding: 0; opacity: 0;&quot;&gt;&lt;/overlay&gt;&#x27;;
-
             body.appendChild(div);
 
-            //this.overlay = document.getElementById(overlayId);
             this.overlay = div;
         },
 
@@ -643,6 +679,26 @@
             overlayStyle[&quot;top&quot;] = xy.y + &quot;px&quot;;
             overlayStyle[&quot;width&quot;] = canvas.clientWidth + &quot;px&quot;;
             overlayStyle[&quot;height&quot;] = canvas.clientHeight + &quot;px&quot;;
+        },
+
+        /** (Re)sizes the background DIV to the canvas size
+         * @private
+         */
+        _resizeBackground: function () {
+
+            if (!this.canvas || !this._backgroundElement) {
+                return;
+            }
+
+            var canvas = this.canvas;
+            var background = this._backgroundElement;
+            var backgroundStyle = background.style;
+
+            var xy = this._getElementXY(canvas);
+            backgroundStyle[&quot;left&quot;] = xy.x + &quot;px&quot;;
+            backgroundStyle[&quot;top&quot;] = xy.y + &quot;px&quot;;
+            backgroundStyle[&quot;width&quot;] = canvas.clientWidth + &quot;px&quot;;
+            backgroundStyle[&quot;height&quot;] = canvas.clientHeight + &quot;px&quot;;
         },
 
         _getElementXY: function (e) {
@@ -782,6 +838,96 @@
         },
 
         _props: {
+
+            /**
+             A background color for the canvas. This is overridden by {{#crossLink &quot;Canvas/backgroundImage:property&quot;}}{{/crossLink}}.
+
+             You can set this to a new color at any time.
+
+             Fires a {{#crossLink &quot;Canvas/backgroundColor:event&quot;}}{{/crossLink}} event on change.
+
+             @property backgroundColor
+             @type Float32Array
+             @default null
+             */
+            backgroundColor: {
+
+                set: function (value) {
+
+                    if (!value) {
+
+                        this._backgroundColor = null;
+
+                    } else {
+
+                        (this._backgroundColor = this._backgroundColor || new XEO.math.vec4()).set(value || [0, 0, 0, 1]);
+
+                        if (!this._backgroundImageSrc) {
+                            var rgb = &quot;rgb(&quot; + Math.round(this._backgroundColor[0] * 255) + &quot;, &quot; + Math.round(this._backgroundColor[1] * 255) + &quot;,&quot; + Math.round(this._backgroundColor[2] * 255) + &quot;)&quot;;
+                            this._backgroundElement.style.background = rgb;
+                        }
+                    }
+
+                    /**
+                     Fired whenever this Canvas&#x27;s {{#crossLink &quot;Canvas/backgroundColor:property&quot;}}{{/crossLink}} property changes.
+                     @event backgroundColor
+                     @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;backgroundColor&quot;, this._backgroundColor);
+                },
+
+                get: function () {
+                    return this._backgroundColor;
+                }
+            },
+
+            /**
+             URL of a background image for the canvas. This is overrided by {{#crossLink &quot;Canvas/backgroundColor/property&quot;}}{{/crossLink}}.
+
+             You can set this to a new file path at any time.
+
+             Fires a {{#crossLink &quot;Canvas/background:event&quot;}}{{/crossLink}} event on change.
+
+             @property backgroundImage
+             @type String
+             */
+            backgroundImage: {
+
+                set: function (value) {
+
+                    if (!value) {
+                        return;
+                    }
+
+                    if (!XEO._isString(value)) {
+                        this.error(&quot;Value for &#x27;backgroundImage&#x27; should be a string&quot;);
+                        return;
+                    }
+
+                    if (value === this._backgroundImageSrc) { // Already loaded this image
+                        return;
+                    }
+
+                    this._backgroundElement.style.backgroundImage = &quot;url(&#x27;&quot; + value + &quot;&#x27;)&quot;;
+                    this._backgroundImageSrc = value;
+
+                    if (!this._backgroundImageSrc) {
+                        var rgb = &quot;rgb(&quot; + Math.round(this._backgroundColor[0] * 255) + &quot;, &quot; + Math.round(this._backgroundColor[1] * 255) + &quot;,&quot; + Math.round(this._backgroundColor[2] * 255) + &quot;)&quot;;
+                        this._backgroundElement.style.background = rgb;
+                    }
+
+                    /**
+                     Fired whenever this Canvas&#x27;s {{#crossLink &quot;Canvas/backgroundImage:property&quot;}}{{/crossLink}} property changes.
+                     @event backgroundImage
+                     @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;backgroundImage&quot;, this._backgroundImageSrc);
+                },
+
+                get: function () {
+                    return this._backgroundImageSrc;
+                }
+            },
 
             /**
              The busy {{#crossLink &quot;Spinner&quot;}}{{/crossLink}} for this Canvas.

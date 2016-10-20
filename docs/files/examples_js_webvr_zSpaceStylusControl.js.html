@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>canvas - xeoengine</title>
+    <title>examples/js/webvr/zSpaceStylusControl.js - xeoengine</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -193,43 +193,347 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>canvas Module</h1>
-<div class="box clearfix meta">
+<h1 class="file-heading">File: examples/js/webvr/zSpaceStylusControl.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ A **ZSpaceStylusControl** component works in conjunction with a {{#crossLink &quot;ZSpaceEffect&quot;}}{{/crossLink}} to drag
+ {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} around with a zSpace stylus input device.
+
+ @class ZSpaceStylusControl
+ @module XEO
+ @submodule webvr
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this ZSpaceStylusControl in the default
+ {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ZSpaceStylusControl.
+ @param [cfg.zspaceEffect] {String|ZSpaceEffect} ID or instance of a {{#crossLink &quot;ZSpaceEffect&quot;}}ZSpaceEffect{{/crossLink}} for this ZSpaceStylusControl.
+ Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this ZSpaceStylusControl. Defaults to the first instance found in
+ the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
+ @param [cfg.active=true] {Boolean} Whether or not this ZSpaceStylusControl is initially active.
+ @extends Component
+ */
+(function () {
+
+    &quot;use strict&quot;;
+
+    var math = XEO.math;
+
+    XEO.ZSpaceStylusControl = XEO.Component.extend({
+
+        type: &quot;XEO.ZSpaceStylusControl&quot;,
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            // Set properties on this XEO.ZSpaceStylusControl (see _props below)
+            this.zspaceEffect = cfg.zspaceEffect;
+            this.active = cfg.active;
+        },
+
+        _props: {
+
+            /**
+             * The {{#crossLink &quot;ZSpaceEffect&quot;}}{{/crossLink}} attached to this ZSpaceStylusControl.
+             *
+             * The ZSpaceStylusControl will attach a {{#crossLink &quot;Projection&quot;}}{{/crossLink}} to its
+             * {{#crossLink &quot;ZSpaceEffect&quot;}}{{/crossLink}} if the {{#crossLink &quot;ZSpaceEffect&quot;}}ZSpaceEffect{{/crossLink}} does not have
+             * one already, replacing whatever projection transform component was already attached.
+             *
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}{{/crossLink}} as this ZSpaceStylusControl. Defaults to the parent
+             * {{#crossLink &quot;Scene&quot;}}Scene&#x27;s{{/crossLink}} default {{#crossLink &quot;Scene/zspaceEffect:property&quot;}}zspaceEffect{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * No other component should modify the state of the {{#crossLink &quot;ZSpaceEffect&quot;}}{{/crossLink}} while
+             * it&#x27;s attached to this ZSpaceStylusControl. There is no prevention or check for that, so if that
+             * happens you&#x27;ll get unexpected results.
+             *
+             * @property zspaceEffect
+             * @type ZSpaceEffect
+             */
+            zspaceEffect: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this ZSpaceStylusControl&#x27;s {{#crossLink &quot;ZSpaceStylusControl/zspaceEffect:property&quot;}}{{/crossLink}}
+                     * property changes.
+                     *
+                     * @event zspaceEffect
+                     * @param value The property&#x27;s new value
+                     */
+                    var zspaceEffect = this._attach({
+                        name: &quot;zspaceEffect&quot;,
+                        type: &quot;XEO.ZSpaceEffect&quot;,
+                        component: value,
+                        sceneSingleton: true // Default to first XEO.ZSpaceEffect found in the Scene
+                    });
+                },
+
+                get: function () {
+                    return this._attached.zspaceEffect;
+                }
+            },
+
+            /**
+             * Flag which indicates whether this ZSpaceStylusControl is active or not.
+             *
+             * Fires an {{#crossLink &quot;ZSpaceStylusControl/active:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property active
+             * @type Boolean
+             * @default true
+             */
+            active: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (this._active === value) {
+                        return;
+                    }
+
+                    this._active = value;
+                    this._active ? this._activate() : this._deactivate();
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this ZSpaceStylusControl&#x27;s {{#crossLink &quot;ZSpaceStylusControl/active:property&quot;}}{{/crossLink}} property changes.
+                     * @event active
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&#x27;active&#x27;, this._active);
+                },
+
+                get: function () {
+                    return this._active;
+                }
+            }
+        },
+
+        _activate: function () { // Activates this ZSpaceStylusControl
+
+            var self = this;
+
+            this._stylusHelper = new (function () {
+                var ray = new XEO.Entity(self.scene, {
+                    geometry: new XEO.Geometry({
+                        primitive: &quot;lines&quot;,
+                        positions: [0, 0, 0, 0, 0, 0],
+                        indices: [0, 1]
+                    }),
+                    material: new XEO.PhongMaterial({
+                        emissive: [1, 0.3, 0.3],
+                        diffuse: [0, 0, 0],
+                        ambient: [0, 0, 0],
+                        lineWidth: 3
+                    }),
+                    modes: new XEO.Modes({pickable: false})
+                });
+
+                var positions = new Float32Array(6);
+
+                this.setPosition = function (pos, dir) {
+                    positions[0] = pos[0]; // Origin
+                    positions[1] = pos[1];
+                    positions[2] = pos[2];
+                    positions[3] = pos[0] + dir[0]; // Direction
+                    positions[4] = pos[1] + dir[1];
+                    positions[5] = pos[2] + dir[2];
+
+                    ray.geometry.positions = positions;
+                };
+
+                this.setHighlighted = function (highlighted) {
+                    ray.material.emissive = highlighted ? [0.3, 1.0, 0.3] : [1.0, 0.3, 0.3];
+                    ray.material.lineWidth = highlighted ? 5 : 3;
+                };
+
+                this.destroy = function () {
+                    ray.destroy();
+                };
+            })();
+
+            var stylusHelper = this._stylusHelper;
+            var zspaceEffect = this._attached.zspaceEffect;
+
+            this._onStylusMoved = zspaceEffect.on(&quot;stylusMoved&quot;, (function () {
+
+                var stylusLength = 0.5 * zspaceEffect.viewerScale;
+                var draggingEntity;
+                var stylusHelperDir = math.vec3();
+                var startOffset = vec4.create();
+                var startRotation = quat.create();
+                var button0Pressed = false;
+
+                var lastEntityHighlighted = null;
+                var hit;
+                var stylusPosition = vec3.create();
+                var stylusDirection = vec3.create();
+                var stylusP = vec4.create();
+                var stylusD = vec4.create();
+                var rotationMatrix = mat3.create();
+                var q = quat.create();
+                var matrix = mat4.create();
+                var stylusEnd = vec4.create();
+                var entityPosition = vec4.create();
+                var zero = vec4.create();
+                var offset = vec4.create();
+                var rotation = quat.create();
+                var entityRotation = quat.create();
+                var newRotation = quat.create();
+                var newOffset = vec4.create();
+
+                return function () {
 
 
-        <div class="foundat">
-            Defined in: <a href="../files/src_canvas_spinner.js.html#l1"><code>src&#x2F;canvas&#x2F;spinner.js:1</code></a>
-        </div>
+                    var stylusMatrix = zspaceEffect.stylusWorldMatrix;
 
-</div>
+                    vec3.set(stylusPosition, stylusMatrix[12], stylusMatrix[13], stylusMatrix[14]);
+                    vec3.set(stylusDirection, -stylusMatrix[8], -stylusMatrix[9], -stylusMatrix[10]);
 
+                    vec4.set(stylusP, stylusPosition[0], stylusPosition[1], stylusPosition[2], 1.0);
+                    vec4.set(stylusD, stylusDirection[0], stylusDirection[1], stylusDirection[2], 1.0);
 
-<div class="box intro">
-    <p>Canvas-related things.</p>
+                    // Update stylus helper
 
-</div>
+                    math.mulVec3Scalar(stylusDirection, 100, stylusHelperDir);
+                    stylusHelper.setPosition(stylusPosition, stylusHelperDir);
 
+                    if (!draggingEntity) {
 
-<div class="yui3-g">
-    <div class="yui3-u-1-2">
-            <p>This module provides the following classes:</p>
+                        // Not dragging an entity
+                        // Pick an entity with the stylus
 
-            <ul class="module-classes">
-                <li class="module-class">
-                    <a href="../classes/Canvas.html">
-                        Canvas
-                    </a>
-                </li>
-                <li class="module-class">
-                    <a href="../classes/Spinner.html">
-                        Spinner
-                    </a>
-                </li>
-            </ul>
-    </div>
+                        hit = self.scene.pick({
+                            pickSurface: true, // &lt;&lt;----- Picking point on surface
+                            origin: stylusPosition,
+                            direction: stylusDirection
+                        });
 
-    <div class="yui3-u-1-2">
-    </div>
+                        if (lastEntityHighlighted) {
+                            if (!hit || (hit.entity.id !== lastEntityHighlighted.id)) {
+                                lastEntityHighlighted.material.emissive = [0, 0, 0];
+                            }
+                        }
+
+                        if (hit) {
+
+                            stylusHelper.setHighlighted(true);
+
+                            hit.entity.material.emissive = [0, 0.5, 0];
+                            lastEntityHighlighted = hit.entity;
+
+                        } else {
+                            stylusHelper.setHighlighted(false);
+                            lastEntityHighlighted = null;
+                        }
+                    }
+
+                    if (zspaceEffect.stylusButton0 !== button0Pressed) {
+
+                        if (zspaceEffect.stylusButton0 &amp;&amp; hit) {
+
+                            // Button 0 down and stylus hits an entity
+                            // Grab entity and begin dragging it
+
+                            var entity = hit.entity;
+
+                            if (entity.transform.parent) {
+                                var transform = entity.transform;
+                                entity.transform = entity.create(XEO.Transform, {
+                                    matrix: transform.leafMatrix
+                                });
+                            }
+
+                            mat3.fromMat4(rotationMatrix, entity.transform.leafMatrix);
+                            quat.fromMat3(q, rotationMatrix);
+                            quat.invert(q, q);
+                            mat4.fromQuat(matrix, q);
+
+                            vec4.set(zero, 0.0, 0.0, 0.0, 1.0);
+                            vec4.transformMat4(entityPosition, zero, entity.transform.leafMatrix);
+                            vec4.scaleAndAdd(stylusEnd, stylusP, stylusD, stylusLength);
+
+                            vec4.subtract(offset, entityPosition, stylusEnd);
+                            vec4.transformMat4(startOffset, offset, matrix);
+
+                            mat3.fromMat4(rotationMatrix, stylusMatrix);
+                            quat.fromMat3(rotation, rotationMatrix);
+                            quat.invert(rotation, rotation);
+                            mat3.fromMat4(rotationMatrix, entity.transform.leafMatrix);
+                            quat.fromMat3(entityRotation, rotationMatrix);
+
+                            quat.multiply(startRotation, rotation, entityRotation);
+
+                            draggingEntity = entity;
+                            draggingEntity.material.emissive = [0.0, 1.0, 0.0];
+
+                        } else {
+
+                            // Button 0 released - release entity
+
+                            if (draggingEntity) {
+                                draggingEntity.material.emissive = [0.0, 0.0, 0.0];
+                                draggingEntity = null;
+                            }
+                        }
+
+                        button0Pressed = zspaceEffect.stylusButton0;
+
+                    } else if (draggingEntity) {
+
+                        // Continue dragging entity
+
+                        vec4.scaleAndAdd(stylusEnd, stylusP, stylusD, stylusLength);
+                        mat3.fromMat4(rotationMatrix, stylusMatrix);
+
+                        quat.fromMat3(rotation, rotationMatrix);
+                        quat.multiply(newRotation, rotation, startRotation);
+
+                        mat4.fromQuat(matrix, newRotation);
+                        vec4.transformMat4(offset, startOffset, matrix);
+
+                        vec4.add(newOffset, offset, stylusEnd);
+                        matrix[12] = newOffset[0];
+                        matrix[13] = newOffset[1];
+                        matrix[14] = newOffset[2];
+
+                        draggingEntity.transform.matrix = matrix;
+                    }
+                };
+            })());
+        },
+
+        _deactivate: function () {
+            this._stylusHelper.destroy();
+            this._attached.zspaceEffect.off(this._onStylusMoved);
+        },
+
+        _getJSON: function () {
+            var json = {
+                active: this._active
+            };
+            if (this._attached.zspaceEffect) {
+                json.camera = this._attached.zspaceEffect.id;
+            }
+            return json;
+        },
+
+        _destroy: function () {
+            this.active = false;
+        }
+    });
+})();
+
+    </pre>
 </div>
                     </div>
                 </div>

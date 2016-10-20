@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-10-14
+ * Built on 2016-10-19
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -1829,6 +1829,39 @@ var Canvas2Image = (function () {
         },
 
         /**
+         * Creates a three-element vector from the rotation part of a sixteen-element matrix.
+         * @param m
+         * @param dest
+         */
+        vec3FromMat4Scale: (function () {
+
+            var tempVec3 = new Float32Array(3);
+
+            return function (m, dest) {
+
+                tempVec3[0] = m[0];
+                tempVec3[1] = m[1];
+                tempVec3[2] = m[2];
+
+                dest[0] = math.lenVec3(tempVec3);
+
+                tempVec3[0] = m[4];
+                tempVec3[1] = m[5];
+                tempVec3[2] = m[6];
+
+                dest[1] = math.lenVec3(tempVec3);
+
+                tempVec3[0] = m[8];
+                tempVec3[1] = m[9];
+                tempVec3[2] = m[10];
+
+                dest[2] = math.lenVec3(tempVec3);
+
+                return dest;
+            };
+        })(),
+
+        /**
          * Duplicates a 4x4 identity matrix.
          * @method dupMat4
          * @static
@@ -1960,6 +1993,23 @@ var Canvas2Image = (function () {
             }
             return true;
         },
+
+        composeMat4: (function () {
+            
+            
+            return function (position, quaternio, scale, mat) {
+
+                this.identityMat4(mat);
+                this.quaternionToMat4(mat);
+                this.scalingMat4v(scale, mat);
+                this.scale(scale);
+                this.setPosition(position);
+
+                return mat;
+
+            };
+        })(),
+
 
         /**
          * Negates the given 4x4 matrix.
@@ -2377,6 +2427,7 @@ var Canvas2Image = (function () {
             return math.translationMat4c(s, s, s, dest);
         },
 
+
         /**
          * Returns 4x4 rotation matrix.
          * @method rotationMat4v
@@ -2458,6 +2509,28 @@ var Canvas2Image = (function () {
          */
         scalingMat4c: function (x, y, z) {
             return math.scalingMat4v([x, y, z]);
+        },
+        
+        scaleMat4v: function(v, m) {
+            
+            var x = v[0];
+            var y = v[1]; 
+            var z = v[2];
+
+            m[ 0 ] *= x;
+            m[ 4 ] *= y;
+            m[ 8 ] *= z;
+            m[ 1 ] *= x;
+            m[ 5 ] *= y;
+            m[ 9 ] *= z;
+            m[ 2 ] *= x;
+            m[ 6 ] *= y;
+            m[ 10 ] *= z;
+            m[ 3 ] *= x;
+            m[ 7 ] *= y;
+            m[ 11 ] *= z;
+
+            return m;
         },
 
         /**
@@ -4403,6 +4476,44 @@ var Canvas2Image = (function () {
             return dest;
         },
 
+        quaternionToRotationMat4: function (q, m) {
+
+            var x = q[0];
+            var y = q[1];
+            var z = q[2];
+            var w = q[3];
+
+            var x2 = x + x, y2 = y + y, z2 = z + z;
+            var xx = x * x2, xy = x * y2, xz = x * z2;
+            var yy = y * y2, yz = y * z2, zz = z * z2;
+            var wx = w * x2, wy = w * y2, wz = w * z2;
+
+            m[0] = 1 - ( yy + zz );
+            m[4] = xy - wz;
+            m[8] = xz + wy;
+
+            m[1] = xy + wz;
+            m[5] = 1 - ( xx + zz );
+            m[9] = yz - wx;
+
+            m[2] = xz - wy;
+            m[6] = yz + wx;
+            m[10] = 1 - ( xx + yy );
+
+            // last column
+            m[3] = 0;
+            m[7] = 0;
+            m[11] = 0;
+
+            // bottom row
+            m[12] = 0;
+            m[13] = 0;
+            m[14] = 0;
+            m[15] = 1;
+
+            return m;
+        },
+        
         normalizeQuaternion: function (q, dest) {
             dest = dest || q;
             var len = math.lenVec4([q[0], q[1], q[2], q[3]]);
@@ -4590,6 +4701,12 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
         // The current ambient color, if available
         this._ambient = null;
+
+        /**
+         * The current ambient color.
+         * @type Float32Array
+         */
+        this.ambientColor = XEO.math.vec4([0,0,0,1]);
 
         // Objects in a list, ordered by state
         this._objectList = [];
@@ -5134,9 +5251,13 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         if (ambient) {
             var color = ambient.color;
             var intensity = ambient.intensity;
-            ambientColor = [color[0] * intensity, color[1] * intensity, color[2] * intensity, 1.0];
+            this.ambientColor[0] = color[0] * intensity;
+            this.ambientColor[1] = color[1] * intensity;
+            this.ambientColor[2] = color[2] * intensity;
         } else {
-            ambientColor = [0, 0, 0];
+            this.ambientColor[0] = 0;
+            this.ambientColor[1] = 0;
+            this.ambientColor[2] = 0;
         }
 
         var frameCtx = this._frameCtx;
@@ -5151,7 +5272,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         frameCtx.frontface = true; // true == "ccw" else "cw"
         frameCtx.textureUnit = 0;
         frameCtx.transparent = false; // True while rendering transparency bin
-        frameCtx.ambientColor = ambientColor;
+        frameCtx.ambientColor = this.ambientColor;
         frameCtx.drawElements = 0;
         frameCtx.useProgram = 0;
         frameCtx.bindTexture = 0;
@@ -5177,7 +5298,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         } else {
 
             // Canvas is opaque - set clear color to the current ambient
-            gl.clearColor(ambientColor[0], ambientColor[1], ambientColor[2], 1.0);
+            gl.clearColor(this.ambientColor[0], this.ambientColor[1], this.ambientColor[2], 1.0);
         }
 
 
@@ -10703,6 +10824,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
          * @param {String} [params.type] Optional expected type of base type of the child; when supplied, will
          * cause an exception if the given child is not the same type or a subtype of this.
          * @param {Boolean} [params.sceneDefault=false]
+         * @param {Boolean} [params.sceneSingleton=false]
          * @param {Function} [params.onAttached] Optional callback called when component attached
          * @param {Function} [params.onAttached.callback] Callback function
          * @param {Function} [params.onAttached.scope] Optional scope for callback
@@ -10724,6 +10846,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
 
             var component = params.component;
             var sceneDefault = params.sceneDefault;
+            var sceneSingleton = params.sceneSingleton;
             var type = params.type;
             var on = params.on;
             var recompiles = params.recompiles !== false;
@@ -10776,15 +10899,36 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 }
             }
 
-            if (!component && sceneDefault === true) {
 
-                // Using a default scene component
+            if (!component) {
 
-                component = this.scene[name];
+                if (sceneSingleton === true) {
 
-                if (!component) {
-                    this.error("Scene has no default component for '" + name + "'");
-                    return null;
+                    // Using the first instance of the component type we find
+
+                    var instances = this.scene.types[type];
+                    for (var id2 in instances) {
+                        if (instances.hasOwnProperty) {
+                            component = instances[id2];
+                            break;
+                        }
+                    }
+
+                    if (!component) {
+                        this.error("Scene has no default component for '" + name + "'");
+                        return null;
+                    }
+
+                } else if (sceneDefault === true) {
+
+                    // Using a default scene component
+
+                    component = this.scene[name];
+
+                    if (!component) {
+                        this.error("Scene has no default component for '" + name + "'");
+                        return null;
+                    }
                 }
             }
 
@@ -11403,6 +11547,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
  @param [cfg.passes=1] The number of times this Scene renders per frame.
  @param [cfg.clearEachPass=false] When doing multiple passes per frame, specifies whether to clear the
  canvas before each pass (true) or just before the first pass (false).
+ @param [cfg.transparent=false] {Boolean} Whether or not the canvas is transparent.
+ @param [cfg.backgroundColor] {Float32Array} RGBA color for canvas background, when canvas is not transparent. Overridden by backgroundImage.
+ @param [cfg.backgroundImage] {String} URL of an image to show as the canvas background, when canvas is not transparent. Overrides backgroundImage.
  @extends Component
  */
 (function () {
@@ -11433,6 +11580,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         _init: function (cfg) {
 
             var self = this;
+
+            var transparent = !!cfg.transparent;
 
             this._componentIDMap = new XEO.utils.Map();
 
@@ -11506,7 +11655,9 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              */
             this.canvas = new XEO.Canvas(this, {
                 canvas: cfg.canvas, // Can be canvas ID, canvas element, or null
-                transparent: cfg.transparent,
+                transparent: transparent,
+                backgroundColor: cfg.backgroundColor,
+                backgroundImage: cfg.backgroundImage,
                 webgl2: cfg.webgl2 !== false,
                 contextAttr: cfg.contextAttr || {}
             });
@@ -11523,7 +11674,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 });
 
             this._renderer = new XEO.renderer.Renderer(XEO.stats, this.canvas.canvas, this.canvas.gl, {
-                transparent: cfg.transparent
+                transparent: transparent
             });
 
             /**
@@ -13129,6 +13280,33 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 clear: clear, // Clear buffers?
                 force: forceRender
             });
+
+            // If the canvas is not transparent and has no background image or color assigned,
+            // then set its color to whatever ambient color the renderer just rendered
+
+            var canvas = this.canvas;
+
+            if (!canvas.transparent && !canvas.backgroundImage && !canvas.backgroundColor) {
+
+                var ambientColor = this._renderer.ambientColor;
+
+                if (!this._lastAmbientColor ||
+                    this._lastAmbientColor[0] !== ambientColor[0] ||
+                    this._lastAmbientColor[1] !== ambientColor[1] ||
+                    this._lastAmbientColor[2] !== ambientColor[2] ||
+                    this._lastAmbientColor[3] !== ambientColor[3]) {
+
+                    canvas.backgroundColor = ambientColor;
+
+                    if (!this._lastAmbientColor) {
+                        this._lastAmbientColor = XEO.math.vec4();
+                    }
+
+                    this._lastAmbientColor.set(ambientColor);
+                }
+            } else {
+                this._lastAmbientColor = null;
+            }
         },
 
         _getJSON: function () {
@@ -14382,6 +14560,7 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
              *
              * @property transparent
              * @type {Boolean}
+             * @default {false}
              * @final
              */
             this.transparent = !!cfg.transparent;
@@ -14462,7 +14641,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                 this.canvas.clientWidth, this.canvas.clientHeight
             ];
 
+            this._createBackground();
             this._createOverlay();
+
+            this._resizeBackground();
             this._resizeOverlay();
 
             // Get WebGL context
@@ -14518,6 +14700,8 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
                     if (newPosition || newSize) {
 
                         self._spinner._adjustPosition();
+
+                        self._resizeBackground();
                         self._resizeOverlay();
 
                         if (newSize) {
@@ -14573,6 +14757,10 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             this._spinner = new XEO.Spinner(this.scene, {
                 canvas: this.canvas
             });
+
+            // Set property, see definition further down
+            this.backgroundColor = cfg.backgroundColor;
+            this.backgroundImage = cfg.backgroundImage;
         },
 
         /**
@@ -14590,11 +14778,12 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             style.width = "100%";
             style.padding = "0";
             style.margin = "0";
-            style.background = "black";
+            style.background = "rgba(0,0,0,0);";
             style.float = "left";
             style.left = "0";
             style.top = "0";
             style.position = "absolute";
+            style.opacity = "1.0";
             style["z-index"] = "-10000";
 
             div.innerHTML += '<canvas id="' + canvasId + '" style="width: 100%; height: 100%; float: left; margin: 0; padding: 0;"></canvas>';
@@ -14605,34 +14794,58 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         },
 
         /**
+         * Creates a image element behind the canvas, for purpose of showing a custom background.
+         * @private
+         */
+        _createBackground: function () {
+
+            var body = document.getElementsByTagName("body")[0];
+            var div = document.createElement('div');
+
+            var style = div.style;
+            style.padding = "0";
+            style.margin = "0";
+            style.background = null;
+            style.backgroundImage = null;
+            style.float = "left";
+            style.left = "0";
+            style.top = "0";
+            style.width = "0px";
+            style.height = "0px";
+            style.position = "absolute";
+            style.opacity = 1;
+            style["z-index"] = "-20000";
+
+            body.appendChild(div);
+
+            this._backgroundElement = div;
+        },
+
+        /**
          * Creates an invisible DIV over the canvas, for purpose of catching
          * input events without interfering with app-lever UI bits floating underneath.
          * @private
          */
         _createOverlay: function () {
 
-            var overlayId = "XEO-overlay-" + XEO.math.createUUID();
             var body = document.getElementsByTagName("body")[0];
             var div = document.createElement('div');
 
             var style = div.style;
-            //style.height = this.canvas.height + "px";
-            //style.width = "100%";
             style.padding = "0";
             style.margin = "0";
             style.background = "black";
             style.float = "left";
             style.left = "0";
             style.top = "0";
+            style.width = "0px";
+            style.height = "0px";
             style.position = "absolute";
             style.opacity = 0;
             style["z-index"] = "100000";
 
-            //div.innerHTML += '<div id="' + overlayId + '" style="width: 100%; height: 100%; float: left; margin: 0; padding: 0; opacity: 0;"></overlay>';
-
             body.appendChild(div);
 
-            //this.overlay = document.getElementById(overlayId);
             this.overlay = div;
         },
 
@@ -14654,6 +14867,26 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
             overlayStyle["top"] = xy.y + "px";
             overlayStyle["width"] = canvas.clientWidth + "px";
             overlayStyle["height"] = canvas.clientHeight + "px";
+        },
+
+        /** (Re)sizes the background DIV to the canvas size
+         * @private
+         */
+        _resizeBackground: function () {
+
+            if (!this.canvas || !this._backgroundElement) {
+                return;
+            }
+
+            var canvas = this.canvas;
+            var background = this._backgroundElement;
+            var backgroundStyle = background.style;
+
+            var xy = this._getElementXY(canvas);
+            backgroundStyle["left"] = xy.x + "px";
+            backgroundStyle["top"] = xy.y + "px";
+            backgroundStyle["width"] = canvas.clientWidth + "px";
+            backgroundStyle["height"] = canvas.clientHeight + "px";
         },
 
         _getElementXY: function (e) {
@@ -14793,6 +15026,96 @@ XEO.math.b3 = function (t, p0, p1, p2, p3) {
         },
 
         _props: {
+
+            /**
+             A background color for the canvas. This is overridden by {{#crossLink "Canvas/backgroundImage:property"}}{{/crossLink}}.
+
+             You can set this to a new color at any time.
+
+             Fires a {{#crossLink "Canvas/backgroundColor:event"}}{{/crossLink}} event on change.
+
+             @property backgroundColor
+             @type Float32Array
+             @default null
+             */
+            backgroundColor: {
+
+                set: function (value) {
+
+                    if (!value) {
+
+                        this._backgroundColor = null;
+
+                    } else {
+
+                        (this._backgroundColor = this._backgroundColor || new XEO.math.vec4()).set(value || [0, 0, 0, 1]);
+
+                        if (!this._backgroundImageSrc) {
+                            var rgb = "rgb(" + Math.round(this._backgroundColor[0] * 255) + ", " + Math.round(this._backgroundColor[1] * 255) + "," + Math.round(this._backgroundColor[2] * 255) + ")";
+                            this._backgroundElement.style.background = rgb;
+                        }
+                    }
+
+                    /**
+                     Fired whenever this Canvas's {{#crossLink "Canvas/backgroundColor:property"}}{{/crossLink}} property changes.
+                     @event backgroundColor
+                     @param value The property's new value
+                     */
+                    this.fire("backgroundColor", this._backgroundColor);
+                },
+
+                get: function () {
+                    return this._backgroundColor;
+                }
+            },
+
+            /**
+             URL of a background image for the canvas. This is overrided by {{#crossLink "Canvas/backgroundColor/property"}}{{/crossLink}}.
+
+             You can set this to a new file path at any time.
+
+             Fires a {{#crossLink "Canvas/background:event"}}{{/crossLink}} event on change.
+
+             @property backgroundImage
+             @type String
+             */
+            backgroundImage: {
+
+                set: function (value) {
+
+                    if (!value) {
+                        return;
+                    }
+
+                    if (!XEO._isString(value)) {
+                        this.error("Value for 'backgroundImage' should be a string");
+                        return;
+                    }
+
+                    if (value === this._backgroundImageSrc) { // Already loaded this image
+                        return;
+                    }
+
+                    this._backgroundElement.style.backgroundImage = "url('" + value + "')";
+                    this._backgroundImageSrc = value;
+
+                    if (!this._backgroundImageSrc) {
+                        var rgb = "rgb(" + Math.round(this._backgroundColor[0] * 255) + ", " + Math.round(this._backgroundColor[1] * 255) + "," + Math.round(this._backgroundColor[2] * 255) + ")";
+                        this._backgroundElement.style.background = rgb;
+                    }
+
+                    /**
+                     Fired whenever this Canvas's {{#crossLink "Canvas/backgroundImage:property"}}{{/crossLink}} property changes.
+                     @event backgroundImage
+                     @param value The property's new value
+                     */
+                    this.fire("backgroundImage", this._backgroundImageSrc);
+                },
+
+                get: function () {
+                    return this._backgroundImageSrc;
+                }
+            },
 
             /**
              The busy {{#crossLink "Spinner"}}{{/crossLink}} for this Canvas.
