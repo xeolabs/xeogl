@@ -69,7 +69,11 @@
 
     scene.camera.view.eye = [0, 0, -100];
 
-    new XEO.CameraControl();
+    //----------------------------------------------------------------------------
+    // Allow camera control with keyboard and mouse
+    //----------------------------------------------------------------------------
+
+    var cameraControl = new XEO.CameraControl();
 
     //---------------------------------------------------
     // Create a zSpace effect and stylus control

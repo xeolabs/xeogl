@@ -52,7 +52,11 @@
     view.rotateEyeX(60);
     view.rotateEyeY(-20);
 
-    new XEO.CameraControl();
+    //----------------------------------------------------------------------------
+    // Allow camera control with keyboard and mouse
+    //----------------------------------------------------------------------------
+
+    var cameraControl = new XEO.CameraControl();
 
     //---------------------------------------------------
     // Create a zSpace effect and stylus control
@@ -69,7 +73,6 @@
             document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. ";
         }
     });
-
 
 </script>
 </body>
