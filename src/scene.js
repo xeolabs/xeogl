@@ -196,6 +196,9 @@
  @param [cfg.passes=1] The number of times this Scene renders per frame.
  @param [cfg.clearEachPass=false] When doing multiple passes per frame, specifies whether to clear the
  canvas before each pass (true) or just before the first pass (false).
+ @param [cfg.transparent=false] {Boolean} Whether or not the canvas is transparent.
+ @param [cfg.backgroundColor] {Float32Array} RGBA color for canvas background, when canvas is not transparent. Overridden by backgroundImage.
+ @param [cfg.backgroundImage] {String} URL of an image to show as the canvas background, when canvas is not transparent. Overrides backgroundImage.
  @extends Component
  */
 (function () {
@@ -226,6 +229,8 @@
         _init: function (cfg) {
 
             var self = this;
+
+            var transparent = !!cfg.transparent;
 
             this._componentIDMap = new XEO.utils.Map();
 
@@ -299,7 +304,9 @@
              */
             this.canvas = new XEO.Canvas(this, {
                 canvas: cfg.canvas, // Can be canvas ID, canvas element, or null
-                transparent: cfg.transparent,
+                transparent: transparent,
+                backgroundColor: cfg.backgroundColor,
+                backgroundImage: cfg.backgroundImage,
                 webgl2: cfg.webgl2 !== false,
                 contextAttr: cfg.contextAttr || {}
             });
@@ -316,7 +323,7 @@
                 });
 
             this._renderer = new XEO.renderer.Renderer(XEO.stats, this.canvas.canvas, this.canvas.gl, {
-                transparent: cfg.transparent
+                transparent: transparent
             });
 
             /**
@@ -1922,6 +1929,33 @@
                 clear: clear, // Clear buffers?
                 force: forceRender
             });
+
+            // If the canvas is not transparent and has no background image or color assigned,
+            // then set its color to whatever ambient color the renderer just rendered
+
+            var canvas = this.canvas;
+
+            if (!canvas.transparent && !canvas.backgroundImage && !canvas.backgroundColor) {
+
+                var ambientColor = this._renderer.ambientColor;
+
+                if (!this._lastAmbientColor ||
+                    this._lastAmbientColor[0] !== ambientColor[0] ||
+                    this._lastAmbientColor[1] !== ambientColor[1] ||
+                    this._lastAmbientColor[2] !== ambientColor[2] ||
+                    this._lastAmbientColor[3] !== ambientColor[3]) {
+
+                    canvas.backgroundColor = ambientColor;
+
+                    if (!this._lastAmbientColor) {
+                        this._lastAmbientColor = XEO.math.vec4();
+                    }
+
+                    this._lastAmbientColor.set(ambientColor);
+                }
+            } else {
+                this._lastAmbientColor = null;
+            }
         },
 
         _getJSON: function () {

@@ -173,6 +173,7 @@
              *
              * @property transparent
              * @type {Boolean}
+             * @default {false}
              * @final
              */
             this.transparent = !!cfg.transparent;
@@ -253,7 +254,10 @@
                 this.canvas.clientWidth, this.canvas.clientHeight
             ];
 
+            this._createBackground();
             this._createOverlay();
+
+            this._resizeBackground();
             this._resizeOverlay();
 
             // Get WebGL context
@@ -309,6 +313,8 @@
                     if (newPosition || newSize) {
 
                         self._spinner._adjustPosition();
+
+                        self._resizeBackground();
                         self._resizeOverlay();
 
                         if (newSize) {
@@ -364,6 +370,10 @@
             this._spinner = new XEO.Spinner(this.scene, {
                 canvas: this.canvas
             });
+
+            // Set property, see definition further down
+            this.backgroundColor = cfg.backgroundColor;
+            this.backgroundImage = cfg.backgroundImage;
         },
 
         /**
@@ -381,11 +391,12 @@
             style.width = "100%";
             style.padding = "0";
             style.margin = "0";
-            style.background = "black";
+            style.background = "rgba(0,0,0,0);";
             style.float = "left";
             style.left = "0";
             style.top = "0";
             style.position = "absolute";
+            style.opacity = "1.0";
             style["z-index"] = "-10000";
 
             div.innerHTML += '<canvas id="' + canvasId + '" style="width: 100%; height: 100%; float: left; margin: 0; padding: 0;"></canvas>';
@@ -396,34 +407,58 @@
         },
 
         /**
+         * Creates a image element behind the canvas, for purpose of showing a custom background.
+         * @private
+         */
+        _createBackground: function () {
+
+            var body = document.getElementsByTagName("body")[0];
+            var div = document.createElement('div');
+
+            var style = div.style;
+            style.padding = "0";
+            style.margin = "0";
+            style.background = null;
+            style.backgroundImage = null;
+            style.float = "left";
+            style.left = "0";
+            style.top = "0";
+            style.width = "0px";
+            style.height = "0px";
+            style.position = "absolute";
+            style.opacity = 1;
+            style["z-index"] = "-20000";
+
+            body.appendChild(div);
+
+            this._backgroundElement = div;
+        },
+
+        /**
          * Creates an invisible DIV over the canvas, for purpose of catching
          * input events without interfering with app-lever UI bits floating underneath.
          * @private
          */
         _createOverlay: function () {
 
-            var overlayId = "XEO-overlay-" + XEO.math.createUUID();
             var body = document.getElementsByTagName("body")[0];
             var div = document.createElement('div');
 
             var style = div.style;
-            //style.height = this.canvas.height + "px";
-            //style.width = "100%";
             style.padding = "0";
             style.margin = "0";
             style.background = "black";
             style.float = "left";
             style.left = "0";
             style.top = "0";
+            style.width = "0px";
+            style.height = "0px";
             style.position = "absolute";
             style.opacity = 0;
             style["z-index"] = "100000";
 
-            //div.innerHTML += '<div id="' + overlayId + '" style="width: 100%; height: 100%; float: left; margin: 0; padding: 0; opacity: 0;"></overlay>';
-
             body.appendChild(div);
 
-            //this.overlay = document.getElementById(overlayId);
             this.overlay = div;
         },
 
@@ -445,6 +480,26 @@
             overlayStyle["top"] = xy.y + "px";
             overlayStyle["width"] = canvas.clientWidth + "px";
             overlayStyle["height"] = canvas.clientHeight + "px";
+        },
+
+        /** (Re)sizes the background DIV to the canvas size
+         * @private
+         */
+        _resizeBackground: function () {
+
+            if (!this.canvas || !this._backgroundElement) {
+                return;
+            }
+
+            var canvas = this.canvas;
+            var background = this._backgroundElement;
+            var backgroundStyle = background.style;
+
+            var xy = this._getElementXY(canvas);
+            backgroundStyle["left"] = xy.x + "px";
+            backgroundStyle["top"] = xy.y + "px";
+            backgroundStyle["width"] = canvas.clientWidth + "px";
+            backgroundStyle["height"] = canvas.clientHeight + "px";
         },
 
         _getElementXY: function (e) {
@@ -584,6 +639,96 @@
         },
 
         _props: {
+
+            /**
+             A background color for the canvas. This is overridden by {{#crossLink "Canvas/backgroundImage:property"}}{{/crossLink}}.
+
+             You can set this to a new color at any time.
+
+             Fires a {{#crossLink "Canvas/backgroundColor:event"}}{{/crossLink}} event on change.
+
+             @property backgroundColor
+             @type Float32Array
+             @default null
+             */
+            backgroundColor: {
+
+                set: function (value) {
+
+                    if (!value) {
+
+                        this._backgroundColor = null;
+
+                    } else {
+
+                        (this._backgroundColor = this._backgroundColor || new XEO.math.vec4()).set(value || [0, 0, 0, 1]);
+
+                        if (!this._backgroundImageSrc) {
+                            var rgb = "rgb(" + Math.round(this._backgroundColor[0] * 255) + ", " + Math.round(this._backgroundColor[1] * 255) + "," + Math.round(this._backgroundColor[2] * 255) + ")";
+                            this._backgroundElement.style.background = rgb;
+                        }
+                    }
+
+                    /**
+                     Fired whenever this Canvas's {{#crossLink "Canvas/backgroundColor:property"}}{{/crossLink}} property changes.
+                     @event backgroundColor
+                     @param value The property's new value
+                     */
+                    this.fire("backgroundColor", this._backgroundColor);
+                },
+
+                get: function () {
+                    return this._backgroundColor;
+                }
+            },
+
+            /**
+             URL of a background image for the canvas. This is overrided by {{#crossLink "Canvas/backgroundColor/property"}}{{/crossLink}}.
+
+             You can set this to a new file path at any time.
+
+             Fires a {{#crossLink "Canvas/background:event"}}{{/crossLink}} event on change.
+
+             @property backgroundImage
+             @type String
+             */
+            backgroundImage: {
+
+                set: function (value) {
+
+                    if (!value) {
+                        return;
+                    }
+
+                    if (!XEO._isString(value)) {
+                        this.error("Value for 'backgroundImage' should be a string");
+                        return;
+                    }
+
+                    if (value === this._backgroundImageSrc) { // Already loaded this image
+                        return;
+                    }
+
+                    this._backgroundElement.style.backgroundImage = "url('" + value + "')";
+                    this._backgroundImageSrc = value;
+
+                    if (!this._backgroundImageSrc) {
+                        var rgb = "rgb(" + Math.round(this._backgroundColor[0] * 255) + ", " + Math.round(this._backgroundColor[1] * 255) + "," + Math.round(this._backgroundColor[2] * 255) + ")";
+                        this._backgroundElement.style.background = rgb;
+                    }
+
+                    /**
+                     Fired whenever this Canvas's {{#crossLink "Canvas/backgroundImage:property"}}{{/crossLink}} property changes.
+                     @event backgroundImage
+                     @param value The property's new value
+                     */
+                    this.fire("backgroundImage", this._backgroundImageSrc);
+                },
+
+                get: function () {
+                    return this._backgroundImageSrc;
+                }
+            },
 
             /**
              The busy {{#crossLink "Spinner"}}{{/crossLink}} for this Canvas.

@@ -60,6 +60,12 @@
         // The current ambient color, if available
         this._ambient = null;
 
+        /**
+         * The current ambient color.
+         * @type Float32Array
+         */
+        this.ambientColor = XEO.math.vec4([0,0,0,1]);
+
         // Objects in a list, ordered by state
         this._objectList = [];
         this._objectListLen = 0;
@@ -603,9 +609,13 @@
         if (ambient) {
             var color = ambient.color;
             var intensity = ambient.intensity;
-            ambientColor = [color[0] * intensity, color[1] * intensity, color[2] * intensity, 1.0];
+            this.ambientColor[0] = color[0] * intensity;
+            this.ambientColor[1] = color[1] * intensity;
+            this.ambientColor[2] = color[2] * intensity;
         } else {
-            ambientColor = [0, 0, 0];
+            this.ambientColor[0] = 0;
+            this.ambientColor[1] = 0;
+            this.ambientColor[2] = 0;
         }
 
         var frameCtx = this._frameCtx;
@@ -620,7 +630,7 @@
         frameCtx.frontface = true; // true == "ccw" else "cw"
         frameCtx.textureUnit = 0;
         frameCtx.transparent = false; // True while rendering transparency bin
-        frameCtx.ambientColor = ambientColor;
+        frameCtx.ambientColor = this.ambientColor;
         frameCtx.drawElements = 0;
         frameCtx.useProgram = 0;
         frameCtx.bindTexture = 0;
@@ -646,7 +656,7 @@
         } else {
 
             // Canvas is opaque - set clear color to the current ambient
-            gl.clearColor(ambientColor[0], ambientColor[1], ambientColor[2], 1.0);
+            gl.clearColor(this.ambientColor[0], this.ambientColor[1], this.ambientColor[2], 1.0);
         }
 
 
