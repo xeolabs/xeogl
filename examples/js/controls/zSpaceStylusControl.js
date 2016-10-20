@@ -2,9 +2,21 @@
  A **ZSpaceStylusControl** component works in conjunction with a {{#crossLink "ZSpaceEffect"}}{{/crossLink}} to drag
  {{#crossLink "Entity"}}Entities{{/crossLink}} around with a zSpace stylus input device.
 
+ <img src="../../../assets/images/ZSpaceStylusControl.png"></img>
+
+ ## Examples
+
+ <ul>
+ <li>[zSpace cube](../../examples/effects_zspace_cube.html)</li>
+ <li>[zSpace with random geometries](../../examples/effects_zspace_geometries.html)</li>
+ <li>[zSpace with glTF gearbox model](../../examples/effects_zspace_gearbox.html)</li>
+ <li>[zSpace with glTF gearbox model and entity explorer](../../examples/effects_zspace_gearbox_explorer.html)</li>
+ <li>[zSpace with glTF reciprocating saw model](../../examples/effects_zspace_ReciprocatingSaw.html)</li>
+ </ul>
+
  @class ZSpaceStylusControl
  @module XEO
- @submodule webvr
+ @submodule controls
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this ZSpaceStylusControl in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.

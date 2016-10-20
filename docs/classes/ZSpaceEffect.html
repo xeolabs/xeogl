@@ -115,7 +115,7 @@
                                 <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
                                 <li><a href="../classes/Stage.html">Stage</a></li>
                                 <li><a href="../classes/Stationary.html">Stationary</a></li>
-                                <li><a href="../classes/Stereo.html">Stereo</a></li>
+                                <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
                                 <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
                                 <li><a href="../classes/Texture.html">Texture</a></li>
                                 <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
@@ -201,7 +201,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l1"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:1</code></a>
+            Defined in: <a href="../files/examples_js_effects_zSpaceEffect.js.html#l1"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:1</code></a>
         </div>
 
             Module: <a href="../modules/webvr.html">webvr</a><br>
@@ -220,23 +220,19 @@
 <a href="../classes/Scene.html#property_camera" class="crosslink">camera</a> if none is specified.</li>
 <li>Don&#39;t attach different view or projection transform components to the <a href="../classes/Camera.html" class="crosslink">Camera</a> while the ZSpaceEffect is active.</li>
 <li>You can however update the <a href="../classes/Camera.html" class="crosslink">Camera</a>&#39;s view transformation at any time, to move the
-viewpoint around.
+viewpoint around.</li>
+<li>Use a <a href="../classes/ZSpaceStylusControl.html" class="crosslink">ZSpaceStylusControl</a> to drag <a href="../classes/Entity.html" class="crosslink">Entities</a>
+around with the stylus.</li>
 </ul>
 
 <p><img src="../../../assets/images/ZSpaceEffect.png"></img></p>
-<h2 id="limitations">Limitations</h2>
-<ul>
-<li>Stylus tracking only works correctly when the browser window is maximized to fill the zSpace display. This is because
-stylus tracking requires that we know the location of the window within the display, which is currently only possible
-when the window is maximized.</li>
-</ul>
-
 <h2 id="examples">Examples</h2>
 <ul>
-<li><a href="../../examples/webvr_zspace_cube.html">zSpace cube</a></li>
-<li><a href="../../examples/webvr_zspace_geometries.html">zSpace with random geometries</a></li>
-<li><a href="../../examples/webvr_zspace_gearbox.html">zSpace with glTF gearbox model</a></li>
-<li><a href="../../examples/webvr_zspace_gearbox_explorer.html">zSpace with glTF gearbox model and entity explorer</a></li>
+<li><a href="../../examples/effects_zspace_cube.html">zSpace cube</a></li>
+<li><a href="../../examples/effects_zspace_geometries.html">zSpace with random geometries</a></li>
+<li><a href="../../examples/effects_zspace_gearbox.html">zSpace with glTF gearbox model</a></li>
+<li><a href="../../examples/effects_zspace_gearbox_explorer.html">zSpace with glTF gearbox model and entity explorer</a></li>
+<li><a href="../../examples/effects_zspace_ReciprocatingSaw.html">zSpace with glTF reciprocating saw model</a></li>
 </ul>
 
 <h2 id="usage">Usage</h2>
@@ -367,6 +363,10 @@ zspace.on("stylusButton2", function(value) {
                         <li class="arg">
                                 <code class="optional">[cfg]</code>
                         </li>
+                        <li class="arg">
+                                <code>[cfg.canvasOffset=0,0]  The offset of the canvas&#x27; corner from the edge of the screen - needed for
+        correct tracking of glasses and stylus. Leave this at &#x60;&#x60;&#x60;&#x60;[0,0]</code>
+                        </li>
                     </ul><span class="paren">)</span>
                 </div>
         
@@ -381,7 +381,7 @@ zspace.on("stylusButton2", function(value) {
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l1"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:1</code></a>
+                <a href="../files/examples_js_effects_zSpaceEffect.js.html#l1"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:1</code></a>
                 </p>
         
         
@@ -514,6 +514,18 @@ zspace.on("stylusButton2", function(value) {
                                     </li>
                                 </ul>
                         </li>
+                        <li class="param">
+                                <code class="param-name">[cfg.canvasOffset=0,0]  The offset of the canvas&#x27; corner from the edge of the screen - needed for
+        correct tracking of glasses and stylus. Leave this at &#x60;&#x60;&#x60;&#x60;[0,0]</code>
+                                <span class="type">Array of Number</span>
+        
+        
+                            <div class="param-description">
+                                <p><code>&#x60;</code>` if the canvas is to fill the entire screen.</p>
+        
+                            </div>
+        
+                        </li>
                     </ul>
                 </div>
         
@@ -592,6 +604,10 @@ zspace.on("stylusButton2", function(value) {
                             </li>
                             <li class="index-item property">
                                 <a href="#property_camera">camera</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_canvasOffset">canvasOffset</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -692,6 +708,10 @@ zspace.on("stylusButton2", function(value) {
                             </li>
                             <li class="index-item event">
                                 <a href="#event_camera">camera</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_canvasOffset">canvasOffset</a>
 
                             </li>
                             <li class="index-item event inherited">
@@ -1487,7 +1507,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l658"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:658</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l688"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:688</code></a>
                             </p>
                     
                     
@@ -1515,7 +1535,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l365"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:365</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l362"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:362</code></a>
                             </p>
                     
                     
@@ -1535,6 +1555,34 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
+                    
+                    
+                    </div>
+                    <div id="property_canvasOffset" class="property item">
+                        <h3 class="name"><code>canvasOffset</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l404"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:404</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The offset of the canvas&#39; corner from the edge of the screen - needed for correct tracking of glasses and stylus.</p>
+                    <p>Leave this at <code>[0,0]</code> if the canvas is to fill the entire screen.</p>
+                    <p>Fires a <a href="../classes/ZSpaceEffect.html#event_canvasOffset" class="crosslink">canvasOffset</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> [0, 0]</p>
                     
                     
                     </div>
@@ -1574,7 +1622,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l468"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:468</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l498"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:498</code></a>
                             </p>
                     
                     
@@ -1601,7 +1649,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l499"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:499</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l529"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:529</code></a>
                             </p>
                     
                     
@@ -1628,7 +1676,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l437"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:437</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l467"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:467</code></a>
                             </p>
                     
                     
@@ -1757,7 +1805,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l407"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:407</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l437"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:437</code></a>
                             </p>
                     
                     
@@ -1840,7 +1888,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l590"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:590</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l620"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:620</code></a>
                             </p>
                     
                     
@@ -1868,7 +1916,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l606"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:606</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l636"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:636</code></a>
                             </p>
                     
                     
@@ -1896,7 +1944,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l622"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:622</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l652"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:652</code></a>
                             </p>
                     
                     
@@ -1924,7 +1972,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l575"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:575</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l605"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:605</code></a>
                             </p>
                     
                     
@@ -1951,7 +1999,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l560"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:560</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l590"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:590</code></a>
                             </p>
                     
                     
@@ -1978,7 +2026,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l545"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:545</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l575"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:575</code></a>
                             </p>
                     
                     
@@ -2005,7 +2053,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l530"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:530</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l560"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:560</code></a>
                             </p>
                     
                     
@@ -2093,7 +2141,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l638"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:638</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l668"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:668</code></a>
                             </p>
                     
                     
@@ -2128,7 +2176,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l684"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:684</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l714"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:714</code></a>
                             </p>
                     
                     
@@ -2170,7 +2218,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l387"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:387</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l384"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:384</code></a>
                             </p>
                     
                     
@@ -2179,6 +2227,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="description">
                             <p>Fired whenever this ZSpaceEffect&#39;s <a href="../classes/ZSpaceEffect.html#property_camera" class="crosslink">camera</a>
                     property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_canvasOffset" class="events item">
+                        <h3 class="name"><code>canvasOffset</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l423"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:423</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this ZSpaceEffect&#39;s <a href="../classes/ZSpaceEffect.html#property_canvasOffset" class="crosslink">canvasOffset</a> property changes.</p>
                     
                         </div>
                     
@@ -2238,7 +2328,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l485"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:485</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l515"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:515</code></a>
                             </p>
                     
                     
@@ -2280,7 +2370,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l516"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:516</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l546"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:546</code></a>
                             </p>
                     
                     
@@ -2322,7 +2412,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l454"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:454</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l484"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:484</code></a>
                             </p>
                     
                     
@@ -2364,7 +2454,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l424"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:424</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l454"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:454</code></a>
                             </p>
                     
                     
@@ -2406,7 +2496,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l1104"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:1104</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l1133"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:1133</code></a>
                             </p>
                     
                     
@@ -2448,7 +2538,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l1115"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:1115</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l1144"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:1144</code></a>
                             </p>
                     
                     
@@ -2490,7 +2580,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l1126"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:1126</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l1155"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:1155</code></a>
                             </p>
                     
                     
@@ -2532,7 +2622,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_zSpaceEffect.js.html#l1094"><code>examples&#x2F;js&#x2F;webvr&#x2F;zSpaceEffect.js:1094</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l1123"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:1123</code></a>
                             </p>
                     
                     

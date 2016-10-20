@@ -7,7 +7,7 @@
 
     <script src="../build/xeoengine.js"></script>
 
-    <script src="js/effects/stereo.js"></script>
+    <script src="js/effects/stereoEffect.js"></script>
 
     <link href="css/styles.css" rel="stylesheet"/>
 
@@ -15,8 +15,8 @@
 
 <div id="infoLight">
     <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>stereo view using a <a
-        href="js/effects/stereo.js"
-        target="_docs">XEO.Stereo</a><br><br>
+        href="js/effects/stereoEffect.js"
+        target="_docs">XEO.StereoEffect</a><br><br>
     <ul>
         <li>Click in the right half-space to pick objects</li>
     </ul>
@@ -49,8 +49,8 @@
 //                view.rotateEyeX(0.3);
             });
 
-    // XEO.Stereo with all defaults
-    var stereo = new XEO.Stereo({
+    // XEO.StereoEffect with all defaults
+    var stereoEffect = new XEO.StereoEffect({
         camera: scene.camera,
         viewport: scene.viewport,
         eyeSep: 1.2,

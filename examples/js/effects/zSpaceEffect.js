@@ -1,359 +1,155 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>examples/js/webvr/zSpaceEffect.js - xeoengine</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
-    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
-    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
-    <link rel="icon" href="../assets/favicon.ico">
-    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
-</head>
-<body class="yui3-skin-sam">
-
-<div id="doc">
-    <div id="hd" class="yui3-g header">
-        <div class="yui3-u-3-4">
-
-                <h1 style="color:white;"><a href="../../">xeoEngine</a> / <a href="../../docs">API Docs</a></h1>
-
-        </div>
-        <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.0</em>
-        </div>
-    </div>
-    <div id="bd" class="yui3-g">
-
-        <div class="yui3-u-1-4">
-            <div id="docs-sidebar" class="sidebar apidocs">
-                <div id="api-list">
-                
-                    <div id="api-tabview" class="tabview">
-                        <ul class="tabs">
-                            <li><a href="#api-classes">Classes</a></li>
-                            <li><a href="#api-modules">Modules</a></li>
-                        </ul>
-                
-                        <div id="api-tabview-filter">
-                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
-                        </div>
-                
-                        <div id="api-tabview-panel">
-                            <ul id="api-classes" class="apis classes">
-                                <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
-                                <li><a href="../classes/Billboard.html">Billboard</a></li>
-                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
-                                <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
-                                <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
-                                <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
-                                <li><a href="../classes/Camera.html">Camera</a></li>
-                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
-                                <li><a href="../classes/CameraController.html">CameraController</a></li>
-                                <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
-                                <li><a href="../classes/Canvas.html">Canvas</a></li>
-                                <li><a href="../classes/Cardboard.html">Cardboard</a></li>
-                                <li><a href="../classes/Clip.html">Clip</a></li>
-                                <li><a href="../classes/Clips.html">Clips</a></li>
-                                <li><a href="../classes/Collection.html">Collection</a></li>
-                                <li><a href="../classes/CollectionBoundary.html">CollectionBoundary</a></li>
-                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
-                                <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
-                                <li><a href="../classes/Component.html">Component</a></li>
-                                <li><a href="../classes/Configs.html">Configs</a></li>
-                                <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
-                                <li><a href="../classes/Cull.html">Cull</a></li>
-                                <li><a href="../classes/Curve.html">Curve</a></li>
-                                <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
-                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
-                                <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
-                                <li><a href="../classes/DirLight.html">DirLight</a></li>
-                                <li><a href="../classes/Entity.html">Entity</a></li>
-                                <li><a href="../classes/Fresnel.html">Fresnel</a></li>
-                                <li><a href="../classes/Frustum.html">Frustum</a></li>
-                                <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
-                                <li><a href="../classes/HighlightEntityEffect.html">HighlightEntityEffect</a></li>
-                                <li><a href="../classes/Input.html">Input</a></li>
-                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
-                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
-                                <li><a href="../classes/KeyboardRotateCamera.html">KeyboardRotateCamera</a></li>
-                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
-                                <li><a href="../classes/LatheGeometry.html">LatheGeometry</a></li>
-                                <li><a href="../classes/Layer.html">Layer</a></li>
-                                <li><a href="../classes/Lights.html">Lights</a></li>
-                                <li><a href="../classes/Lookat.html">Lookat</a></li>
-                                <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/MegaTexture.html">MegaTexture</a></li>
-                                <li><a href="../classes/Model.html">Model</a></li>
-                                <li><a href="../classes/Modes.html">Modes</a></li>
-                                <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
-                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
-                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
-                                <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
-                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
-                                <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
-                                <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
-                                <li><a href="../classes/Ortho.html">Ortho</a></li>
-                                <li><a href="../classes/Path.html">Path</a></li>
-                                <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
-                                <li><a href="../classes/Perspective.html">Perspective</a></li>
-                                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
-                                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
-                                <li><a href="../classes/PointLight.html">PointLight</a></li>
-                                <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
-                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
-                                <li><a href="../classes/Reflect.html">Reflect</a></li>
-                                <li><a href="../classes/Render.html">Render</a></li>
-                                <li><a href="../classes/Rotate.html">Rotate</a></li>
-                                <li><a href="../classes/Scale.html">Scale</a></li>
-                                <li><a href="../classes/Scene.html">Scene</a></li>
-                                <li><a href="../classes/Shader.html">Shader</a></li>
-                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
-                                <li><a href="../classes/Skybox.html">Skybox</a></li>
-                                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
-                                <li><a href="../classes/Spinner.html">Spinner</a></li>
-                                <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
-                                <li><a href="../classes/Stage.html">Stage</a></li>
-                                <li><a href="../classes/Stationary.html">Stationary</a></li>
-                                <li><a href="../classes/Stereo.html">Stereo</a></li>
-                                <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
-                                <li><a href="../classes/Texture.html">Texture</a></li>
-                                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
-                                <li><a href="../classes/Transform.html">Transform</a></li>
-                                <li><a href="../classes/Translate.html">Translate</a></li>
-                                <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
-                                <li><a href="../classes/Viewport.html">Viewport</a></li>
-                                <li><a href="../classes/Visibility.html">Visibility</a></li>
-                                <li><a href="../classes/WebVR.html">WebVR</a></li>
-                                <li><a href="../classes/XEO.html">XEO</a></li>
-                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
-                                <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
-                                <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
-                            </ul>
-                
-                            <ul id="api-modules" class="apis modules">
-                                <li><a href="..//modules/animation.html">animation</a></li>
-                                <li><a href="..//modules/boundaries.html">boundaries</a></li>
-                                <li><a href="..//modules/camera.html">camera</a></li>
-                                <li><a href="..//modules/canvas.html">canvas</a></li>
-                                <li><a href="..//modules/clipping.html">clipping</a></li>
-                                <li><a href="..//modules/collections.html">collections</a></li>
-                                <li><a href="..//modules/configs.html">configs</a></li>
-                                <li><a href="..//modules/controls.html">controls</a></li>
-                                <li><a href="..//modules/culling.html">culling</a></li>
-                                <li><a href="..//modules/curves.html">curves</a></li>
-                                <li><a href="..//modules/effects.html">effects</a></li>
-                                <li><a href="..//modules/entities.html">entities</a></li>
-                                <li><a href="..//modules/geometry.html">geometry</a></li>
-                                <li><a href="..//modules/importing.html">importing</a></li>
-                                <li><a href="..//modules/input.html">input</a></li>
-                                <li><a href="..//modules/interaction.html">interaction</a></li>
-                                <li><a href="..//modules/lighting.html">lighting</a></li>
-                                <li><a href="..//modules/materials.html">materials</a></li>
-                                <li><a href="..//modules/math.html">math</a></li>
-                                <li><a href="..//modules/paths.html">paths</a></li>
-                                <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/shaders.html">shaders</a></li>
-                                <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
-                                <li><a href="..//modules/transforms.html">transforms</a></li>
-                                <li><a href="..//modules/webvr.html">webvr</a></li>
-                                <li><a href="..//modules/xeo.html">xeo</a></li>
-                                <li><a href="..//modules/XEO.html">XEO</a></li>
-                                <li><a href="..//modules/xeogl.html">xeogl</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="yui3-u-3-4">
-                <!--<div id="api-options">-->
-                    <!--Show:-->
-                    <!--<label for="api-show-inherited">-->
-                        <!--<input type="checkbox" id="api-show-inherited" checked>-->
-                        <!--Inherited-->
-                    <!--</label>-->
-            
-                    <!--<label for="api-show-protected">-->
-                        <!--<input type="checkbox" id="api-show-protected">-->
-                        <!--Protected-->
-                    <!--</label>-->
-            
-                    <!--<label for="api-show-private">-->
-                        <!--<input type="checkbox" id="api-show-private">-->
-                        <!--Private-->
-                    <!--</label>-->
-                    <!--<label for="api-show-deprecated">-->
-                        <!--<input type="checkbox" id="api-show-deprecated">-->
-                        <!--Deprecated-->
-                    <!--</label>-->
-            
-                <!--</div>-->
-            
-            <div class="apidocs">
-                <div id="docs-main">
-                    <div class="content">
-<h1 class="file-heading">File: examples/js/webvr/zSpaceEffect.js</h1>
-
-<div class="file">
-    <pre class="code prettyprint linenums">
 /**
- A **ZSpaceEffect** makes its {{#crossLink &quot;Scene&quot;}}{{/crossLink}} viewable with a zSpace viewer.
+ A **ZSpaceEffect** makes its {{#crossLink "Scene"}}{{/crossLink}} viewable with a zSpace viewer.
 
- &lt;ul&gt;
- &lt;li&gt;Plug-and-play: just create a ZSpaceEffect within your xeoEngine {{#crossLink &quot;Scene&quot;}}{{/crossLink}} to make it viewable with a ZSpace display.&lt;/li&gt;
- &lt;li&gt;Activate or disable the ZSpaceEffect at any time to switch between zSpace mode and normal mono viewing mode.&lt;/li&gt;
- &lt;li&gt;Requires WebGL2 and WebVR support, which you&#x27;ll have if you&#x27;re running on a zSpace viewer.&lt;/li&gt;
- &lt;li&gt;Attaches to a {{#crossLink &quot;Camera&quot;}}{{/crossLink}}, defaults to its {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default
- {{#crossLink &quot;Scene/camera:property&quot;}}{{/crossLink}} if none is specified.&lt;/li&gt;
- &lt;li&gt;Don&#x27;t attach different view or projection transform components to the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} while the ZSpaceEffect is active.&lt;/li&gt;
- &lt;li&gt;You can however update the {{#crossLink &quot;Camera&quot;}}{{/crossLink}}&#x27;s view transformation at any time, to move the
- viewpoint around.
- &lt;/ul&gt;
+ <ul>
+ <li>Plug-and-play: just create a ZSpaceEffect within your xeoEngine {{#crossLink "Scene"}}{{/crossLink}} to make it viewable with a ZSpace display.</li>
+ <li>Activate or disable the ZSpaceEffect at any time to switch between zSpace mode and normal mono viewing mode.</li>
+ <li>Requires WebGL2 and WebVR support, which you'll have if you're running on a zSpace viewer.</li>
+ <li>Attaches to a {{#crossLink "Camera"}}{{/crossLink}}, defaults to its {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
+ {{#crossLink "Scene/camera:property"}}{{/crossLink}} if none is specified.</li>
+ <li>Don't attach different view or projection transform components to the {{#crossLink "Camera"}}{{/crossLink}} while the ZSpaceEffect is active.</li>
+ <li>You can however update the {{#crossLink "Camera"}}{{/crossLink}}'s view transformation at any time, to move the
+ viewpoint around.</li>
+ <li>Use a {{#crossLink "ZSpaceStylusControl"}}{{/crossLink}} to drag {{#crossLink "Entity"}}Entities{{/crossLink}}
+ around with the stylus.</li>
+ </ul>
 
- &lt;img src=&quot;../../../assets/images/ZSpaceEffect.png&quot;&gt;&lt;/img&gt;
-
- ## Limitations
-
- &lt;ul&gt;
- &lt;li&gt;Stylus tracking only works correctly when the browser window is maximized to fill the zSpace display. This is because
- stylus tracking requires that we know the location of the window within the display, which is currently only possible
- when the window is maximized.&lt;/li&gt;
- &lt;/ul&gt;
+ <img src="../../../assets/images/ZSpaceEffect.png"></img>
 
  ## Examples
 
- &lt;ul&gt;
- &lt;li&gt;[zSpace cube](../../examples/webvr_zspace_cube.html)&lt;/li&gt;
- &lt;li&gt;[zSpace with random geometries](../../examples/webvr_zspace_geometries.html)&lt;/li&gt;
- &lt;li&gt;[zSpace with glTF gearbox model](../../examples/webvr_zspace_gearbox.html)&lt;/li&gt;
- &lt;li&gt;[zSpace with glTF gearbox model and entity explorer](../../examples/webvr_zspace_gearbox_explorer.html)&lt;/li&gt;
- &lt;/ul&gt;
+ <ul>
+ <li>[zSpace cube](../../examples/effects_zspace_cube.html)</li>
+ <li>[zSpace with random geometries](../../examples/effects_zspace_geometries.html)</li>
+ <li>[zSpace with glTF gearbox model](../../examples/effects_zspace_gearbox.html)</li>
+ <li>[zSpace with glTF gearbox model and entity explorer](../../examples/effects_zspace_gearbox_explorer.html)</li>
+ <li>[zSpace with glTF reciprocating saw model](../../examples/effects_zspace_ReciprocatingSaw.html)</li>
+ </ul>
 
  ## Usage
 
- In the following example we&#x27;re going to set up a ZSpace-viewable scene with xeoEngine, defining the scene step-by-step to
- emphasize the plug-and-play design of xeoEngine&#x27;s API.
+ In the following example we're going to set up a ZSpace-viewable scene with xeoEngine, defining the scene step-by-step to
+ emphasize the plug-and-play design of xeoEngine's API.
 
  **1. Create an entity**
 
- First we&#x27;ll create a simple torus-shaped {{#crossLink &quot;Entity&quot;}}{{/crossLink}}, which will be within xeoEngine&#x27;s default
- {{#crossLink &quot;Scene&quot;}}{{/crossLink}}, since we&#x27;re not defining the {{#crossLink &quot;Scene&quot;}}{{/crossLink}} component
- explicitly. Our {{#crossLink &quot;Entity&quot;}}{{/crossLink}} is also implicitly connected to the
- {{#crossLink &quot;Scene&quot;}}{{/crossLink}}&#x27;s default {{#crossLink &quot;Camera&quot;}}{{/crossLink}}, since we didn&#x27;t explicitly create
- a {{#crossLink &quot;Camera&quot;}}{{/crossLink}} for it either.
+ First we'll create a simple torus-shaped {{#crossLink "Entity"}}{{/crossLink}}, which will be within xeoEngine's default
+ {{#crossLink "Scene"}}{{/crossLink}}, since we're not defining the {{#crossLink "Scene"}}{{/crossLink}} component
+ explicitly. Our {{#crossLink "Entity"}}{{/crossLink}} is also implicitly connected to the
+ {{#crossLink "Scene"}}{{/crossLink}}'s default {{#crossLink "Camera"}}{{/crossLink}}, since we didn't explicitly create
+ a {{#crossLink "Camera"}}{{/crossLink}} for it either.
 
- &#x60;&#x60;&#x60;&#x60;javascript
+ ````javascript
  var entity = new XEO.Entity({
      geometry: new XEO.TorusGeometry(),
      material: new XEO.PhongMaterial({
         diffuseMap: new XEO.Texture({
-            src: &quot;textures/diffuse/uvGrid2.jpg&quot;
+            src: "textures/diffuse/uvGrid2.jpg"
         })
      })
  });
- &#x60;&#x60;&#x60;&#x60;
+ ````
 
  **2. Enable mouse/keyboard camera interaction**
 
- At this point we&#x27;ve got a textured torus floating in the middle of the canvas (which is also created automatically
- since we didn&#x27;t specify one). Now we&#x27;ll create a
- {{#crossLink &quot;CameraControl&quot;}}{{/crossLink}}, which immediately allows us to move our viewpoint around with the mouse and
- keyboard. This component is also within xeoEngine&#x27;s default {{#crossLink &quot;Scene&quot;}}{{/crossLink}} and connected to the
- {{#crossLink &quot;Scene&quot;}}{{/crossLink}}&#x27;s default {{#crossLink &quot;Camera&quot;}}{{/crossLink}}.
+ At this point we've got a textured torus floating in the middle of the canvas (which is also created automatically
+ since we didn't specify one). Now we'll create a
+ {{#crossLink "CameraControl"}}{{/crossLink}}, which immediately allows us to move our viewpoint around with the mouse and
+ keyboard. This component is also within xeoEngine's default {{#crossLink "Scene"}}{{/crossLink}} and connected to the
+ {{#crossLink "Scene"}}{{/crossLink}}'s default {{#crossLink "Camera"}}{{/crossLink}}.
 
- &#x60;&#x60;&#x60;&#x60;javascript
+ ````javascript
  new CameraControl();
- &#x60;&#x60;&#x60;&#x60;
+ ````
 
  **3. Enable ZSpace viewing**
 
- Now we can orbit, pan and zoom around the torus with the mouse and keyboard. Let&#x27;s view it on a ZSpace display by
- dropping a ZSpaceEffect into our default {{#crossLink &quot;Scene&quot;}}{{/crossLink}}.
+ Now we can orbit, pan and zoom around the torus with the mouse and keyboard. Let's view it on a ZSpace display by
+ dropping a ZSpaceEffect into our default {{#crossLink "Scene"}}{{/crossLink}}.
 
- &#x60;&#x60;&#x60;&#x60;javascript
+ ````javascript
  var zspace = new ZSpaceEffect();
- &#x60;&#x60;&#x60;&#x60;
+ ````
 
- The ZSpaceEffect immediately activates, so at this point if we&#x27;re running on a ZSpace device we&#x27;ll have a stereo
+ The ZSpaceEffect immediately activates, so at this point if we're running on a ZSpace device we'll have a stereo
  view of the torus, which we can view with the stereo glasses.
 
  At any point we can always disable the ZSpaceEffect effect to switch between normal WebGL mono viewing mode:
 
- &#x60;&#x60;&#x60;&#x60;javascript
+ ````javascript
  zspace.active = false; // Back to normal mono viewing..
  zspace.active = true; // ..and then back to ZSpace stereo mode.
 
- &#x60;&#x60;&#x60;&#x60;
+ ````
 
  ## Detecting support
 
- The **ZSpaceEffect** will fire a &quot;supported&quot; event once it has determined whether or not the browser
+ The **ZSpaceEffect** will fire a "supported" event once it has determined whether or not the browser
  supports a zSpace viewer:
 
- &#x60;&#x60;&#x60;&#x60;javascript
- zspace.on(&quot;supported&quot;, function (supported) {
+ ````javascript
+ zspace.on("supported", function (supported) {
 
         if (!supported) {
 
             // Not a zSpace device
 
-            this.error(&quot;This computer is not a ZSpace viewer!&quot;); // Log error on the XEO.ZSpaceEffect
+            this.error("This computer is not a ZSpace viewer!"); // Log error on the XEO.ZSpaceEffect
 
             // At this point you could just destroy the XEO.ZSpaceEffect to make it detach from the Camera
         }
     });
- &#x60;&#x60;&#x60;&#x60;
+ ````
 
  ## Handling stylus input
 
  Reading the current World-space position and direction of the stylus:
 
- &#x60;&#x60;&#x60;&#x60;javascript
+ ````javascript
  var stylusPos = zspace.stylusPos;
  var stylusDir = zspace.stylusDir;
- &#x60;&#x60;&#x60;&#x60;
+ ````
 
- Note that these properties only have meaningful values once the ZSpaceEffect has fired at least one {{#crossLink &quot;ZSpaceEffect/stylusMoved:event&quot;}}{{/crossLink}} event.
+ Note that these properties only have meaningful values once the ZSpaceEffect has fired at least one {{#crossLink "ZSpaceEffect/stylusMoved:event"}}{{/crossLink}} event.
 
  Subscribing to stylus movement:
 
- &#x60;&#x60;&#x60;&#x60;javascript
- zspace.on(&quot;stylusMoved&quot;, function() {
+ ````javascript
+ zspace.on("stylusMoved", function() {
      var stylusPos = zspace.stylusPos;
      var stylusDir = zspace.stylusDir;
      //...
  });
- &#x60;&#x60;&#x60;&#x60;
+ ````
 
  Reading the current state of each stylus button:
 
- &#x60;&#x60;&#x60;&#x60;javascript
+ ````javascript
  var button0 = zspace.stylusButton0; // Boolean
  var button1 = zspace.stylusButton1;
  var button2 = zspace.stylusButton2;
- &#x60;&#x60;&#x60;&#x60;
+ ````
 
  Subscribing to change of state of each stylus button:
 
- &#x60;&#x60;&#x60;&#x60;javascript
- zspace.on(&quot;stylusButton0&quot;, function(value) { // Boolean value
-     this.log(&quot;stylusButton0 = &quot; + value);
+ ````javascript
+ zspace.on("stylusButton0", function(value) { // Boolean value
+     this.log("stylusButton0 = " + value);
  });
 
- zspace.on(&quot;stylusButton1&quot;, function(value) {
-     this.log(&quot;stylusButton1 = &quot; + value);
+ zspace.on("stylusButton1", function(value) {
+     this.log("stylusButton1 = " + value);
  });
 
- zspace.on(&quot;stylusButton2&quot;, function(value) {
-     this.log(&quot;stylusButton2 = &quot; + value);
+ zspace.on("stylusButton2", function(value) {
+     this.log("stylusButton2 = " + value);
  });
- &#x60;&#x60;&#x60;&#x60;
+ ````
 
- Picking an {{#crossLink &quot;Entity&quot;}}{{/crossLink}} with the stylus when button 0 is pressed:
+ Picking an {{#crossLink "Entity"}}{{/crossLink}} with the stylus when button 0 is pressed:
 
- &#x60;&#x60;&#x60;&#x60;javascript
- zspace.on(&quot;stylusButton0&quot;, function() {
+ ````javascript
+ zspace.on("stylusButton0", function() {
 
     var hit = zspace.scene.pick({
         pickSurface: true,
@@ -367,9 +163,9 @@
 
         // Other properties on the hit result:
 
-        var primitive = hit.primitive; // Type of primitive that was picked, usually &quot;triangles&quot;
-        var primIndex = hit.primIndex; // Position of triangle&#x27;s first index in the picked Entity&#x27;s Geometry&#x27;s indices array
-        var indices = hit.indices; // UInt32Array containing the triangle&#x27;s vertex indices
+        var primitive = hit.primitive; // Type of primitive that was picked, usually "triangles"
+        var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array
+        var indices = hit.indices; // UInt32Array containing the triangle's vertex indices
         var localPos = hit.localPos; // Float32Array containing the picked Local-space position within the triangle
         var worldPos = hit.worldPos; // Float32Array containing the picked World-space position within the triangle
         var viewPos = hit.viewPos; // Float32Array containing the picked View-space position within the triangle
@@ -380,36 +176,38 @@
         //...
     }
  });
- &#x60;&#x60;&#x60;&#x60;
+ ````
  @class ZSpaceEffect
  @module XEO
  @submodule webvr
  @constructor
- @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this ZSpaceEffect in the default
- {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this ZSpaceEffect in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ZSpaceEffect.
- @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} for this ZSpaceEffect.
- Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this ZSpaceEffect. Defaults to the
- parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}&#x27;s default instance, {{#crossLink &quot;Scene/camera:property&quot;}}camera{{/crossLink}}.
+ @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} for this ZSpaceEffect.
+ Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this ZSpaceEffect. Defaults to the
+ parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
  @param [cfg.nearClip=0.1] {Number} Position of the near clipping plane on the View-space Z-axis.
  @param [cfg.farClip=10000] {Number} Position of the far clipping plane on the View-space Z-axis.
  @param [cfg.displaySize=0.521,0.293] {Array of Number} The viewer display size.
  @param [cfg.displayResolution=1920,1080] {Array of Number} The viewer display resolution.
+ @param [cfg.canvasOffset=0,0] {Array of Number} The offset of the canvas' corner from the edge of the screen - needed for
+ correct tracking of glasses and stylus. Leave this at ````[0,0]```` if the canvas is to fill the entire screen.
  @param [cfg.active=true] {Boolean} Whether or not this ZSpaceEffect is initially active.
  @extends Component
  */
 (function () {
 
-    &quot;use strict&quot;;
+    "use strict";
 
     var math = XEO.math;
 
     XEO.ZSpaceEffect = XEO.Component.extend({
 
-        type: &quot;XEO.ZSpaceEffect&quot;,
+        type: "XEO.ZSpaceEffect",
 
         _init: function (cfg) {
 
@@ -440,7 +238,6 @@
             this._viewerScale = 1;
 
             this._canvasOffset = math.vec2([0, 0]);
-            this._canvasOffset = math.vec2([310, 0]);
 
             // Matrices
             this._leftViewMatrix = math.identityMat4();
@@ -460,8 +257,8 @@
 
                 // WebGL 2 support is required
 
-                this.error(&quot;WebGL 2 is not supported by this browser&quot;);
-                this.fire(&quot;supported&quot;, this._supported = false, false);
+                this.error("WebGL 2 is not supported by this browser");
+                this.fire("supported", this._supported = false, false);
 
             } else {
 
@@ -469,16 +266,16 @@
 
                 if (!navigator.getVRDisplays) {
 
-                    this.error(&quot;WebVR is not supported by this browser&quot;);
-                    this.fire(&quot;supported&quot;, this._supported = false, false);
+                    this.error("WebVR is not supported by this browser");
+                    this.fire("supported", this._supported = false, false);
 
                 } else {
 
                     navigator.getVRDisplays().then(function (displays) {
 
                         if (displays.length === 0) {
-                            self.error(&quot;No WebVR displays found&quot;);
-                            self.fire(&quot;supported&quot;, self._supported = false, false);
+                            self.error("No WebVR displays found");
+                            self.fire("supported", self._supported = false, false);
                             return;
                         }
 
@@ -486,35 +283,35 @@
                         var display;
                         var displayName;
 
-                        for (i = 0; i &lt; displays.length; i++) {
+                        for (i = 0; i < displays.length; i++) {
 
                             display = displays[i];
                             displayName = display.displayName;
 
-                            self.log(&quot;Found WebVR display: &#x27;&quot; + displayName + &quot;&#x27;&quot;);
+                            self.log("Found WebVR display: '" + displayName + "'");
 
                             switch (display.displayName) {
-                                case &quot;ZSpace Left View&quot;:
+                                case "ZSpace Left View":
                                     self._leftViewDevice = display;
                                     break;
 
-                                case &quot;ZSpace Right View&quot;:
+                                case "ZSpace Right View":
                                     self._rightViewDevice = display;
                                     break;
 
-                                case &quot;ZSpace Left Projection&quot;:
+                                case "ZSpace Left Projection":
                                     self._leftProjectionDevice = display;
                                     break;
 
-                                case &quot;ZSpace Right Projection&quot;:
+                                case "ZSpace Right Projection":
                                     self._rightProjectionDevice = display;
                                     break;
 
-                                case &quot;ZSpace Stylus&quot;:
+                                case "ZSpace Stylus":
                                     self._stylusDevice = display;
                                     break;
 
-                                case &quot;ZSpace Stylus Buttons&quot;:
+                                case "ZSpace Stylus Buttons":
                                     self._stylusButtonsDevice = display;
                                     break;
                             }
@@ -526,32 +323,33 @@
                             || !self._rightProjectionDevice
                             || !self._stylusDevice
                             || !self._stylusButtonsDevice) {
-                            self.log(&quot;ZSpace WebVR display(s) not found&quot;);
-                            self.fire(&quot;supported&quot;, self._supported = false, false);
+                            self.log("ZSpace WebVR display(s) not found");
+                            self.fire("supported", self._supported = false, false);
                             return;
                         }
 
-                        self.fire(&quot;supported&quot;, self._supported = true, false); // Battlestation is fully operational.
+                        self.fire("supported", self._supported = true, false); // Battlestation is fully operational.
                     });
 
                     var zspaceConnectHandler = function (e) {
-                        self.log(&quot;zspace connected&quot;);
+                        self.log("zspace connected");
                         self._stylusGamepad = e.gamepad;
                     };
 
                     var zspaceDisconnectHandler = function (e) {
-                        self.log(&quot;zspace disconnected&quot;);
+                        self.log("zspace disconnected");
                         self._stylusGamepad = null;
                     };
 
-                    window.addEventListener(&quot;gamepadconnected&quot;, zspaceConnectHandler);
-                    window.addEventListener(&quot;gamepaddisconnected&quot;, zspaceDisconnectHandler);
+                    window.addEventListener("gamepadconnected", zspaceConnectHandler);
+                    window.addEventListener("gamepaddisconnected", zspaceDisconnectHandler);
                 }
             }
 
             // Set properties on this XEO.ZSpaceEffect (see _props below)
 
             this.camera = cfg.camera;
+            this.canvasOffset = cfg.canvasOffset;
             this.nearClip = cfg.nearClip;
             this.farClip = cfg.farClip;
             this.displaySize = cfg.displaySize;
@@ -562,19 +360,19 @@
         _props: {
 
             /**
-             * The {{#crossLink &quot;Camera&quot;}}{{/crossLink}} attached to this ZSpaceEffect.
+             * The {{#crossLink "Camera"}}{{/crossLink}} attached to this ZSpaceEffect.
              *
-             * The ZSpaceEffect will attach a {{#crossLink &quot;Projection&quot;}}{{/crossLink}} to its
-             * {{#crossLink &quot;Camera&quot;}}{{/crossLink}} if the {{#crossLink &quot;Camera&quot;}}Camera{{/crossLink}} does not have
+             * The ZSpaceEffect will attach a {{#crossLink "Projection"}}{{/crossLink}} to its
+             * {{#crossLink "Camera"}}{{/crossLink}} if the {{#crossLink "Camera"}}Camera{{/crossLink}} does not have
              * one already, replacing whatever projection transform component was already attached.
              *
-             * Must be within the same {{#crossLink &quot;Scene&quot;}}{{/crossLink}} as this ZSpaceEffect. Defaults to the parent
-             * {{#crossLink &quot;Scene&quot;}}Scene&#x27;s{{/crossLink}} default {{#crossLink &quot;Scene/camera:property&quot;}}camera{{/crossLink}} when set to
+             * Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this ZSpaceEffect. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene's{{/crossLink}} default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
              * a null or undefined value.
              *
-             * No other component should modify the state of the {{#crossLink &quot;Camera&quot;}}{{/crossLink}} while
-             * it&#x27;s attached to this ZSpaceEffect. There is no prevention or check for that, so if that
-             * happens you&#x27;ll get unexpected results.
+             * No other component should modify the state of the {{#crossLink "Camera"}}{{/crossLink}} while
+             * it's attached to this ZSpaceEffect. There is no prevention or check for that, so if that
+             * happens you'll get unexpected results.
              *
              * @property camera
              * @type Camera
@@ -584,15 +382,15 @@
                 set: function (value) {
 
                     /**
-                     * Fired whenever this ZSpaceEffect&#x27;s {{#crossLink &quot;ZSpaceEffect/camera:property&quot;}}{{/crossLink}}
+                     * Fired whenever this ZSpaceEffect's {{#crossLink "ZSpaceEffect/camera:property"}}{{/crossLink}}
                      * property changes.
                      *
                      * @event camera
-                     * @param value The property&#x27;s new value
+                     * @param value The property's new value
                      */
                     var camera = this._attach({
-                        name: &quot;camera&quot;,
-                        type: &quot;XEO.Camera&quot;,
+                        name: "camera",
+                        type: "XEO.Camera",
                         component: value,
                         sceneDefault: true
                     });
@@ -604,9 +402,42 @@
             },
 
             /**
-             * Position of this ZSpaceEffect&#x27;s near plane on the positive View-space Z-axis.
+             * The offset of the canvas' corner from the edge of the screen - needed for correct tracking of glasses and stylus.
              *
-             * Fires a {{#crossLink &quot;ZSpaceEffect/nearClip:event&quot;}}{{/crossLink}} event on change.
+             * Leave this at ````[0,0]```` if the canvas is to fill the entire screen.
+             *
+             * Fires a {{#crossLink "ZSpaceEffect/canvasOffset:event"}}{{/crossLink}} event on change.
+             *
+             * @property canvasOffset
+             * @default [0, 0]
+             * @type Float32Array
+             */
+            canvasOffset: {
+
+                set: function (value) {
+
+                    (this._canvasOffset = this._canvasOffset || new XEO.math.vec2()).set(value || [0, 0]);
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this ZSpaceEffect's {{#crossLink "ZSpaceEffect/canvasOffset:property"}}{{/crossLink}} property changes.
+                     * @event canvasOffset
+                     * @type Float32Array
+                     * @param value The property's new value
+                     */
+                    this.fire("canvasOffset", this._canvasOffset);
+                },
+
+                get: function () {
+                    return this._canvasOffset;
+                }
+            },
+
+            /**
+             * Position of this ZSpaceEffect's near plane on the positive View-space Z-axis.
+             *
+             * Fires a {{#crossLink "ZSpaceEffect/nearClip:event"}}{{/crossLink}} event on change.
              *
              * @property nearClip
              * @default 0.1
@@ -616,16 +447,16 @@
 
                 set: function (value) {
 
-                    this._nearClip = (value !== undefined &amp;&amp; value !== null) ? value : 0.1;
+                    this._nearClip = (value !== undefined && value !== null) ? value : 0.1;
 
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this ZSpaceEffect&#x27;s   {{#crossLink &quot;ZSpaceEffect/nearClip:property&quot;}}{{/crossLink}} property changes.
+                     * Fired whenever this ZSpaceEffect's   {{#crossLink "ZSpaceEffect/nearClip:property"}}{{/crossLink}} property changes.
                      * @event nearClip
-                     * @param value The property&#x27;s new value
+                     * @param value The property's new value
                      */
-                    this.fire(&quot;nearClip&quot;, this._nearClip);
+                    this.fire("nearClip", this._nearClip);
                 },
 
                 get: function () {
@@ -634,9 +465,9 @@
             },
 
             /**
-             * Position of this ZSpaceEffect&#x27;s far plane on the positive View-space Z-axis.
+             * Position of this ZSpaceEffect's far plane on the positive View-space Z-axis.
              *
-             * Fires a {{#crossLink &quot;ZSpaceEffect/farClip:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "ZSpaceEffect/farClip:event"}}{{/crossLink}} event on change.
              *
              * @property farClip
              * @default 10000.0
@@ -646,17 +477,17 @@
 
                 set: function (value) {
 
-                    this._farClip = (value !== undefined &amp;&amp; value !== null) ? value : 10000;
+                    this._farClip = (value !== undefined && value !== null) ? value : 10000;
 
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this ZSpaceEffect&#x27;s  {{#crossLink &quot;ZSpaceEffect/farClip:property&quot;}}{{/crossLink}} property changes.
+                     * Fired whenever this ZSpaceEffect's  {{#crossLink "ZSpaceEffect/farClip:property"}}{{/crossLink}} property changes.
                      *
                      * @event farClip
-                     * @param value The property&#x27;s new value
+                     * @param value The property's new value
                      */
-                    this.fire(&quot;farClip&quot;, this._farClip);
+                    this.fire("farClip", this._farClip);
                 },
 
                 get: function () {
@@ -667,7 +498,7 @@
             /**
              * The display resolution.
              *
-             * Fires a {{#crossLink &quot;ZSpaceEffect/displayResolution:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "ZSpaceEffect/displayResolution:event"}}{{/crossLink}} event on change.
              *
              * @property displayResolution
              * @default [1920, 1080]
@@ -682,12 +513,12 @@
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this ZSpaceEffect&#x27;s {{#crossLink &quot;ZSpaceEffect/displayResolution:property&quot;}}{{/crossLink}} property changes.
+                     * Fired whenever this ZSpaceEffect's {{#crossLink "ZSpaceEffect/displayResolution:property"}}{{/crossLink}} property changes.
                      * @event displayResolution
                      * @type Float32Array
-                     * @param value The property&#x27;s new value
+                     * @param value The property's new value
                      */
-                    this.fire(&quot;displayResolution&quot;, this._displayResolution);
+                    this.fire("displayResolution", this._displayResolution);
                 },
 
                 get: function () {
@@ -698,7 +529,7 @@
             /**
              * The display size.
              *
-             * Fires a {{#crossLink &quot;ZSpaceEffect/displaySize:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "ZSpaceEffect/displaySize:event"}}{{/crossLink}} event on change.
              *
              * @property displaySize
              * @default [0.521, 0.293]
@@ -713,12 +544,12 @@
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this ZSpaceEffect&#x27;s {{#crossLink &quot;ZSpaceEffect/displaySize:property&quot;}}{{/crossLink}} property changes.
+                     * Fired whenever this ZSpaceEffect's {{#crossLink "ZSpaceEffect/displaySize:property"}}{{/crossLink}} property changes.
                      * @event displaySize
                      * @type Float32Array
-                     * @param value The property&#x27;s new value
+                     * @param value The property's new value
                      */
-                    this.fire(&quot;displaySize&quot;, this._displaySize);
+                    this.fire("displaySize", this._displaySize);
                 },
 
                 get: function () {
@@ -729,7 +560,7 @@
             /**
              * The current World-space position of the stylus.
              *
-             * Fires a {{#crossLink &quot;ZSpaceEffect/stylusMoved:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "ZSpaceEffect/stylusMoved:event"}}{{/crossLink}} event on change.
              *
              * @property stylusPos
              * @type Float32Array
@@ -744,7 +575,7 @@
             /**
              * The current World-space direction of the stylus.
              *
-             * Fires a {{#crossLink &quot;ZSpaceEffect/stylusMoved:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "ZSpaceEffect/stylusMoved:event"}}{{/crossLink}} event on change.
              *
              * @property stylusOrientation
              * @type Float32Array
@@ -759,7 +590,7 @@
             /**
              * The current camera matrix for the stylus.
              *
-             * Fires a {{#crossLink &quot;ZSpaceEffect/stylusMoved:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "ZSpaceEffect/stylusMoved:event"}}{{/crossLink}} event on change.
              *
              * @property stylusCameraMatrix
              * @type Float32Array
@@ -774,7 +605,7 @@
             /**
              * The current world matrix for the stylus.
              *
-             * Fires a {{#crossLink &quot;ZSpaceEffect/stylusMoved:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "ZSpaceEffect/stylusMoved:event"}}{{/crossLink}} event on change.
              *
              * @property stylusCameraMatrix
              * @type Float32Array
@@ -789,7 +620,7 @@
             /**
              * Whether or not the first button is down on the stylus.
              *
-             * Fires a {{#crossLink &quot;ZSpaceEffect/stylusButton0:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "ZSpaceEffect/stylusButton0:event"}}{{/crossLink}} event on change.
              *
              * @property stylusButton0
              * @default false
@@ -805,7 +636,7 @@
             /**
              * Whether or not the second button is down on the stylus.
              *
-             * Fires a {{#crossLink &quot;ZSpaceEffect/stylusButton1:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "ZSpaceEffect/stylusButton1:event"}}{{/crossLink}} event on change.
              *
              * @property stylusButton1
              * @default false
@@ -821,7 +652,7 @@
             /**
              * Whether or not the third button is down on the stylus.
              *
-             * Fires a {{#crossLink &quot;ZSpaceEffect/stylusButton2:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "ZSpaceEffect/stylusButton2:event"}}{{/crossLink}} event on change.
              *
              * @property stylusButton2
              * @default false
@@ -840,7 +671,7 @@
              * The ZSpaceEffect automatically calculates this from the distance between
              * the eye and the point of interest.
              *
-             * Fires a {{#crossLink &quot;ZSpaceEffect/stylusButton2:event&quot;}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "ZSpaceEffect/stylusButton2:event"}}{{/crossLink}} event on change.
              *
              * @property viewerScale
              * @default 1
@@ -859,7 +690,7 @@
              *
              * Note that this ZSpaceEffect can still be activated when the browser does not support ZSpace.
              *
-             * Fires an {{#crossLink &quot;ZSpaceEffect/active:event&quot;}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "ZSpaceEffect/active:event"}}{{/crossLink}} event on change.
              *
              * @property active
              * @type Boolean
@@ -881,11 +712,11 @@
                     this._renderer.imageDirty = true;
 
                     /**
-                     * Fired whenever this ZSpaceEffect&#x27;s {{#crossLink &quot;ZSpaceEffect/active:property&quot;}}{{/crossLink}} property changes.
+                     * Fired whenever this ZSpaceEffect's {{#crossLink "ZSpaceEffect/active:property"}}{{/crossLink}} property changes.
                      * @event active
-                     * @param value The property&#x27;s new value
+                     * @param value The property's new value
                      */
-                    this.fire(&#x27;active&#x27;, this._active);
+                    this.fire('active', this._active);
                 },
 
                 get: function () {
@@ -901,21 +732,21 @@
             // Need to reallocate stereo framebuffer
             // whenever canvas resizes or context lost/restored
 
-            this._onCanvasResized = this.scene.canvas.on(&quot;boundary&quot;, function () {
+            this._onCanvasResized = this.scene.canvas.on("boundary", function () {
                 self._destroyFrameBuffer(); // To recreate next time we bind it
             });
 
-            this._onWebGLContextRestored = this.scene.canvas.on(&quot;webglContextRestored&quot;, function () {
+            this._onWebGLContextRestored = this.scene.canvas.on("webglContextRestored", function () {
                 self._frameBufferAllocated = false; // Framebuffers were destroyed by context loss, reallocate next time we bind
             });
 
-            // Intercept each render with a callback; we&#x27;ll get two invocations
+            // Intercept each render with a callback; we'll get two invocations
             // per frame, one for the left eye, a second for the right
 
-            this._onSceneRendering = this.scene.on(&quot;rendering&quot;, this._rendering, this);
+            this._onSceneRendering = this.scene.on("rendering", this._rendering, this);
 
             // Attach renderer hooks to bind/unbind our stereo
-            // framebuffer as the renderer&#x27;s output buffer.
+            // framebuffer as the renderer's output buffer.
 
             this._renderer.bindOutputFramebuffer = function (pass) {
                 if (!self._supported) { // Support not found yet
@@ -935,10 +766,10 @@
         },
 
         _bindFrameBuffer: function (pass) { // Activates stereo output framebuffer, lazy-allocating it if needed
-            if (!this._frameBufferAllocated) { // Becomes false on &quot;webglContextRestored&quot; event and when canvas resized
+            if (!this._frameBufferAllocated) { // Becomes false on "webglContextRestored" event and when canvas resized
                 this._allocateFrameBuffer();
             }
-            // this.log(&quot;Binding stereo framebuffer - pass = &quot; + pass);
+            // this.log("Binding stereo framebuffer - pass = " + pass);
             var gl = this.scene.canvas.gl;
             if (pass === 0) {
                 gl.setStereoFramebuffer(this._frameBuffer, this._frameBufferTexture);
@@ -955,7 +786,7 @@
             var width = canvas.clientWidth;
             var height = canvas.clientHeight;
 
-            // this.log(&quot;Creating stereo framebuffer - size = &quot; + width + &quot;, &quot; + height);
+            // this.log("Creating stereo framebuffer - size = " + width + ", " + height);
 
             this._frameBufferTexture = gl.createTexture();
             gl.bindTexture(gl.TEXTURE_2D_ARRAY, this._frameBufferTexture);
@@ -986,7 +817,7 @@
                 return;
             }
 
-            //this.log(&quot;Destroying stereo framebuffer&quot;);
+            //this.log("Destroying stereo framebuffer");
 
             var gl = this.scene.canvas.gl;
 
@@ -1006,7 +837,7 @@
             if (!this._supported) {
 
                 // Support is found asynchronously and we are able to be active while looking for it.
-                // Come back on next render, maybe we&#x27;ll have support then.
+                // Come back on next render, maybe we'll have support then.
 
                 return;
             }
@@ -1014,14 +845,14 @@
             var camera = this._attached.camera;
 
             if (!camera) {
-                return; // Come back on next render, maybe we&#x27;ll have a camera then
+                return; // Come back on next render, maybe we'll have a camera then
             }
 
             // Need to have XEO.Transforms for viewing and projection
             // on the Camera, so that we can set matrices on them.
 
-            if (camera.project.type !== &quot;XEO.Transform&quot;) {
-                this.warn(&quot;Replacing camera&#x27;s projection transform with a XEO.Transform (needed for ZSpace)&quot;);
+            if (camera.project.type !== "XEO.Transform") {
+                this.warn("Replacing camera's projection transform with a XEO.Transform (needed for ZSpace)");
                 this._oldProject = camera.project; // Save so we can restore on deactivation
                 camera.project = camera.create(XEO.Transform);
             }
@@ -1102,8 +933,6 @@
 
             var invViewMatrix = math.mat4();
 
-            var stylusLocalMatrix = math.mat4();
-
             return function () {
 
                 // Automatically derive viewer scale from base view transform
@@ -1116,7 +945,8 @@
 
                 canvas = this.scene.canvas.canvas;
 
-                getCanvasPosition(canvas, canvasPosition);
+                canvasPosition[0] = window.screenX + canvas.offsetLeft - screen.availLeft + this._canvasOffset[0];
+                canvasPosition[1] = window.screenY + canvas.offsetTop + 75 + this._canvasOffset[1];
 
                 canvasWidth = canvas.clientWidth * displayScaleFactorX * this._viewerScale;
                 canvasHeight = canvas.clientHeight * displayScaleFactorY * this._viewerScale;
@@ -1138,7 +968,7 @@
                 scale[2] = this._viewerScale;
                 math.scalingMat4v(scale, viewScaleMat);
 
-                // Batches this component&#x27;s outgoing update events for after all ZSpace device updates
+                // Batches this component's outgoing update events for after all ZSpace device updates
                 // processed, so that we have all device state available at the time we fire them
 
                 var stylusMoved = false;
@@ -1149,7 +979,7 @@
                 // Left eye viewing matrix
 
                 var leftViewPose = this._leftViewDevice.getPose();
-                if (leftViewPose &amp;&amp; leftViewPose.orientation &amp;&amp; leftViewPose.position) {
+                if (leftViewPose && leftViewPose.orientation && leftViewPose.position) {
 
                     math.transformPoint3(offsetTranslateMat, leftViewPose.position, tempVec3a);
                     math.transformPoint3(viewScaleMat, tempVec3a, tempVec3b);
@@ -1162,7 +992,7 @@
                 // Right eye viewing matrix
 
                 var rightViewPose = this._rightViewDevice.getPose();
-                if (rightViewPose &amp;&amp; rightViewPose.orientation &amp;&amp; rightViewPose.position) {
+                if (rightViewPose && rightViewPose.orientation && rightViewPose.position) {
 
                     math.transformPoint3(offsetTranslateMat, rightViewPose.position, tempVec3a);
                     math.transformPoint3(viewScaleMat, tempVec3a, tempVec3b);
@@ -1178,7 +1008,7 @@
                 // Left eye projection matrix
 
                 leftProjectionPose = this._leftProjectionDevice.getPose();
-                if (leftProjectionPose &amp;&amp; leftProjectionPose.orientation &amp;&amp; leftProjectionPose.position) {
+                if (leftProjectionPose && leftProjectionPose.orientation && leftProjectionPose.position) {
                     math.transformPoint3(offsetTranslateMat, leftProjectionPose.position, tempVec3a);
                     math.transformPoint3(viewScaleMat, tempVec3a, tempVec3b);
                     up = Math.atan((canvasHeight * 0.5 - tempVec3b[1]) / tempVec3b[2]);
@@ -1194,7 +1024,7 @@
                 // Right eye projection matrix
 
                 rightProjectionPose = this._rightProjectionDevice.getPose();
-                if (rightProjectionPose &amp;&amp; rightProjectionPose.orientation &amp;&amp; rightProjectionPose.position) {
+                if (rightProjectionPose && rightProjectionPose.orientation && rightProjectionPose.position) {
                     math.transformPoint3(offsetTranslateMat, rightProjectionPose.position, tempVec3a);
                     math.transformPoint3(viewScaleMat, tempVec3a, tempVec3b);
                     up = Math.atan((canvasHeight * 0.5 - tempVec3b[1]) / tempVec3b[2]);
@@ -1207,10 +1037,10 @@
                     math.frustumMat4(-0.1, 0.1, -0.1, 0.1, 0.1, 1000.0, this._rightProjectionMatrix);
                 }
 
-                // Poll the stylus&#x27; pose
+                // Poll the stylus' pose
 
                 var stylusPose = this._stylusDevice.getPose();
-                if (stylusPose &amp;&amp; stylusPose.orientation &amp;&amp; stylusPose.position) {
+                if (stylusPose && stylusPose.orientation && stylusPose.position) {
 
                     var orientation = stylusPose.orientation;
 
@@ -1219,16 +1049,16 @@
 
                     math.rotationTranslationMat4(orientation, tempVec3b, this._stylusCameraMatrix);
 
-                    if (this._stylusPos[0] !== tempVec3b[0] &amp;&amp; this._stylusPos[1] !== tempVec3b[1] &amp;&amp; this._stylusPos[2] !== tempVec3b[2]) {
+                    if (this._stylusPos[0] !== tempVec3b[0] && this._stylusPos[1] !== tempVec3b[1] && this._stylusPos[2] !== tempVec3b[2]) {
                         this._stylusPos[0] = tempVec3b[0];
                         this._stylusPos[1] = tempVec3b[1];
                         this._stylusPos[2] = tempVec3b[2];
                         stylusMoved = true;
                     }
 
-                    if (this._stylusOrientation[0] !== orientation[0] &amp;&amp;
-                        this._stylusOrientation[1] !== orientation[1] &amp;&amp;
-                        this._stylusOrientation[2] !== orientation[2] &amp;&amp;
+                    if (this._stylusOrientation[0] !== orientation[0] &&
+                        this._stylusOrientation[1] !== orientation[1] &&
+                        this._stylusOrientation[2] !== orientation[2] &&
                         this._stylusOrientation[3] !== orientation[3]) {
 
                         this._stylusOrientation[0] = orientation[0];
@@ -1260,10 +1090,10 @@
                     math.identityMat4(this._stylusCameraMatrix);
                 }
 
-                // Poll the stylus&#x27; buttons
+                // Poll the stylus' buttons
 
                 var stylusButtonsPose = this._stylusButtonsDevice.getPose();
-                if (stylusButtonsPose &amp;&amp; stylusButtonsPose.position) {
+                if (stylusButtonsPose && stylusButtonsPose.position) {
 
                     var buttons = stylusButtonsPose.position;
                     var button0 = !!buttons[0];
@@ -1291,44 +1121,44 @@
                 if (stylusMoved) {
 
                     /**
-                     * Fired whenever this ZSpaceEffect&#x27;s stylus moves.
+                     * Fired whenever this ZSpaceEffect's stylus moves.
                      *
                      * @event stylusMoved
                      */
-                    this.fire(&quot;stylusMoved&quot;, true);
+                    this.fire("stylusMoved", true);
                 }
 
                 if (stylusButton0Updated) {
 
                     /**
-                     * Fired whenever this ZSpaceEffect&#x27;s first button is pressed or released.
+                     * Fired whenever this ZSpaceEffect's first button is pressed or released.
                      *
                      * @event stylusButton0
                      * @param value True if the button is down.
                      */
-                    this.fire(&quot;stylusButton0&quot;, this._stylusButton0);
+                    this.fire("stylusButton0", this._stylusButton0);
                 }
 
                 if (stylusButton1Updated) {
 
                     /**
-                     * Fired whenever this ZSpaceEffect&#x27;s second button is pressed or released.
+                     * Fired whenever this ZSpaceEffect's second button is pressed or released.
                      *
                      * @event stylusButton1
                      * @param value True if the button is down.
                      */
-                    this.fire(&quot;stylusButton1&quot;, this._stylusButton1);
+                    this.fire("stylusButton1", this._stylusButton1);
                 }
 
                 if (stylusButton2Updated) {
 
                     /**
-                     * Fired whenever this ZSpaceEffect&#x27;s third button is pressed or released.
+                     * Fired whenever this ZSpaceEffect's third button is pressed or released.
                      *
                      * @event stylusButton2
                      * @param value True if the button is down.
                      */
-                    this.fire(&quot;stylusButton2&quot;, this._stylusButton2);
+                    this.fire("stylusButton2", this._stylusButton2);
                 }
             };
 
@@ -1338,7 +1168,7 @@
 
             var scene = this.scene;
 
-            scene.passes = 1; // Don&#x27;t need to restore scene.clearEachPass
+            scene.passes = 1; // Don't need to restore scene.clearEachPass
 
             if (this._oldView) { // Transforms were replaced on camera when activating - restore old transforms
                 this._attached.camera.view = this._oldView;
@@ -1376,12 +1206,6 @@
         }
     });
 
-    function getCanvasPosition(canvas, canvasPosition) { // Helper function to get an element&#x27;s exact position
-        var canvasOffset = [0, 0];
-        canvasPosition[0] = window.screenX + canvas.offsetLeft - screen.availLeft + canvasOffset[0];
-        canvasPosition[1] = window.screenY + canvas.offsetTop + 75 + canvasOffset[1];
-    }
-
     function makeProjectionMatrix(up, down, left, right, nearClip, farClip, out) {
         var o = Math.tan(up);
         var u = Math.tan(down);
@@ -1407,22 +1231,3 @@
         return out;
     }
 })();
-
-    </pre>
-</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<script src="../assets/vendor/prettify/prettify-min.js"></script>
-<script>prettyPrint();</script>
-<script src="../assets/js/yui-prettify.js"></script>
-<script src="../assets/../api.js"></script>
-<script src="../assets/js/api-filter.js"></script>
-<script src="../assets/js/api-list.js"></script>
-<script src="../assets/js/api-search.js"></script>
-<script src="../assets/js/apidocs.js"></script>
-</body>
-</html>

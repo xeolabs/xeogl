@@ -1,18 +1,18 @@
 /**
- A **Stereo** sets up a stereo view for its Scene.
+ A **StereoEffect** sets up a stereo view for its Scene.
 
  ## Usage
 
  Stereo view of an Entity using Scene's default Camera and viewport:
 
  ````javascript
- // Both the Entity and the Stereo use their Scene's default Camera and Viewport
+ // Both the Entity and the StereoEffect use their Scene's default Camera and Viewport
 
  var entity = new XEO.Entity({
      geometry: new XEO.BoxGeometry()
  });
 
- var stereo = new XEO.Stereo({
+ var stereo = new XEO.StereoEffect({
      eyeSep: 0.2, // Default
      focalLength: 20, // Default
      aperture: 45, // Default
@@ -44,7 +44,7 @@
      geometry: new XEO.BoxGeometry()
  });
 
- var stereo = new XEO.Stereo({
+ var stereo = new XEO.StereoEffect({
      camera: camera,
      viewport: viewport,
      eyeSep: 0.2, // Default
@@ -54,35 +54,35 @@
  });
  ````
 
- @class Stereo
+ @class StereoEffect
  @module XEO
  @submodule effects
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Stereo in the default
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this StereoEffect in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Stereo.
- @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} for this Stereo.
- Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Stereo. Defaults to the
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this StereoEffect.
+ @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} for this StereoEffect.
+ Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this StereoEffect. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
- @param [cfg.viewport] {String|Viewport} ID or instance of a {{#crossLink "Viewport"}}Viewport{{/crossLink}} for this Stereo.
- Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Stereo. Defaults to the
+ @param [cfg.viewport] {String|Viewport} ID or instance of a {{#crossLink "Viewport"}}Viewport{{/crossLink}} for this StereoEffect.
+ Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this StereoEffect. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/viewport:property"}}viewport{{/crossLink}}.
  @param [cfg.eyeSep=0.2] Number Eye separation distance.
  @param [cfg.focalLength=20] Focal length.
  @param [cfg.aperture=45] Aperture angle in degrees.
- @param [cfg.active=true] {Boolean} Whether or not this Stereo is active.
+ @param [cfg.active=true] {Boolean} Whether or not this StereoEffect is active.
  @extends Entity
  */
 (function () {
 
     "use strict";
 
-    XEO.Stereo = XEO.Entity.extend({
+    XEO.StereoEffect = XEO.Entity.extend({
 
-        type: "XEO.Stereo",
+        type: "XEO.StereoEffect",
 
         _init: function (cfg) {
 
@@ -97,13 +97,13 @@
         _props: {
 
             /**
-             * The {{#crossLink "Camera"}}{{/crossLink}} attached to this Stereo.
+             * The {{#crossLink "Camera"}}{{/crossLink}} attached to this StereoEffect.
              *
-             * This Stereo will attach a {{#crossLink "Frustum"}}{{/crossLink}} to its
+             * This StereoEffect will attach a {{#crossLink "Frustum"}}{{/crossLink}} to its
              * {{#crossLink "Camera"}}{{/crossLink}} if the {{#crossLink "Camera"}}Camera{{/crossLink}} does not have
              * one already, replacing the projection transform component that was already attached.
              *
-             * Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Stereo. Defaults to the parent
+             * Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this StereoEffect. Defaults to the parent
              * {{#crossLink "Scene"}}Scene's{{/crossLink}} default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
              * a null or undefined value.
              *
@@ -115,7 +115,7 @@
                 set: function (value) {
 
                     /**
-                     * Fired whenever this Stereo's {{#crossLink "Stereo/camera:property"}}{{/crossLink}}
+                     * Fired whenever this StereoEffect's {{#crossLink "StereoEffect/camera:property"}}{{/crossLink}}
                      * property changes.
                      *
                      * @event camera
@@ -144,9 +144,9 @@
             },
 
             /**
-             * The {{#crossLink "Viewport"}}{{/crossLink}} attached to this Stereo.
+             * The {{#crossLink "Viewport"}}{{/crossLink}} attached to this StereoEffect.
              *
-             * Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Stereo. Defaults to the parent
+             * Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this StereoEffect. Defaults to the parent
              * {{#crossLink "Scene"}}Scene's{{/crossLink}} default {{#crossLink "Scene/viewport:property"}}Viewport{{/crossLink}} when set to
              * a null or undefined value.
              *
@@ -158,7 +158,7 @@
                 set: function (value) {
 
                     /**
-                     * Fired whenever this Stereo's {{#crossLink "Stereo/Viewport:property"}}{{/crossLink}}
+                     * Fired whenever this StereoEffect's {{#crossLink "StereoEffect/Viewport:property"}}{{/crossLink}}
                      * property changes.
                      *
                      * @event Viewport
@@ -182,7 +182,7 @@
             /**
              * Eye separation distance.
              *
-             * Fires an {{#crossLink "Stereo/eyeSep:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "StereoEffect/eyeSep:event"}}{{/crossLink}} event on change.
              *
              * @property eyeSep
              * @type Number
@@ -201,7 +201,7 @@
                     this._eyeSep = value;
 
                     /**
-                     * Fired whenever this Stereo's {{#crossLink "Stereo/eyeSep:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this StereoEffect's {{#crossLink "StereoEffect/eyeSep:property"}}{{/crossLink}} property changes.
                      * @event eyeSep
                      * @param value The property's new value
                      */
@@ -216,7 +216,7 @@
             /**
              * Focal length.
              *
-             * Fires an {{#crossLink "Stereo/focalLength:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "StereoEffect/focalLength:event"}}{{/crossLink}} event on change.
              *
              * @property focalLength
              * @type Number
@@ -235,7 +235,7 @@
                     this._focalLength = value;
 
                     /**
-                     * Fired whenever this Stereo's {{#crossLink "Stereo/focalLength:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this StereoEffect's {{#crossLink "StereoEffect/focalLength:property"}}{{/crossLink}} property changes.
                      * @event focalLength
                      * @param value The property's new value
                      */
@@ -250,7 +250,7 @@
             /**
              * Aperture angle in degrees.
              *
-             * Fires an {{#crossLink "Stereo/aperture:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "StereoEffect/aperture:event"}}{{/crossLink}} event on change.
              *
              * @property aperture
              * @type Number
@@ -269,7 +269,7 @@
                     this._aperture = value;
 
                     /**
-                     * Fired whenever this Stereo's {{#crossLink "Stereo/aperture:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this StereoEffect's {{#crossLink "StereoEffect/aperture:property"}}{{/crossLink}} property changes.
                      * @event aperture
                      * @param value The property's new value
                      */
@@ -282,9 +282,9 @@
             },
 
             /**
-             * Flag which indicates whether this Stereo is active or not.
+             * Flag which indicates whether this StereoEffect is active or not.
              *
-             * Fires an {{#crossLink "Stereo/active:event"}}{{/crossLink}} event on change.
+             * Fires an {{#crossLink "StereoEffect/active:event"}}{{/crossLink}} event on change.
              *
              * @property active
              * @type Boolean
@@ -305,7 +305,7 @@
                     this._active ? this._activate() : this._deactivate();
 
                     /**
-                     * Fired whenever this Stereo's {{#crossLink "Stereo/active:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this StereoEffect's {{#crossLink "StereoEffect/active:property"}}{{/crossLink}} property changes.
                      * @event active
                      * @param value The property's new value
                      */

@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeoengine.org/
  *
- * Built on 2016-10-19
+ * Built on 2016-10-20
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -1174,6 +1174,18 @@ var Canvas2Image = (function () {
         },
 
         /**
+         * Converts a 3x3 matrix to 4x4
+         * @method mat3ToMat4
+         * @param mat3 3x3 matrix.
+         * @param mat4 4x4 matrix
+         * @static
+         * @returns {Float32Array}
+         */
+        mat3ToMat4: function (mat3, mat4) { // TODO
+            //return new Float32Array(values || 9);
+        },
+
+        /**
          * Returns a new, uninitialized 4x4 matrix.
          * @method mat4
          * @param [values] Initial values.
@@ -1182,6 +1194,18 @@ var Canvas2Image = (function () {
          */
         mat4: function (values) {
             return new Float32Array(values || 16);
+        },
+
+        /**
+         * Converts a 4x4 matrix to 3x3
+         * @method mat4ToMat3
+         * @param mat4 4x4 matrix.
+         * @param mat3 3x3 matrix
+         * @static
+         * @returns {Float32Array}
+         */
+        mat4ToMat3: function (mat4, mat3) { // TODO
+            //return new Float32Array(values || 9);
         },
 
         /**
@@ -1993,23 +2017,6 @@ var Canvas2Image = (function () {
             }
             return true;
         },
-
-        composeMat4: (function () {
-            
-            
-            return function (position, quaternio, scale, mat) {
-
-                this.identityMat4(mat);
-                this.quaternionToMat4(mat);
-                this.scalingMat4v(scale, mat);
-                this.scale(scale);
-                this.setPosition(position);
-
-                return mat;
-
-            };
-        })(),
-
 
         /**
          * Negates the given 4x4 matrix.

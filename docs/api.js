@@ -76,7 +76,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "SplineCurve",
         "Stage",
         "Stationary",
-        "Stereo",
+        "StereoEffect",
         "TeapotGeometry",
         "Texture",
         "TorusGeometry",
