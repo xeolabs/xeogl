@@ -16,8 +16,8 @@
  ````javascript
 
  // First Entity with a BoxGeometry
- var box = new XEO.Entity({
-     geometry: new XEO.BoxGeometry({
+ var box = new xeogl.Entity({
+     geometry: new xeogl.BoxGeometry({
         xSize: 1,
         ySize: 1,
         zSize: 1
@@ -30,13 +30,13 @@
  // Second Entity with a BoundaryGeometry that shows a wireframe box
  // for the World-space boundary of the first Entity
 
- new XEO.Entity({
+ new xeogl.Entity({
 
-     geometry: new XEO.BoundaryGeometry({
+     geometry: new xeogl.BoundaryGeometry({
          boundary: worldBoundary
      }),
 
-     material: new XEO.PhongMaterial({
+     material: new xeogl.PhongMaterial({
          diffuse: [0.5, 1.0, 0.5],
          emissive: [0.5, 1.0, 0.5],
          lineWidth:2
@@ -45,7 +45,7 @@
  ````
 
  @class BoundaryGeometry
- @module XEO
+ @module xeogl
  @submodule geometry
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this BoundaryGeometry in the default
@@ -61,9 +61,9 @@
 
     "use strict";
 
-    XEO.BoundaryGeometry = XEO.Geometry.extend({
+    xeogl.BoundaryGeometry = xeogl.Geometry.extend({
 
-        type: "XEO.BoundaryGeometry",
+        type: "xeogl.BoundaryGeometry",
 
         _init: function (cfg) {
 
@@ -122,7 +122,7 @@
 
                     this._attach({
                         name: "boundary",
-                        type: "XEO.Boundary3D",
+                        type: "xeogl.Boundary3D",
                         component: value,
                         sceneDefault: false,
                         on: {
@@ -131,7 +131,7 @@
                                     return;
                                 }
                                 geometryDirty = true;
-                                XEO.scheduleTask(function () {
+                                xeogl.scheduleTask(function () {
                                     self._setPositionsFromOBB(self._attached.boundary.obb);
                                     geometryDirty = false;
                                 });

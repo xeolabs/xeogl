@@ -33,7 +33,7 @@
  property over time:
 
  ````javascript
- var curve = new XEO.CubicBezierCurve({
+ var curve = new xeogl.CubicBezierCurve({
      v0: [-10, 0, 0],
      v1: [-5, 15, 0],
      v2: [20, 15, 0],
@@ -82,13 +82,13 @@
  curve.  Note that we need to flatten the points array for consumption by the {{#crossLink "Geometry"}}{{/crossLink}}.
 
  ````javascript
- var geometry = new XEO.Geometry({
-     positions: XEO.math.flatten(curve.getPoints(50))
+ var geometry = new xeogl.Geometry({
+     positions: xeogl.math.flatten(curve.getPoints(50))
  });
  ````
 
  @class CubicBezierCurve
- @module XEO
+ @module xeogl
  @submodule curves
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
@@ -106,7 +106,7 @@
 
     "use strict";
 
-    XEO.CubicBezierCurve = XEO.Curve.extend({
+    xeogl.CubicBezierCurve = xeogl.Curve.extend({
 
         /**
          JavaScript class name for this Component.
@@ -115,7 +115,7 @@
          @type String
          @final
          */
-        type: "XEO.CubicBezierCurve",
+        type: "xeogl.CubicBezierCurve",
 
         _init: function (cfg) {
 
@@ -150,7 +150,7 @@
                      * @event v0
                      * @param value The property's new value
                      */
-                    this.fire("v0", this._v0 = value || XEO.math.vec3([0, 0, 0]));
+                    this.fire("v0", this._v0 = value || xeogl.math.vec3([0, 0, 0]));
                 },
 
                 get: function () {
@@ -177,7 +177,7 @@
                      * @event v1
                      * @param value The property's new value
                      */
-                    this.fire("v1", this._v1 = value || XEO.math.vec3([0, 0, 0]));
+                    this.fire("v1", this._v1 = value || xeogl.math.vec3([0, 0, 0]));
                 },
 
                 get: function () {
@@ -204,7 +204,7 @@
                      * @event v2
                      * @param value The property's new value
                      */
-                    this.fire("v2", this._v2 = value || XEO.math.vec3([0, 0, 0]));
+                    this.fire("v2", this._v2 = value || xeogl.math.vec3([0, 0, 0]));
                 },
 
                 get: function () {
@@ -231,7 +231,7 @@
                      * @event v3
                      * @param value The property's new value
                      */
-                    this.fire("v3", this._v3 = value || XEO.math.vec3([0, 0, 0]));
+                    this.fire("v3", this._v3 = value || xeogl.math.vec3([0, 0, 0]));
                 },
 
                 get: function () {
@@ -293,7 +293,7 @@
          */
         getPoint: function (t) {
 
-            var math = XEO.math;
+            var math = xeogl.math;
             var vector = math.vec3();
 
             vector[0] = math.b3(t, this._v0[0], this._v1[0], this._v2[0], this._v3[0]);

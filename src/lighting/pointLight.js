@@ -13,7 +13,7 @@
  head as the {{#crossLink "Camera"}}{{/crossLink}} moves.</li>
  <li>PointLights have {{#crossLink "PointLight/constantAttenuation:property"}}{{/crossLink}}, {{#crossLink "PointLight/linearAttenuation:property"}}{{/crossLink}} and
  {{#crossLink "PointLight/quadraticAttenuation:property"}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that PointLights create within xeoEngine's shaders.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that PointLights create within xeogl's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/PointLight.png"></img>
@@ -28,11 +28,11 @@
  ## Usage
 
  ```` javascript
- var entity = new XEO.Entity(scene, {
+ var entity = new xeogl.Entity(scene, {
 
-        lights: new XEO.Lights({
+        lights: new xeogl.Lights({
             lights: [
-                new XEO.PointLight({
+                new xeogl.PointLight({
                     pos: [0, 100, 100],
                     color: [0.5, 0.7, 0.5],
                     intensity: 1
@@ -44,16 +44,16 @@
             ]
         }),
  ,
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuse: [0.5, 0.5, 0.0]
         }),
 
-        geometry: new XEO.BoxGeometry()
+        geometry: new xeogl.BoxGeometry()
   });
  ````
 
  @class PointLight
- @module XEO
+ @module xeogl
  @submodule lighting
  @constructor
  @extends Component
@@ -74,16 +74,16 @@
 
     "use strict";
 
-    XEO.PointLight = XEO.Component.extend({
+    xeogl.PointLight = xeogl.Component.extend({
 
-        type: "XEO.PointLight",
+        type: "xeogl.PointLight",
 
         _init: function (cfg) {
 
             this._state = {
                 type: "point",
-                pos: XEO.math.vec3([1.0, 1.0, 1.0]),
-                color: XEO.math.vec3([0.7, 0.7, 0.8]),
+                pos: xeogl.math.vec3([1.0, 1.0, 1.0]),
+                color: xeogl.math.vec3([0.7, 0.7, 0.8]),
                 intensity: 1.0,
 
                 // Packaging constant, linear and quadratic attenuation terms

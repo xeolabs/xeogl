@@ -16,9 +16,9 @@
  that sets the WebGL color mask and enables blending:
 
  ````javascript
- new XEO.Entity({
-     geometry: new XEO.BoxGeometry(),
-     colorBuf: new XEO.ColorBuf({
+ new xeogl.Entity({
+     geometry: new xeogl.BoxGeometry(),
+     colorBuf: new xeogl.ColorBuf({
          blendEnabled: true,
          colorMask: [true, true, true, true]
      })
@@ -26,7 +26,7 @@
  ````
 
  @class ColorBuf
- @module XEO
+ @module xeogl
  @submodule rendering
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this ColorBuf within the
@@ -42,13 +42,13 @@
 
     "use strict";
 
-    XEO.ColorBuf = XEO.Component.extend({
+    xeogl.ColorBuf = xeogl.Component.extend({
 
-        type: "XEO.ColorBuf",
+        type: "xeogl.ColorBuf",
 
         _init: function (cfg) {
 
-            this._state = new XEO.renderer.ColorBuf({
+            this._state = new xeogl.renderer.ColorBuf({
                 blendEnabled: false,
                 colorMask: [true, true, true, true]
             });

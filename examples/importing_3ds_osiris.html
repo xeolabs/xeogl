@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
 
     <script src="js/importing/k3d.js"></script>
     <script src="js/importing/nintendo3DSGeometry.js"></script>
@@ -15,38 +15,38 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>loading .3DS geometry using an <a
-        href="../docs/classes/Nintendo3DSGeometry.html" target="_docs">XEO.Nintendo3DSGeometry</a>
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>loading .3DS geometry using an <a
+        href="../docs/classes/Nintendo3DSGeometry.html" target="_docs">xeogl.Nintendo3DSGeometry</a>
 </div>
 
 <script>
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
 
-        geometry: new XEO.Nintendo3DSGeometry({
+        geometry: new xeogl.Nintendo3DSGeometry({
             src: "models/3ds/osiris.3ds",
             normals: "auto"
         }),
 
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuse: [0.6,0.6,0.6],
             specular: [0, 0, 0]
         }),
 
         // We need to rotate this particular .3DS model
-        transform: new XEO.Rotate({
+        transform: new xeogl.Rotate({
             xyz: [1,0,0],
             angle: -90,
-            parent: new XEO.Rotate({
+            parent: new xeogl.Rotate({
                 xyz: [0,1,0],
                 angle: 90
             })
         })
     });
 
-    var cameraControl = new XEO.CameraControl();
+    var cameraControl = new xeogl.CameraControl();
 
-    var cameraFlight = new XEO.CameraFlight();
+    var cameraFlight = new xeogl.CameraFlight();
 
     entity.geometry.on("loaded",
             function () {

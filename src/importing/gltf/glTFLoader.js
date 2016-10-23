@@ -1,5 +1,5 @@
 /**
- * Private xeoEngine glTF loader core.
+ * Private xeogl glTF loader core.
  *
  * Adapted from the THREE loader by Tony Parisi (http://www.tonyparisi.com)
  * https://github.com/KhronosGroup/glTF/blob/master/loaders/threejs/glTFLoaderUtils.js
@@ -153,7 +153,7 @@
     };
 
 
-    XEO.GLTFLoader = Object.create(XEO.glTFParser, {
+    xeogl.GLTFLoader = Object.create(xeogl.glTFParser, {
 
         setCollection: {
             value: function (collection) {
@@ -171,8 +171,8 @@
 
                 this.resources = new Resources();
 
-                XEO.glTFParser.handleLoadCompleted = ok;
-                XEO.glTFParser.load.call(this, userInfo, options);
+                xeogl.glTFParser.handleLoadCompleted = ok;
+                xeogl.glTFParser.load.call(this, userInfo, options);
             }
         },
 
@@ -220,7 +220,7 @@
 
                 var image = this._json.images[description.source];
 
-                var texture = new XEO.Texture(this.collection.scene, {
+                var texture = new xeogl.Texture(this.collection.scene, {
                     id: this._makeID(entryID),
                     src: image.uri,
                     flipY: true
@@ -257,7 +257,7 @@
                 var entry;
 
                 if (diffuseVal) {
-                    if (XEO._isString(diffuseVal)) {
+                    if (xeogl._isString(diffuseVal)) {
                         entry = this.resources.getEntry(diffuseVal);
                         if (entry) {
                             cfg.diffuseMap = entry.object;
@@ -268,7 +268,7 @@
                 }
 
                 if (specularVal) {
-                    if (XEO._isString(specularVal)) {
+                    if (xeogl._isString(specularVal)) {
                         entry = this.resources.getEntry(specularVal);
                         if (entry) {
                             cfg.specularMap = entry.object;
@@ -279,7 +279,7 @@
                 }
 
                 if (emissiveVal) {
-                    if (XEO._isString(emissiveVal)) {
+                    if (xeogl._isString(emissiveVal)) {
                         entry = this.resources.getEntry(emissiveVal);
                         if (entry) {
                             cfg.emissiveMap = entry.object;
@@ -289,7 +289,7 @@
                     }
                 }
 
-                var material = new XEO.PhongMaterial(this.collection.scene, cfg);
+                var material = new xeogl.PhongMaterial(this.collection.scene, cfg);
 
                 this.collection.add(material);
 
@@ -326,7 +326,7 @@
 
                     if (primitiveDescription.mode === WebGLRenderingContext.TRIANGLES) {
 
-                        var geometry = new XEO.Geometry(this.collection.scene, {
+                        var geometry = new xeogl.Geometry(this.collection.scene, {
                             id: this._makeID(entryID)
                         });
 
@@ -357,7 +357,7 @@
                         };
 
                         var indicesContext = new IndicesContext(indicesObject, geometry);
-                        var alreadyProcessedIndices = XEO.GLTFLoaderUtils.getBuffer(indicesObject, indicesDelegate, indicesContext);
+                        var alreadyProcessedIndices = xeogl.GLTFLoaderUtils.getBuffer(indicesObject, indicesDelegate, indicesContext);
 
                         // Load Vertex Attributes
                         allAttributes.forEach(function (semantic) {
@@ -397,7 +397,7 @@
 
                             var attribContext = new VertexAttributeContext(attributeObject, semantic, geometry);
 
-                            var alreadyProcessedAttribute = XEO.GLTFLoaderUtils.getBuffer(attributeObject, vertexAttributeDelegate, attribContext);
+                            var alreadyProcessedAttribute = xeogl.GLTFLoaderUtils.getBuffer(attributeObject, vertexAttributeDelegate, attribContext);
 
                             /*if(alreadyProcessedAttribute) {
                              vertexAttributeDelegate.resourceAvailable(alreadyProcessedAttribute, attribContext);
@@ -455,7 +455,7 @@
 
                 if (node.matrix) {
                     var matrix = node.matrix;
-                    transform = new XEO.Transform(scene, {
+                    transform = new xeogl.Transform(scene, {
                         id: this._makeID(nodeId + ".transform"),
                         matrix: matrix,
                         parent: transform
@@ -465,7 +465,7 @@
 
                 if (node.translation) {
                     var translation = node.translation;
-                    transform = new XEO.Translate(scene, {
+                    transform = new xeogl.Translate(scene, {
                         id: this._makeID(nodeId + ".translation"),
                         xyz: [translation[0], translation[1], translation[2]],
                         parent: transform
@@ -475,7 +475,7 @@
 
                 if (node.rotation) {
                     var rotation = node.rotation;
-                    transform = new XEO.Rotate(scene, {
+                    transform = new xeogl.Rotate(scene, {
                         id: this._makeID(nodeId + ".rotation"),
                         xyz: [rotation[0], rotation[1], rotation[2]],
                         angle: rotation[3],
@@ -486,7 +486,7 @@
 
                 if (node.scale) {
                     var scale = node.scale;
-                    transform = new XEO.Scale(scene, {
+                    transform = new xeogl.Scale(scene, {
                         id: this._makeID(nodeId + ".scale"),
                         xyz: [scale[0], scale[1], scale[2]],
                         parent: transform
@@ -496,32 +496,32 @@
 
                 if (node.meshes) {
 
-                    // One XEO.Visibility per mesh group
+                    // One xeogl.Visibility per mesh group
 
-                    var visibility = new XEO.Visibility(scene, {
+                    var visibility = new xeogl.Visibility(scene, {
                         id: this._makeID(nodeId + ".visibility")
                     });
 
                     collection.add(visibility);
 
-                    // One XEO.Cull per mesh group
+                    // One xeogl.Cull per mesh group
 
-                    var cull = new XEO.Cull(scene, {
+                    var cull = new xeogl.Cull(scene, {
                         id: this._makeID(nodeId + ".cull")
                     });
 
                     collection.add(cull);
 
-                    // One XEO.Modes per mesh group
+                    // One xeogl.Modes per mesh group
 
-                    var modes = new XEO.Modes(scene, {
+                    var modes = new xeogl.Modes(scene, {
                         id: this._makeID(nodeId + ".modes")
                     });
 
                     collection.add(cull);
 
-                    // One XEO.Entity per mesh, each sharing the same
-                    // XEO.Visibility, XEO.Cull and XEO.Nodes
+                    // One xeogl.Entity per mesh, each sharing the same
+                    // xeogl.Visibility, xeogl.Cull and xeogl.Nodes
 
                     var meshes = node.meshes;
                     var imeshes;
@@ -533,7 +533,7 @@
                     var geometry;
                     var entityId;
                     var j;
-                    var entities = scene.types["XEO.Entity"];
+                    var entities = scene.types["xeogl.Entity"];
                     var entity;
 
                     for (imeshes = 0; imeshes < lenMeshes; imeshes++) {
@@ -558,7 +558,7 @@
                             //    entityId = this._makeID(nodeId + ".entity." + i + "." + j);
                             //}
 
-                            entity = new XEO.Entity(scene, {
+                            entity = new xeogl.Entity(scene, {
                                 id: entityId,
                                 meta: {
                                     name: node.name
@@ -570,7 +570,7 @@
                                 cull: cull,
                                 modes: modes,
 
-                                // Indicates that this Entity is freshly loaded -  increments the XEO.Spinner#processes
+                                // Indicates that this Entity is freshly loaded -  increments the xeogl.Spinner#processes
                                 // count on the Scene Canvas, which will decrement again as soon as Entity is compiled
                                 // into the render graph, causing the Spinner to show until this Entity is visible
                                 loading: true

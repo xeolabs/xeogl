@@ -11,7 +11,7 @@
  <li>When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
  within a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, it will be transformed by each {{#crossLink "Transform"}}{{/crossLink}}
  on the path up to the root, in that order.</li>
- <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>
+ <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeogl's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/Transform.png"></img>
@@ -37,91 +37,91 @@
 
  ````javascript
  // Shared Geometry
- var boxGeometry = new XEO.BoxGeometry();
+ var boxGeometry = new xeogl.BoxGeometry();
 
  // Position of entire table
- var tablePos = new XEO.Translate({
+ var tablePos = new xeogl.Translate({
     xyz: [0, 6, 0]
  });
 
  // Orientation of entire table
- var tableRotate = new XEO.Rotate({
+ var tableRotate = new xeogl.Rotate({
     xyz: [1, 1, 1],
     angle: 0,
     parent: tablePos
  });
 
  // Red table leg
- var tableLeg1 = new XEO.Entity({
+ var tableLeg1 = new xeogl.Entity({
     geometry: boxGeometry,
-    transform: new XEO.Scale({
+    transform: new xeogl.Scale({
         xyz: [1, 3, 1],
-        parent: new XEO.Translate({
+        parent: new xeogl.Translate({
             xyz: [-4, -6, -4],
             parent: tableRotate
         })
     }),
-    material: new XEO.PhongMaterial({
+    material: new xeogl.PhongMaterial({
         diffuse: [1, 0.3, 0.3]
     })
  });
 
  // Green table leg
- var tableLeg2 = new XEO.Entity({
+ var tableLeg2 = new xeogl.Entity({
     geometry: boxGeometry,
-    transform: new XEO.Scale({
+    transform: new xeogl.Scale({
         xyz: [1, 3, 1],
-        parent: new XEO.Translate({
+        parent: new xeogl.Translate({
             xyz: [4, -6, -4],
             parent: tableRotate
         })
     }),
-    material: new XEO.PhongMaterial({
+    material: new xeogl.PhongMaterial({
         diffuse: [0.3, 1.0, 0.3]
     })
  });
 
  // Blue table leg
- var tableLeg3 = new XEO.Entity({
+ var tableLeg3 = new xeogl.Entity({
     geometry: boxGeometry,
-    transform: new XEO.Scale({
+    transform: new xeogl.Scale({
         xyz: [1, 3, 1],
-        parent: new XEO.Translate({
+        parent: new xeogl.Translate({
             xyz: [4, -6, 4],
             parent: tableRotate
         })
     }),
-    material: new XEO.PhongMaterial({
+    material: new xeogl.PhongMaterial({
         diffuse: [0.3, 0.3, 1.0]
     })
  });
 
  // Yellow table leg
- var tableLeg4 = new XEO.Entity({
+ var tableLeg4 = new xeogl.Entity({
     geometry: boxGeometry,
-    transform: new XEO.Scale({
+    transform: new xeogl.Scale({
         xyz: [1, 3, 1],
-        parent: new XEO.Translate({
+        parent: new xeogl.Translate({
             xyz: [-4, -6, 4],
             parent: tableRotate
         })
     }),
-    material: new XEO.PhongMaterial({
+    material: new xeogl.PhongMaterial({
         diffuse: [1.0, 1.0, 0.0]
     })
  });
 
  // Purple table top
- var tableTop = new XEO.Entity({
+ var tableTop = new xeogl.Entity({
     geometry: boxGeometry,
-    transform: new XEO.Scale({
+    transform: new xeogl.Scale({
         xyz: [6, 0.5, 6],
-        parent: new XEO.Translate({
+        parent: new xeogl.Translate({
             xyz: [0, -3, 0],
             parent: tableRotate
         })
     }),
-    material: new XEO.PhongMaterial({
+    material: new xeogl.PhongMaterial({
         diffuse: [1.0, 0.3, 1.0]
     })
  });
@@ -141,7 +141,7 @@
  ````
 
  @class Transform
- @module XEO
+ @module xeogl
  @submodule transforms
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Transform in the
@@ -160,25 +160,25 @@
 
     "use strict";
 
-    XEO.Transform = XEO.Component.extend({
+    xeogl.Transform = xeogl.Component.extend({
 
-        type: "XEO.Transform",
+        type: "xeogl.Transform",
 
         _init: function (cfg) {
 
             this._onParentUpdated = null;
             this._onParentDestroyed = null;
 
-            this._matrix = XEO.math.identityMat4(XEO.math.mat4());
-            this._leafMatrix = XEO.math.mat4();
-            this._leafNormalMatrix = XEO.math.mat4();
+            this._matrix = xeogl.math.identityMat4(xeogl.math.mat4());
+            this._leafMatrix = xeogl.math.mat4();
+            this._leafNormalMatrix = xeogl.math.mat4();
 
             this._leafMatrixDirty = true;
             this._leafNormalMatrixDirty = true;
 
             var self = this;
 
-            this._state = new XEO.renderer.Transform({
+            this._state = new xeogl.renderer.Transform({
 
                 // Lazy-generate leaf matrices as we render because it's only
                 // at this point that we actually know that we need them.
@@ -247,9 +247,9 @@
                 // store result in this leaf matrix
 
                 if (this._postMultiply) {
-                    XEO.math.mulMat4(this._parent.leafMatrix, this._matrix, this._leafMatrix);
+                    xeogl.math.mulMat4(this._parent.leafMatrix, this._matrix, this._leafMatrix);
                 } else {
-                    XEO.math.mulMat4(this._matrix, this._parent.leafMatrix, this._leafMatrix);
+                    xeogl.math.mulMat4(this._matrix, this._parent.leafMatrix, this._leafMatrix);
                 }
             }
 
@@ -265,8 +265,8 @@
                 this._buildLeafMatrix();
             }
 
-            XEO.math.inverseMat4(this._leafMatrix, this._leafNormalMatrix);
-            XEO.math.transposeMat4(this._leafNormalMatrix);
+            xeogl.math.inverseMat4(this._leafMatrix, this._leafNormalMatrix);
+            xeogl.math.transposeMat4(this._leafNormalMatrix);
 
             this._renderer.imageDirty = true;
 
@@ -385,7 +385,7 @@
 
                 set: function (value) {
 
-                    this._matrix.set(value || XEO.math.identityMat4());
+                    this._matrix.set(value || xeogl.math.identityMat4());
 
                     this._leafMatrixDirty = true;
 

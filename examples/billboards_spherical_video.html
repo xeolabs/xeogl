@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a>
+    <a href="http://xeogl.org">xeogl</a>
     <br><br>
    1000 spherical <a href="../docs/classes/Billboard.html" target="_docs">Billboards</a>
 </div>
 
 <script>
 
-    var geometry = new XEO.Geometry({
+    var geometry = new xeogl.Geometry({
         primitive: "triangles",
         positions: [3, 3, 0, -3, 3, 0, -3, -3, 0, 3, -3, 0],
         normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],
@@ -26,32 +26,32 @@
         indices: [0, 1, 2, 0, 2, 3] // Ensure these will be front-faces
     });
 
-    var material = new XEO.PhongMaterial({
-        emissiveMap: new XEO.Texture()
+    var material = new xeogl.PhongMaterial({
+        emissiveMap: new xeogl.Texture()
     });
 
-    var lights = new XEO.Lights({
+    var lights = new xeogl.Lights({
         lights: []
     });
 
-    var billboard = new XEO.Billboard({
+    var billboard = new xeogl.Billboard({
         spherical: true
     });
 
     for (var i = 0; i < 1000; i++) {
 
-        new XEO.Entity({
+        new xeogl.Entity({
             geometry: geometry,
             material: material,
             lights: lights,
             billboard: billboard,
-            transform: new XEO.Translate({
+            transform: new xeogl.Translate({
                 xyz: [Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50]
             })
         });
     }
 
-    var scene = XEO.scene;
+    var scene = xeogl.scene;
 
     // Move the camera back a bit
 
@@ -93,7 +93,7 @@
             });
 
 
-    var cameraControl = new XEO.CameraControl();
+    var cameraControl = new xeogl.CameraControl();
     cameraControl.mouseZoom.sensitivity = 5;
 
 </script>

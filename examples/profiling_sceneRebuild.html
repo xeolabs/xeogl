@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight" style="left: 0; text-align: left; background: black; opacity: 0.6; color: white;">
-    <a href="http://xeoengine.org">xeoEngine</a>
+    <a href="http://xeogl.org">xeogl</a>
     <br><br>
     getting a <a href="../docs/classes/Scene.html"
                  target="_docs">Scene's</a> runtime statistics
@@ -23,17 +23,17 @@
 <script>
 
     var geometries = [
-        new XEO.TorusGeometry({
+        new xeogl.TorusGeometry({
             radius: 2.0,
             tube: 0.8
         }),
-        new XEO.SphereGeometry({
+        new xeogl.SphereGeometry({
             radius: 1.0
         }),
-        new XEO.BoxGeometry({
+        new xeogl.BoxGeometry({
             xSize: 2, ySize: 2, zSize: 2
         }),
-        new XEO.CylinderGeometry({
+        new xeogl.CylinderGeometry({
             radiusTop: 2.0,
             radiusBottom: 2.0,
             height: 5.0,
@@ -44,11 +44,11 @@
     ];
 
     var materials = [
-        new XEO.PhongMaterial({
+        new xeogl.PhongMaterial({
             ambient: [0.3, 0.3, 0.3],
             diffuse: [0.3, 0.5, 0.5],
             shininess: 30,
-            diffuseMap: new XEO.Texture({
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/uvGrid2.jpg",
                 minFilter: "linearMipmapLinear",
                 magFiler: "linear",
@@ -60,13 +60,13 @@
                 flipY: false // Default
             })
         }),
-        new XEO.PhongMaterial({
+        new xeogl.PhongMaterial({
             diffuse: [1.0, 0.3, 0.3]
         }),
-        new XEO.PhongMaterial({
+        new xeogl.PhongMaterial({
             diffuse: [0.3, 1.0, 0.3]
         }),
-        new XEO.PhongMaterial({
+        new xeogl.PhongMaterial({
             diffuse: [0.3, 0.3, 1.0]
         })
     ];
@@ -94,10 +94,10 @@
 
             for (var z = 0; z <= 1.0; z += inc) {
 
-                entity = new XEO.Entity({
+                entity = new xeogl.Entity({
                     geometry: geometries[gi < 3 ? ++gi : gi = 0],
                     material: materials[mi < 3 ? ++mi : mi = 0],
-                    transform: new XEO.Translate({
+                    transform: new xeogl.Translate({
                         xyz: [(x * width) - halfWidth, (y * width) - halfWidth, (z * width) - halfWidth]
                     })
                 });
@@ -110,7 +110,7 @@
     }
 
 
-    var scene = XEO.scene;
+    var scene = xeogl.scene;
 
     scene.camera.view.zoom(190);
 
@@ -159,9 +159,9 @@
                 view.rotateEyeY(0.5);
                 view.rotateEyeX(0.3);
 
-                // Get stats from xeoEngine and log them
+                // Get stats from xeogl and log them
 
-                var stats = XEO.stats;
+                var stats = xeogl.stats;
 
                 logJSON(stats);
             });

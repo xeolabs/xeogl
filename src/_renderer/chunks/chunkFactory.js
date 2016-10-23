@@ -3,16 +3,16 @@
     "use strict";
 
     /**
-     *  Manages creation, reuse and destruction of {@link XEO.renderer.Chunk}s.
+     *  Manages creation, reuse and destruction of {@link xeogl.renderer.Chunk}s.
      */
-    XEO.renderer.ChunkFactory = function () {
-        this.types = XEO.renderer.ChunkFactory.types;
+    xeogl.renderer.ChunkFactory = function () {
+        this.types = xeogl.renderer.ChunkFactory.types;
     };
 
     /**
-     * Sub-classes of {@link XEO.renderer.Chunk} provided by this factory
+     * Sub-classes of {@link xeogl.renderer.Chunk} provided by this factory
      */
-    XEO.renderer.ChunkFactory.types = {};   // Supported chunk classes, installed by #createChunkType
+    xeogl.renderer.ChunkFactory.types = {};   // Supported chunk classes, installed by #createChunkType
 
     /**
      * Creates a chunk type.
@@ -23,13 +23,13 @@
      * @param params.pickObject
      * @param params.pickPrimitive
      */
-    XEO.renderer.ChunkFactory.createChunkType = function (params) {
+    xeogl.renderer.ChunkFactory.createChunkType = function (params) {
 
         if (!params.type) {
             throw "'type' expected in params";
         }
 
-        var supa = XEO.renderer.Chunk;
+        var supa = xeogl.renderer.Chunk;
 
         var chunkClass = function () { // Create the class
             this.useCount = 0;
@@ -39,9 +39,9 @@
         chunkClass.prototype = new supa();              // Inherit from base class
         chunkClass.prototype.constructor = chunkClass;
 
-        XEO._apply(params, chunkClass.prototype);   // Augment subclass
+        xeogl._apply(params, chunkClass.prototype);   // Augment subclass
 
-        XEO.renderer.ChunkFactory.types[params.type] = {
+        xeogl.renderer.ChunkFactory.types[params.type] = {
             constructor: chunkClass,
             chunks: {},
             freeChunks: [],
@@ -54,7 +54,7 @@
     /**
      * Gets a chunk from this factory.
      */
-    XEO.renderer.ChunkFactory.prototype.getChunk = function (id, type, program, state) {
+    xeogl.renderer.ChunkFactory.prototype.getChunk = function (id, type, program, state) {
 
         var chunkType = this.types[type];
 
@@ -98,9 +98,9 @@
     /**
      * Releases a chunk back to this factory.
      *
-     * @param {XEO.renderer.Chunk} chunk Chunk to release
+     * @param {xeogl.renderer.Chunk} chunk Chunk to release
      */
-    XEO.renderer.ChunkFactory.prototype.putChunk = function (chunk) {
+    xeogl.renderer.ChunkFactory.prototype.putChunk = function (chunk) {
 
         if (chunk.useCount === 0) { // In case of excess puts
             return;
@@ -121,7 +121,7 @@
     /**
      * Restores the chunks in this factory after a WebGL context recovery.
      */
-    XEO.renderer.ChunkFactory.prototype.webglRestored = function (gl) {
+    xeogl.renderer.ChunkFactory.prototype.webglRestored = function (gl) {
 
         var types = this.types;
         var chunkType;

@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>diffuse and normal map <a href="../docs/classes/Texture.html"
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>diffuse and normal map <a href="../docs/classes/Texture.html"
                                                                                      target="_docs">Textures</a>
     <br><br>
     <img src="textures/diffuse/chesterfieldDiffuseMap.png" width="200px" height="200px">
@@ -22,22 +22,22 @@
 <script>
 
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
 
-        geometry: new XEO.BoxGeometry(),
+        geometry: new xeogl.BoxGeometry(),
 
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
 
-            diffuseMap: new XEO.Texture({
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/chesterfieldDiffuseMap.png"
             }),
 
-            normalMap: new XEO.Texture({
+            normalMap: new xeogl.Texture({
                 src: "textures/normal/chesterfieldNormalMap.png"
             })
         }),
 
-        modes: new XEO.Modes({
+        modes: new xeogl.Modes({
             transparent: true
         })
     });
@@ -55,7 +55,7 @@
 //                view.rotateEyeX(0.1);
             });
 
-    new XEO.CameraControl();
+    new xeogl.CameraControl();
 
 </script>
 </body>

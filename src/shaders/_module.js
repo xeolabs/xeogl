@@ -1,6 +1,6 @@
 /**
  * Components for defining custom GLSL shaders.
  *
- * @module XEO
+ * @module xeogl
  * @submodule shaders
  */

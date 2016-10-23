@@ -1,36 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>importing glTF with textures using a <a
-        href="../docs/classes/Model.html" target="_docs">XEO.Model</a> component
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>importing glTF with textures using a <a
+        href="../docs/classes/Model.html" target="_docs">xeogl.Model</a> component
 </div>
 
 <script>
 
     // Load glTF
 
-    var duck = new XEO.Model({
+    var duck = new xeogl.Model({
 
         // Source glTF file
         src: "models/gltf/duck/duck.gltf",
 
         // Modelling transformation hierarchy
-        transform: new XEO.Rotate({
+        transform: new xeogl.Rotate({
             xyz: [0, 1, 0],
             angle: 0,
 
-            parent: new XEO.Rotate({
+            parent: new xeogl.Rotate({
                 xyz: [0, 0, 1],
                 angle: 0
             })
@@ -59,7 +59,7 @@
     ];
 
 
-    new XEO.CameraControl();
+    new xeogl.CameraControl();
 
 
 </script>

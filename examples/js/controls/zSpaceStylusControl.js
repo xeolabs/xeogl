@@ -18,21 +18,21 @@
 
  ````javascript
  // Create a textured cube entity
- var entity = new XEO.Entity({
-     geometry: new XEO.BoxGeometry({
+ var entity = new xeogl.Entity({
+     geometry: new xeogl.BoxGeometry({
          xSize: .6,
          ySize: .6,
          zSize: .6
      }),
-     material: new XEO.PhongMaterial({
-         diffuseMap: new XEO.Texture({
+     material: new xeogl.PhongMaterial({
+         diffuseMap: new xeogl.Texture({
              src: "textures/diffuse/UVCheckerMap11-1024.png"
          })
      }),
-     modes: new XEO.Modes({
+     modes: new xeogl.Modes({
          backfaces: true
      }),
-     transform: new XEO.Rotate({
+     transform: new xeogl.Rotate({
          xyz: [0, 1, 0],
          angle: 0
      })
@@ -44,26 +44,26 @@
  scene.camera.view.look = [0, 0, 0];
 
  // Allow camera control with keyboard and mouse
- var cameraControl = new XEO.CameraControl();
+ var cameraControl = new xeogl.CameraControl();
 
  // Create a ZSpaceEffect
- var zspaceEffect = new XEO.ZSpaceEffect({
+ var zspaceEffect = new xeogl.ZSpaceEffect({
      canvasOffset: [310, 0]
  });
 
  // Create a ZSpaceStylusControl
- var zspaceStylusControl = new XEO.ZSpaceStylusControl();
+ var zspaceStylusControl = new xeogl.ZSpaceStylusControl();
 
  // Handle missing zSpace support
  zspaceEffect.on("supported", function (supported) {
      if (!supported) {
-         document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. ";
+         document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeogl camera controls. ";
      }
  });
  ````
 
  @class ZSpaceStylusControl
- @module XEO
+ @module xeogl
  @submodule controls
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this ZSpaceStylusControl in the default
@@ -82,11 +82,11 @@
 
     "use strict";
 
-    var math = XEO.math;
+    var math = xeogl.math;
 
-    XEO.ZSpaceStylusControl = XEO.Component.extend({
+    xeogl.ZSpaceStylusControl = xeogl.Component.extend({
 
-        type: "XEO.ZSpaceStylusControl",
+        type: "xeogl.ZSpaceStylusControl",
 
         _init: function (cfg) {
 
@@ -129,9 +129,9 @@
                      */
                     var zspaceEffect = this._attach({
                         name: "zspaceEffect",
-                        type: "XEO.ZSpaceEffect",
+                        type: "xeogl.ZSpaceEffect",
                         component: value,
-                        sceneSingleton: true // Default to first XEO.ZSpaceEffect found in the Scene
+                        sceneSingleton: true // Default to first xeogl.ZSpaceEffect found in the Scene
                     });
                 },
 
@@ -183,15 +183,15 @@
             var self = this;
 
             this._stylusHelper = new (function () {
-                var ray = new XEO.Entity(self.scene, {
+                var ray = new xeogl.Entity(self.scene, {
                     geometry: {
-                        type: "XEO.Geometry",
+                        type: "xeogl.Geometry",
                         primitive: "lines",
                         positions: [0, 0, 0, 0, 0, 0],
                         indices: [0, 1]
                     },
                     material: {
-                        type: "XEO.PhongMaterial",
+                        type: "xeogl.PhongMaterial",
                         emissive: [1, 0.3, 0.3],
                         diffuse: [0, 0, 0],
                         ambient: [0, 0, 0],
@@ -315,7 +315,7 @@
                                 self.warn("Flattening transform of " + draggingEntity.type + " " + draggingEntity.id);
 
                                 var transform = draggingEntity.transform;
-                                draggingEntity.transform = draggingEntity.create(XEO.Transform, {
+                                draggingEntity.transform = draggingEntity.create(xeogl.Transform, {
                                     matrix: transform.leafMatrix
                                 });
                             }

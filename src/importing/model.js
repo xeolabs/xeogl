@@ -2,7 +2,7 @@
 
     "use strict";
 
-    var glTFLoader = XEO.GLTFLoader;
+    var glTFLoader = xeogl.GLTFLoader;
 
     /**
      A **Model** loads content from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file into its parent {{#crossLink "Scene"}}{{/crossLink}}.
@@ -39,32 +39,32 @@
      Find API documentation for Model here:
 
      <ul>
-     <li>[Importing glTF](https://github.com/xeolabs/xeoengine/wiki/Importing-glTF)</li>
+     <li>[Importing glTF](https://github.com/xeolabs/xeogl/wiki/Importing-glTF)</li>
      </ul>
 
      @class Model
-     @module XEO
+     @module xeogl
      @submodule importing
      @extends Component
      */
-    XEO.Model = XEO.Component.extend({
+    xeogl.Model = xeogl.Component.extend({
 
-        type: "XEO.Model",
+        type: "xeogl.Model",
 
         _init: function (cfg) {
 
             this._super(cfg);
 
-            // The XEO.Collection that will hold all the components
+            // The xeogl.Collection that will hold all the components
             // we create from the glTF model; this will be available
             // as a public, immutable #collection property
 
-            this._collection = this.create(XEO.Collection);
+            this._collection = this.create(xeogl.Collection);
 
             // Dummy transform to make it easy to graft user-supplied
             // transforms above loaded entities
 
-            this._dummyRootTransform = this.create(XEO.Transform, {
+            this._dummyRootTransform = this.create(xeogl.Transform, {
                 meta: "dummy"
             });
 
@@ -75,7 +75,7 @@
                 return;
             }
 
-            if (!XEO._isString(cfg.src)) {
+            if (!xeogl._isString(cfg.src)) {
                 this.error("Value for config 'src' should be a string");
                 return;
             }
@@ -105,7 +105,7 @@
                         return;
                     }
 
-                    if (!XEO._isString(value)) {
+                    if (!xeogl._isString(value)) {
                         this.error("Value for 'src' should be a string");
                         return;
                     }
@@ -146,7 +146,7 @@
 
                             self._collection.iterate(function (component) {
 
-                                if (component.isType("XEO.Entity")) {
+                                if (component.isType("xeogl.Entity")) {
 
                                     // Insert the dummy transform above
                                     // each entity we just loaded
@@ -255,7 +255,7 @@
                      */
                     this._attach({
                         name: "transform",
-                        type: "XEO.Transform",
+                        type: "xeogl.Transform",
                         component: value,
                         sceneDefault: false,
                         onAttached: {

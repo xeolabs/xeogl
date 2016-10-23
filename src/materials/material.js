@@ -9,7 +9,7 @@
  </ul>
 
  @class Material
- @module XEO
+ @module xeogl
  @submodule materials
  @constructor
  @extends Component
@@ -18,9 +18,9 @@
 
     "use strict";
 
-    XEO.Material = XEO.Component.extend({
+    xeogl.Material = xeogl.Component.extend({
 
-        type: "XEO.Material",
+        type: "xeogl.Material",
 
         _init: function () {
 

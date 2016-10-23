@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>dynamic scene rebuild
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>dynamic scene rebuild
 </div>
 
 <script>
@@ -20,16 +20,16 @@
     var entities = [];
 
     // Move eye back a bit
-    XEO.scene.camera.view.zoom(10);
+    xeogl.scene.camera.view.zoom(10);
 
     // On each tick, rebuild the scene and rotate the camera
 
-    XEO.scene.on("tick",
+    xeogl.scene.on("tick",
             function () {
 
                 buildScene();
 
-                XEO.scene.camera.view.rotateEyeY(1.0);
+                xeogl.scene.camera.view.rotateEyeY(1.0);
             });
 
     function buildScene() {
@@ -49,8 +49,8 @@
             // Each entity uses defaults for everything
             // except for its modelling transform
 
-            entity = new XEO.Entity({
-                transform: new XEO.Translate({
+            entity = new xeogl.Entity({
+                transform: new xeogl.Translate({
                     xyz: [
                         Math.random() * 10 - 5,
                         Math.random() * 10 - 5,

@@ -20,7 +20,7 @@
  <li>Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}}
  via the {{#crossLink "Modes/clipping:property"}}{{/crossLink}} flag on {{#crossLink "Modes"}}Modes{{/crossLink}} components
  attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Clips create within xeoEngine's shaders.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Clips create within xeogl's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/Clip.png"></img>
@@ -38,18 +38,18 @@
 
  ````javascript
  // Create a set of Clip planes
- clips = new XEO.Clip({
+ clips = new xeogl.Clip({
      clips: [
 
          // Clip plane on negative diagonal
-         new XEO.Clip({
+         new xeogl.Clip({
              dir: [-1.0, -1.0, -1.0], // Direction of Clip from World space origin
              dist: 2.0,               // Distance along direction vector
              mode: "outside"          // Clip fragments that fall beyond the plane
          }),
 
          // Clip plane on positive diagonal
-         new XEO.Clip({
+         new xeogl.Clip({
              dir: [1.0, 1.0, 1.0],
              dist: 2.0,
              mode: "outside"
@@ -58,8 +58,8 @@
  });
 
  // Create an Entity that's clipped by our Clip planes
- var entity = new XEO.Entity({
-     geometry: new XEO.BoxGeometry(),
+ var entity = new xeogl.Entity({
+     geometry: new xeogl.BoxGeometry(),
      clips: clips
  });
 
@@ -71,7 +71,7 @@
  enable or disable clipping of it:
 
  ```` javascript
- entity.modes = new XEO.Modes(scene, {
+ entity.modes = new xeogl.Modes(scene, {
     clipping: true
  });
 
@@ -80,7 +80,7 @@
  ````
 
  @class Clip
- @module XEO
+ @module xeogl
  @submodule clipping
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Clip in the
@@ -99,9 +99,9 @@
 
     "use strict";
 
-    XEO.Clip = XEO.Component.extend({
+    xeogl.Clip = xeogl.Component.extend({
 
-        type: "XEO.Clip",
+        type: "xeogl.Clip",
 
         _init: function (cfg) {
 
@@ -172,7 +172,7 @@
 
                 set: function (value) {
 
-                    this._state.dir =  value || XEO.math.vec3([1, 0, 0]);
+                    this._state.dir =  value || xeogl.math.vec3([1, 0, 0]);
 
                     this._renderer.imageDirty = true;
 

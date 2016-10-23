@@ -26,7 +26,7 @@
  // Create 1000 Entities in default Scene with shared Geometry,
  // PhongMaterial and Billboard
 
- var geometry = new XEO.Geometry({
+ var geometry = new xeogl.Geometry({
         primitive: "triangles",
         positions: [3, 3, 0, -3, 3, 0, -3, -3, 0, 3, -3, 0],
         normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],
@@ -34,22 +34,22 @@
         indices: [2, 1, 0, 3, 2, 0] // Ensure these will be front-faces
     });
 
- var material = new XEO.PhongMaterial({
-        emissiveMap: new XEO.Texture({
+ var material = new xeogl.PhongMaterial({
+        emissiveMap: new xeogl.Texture({
             src: "textures/diffuse/teapot.jpg"
         })
     });
 
- var billboard = new XEO.Billboard({
+ var billboard = new xeogl.Billboard({
         spherical: true
     });
 
  for (var i = 0; i < 1000; i++) {
-        new XEO.Entity({
+        new xeogl.Entity({
             geometry: geometry,
             material: material,
             billboard: billboard,
-            transform: new XEO.Translate({
+            transform: new xeogl.Translate({
                 xyz: [Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50]
             })
         });
@@ -57,7 +57,7 @@
 
  // Move eye back to see everything, then orbit Camera
 
- var scene = XEO.scene;
+ var scene = xeogl.scene;
 
  scene.camera.view.zoom(120);
 
@@ -72,7 +72,7 @@
  ````
 
  @class Billboard
- @module XEO
+ @module xeogl
  @submodule transforms
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Billboard in the default
@@ -88,15 +88,15 @@
 
     "use strict";
 
-    XEO.Billboard = XEO.Component.extend({
+    xeogl.Billboard = xeogl.Component.extend({
 
-        type: "XEO.Billboard",
+        type: "xeogl.Billboard",
 
         _init: function (cfg) {
 
             this._super(cfg);
 
-            this._state = new XEO.renderer.Billboard({
+            this._state = new xeogl.renderer.Billboard({
                 active: true,
                 spherical: true,
                 hash: "a;s;"

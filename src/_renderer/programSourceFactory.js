@@ -3,9 +3,9 @@
     "use strict";
 
     /**
-     *  Manages creation, sharing and recycle of {@link XEO.renderer.ProgramSource} instances
+     *  Manages creation, sharing and recycle of {@link xeogl.renderer.ProgramSource} instances
      */
-    XEO.renderer.ProgramSourceFactory = new (function () {
+    xeogl.renderer.ProgramSourceFactory = new (function () {
 
         var cache = {}; // Caches source code against hashes
 
@@ -52,7 +52,7 @@
             reflectivityFresnel = states.material.reflectivityFresnel;
             emissiveFresnel = states.material.emissiveFresnel;
 
-            source = new XEO.renderer.ProgramSource(
+            source = new xeogl.renderer.ProgramSource(
                 hash,
                 vertexPickObject(),
                 fragmentPickObject(),

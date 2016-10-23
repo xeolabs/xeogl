@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.js"></script>
+    <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
     <style>
@@ -25,7 +25,7 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>multiple <a
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>multiple <a
         href="../docs/classes/Scene.html"
         target="_docs">Scenes</a> in a page
 </div>
@@ -40,26 +40,26 @@
     // Scene 1
     //-----------------------------
 
-    var scene1 = new XEO.Scene({
+    var scene1 = new xeogl.Scene({
         canvas: "myCanvas1",
         backgroundColor: [0.3, 0.6, 0.9]
     });
 
-    scene1.lights = new XEO.Lights(scene1, [
+    scene1.lights = new xeogl.Lights(scene1, [
 
-        new XEO.AmbientLight(scene1,  {
+        new xeogl.AmbientLight(scene1,  {
             color: [0.3, 0.3, 0.9],
             intensity: 0.9
         }),
 
-        new XEO.DirLight(scene1,  {
+        new xeogl.DirLight(scene1,  {
             dir: [-0.5, 0.5, -0.6],
             color: [0.8, 0.8, 0.7],
             intensity: 1.0,
             space: "view"
         }),
 
-        new XEO.DirLight(scene1,  {
+        new xeogl.DirLight(scene1,  {
             dir: [0.5, -0.5, -0.6],
             color: [0.8, 0.8, 0.8],
             intensity: 1.0,
@@ -67,10 +67,10 @@
         })
     ]);
 
-    new XEO.Entity(scene1, {
-        geometry: new XEO.SphereGeometry(scene1),
-        material: new XEO.PhongMaterial(scene1, {
-            diffuseMap: new XEO.Texture(scene1, {
+    new xeogl.Entity(scene1, {
+        geometry: new xeogl.SphereGeometry(scene1),
+        material: new xeogl.PhongMaterial(scene1, {
+            diffuseMap: new xeogl.Texture(scene1, {
                 src: "textures/diffuse/uvGrid2.jpg"
             })
         })
@@ -84,20 +84,20 @@
                 this.camera.view.rotateEyeX(0.3);
             });
 
-    new XEO.CameraControl(scene1);
+    new xeogl.CameraControl(scene1);
 
     //-----------------------------
     // Scene 2
     //-----------------------------
 
-    var scene2 = new XEO.Scene({
+    var scene2 = new xeogl.Scene({
         canvas: "myCanvas2"
     });
 
-    new XEO.Entity(scene2, {
-        geometry: new XEO.BoxGeometry(scene2),
-        material: new XEO.PhongMaterial(scene2, {
-            diffuseMap: new XEO.Texture(scene2, {
+    new xeogl.Entity(scene2, {
+        geometry: new xeogl.BoxGeometry(scene2),
+        material: new xeogl.PhongMaterial(scene2, {
+            diffuseMap: new xeogl.Texture(scene2, {
                 src: "textures/diffuse/uvgrid.jpg"
             })
         })
@@ -111,13 +111,13 @@
                 this.camera.view.rotateEyeX(-0.3);
             });
 
-    new XEO.CameraControl(scene2);
+    new xeogl.CameraControl(scene2);
 
     //-----------------------------
     // Scene 3
     //-----------------------------
 
-    var scene3 = new XEO.Scene({
+    var scene3 = new xeogl.Scene({
         canvas: "myCanvas3"
     });
 
@@ -126,7 +126,7 @@
     scene3.camera.view.look = [159.20, 17.02, 3.21];
     scene3.camera.view.up = [-0.15, 0.97, 0.13];
 
-    var gearbox = new XEO.Model(scene3, {
+    var gearbox = new xeogl.Model(scene3, {
         src: "models/gltf/gearbox/gearbox_assy.gltf"
     });
 
@@ -136,7 +136,7 @@
                 this.camera.view.rotateEyeX(0.3);
             });
 
-    new XEO.CameraControl(scene3);
+    new xeogl.CameraControl(scene3);
 
 
 </script>

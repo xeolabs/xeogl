@@ -25,16 +25,16 @@
  var boxGeometry = new BoxGeometry();
 
  for (var i = 0; i < 20; i++) {
-        new XEO.Entity({
+        new xeogl.Entity({
             geometry: boxGeometry,
-            transform: new XEO.Translate({
+            transform: new xeogl.Translate({
                 xyz: [
                     Math.random() * 15 - 7,
                     Math.random() * 15 - 7,
                     Math.random() * 15 - 7
                 ]
             }),
-            material: new XEO.PhongMaterial({
+            material: new xeogl.PhongMaterial({
                 diffuse: [
                     Math.random(),
                     Math.random(),
@@ -45,7 +45,7 @@
     }
 
  // A Skybox that wraps our Entities in a cloudy background
- var skybox = new XEO.Skybox({
+ var skybox = new xeogl.Skybox({
         src: "textures/skybox/miramarClouds.jpg",
         size: 1000 // Default
     });
@@ -63,7 +63,7 @@
  ````
 
  @class Skybox
- @module XEO
+ @module xeogl
  @submodule skyboxes
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Skybox within the
@@ -79,15 +79,15 @@
 
     "use strict";
 
-    XEO.Skybox = XEO.Component.extend({
+    xeogl.Skybox = xeogl.Component.extend({
 
-        type: "XEO.Skybox",
+        type: "xeogl.Skybox",
 
         _init: function (cfg) {
 
             var cfg2 = {
 
-                geometry: this.create(XEO.Geometry, { // Box-shaped geometry
+                geometry: this.create(xeogl.Geometry, { // Box-shaped geometry
                         primitive: "triangles",
                         positions: [
                             1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1, // v0-v1-v2-v3 front
@@ -147,37 +147,37 @@
                     },
                     "geometryInstance"), // Use same Geometry for all Skyboxes
 
-                transform: this.create(XEO.Scale, { // Scale the box
+                transform: this.create(xeogl.Scale, { // Scale the box
                     xyz: [2000, 2000, 2000] // Overridden when we initialize the 'size' property, below
                 }),
 
-                material: this.create(XEO.PhongMaterial, { // Emissive map of sky, no diffuse, ambient or specular reflection
+                material: this.create(xeogl.PhongMaterial, { // Emissive map of sky, no diffuse, ambient or specular reflection
                         ambient: [0, 0, 0],
                         diffuse: [0, 0, 0],
                         specular: [0, 0, 0],
-                        emissiveMap: this.create(XEO.Texture, {
+                        emissiveMap: this.create(xeogl.Texture, {
                             src: cfg.src
                         })
                     },
                     "materialInstance"), // Use same PhongMaterial for all Skyboxes
 
-                stationary: this.create(XEO.Stationary, { // Lock skybox position with respect to viewpoint
+                stationary: this.create(xeogl.Stationary, { // Lock skybox position with respect to viewpoint
                         active: true
                     },
                     "stationaryInstance"), // Use same Stationary for all SkyBoxes
 
-                modes: this.create(XEO.Modes, {
+                modes: this.create(xeogl.Modes, {
                         backfaces: true, // Show interior faces of our skybox geometry
                         pickable: false, // Don't want to ba able to pick skybox
 
                         // SkyBox does not contribute to the size of any enclosing boundaries
-                        // that might be calculated by xeoEngine, eg. like that returned by XEO.Scene#worldBoundary
+                        // that might be calculated by xeogl, eg. like that returned by xeogl.Scene#worldBoundary
                         collidable: false
                     },
                     "modesInstance") // Use same Modes for all Skyboxes
             };
 
-            this._skyboxEntity = this.create(XEO.Entity, cfg2);
+            this._skyboxEntity = this.create(xeogl.Entity, cfg2);
 
             this.size = cfg.size; // Sets 'xyz' property on the Entity's Scale transform
         },

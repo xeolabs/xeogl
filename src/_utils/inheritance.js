@@ -88,7 +88,7 @@
         if (!prop.type) {
             prop.type = _super.type + "_" + createUUID();
         } else {
-            XEO._superTypes[prop.type] = prototype.superTypes;
+            xeogl._superTypes[prop.type] = prototype.superTypes;
         }
 
         // The dummy class constructor

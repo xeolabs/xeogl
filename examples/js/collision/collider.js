@@ -11,7 +11,7 @@
  TODO
 
  @class Collider
- @module XEO
+ @module xeogl
  @submodule audio
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Collider within the
@@ -37,9 +37,9 @@
 
     "use strict";
 
-    XEO.Collider = XEO.Component.extend({
+    xeogl.Collider = xeogl.Component.extend({
 
-        type: "XEO.Collider",
+        type: "xeogl.Collider",
 
         _init: function (cfg) {
 

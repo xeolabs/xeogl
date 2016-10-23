@@ -6,52 +6,52 @@
  Stereo view of an Entity with CardboardFirstPerson control:
 
  ````javascript
- new XEO.Entity({
-     geometry: new XEO.BoxGeometry()
+ new xeogl.Entity({
+     geometry: new xeogl.BoxGeometry()
  });
 
  new Stereo();
 
- new XEO.CardboardFirstPerson();
+ new xeogl.CardboardFirstPerson();
  ````
 
  Stereo view of an Entity with CardboardFirstPerson control, using custom Camera and Viewport:
 
  ````javascript
- var camera = new XEO.Camera({
-     view: new XEO.Lookat({
+ var camera = new xeogl.Camera({
+     view: new xeogl.Lookat({
          eye: [0, 0, 10],
          look: [0, 0, 0],
          up: [0, 1, 0]
      }),
-     project: new XEO.Perspective({
+     project: new xeogl.Perspective({
          fovy: 60,
          near: 0.1,
          far: 1000
      })
  });
 
- var viewport = new XEO.Viewport();
+ var viewport = new xeogl.Viewport();
 
- var entity = new XEO.Entity({
+ var entity = new xeogl.Entity({
      camera: camera,
      viewport: viewport,
-     geometry: new XEO.BoxGeometry()
+     geometry: new xeogl.BoxGeometry()
  });
 
- new XEO.Stereo({
+ new xeogl.Stereo({
      camera: camera,
      viewport: viewport
  });
 
- new XEO.CardboardFirstPerson({
+ new xeogl.CardboardFirstPerson({
      camera: camera,
      active: true // Default
  });
  ````
 
  @class CardboardFirstPerson
- @module XEO
+ @module xeogl
  @submodule interaction
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this CardboardFirstPerson in the default
@@ -70,9 +70,9 @@
 
     "use strict";
 
-    XEO.CardboardFirstPerson = XEO.CameraController.extend({
+    xeogl.CardboardFirstPerson = xeogl.CameraController.extend({
 
-        type: "XEO.CardboardFirstPerson",
+        type: "xeogl.CardboardFirstPerson",
 
         _init: function (cfg) {
 

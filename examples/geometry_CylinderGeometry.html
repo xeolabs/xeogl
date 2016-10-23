@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
@@ -11,12 +11,12 @@
     <script src="js/libs/dat.gui.min.js"></script>
     <link type="text/css" rel="stylesheet" href="css/dat-gui-swec.css">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a>
+    <a href="http://xeogl.org" target="_home">xeogl</a>
     <br><br>
     <a href="../docs/classes/CylinderGeometry.html"
        target="_docs">CylinderGeometry</a>
@@ -28,7 +28,7 @@
 
 <script>
 
-    var cylinder = new XEO.CylinderGeometry({
+    var cylinder = new xeogl.CylinderGeometry({
         radiusTop: 2.0,
         radiusBottom: 2.0,
         height: 5.0,
@@ -37,21 +37,21 @@
         openEnded: false
     });
     
-    new XEO.Entity({
+    new xeogl.Entity({
         geometry: cylinder,
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuse: [1, 0, 0],
             specular: [1,1,0],
-            diffuseMap: new XEO.Texture({
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/uvGrid2.jpg"
             })
         })
     });
 
-    XEO.scene.on("tick",
+    xeogl.scene.on("tick",
             function () {
 
-                var view = XEO.scene.camera.view;
+                var view = xeogl.scene.camera.view;
 
                 view.rotateEyeY(0.6);
                 view.rotateEyeX(0.3);
@@ -61,7 +61,7 @@
 
     var Menu = function () {
 
-        this.message = "XEO.CylinderGeometry";
+        this.message = "xeogl.CylinderGeometry";
 
         this["primitive"] = cylinder.primitive;
         this["radiusTop"] = cylinder.radiusTop;
@@ -99,7 +99,7 @@
 
     var menu = new Menu();
 
-    var folder = gui.addFolder('XEO.CylinderGeometry');
+    var folder = gui.addFolder('xeogl.CylinderGeometry');
     folder.add(menu, 'primitive', ["triangles", "lines", "points"]);
     folder.add(menu, 'radiusTop', 0.1, 5.0);
     folder.add(menu, 'radiusBottom', 0.1, 5.0);

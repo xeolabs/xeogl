@@ -1,6 +1,6 @@
 /**
   Components for defining 3D curves.
 
-  @module XEO
+  @module xeogl
   @submodule curves
  */

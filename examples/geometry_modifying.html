@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a>
+    <a href="http://xeogl.org" target="_home">xeogl</a>
     <br>
     <br>
     dynamically modifying a <a href="../docs/classes/Geometry.html"
@@ -21,18 +21,18 @@
 <script>
 
     // Allow user camera control
-    new XEO.CameraControl();
+    new xeogl.CameraControl();
 
     // The Geometry we'll dynamically modify
-    var geometry = new XEO.Geometry({
+    var geometry = new xeogl.Geometry({
         primitive: "triangles"
     });
 
     // Entity that uses our Geometry
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
         geometry: geometry,
-        material: new XEO.PhongMaterial({
-            diffuseMap: new XEO.Texture({
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/uvGrid2.jpg"
             }),
             diffuse: [0.3, 0.3, 1],
@@ -131,7 +131,7 @@
                 uv.push(i / tubeSegments);
                 uv.push(1 - j / radialSegments);
 
-                vec = XEO.math.normalizeVec3(XEO.math.subVec3([x, y, z], [centerX, centerY, centerZ], []), []);
+                vec = xeogl.math.normalizeVec3(xeogl.math.subVec3([x, y, z], [centerX, centerY, centerZ], []), []);
 
                 normals.push(vec[0]);
                 normals.push(vec[1]);

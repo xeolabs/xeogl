@@ -2,17 +2,17 @@
  A ripply water {{#crossLink "Shader"}}Shader{{/crossLink}}.
 
  @class Shader.Water
- @module XEO
+ @module xeogl
  @extends Shader
  */
-XEO.WaterShader = XEO.Shader.extend({
+xeogl.WaterShader = xeogl.Shader.extend({
 
-    type: "XEO.WaterShader",
+    type: "xeogl.WaterShader",
 
 
     _init: function (cfg) {
 
-        this._super(XEO._apply({
+        this._super(xeogl._apply({
 
             vertex: [
                 "attribute vec3 xeo_aPosition;",

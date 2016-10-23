@@ -1,27 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>
 </div>
 
 <script>
 
-    new XEO.CameraControl();
+    new xeogl.CameraControl();
 
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
 
-        geometry: new XEO.TorusGeometry({
+        geometry: new xeogl.TorusGeometry({
             radius: 1.0,
             tube: 0.3,
             segmentsR: 32,
@@ -29,7 +29,7 @@
             arc: Math.PI * 2.0
         }),
 
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuse: [1, 0.3, 0.3]
         }),
 
@@ -37,13 +37,13 @@
     });
 
 
-    var boundaryObject = new XEO.Entity({
+    var boundaryObject = new xeogl.Entity({
 
-        geometry: new XEO.BoundaryGeometry({
+        geometry: new xeogl.BoundaryGeometry({
             boundary: entity.localBoundary
         }),
 
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuse: [0.5, 1.0, 0.5],
             emissive: [0.5, 1.0, 0.5],
             lineWidth: 2
@@ -54,35 +54,35 @@
 
     function getTransform() {
 
-        var scale0 = new XEO.Scale({
+        var scale0 = new xeogl.Scale({
             xyz: [0.3, 0.5, 0.5]
         });
 
-        var rotate0 = new XEO.Rotate({
+        var rotate0 = new xeogl.Rotate({
             xyz: [0, 0, 1],
             angle: 40
         });
 
-        var translate = new XEO.Translate({
+        var translate = new xeogl.Translate({
             xyz: [5, 0, 0]
             ,
             parent: rotate0
         });
 
-        var rotate1 = new XEO.Rotate({
+        var rotate1 = new xeogl.Rotate({
             xyz: [1, 0, 1],
             angle: 25,
             parent:translate
         });
 
-        var rotate2 = new XEO.Rotate({
+        var rotate2 = new xeogl.Rotate({
             xyz: [1, 1, 0],
             angle: 45,
 
             parent: rotate1
         });
 
-        var scale = new XEO.Scale({
+        var scale = new xeogl.Scale({
             xyz: [0.5, 0.5, 0.5],
 
             parent: rotate2

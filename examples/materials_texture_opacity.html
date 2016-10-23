@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>opacity <a href="../docs/classes/Texture.html"
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>opacity <a href="../docs/classes/Texture.html"
                                                                               target="_docs">Texture</a>
     <br><br>
     <img src="textures/diffuse/crossGridColorMap.jpg" width="300px" height="300px">
@@ -21,13 +21,13 @@
 
     // Sphere
 
-    var geometry = new XEO.SphereGeometry({
+    var geometry = new xeogl.SphereGeometry({
         radius: 2.0,
         widthSegments: 32,
         heightSegments: 24
     });
 
-    var texture = new XEO.Texture({
+    var texture = new xeogl.Texture({
         src: "textures/diffuse/crossGridColorMap.jpg",
         minFilter: "linearMipmapLinear",
         magFiler: "linear",
@@ -38,18 +38,18 @@
         rotate: 0
     });
 
-    var material = new XEO.PhongMaterial({
+    var material = new xeogl.PhongMaterial({
         ambient: [0.3, 0.3, 0.3],
         shininess: 30,
         opacityMap: texture,
         diffuse: [0.1, 0.1, 0.4]
     });
 
-    var modes = new XEO.Modes({
+    var modes = new xeogl.Modes({
         transparent: true
     });
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
         geometry: geometry,
         material: material,
         modes: modes
@@ -57,12 +57,12 @@
 
     // Torus
 
-    new XEO.Entity({
+    new xeogl.Entity({
 
-        geometry: new XEO.TorusGeometry({}),
+        geometry: new xeogl.TorusGeometry({}),
 
-        material: new XEO.PhongMaterial({
-            diffuseMap: new XEO.Texture({
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/uvGrid2.jpg",
                 minFilter: "linearMipmapLinear",
                 magFiler: "linear",
@@ -74,7 +74,7 @@
             })
         }),
 
-        transform: new XEO.Translate({
+        transform: new xeogl.Translate({
             xyz: [0, 0, 0]
         })
     });

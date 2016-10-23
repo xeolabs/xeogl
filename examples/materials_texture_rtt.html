@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a>
+    <a href="http://xeogl.org" target="_home">xeogl</a>
     <br><br>
     render-to-texture using <a href="../docs/classes/ColorTarget.html" target="_docs">ColorTarget</a>
     and <a href="../docs/classes/Texture.html" target="_docs">Texture</a> components
@@ -20,45 +20,45 @@
 <script>
 
 
-    var object1 = new XEO.Entity({
+    var object1 = new xeogl.Entity({
 
-        stage: new XEO.Stage({
+        stage: new xeogl.Stage({
             priority: 0
         }),
         
-        geometry: new XEO.TorusGeometry(),
+        geometry: new xeogl.TorusGeometry(),
 
-        material: new XEO.PhongMaterial({
-            diffuseMap: new XEO.Texture({
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/UVCheckerMap08-1024.png"
             })
         }),
 
-       colorTarget: new XEO.ColorTarget({
+       colorTarget: new xeogl.ColorTarget({
             active: true,
             size: [800, 800]
         })
     });
 
 
-    var object2 = new XEO.Entity({
+    var object2 = new xeogl.Entity({
 
-        stage: new XEO.Stage({
+        stage: new xeogl.Stage({
             priority: 1
         }),
 
-        geometry: new XEO.PlaneGeometry({
+        geometry: new xeogl.PlaneGeometry({
             xSize: 10,
             zSize: 10
         }),
 
-        material: new XEO.PhongMaterial({
-            diffuseMap: new XEO.Texture({
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
                 target: object1.colorTarget
             })
         }),
 
-        modes: new XEO.Modes({
+        modes: new xeogl.Modes({
             backfaces: true
         })
     });

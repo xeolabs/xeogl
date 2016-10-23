@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <script src="js/curves/curve.js"></script>
     <script src="js/curves/quadraticBezierCurve.js"></script>
     <script src="js/debug/debug.js"></script>
@@ -16,7 +16,7 @@
 
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a>
+    <a href="http://xeogl.org">xeogl</a>
     <br><br>tweening <a href="../docs/classes/PhongMaterial.html"
                         target="_docs">PhongMaterial</a> diffuse color with a <a href="../docs/classes/QuadraticBezierCurve.html"
                target="_docs">QuadraticBezierCurve</a>
@@ -24,17 +24,17 @@
 
 <script>
 
-    var curve = new XEO.QuadraticBezierCurve({
+    var curve = new xeogl.QuadraticBezierCurve({
         v0: [1, 0, 0],
         v1: [0, 1, 0],
         v2: [0, 0, 1]
     });
 
-    var material = new XEO.PhongMaterial({
+    var material = new xeogl.PhongMaterial({
         diffuse: [0, 0, 0]
     });
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
         material: material
     });
 

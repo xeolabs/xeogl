@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>
     render-to-texture using <a href="../docs/classes/ColorTarget.html" target="_docs">ColorTarget</a>
     and <a href="../docs/classes/Texture.html" target="_docs">Texture</a> components
 </div>
@@ -21,29 +21,29 @@
     window._image = new Image();
     window._image.src = "textures/diffuse/uvGrid2.jpg";
     window._image.onload = function () {
-        window._image = XEO.renderer.webgl.ensureImageSizePowerOfTwo(window._image)
+        window._image = xeogl.renderer.webgl.ensureImageSizePowerOfTwo(window._image)
 
-        var textureGenerator = new XEO.Entity({
+        var textureGenerator = new xeogl.Entity({
 
-            stage: new XEO.Stage({
+            stage: new xeogl.Stage({
                 priority: 0
             }),
 
-            coXlorTarget: new XEO.ColorTarget({
+            coXlorTarget: new xeogl.ColorTarget({
                 //    size: [1000,1000]
             }),
 
-            camerZXa: new XEO.Camera({
-                view: new XEO.Lookat(),
-                project: new XEO.Ortho()
+            camerZXa: new xeogl.Camera({
+                view: new xeogl.Lookat(),
+                project: new xeogl.Ortho()
             }),
 
-            geometry: new XEO.BoxGeometry({
+            geometry: new xeogl.BoxGeometry({
                 xSize: 2,
                 zSize: 2
             }),
 
-            shader: new XEO.Shader({
+            shader: new xeogl.Shader({
                 vertex: [
                     "attribute vec3 xeo_aPosition;",
                     //"attribute vec2 xeo_aUV;",
@@ -72,31 +72,31 @@
                 }
             }),
 
-            modes: new XEO.Modes({
+            modes: new xeogl.Modes({
                 backfaces: true
             }),
 
-            transform: new XEO.Rotate({
+            transform: new xeogl.Rotate({
                 xyz: [1, 0, 0],
                 angle: 90
             })
         });
 
-        new XEO.CameraControl()
+        new xeogl.CameraControl()
 
         // We'll apply the color target as a texture on this plane
 //
-//        var box = new XEO.Entity({
+//        var box = new xeogl.Entity({
 //
-//            stage: new XEO.Stage({
+//            stage: new xeogl.Stage({
 //                priority: 1
 //            }),
 //
-//            geometry: new XEO.BoxGeometry(),
+//            geometry: new xeogl.BoxGeometry(),
 //
-//            material: new XEO.PhongMaterial({
+//            material: new xeogl.PhongMaterial({
 //
-//                diffuseMap: new XEO.Texture({
+//                diffuseMap: new xeogl.Texture({
 //                    target: textureGenerator.colorTarget
 ////                    ,
 ////                    wrapS: "clampToEdge",
@@ -112,7 +112,7 @@
 
         var t = 0;
 
-        XEO.scene.on("tick",
+        xeogl.scene.on("tick",
                 function () {
 
                     // Orbit the water's camera

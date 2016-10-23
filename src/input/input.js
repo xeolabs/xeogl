@@ -13,7 +13,7 @@
  a {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}Canvas{{/crossLink}}.
 
  ````javascript
- var myScene = new XEO.Scene();
+ var myScene = new xeogl.Scene();
 
  var input = myScene.input;
 
@@ -89,7 +89,7 @@
  ````
 
  @class Input
- @module XEO
+ @module xeogl
  @submodule input
  @extends Component
  */
@@ -97,9 +97,9 @@
 
     "use strict";
 
-    XEO.Input = XEO.Component.extend({
+    xeogl.Input = xeogl.Component.extend({
 
-        type: "XEO.Input",
+        type: "xeogl.Input",
 
         serializable: false,
 
@@ -472,8 +472,8 @@
 
                 var orientation;
                 var orientationAngle;
-                var acceleration = XEO.math.vec3();
-                var accelerationIncludingGravity = XEO.math.vec3();
+                var acceleration = xeogl.math.vec3();
+                var accelerationIncludingGravity = xeogl.math.vec3();
 
                 var orientationChangeEvent = {
                     orientation: null,
@@ -484,7 +484,7 @@
                     orientationAngle: 0,
                     acceleration: null,
                     accelerationIncludingGravity: accelerationIncludingGravity,
-                    rotationRate: XEO.math.vec3(),
+                    rotationRate: xeogl.math.vec3(),
                     interval: 0
                 };
 

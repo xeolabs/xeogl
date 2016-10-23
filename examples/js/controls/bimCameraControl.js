@@ -7,15 +7,15 @@
      Controls camera with mouse and keyboard, handles selection of entities and rotation point.
 
      */
-    XEO.BIMCameraControl = XEO.Component.extend({
+    xeogl.BIMCameraControl = xeogl.Component.extend({
 
-        type: "XEO.BIMCameraControl",
+        type: "xeogl.BIMCameraControl",
 
         _init: function (cfg) {
 
             var self = this;
 
-            var math = XEO.math;
+            var math = xeogl.math;
 
             // Configs
 
@@ -68,24 +68,24 @@
 
             // Rotation point indicator
 
-            var pickHelper = this.create(XEO.Entity, {
-                geometry: this.create(XEO.SphereGeometry, {
+            var pickHelper = this.create(xeogl.Entity, {
+                geometry: this.create(xeogl.SphereGeometry, {
                     radius: 0.1
                 }),
-                material: this.create(XEO.PhongMaterial, {
+                material: this.create(xeogl.PhongMaterial, {
                     diffuse: [0, 0, 0],
                     ambient: [0, 0, 0],
                     specular: [0, 0, 0],
                     emissive: [1.0, 1.0, 0.6], // Glowing
                     lineWidth: 4
                 }),
-                transform: this.create(XEO.Translate, {
+                transform: this.create(xeogl.Translate, {
                     xyz: [0, 0, 0]
                 }),
-                visibility: this.create(XEO.Visibility, {
+                visibility: this.create(xeogl.Visibility, {
                     visible: false // Initially invisible
                 }),
-                modes: this.create(XEO.Modes, {
+                modes: this.create(xeogl.Modes, {
                     collidable: false // This helper has no collision boundary of its own
                 })
             });
@@ -306,7 +306,7 @@
                         return;
                     }
 
-                    var math = XEO.math;
+                    var math = xeogl.math;
 
                     rotationDeltas[0] += (canvasPos[0] - mouseDownPos[0]) * sensitivityMouseRotate;
                     rotationDeltas[1] += (canvasPos[1] - mouseDownPos[1]) * sensitivityMouseRotate;
@@ -458,7 +458,7 @@
                                     yaw = 0;
                                 }
 
-                                var math = XEO.math;
+                                var math = xeogl.math;
 
                                 rotationDeltas[0] -= yaw;
                                 rotationDeltas[1] += pitch;
@@ -481,9 +481,9 @@
 
             (function () {
 
-                var tempVec3a = XEO.math.vec3();
-                var tempVec3b = XEO.math.vec3();
-                var tempVec3c = XEO.math.vec3();
+                var tempVec3a = xeogl.math.vec3();
+                var tempVec3b = xeogl.math.vec3();
+                var tempVec3c = xeogl.math.vec3();
 
                 scene.on("tick",
                     function (params) {
@@ -528,7 +528,7 @@
                                 view.eye = math.addVec3(eye, eyePivotVec, tempVec3c);
                                 view.look = math.addVec3(look, eyePivotVec, tempVec3c);
 
-                                if (camera.project.isType("XEO.Ortho")) {
+                                if (camera.project.isType("xeogl.Ortho")) {
                                     camera.project.scale += delta * (math.getAABBDiag(scene.worldBoundary.aabb) * orthoScaleRate);
                                 }
 
@@ -553,10 +553,10 @@
                 var targeting = false;
                 var progress = 0;
 
-                var tempVec3a = XEO.math.vec3();
-                var tempVec3b = XEO.math.vec3();
-                var tempVec3c = XEO.math.vec3();
-                var tempVec3d = XEO.math.vec3();
+                var tempVec3a = xeogl.math.vec3();
+                var tempVec3b = xeogl.math.vec3();
+                var tempVec3c = xeogl.math.vec3();
+                var tempVec3d = xeogl.math.vec3();
 
                 input.on("mousewheel",
                     function (_delta) {
@@ -633,7 +633,7 @@
                                 view.eye = math.addVec3(eye, eyePivotVec, tempVec3c);
                                 view.look = math.addVec3(look, eyePivotVec, tempVec3d);
 
-                                if (camera.project.isType("XEO.Ortho")) {
+                                if (camera.project.isType("xeogl.Ortho")) {
                                     camera.project.scale += delta * (math.getAABBDiag(scene.worldBoundary.aabb) * orthoScaleRate);
                                 }
 
@@ -652,7 +652,7 @@
 
             (function () {
 
-                var flight = self.create(XEO.CameraFlight, {
+                var flight = self.create(xeogl.CameraFlight, {
                     camera: camera,
                     duration: 1.0 // One second to fly to each new target
                 });
@@ -694,7 +694,7 @@
                         var boundary = scene.worldBoundary;
                         var aabb = boundary.aabb;
                         var center = boundary.center;
-                        var diag = XEO.math.getAABBDiag(aabb);
+                        var diag = xeogl.math.getAABBDiag(aabb);
                         var stopFOV = 55;
                         var dist = Math.abs((diag) / Math.tan(stopFOV / 2));
 

@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>emissive <a href="../docs/classes/Texture.html"
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>emissive <a href="../docs/classes/Texture.html"
                                                                                target="_docs">Texture</a>
     <br><br>
     <img src="textures/emissive/emissiveMap.jpg" width="300px" height="300px">
@@ -18,7 +18,7 @@
 
 <script>
 
-    var geometry = new XEO.TorusGeometry({
+    var geometry = new xeogl.TorusGeometry({
         radius: 1.0,
         tube: 0.4,
         radialSegments: 32,
@@ -26,7 +26,7 @@
         arc: Math.PI * 2.0
     });
 
-    var texture = new XEO.Texture({
+    var texture = new xeogl.Texture({
         src: "textures/emissive/emissiveMap.jpg",
         minFilter: "linearMipmapLinear",
         magFiler: "linear",
@@ -37,7 +37,7 @@
         rotate: 0
     });
 
-    var material = new XEO.PhongMaterial({
+    var material = new xeogl.PhongMaterial({
         ambient: [0, 0, 0],
         shininess: 30,
         diffuse: [0.2,0.2,0.2],
@@ -45,7 +45,7 @@
         emissiveMap: texture
     });
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
         geometry: geometry,
         material: material
     });

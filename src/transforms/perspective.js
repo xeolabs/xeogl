@@ -6,7 +6,7 @@
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
  {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>Alternatively, use {{#crossLink "Ortho"}}{{/crossLink}} if you need a orthographic projection.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Perspective components create within xeoEngine's shaders.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Perspective components create within xeogl's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/Perspective.png"></img>
@@ -20,29 +20,29 @@
  ## Usage
 
  ````Javascript
- new XEO.Entity({
+ new xeogl.Entity({
 
-     camera: XEO.Camera({
+     camera: xeogl.Camera({
 
-        view: new XEO.Lookat({
+        view: new xeogl.Lookat({
             eye: [0, 0, -4],
             look: [0, 0, 0],
             up: [0, 1, 0]
         }),
 
-        project: new XEO.Perspective({
+        project: new xeogl.Perspective({
             fovy: 60,
             near: 0.1,
             far: 1000
         })
      }),
 
-     perspective: new XEO.BoxGeometry()
+     perspective: new xeogl.BoxGeometry()
  });
  ````
 
  @class Perspective
- @module XEO
+ @module xeogl
  @submodule transforms
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Perspective within the
@@ -60,9 +60,9 @@
 
     "use strict";
 
-    XEO.Perspective = XEO.Transform.extend({
+    xeogl.Perspective = xeogl.Transform.extend({
 
-        type: "XEO.Perspective",
+        type: "xeogl.Perspective",
 
         _init: function (cfg) {
 
@@ -86,7 +86,7 @@
             var canvas = this.scene.canvas.canvas;
             var aspect = canvas.clientWidth / canvas.clientHeight;
 
-            this.matrix = XEO.math.perspectiveMat4(this._fovy * (Math.PI / 180.0), aspect, this._near, this._far, this._matrix);
+            this.matrix = xeogl.math.perspectiveMat4(this._fovy * (Math.PI / 180.0), aspect, this._near, this._far, this._matrix);
         },
 
         _props: {

@@ -1,7 +1,7 @@
-Development Workflow for the xeoEngine Repo
+Development Workflow for the xeogl Repo
 ======================================++===
 
-**To contribute code to the xeoEngine repo:**
+**To contribute code to the xeogl repo:**
 
 1. Create a feature branch off of **master** with an informative name.
 2. Make your modifications to the codebase and commit them to your feature branch.

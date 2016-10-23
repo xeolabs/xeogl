@@ -3,21 +3,21 @@
     "use strict";
 
     /**
-     * A chunk of WebGL state changes to render a XEO.renderer.State.
+     * A chunk of WebGL state changes to render a xeogl.renderer.State.
      *
      * @private
      */
-    XEO.renderer.Chunk = function () {
+    xeogl.renderer.Chunk = function () {
     };
 
     /**
      * Initialises the chunk.
      *
      * @param {Number} id Chunk ID
-     * @param {XEO.renderer.Program} program Program to render this chunk
-     * @param {XEO.renderer.State} state The state rendered by this chunk
+     * @param {xeogl.renderer.Program} program Program to render this chunk
+     * @param {xeogl.renderer.State} state The state rendered by this chunk
      */
-    XEO.renderer.Chunk.prototype.init = function (id, program, state) {
+    xeogl.renderer.Chunk.prototype.init = function (id, program, state) {
 
         this.id = id;
 

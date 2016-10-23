@@ -37,31 +37,31 @@
 
  ````javascript
  // First stage: an Entity that renders to a ColorTarget
- var entity1 = new XEO.Entity({
-    stage: new XEO.Stage({
+ var entity1 = new xeogl.Entity({
+    stage: new xeogl.Stage({
         priority: 0
     }),
-    geometry: new XEO.BoxGeometry(),
-    colorTarget: new XEO.ColorTarget()
+    geometry: new xeogl.BoxGeometry(),
+    colorTarget: new xeogl.ColorTarget()
 });
 
 
  // Second stage: an Entity with a Texture that sources from the ColorTarget
- var entity2 = new XEO.Entity({
-    stage: new XEO.Stage( {
+ var entity2 = new xeogl.Entity({
+    stage: new xeogl.Stage( {
         priority: 1
     }),
-    material: new XEO.PhongMaterial({
-        diffuseMap: new XEO.Texture({
+    material: new xeogl.PhongMaterial({
+        diffuseMap: new xeogl.Texture({
             target: entity1.colorTarget
         })
     }),
-    geometry: new XEO.BoxGeometry()
+    geometry: new xeogl.BoxGeometry()
 });
  ````
 
  @class Stage
- @module XEO
+ @module xeogl
  @submodule rendering
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Stage in the default
@@ -77,13 +77,13 @@
 
     "use strict";
 
-    XEO.Stage = XEO.Component.extend({
+    xeogl.Stage = xeogl.Component.extend({
 
-        type: "XEO.Stage",
+        type: "xeogl.Stage",
 
         _init: function (cfg) {
 
-            this._state = new XEO.renderer.Stage({
+            this._state = new xeogl.renderer.Stage({
                 priority: null,
                 pickable: true
             });

@@ -25,25 +25,25 @@
  ## Usage
 
  ````Javascript
- var camera = new XEO.Camera({
-     view: new XEO.Lookat({
+ var camera = new xeogl.Camera({
+     view: new xeogl.Lookat({
          eye: [0, 0, 10],
          look: [0, 0, 0],
          up: [0, 1, 0]
      }),
-     project: new XEO.Perspective({
+     project: new xeogl.Perspective({
          fovy: 60,
          near: 0.1,
          far: 1000
      })
  });
 
- var entity = new XEO.Entity({
+ var entity = new xeogl.Entity({
      camera: camera,
-     geometry: new XEO.BoxGeometry()
+     geometry: new xeogl.BoxGeometry()
  });
 
- new XEO.MouseRotateCamera(scene, {
+ new xeogl.MouseRotateCamera(scene, {
 
      camera: camera,
 
@@ -54,7 +54,7 @@
  ````
 
  @class MouseRotateCamera
- @module XEO
+ @module xeogl
  @submodule controls
  @constructor
  @param [scene] {scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
@@ -73,7 +73,7 @@
 
     "use strict";
 
-    XEO.MouseRotateCamera = XEO.Component.extend({
+    xeogl.MouseRotateCamera = xeogl.Component.extend({
 
         /**
          JavaScript class name for this Component.
@@ -82,7 +82,7 @@
          @type String
          @final
          */
-        type: "XEO.MouseRotateCamera",
+        type: "xeogl.MouseRotateCamera",
 
         _init: function (cfg) {
 
@@ -127,7 +127,7 @@
 
                     this._attach({
                         name: "camera",
-                        type: "XEO.Camera",
+                        type: "xeogl.Camera",
                         component: value,
                         sceneDefault: true
                     });

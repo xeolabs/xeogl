@@ -32,7 +32,7 @@
  property over time:
 
  ````javascript
- var curve = new XEO.SplineCurve({
+ var curve = new xeogl.SplineCurve({
      points: [
          [-10, 0, 0],
          [-5, 15, 0],
@@ -83,13 +83,13 @@
  curve.  Note that we need to flatten the points array for consumption by the {{#crossLink "Geometry"}}{{/crossLink}}.
 
  ````javascript
- var geometry = new XEO.Geometry({
-     positions: XEO.math.flatten(curve.getPoints(50))
+ var geometry = new xeogl.Geometry({
+     positions: xeogl.math.flatten(curve.getPoints(50))
  });
  ````
 
  @class SplineCurve
- @module XEO
+ @module xeogl
  @submodule curves
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
@@ -104,7 +104,7 @@
 
     "use strict";
 
-    XEO.SplineCurve = XEO.Curve.extend({
+    xeogl.SplineCurve = xeogl.Curve.extend({
 
         /**
          JavaScript class name for this Component.
@@ -113,7 +113,7 @@
          @type String
          @final
          */
-        type: "XEO.SplineCurve",
+        type: "xeogl.SplineCurve",
 
         _init: function (cfg) {
 
@@ -209,7 +209,7 @@
          */
         getPoint: function (t) {
 
-            var math = XEO.math;
+            var math = xeogl.math;
 
             var points = this.points;
 

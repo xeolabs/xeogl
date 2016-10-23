@@ -9,7 +9,7 @@
      * @param type gl.VERTEX_SHADER | gl.FRAGMENT_SHADER
      * @param source Source code for shader
      */
-    XEO.renderer.webgl.Shader = function (gl, type, source) {
+    xeogl.renderer.webgl.Shader = function (gl, type, source) {
 
         /**
          * True if this shader successfully allocated. When false,

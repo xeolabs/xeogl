@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
 
     <script src="js/effects/zSpaceEffect.js"></script>
     <script src="js/controls/zSpaceStylusControl.js"></script>
@@ -17,7 +17,7 @@
 
 <div id="infoLight"
      style="left: 0; text-align: left; background: black; opacity: 0.7; padding: 8px; color: white; font-size: 14pt;">
-    <span><a href="http://xeoengine.org" target="_home">xeoEngine</a><br>
+    <span><a href="http://xeogl.org" target="_home">xeogl</a><br>
         using a <a
                 href="../docs/classes/ZSpaceEffect.html"
                 target="_docs">ZSpaceEffect</a> to view a simple <a
@@ -32,21 +32,21 @@
     // Create a cube entity
     //---------------------------------------------------
 
-    var entity = new XEO.Entity({
-        geometry: new XEO.BoxGeometry({
+    var entity = new xeogl.Entity({
+        geometry: new xeogl.BoxGeometry({
             xSize: .6,
             ySize: .6,
             zSize: .6
         }),
-        material: new XEO.PhongMaterial({
-            diffuseMap: new XEO.Texture({
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/UVCheckerMap11-1024.png"
             })
         }),
-        modes: new XEO.Modes({
+        modes: new xeogl.Modes({
             backfaces: true
         }),
-        transform: new XEO.Rotate({
+        transform: new xeogl.Rotate({
             xyz: [0, 1, 0],
             angle: 0
         })
@@ -65,21 +65,21 @@
     // Allow camera control with keyboard and mouse
     //----------------------------------------------------------------------------
 
-    var cameraControl = new XEO.CameraControl();
+    var cameraControl = new xeogl.CameraControl();
 
     //---------------------------------------------------
     // Create a zSpace effect and stylus control
     //---------------------------------------------------
 
-    var zspaceEffect = new XEO.ZSpaceEffect({
+    var zspaceEffect = new xeogl.ZSpaceEffect({
         canvasOffset: [310, 0]
     });
 
-    var zspaceStylusControl = new XEO.ZSpaceStylusControl();
+    var zspaceStylusControl = new xeogl.ZSpaceStylusControl();
 
     zspaceEffect.on("supported", function (supported) {
         if (!supported) {
-            document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. ";
+            document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeogl camera controls. ";
         }
     });
 

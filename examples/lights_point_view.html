@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
 
     <script src="js/debug/debug.js"></script>
 
@@ -14,13 +14,13 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a> - <a href="../docs/classes/PointLight.html"
+    <a href="http://xeogl.org">xeogl</a> - <a href="../docs/classes/PointLight.html"
                                                       target="_docs">PointLight in View-space</a>
 </div>
 
 <script>
 
-    var pointLight = new XEO.PointLight({
+    var pointLight = new xeogl.PointLight({
         pos: [3.0, 3.0, 3.0],
         color: [0.7, 0.7, 0.8],
         intensity: 1.0,
@@ -30,13 +30,13 @@
         space: "view"
     });
 
-    var lights = new XEO.Lights({
+    var lights = new xeogl.Lights({
         lights: [
             pointLight
         ]
     });
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
         lights: lights
     });
 
@@ -46,7 +46,7 @@
                 entity.scene.view.rotateEyeX(0.3);
             });
 
-    XEO.debug
+    xeogl.debug
             .id("light")
             .fillColor([1.0, 0.6, 0.6])
             .color([0, 0, 0])

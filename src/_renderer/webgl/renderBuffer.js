@@ -2,7 +2,7 @@
 
     "use strict";
 
-    XEO.renderer.webgl.RenderBuffer = function (canvas, gl, options) {
+    xeogl.renderer.webgl.RenderBuffer = function (canvas, gl, options) {
 
         options = options || {};
 
@@ -44,14 +44,14 @@
      *
      * @param size {Array of Number} Two-element size vector
      */
-    XEO.renderer.webgl.RenderBuffer.prototype.setSize = function (size) {
+    xeogl.renderer.webgl.RenderBuffer.prototype.setSize = function (size) {
         this.size = size;
     };
 
     /**
      * Called after WebGL context is restored.
      */
-    XEO.renderer.webgl.RenderBuffer.prototype.webglRestored = function (gl) {
+    xeogl.renderer.webgl.RenderBuffer.prototype.webglRestored = function (gl) {
         this.gl = gl;
         this.buffer = null;
         this.allocated = false;
@@ -61,7 +61,7 @@
     /**
      * Binds this buffer
      */
-    XEO.renderer.webgl.RenderBuffer.prototype.bind = function () {
+    xeogl.renderer.webgl.RenderBuffer.prototype.bind = function () {
 
         this._touch();
 
@@ -74,7 +74,7 @@
         this.bound = true;
     };
 
-    XEO.renderer.webgl.RenderBuffer.prototype._touch = function () {
+    xeogl.renderer.webgl.RenderBuffer.prototype._touch = function () {
 
         var width;
         var height;
@@ -184,7 +184,7 @@
     /**
      * Clears this renderbuffer
      */
-    XEO.renderer.webgl.RenderBuffer.prototype.clear = function () {
+    xeogl.renderer.webgl.RenderBuffer.prototype.clear = function () {
         if (!this.bound) {
             throw "Render buffer not bound";
         }
@@ -195,7 +195,7 @@
     /**
      * Reads buffer pixel at given coordinates
      */
-    XEO.renderer.webgl.RenderBuffer.prototype.read = function (pickX, pickY) {
+    xeogl.renderer.webgl.RenderBuffer.prototype.read = function (pickX, pickY) {
         var x = pickX;
         var y = this.canvas.height - pickY;
         var pix = new Uint8Array(4);
@@ -206,14 +206,14 @@
     /**
      * Unbinds this renderbuffer
      */
-    XEO.renderer.webgl.RenderBuffer.prototype.unbind = function () {
+    xeogl.renderer.webgl.RenderBuffer.prototype.unbind = function () {
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
         this.bound = false;
     };
 
     /** Returns the texture
      */
-    XEO.renderer.webgl.RenderBuffer.prototype.getTexture = function () {
+    xeogl.renderer.webgl.RenderBuffer.prototype.getTexture = function () {
 
         var self = this;
 
@@ -241,7 +241,7 @@
 
     /** Destroys this buffer
      */
-    XEO.renderer.webgl.RenderBuffer.prototype.destroy = function () {
+    xeogl.renderer.webgl.RenderBuffer.prototype.destroy = function () {
 
         if (this.allocated) {
 

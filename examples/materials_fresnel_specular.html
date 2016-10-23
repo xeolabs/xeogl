@@ -1,41 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>specular <a href="../docs/classes/Fresnel.html"
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>specular <a href="../docs/classes/Fresnel.html"
                                                                                target="_docs">Fresnel</a>
 </div>
 
 <script>
 
-    // Override xeoEngine's default lights with some View-space directional lights,
+    // Override xeogl's default lights with some View-space directional lights,
     // including one that shines from behind our torus Entity
 
-    var lights = new XEO.Lights({
+    var lights = new xeogl.Lights({
         lights: [
 
-            new XEO.AmbientLight({
+            new xeogl.AmbientLight({
                 color: [0.8, 0.8, 0.9],
                 intensity: 0.6
             }),
 
-            new XEO.DirLight({
+            new xeogl.DirLight({
                 dir: [0.0, 0.0, 1.0],
                 color: [1.0, 1.0, 0.9],
                 intensity: 1.0,
                 space: "view"
             }),
 
-            new XEO.DirLight({
+            new xeogl.DirLight({
                 dir: [0.1, 0.1, -0.7],
                 color: [0.5, 0.5, 0.5],
                 intensity: 0.3,
@@ -44,7 +44,7 @@
         ]
     });
 
-    var geometry = new XEO.TorusGeometry({
+    var geometry = new xeogl.TorusGeometry({
         radius: 1.0,
         tube: 0.4,
         radialSegments: 32,
@@ -52,11 +52,11 @@
         arc: Math.PI * 2.0
     });
 
-    var diffuseMap = new XEO.Texture({
+    var diffuseMap = new xeogl.Texture({
         src: "textures/diffuse/uvGrid2.jpg"
     });
 
-    var specularFresnel = new XEO.Fresnel({
+    var specularFresnel = new xeogl.Fresnel({
         edgeBias: 0.0,
         centerBias: 1.0,
         power: 1.0,
@@ -64,7 +64,7 @@
         centerColor: [0.0, 0.0, 0.0]
     });
 
-    var material = new XEO.PhongMaterial({
+    var material = new xeogl.PhongMaterial({
         ambient: [0.3, 0.3, 0.3],
         diffuse: [0.3, 0.5, 0.5],
         shininess: 3,
@@ -72,7 +72,7 @@
         specularFresnel: specularFresnel
     });
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
         geometry: geometry,
         material: material,
         lights: lights

@@ -1,6 +1,6 @@
 /**
  * Components for defining geometry.
  *
- * @module XEO
+ * @module xeogl
  * @submodule geometry
  */

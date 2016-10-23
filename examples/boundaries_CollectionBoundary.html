@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a>
+    <a href="http://xeogl.org">xeogl</a>
     <br><br>
     a <a href="../docs/classes/CollectionBoundary.html" target="_docs">CollectionBoundary</a> containing
     1000 animated <a href="../docs/classes/Entity.html" target="_docs">Entities</a>
@@ -29,17 +29,17 @@
 <script>
 
     // The CollectionBoundary
-    var collectionBoundary = new XEO.CollectionBoundary({
-        collection: new XEO.Collection()
+    var collectionBoundary = new xeogl.CollectionBoundary({
+        collection: new xeogl.Collection()
     });
 
     // Entity which shows the boundary of the CollectionBoundary
     // as a wireframe box
-    var collectionBoundaryIndicator = new XEO.Entity({
-        geometry: new XEO.BoundaryGeometry({
+    var collectionBoundaryIndicator = new xeogl.Entity({
+        geometry: new xeogl.BoundaryGeometry({
             boundary: collectionBoundary.worldBoundary
         }),
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuse: [0.5, 1.0, 0.5],
             emissive: [0.5, 1.0, 0.5],
             lineWidth: 2
@@ -49,7 +49,7 @@
     // Create 1000 moving Entities within the CollectionBoundary
 
     // Geometry shared by our Entities
-    var sphereGeometry =new XEO.TorusGeometry({
+    var sphereGeometry =new xeogl.TorusGeometry({
         radius: 6.0,
         tube: 2.0,
         radialSegments: 60,
@@ -57,14 +57,14 @@
         arc: Math.PI * 2.0
     });
 
-    var boxGeometry = new XEO.BoxGeometry({
+    var boxGeometry = new xeogl.BoxGeometry({
         xSize: 6,
         ySize: 6,
         zSize: 6
     });
 
-    var material = new XEO.PhongMaterial({
-        diffuseMap: new XEO.Texture({
+    var material = new xeogl.PhongMaterial({
+        diffuseMap: new xeogl.Texture({
             src: "textures/diffuse/uvGrid2.jpg"
         })
     });
@@ -78,13 +78,13 @@
 
             // Create a randomly-positioned sphere Entity
 
-            var entity = new XEO.Entity({
+            var entity = new xeogl.Entity({
                 geometry: boxGeometry,
                 material: material,
-                transform:new XEO.Rotate({
+                transform:new xeogl.Rotate({
                     xyz: [Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1],
                     angle: 0,
-                    parent: new XEO.Translate({
+                    parent: new xeogl.Translate({
                         xyz: [
                             Math.random() * r - halfr,
                             Math.random() * r - halfr,
@@ -133,7 +133,7 @@
 
     // Move the camera back a bit
 
-    var scene = XEO.scene;
+    var scene = xeogl.scene;
 
     scene.camera.view.zoom(320);
 
@@ -144,12 +144,12 @@
                 var view = scene.camera.view;
                 view.rotateEyeY(0.2);
 
-                logJSON(XEO.stats.frame);
+                logJSON(xeogl.stats.frame);
             });
 
     // Permit user camera control
 
-    var cameraControl = new XEO.CameraControl();
+    var cameraControl = new xeogl.CameraControl();
     cameraControl.mouseZoom.sensitivity = 5;
 
 

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.js"></script>
+    <script src="../build/xeogl.js"></script>
 
     <script src="js/effects/stereoEffect.js"></script>
 
@@ -14,9 +14,9 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>stereo view using a <a
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>stereo view using a <a
         href="js/effects/stereoEffect.js"
-        target="_docs">XEO.StereoEffect</a><br><br>
+        target="_docs">xeogl.StereoEffect</a><br><br>
     <ul>
         <li>Click in the right half-space to pick objects</li>
     </ul>
@@ -25,7 +25,7 @@
 <script>
 
     // Load glTF model
-    var gearbox = new XEO.Model({
+    var gearbox = new xeogl.Model({
         src: "models/gltf/gearbox/gearbox_assy.gltf"
     });
 
@@ -49,8 +49,8 @@
 //                view.rotateEyeX(0.3);
             });
 
-    // XEO.StereoEffect with all defaults
-    var stereoEffect = new XEO.StereoEffect({
+    // xeogl.StereoEffect with all defaults
+    var stereoEffect = new xeogl.StereoEffect({
         camera: scene.camera,
         viewport: scene.viewport,
         eyeSep: 1.2,
@@ -60,7 +60,7 @@
     });
 
     // Camera mouse and keyboard interaction
-    new XEO.CameraControl();
+    new xeogl.CameraControl();
 
 </script>
 </body>

@@ -1,25 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeoengine.js"></script>
+    <script src="../build/xeogl.js"></script>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>importing glTF using a <a
-        href="../docs/classes/Model.html" target="_docs">XEO.Model</a> component
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>importing glTF using a <a
+        href="../docs/classes/Model.html" target="_docs">xeogl.Model</a> component
 </div>
 
 <script>
 
     // Load glTF
-    var gearbox = new XEO.Model({
+    var gearbox = new xeogl.Model({
         src: "models/gltf/gearbox/gearbox_assy.gltf"
     });
 
@@ -31,7 +31,7 @@
     view.up = [-0.15, 0.97, 0.13];
 
     // Allow user camera control
-    new XEO.CameraControl();
+    new xeogl.CameraControl();
 
     // Slowly orbit camera about model
     gearbox.scene.on("tick",

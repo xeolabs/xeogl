@@ -9,7 +9,7 @@
     "Fast and flexible [[picking|interaction_picking_triangles_normalAndUV]]"
   ],
   "Optimizations": [
-    "See the <a href='https://github.com/xeolabs/xeoengine/wiki/Implementation-Notes' target='_wiki'>wiki</a> for implementation notes on optimizations in xeoEngine."
+    "See the <a href='https://github.com/xeolabs/xeogl/wiki/Implementation-Notes' target='_wiki'>wiki</a> for implementation notes on optimizations in xeogl."
   ],
   "Cameras": [
     "[[Orthographic|camera_ortho]], [[perspective|camera_perspective]] and [[frustum|camera_frustum]] projection",

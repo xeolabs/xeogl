@@ -12,7 +12,7 @@
  <li>Use {{#crossLink "Ortho"}}{{/crossLink}} if you just want to specify the X,Y frustum extents with a single scale factor,
  ie. without individually specifying the distance to each frustum plane.</li>
  <li>Use {{#crossLink "Perspective"}}{{/crossLink}} if you need perspective projection.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Ortho components create within xeoEngine's shaders.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Ortho components create within xeogl's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/Frustum.png"></img>
@@ -27,17 +27,17 @@
  ## Usage
 
  ````Javascript
- new XEO.Entity({
+ new xeogl.Entity({
 
-     camera: XEO.Camera({
+     camera: xeogl.Camera({
 
-        view: new XEO.Lookat({
+        view: new xeogl.Lookat({
             eye: [0, 0, -4],
             look: [0, 0, 0],
             up: [0, 1, 0]
         }),
 
-        project: new XEO.Frustum(scene, {
+        project: new xeogl.Frustum(scene, {
             left: -0.1,
             right: 0.1,
             bottom: -0.1,
@@ -47,12 +47,12 @@
         })
      }),
 
-     geometry: new XEO.BoxGeometry()
+     geometry: new xeogl.BoxGeometry()
  });
  ````
 
  @class Frustum
- @module XEO
+ @module xeogl
  @submodule transforms
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Frustum within the
@@ -72,9 +72,9 @@
 
     "use strict";
 
-    XEO.Frustum = XEO.Transform.extend({
+    xeogl.Frustum = xeogl.Transform.extend({
 
-        type: "XEO.Frustum",
+        type: "xeogl.Frustum",
 
         _init: function (cfg) {
 
@@ -98,7 +98,7 @@
         },
 
         _update: function () {
-            this.matrix = XEO.math.frustumMat4(
+            this.matrix = xeogl.math.frustumMat4(
                 this._left,
                 this._right,
                 this._bottom,

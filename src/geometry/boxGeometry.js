@@ -13,16 +13,16 @@
  diffuse {{#crossLink "Texture"}}{{/crossLink}}:
 
  ````javascript
- new XEO.Entity({
+ new xeogl.Entity({
 
-     geometry: new XEO.BoxGeometry({
+     geometry: new xeogl.BoxGeometry({
         xSize: 1,
         ySize: 1,
         zSize: 1
      }),
 
-     material: new XEO.PhongMaterial({
-        diffuseMap: new XEO.Texture({
+     material: new xeogl.PhongMaterial({
+        diffuseMap: new xeogl.Texture({
             src: "textures/diffuse/uvGrid2.jpg"
         })
      })
@@ -30,7 +30,7 @@
  ````
 
  @class BoxGeometry
- @module XEO
+ @module xeogl
  @submodule geometry
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this BoxGeometry in the default
@@ -49,9 +49,9 @@
 
     "use strict";
 
-    XEO.BoxGeometry = XEO.Geometry.extend({
+    xeogl.BoxGeometry = xeogl.Geometry.extend({
 
-        type: "XEO.BoxGeometry",
+        type: "xeogl.BoxGeometry",
 
         _init: function (cfg) {
 

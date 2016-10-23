@@ -4,27 +4,27 @@
  ## Example
 
  ````javascript
- new XEO.Entity({
-     geometry: new XEO.VectorTextGeometry({
+ new xeogl.Entity({
+     geometry: new xeogl.VectorTextGeometry({
          text: "Attack ships on fire off the Shoulder of Orion",
          xSize: 2,
          ySize: 2
      }),
-     material: new XEO.PhongMaterial({
+     material: new xeogl.PhongMaterial({
          emissive: [0.5, 1.0, 1.0],
          lineWidth: 2
      }),
-     lights: new XEO.Lights({
+     lights: new xeogl.Lights({
          lights: [] // No lights - rely on emissive color
      }),
-     transform: new XEO.Translate({
+     transform: new xeogl.Translate({
          xyz: [0, 40, 0]
      })
  });
  ````
 
  @class VectorTextGeometry
- @module XEO
+ @module xeogl
  @submodule geometry
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this VectorTextGeometry in the default
@@ -42,9 +42,9 @@
 
     var letters;
 
-    XEO.VectorTextGeometry = XEO.Geometry.extend({
+    xeogl.VectorTextGeometry = xeogl.Geometry.extend({
 
-        type: "XEO.VectorTextGeometry",
+        type: "xeogl.VectorTextGeometry",
 
         _init: function (cfg) {
 

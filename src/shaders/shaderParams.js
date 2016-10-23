@@ -24,7 +24,7 @@
  // which will receive the positions and UVs from the Geometry components. Also note the 'time'
  // uniform, which we'll be animating via the ShaderParams components.
 
- var shader = new XEO.Shader({
+ var shader = new xeogl.Shader({
 
     // Vertex shading stage
     vertex: [
@@ -70,16 +70,16 @@
  // First Entity using our Shader, with a quad covering the left half of the canvas,
  // along with its own ShaderParams to independently set its own values for the Shader's uniforms.
 
- var entity1 = new XEO.Entity({
+ var entity1 = new xeogl.Entity({
     shader: shader,
-    geometry: new XEO.Geometry({
+    geometry: new xeogl.Geometry({
         primitive:"triangles",
         positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
         normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
         uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
         indices:[ 0, 1, 2, 0, 2, 3 ]
     }),
-    shaderParams1: new XEO.ShaderParams({
+    shaderParams1: new xeogl.ShaderParams({
         params: {
             time: 0.0
         }
@@ -89,16 +89,16 @@
  // Second Entity using the Shader, with a quad covering the right half of the canvas,
  // along with its own ShaderParams to independently set its own values for the Shader's uniforms.
 
- var entity2 = new XEO.Entity({
+ var entity2 = new xeogl.Entity({
     shader: shader,
-    geometry: new XEO.Geometry({
+    geometry: new xeogl.Geometry({
         primitive:"triangles",
         positions:[ 1, 1, 0, 0, 1, 0, 0, -1, 0, 1, -1, 0 ],
         normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
         uv:[ 1, 1, 0, 1, 0, 0, 1, 0 ],
         indices:[ 0, 1, 2, 0, 2, 3 ]
     }),
-    shaderParams: new XEO.ShaderParams({
+    shaderParams: new xeogl.ShaderParams({
         params: {
             time: 0.0
         }
@@ -123,7 +123,7 @@
 });
  ````
  @class ShaderParams
- @module XEO
+ @module xeogl
  @submodule shaders
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this ShaderParams in the default
@@ -138,13 +138,13 @@
 
     "use strict";
 
-    XEO.ShaderParams = XEO.Component.extend({
+    xeogl.ShaderParams = xeogl.Component.extend({
 
-        type: "XEO.ShaderParams",
+        type: "xeogl.ShaderParams",
 
         _init: function (cfg) {
 
-            this._state = new XEO.renderer.ShaderParams({
+            this._state = new xeogl.renderer.ShaderParams({
                 params: {}
             });
 

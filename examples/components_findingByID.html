@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a>
+    <a href="http://xeogl.org">xeogl</a>
     <br><br>
     creating an <a href="../docs/classes/Entity.html" target="_docs">Entity</a>, then finding it by ID within
     its <a href="../docs/classes/Scene.html" target="_docs">Scene</a> and attaching a red <a
@@ -21,10 +21,10 @@
 <script>
 
     // For this example we'll create our own Scene
-    var scene = new XEO.Scene();
+    var scene = new xeogl.Scene();
 
     // Create a Entity with all defaults
-    new XEO.Entity(scene, {
+    new xeogl.Entity(scene, {
         id: "myObject"
     });
 
@@ -32,7 +32,7 @@
     var entity = scene.components["myObject"];
 
     // Attach a new Material to it
-    entity.material = new XEO.PhongMaterial(scene, {
+    entity.material = new xeogl.PhongMaterial(scene, {
         diffuse: [1.0, 0.0, 0.0]
     });
 

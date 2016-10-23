@@ -1,6 +1,6 @@
 /**
  * Entities.
  *
- * @module XEO
+ * @module xeogl
  * @submodule entities
  */

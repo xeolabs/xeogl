@@ -1,77 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>partitioning the canvas into four <a
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>partitioning the canvas into four <a
         href="../docs/classes/Viewport.html"
         target="_docs">Viewports</a>
 </div>
 
 <script>
 
-    var entity1 = new XEO.Entity({
-        geometry: new XEO.SphereGeometry(),
-        material: new XEO.PhongMaterial({
-            diffuseMap: new XEO.Texture({
+    var entity1 = new xeogl.Entity({
+        geometry: new xeogl.SphereGeometry(),
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/uvGrid2.jpg"
             })
         }),
-        viewport: new XEO.Viewport({
+        viewport: new xeogl.Viewport({
             boundary: [0, 0, 500, 400],
             autoBoundary: false
         })
     });
 
 
-    var entity2 = new XEO.Entity({
-        geometry: new XEO.TorusGeometry(),
-        material: new XEO.PhongMaterial({
-            diffuseMap: new XEO.Texture({
+    var entity2 = new xeogl.Entity({
+        geometry: new xeogl.TorusGeometry(),
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/uvGrid2.jpg"
             })
         }),
-        viewport: new XEO.Viewport({
+        viewport: new xeogl.Viewport({
             boundary: [510, 0, 500, 400],
             autoBoundary: false
         })
     });
 
-    var entity3 = new XEO.Entity({
-        geometry: new XEO.TorusGeometry(),
-        material: new XEO.PhongMaterial({
-            diffuseMap: new XEO.Texture({
+    var entity3 = new xeogl.Entity({
+        geometry: new xeogl.TorusGeometry(),
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/uvGrid2.jpg"
             })
         }),
-        viewport: new XEO.Viewport({
+        viewport: new xeogl.Viewport({
             boundary: [0, 500, 510, 400],
             autoBoundary: false
         })
     });
 
-    var entity4 = new XEO.Entity({
-        geometry: new XEO.BoxGeometry(),
-        material: new XEO.PhongMaterial({
-            diffuseMap: new XEO.Texture({
+    var entity4 = new xeogl.Entity({
+        geometry: new xeogl.BoxGeometry(),
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/uvGrid2.jpg"
             })
         }),
-        viewport: new XEO.Viewport({
+        viewport: new xeogl.Viewport({
             boundary: [200, 500, 510, 400],
             autoBoundary: false
         })
     });
 
-    var scene = XEO.scene;
+    var scene = xeogl.scene;
 
     scene.camera.view.eye = [0, 0, 1.5];
 

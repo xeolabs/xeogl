@@ -4,7 +4,7 @@
  <ul>
  <li>Fresnels are grouped within {{#crossLink "PhongMaterial"}}{{/crossLink}}s, which are attached to
  {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Fresnels create within xeoEngine's shaders.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Fresnels create within xeogl's shaders.</li>
  </ul>
 
  ## Examples
@@ -21,20 +21,20 @@
  ## Usage
 
  ````javascript
- var entity = new XEO.Entity({
+ var entity = new xeogl.Entity({
 
-     material: new XEO.PhongMaterial({
+     material: new xeogl.PhongMaterial({
          ambient: [0.3, 0.3, 0.3],
          shininess: 30,
 
-         diffuseFresnel: new XEO.Fresnel({
+         diffuseFresnel: new xeogl.Fresnel({
              edgeColor: [1.0, 1.0, 1.0],
              centerColor: [0.0, 0.0, 0.0],
              power: 4,
              bias: 0.6
          }),
 
-         specularFresnel: new XEO.Fresnel({
+         specularFresnel: new xeogl.Fresnel({
              edgeColor: [1.0, 1.0, 1.0],
              centerColor: [0.0, 0.0, 0.0],
              power: 4,
@@ -42,12 +42,12 @@
          })
      }),
 
-     new XEO.TorusGeometry()
+     new xeogl.TorusGeometry()
  });
  ````
 
  @class Fresnel
- @module XEO
+ @module xeogl
  @submodule materials
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Geometry in the default
@@ -66,15 +66,15 @@
 
     "use strict";
 
-    XEO.Fresnel = XEO.Component.extend({
+    xeogl.Fresnel = xeogl.Component.extend({
 
-        type: "XEO.Fresnel",
+        type: "xeogl.Fresnel",
 
         _init: function (cfg) {
 
-            this._state = new XEO.renderer.Fresnel({
-                edgeColor: XEO.math.vec3([0, 0, 0]),
-                centerColor: XEO.math.vec3([1, 1, 1]),
+            this._state = new xeogl.renderer.Fresnel({
+                edgeColor: xeogl.math.vec3([0, 0, 0]),
+                centerColor: xeogl.math.vec3([1, 1, 1]),
                 edgeBias: 0,
                 centerBias: 1,
                 power: 1

@@ -10,8 +10,8 @@
  ## Usage
 
  ````javascript
- new XEO.Entity({
-     geometry: new XEO.HeightmapGeometry({
+ new xeogl.Entity({
+     geometry: new xeogl.HeightmapGeometry({
          primitive: "triangles",
          src: "textures/height/mountain.png",
          xSize: 10,
@@ -22,19 +22,19 @@
          lod: 1.0, // Default
          autoNormals: true // Default
      }),
-     material: new XEO.PhongMaterial({
-         diffuseMap: new XEO.Texture({
+     material: new xeogl.PhongMaterial({
+         diffuseMap: new xeogl.Texture({
              src: "textures/diffuse/uvGrid2.jpg"
          })
      }),
-     modes: new XEO.Modes({
+     modes: new xeogl.Modes({
          backfaces: true
      })
  });
  ````
 
  @class HeightmapGeometry
- @module XEO
+ @module xeogl
  @submodule geometry
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Heightmap in the default
@@ -58,9 +58,9 @@
 
     "use strict";
 
-    XEO.HeightmapGeometry = XEO.Geometry.extend({
+    xeogl.HeightmapGeometry = xeogl.Geometry.extend({
 
-        type: "XEO.HeightmapGeometry",
+        type: "xeogl.HeightmapGeometry",
 
         _init: function (cfg) {
 
@@ -300,7 +300,7 @@
                     // Keep self._src because that's where we loaded the image
                     // from, and we may need to save that in JSON later
 
-                    self._image = XEO.renderer.webgl.ensureImageSizePowerOfTwo(image);
+                    self._image = xeogl.renderer.webgl.ensureImageSizePowerOfTwo(image);
 
                     self._srcDirty = false;
                     self._imageDirty = true;
@@ -415,7 +415,7 @@
 
                 set: function (value) {
 
-                    this._image = value ? XEO.renderer.webgl.ensureImageSizePowerOfTwo(value) : value;
+                    this._image = value ? xeogl.renderer.webgl.ensureImageSizePowerOfTwo(value) : value;
                     this._src = null;
 
                     this._srcDirty = false;

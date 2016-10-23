@@ -13,23 +13,23 @@
  ````Javascript
  // Create some Entities
 
- var entity1 = new XEO.Entity({
+ var entity1 = new xeogl.Entity({
     id: "entity1",
-    transform: new XEO.Translate(scene, { xyz: [-5, 0, 0] })
+    transform: new xeogl.Translate(scene, { xyz: [-5, 0, 0] })
  });
 
- var entity2 = new XEO.Entity({
+ var entity2 = new xeogl.Entity({
     id: "entity2",
-    transform: new XEO.Translate(scene, { xyz: [0, 0, 0] })
+    transform: new xeogl.Translate(scene, { xyz: [0, 0, 0] })
  });
 
- var entity3 = new XEO.Entity({
+ var entity3 = new xeogl.Entity({
     id: "entity3",
-    transform: new XEO.Translate(scene, { xyz: [5, 0, 0] })
+    transform: new xeogl.Translate(scene, { xyz: [5, 0, 0] })
  });
 
  // Create a MousePickEntity
- var mousePickEntity = new XEO.MousePickEntity({
+ var mousePickEntity = new xeogl.MousePickEntity({
 
     // We want the 3D World-space coordinates
     // of each location we pick
@@ -51,7 +51,7 @@
  ````
 
  @class MousePickEntity
- @module XEO
+ @module xeogl
  @submodule controls
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
@@ -67,7 +67,7 @@
 
     "use strict";
 
-    XEO.MousePickEntity = XEO.Component.extend({
+    xeogl.MousePickEntity = xeogl.Component.extend({
 
         /**
          JavaScript class name for this Component.
@@ -76,7 +76,7 @@
          @type String
          @final
          */
-        type: "XEO.MousePickEntity",
+        type: "xeogl.MousePickEntity",
 
         _init: function (cfg) {
 

@@ -6,52 +6,52 @@
  Stereo view of an Entity with CardboardLookAround control:
 
  ````javascript
- new XEO.Entity({
-     geometry: new XEO.BoxGeometry()
+ new xeogl.Entity({
+     geometry: new xeogl.BoxGeometry()
  });
 
  new Stereo();
 
- new XEO.CardboardLookAround();
+ new xeogl.CardboardLookAround();
  ````
 
  Stereo view of an Entity with CardboardLookAround control, using custom Camera and Viewport:
 
  ````javascript
- var camera = new XEO.Camera({
-     view: new XEO.Lookat({
+ var camera = new xeogl.Camera({
+     view: new xeogl.Lookat({
          eye: [0, 0, 10],
          look: [0, 0, 0],
          up: [0, 1, 0]
      }),
-     project: new XEO.Perspective({
+     project: new xeogl.Perspective({
          fovy: 60,
          near: 0.1,
          far: 1000
      })
  });
 
- var viewport = new XEO.Viewport();
+ var viewport = new xeogl.Viewport();
 
- var entity = new XEO.Entity({
+ var entity = new xeogl.Entity({
      camera: camera,
      viewport: viewport,
-     geometry: new XEO.BoxGeometry()
+     geometry: new xeogl.BoxGeometry()
  });
 
- new XEO.Stereo({
+ new xeogl.Stereo({
      camera: camera,
      viewport: viewport
  });
 
- new XEO.CardboardLookAround({
+ new xeogl.CardboardLookAround({
      camera: camera,
      active: true // Default
  });
  ````
 
  @class CardboardLookAround
- @module XEO
+ @module xeogl
  @submodule interaction
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this CardboardLookAround in the default
@@ -70,9 +70,9 @@
 
     "use strict";
 
-    XEO.CardboardLookAround = XEO.CameraController.extend({
+    xeogl.CardboardLookAround = xeogl.CameraController.extend({
 
-        type: "XEO.CardboardLookAround",
+        type: "xeogl.CardboardLookAround",
 
         _init: function (cfg) {
 
@@ -86,7 +86,7 @@
             var orientation;
             var orientationAngle;
 
-            var math = XEO.math;
+            var math = xeogl.math;
             var euler = math.vec3();
             var tempVec3a = math.vec3();
             var tempVec3b = math.vec3();
@@ -207,7 +207,7 @@
 
             function align() {
 
-                var math = XEO.math;
+                var math = xeogl.math;
 
                 math.inverseQuaternion(quaternion, inverseQuat);
                 math.vec3ApplyQuaternion(inverseQuat, zed, vec);

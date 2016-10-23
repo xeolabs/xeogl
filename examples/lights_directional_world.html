@@ -1,44 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a> - <a href="../docs/classes/DirLight.html"
+    <a href="http://xeogl.org">xeogl</a> - <a href="../docs/classes/DirLight.html"
                           target="_docs">DirLight</a> in View-scape
 </div>
 
 <script>
 
-    var dirLight1 = new XEO.DirLight({
+    var dirLight1 = new xeogl.DirLight({
         dir: [1,0,-1],
         color: [0.7, 0.7, 0.8],
         intensity: 1.0,
         space: "world"
     });
 
-    var dirLight2 = new XEO.DirLight({
+    var dirLight2 = new xeogl.DirLight({
         dir: [-1,0,-1],
         color: [1.0, 0.6, 0.6],
         intensity: 1.0,
         space: "world"
     });
 
-    var lights = new XEO.Lights({
+    var lights = new xeogl.Lights({
         lights: [
             dirLight1,
                 dirLight2
         ]
     });
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
         lights: lights
     });
 

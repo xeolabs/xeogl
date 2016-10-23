@@ -9,7 +9,7 @@
  <li>When the {{#crossLink "Entity"}}Entities{{/crossLink}} have {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}},
  AmbientLight {{#crossLink "AmbientLight/color:property"}}color{{/crossLink}} is multiplied by
  {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that AmbientLights create within xeoEngine's shaders.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that AmbientLights create within xeogl's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/AmbientLight.png"></img>
@@ -23,26 +23,26 @@
  ## Usage
 
  ```` javascript
- var entity = new XEO.Entity({
+ var entity = new xeogl.Entity({
 
-        lights: new XEO.Lights({
+        lights: new xeogl.Lights({
             lights: [
-                new XEO.AmbientLight({
+                new xeogl.AmbientLight({
                     color: [0.7, 0.7, 0.7]
                 })
             ]
         }),
  ,
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuse: [0.5, 0.5, 0.0]
         }),
 
-        geometry: new XEO.BoxGeometry()
+        geometry: new xeogl.BoxGeometry()
   });
  ````
 
  @class AmbientLight
- @module XEO
+ @module xeogl
  @submodule lighting
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this AmbientLight within the
@@ -57,15 +57,15 @@
 
     "use strict";
 
-    XEO.AmbientLight = XEO.Component.extend({
+    xeogl.AmbientLight = xeogl.Component.extend({
 
-        type: "XEO.AmbientLight",
+        type: "xeogl.AmbientLight",
 
         _init: function (cfg) {
 
             this._state = {
                 type: "ambient",
-                color: XEO.math.vec3([0.7, 0.7, 0.7]),
+                color: xeogl.math.vec3([0.7, 0.7, 0.7]),
                 intensity: 1.0
             };
 

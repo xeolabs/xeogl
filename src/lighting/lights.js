@@ -17,23 +17,23 @@
  ## Usage
 
  ```` javascript
- var entity = new XEO.Entity({
+ var entity = new xeogl.Entity({
 
-     lights: new XEO.Lights({
+     lights: new xeogl.Lights({
          lights: [
 
-             new XEO.AmbientLight({
+             new xeogl.AmbientLight({
                  color: [0.7, 0.7, 0.7]
              })
 
-             new XEO.DirLight({
+             new xeogl.DirLight({
                  dir:         [-1, -1, -1],
                  color:       [0.5, 0.7, 0.5],
                  intensity:   1.0,
                  space:      "view"  // Other option is "world", for World-space
              }),
 
-             new XEO.PointLight({
+             new xeogl.PointLight({
                  pos: [0, 100, 100],
                  color: [0.5, 0.7, 0.5],
                  intensity: 1
@@ -45,20 +45,20 @@
          ]
     }),
 
-    material: new XEO.PhongMaterial({
+    material: new xeogl.PhongMaterial({
         ambient:    [0.3, 0.3, 0.3],
         diffuse:    [0.7, 0.7, 0.7],
         specular:   [1. 1, 1],
         shininess:  30
     }),
 
-    geometry: new XEO.BoxGeometry()
+    geometry: new xeogl.BoxGeometry()
  });
  ````
 
  @class Lights
  @constructor
- @module XEO
+ @module xeogl
  @submodule lighting
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Lights in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
@@ -72,14 +72,14 @@
 
     "use strict";
 
-    XEO.Lights = XEO.Component.extend({
+    xeogl.Lights = xeogl.Component.extend({
 
-        type: "XEO.Lights",
+        type: "xeogl.Lights",
 
         _init: function (cfg) {
 
             // Renderer state contains the states of the child light source components
-            this._state = new XEO.renderer.Lights({
+            this._state = new xeogl.renderer.Lights({
                 lights: [],
                 hash: ""
             });
@@ -110,9 +110,9 @@
              ````javascript
              var lights = myLights.lights;
 
-             lights.push(new XEO.PointLight({...}));
+             lights.push(new xeogl.PointLight({...}));
 
-             myLights.lights = lights; // This way, the XEO.Lights component is able to detect that the new light was added.
+             myLights.lights = lights; // This way, the xeogl.Lights component is able to detect that the new light was added.
              ````
 
              We'll be able to relax this once JavaScript gets the (proper) ability to observe array updates.
@@ -180,7 +180,7 @@
 
                         light = value[i];
 
-                        if (XEO._isNumeric(light) || XEO._isString(light)) {
+                        if (xeogl._isNumeric(light) || xeogl._isString(light)) {
 
                             // ID given for light - find the light component
 
@@ -189,15 +189,15 @@
                             light = this.scene.components[id];
 
                             if (!light) {
-                                this.error("Component not found: " + XEO._inQuotes(id));
+                                this.error("Component not found: " + xeogl._inQuotes(id));
                                 continue;
                             }
                         }
 
                         var type = light.type;
 
-                        if (type !== "XEO.AmbientLight" && type !== "XEO.DirLight" && type !== "XEO.PointLight") {
-                            this.error("Component " + XEO._inQuotes(light.id) + " is not an XEO.AmbientLight, XEO.DirLight or XEO.PointLight ");
+                        if (type !== "xeogl.AmbientLight" && type !== "xeogl.DirLight" && type !== "xeogl.PointLight") {
+                            this.error("Component " + xeogl._inQuotes(light.id) + " is not an xeogl.AmbientLight, xeogl.DirLight or xeogl.PointLight ");
                             continue;
                         }
 

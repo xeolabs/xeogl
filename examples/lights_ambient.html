@@ -1,48 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.js"></script>
+    <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a> - <a href="../docs/classes/AmbientLight.html"
+    <a href="http://xeogl.org">xeogl</a> - <a href="../docs/classes/AmbientLight.html"
                                                       target="_docs">AmbientLight</a>
 </div>
 
 <script>
 
-    var material = new XEO.PhongMaterial({
+    var material = new xeogl.PhongMaterial({
         ambient: [0.0, 0.7, 0.7],
         diffuse: [1, 1, 0]
     });
 
-    var ambientLight = new XEO.AmbientLight({
+    var ambientLight = new xeogl.AmbientLight({
         color: [0.0, 0.3, 0.7]
     });
 
-    var dirLight = new XEO.DirLight({
+    var dirLight = new xeogl.DirLight({
         dir: [0.6, 0.6, -1.0],
         color: [0.7, 0.7, 0.8],
         intensity: 1.0,
         space: "view"
     });
 
-    var lights = new XEO.Lights({
+    var lights = new xeogl.Lights({
         lights: [
             ambientLight,
             dirLight
         ]
     });
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
         lights: lights,
-        geometry: new XEO.BoxGeometry(),
+        geometry: new xeogl.BoxGeometry(),
         material: material
     });
 

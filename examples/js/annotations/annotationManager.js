@@ -2,13 +2,13 @@
 
     "use strict";
 
-    const PIN_COLOR = XEO.math.vec4([1.0, 1.0, 0.0]);
+    const PIN_COLOR = xeogl.math.vec4([1.0, 1.0, 0.0]);
 
     /**
      An **AnnotationManager** manages {{#crossLink "Annotation"}}Annotations{{/crossLink}} in a {{#crossLink "Scene"}}{{/crossLink}}.
 
      @class AnnotationManager
-     @module XEO
+     @module xeogl
      @submodule annotations
      @constructor
      @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Annotation in the default
@@ -19,12 +19,12 @@
      @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Annotation.
      @extends Component
      */
-    XEO.AnnotationManager = XEO.Component.extend({
+    xeogl.AnnotationManager = xeogl.Component.extend({
 
         _init: function (cfg) {
             this.annotations = {};
             this._listDirty = true;
-            this._cameraFlight = this.create(XEO.CameraFlight, {
+            this._cameraFlight = this.create(xeogl.CameraFlight, {
                 duration: 1.0
             });
             this.visible = cfg.visible;

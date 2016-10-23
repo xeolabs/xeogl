@@ -43,25 +43,25 @@
  ## Usage
 
  ````Javascript
- var camera = new XEO.Camera({
-     view: new XEO.Lookat({
+ var camera = new xeogl.Camera({
+     view: new xeogl.Lookat({
          eye: [0, 0, 10],
          look: [0, 0, 0],
          up: [0, 1, 0]
      }),
-     project: new XEO.Perspective({
+     project: new xeogl.Perspective({
          fovy: 60,
          near: 0.1,
          far: 1000
      })
  });
 
- var entity = new XEO.Entity({
+ var entity = new xeogl.Entity({
      camera: camera,
-     geometry: new XEO.BoxGeometry()
+     geometry: new xeogl.BoxGeometry()
  });
 
- var cameraControl = new XEO.CameraControl({
+ var cameraControl = new xeogl.CameraControl({
      camera: entity.camera,
 
      // "First person" mode rotates look about eye.
@@ -77,7 +77,7 @@
  ````
 
  @class CameraControl
- @module XEO
+ @module xeogl
  @submodule controls
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
@@ -96,7 +96,7 @@
     "use strict";
 
 
-    XEO.CameraControl = XEO.Component.extend({
+    xeogl.CameraControl = xeogl.Component.extend({
 
         /**
          JavaScript class name for this Component.
@@ -105,7 +105,7 @@
          @type String
          @final
          */
-        type: "XEO.CameraControl",
+        type: "xeogl.CameraControl",
 
         /**
          Indicates that only one instance of a CameraControl may be active within
@@ -123,22 +123,22 @@
             var scene = this.scene;
 
             // Shows a bounding box around each Entity we fly to
-            this._boundaryEntity = this.create(XEO.Entity, {
-                geometry: this.create(XEO.BoundaryGeometry),
-                material: this.create(XEO.PhongMaterial, {
+            this._boundaryEntity = this.create(xeogl.Entity, {
+                geometry: this.create(xeogl.BoundaryGeometry),
+                material: this.create(xeogl.PhongMaterial, {
                     diffuse: [0, 0, 0],
                     ambient: [0, 0, 0],
                     specular: [0, 0, 0],
                     emissive: [1.0, 1.0, 0.6],
                     lineWidth: 4
                 }),
-                visibility: this.create(XEO.Visibility, {
+                visibility: this.create(xeogl.Visibility, {
                     visible: false
                 }),
-                modes: this.create(XEO.Modes, {
+                modes: this.create(xeogl.Modes, {
 
                     // Does not contribute to the size of any enclosing boundaries
-                    // that might be calculated by xeoEngine, eg. like that returned by XEO.Scene#worldBoundary
+                    // that might be calculated by xeogl, eg. like that returned by xeogl.Scene#worldBoundary
                     collidable: false
                 })
             });
@@ -150,7 +150,7 @@
              * @final
              * @type KeyboardAxisCamera
              */
-            this.keyboardAxis = this.create(XEO.KeyboardAxisCamera, {
+            this.keyboardAxis = this.create(xeogl.KeyboardAxisCamera, {
                 camera: cfg.camera
             });
 
@@ -161,7 +161,7 @@
              * @final
              * @type KeyboardRotateCamera
              */
-            this.keyboardRotate = this.create(XEO.KeyboardRotateCamera, {
+            this.keyboardRotate = this.create(xeogl.KeyboardRotateCamera, {
                 camera: cfg.camera
             });
 
@@ -172,7 +172,7 @@
              * @final
              * @type MouseRotateCamera
              */
-            this.mouseRotate = this.create(XEO.MouseRotateCamera, {
+            this.mouseRotate = this.create(xeogl.MouseRotateCamera, {
                 camera: cfg.camera
             });
 
@@ -183,7 +183,7 @@
              * @final
              * @type KeyboardPanCamera
              */
-            this.keyboardPan = this.create(XEO.KeyboardPanCamera, {
+            this.keyboardPan = this.create(xeogl.KeyboardPanCamera, {
                 camera: cfg.camera
             });
 
@@ -194,7 +194,7 @@
              * @final
              * @type MousePanCamera
              */
-            this.mousePan = this.create(XEO.MousePanCamera, {
+            this.mousePan = this.create(xeogl.MousePanCamera, {
                 camera: cfg.camera
             });
 
@@ -205,7 +205,7 @@
              * @final
              * @type KeyboardZoomCamera
              */
-            this.keyboardZoom = this.create(XEO.KeyboardZoomCamera, {
+            this.keyboardZoom = this.create(xeogl.KeyboardZoomCamera, {
                 camera: cfg.camera
             });
 
@@ -216,7 +216,7 @@
              * @final
              * @type MouseZoomCamera
              */
-            this.mouseZoom = this.create(XEO.MouseZoomCamera, {
+            this.mouseZoom = this.create(xeogl.MouseZoomCamera, {
                 camera: cfg.camera
             });
 
@@ -227,7 +227,7 @@
              * @final
              * @type MousePickEntity
              */
-            this.mousePickEntity = this.create(XEO.MousePickEntity, {
+            this.mousePickEntity = this.create(xeogl.MousePickEntity, {
                 pickSurface: true
             });
 
@@ -245,7 +245,7 @@
              * @final
              * @type CameraFlight
              */
-            this.cameraFlight = this.create(XEO.CameraFlight, {
+            this.cameraFlight = this.create(xeogl.CameraFlight, {
                 camera: cfg.camera,
                 duration: 0.5
             });
@@ -277,7 +277,7 @@
                 // Fly to look at point, don't change eye->look dist
 
                 var view = this.camera.view;
-                var diff = XEO.math.subVec3(view.eye, view.look, []);
+                var diff = xeogl.math.subVec3(view.eye, view.look, []);
 
                 this.cameraFlight.flyTo({
                         look: pos,
@@ -363,7 +363,7 @@
                      */
                     this._attach({
                         name: "camera",
-                        type: "XEO.Camera",
+                        type: "xeogl.Camera",
                         component: value,
                         sceneDefault: true,
                         onAdded: this._transformUpdated,

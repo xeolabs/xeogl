@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>examples/js/controls/bimCameraControl.js - xeogl</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../../assets/images/logo.png" title="xeogl"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 1.0.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
+                                <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
+                                <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
+                                <li><a href="../classes/Camera.html">Camera</a></li>
+                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraController.html">CameraController</a></li>
+                                <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
+                                <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/Cardboard.html">Cardboard</a></li>
+                                <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/Collection.html">Collection</a></li>
+                                <li><a href="../classes/CollectionBoundary.html">CollectionBoundary</a></li>
+                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
+                                <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
+                                <li><a href="../classes/Component.html">Component</a></li>
+                                <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+                                <li><a href="../classes/Cull.html">Cull</a></li>
+                                <li><a href="../classes/Curve.html">Curve</a></li>
+                                <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
+                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
+                                <li><a href="../classes/DepthTarget.html">DepthTarget</a></li>
+                                <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Entity.html">Entity</a></li>
+                                <li><a href="../classes/Fresnel.html">Fresnel</a></li>
+                                <li><a href="../classes/Frustum.html">Frustum</a></li>
+                                <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
+                                <li><a href="../classes/HighlightEntityEffect.html">HighlightEntityEffect</a></li>
+                                <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
+                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
+                                <li><a href="../classes/KeyboardRotateCamera.html">KeyboardRotateCamera</a></li>
+                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
+                                <li><a href="../classes/LatheGeometry.html">LatheGeometry</a></li>
+                                <li><a href="../classes/Layer.html">Layer</a></li>
+                                <li><a href="../classes/Lights.html">Lights</a></li>
+                                <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/Model.html">Model</a></li>
+                                <li><a href="../classes/Modes.html">Modes</a></li>
+                                <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
+                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
+                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
+                                <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
+                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
+                                <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
+                                <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
+                                <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Path.html">Path</a></li>
+                                <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
+                                <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
+                                <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Reflect.html">Reflect</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
+                                <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/Shader.html">Shader</a></li>
+                                <li><a href="../classes/ShaderParams.html">ShaderParams</a></li>
+                                <li><a href="../classes/Skybox.html">Skybox</a></li>
+                                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
+                                <li><a href="../classes/Spinner.html">Spinner</a></li>
+                                <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/Stage.html">Stage</a></li>
+                                <li><a href="../classes/Stationary.html">Stationary</a></li>
+                                <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
+                                <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
+                                <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
+                                <li><a href="../classes/Viewport.html">Viewport</a></li>
+                                <li><a href="../classes/Visibility.html">Visibility</a></li>
+                                <li><a href="../classes/WebVR.html">WebVR</a></li>
+                                <li><a href="../classes/xeogl.html">xeogl</a></li>
+                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
+                                <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/animation.html">animation</a></li>
+                                <li><a href="../modules/boundaries.html">boundaries</a></li>
+                                <li><a href="../modules/camera.html">camera</a></li>
+                                <li><a href="../modules/canvas.html">canvas</a></li>
+                                <li><a href="../modules/clipping.html">clipping</a></li>
+                                <li><a href="../modules/collections.html">collections</a></li>
+                                <li><a href="../modules/configs.html">configs</a></li>
+                                <li><a href="../modules/controls.html">controls</a></li>
+                                <li><a href="../modules/culling.html">culling</a></li>
+                                <li><a href="../modules/curves.html">curves</a></li>
+                                <li><a href="../modules/effects.html">effects</a></li>
+                                <li><a href="../modules/entities.html">entities</a></li>
+                                <li><a href="../modules/geometry.html">geometry</a></li>
+                                <li><a href="../modules/importing.html">importing</a></li>
+                                <li><a href="../modules/input.html">input</a></li>
+                                <li><a href="../modules/interaction.html">interaction</a></li>
+                                <li><a href="../modules/lighting.html">lighting</a></li>
+                                <li><a href="../modules/materials.html">materials</a></li>
+                                <li><a href="../modules/math.html">math</a></li>
+                                <li><a href="../modules/paths.html">paths</a></li>
+                                <li><a href="../modules/rendering.html">rendering</a></li>
+                                <li><a href="../modules/shaders.html">shaders</a></li>
+                                <li><a href="../modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="../modules/transforms.html">transforms</a></li>
+                                <li><a href="../modules/webvr.html">webvr</a></li>
+                                <li><a href="../modules/xeo.html">xeo</a></li>
+                                <li><a href="../modules/xeogl.html">xeogl</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: examples/js/controls/bimCameraControl.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+(function () {
+
+    &quot;use strict&quot;;
+
+    /**
+
+     Controls camera with mouse and keyboard, handles selection of entities and rotation point.
+
+     */
+    xeogl.BIMCameraControl = xeogl.Component.extend({
+
+        type: &quot;xeogl.BIMCameraControl&quot;,
+
+        _init: function (cfg) {
+
+            var self = this;
+
+            var math = xeogl.math;
+
+            // Configs
+
+            var sensitivityMouseRotate = cfg.sensitivityMouseRotate || 1.0;
+            var sensitivityMousePan = cfg.sensitivityMousePan || 0.5;
+            var sensitivityKeyboardPan = cfg.sensitivityKeyboardPan || 0.5;
+            var sensitivityKeyboardRotate = cfg.sensitivityKeyboardRotate || 0.5;
+            var sensitivityMouseZoom = cfg.sensitivityMouseZoom || 0.5;
+            var sensitivityKeyboardZoom = cfg.sensitivityKeyboardZoom || 0.5;
+
+            var orthoScaleRate = 0.02; // Rate at which orthographic scale changes with zoom
+
+            var canvasPickTolerance = 4;
+            var worldPickTolerance = 3;
+
+            var tempVec3a = math.vec3();
+            var tempVec3b = math.vec3();
+            var tempVec3c = math.vec3();
+            var pitchMat = math.mat4();
+
+            var camera = cfg.camera;
+            var scene = this.scene;
+            var input = scene.input;
+
+            // Camera position on last mouse click
+            var rotateStartEye;
+            var rotateStartLook;
+            var rotateStartUp = math.vec3();
+
+            var orbitPitchAxis = math.vec3([1, 0, 0]); // The current axis for vertical orbit  
+
+            var pickHit; // Hit record from the most recent pick
+            var pickClicks = 0; // Number of times we&#x27;ve clicked on same spot on entity
+
+            var mouseClickPos = math.vec2(); // Canvas position of last mouseDown
+            var firstPickCanvasPos = math.vec2(); // Canvas position of first pick
+            var firstPickWorldPos = math.vec2(); // World position of first pick
+            var firstPickTime; // Time of first pick
+
+            var rotatePos = math.vec3([0, 0, 0]); // World-space pivot point we&#x27;re currently rotating about
+
+            var mouseDownPos = math.vec2(); // Mouse&#x27;s last position while down
+            var rotationDeltas = math.vec2(); // Accumulated angle deltas while rotating with keyboard or mouse
+
+            var shiftDown = false; // True while shift key down
+            var mouseDown = false; // true while mouse down
+
+
+            var flying = false;
+
+            // Rotation point indicator
+
+            var pickHelper = this.create(xeogl.Entity, {
+                geometry: this.create(xeogl.SphereGeometry, {
+                    radius: 0.1
+                }),
+                material: this.create(xeogl.PhongMaterial, {
+                    diffuse: [0, 0, 0],
+                    ambient: [0, 0, 0],
+                    specular: [0, 0, 0],
+                    emissive: [1.0, 1.0, 0.6], // Glowing
+                    lineWidth: 4
+                }),
+                transform: this.create(xeogl.Translate, {
+                    xyz: [0, 0, 0]
+                }),
+                visibility: this.create(xeogl.Visibility, {
+                    visible: false // Initially invisible
+                }),
+                modes: this.create(xeogl.Modes, {
+                    collidable: false // This helper has no collision boundary of its own
+                })
+            });
+
+            // Shows the rotation point indicator
+            // at the given position for one second
+
+            var showRotationPoint = (function () {
+
+                var pickHelperHide = null;
+
+                return function (pos) {
+
+                    pickHelper.transform.xyz = pos;
+                    pickHelper.visibility.visible = true;
+
+                    if (pickHelperHide) {
+                        clearTimeout(pickHelperHide);
+                        pickHelperHide = null;
+                    }
+
+                    pickHelperHide = setTimeout(function () {
+                            pickHelper.visibility.visible = false;
+                            pickHelperHide = null;
+                        },
+                        1000)
+                };
+            })();
+
+
+            var pickTimer;
+
+            // Fires a &quot;pick&quot; after a timeout period unless clearPickTimer is called before then.
+            function startPickTimer() {
+
+                if (pickTimer) {
+                    clearPickTimer();
+                }
+
+                pickTimer = setTimeout(function () {
+                    pickClicks = 0;
+                    self.fire(&quot;pick&quot;, pickHit);
+                    pickTimer = null;
+                }, 250);
+            }
+
+            // Stops a previous call to startPickTimer from firing a &quot;pick&quot;
+            function clearPickTimer() {
+                clearTimeout(pickTimer);
+                pickTimer = null;
+            }
+
+
+            function resetRotate() {
+
+                pickClicks = 0;
+
+                rotationDeltas[0] = 0;
+                rotationDeltas[1] = 0;
+
+                rotateStartEye = camera.view.eye.slice();
+                rotateStartLook = camera.view.look.slice();
+                math.addVec3(rotateStartEye, camera.view.up, rotateStartUp);
+
+                setOrbitPitchAxis();
+            }
+
+            function setOrbitPitchAxis() {
+                math.cross3Vec3(math.normalizeVec3(math.subVec3(camera.view.eye, camera.view.look, [])), camera.view.up, orbitPitchAxis);
+            }
+
+            var setCursor = (function () {
+
+                var t;
+
+                return function (cursor, persist) {
+
+                    clearTimeout(t);
+
+                    self.scene.canvas.overlay.style[&quot;cursor&quot;] = cursor;
+
+                    if (!persist) {
+                        t = setTimeout(function () {
+                            self.scene.canvas.overlay.style[&quot;cursor&quot;] = &quot;auto&quot;;
+                        }, 100);
+                    }
+                };
+            })();
+
+            input.on(&quot;mousedown&quot;,
+                function (canvasPos) {
+
+                    canvasPos = canvasPos.slice();
+
+                    if (!input.mouseover) {
+                        return;
+                    }
+
+                    if (!input.mouseDownLeft) {
+                        return;
+                    }
+
+                    if (flying) {
+                        return;
+                    }
+
+                    clearPickTimer();
+
+                    setOrbitPitchAxis();
+
+                    rotateStartEye = camera.view.eye.slice();
+                    rotateStartLook = camera.view.look.slice();
+                    math.addVec3(rotateStartEye, camera.view.up, rotateStartUp);
+
+                    pickHit = scene.pick({
+                        canvasPos: canvasPos,
+                        pickSurface: true
+                    });
+
+                    if (pickHit) {
+
+                        var pickWorldPos = pickHit.worldPos.slice();
+                        var pickCanvasPos = canvasPos;
+
+                        var pickTime = Date.now();
+
+                        if (pickClicks === 1) {
+
+                            if ((pickTime - firstPickTime &lt; 250)
+                                &amp;&amp; closeEnoughCanvas(canvasPos, firstPickCanvasPos)
+                                &amp;&amp; closeEnoughWorld(pickWorldPos, firstPickWorldPos)) {
+
+                                // Double-clicked
+
+                                rotatePos = pickWorldPos;
+
+                                showRotationPoint(pickWorldPos);
+                            }
+
+                            pickClicks = 0;
+
+                        } else {
+
+                            pickClicks = 1;
+
+                            firstPickWorldPos = pickWorldPos;
+                            firstPickCanvasPos = pickCanvasPos;
+                            firstPickTime = pickTime;
+                        }
+
+                    } else {
+
+                        pickClicks = 0;
+                    }
+
+                    mouseClickPos[0] = canvasPos[0];
+                    mouseClickPos[1] = canvasPos[1];
+
+                    mouseDownPos[0] = canvasPos[0];
+                    mouseDownPos[1] = canvasPos[1];
+
+                    rotationDeltas[0] = 0;
+                    rotationDeltas[1] = 0;
+
+                    mouseDown = true;
+                });
+
+            // Returns true if the two Canvas-space points are
+            // close enough to be considered the same point
+
+            function closeEnoughCanvas(p, q) {
+                return p[0] &gt;= (q[0] - canvasPickTolerance) &amp;&amp;
+                    p[0] &lt;= (q[0] + canvasPickTolerance) &amp;&amp;
+                    p[1] &gt;= (q[1] - canvasPickTolerance) &amp;&amp;
+                    p[1] &lt;= (q[1] + canvasPickTolerance);
+            }
+
+            // Returns true if the two World-space points are
+            // close enough to be considered the same point
+
+            function closeEnoughWorld(p, q) {
+                return p[0] &gt;= (q[0] - worldPickTolerance) &amp;&amp;
+                    p[0] &lt;= (q[0] + worldPickTolerance) &amp;&amp;
+                    p[1] &gt;= (q[1] - worldPickTolerance) &amp;&amp;
+                    p[1] &gt;= (q[1] - worldPickTolerance) &amp;&amp;
+                    p[2] &lt;= (q[2] + worldPickTolerance) &amp;&amp;
+                    p[2] &lt;= (q[2] + worldPickTolerance);
+            }
+
+            input.on(&quot;mousemove&quot;,
+                function (canvasPos) {
+
+                    if (!input.mouseover) {
+                        return;
+                    }
+
+                    if (flying) {
+                        return;
+                    }
+
+                    if (!mouseDown) {
+
+                        var hit = scene.pick({
+                            canvasPos: canvasPos,
+                            pickSurface: true
+                        });
+
+                        if (hit) {
+                            setCursor(&quot;pointer&quot;, true);
+                        } else {
+                            setCursor(&quot;auto&quot;, true);
+                        }
+
+                        return;
+                    }
+
+                    if (flying) {
+                        return;
+                    }
+
+                    var math = xeogl.math;
+
+                    rotationDeltas[0] += (canvasPos[0] - mouseDownPos[0]) * sensitivityMouseRotate;
+                    rotationDeltas[1] += (canvasPos[1] - mouseDownPos[1]) * sensitivityMouseRotate;
+
+                    math.rotationMat4v(rotationDeltas[1] * math.DEGTORAD, orbitPitchAxis, pitchMat);
+
+                    camera.view.eye = rotate(rotateStartEye);
+                    camera.view.look = rotate(rotateStartLook);
+                    camera.view.up = math.subVec3(rotate(rotateStartUp), camera.view.eye, []);
+
+                    mouseDownPos[0] = canvasPos[0];
+                    mouseDownPos[1] = canvasPos[1];
+
+                    //setCursor(&quot;url(bimsurfer/src/xeoViewer/controls/cursors/rotate.png), auto&quot;);
+                });
+
+            function rotate(p) {
+                var p1 = math.subVec3(p, rotatePos, tempVec3a);
+                var p2 = math.transformVec3(pitchMat, p1, tempVec3b);
+                var p3 = math.addVec3(p2, rotatePos, tempVec3c);
+                return math.rotateVec3Z(p3, rotatePos, -rotationDeltas[0] * math.DEGTORAD, math.vec3());
+            }
+
+            input.on(&quot;keydown&quot;,
+                function (keyCode) {
+                    if (keyCode === input.KEY_SHIFT) {
+                        shiftDown = true;
+                    }
+                });
+
+            input.on(&quot;keyup&quot;,
+                function (keyCode) {
+                    if (keyCode === input.KEY_SHIFT) {
+                        shiftDown = false;
+                        resetRotate();
+                    }
+                });
+
+            input.on(&quot;mouseup&quot;,
+                function (canvasPos) {
+
+                    if (!mouseDown) {
+                        return;
+                    }
+
+                    if (flying) {
+                        return;
+                    }
+
+                    mouseDown = false;
+
+                    if (input.mouseover) {
+
+                        if (firstPickCanvasPos &amp;&amp; closeEnoughCanvas(canvasPos, firstPickCanvasPos)) {
+
+                            if (pickClicks === 1) {
+
+                                if (shiftDown) {
+
+                                    pickClicks = 0;
+
+                                    self.fire(&quot;pick&quot;, pickHit);
+
+                                } else {
+                                    startPickTimer();
+                                }
+
+                            } else {
+                                //  self.fire(&quot;nopick&quot;);
+                            }
+
+                        } else if (pickClicks === 0) {
+
+                            if (mouseClickPos &amp;&amp; closeEnoughCanvas(canvasPos, mouseClickPos)) {
+
+                                self.fire(&quot;nopick&quot;);
+                            }
+                        }
+                    }
+                });
+
+            input.on(&quot;dblclick&quot;,
+                function () {
+
+                    if (flying) {
+                        return;
+                    }
+
+                    mouseDown = false;
+                });
+
+            //---------------------------------------------------------------------------------------------------------
+            // Keyboard rotate camera
+            //---------------------------------------------------------------------------------------------------------
+
+            (function () {
+
+                var tempVec3 = math.vec3();
+
+                scene.on(&quot;tick&quot;,
+                    function (params) {
+
+                        if (!input.mouseover) {
+                            return;
+                        }
+
+                        if (mouseDown) {
+                            return;
+                        }
+
+                        if (flying) {
+                            return;
+                        }
+
+                        var elapsed = params.deltaTime;
+
+                        var yawRate = sensitivityKeyboardRotate * 0.3;
+                        var pitchRate = sensitivityKeyboardRotate * 0.3;
+
+                        if (!input.ctrlDown &amp;&amp; !input.altDown) {
+
+                            var left = input.keyDown[input.KEY_LEFT_ARROW];
+                            var right = input.keyDown[input.KEY_RIGHT_ARROW];
+                            var up = input.keyDown[input.KEY_UP_ARROW];
+                            var down = input.keyDown[input.KEY_DOWN_ARROW];
+
+                            if (left || right || up || down) {
+
+                                var yaw = 0;
+                                var pitch = 0;
+
+                                if (right) {
+                                    yaw = -elapsed * yawRate;
+
+                                } else if (left) {
+                                    yaw = elapsed * yawRate;
+                                }
+
+                                if (down) {
+                                    pitch = elapsed * pitchRate;
+
+                                } else if (up) {
+                                    pitch = -elapsed * pitchRate;
+                                }
+
+                                if (Math.abs(yaw) &gt; Math.abs(pitch)) {
+                                    pitch = 0;
+                                } else {
+                                    yaw = 0;
+                                }
+
+                                var math = xeogl.math;
+
+                                rotationDeltas[0] -= yaw;
+                                rotationDeltas[1] += pitch;
+
+                                math.rotationMat4v(rotationDeltas[1] * math.DEGTORAD, orbitPitchAxis, pitchMat);
+
+                                camera.view.eye = rotate(rotateStartEye);
+                                camera.view.look = rotate(rotateStartLook);
+                                camera.view.up = math.subVec3(rotate(rotateStartUp), camera.view.eye, tempVec3);
+
+                                //setCursor(&quot;url(bimsurfer/src/xeoViewer/controls/cursors/rotate.png), auto&quot;);
+                            }
+                        }
+                    });
+            })();
+
+            //---------------------------------------------------------------------------------------------------------
+            // Keyboard zoom camera
+            //---------------------------------------------------------------------------------------------------------
+
+            (function () {
+
+                var tempVec3a = xeogl.math.vec3();
+                var tempVec3b = xeogl.math.vec3();
+                var tempVec3c = xeogl.math.vec3();
+
+                scene.on(&quot;tick&quot;,
+                    function (params) {
+
+                        if (!input.mouseover) {
+                            return;
+                        }
+
+                        if (mouseDown) {
+                            return;
+                        }
+
+                        if (flying) {
+                            return;
+                        }
+
+                        var elapsed = params.deltaTime;
+
+                        if (!input.ctrlDown &amp;&amp; !input.altDown) {
+
+                            var wkey = input.keyDown[input.KEY_ADD];
+                            var skey = input.keyDown[input.KEY_SUBTRACT];
+
+                            if (wkey || skey) {
+
+                                var delta = 0;
+
+                                if (skey) {
+                                    delta = elapsed * 0.1 * sensitivityKeyboardZoom; // Want sensitivity configs in [0..1] range
+                                } else if (wkey) {
+                                    delta = -elapsed * 0.1 * sensitivityKeyboardZoom;
+                                }
+
+                                var view = camera.view;
+                                var eye = view.eye;
+                                var look = view.look;
+
+                                // Get vector from eye to center of rotationDeltas
+                                var eyePivotVec = math.mulVec3Scalar(math.normalizeVec3(math.subVec3(eye, rotatePos, tempVec3a), tempVec3b), delta);
+
+                                // Move eye and look along the vector
+                                view.eye = math.addVec3(eye, eyePivotVec, tempVec3c);
+                                view.look = math.addVec3(look, eyePivotVec, tempVec3c);
+
+                                if (camera.project.isType(&quot;xeogl.Ortho&quot;)) {
+                                    camera.project.scale += delta * (math.getAABBDiag(scene.worldBoundary.aabb) * orthoScaleRate);
+                                }
+
+                                setCursor(&quot;crosshair&quot;);
+
+                                resetRotate();
+                            }
+                        }
+                    });
+            })();
+
+            //---------------------------------------------------------------------------------------------------------
+            // Mouse zoom
+            // Roll mouse wheel to move eye and look closer or further from center of rotationDeltas 
+            //---------------------------------------------------------------------------------------------------------
+
+            (function () {
+
+                var delta = 0;
+                var target = 0;
+                var newTarget = false;
+                var targeting = false;
+                var progress = 0;
+
+                var tempVec3a = xeogl.math.vec3();
+                var tempVec3b = xeogl.math.vec3();
+                var tempVec3c = xeogl.math.vec3();
+                var tempVec3d = xeogl.math.vec3();
+
+                input.on(&quot;mousewheel&quot;,
+                    function (_delta) {
+
+                        if (mouseDown) {
+                            return;
+                        }
+
+                        if (flying) {
+                            return;
+                        }
+
+                        delta = _delta;
+
+                        if (delta === 0) {
+                            targeting = false;
+                            newTarget = false;
+                        } else {
+                            newTarget = true;
+                        }
+                    });
+
+                scene.on(&quot;tick&quot;,
+                    function () {
+
+                        if (mouseDown) {
+                            return;
+                        }
+
+                        if (flying) {
+                            return;
+                        }
+
+                        var f = sensitivityMouseZoom * 1.0;
+
+                        if (newTarget) {
+                            target = delta * f;
+                            progress = 0;
+                            newTarget = false;
+                            targeting = true;
+                        }
+
+                        if (targeting) {
+
+                            if (delta &gt; 0) {
+
+                                progress += sensitivityMouseZoom * 0.1;
+
+                                if (progress &gt; target) {
+                                    targeting = false;
+                                }
+
+                            } else if (delta &lt; 0) {
+
+                                progress -= sensitivityMouseZoom * 0.1;
+
+                                if (progress &lt; target) {
+                                    targeting = false;
+                                }
+                            }
+
+                            if (targeting) {
+
+                                var view = camera.view;
+                                var eye = view.eye;
+                                var look = view.look;
+
+                                // Get vector from eye to center of rotationDeltas
+                                var eyePivotVec = math.mulVec3Scalar(math.normalizeVec3(math.subVec3(eye, rotatePos, tempVec3a), tempVec3b), delta);
+
+                                console.log(rotatePos);
+
+                                // Move eye and look along the vector
+                                view.eye = math.addVec3(eye, eyePivotVec, tempVec3c);
+                                view.look = math.addVec3(look, eyePivotVec, tempVec3d);
+
+                                if (camera.project.isType(&quot;xeogl.Ortho&quot;)) {
+                                    camera.project.scale += delta * (math.getAABBDiag(scene.worldBoundary.aabb) * orthoScaleRate);
+                                }
+
+                                setCursor(&quot;crosshair&quot;);
+
+                                resetRotate();
+                            }
+                        }
+                    });
+            })();
+
+            //---------------------------------------------------------------------------------------------------------
+            // Keyboard axis view
+            // Press 1,2,3,4,5 or 6 to view center of model from along an axis 
+            //---------------------------------------------------------------------------------------------------------
+
+            (function () {
+
+                var flight = self.create(xeogl.CameraFlight, {
+                    camera: camera,
+                    duration: 1.0 // One second to fly to each new target
+                });
+
+                function fly(eye, look, up) {
+
+                    flying = true;
+
+                    setCursor(&quot;wait&quot;, true);
+
+                    flight.cancel();
+
+                    flight.flyTo({
+                            look: look,
+                            eye: eye,
+                            up: up
+                        },
+                        function () {
+
+                            setCursor(&quot;auto&quot;);
+
+                            resetRotate();
+
+                            flying = false;
+                        });
+                }
+
+                input.on(&quot;keydown&quot;,
+                    function (keyCode) {
+
+                        if (!input.mouseover) {
+                            return;
+                        }
+
+                        if (mouseDown) {
+                            return;
+                        }
+
+                        var boundary = scene.worldBoundary;
+                        var aabb = boundary.aabb;
+                        var center = boundary.center;
+                        var diag = xeogl.math.getAABBDiag(aabb);
+                        var stopFOV = 55;
+                        var dist = Math.abs((diag) / Math.tan(stopFOV / 2));
+
+                        switch (keyCode) {
+
+                            case input.KEY_NUM_1: // Right view
+                                fly(math.vec3([center[0] - dist, center[1], center[2]]), center, math.vec3([0, 0, 1]));
+                                break;
+
+                            case input.KEY_NUM_2: // Back view
+                                fly(math.vec3([center[0], center[1] + dist, center[2]]), center, math.vec3([0, 0, 1]));
+                                break;
+
+                            case input.KEY_NUM_3: // Left view
+                                fly(math.vec3([center[0] + dist, center[1], center[2]]), center, math.vec3([0, 0, 1]));
+                                break;
+
+                            case input.KEY_NUM_4: // Front view
+                                fly(math.vec3([center[0], center[1] - dist, center[2]]), center, math.vec3([0, 0, 1]));
+                                break;
+
+                            case input.KEY_NUM_5: // Top view
+                                fly(math.vec3([center[0], center[1], center[2] + dist]), center, math.vec3([0, 1, 0]));
+                                break;
+
+                            case input.KEY_NUM_6: // Bottom view
+                                fly(math.vec3([center[0], center[1], center[2] - dist]), center, math.vec3([0, -1, 0]));
+                                break;
+
+                            default:
+                                return;
+                        }
+                    });
+            })();
+
+            //---------------------------------------------------------------------------------------------------------
+            // Keyboard pan camera
+            // Press W,S,A or D to pan the camera 
+            //---------------------------------------------------------------------------------------------------------
+
+            (function () {
+
+                var tempVec3 = math.vec3();
+
+                scene.on(&quot;tick&quot;,
+                    function (params) {
+
+                        if (mouseDown) {
+                            return;
+                        }
+
+                        if (!input.mouseover) {
+                            return;
+                        }
+
+                        if (flying) {
+                            return;
+                        }
+
+                        var elapsed = params.deltaTime;
+
+                        if (!input.ctrlDown &amp;&amp; !input.altDown) {
+
+                            var wkey = input.keyDown[input.KEY_W];
+                            var skey = input.keyDown[input.KEY_S];
+                            var akey = input.keyDown[input.KEY_A];
+                            var dkey = input.keyDown[input.KEY_D];
+                            var zkey = input.keyDown[input.KEY_Z];
+                            var xkey = input.keyDown[input.KEY_X];
+
+                            if (wkey || skey || akey || dkey || xkey || zkey) {
+
+                                var x = 0;
+                                var y = 0;
+                                var z = 0;
+
+                                var sensitivity = sensitivityKeyboardPan * 0.1;
+
+                                if (skey) {
+                                    y = elapsed * sensitivity;
+                                } else if (wkey) {
+                                    y = -elapsed * sensitivity;
+                                }
+
+                                if (dkey) {
+                                    x = elapsed * sensitivity;
+                                } else if (akey) {
+                                    x = -elapsed * sensitivity;
+                                }
+
+                                if (xkey) {
+                                    z = elapsed * sensitivity;
+                                } else if (zkey) {
+                                    z = -elapsed * sensitivity;
+                                }
+
+                                tempVec3[0] = x;
+                                tempVec3[1] = y;
+                                tempVec3[2] = z;
+
+                                camera.view.pan(tempVec3);
+
+                                resetRotate();
+
+                                setCursor(&quot;e-resize&quot;);
+                            }
+                        }
+                    });
+            })();
+        }
+    });
+})();
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 /**
- An **Entity** is an object within a xeoEngine {{#crossLink "Scene"}}Scene{{/crossLink}}.
+ An **Entity** is an object within a xeogl {{#crossLink "Scene"}}Scene{{/crossLink}}.
 
  ## Overview
 
@@ -21,13 +21,13 @@
  the {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}}.</li>
 
  ```` javascript
- var scene = new XEO.Scene();
+ var scene = new xeogl.Scene();
 
- var geometry = new XEO.Geometry(myScene, {
+ var geometry = new xeogl.Geometry(myScene, {
       //...
   });
 
- var entity = new XEO.Entity(myScene, {
+ var entity = new xeogl.Entity(myScene, {
        geometry: myGeometry,
        transform: translate
   });
@@ -57,17 +57,17 @@
 
 
  ```` javascript
- var scene = new XEO.Scene();
+ var scene = new xeogl.Scene();
 
- var geometry = new XEO.Geometry(myScene, {
+ var geometry = new xeogl.Geometry(myScene, {
       //...
   });
 
- var translate = new XEO.Translate(scene, {
+ var translate = new xeogl.Translate(scene, {
     xyz: [-5, 0, 0] // Translate along -X axis
  });
 
- var entity = new XEO.Entity(myScene, {
+ var entity = new xeogl.Entity(myScene, {
        geometry: myGeometry,
        transform: translate
   });
@@ -135,10 +135,10 @@
  ````
 
  @class Entity
- @module XEO
+ @module xeogl
  @submodule entities
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Entity within xeoEngine's default {{#crossLink "XEO/scene:property"}}scene{{/crossLink}} by default.
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Entity within xeogl's default {{#crossLink "xeogl/scene:property"}}scene{{/crossLink}} by default.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Entity.
@@ -198,9 +198,9 @@
 
     "use strict";
 
-    XEO.Entity = XEO.Component.extend({
+    xeogl.Entity = xeogl.Component.extend({
 
-        type: "XEO.Entity",
+        type: "xeogl.Entity",
 
         _init: function (cfg) {
 
@@ -275,7 +275,7 @@
                      */
                     this._attach({
                         name: "camera",
-                        type: "XEO.Camera",
+                        type: "xeogl.Camera",
                         component: value,
                         sceneDefault: true,
                         on: {
@@ -319,7 +319,7 @@
                      */
                     this._attach({
                         name: "clips",
-                        type: "XEO.Clips",
+                        type: "xeogl.Clips",
                         component: value,
                         sceneDefault: true
                     });
@@ -353,7 +353,7 @@
                      */
                     this._attach({
                         name: "colorTarget",
-                        type: "XEO.ColorTarget",
+                        type: "xeogl.ColorTarget",
                         component: value,
                         sceneDefault: true
                     });
@@ -388,7 +388,7 @@
                      */
                     this._attach({
                         name: "colorBuf",
-                        type: "XEO.ColorBuf",
+                        type: "xeogl.ColorBuf",
                         component: value,
                         sceneDefault: true
                     });
@@ -423,7 +423,7 @@
                      */
                     this._attach({
                         name: "depthTarget",
-                        type: "XEO.DepthTarget",
+                        type: "xeogl.DepthTarget",
                         component: value,
                         sceneDefault: true
                     });
@@ -458,7 +458,7 @@
                      */
                     this._attach({
                         name: "depthBuf",
-                        type: "XEO.DepthBuf",
+                        type: "xeogl.DepthBuf",
                         component: value,
                         sceneDefault: true
                     });
@@ -493,7 +493,7 @@
                      */
                     this._attach({
                         name: "visibility",
-                        type: "XEO.Visibility",
+                        type: "xeogl.Visibility",
                         component: value,
                         sceneDefault: true
                     });
@@ -529,7 +529,7 @@
 
                     this._attach({
                         name: "cull",
-                        type: "XEO.Cull",
+                        type: "xeogl.Cull",
                         component: value,
                         sceneDefault: true
                     });
@@ -564,7 +564,7 @@
                      */
                     this._attach({
                         name: "modes",
-                        type: "XEO.Modes",
+                        type: "xeogl.Modes",
                         component: value,
                         sceneDefault: true
                     });
@@ -601,7 +601,7 @@
 
                     this._attach({
                         name: "geometry",
-                        type: "XEO.Geometry",
+                        type: "xeogl.Geometry",
                         component: value,
                         sceneDefault: true,
                         on: {
@@ -646,7 +646,7 @@
                      */
                     this._attach({
                         name: "layer",
-                        type: "XEO.Layer",
+                        type: "xeogl.Layer",
                         component: value,
                         sceneDefault: true
                     });
@@ -681,7 +681,7 @@
                      */
                     this._attach({
                         name: "lights",
-                        type: "XEO.Lights",
+                        type: "xeogl.Lights",
                         component: value,
                         sceneDefault: true
                     });
@@ -716,7 +716,7 @@
                      */
                     this._attach({
                         name: "material",
-                        type: "XEO.Material",
+                        type: "xeogl.Material",
                         component: value,
                         sceneDefault: true
                     });
@@ -750,7 +750,7 @@
                      */
                     this._attach({
                         name: "morphTargets",
-                        type: "XEO.MorphTargets",
+                        type: "xeogl.MorphTargets",
                         component: value,
                         sceneDefault: true
                     });
@@ -785,7 +785,7 @@
                      */
                     this._attach({
                         name: "reflect",
-                        type: "XEO.Reflect",
+                        type: "xeogl.Reflect",
                         component: value,
                         sceneDefault: true
                     });
@@ -819,7 +819,7 @@
                      */
                     this._attach({
                         name: "shader",
-                        type: "XEO.Shader",
+                        type: "xeogl.Shader",
                         component: value,
                         sceneDefault: true
                     });
@@ -854,7 +854,7 @@
                      */
                     this._attach({
                         name: "shaderParams",
-                        type: "XEO.ShaderParams",
+                        type: "xeogl.ShaderParams",
                         component: value,
                         sceneDefault: true
                     });
@@ -889,7 +889,7 @@
                      */
                     this._attach({
                         name: "stage",
-                        type: "XEO.Stage",
+                        type: "xeogl.Stage",
                         component: value,
                         sceneDefault: true
                     });
@@ -933,7 +933,7 @@
                      */
                     this._attach({
                         name: "transform",
-                        type: "XEO.Transform",
+                        type: "xeogl.Transform",
                         component: value,
                         sceneDefault: true,
                         on: {
@@ -947,7 +947,7 @@
 
                                     this._transformDirty = true;
 
-                                    XEO.scheduleTask(this._transformUpdated, this);
+                                    xeogl.scheduleTask(this._transformUpdated, this);
                                 },
                                 scope: this
                             },
@@ -993,7 +993,7 @@
                      */
                     this._attach({
                         name: "billboard",
-                        type: "XEO.Billboard",
+                        type: "xeogl.Billboard",
                         component: value,
                         sceneDefault: true
                     });
@@ -1029,7 +1029,7 @@
                      */
                     this._attach({
                         name: "viewport",
-                        type: "XEO.Viewport",
+                        type: "xeogl.Viewport",
                         component: value,
                         sceneDefault: true
                     });
@@ -1069,7 +1069,7 @@
                      */
                     this._attach({
                         name: "stationary",
-                        type: "XEO.Stationary",
+                        type: "xeogl.Stationary",
                         component: value,
                         sceneDefault: true
                     });
@@ -1126,7 +1126,7 @@
              *
              * <h4>Example</h4>
              *
-             * [here](http://xeoengine.org/examples/#boundaries_Entity_worldBoundary)
+             * [here](http://xeogl.org/examples/#boundaries_Entity_worldBoundary)
              *
              * <h4>Performance</h4>
              *
@@ -1147,7 +1147,7 @@
 
                         // this._setWorldBoundaryDirty();
 
-                        this._worldBoundary = new XEO.Boundary3D(this.scene, {
+                        this._worldBoundary = new xeogl.Boundary3D(this.scene, {
 
                             meta: {
                                 desc: "Entity " + self.id + " World-space boundary" // For debugging
@@ -1235,7 +1235,7 @@
 
                         //     this._setViewBoundaryDirty();
 
-                        this._viewBoundary = new XEO.Boundary3D(this.scene, {
+                        this._viewBoundary = new xeogl.Boundary3D(this.scene, {
 
                             meta: {
                                 desc: "Entity " + self.id + " View-space boundary" // For debugging
@@ -1306,7 +1306,7 @@
 
                         //   this._setCanvasBoundaryDirty();
 
-                        this._canvasBoundary = new XEO.Boundary2D(this.scene, {
+                        this._canvasBoundary = new xeogl.Boundary2D(this.scene, {
 
                             meta: {
                                 desc: "Entity " + self.id + " Canvas-space boundary" // For debugging
@@ -1345,7 +1345,7 @@
              * This is sometimes useful to have as a reference
              * when constructing your own custom {{#crossLink "Shader"}}{{/crossLink}} components.
              *
-             * Will return null if xeoEngine has not yet rendered this Entity.
+             * Will return null if xeogl has not yet rendered this Entity.
              *
              * @property glsl
              * @type JSON
@@ -1382,7 +1382,7 @@
              * This is sometimes useful to have as a reference
              * when constructing your own custom {{#crossLink "Shader"}}{{/crossLink}} components.
              *
-             * Will return null if xeoEngine has not yet rendered this Entity.
+             * Will return null if xeogl has not yet rendered this Entity.
              *
              * @property glslString
              * @type String
@@ -1458,7 +1458,7 @@
                 var task = function () {
 
                     if (!self._valid()) {
-                        XEO.scheduleTask(task);
+                        xeogl.scheduleTask(task);
                         return;
                     }
 
@@ -1467,7 +1467,7 @@
                     self._compiling = false;
                 };
 
-                XEO.scheduleTask(task);
+                xeogl.scheduleTask(task);
             }
         },
 
@@ -1506,7 +1506,7 @@
 
             if (this._loading) {
 
-                // This Entity was flagged as freshly loaded, which incremented the XEO.Spinner#processes
+                // This Entity was flagged as freshly loaded, which incremented the xeogl.Spinner#processes
                 // count on the Scene Canvas, causing a spinner to appear. Unflag and decrement the
                 // count now that we have compiled it into the render graph. Spinner will disappear
                 // when the count has returned to zero.

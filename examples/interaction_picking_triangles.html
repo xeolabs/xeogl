@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.js"></script>
+    <script src="../build/xeogl.js"></script>
     <script src="js/geometry/heightmapGeometry.js"></script>
     <script src="js/debug/debug.js"></script>
 
@@ -14,14 +14,14 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a>
+    <a href="http://xeogl.org">xeogl</a>
     <br><br>
     <ul>
         <li>
             picking individual triangles on an <a href="../docs/classes/Entity.html" target="_docs">Entity</a>
         </li>
         <li>
-            uses the <a href="js/debug/debug.js" target="_docs">XEO.debug</a> helper to show the picked triangle
+            uses the <a href="js/debug/debug.js" target="_docs">xeogl.debug</a> helper to show the picked triangle
         </li>
         <li>
             move your mouse over the heightmap!
@@ -37,10 +37,10 @@
 
     // A Entity that we can pick - a heightmap with a diffuse map
 
-    var terrainObject = new XEO.Entity({
+    var terrainObject = new xeogl.Entity({
 
-        // XEO.HeightMap is defined in ./js/geometry/heightmapGeometry.js
-        geometry: new XEO.HeightmapGeometry({
+        // xeogl.HeightMap is defined in ./js/geometry/heightmapGeometry.js
+        geometry: new xeogl.HeightmapGeometry({
             primitive: "triangles",
             src: "textures/height/mountain.png",
             xSize: 10,
@@ -52,15 +52,15 @@
             autoNormals: true // Default
         }),
 
-        material: new XEO.PhongMaterial({
-            diffuseMap: new XEO.Texture({
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/uvGrid2.jpg"
             }),
             diffuse: [0.3, 0.3, 1],
             lineWidth: 3,
             pointSize: 5
         }),
-        modes: new XEO.Modes({
+        modes: new xeogl.Modes({
             backfaces: true
         })
 
@@ -79,7 +79,7 @@
 
     // Allow camera interaction
 
-    new XEO.CameraControl();
+    new xeogl.CameraControl();
 
 
     // Attempt to pick a triangle on the heightmap Entity on each mouse move
@@ -138,7 +138,7 @@
 
                         // Use debug helper to show triangle with vertex labels
 
-                        XEO.debug
+                        xeogl.debug
                                 .id("triangle")
                                 .lineWidth(4)
                                 .color([0.0, 0.0, 0.0])
@@ -148,7 +148,7 @@
                                 .pos(a)
                                 .line();
 
-                        XEO.debug
+                        xeogl.debug
                                 .id("vertexA")
                                 .fillColor([1.0, 1.0, 0.3])
                                 .color([0, 0, 0])
@@ -156,7 +156,7 @@
                                 .pos(a)
                                 .label();
 
-                        XEO.debug
+                        xeogl.debug
                                 .id("vertexB")
                                 .fillColor([1.0, 1.0, 0.3])
                                 .color([0, 0, 0])
@@ -164,7 +164,7 @@
                                 .pos(b)
                                 .label();
 
-                        XEO.debug
+                        xeogl.debug
                                 .id("vertexC")
                                 .fillColor([1.0, 1.0, 0.3])
                                 .color([0, 0, 0])
@@ -173,7 +173,7 @@
                                 .label();
 
                         if (hit.worldPos) {
-                            XEO.debug
+                            xeogl.debug
                                     .id("worldPos")
                                     .fillColor([0.3, 1.0, 0.3])
                                     .color([0, 0, 0])

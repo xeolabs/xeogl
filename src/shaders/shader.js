@@ -2,8 +2,8 @@
  A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  <ul>
- <li>Normally you would rely on xeoEngine to automatically generate shaders for you, however the Shader component allows you to author them manually.</li>
- <li>You can use xeoEngine's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other
+ <li>Normally you would rely on xeogl to automatically generate shaders for you, however the Shader component allows you to author them manually.</li>
+ <li>You can use xeogl's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other
  components on the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>Use Shaders in combination with {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} components when you need to share
  the same Shaders among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} while setting the Shaders' uniforms
@@ -30,7 +30,7 @@
  // which will receive the positions and UVs from the Geometry. Also note the 'time'
  // uniform, which we'll be animating via Shader#setParams.
 
- var shader = new XEO.Shader({
+ var shader = new xeogl.Shader({
 
     // Vertex shading stage
     vertex: [
@@ -74,7 +74,7 @@
  });
 
  // A screen-aligned quad
- var quad = new XEO.Geometry({
+ var quad = new xeogl.Geometry({
     primitive:"triangles",
     positions:[ 1, 1, 0, -1, 1, 0, -1, -1, 0, 1, -1, 0 ],
     normals:[ -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0 ],
@@ -82,7 +82,7 @@
     indices:[ 0, 1, 2, 0, 2, 3 ]
  });
 
- var entity = new XEO.Entity(scene, {
+ var entity = new xeogl.Entity(scene, {
     shader: shader,
     geometry: quad
  });
@@ -100,7 +100,7 @@
 
  ## <a name="inputs">Shader Inputs</a>
 
- xeoEngine provides the following inputs for your shaders (work in progress).
+ xeogl provides the following inputs for your shaders (work in progress).
 
  #### Attributes
 
@@ -163,7 +163,7 @@
 
 
  @class Shader
- @module XEO
+ @module xeogl
  @submodule shaders
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Shader in the default
@@ -180,13 +180,13 @@
 
     "use strict";
 
-    XEO.Shader = XEO.Component.extend({
+    xeogl.Shader = xeogl.Component.extend({
 
-        type: "XEO.Shader",
+        type: "xeogl.Shader",
 
         _init: function (cfg) {
 
-            this._state = new XEO.renderer.Shader({
+            this._state = new xeogl.renderer.Shader({
                 vertex: null,
                 fragment: null,
                 params: {}

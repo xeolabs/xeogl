@@ -7,9 +7,9 @@
  diffuse {{#crossLink "Texture"}}{{/crossLink}}:
 
  ````javascript
- new XEO.Entity({
+ new xeogl.Entity({
 
-     geometry: new XEO.LatheGeometry({
+     geometry: new xeogl.LatheGeometry({
         primitive: "triangles",
         points: [
             [ 0, 0,  8],
@@ -25,8 +25,8 @@
         autoNormals: true // Default
      }),
 
-     material: new XEO.PhongMaterial({
-        diffuseMap: new XEO.Texture({
+     material: new xeogl.PhongMaterial({
+        diffuseMap: new xeogl.Texture({
             src: "textures/diffuse/uvGrid2.jpg"
         })
      })
@@ -34,7 +34,7 @@
  ````
 
  @class LatheGeometry
- @module XEO
+ @module xeogl
  @submodule geometry
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this LatheGeometry in the default
@@ -55,9 +55,9 @@
 
     "use strict";
 
-    XEO.LatheGeometry = XEO.Geometry.extend({
+    xeogl.LatheGeometry = xeogl.Geometry.extend({
 
-        type: "XEO.LatheGeometry",
+        type: "xeogl.LatheGeometry",
 
         _init: function (cfg) {
 
@@ -86,8 +86,8 @@
             if (segments < 4) {
                 segments = 4;
             }
-            var phiStart = this._phiStart * XEO.math.DEGTORAD;
-            var phiLength = this._phiLength * XEO.math.DEGTORAD;
+            var phiStart = this._phiStart * xeogl.math.DEGTORAD;
+            var phiLength = this._phiLength * xeogl.math.DEGTORAD;
             var points = this._points;
             var inversePointLength = 1.0 / ( points.length - 1 );
             var inverseSegments = 1.0 / segments;

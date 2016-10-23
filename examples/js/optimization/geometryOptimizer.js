@@ -2,9 +2,9 @@
 
     "use strict";
 
-    XEO.GeometryOptimizer = XEO.Component.extend({
+    xeogl.GeometryOptimizer = xeogl.Component.extend({
 
-        type: "XEO.GeometryOptimizer",
+        type: "xeogl.GeometryOptimizer",
 
         _init: function (cfg) {
             this.collection = cfg.collection;
@@ -28,7 +28,7 @@
 
                     this._attach({
                         name: "collection",
-                        type: "XEO.Collection",
+                        type: "xeogl.Collection",
                         component: value, // Converts value from ID to instance if necessary
                         on: {
                             added: function (component) {
@@ -92,9 +92,9 @@
 
                 }
 
-                new XEO.Entity({
+                new xeogl.Entity({
                     geometry: {
-                        type: "XEO.Geometry",
+                        type: "xeogl.Geometry",
                         primitive: "triangles",
                         positions: positions,
                         uvs: uvs,

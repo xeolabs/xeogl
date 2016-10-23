@@ -13,9 +13,9 @@
  diffuse {{#crossLink "Texture"}}{{/crossLink}}:
 
  ````javascript
- new XEO.Entity({
+ new xeogl.Entity({
 
-     geometry: new XEO.CylinderGeometry({
+     geometry: new xeogl.CylinderGeometry({
          radiusTop: 2.0,
          radiusBottom: 2.0,
          height: 5.0,
@@ -24,8 +24,8 @@
          openEnded: false
      }),
 
-     material: new XEO.PhongMaterial({
-        diffuseMap: new XEO.Texture({
+     material: new xeogl.PhongMaterial({
+        diffuseMap: new xeogl.Texture({
             src: "textures/diffuse/uvGrid2.jpg"
         })
      })
@@ -33,7 +33,7 @@
  ````
 
  @class CylinderGeometry
- @module XEO
+ @module xeogl
  @submodule geometry
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this CylinderGeometry in the default
@@ -56,9 +56,9 @@
 
     "use strict";
 
-    XEO.CylinderGeometry = XEO.Geometry.extend({
+    xeogl.CylinderGeometry = xeogl.Geometry.extend({
 
-        type: "XEO.CylinderGeometry",
+        type: "xeogl.CylinderGeometry",
 
         _init: function (cfg) {
 

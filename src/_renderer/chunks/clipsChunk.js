@@ -5,7 +5,7 @@
     /**
      * Create display state chunk type for draw and pick render of user clipping planes
      */
-    XEO.renderer.ChunkFactory.createChunkType({
+    xeogl.renderer.ChunkFactory.createChunkType({
 
         type: "clips",
 

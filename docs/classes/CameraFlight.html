@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>CameraFlight - xeoengine</title>
+    <title>CameraFlight - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -14,12 +14,10 @@
 <div id="doc">
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
-
-                <h1 style="color:white;"><a href="../../">xeoEngine</a> / <a href="../../docs">API Docs</a></h1>
-
+                <h1><img src="../../assets/images/logo.png" title="xeogl"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.0</em>
+            <em>API Docs for: 1.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -27,7 +25,7 @@
         <div class="yui3-u-1-4">
             <div id="docs-sidebar" class="sidebar apidocs">
                 <div id="api-list">
-                
+                    <h2 class="off-left">APIs</h2>
                     <div id="api-tabview" class="tabview">
                         <ul class="tabs">
                             <li><a href="#api-classes">Classes</a></li>
@@ -83,7 +81,6 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/MegaTexture.html">MegaTexture</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
@@ -103,7 +100,6 @@
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
-                                <li><a href="../classes/Render.html">Render</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
@@ -125,41 +121,40 @@
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/WebVR.html">WebVR</a></li>
-                                <li><a href="../classes/XEO.html">XEO</a></li>
-                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
+                                <li><a href="../classes/xeogl.html">xeogl</a></li>
+                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
                                 <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
                                 <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
-                                <li><a href="..//modules/animation.html">animation</a></li>
-                                <li><a href="..//modules/boundaries.html">boundaries</a></li>
-                                <li><a href="..//modules/camera.html">camera</a></li>
-                                <li><a href="..//modules/canvas.html">canvas</a></li>
-                                <li><a href="..//modules/clipping.html">clipping</a></li>
-                                <li><a href="..//modules/collections.html">collections</a></li>
-                                <li><a href="..//modules/configs.html">configs</a></li>
-                                <li><a href="..//modules/controls.html">controls</a></li>
-                                <li><a href="..//modules/culling.html">culling</a></li>
-                                <li><a href="..//modules/curves.html">curves</a></li>
-                                <li><a href="..//modules/effects.html">effects</a></li>
-                                <li><a href="..//modules/entities.html">entities</a></li>
-                                <li><a href="..//modules/geometry.html">geometry</a></li>
-                                <li><a href="..//modules/importing.html">importing</a></li>
-                                <li><a href="..//modules/input.html">input</a></li>
-                                <li><a href="..//modules/interaction.html">interaction</a></li>
-                                <li><a href="..//modules/lighting.html">lighting</a></li>
-                                <li><a href="..//modules/materials.html">materials</a></li>
-                                <li><a href="..//modules/math.html">math</a></li>
-                                <li><a href="..//modules/paths.html">paths</a></li>
-                                <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/shaders.html">shaders</a></li>
-                                <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
-                                <li><a href="..//modules/transforms.html">transforms</a></li>
-                                <li><a href="..//modules/webvr.html">webvr</a></li>
-                                <li><a href="..//modules/xeo.html">xeo</a></li>
-                                <li><a href="..//modules/XEO.html">XEO</a></li>
-                                <li><a href="..//modules/xeogl.html">xeogl</a></li>
+                                <li><a href="../modules/animation.html">animation</a></li>
+                                <li><a href="../modules/boundaries.html">boundaries</a></li>
+                                <li><a href="../modules/camera.html">camera</a></li>
+                                <li><a href="../modules/canvas.html">canvas</a></li>
+                                <li><a href="../modules/clipping.html">clipping</a></li>
+                                <li><a href="../modules/collections.html">collections</a></li>
+                                <li><a href="../modules/configs.html">configs</a></li>
+                                <li><a href="../modules/controls.html">controls</a></li>
+                                <li><a href="../modules/culling.html">culling</a></li>
+                                <li><a href="../modules/curves.html">curves</a></li>
+                                <li><a href="../modules/effects.html">effects</a></li>
+                                <li><a href="../modules/entities.html">entities</a></li>
+                                <li><a href="../modules/geometry.html">geometry</a></li>
+                                <li><a href="../modules/importing.html">importing</a></li>
+                                <li><a href="../modules/input.html">input</a></li>
+                                <li><a href="../modules/interaction.html">interaction</a></li>
+                                <li><a href="../modules/lighting.html">lighting</a></li>
+                                <li><a href="../modules/materials.html">materials</a></li>
+                                <li><a href="../modules/math.html">math</a></li>
+                                <li><a href="../modules/paths.html">paths</a></li>
+                                <li><a href="../modules/rendering.html">rendering</a></li>
+                                <li><a href="../modules/shaders.html">shaders</a></li>
+                                <li><a href="../modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="../modules/transforms.html">transforms</a></li>
+                                <li><a href="../modules/webvr.html">webvr</a></li>
+                                <li><a href="../modules/xeo.html">xeo</a></li>
+                                <li><a href="../modules/xeogl.html">xeogl</a></li>
                             </ul>
                         </div>
                     </div>
@@ -167,33 +162,33 @@
             </div>
         </div>
         <div class="yui3-u-3-4">
-                <!--<div id="api-options">-->
-                    <!--Show:-->
-                    <!--<label for="api-show-inherited">-->
-                        <!--<input type="checkbox" id="api-show-inherited" checked>-->
-                        <!--Inherited-->
-                    <!--</label>-->
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
             
-                    <!--<label for="api-show-protected">-->
-                        <!--<input type="checkbox" id="api-show-protected">-->
-                        <!--Protected-->
-                    <!--</label>-->
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
             
-                    <!--<label for="api-show-private">-->
-                        <!--<input type="checkbox" id="api-show-private">-->
-                        <!--Private-->
-                    <!--</label>-->
-                    <!--<label for="api-show-deprecated">-->
-                        <!--<input type="checkbox" id="api-show-deprecated">-->
-                        <!--Deprecated-->
-                    <!--</label>-->
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
             
-                <!--</div>-->
+                </div>
             
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>CameraFlight</h1>
+<h1>CameraFlight Class</h1>
 <div class="box meta">
 
         <div class="extends">
@@ -205,7 +200,7 @@
         </div>
 
             Module: <a href="../modules/animation.html">animation</a><br>
-            Parent Module: <a href="../modules/XEO.html">XEO</a>
+            Parent Module: <a href="../modules/xeogl.html">xeogl</a>
 
 </div>
 
@@ -249,11 +244,11 @@
 <h2 id="flying-to-an-entity">Flying to an Entity</h2>
 <p>Flying to an <a href="../classes/Entity.html" class="crosslink">Entity</a> (which provides a World-space
 <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> via its <a href="../classes/Entity.html#property_worldBoundary" class="crosslink">worldBoundary</a> property):</p>
-<pre class="code prettyprint"><code class="lang-Javascript">var camera = new XEO.Camera();
+<pre class="code prettyprint"><code class="lang-Javascript">var camera = new xeogl.Camera();
 
 // Create a CameraFlight that takes exactly twenty seconds to fly
 // the Camera to each specified target
-var cameraFlight = new XEO.CameraFlight({
+var cameraFlight = new xeogl.CameraFlight({
    camera: camera,
    stopFOV: 45, // Default, degrees
    duration: 1 // Default, seconds
@@ -311,7 +306,6 @@ cameraFlight.flyTo(aabb);
                         </li>
                     </ul><span class="paren">)</span>
                 </div>
-        
         
         
         
@@ -432,7 +426,7 @@ cameraFlight.flyTo(aabb);
 
     <div>
         <div id="index" class="api-class-tabpanel index">
-            <h2 class="off-left">Index</h2>
+            <h2 class="off-left">Item Index</h2>
 
                 <div class="index-section methods">
                     <h3>Methods</h3>
@@ -489,10 +483,6 @@ cameraFlight.flyTo(aabb);
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_once">once</a>
-
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_processCompletedTiles">processCompletedTiles</a>
 
                             </li>
                             <li class="index-item method">
@@ -685,7 +675,6 @@ cameraFlight.flyTo(aabb);
 
 
 
-
     <div class="meta">
                 <p>
                 Defined in
@@ -732,7 +721,6 @@ cameraFlight.flyTo(aabb);
 
 
 
-
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_create">Component</a>:
@@ -748,7 +736,7 @@ cameraFlight.flyTo(aabb);
 <p>You would typically use this method to conveniently instantiate components that you&#39;d want to
 share (ie. "instance") among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
 <p>The method is given a component type, configuration and optional instance ID, like so:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(XEO.PhongMaterial, {
+<pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(xeogl.PhongMaterial, {
      diffuse: [1,0,0],
      specular: [1,1,0]
 }, "myMaterial");
@@ -757,7 +745,7 @@ share (ie. "instance") among your <a href="../classes/Entity.html" class="crossl
 <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, passing the given  attributes to the component&#39;s constructor.</p>
 <p>If you call this method again, specifying the same <code>type</code> and <code>instanceId</code>, the method will return the same
 component instance that it returned the first time, and will ignore the configuration:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
+<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(xeogl.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
 </code></pre>
 <p>So in this example, our <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> will continue to have the red specular
 and diffuse color that we specified the first time.</p>
@@ -778,8 +766,8 @@ times as you got it, the Scene will destroy the component.</p>
 
 
                     <div class="param-description">
-                        <p>Component type - either a string like &quot;XEO.PhongMaterial&quot; or the actual
-constructor function, ie. XEO.PhongMaterial.</p>
+                        <p>Component type - either a string like &quot;xeogl.PhongMaterial&quot; or the actual
+constructor function, ie. xeogl.PhongMaterial.</p>
 
                     </div>
 
@@ -839,9 +827,8 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
 
 
 
-
     <div class="meta">
-                    <p>Provided by the <a href="../modules/XEO.html">XEO</a> module.</p>
+                    <p>Provided by the <a href="../modules/xeogl.html">xeogl</a> module.</p>
                 <p>
                 Defined in
         <a href="../files/src__utils_inheritance.js.html#l116"><code>src&#x2F;_utils&#x2F;inheritance.js:116</code></a>
@@ -872,7 +859,6 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
     <h3 class="name"><code>destroy</code></h3>
 
         <span class="paren">()</span>
-
 
 
 
@@ -914,7 +900,6 @@ defaults that this component overrode on them.</p>
                 </li>
             </ul><span class="paren">)</span>
         </div>
-
 
 
 
@@ -978,7 +963,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                 </li>
             </ul><span class="paren">)</span>
         </div>
-
 
 
 
@@ -1056,148 +1040,6 @@ any subsequent notifications on that location as they are made.</p>
                 <li class="arg">
                         <code>params</code>
                 </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_animation_cameraFlight.js.html#l377"><code>src&#x2F;animation&#x2F;cameraFlight.js:377</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Jumps this CameraFlight&#39;s <a href="../classes/Camera.html" class="crosslink">Camera</a> to the given target.</p>
-<p><ul>
-    <li>When the target is a boundary, this CameraFlight will position the <a href="../classes/Camera.html" class="crosslink">Camera</a>
-    at where the target fills most of the canvas.</li>
-    <li>When the target is an explicit <a href="../classes/Camera.html" class="crosslink">Camera</a> position, given as <code>eye</code>, <code>look</code> and <code>up</code>
-     vectors, then this CameraFlight will jump the <a href="../classes/Camera.html" class="crosslink">Camera</a> to that target.</li></p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">params</code>
-                        <span class="type"> | <a href="../classes/Component.html" class="crosslink">Component</a></span>
-
-
-                    <div class="param-description">
-                        <p>Either a parameters object or a <a href="../classes/Component.html" class="crosslink">Component</a> subtype that has a WorldBoundary.</p>
-
-                    </div>
-
-                        <ul class="params-list">
-                            <li class="param">
-                                    <code class="param-name optional">[arc=0]   Factor in range [0..1]</code>
-                                    <span class="type">Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>indicating how much the
-Camera/eye:property position will
-swing away from its Camera/eye:property position as it flies to the target.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name optional">[component]</code>
-                                    <span class="type">String | <a href="../classes/Component.html" class="crosslink">Component</a></span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>ID or instance of a component to fly to.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name optional">[aabb]</code>
-                                    <span class="type"></span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>World-space axis-aligned bounding box (AABB) target to fly to.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name optional">[eye]</code>
-                                    <span class="type">Array of Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>Position to fly the eye position to.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name optional">[look]</code>
-                                    <span class="type">Array of Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>Position to fly the look position to.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name optional">[up]</code>
-                                    <span class="type">Array of Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>Position to fly the up vector to.</p>
-
-                                </div>
-
-                            </li>
-                            <li class="param">
-                                    <code class="param-name optional">[stopFOV]</code>
-                                    <span class="type">Number</span>
-                                    <span class="flag optional" title="This parameter is optional.">optional</span>
-
-                                <div class="param-description">
-                                    <p>How much of field-of-view, in degrees, that a target <a href="../classes/Entity.html" class="crosslink">Entity</a> or its AABB should
-fill the canvas on arrival.</p>
-
-                                </div>
-
-                            </li>
-                        </ul>
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
-<div id="method_flyTo" class="method item">
-    <h3 class="name"><code>flyTo</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>params</code>
-                </li>
                 <li class="arg">
                         <code class="optional">[callback]</code>
                 </li>
@@ -1206,7 +1048,6 @@ fill the canvas on arrival.</p>
                 </li>
             </ul><span class="paren">)</span>
         </div>
-
 
 
 
@@ -1373,6 +1214,147 @@ fill the canvas on arrival.</p>
 
 
 </div>
+<div id="method_flyTo" class="method item">
+    <h3 class="name"><code>flyTo</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>params</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_animation_cameraFlight.js.html#l377"><code>src&#x2F;animation&#x2F;cameraFlight.js:377</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Jumps this CameraFlight&#39;s <a href="../classes/Camera.html" class="crosslink">Camera</a> to the given target.</p>
+<p><ul>
+    <li>When the target is a boundary, this CameraFlight will position the <a href="../classes/Camera.html" class="crosslink">Camera</a>
+    at where the target fills most of the canvas.</li>
+    <li>When the target is an explicit <a href="../classes/Camera.html" class="crosslink">Camera</a> position, given as <code>eye</code>, <code>look</code> and <code>up</code>
+     vectors, then this CameraFlight will jump the <a href="../classes/Camera.html" class="crosslink">Camera</a> to that target.</li></p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">params</code>
+                        <span class="type"> | <a href="../classes/Component.html" class="crosslink">Component</a></span>
+
+
+                    <div class="param-description">
+                        <p>Either a parameters object or a <a href="../classes/Component.html" class="crosslink">Component</a> subtype that has a WorldBoundary.</p>
+
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name optional">[arc=0]   Factor in range [0..1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>indicating how much the
+Camera/eye:property position will
+swing away from its Camera/eye:property position as it flies to the target.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[component]</code>
+                                    <span class="type">String | <a href="../classes/Component.html" class="crosslink">Component</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>ID or instance of a component to fly to.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[aabb]</code>
+                                    <span class="type"></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>World-space axis-aligned bounding box (AABB) target to fly to.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[eye]</code>
+                                    <span class="type">Array of Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Position to fly the eye position to.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[look]</code>
+                                    <span class="type">Array of Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Position to fly the look position to.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[up]</code>
+                                    <span class="type">Array of Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Position to fly the up vector to.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[stopFOV]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>How much of field-of-view, in degrees, that a target <a href="../classes/Entity.html" class="crosslink">Entity</a> or its AABB should
+fill the canvas on arrival.</p>
+
+                                </div>
+
+                            </li>
+                        </ul>
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
 <div id="method_isType" class="method item inherited">
     <h3 class="name"><code>isType</code></h3>
 
@@ -1387,7 +1369,6 @@ fill the canvas on arrival.</p>
         <span class="returns-inline">
             <span class="type">Boolean</span>
         </span>
-
 
 
 
@@ -1412,14 +1393,14 @@ fill the canvas on arrival.</p>
 property <a href="../classes/Component.html#property_superTypes" class="crosslink">superTypes</a>, returning true as soon as one of the type strings in
 the chain matches the given type, of false if none match.</p>
 <h4 id="examples-">Examples:</h4>
-<pre class="code prettyprint"><code class="lang-javascript">var myRotate = new XEO.Rotate({ ... });
+<pre class="code prettyprint"><code class="lang-javascript">var myRotate = new xeogl.Rotate({ ... });
 
-myRotate.isType(XEO.Component); // Returns true for all XEO components
-myRotate.isType("XEO.Component"); // Returns true for all XEO components
-myRotate.isType(XEO.Rotate); // Returns true
-myRotate.isType(XEO.Transform); // Returns true
-myRotate.isType("XEO.Transform"); // Returns true
-myRotate.isType(XEO.Entity); // Returns false, because XEO.Rotate does not (even indirectly) extend XEO.Entity
+myRotate.isType(xeogl.Component); // Returns true for all xeogl components
+myRotate.isType("xeogl.Component"); // Returns true for all xeogl components
+myRotate.isType(xeogl.Rotate); // Returns true
+myRotate.isType(xeogl.Transform); // Returns true
+myRotate.isType("xeogl.Transform"); // Returns true
+myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (even indirectly) extend xeogl.Entity
 </code></pre>
 
     </div>
@@ -1434,7 +1415,7 @@ myRotate.isType(XEO.Entity); // Returns false, because XEO.Rotate does not (even
 
 
                     <div class="param-description">
-                        <p>Component type to compare with, eg &quot;XEO.PhongMaterial&quot;, or a XEO component constructor.</p>
+                        <p>Component type to compare with, eg &quot;xeogl.PhongMaterial&quot;, or a xeogl component constructor.</p>
 
                     </div>
 
@@ -1464,7 +1445,6 @@ myRotate.isType(XEO.Entity); // Returns false, because XEO.Rotate does not (even
                 </li>
             </ul><span class="paren">)</span>
         </div>
-
 
 
 
@@ -1530,7 +1510,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 
-
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
@@ -1588,7 +1567,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
         <span class="returns-inline">
             <span class="type">String</span>
         </span>
-
 
 
 
@@ -1689,7 +1667,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 
-
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
@@ -1751,78 +1728,10 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 </div>
-<div id="method_processCompletedTiles" class="method item">
-    <h3 class="name"><code>processCompletedTiles</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>renderFrameNumber</code>
-                </li>
-                <li class="arg">
-                        <code>loader</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src__renderer_webgl_megatexture_cache.js.html#l77"><code>src&#x2F;_renderer&#x2F;webgl&#x2F;megatexture&#x2F;cache.js:77</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Processes completed tiles.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">renderFrameNumber</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">loader</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-
-
-</div>
 <div id="method_stop" class="method item">
     <h3 class="name"><code>stop</code></h3>
 
         <span class="paren">()</span>
-
 
 
 
@@ -1860,7 +1769,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                 </li>
             </ul><span class="paren">)</span>
         </div>
-
 
 
 
@@ -2649,7 +2557,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     <p>For example, if this component is a <a href="../classes/Rotate.html" class="crosslink">Rotate</a>, which
                     extends <a href="../classes/Transform.html" class="crosslink">Transform</a>, which in turn extends <a href="../classes/Component.html" class="crosslink">Component</a>,
                     then this property will have the value:</p>
-                    <pre class="code prettyprint"><code class="lang-json">["XEO.Component", "XEO.Transform"]
+                    <pre class="code prettyprint"><code class="lang-json">["xeogl.Component", "xeogl.Transform"]
                     </code></pre>
                     <p>Note that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.</p>
                     

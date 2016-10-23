@@ -11,7 +11,7 @@
  TODO
 
  @class RigidBody
- @module XEO
+ @module xeogl
  @submodule audio
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this RigidBody within the
@@ -37,9 +37,9 @@
 
     "use strict";
 
-    XEO.RigidBody = XEO.Component.extend({
+    xeogl.RigidBody = xeogl.Component.extend({
 
-        type: "XEO.RigidBody",
+        type: "xeogl.RigidBody",
 
         _init: function (cfg) {
 

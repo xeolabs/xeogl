@@ -7,7 +7,7 @@
  <li>Lookat is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
  <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with projection transforms such as
  {{#crossLink "Perspective"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Lookat components create within xeoEngine's shaders.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Lookat components create within xeogl's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/Lookat.png"></img>
@@ -21,29 +21,29 @@
  ## Usage
 
  ````Javascript
- new XEO.Entity({
+ new xeogl.Entity({
 
-     camera: XEO.Camera({
+     camera: xeogl.Camera({
 
-        view: new XEO.Lookat({
+        view: new xeogl.Lookat({
             eye: [0, 0, 4],
             look: [0, 0, 0],
             up: [0, 1, 0]
         }),
 
-        project: new XEO.Perspective({
+        project: new xeogl.Perspective({
             fovy: 60,
             near: 0.1,
             far: 1000
         })
      }),
 
-     geometry: new XEO.BoxGeometry()
+     geometry: new xeogl.BoxGeometry()
  });
  ````
 
  @class Lookat
- @module XEO
+ @module xeogl
  @submodule transforms
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Lookat in the default
@@ -63,24 +63,24 @@
 
     "use strict";
 
-    var tempVec3 = XEO.math.vec3();
-    var tempVec3b = XEO.math.vec3();
-    var tempVec3c = XEO.math.vec3();
-    var tempVec3d = XEO.math.vec3();
-    var tempVec3e = XEO.math.vec3();
-    var tempVec3f = XEO.math.vec3();
+    var tempVec3 = xeogl.math.vec3();
+    var tempVec3b = xeogl.math.vec3();
+    var tempVec3c = xeogl.math.vec3();
+    var tempVec3d = xeogl.math.vec3();
+    var tempVec3e = xeogl.math.vec3();
+    var tempVec3f = xeogl.math.vec3();
 
-    XEO.Lookat = XEO.Transform.extend({
+    xeogl.Lookat = xeogl.Transform.extend({
 
-        type: "XEO.Lookat",
+        type: "xeogl.Lookat",
 
         _init: function (cfg) {
 
             this._super(cfg);
 
-            this._eye = XEO.math.vec3([0, 0, 10.0]);
-            this._look = XEO.math.vec3([0, 0, 0]);
-            this._up = XEO.math.vec3([0, 1, 0]);
+            this._eye = xeogl.math.vec3([0, 0, 10.0]);
+            this._look = xeogl.math.vec3([0, 0, 0]);
+            this._up = xeogl.math.vec3([0, 1, 0]);
 
             this.eye = cfg.eye;
             this.look = cfg.look;
@@ -89,7 +89,7 @@
         },
 
         _update: function () {
-            this.matrix = XEO.math.lookAtMat4v(this._eye, this._look, this._up, this._matrix);
+            this.matrix = xeogl.math.lookAtMat4v(this._eye, this._look, this._up, this._matrix);
         },
 
         /**
@@ -100,18 +100,18 @@
         rotateEyeY: function (angle) {
 
             // Get 'look' -> 'eye' vector
-            var eye2 = XEO.math.subVec3(this._eye, this._look, tempVec3);
+            var eye2 = xeogl.math.subVec3(this._eye, this._look, tempVec3);
 
-            var mat = XEO.math.rotationMat4v(angle * 0.0174532925, this._gimbalLockY ? XEO.math.vec3([0, 1, 0]) : this._up);
-            eye2 = XEO.math.transformPoint3(mat, eye2, tempVec3b);
+            var mat = xeogl.math.rotationMat4v(angle * 0.0174532925, this._gimbalLockY ? xeogl.math.vec3([0, 1, 0]) : this._up);
+            eye2 = xeogl.math.transformPoint3(mat, eye2, tempVec3b);
 
             // Set eye position as 'look' plus 'eye' vector
-            this.eye = XEO.math.addVec3(eye2, this._look, tempVec3c);
+            this.eye = xeogl.math.addVec3(eye2, this._look, tempVec3c);
 
             if (this._gimbalLockY) {
 
                 // Rotate 'up' vector about orthogonal vector
-                this.up = XEO.math.transformPoint3(mat, this._up, tempVec3d);
+                this.up = xeogl.math.transformPoint3(mat, this._up, tempVec3d);
             }
         },
 
@@ -123,20 +123,20 @@
         rotateEyeX: function (angle) {
 
             // Get 'look' -> 'eye' vector
-            var eye2 = XEO.math.subVec3(this._eye, this._look, tempVec3);
+            var eye2 = xeogl.math.subVec3(this._eye, this._look, tempVec3);
 
             // Get orthogonal vector from 'eye' and 'up'
-            var left = XEO.math.cross3Vec3(XEO.math.normalizeVec3(eye2, tempVec3b), XEO.math.normalizeVec3(this._up, tempVec3c));
+            var left = xeogl.math.cross3Vec3(xeogl.math.normalizeVec3(eye2, tempVec3b), xeogl.math.normalizeVec3(this._up, tempVec3c));
 
             // Rotate 'eye' vector about orthogonal vector
-            var mat = XEO.math.rotationMat4v(angle * 0.0174532925, left);
-            eye2 = XEO.math.transformPoint3(mat, eye2, tempVec3d);
+            var mat = xeogl.math.rotationMat4v(angle * 0.0174532925, left);
+            eye2 = xeogl.math.transformPoint3(mat, eye2, tempVec3d);
 
             // Set eye position as 'look' plus 'eye' vector
-            this.eye = XEO.math.addVec3(eye2, this._look, tempVec3e);
+            this.eye = xeogl.math.addVec3(eye2, this._look, tempVec3e);
 
             // Rotate 'up' vector about orthogonal vector
-            this.up = XEO.math.transformPoint3(mat, this._up, tempVec3f);
+            this.up = xeogl.math.transformPoint3(mat, this._up, tempVec3f);
         },
 
         /**
@@ -149,14 +149,14 @@
         rotateLookY: function (angle) {
 
             // Get 'look' -> 'eye' vector
-            var look2 = XEO.math.subVec3(this._look, this._eye, tempVec3);
+            var look2 = xeogl.math.subVec3(this._look, this._eye, tempVec3);
 
             // Rotate 'look' vector about 'up' vector
-            var mat = XEO.math.rotationMat4v(angle * 0.0174532925, this._up);
-            look2 = XEO.math.transformPoint3(mat, look2, tempVec3b);
+            var mat = xeogl.math.rotationMat4v(angle * 0.0174532925, this._up);
+            look2 = xeogl.math.transformPoint3(mat, look2, tempVec3b);
 
             // Set look position as 'look' plus 'eye' vector
-            this.look = XEO.math.addVec3(look2, this._eye, tempVec3c);
+            this.look = xeogl.math.addVec3(look2, this._eye, tempVec3c);
         },
 
         /**
@@ -167,20 +167,20 @@
         rotateLookX: function (angle) {
 
             // Get 'look' -> 'eye' vector
-            var look2 = XEO.math.subVec3(this._look, this._eye, tempVec3);
+            var look2 = xeogl.math.subVec3(this._look, this._eye, tempVec3);
 
             // Get orthogonal vector from 'eye' and 'up'
-            var left = XEO.math.cross3Vec3(XEO.math.normalizeVec3(look2, tempVec3b), XEO.math.normalizeVec3(this._up, tempVec3c));
+            var left = xeogl.math.cross3Vec3(xeogl.math.normalizeVec3(look2, tempVec3b), xeogl.math.normalizeVec3(this._up, tempVec3c));
 
             // Rotate 'look' vector about orthogonal vector
-            var mat = XEO.math.rotationMat4v(angle * 0.0174532925, left);
-            look2 = XEO.math.transformPoint3(mat, look2, tempVec3d);
+            var mat = xeogl.math.rotationMat4v(angle * 0.0174532925, left);
+            look2 = xeogl.math.transformPoint3(mat, look2, tempVec3d);
 
             // Set eye position as 'look' plus 'eye' vector
-            this.look = XEO.math.addVec3(look2, this._eye, tempVec3e);
+            this.look = xeogl.math.addVec3(look2, this._eye, tempVec3e);
 
             // Rotate 'up' vector about orthogonal vector
-            this.up = XEO.math.transformPoint3(mat, this._up, tempVecf);
+            this.up = xeogl.math.transformPoint3(mat, this._up, tempVecf);
         },
 
         /**
@@ -190,7 +190,7 @@
         pan: function (pan) {
 
             // Get 'look' -> 'eye' vector
-            var eye2 = XEO.math.subVec3(this._eye, this._look, tempVec3);
+            var eye2 = xeogl.math.subVec3(this._eye, this._look, tempVec3);
 
             // Building this pan vector
             var vec = [0, 0, 0];
@@ -200,9 +200,9 @@
 
                 // Pan along orthogonal vector to 'look' and 'up'
 
-                var left = XEO.math.cross3Vec3(XEO.math.normalizeVec3(eye2, []), XEO.math.normalizeVec3(this._up, tempVec3b));
+                var left = xeogl.math.cross3Vec3(xeogl.math.normalizeVec3(eye2, []), xeogl.math.normalizeVec3(this._up, tempVec3b));
 
-                v = XEO.math.mulVec3Scalar(left, pan[0]);
+                v = xeogl.math.mulVec3Scalar(left, pan[0]);
 
                 vec[0] += v[0];
                 vec[1] += v[1];
@@ -213,7 +213,7 @@
 
                 // Pan along 'up' vector
 
-                v = XEO.math.mulVec3Scalar(XEO.math.normalizeVec3(this._up, tempVec3c), pan[1]);
+                v = xeogl.math.mulVec3Scalar(xeogl.math.normalizeVec3(this._up, tempVec3c), pan[1]);
 
                 vec[0] += v[0];
                 vec[1] += v[1];
@@ -224,15 +224,15 @@
 
                 // Pan along 'eye'- -> 'look' vector
 
-                v = XEO.math.mulVec3Scalar(XEO.math.normalizeVec3(eye2, tempVec3d), pan[2]);
+                v = xeogl.math.mulVec3Scalar(xeogl.math.normalizeVec3(eye2, tempVec3d), pan[2]);
 
                 vec[0] += v[0];
                 vec[1] += v[1];
                 vec[2] += v[2];
             }
 
-            this.eye = XEO.math.addVec3(this._eye, vec, tempVec3e);
-            this.look = XEO.math.addVec3(this._look, vec, tempVec3f);
+            this.eye = xeogl.math.addVec3(this._eye, vec, tempVec3e);
+            this.look = xeogl.math.addVec3(this._look, vec, tempVec3f);
         },
 
         /**
@@ -241,13 +241,13 @@
          */
         zoom: function (delta) {
 
-            var vec = XEO.math.subVec3(this._eye, this._look, tempVec3); // Get vector from eye to look
-            var lenLook = Math.abs(XEO.math.lenVec3(vec, tempVec3b));    // Get len of that vector
+            var vec = xeogl.math.subVec3(this._eye, this._look, tempVec3); // Get vector from eye to look
+            var lenLook = Math.abs(xeogl.math.lenVec3(vec, tempVec3b));    // Get len of that vector
             var newLenLook = Math.abs(lenLook + delta);         // Get new len after zoom
 
-            var dir = XEO.math.normalizeVec3(vec, tempVec3c);  // Get normalised vector
+            var dir = xeogl.math.normalizeVec3(vec, tempVec3c);  // Get normalised vector
 
-            this.eye = XEO.math.addVec3(this._look, XEO.math.mulVec3Scalar(dir, newLenLook), tempVec3d);
+            this.eye = xeogl.math.addVec3(this._look, xeogl.math.mulVec3Scalar(dir, newLenLook), tempVec3d);
         },
 
         _props: {

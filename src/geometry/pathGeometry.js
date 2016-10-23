@@ -8,29 +8,29 @@
  a {{#crossLink "PhongMaterial"}}{{/crossLink}}:
 
  ````javascript
- new XEO.Entity({
+ new xeogl.Entity({
 
-     geometry: new XEO.PathGeometry({
+     geometry: new xeogl.PathGeometry({
 
         divisions: 10,
 
-        path: new XEO.Path({
+        path: new xeogl.Path({
 
             // Subpaths
 
             curves: [
-                new XEO.CubicBezierCurve({
+                new xeogl.CubicBezierCurve({
                     v0: [-10, 0, 0],
                     v1: [-5, 15, 0],
                     v2: [20, 15, 0],
                     v3: [10, 0, 0]
                 }),
-                new XEO.QuadraticBezierCurve({
+                new xeogl.QuadraticBezierCurve({
                     v0: [10, 0, 0],
                     v1: [30, 15, 0],
                     v2: [20, 0, 0]
                 }),
-                new XEO.SplineCurve({
+                new xeogl.SplineCurve({
                     points: [
                         [20, 0, 0],
                         [-5, 15, 0],
@@ -42,20 +42,20 @@
         })
      }),
 
-     material: new XEO.PhongMaterial(
+     material: new xeogl.PhongMaterial(
         diffuse: [1,0,0]
      })
  });
  ````
 
  @class PathGeometry
- @module XEO
+ @module xeogl
  @submodule geometry
  @extends Geometry
  */
-XEO.PathGeometry = XEO.Geometry.extend({
+xeogl.PathGeometry = xeogl.Geometry.extend({
 
-    type: "XEO.PathGeometry",
+    type: "xeogl.PathGeometry",
 
     // Constructor
 
@@ -133,7 +133,7 @@ XEO.PathGeometry = XEO.Geometry.extend({
                  */
                 this._attach({
                     name: "path",
-                    type: "XEO.Curve",
+                    type: "xeogl.Curve",
                     component: value,
                     sceneDefault: false,
                     on: {

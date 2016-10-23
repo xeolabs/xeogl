@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>stats test
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>stats test
 </div>
 
 <script>
 
 //setInterval(function() {
 
-   // XEO.scene.clear();
+   // xeogl.scene.clear();
 
-    var geometry = new XEO.Sphere({
+    var geometry = new xeogl.Sphere({
         radius: 2.0
     });
 
@@ -36,34 +36,34 @@
         for (var x = 0; x <= 1.0; x += inc) {
             for (var z = 0; z <= 1.0; z += inc) {
 
-                new XEO.Entity({
+                new xeogl.Entity({
 
                     geometry: geometry,
 
-                    material: new XEO.PhongMaterial({
+                    material: new xeogl.PhongMaterial({
                         shininess: x,
                         reflectivity: z,
                         diffuse: [x, z, y]
                     }),
 
-                    transform: new XEO.Translate({
+                    transform: new xeogl.Translate({
                         xyz: [(x * width) - halfWidth, (y * width) - halfWidth, (z * width) - halfWidth]
                     })
                 });
             }
         }
     }
-    new XEO.CameraControl();
+    new xeogl.CameraControl();
 
-    XEO.scene.camera.view.rotateEyeY(20);
-    XEO.scene.camera.view.rotateEyeX(20);
-    XEO.scene.camera.view.zoom(-100);
+    xeogl.scene.camera.view.rotateEyeY(20);
+    xeogl.scene.camera.view.rotateEyeX(20);
+    xeogl.scene.camera.view.zoom(-100);
 
 //}, 200);
 
 
 
-    var scene = XEO.scene;
+    var scene = xeogl.scene;
 
     scene.on("tick",
             function () {

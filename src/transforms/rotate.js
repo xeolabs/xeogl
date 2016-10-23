@@ -7,7 +7,7 @@
  <li>When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
  within a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, it will be transformed by each {{#crossLink "Transform"}}{{/crossLink}}
  on the path up to the root, in that order.</li>
- <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>
+ <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeogl's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/Rotate.png"></img>
@@ -25,45 +25,45 @@
  The Entities share the same {{#crossLink "BoxGeometry"}}{{/crossLink}}.<br>
 
  ````javascript
- var rotate = new XEO.Rotate({
+ var rotate = new xeogl.Rotate({
     xyz: [0, 1, 0], // Rotate 30 degrees about Y axis
     angle: 30
  });
 
- var translate1 = new XEO.Translate({
+ var translate1 = new xeogl.Translate({
     parent: rotate,
     xyz: [-5, 0, 0] // Translate along -X axis
  });
 
- var translate2 = new XEO.Translate({
+ var translate2 = new xeogl.Translate({
     parent: rotate,
     xyz: [5, 0, 0] // Translate along +X axis
  });
 
- var scale = new XEO.Scale({
+ var scale = new xeogl.Scale({
     parent: translate2,
     xyz: [1, 2, 1] // Scale x2 on Y axis
  });
 
- var geometry = new XEO.Geometry(scene); // Defaults to a 2x2x2 box
+ var geometry = new xeogl.Geometry(scene); // Defaults to a 2x2x2 box
 
- var Entity1 = new XEO.Entity({
+ var Entity1 = new xeogl.Entity({
     transform: translate1,
     geometry: geometry
  });
 
- var Entity2 = new XEO.Entity({
+ var Entity2 = new xeogl.Entity({
     transform: scale,
     geometry: geometry
  });
  ````
 
- Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
+ Since everything in xeogl is dynamically editable, we can restructure the transform hierarchy at any time.
 
  Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "Entity"}}{{/crossLink}}:
 
  ````javascript
- var scale2 = new XEO.Scale({
+ var scale2 = new xeogl.Scale({
     parent: translate1,
     xyz: [1, 1, 2] // Scale x2 on Z axis
  });
@@ -80,7 +80,7 @@
  });
  ````
  @class Rotate
- @module XEO
+ @module xeogl
  @submodule transforms
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Rotate in the default
@@ -97,9 +97,9 @@
 
     "use strict";
 
-    XEO.Rotate = XEO.Transform.extend({
+    xeogl.Rotate = xeogl.Transform.extend({
 
-        type: "XEO.Rotate",
+        type: "xeogl.Rotate",
 
         _init: function (cfg) {
 
@@ -110,7 +110,7 @@
         },
 
         _update: function () {
-            this.matrix = XEO.math.rotationMat4v(this._angle * XEO.math.DEGTORAD, this._xyz, this._matrix);
+            this.matrix = xeogl.math.rotationMat4v(this._angle * xeogl.math.DEGTORAD, this._xyz, this._matrix);
         },
 
         _props: {
@@ -128,7 +128,7 @@
 
                 set: function (value) {
 
-                    (this._xyz = this._xyz || new XEO.math.vec3()).set(value || [0, 1, 0]);
+                    (this._xyz = this._xyz || new xeogl.math.vec3()).set(value || [0, 1, 0]);
 
                     this._scheduleUpdate();
 

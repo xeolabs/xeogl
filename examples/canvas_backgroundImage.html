@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeoengine.js"></script>
+    <script src="../build/xeogl.js"></script>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>importing glTF using a <a
-        href="../docs/classes/Model.html" target="_docs">XEO.Model</a> component
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>importing glTF using a <a
+        href="../docs/classes/Model.html" target="_docs">xeogl.Model</a> component
 </div>
 
 <script>
@@ -30,14 +30,14 @@
         gearbox.scene.canvas.backgroundImage = bg[i++ % bg.length];
     }, 1000);
 
-    var entity = new XEO.Entity({
-        geometry: new XEO.TorusGeometry(),
-        material: new XEO.PhongMaterial({
-            diffuseMap: new XEO.Texture({
+    var entity = new xeogl.Entity({
+        geometry: new xeogl.TorusGeometry(),
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/uvGrid2.jpg"
             })
         }),
-        transform: new XEO.Rotate({
+        transform: new xeogl.Rotate({
             xyz: [0.8, 0.8, 0],
             angle: 0
         })

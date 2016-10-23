@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>
     defining a simple <a href="../docs/classes/Geometry.html" target="_docs">Geometry</a> with triangles
 </div>
 
 <script>
 
     // Create a 2x2x2 box centered at the World-space origin
-    var geometry = new XEO.Geometry({
+    var geometry = new xeogl.Geometry({
 
         // The primitive type - allowed values are
         // "points", "lines", "line-loop", "line-strip",
@@ -145,11 +145,11 @@
         ]
     });
 
-    var material = new XEO.PhongMaterial({
+    var material = new xeogl.PhongMaterial({
         diffuse: [0.6, 0.6, 1.0]
     });
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
         geometry: geometry,
         material: material
     });

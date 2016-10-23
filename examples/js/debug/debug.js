@@ -3,10 +3,10 @@
     "use strict";
 
     /**
-     Quick-and-dirty utility for debugging XEO {{#crossLink "Scene"}}Scenes{{/crossLink}}.
+     Quick-and-dirty utility for debugging xeogl {{#crossLink "Scene"}}Scenes{{/crossLink}}.
 
      The utility has fluent builder API that lets you create and update simple entities to help you
-     debug or demo things on XEO.
+     debug or demo things on xeogl.
 
      The utility does not clean up any components it created with your {{#crossLink "Scene"}}Scenes{{/crossLink}}.
 
@@ -15,7 +15,7 @@
      Drawing a red triangle:
 
      ```` javascript
-     XEO.debug
+     xeogl.debug
      .id("myTriangle")  // Supply an ID when you want to update the line if already existing
      .color([1,0,0])
      .pos([-10, -10, 0])
@@ -28,7 +28,7 @@
      Updating the triangle to change it's color and position:
 
      ```` javascript
-     XEO.debug
+     xeogl.debug
      .id("myTriangle")
      .pos([-15, -15, 0])
      .pos([15, -15, 0])
@@ -41,19 +41,19 @@
      Creating a label at a Given World position:
 
      ```` javascript
-     XEO.debug
+     xeogl.debug
      .pos([-10, 34, 2])
      .text("Check this out!")
      .label();
 
      ````
-     @class XEO.debug
+     @class xeogl.debug
      @static
      @author xeolabs / http://xeolabs.com/
      */
-    XEO.debug = new (function () {
+    xeogl.debug = new (function () {
 
-        // Converts XEO color to CSS
+        // Converts xeogl color to CSS
         function cssColor(color) {
             return "rgb(" +
                 Math.floor(color[0] * 255) + "," +
@@ -81,7 +81,7 @@
         };
 
         function getScene() {
-            return scene || XEO.scene;
+            return scene || xeogl.scene;
         }
 
         this.id = function (value) {
@@ -170,7 +170,7 @@
         this.line = function () {
 
             if (posi < 2) {
-                console.error("[XEO.debug.line] Not enough calls to XEO.debug.pos() for XEO.debug.line() - need at least two.");
+                console.error("[xeogl.debug.line] Not enough calls to xeogl.debug.pos() for xeogl.debug.line() - need at least two.");
                 return;
             }
 
@@ -194,27 +194,27 @@
 
             if (!object) {
 
-                new XEO.Entity(getScene(), {
+                new xeogl.Entity(getScene(), {
                     id: _id,
-                    geometry: new XEO.Geometry({
+                    geometry: new xeogl.Geometry({
                         primitive: "lines",
                         positions: positions,
                         indices: indices
                     }),
-                    material: new XEO.PhongMaterial({
+                    material: new xeogl.PhongMaterial({
                         emissive: color,
                         opacity: opacity,
                         lineWidth: lineWidth
                     }),
-                    modes: new XEO.Modes({  // This Entity should not be pickable
+                    modes: new xeogl.Modes({  // This Entity should not be pickable
                         pickable: false,
                         transparent: opacity < 1.0
                     }),
-                    visibility: new XEO.Visibility({  // This Entity should not be pickable
+                    visibility: new xeogl.Visibility({  // This Entity should not be pickable
                         visible: true
                     })
                     //,
-                    //transform: new XEO.Matrix({
+                    //transform: new xeogl.Matrix({
                     //    matrix: matrix
                     //})
                 });
@@ -242,23 +242,23 @@
 
             if (!object) {
 
-                object = new XEO.Entity(getScene(), {
+                object = new xeogl.Entity(getScene(), {
                     id: _id,
-                    transform: new XEO.Translate({
+                    transform: new xeogl.Translate({
                         xyz: pos[0]
                     }),
-                    geometry: new XEO.SphereGeometry({
+                    geometry: new xeogl.SphereGeometry({
                         radius: 0.1
                     }),
-                    modes: new XEO.Modes({  // This Entity should not be pickable
+                    modes: new xeogl.Modes({  // This Entity should not be pickable
                         pickable: false,
                         transparent: true,
                         collidable: false
                     }),
-                    material: new XEO.PhongMaterial({ // Hides the sphere while still rendering it
+                    material: new xeogl.PhongMaterial({ // Hides the sphere while still rendering it
                         opacity: 0
                     }),
-                    visibility: new XEO.Visibility({  // This Entity should not be pickable
+                    visibility: new xeogl.Visibility({  // This Entity should not be pickable
                         visible: true
                     })
                 });
@@ -352,27 +352,27 @@
 
             if (!object) {
 
-                new XEO.Entity(getScene(), {
+                new xeogl.Entity(getScene(), {
                     id: _id,
-                    transform: new XEO.Translate({
+                    transform: new xeogl.Translate({
                         xyz: pos[0]
                     }),
-                    geometry: new XEO.SphereGeometry({
+                    geometry: new xeogl.SphereGeometry({
                         radius: radius
                     }),
-                    modes: new XEO.Modes({  // This Entity should not be pickable
+                    modes: new xeogl.Modes({  // This Entity should not be pickable
                         pickable: false,
                         transparent: opacity < 1.0,
                         backfaces: false,
                         collidable: false
                     }),
-                    material: new XEO.PhongMaterial({ // Hides the sphere while still rendering it
+                    material: new xeogl.PhongMaterial({ // Hides the sphere while still rendering it
                         diffuse: color,
                         emissive: color,
                         opacity: opacity,
                         specular: [1, 1, 1]
                     }),
-                    visibility: new XEO.Visibility({  // This Entity should not be pickable
+                    visibility: new xeogl.Visibility({  // This Entity should not be pickable
                         visible: true
                     })
                 });
@@ -401,9 +401,9 @@
 
             if (!object) {
 
-                new XEO.Entity({
+                new xeogl.Entity({
                     id: _id,
-                    geometry: new XEO.CylinderGeometry({
+                    geometry: new xeogl.CylinderGeometry({
                         radiusTop: radius,
                         radiusBottom: 0.0,
                         height: 1.0,
@@ -411,24 +411,24 @@
                         heightSegments: 1,
                         openEnded: false
                     }),
-                    transform: new XEO.Translate({
+                    transform: new xeogl.Translate({
                         xyz: [0, height / 2.0, 0],
-                        parent: new XEO.Transform({
-                            parent: new XEO.Translate({
+                        parent: new xeogl.Transform({
+                            parent: new xeogl.Translate({
                                 xyz: pos[0]
                             })
                         })
                     }),
-                    material: new XEO.PhongMaterial({
+                    material: new xeogl.PhongMaterial({
                         diffuse: [1, .2, .2],
                         specular: [1, 1, 1],
                         shininess: 90
                     }),
-                    modes: new XEO.Modes({
+                    modes: new xeogl.Modes({
                         pickable: false,
                         collidable: false
                     }),
-                    visibility: new XEO.Visibility({  // This Entity should not be pickable
+                    visibility: new xeogl.Visibility({  // This Entity should not be pickable
                         visible: true
                     })
                 });
@@ -438,8 +438,8 @@
                 object.geometry.height = height;
                 object.transform.xyz = [0, height / 2.0, 0];
                 object.transform.parent.parent.xyz = pos[0];
-                object.transform.parent.matrix = XEO.math.quaternionToMat4(
-                    XEO.math.vec3PairToQuaternion(dir, [0, -1, 0]));
+                object.transform.parent.matrix = xeogl.math.quaternionToMat4(
+                    xeogl.math.vec3PairToQuaternion(dir, [0, -1, 0]));
                 object.visibility.visible = true;
             }
 
@@ -459,28 +459,28 @@
 
             if (!object) {
 
-                object = new XEO.Entity(getScene(), {
+                object = new xeogl.Entity(getScene(), {
                     id: _id,
-                    transform: new XEO.Translate({
+                    transform: new xeogl.Translate({
                         xyz: pos[0]
                     }),
-                    geometry: new XEO.VectorTextGeometry({
+                    geometry: new xeogl.VectorTextGeometry({
                         text: text
                     }),
-                    modes: new XEO.Modes({  // This Entity should not be pickable
+                    modes: new xeogl.Modes({  // This Entity should not be pickable
                         pickable: false,
                         transparent: true,
                         collidable: false
                     }),
-                    material: new XEO.PhongMaterial({ // Hides the sphere while still rendering it
+                    material: new xeogl.PhongMaterial({ // Hides the sphere while still rendering it
                         emissive: color,
                         opacity: opacity,
                         lineWidth: lineWidth
                     }),
-                    billboard: new XEO.Billboard({
+                    billboard: new xeogl.Billboard({
                         spherical: true
                     }),
-                    visbility: new XEO.Visibility({  // This Entity should not be pickable
+                    visbility: new xeogl.Visibility({  // This Entity should not be pickable
                         visible: true
                     })
                 });

@@ -1,13 +1,13 @@
 /**
 
- A **Modes** toggles various xeoEngine modes and capabilities for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **Modes** toggles various xeogl modes and capabilities for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  <ul>
  <li>Though the rendering modes are defined by various different components attached to the {{#crossLink "Entity"}}Entities{{/crossLink}},
  Modes components provide a single point through which you can toggle them on or off.</li>
  <li>A Modes may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
  rendering modes for them as a group.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Modes create within xeoEngine's shaders.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Modes create within xeogl's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/Modes.png"></img>
@@ -19,38 +19,38 @@
 
  ````javascript
  // Create a Modes with default properties
- var modes = new XEO.Modes(scene, {
+ var modes = new xeogl.Modes(scene, {
     collidable: true,           // Include Entities in boundary calculations
     pickable: true,             // Enable picking
-    clippable true,             // Enable effect of XEO.Clip components
+    clippable true,             // Enable effect of xeogl.Clip components
     transparent : false,        // Disable transparency
     backfaces : true,           // Render backfaces
     frontface : "ccw"
  });
 
- var boxGeometry = new XEO.BoxGeometry();
+ var boxGeometry = new xeogl.BoxGeometry();
 
  // Create two Entities whose rendering modes will be controlled by our Modes
 
- var entity1 = new XEO.Entity({
+ var entity1 = new xeogl.Entity({
      geometry: boxGeometry,
      modes: modes,
-     translate: new XEO.Translate({
+     translate: new xeogl.Translate({
         xyz: [3, 0, 0]
      })
  });
 
- var entity2 = new XEO.Entity(scene, {
+ var entity2 = new xeogl.Entity(scene, {
      geometry: boxGeometry,
      modes: modes,
-     translate: new XEO.Translate({
+     translate: new xeogl.Translate({
         xyz: [3, 0, 0]
      })
  });
  ````
 
  @class Modes
- @module XEO
+ @module xeogl
  @submodule rendering
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Modes in the default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
@@ -74,13 +74,13 @@
 
     "use strict";
 
-    XEO.Modes = XEO.Component.extend({
+    xeogl.Modes = xeogl.Component.extend({
 
-        type: "XEO.Modes",
+        type: "xeogl.Modes",
 
         _init: function (cfg) {
 
-            this._state = new XEO.renderer.Modes({
+            this._state = new xeogl.renderer.Modes({
                 pickable: null,
                 clippable: null,
                 transparent: null,

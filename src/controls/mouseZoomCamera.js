@@ -18,30 +18,30 @@
  ## Usage
 
  ````Javascript
- var camera = new XEO.Camera({
-     view: new XEO.Lookat({
+ var camera = new xeogl.Camera({
+     view: new xeogl.Lookat({
          eye: [0, 0, 10],
          look: [0, 0, 0],
          up: [0, 1, 0]
      }),
-     project: new XEO.Perspective({
+     project: new xeogl.Perspective({
          fovy: 60,
          near: 0.1,
          far: 1000
      })
  });
 
- var entity = new XEO.Entity({
+ var entity = new xeogl.Entity({
      camera: camera,
-     geometry: new XEO.BoxGeometry()
+     geometry: new xeogl.BoxGeometry()
  });
 
- new XEO.MouseZoomCamera({
+ new xeogl.MouseZoomCamera({
      camera: camera
  });
  ````
  @class MouseZoomCamera
- @module XEO
+ @module xeogl
  @submodule controls
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
@@ -59,7 +59,7 @@
 
     "use strict";
 
-    XEO.MouseZoomCamera = XEO.Component.extend({
+    xeogl.MouseZoomCamera = xeogl.Component.extend({
 
         /**
          JavaScript class name for this Component.
@@ -68,7 +68,7 @@
          @type String
          @final
          */
-        type: "XEO.MouseZoomCamera",
+        type: "xeogl.MouseZoomCamera",
 
         _init: function (cfg) {
 
@@ -111,7 +111,7 @@
 
                     this._attach({
                         name: "camera",
-                        type: "XEO.Camera",
+                        type: "xeogl.Camera",
                         component: value,
                         sceneDefault: true
                     });
@@ -175,9 +175,9 @@
                         var targeting = false;
                         var progress = 0;
 
-                        var eyeVec = XEO.math.vec3();
-                        var lookVec = XEO.math.vec3();
-                        var tempVec3 = XEO.math.vec3();
+                        var eyeVec = xeogl.math.vec3();
+                        var lookVec = xeogl.math.vec3();
+                        var tempVec3 = xeogl.math.vec3();
 
                         var self = this;
 
@@ -214,9 +214,9 @@
                                 lookVec[1] = look[1];
                                 lookVec[2] = look[2];
 
-                                XEO.math.subVec3(eyeVec, lookVec, tempVec3);
+                                xeogl.math.subVec3(eyeVec, lookVec, tempVec3);
 
-                                var lenLook = Math.abs(XEO.math.lenVec3(tempVec3));
+                                var lenLook = Math.abs(xeogl.math.lenVec3(tempVec3));
                                 var lenLimits = 1000;
                                 var f = self._sensitivity * (2.0 + (lenLook / lenLimits));
 
@@ -249,7 +249,7 @@
                                     if (targeting) {
                                         camera.view.zoom(progress);
 
-                                        if (camera.project.isType("XEO.Ortho")) {
+                                        if (camera.project.isType("xeogl.Ortho")) {
 
                                         }
                                     }

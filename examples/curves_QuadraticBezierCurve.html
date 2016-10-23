@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <script src="js/curves/curve.js"></script>
     <script src="js/curves/quadraticBezierCurve.js"></script>
     <script src="js/debug/debug.js"></script>
@@ -16,14 +16,14 @@
 
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a>
+    <a href="http://xeogl.org">xeogl</a>
     <br><br>tweening a position along a <a href="../docs/classes/QuadraticBezierCurve.html"
                target="_docs">QuadraticBezierCurve</a>
 </div>
 
 <script>
 
-    var curve = new XEO.QuadraticBezierCurve({
+    var curve = new xeogl.QuadraticBezierCurve({
         v0: [-10, 0, 0],
         v1: [20, 15, 0],
         v2: [10, 0, 0]
@@ -31,11 +31,11 @@
 
     // Entity to show a smooth line through the QuadraticBezierCurve's control points
 
-    var lineObject = new XEO.Entity({
-        geometry: new XEO.Geometry({
-            positions: XEO.math.flatten(curve.getPoints(50))
+    var lineObject = new xeogl.Entity({
+        geometry: new xeogl.Geometry({
+            positions: xeogl.math.flatten(curve.getPoints(50))
         }),
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuse: [1, 0, 0]
         })
     });
@@ -44,7 +44,7 @@
     // Move the eye back a bit to
     // fit the whole curve in view
 
-    var scene = XEO.scene;
+    var scene = xeogl.scene;
 
     scene.camera.view.zoom(25);
 
@@ -61,7 +61,7 @@
                 // Use the helper utility to visualise the point and tangent
                 // as they move along the curve
 
-                XEO.debug
+                xeogl.debug
                         .id("line")
                         .lineWidth(4)
                         .color([0.5, 1.0, 0.5])
@@ -69,7 +69,7 @@
                         .pos([point[0] + tangent[0] * 2, point[1] + tangent[1] * 2, point[2] + tangent[2] * 2])
                         .line();
 
-                XEO.debug
+                xeogl.debug
                         .id("point")
                         .fillColor([1.0, 0.6, 0.6])
                         .color([0, 0, 0])
@@ -77,7 +77,7 @@
                         .pos(point)
                         .label();
 
-                XEO.debug
+                xeogl.debug
                         .id("tangent")
                         .fillColor([0.6, 0.6, 1.0])
                         .color([0, 0, 0])

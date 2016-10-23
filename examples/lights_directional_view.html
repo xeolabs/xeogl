@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <script src="js/libs/dat.gui.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a> - <a href="../docs/classes/DirLight.html"
+    <a href="http://xeogl.org">xeogl</a> - <a href="../docs/classes/DirLight.html"
                                                       target="_docs">DirLight</a> in View-scape
 </div>
 
@@ -21,29 +21,29 @@
 
 <script>
 
-    var dirLight = new XEO.DirLight({
+    var dirLight = new xeogl.DirLight({
         dir: [0.0, 0.0, 1.0],
         color: [0.7, 0.7, 0.8],
         intensity: 1.0,
         space: "view"
     });
 
-    var lights = new XEO.Lights({
+    var lights = new xeogl.Lights({
         lights: [
             dirLight
         ]
     });
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
         lights: lights,
-        geometry:  new XEO.TorusGeometry({
+        geometry:  new xeogl.TorusGeometry({
             radius: 1.0,
             tube: 0.3,
             radialSegments: 32,
             tubeSegments: 24,
             arc: Math.PI * 2.0
         }),
-        transform: new XEO.Translate({
+        transform: new xeogl.Translate({
             xyz: [1,0,0]
         })
     });

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
@@ -9,12 +9,12 @@
 
     <link type="text/css" rel="stylesheet" href="css/dat-gui-swec.css">
 
-    <script src="../build/xeoengine.js"></script>
+    <script src="../build/xeogl.js"></script>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>
     instantiating an <a href="../docs/classes/Entity.html" target="_docs">Entity</a> with child components given as
     configuration objects
 </div>
@@ -33,9 +33,9 @@
     // manage their life cycles, automatically destroying them when they are replaced,
     // or the Entity itself is destroyed.
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
         geometry: {
-            type: "XEO.TorusGeometry",
+            type: "xeogl.TorusGeometry",
             radius: 3.0,
             tube: 1,
             radialSegments: 32,
@@ -43,18 +43,18 @@
             arc: Math.PI * 2.0
         },
         material: {
-            type: "XEO.PhongMaterial",
+            type: "xeogl.PhongMaterial",
             ambient: [0.9, 0.3, 0.9],
             shininess: 30,
             diffuseMap: {
-                type: "XEO.Texture",
+                type: "xeogl.Texture",
                 src: "textures/diffuse/uvGrid2.jpg"
             },
             lineWidth: 2,
             pointSize: 5
         },
         transform: {
-            type: "XEO.Rotate",
+            type: "xeogl.Rotate",
             xyz: [0, 1, 0],
             angle: 0
         },
@@ -68,7 +68,7 @@
     // the transform with one that rotates about a different axis.
 
     entity.transform = {
-        type: "XEO.Rotate",
+        type: "xeogl.Rotate",
         xyz: [1, 0, 0],
         angle: 0
     };

@@ -1,6 +1,6 @@
 /**
  * Components for defining light sources.
  *
- * @module XEO
+ * @module xeogl
  * @submodule lighting
  */

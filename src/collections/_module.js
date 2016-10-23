@@ -1,6 +1,6 @@
 /**
  * Components for managing collections of components.
  *
- * @module XEO
+ * @module xeogl
  * @submodule collections
  */

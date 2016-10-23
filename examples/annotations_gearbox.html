@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeoengine.js"></script>
+    <script src="../build/xeogl.js"></script>
 
     <link href="js/annotations/style.css" rel="stylesheet"/>
     <script src="js/annotations/annotationManager.js"></script>
@@ -16,16 +16,16 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>attaching experimental
-    <a href="js/annotations/annotation.js" target="_docs">XEO.Annotations</a> to a <a
-        href="../docs/classes/Model.html" target="_docs">XEO.Model</a> loaded from glTF<br>
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>attaching experimental
+    <a href="js/annotations/annotation.js" target="_docs">xeogl.Annotations</a> to a <a
+        href="../docs/classes/Model.html" target="_docs">xeogl.Model</a> loaded from glTF<br>
     click the objects to attach more annotations
 </div>
 
 <script>
 
     // Load glTF gearbox model
-    var gearbox = new XEO.Model({
+    var gearbox = new xeogl.Model({
         src: "models/gltf/gearbox/gearbox_assy.gltf"
     });
 
@@ -39,13 +39,13 @@
     view.up = [-0.15, 0.97, 0.13];
 
     // Allow user camera control
-    var cameraControl = new XEO.CameraControl();
+    var cameraControl = new xeogl.CameraControl();
     cameraControl.mousePickEntity.active = false;
 
     gearbox.on("loaded",
             function () {
 
-                var manager = new XEO.AnnotationManager({
+                var manager = new xeogl.AnnotationManager({
                     occlusionCull: true // Hide annotations when their pins are occluded 
                 });
 
@@ -67,7 +67,7 @@
 
                 // Create some initial annotations on the Model's Entities
 
-                new XEO.Annotation({
+                new xeogl.Annotation({
                     manager: manager,
                     entity: "6#n274017_gear_53t-node_1.entity.0",
                     primIndex: 3081,
@@ -77,7 +77,7 @@
                     visible: true
                 });
 
-                new XEO.Annotation({
+                new xeogl.Annotation({
                     manager: manager,
                     entity: "6#n273303_shaft-node.entity.0",
                     primIndex: 14289,
@@ -87,7 +87,7 @@
                     desc: "This is the end of one of the gearbox's shafts."
                 });
 
-                new XEO.Annotation({
+                new xeogl.Annotation({
                     manager: manager,
                     entity: "6#n273303_shaft-node.entity.0",
                     primIndex: 14249,
@@ -97,7 +97,7 @@
                     desc: "This is the other end of one of the gearbox's shafts."
                 });
 
-                new XEO.Annotation({
+                new xeogl.Annotation({
                     manager: manager,
                     entity: "6#n274233_spacer-node.entity.0",
                     primIndex: 3405,
@@ -108,7 +108,7 @@
 
                 // Create Annotations on Entities as they are picked
 
-                var picker = new XEO.MousePickEntity();
+                var picker = new xeogl.MousePickEntity();
 
                 picker.pickSurface = true;
 
@@ -129,11 +129,11 @@
                                 visible: true
                             };
 
-                            new XEO.Annotation(cfg);
+                            new xeogl.Annotation(cfg);
 
                             // Log JS expression that can create the Annotation
 
-                            console.log("new XEO.Annotation(" + JSON.stringify(cfg, floatArrayAsJSON) + ");");
+                            console.log("new xeogl.Annotation(" + JSON.stringify(cfg, floatArrayAsJSON) + ");");
                         });
 
                 function floatArrayAsJSON(k, v) {

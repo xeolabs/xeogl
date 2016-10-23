@@ -1,6 +1,6 @@
 /**
  * Components for managing Scene configuration.
  *
- * @module XEO
+ * @module xeogl
  * @submodule configs
  */

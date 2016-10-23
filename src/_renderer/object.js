@@ -3,9 +3,9 @@
     "use strict";
 
     /**
-     * An object within a XEO.renderer.Renderer
+     * An object within a xeogl.renderer.Renderer
      */
-    XEO.renderer.Object = function (id) {
+    xeogl.renderer.Object = function (id) {
 
         /**
          * ID for this object, unique among all objects in the Renderer
@@ -34,22 +34,22 @@
         this.program = null;
 
         /**
-         * State for the XEO.renderer.Stage that this object was compiled from, used for (re)computing #sortKey and visibility cull
+         * State for the xeogl.renderer.Stage that this object was compiled from, used for (re)computing #sortKey and visibility cull
          */
         this.stage = null;
 
         /**
-         * State for the XEO.renderer.Modes that this object was compiled from, used for visibility cull
+         * State for the xeogl.renderer.Modes that this object was compiled from, used for visibility cull
          */
         this.modes = null;
 
         /**
-         * State for the XEO.renderer.Layer that this object was compiled from, used for (re)computing #sortKey and visibility cull
+         * State for the xeogl.renderer.Layer that this object was compiled from, used for (re)computing #sortKey and visibility cull
          */
         this.layer = null;
 
         /**
-         * State for the XEO.renderer.Material that this object was compiled from, used for (re)computing #sortKey
+         * State for the xeogl.renderer.Material that this object was compiled from, used for (re)computing #sortKey
          */
         this.material = null;
 

@@ -1,10 +1,10 @@
 /**
- * Private xeoEngine glTF loading utilities.
+ * Private xeogl glTF loading utilities.
  *
  * Adapted from the THREE loader by Tony Parisi (http://www.tonyparisi.com)
  * https://github.com/KhronosGroup/glTF/blob/master/loaders/threejs/glTFLoaderUtils.js
  */
-XEO.GLTFLoaderUtils = Object.create(Object, {
+xeogl.GLTFLoaderUtils = Object.create(Object, {
 
     // errors
 
@@ -118,12 +118,12 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
             }
 
             if (!type) {
-                delegate.handleError(XEO.GLTFLoaderUtils.INVALID_TYPE, null);
+                delegate.handleError(xeogl.GLTFLoaderUtils.INVALID_TYPE, null);
                 return;
             }
 
             if (!path) {
-                delegate.handleError(XEO.GLTFLoaderUtils.INVALID_PATH);
+                delegate.handleError(xeogl.GLTFLoaderUtils.INVALID_PATH);
                 return;
             }
 
@@ -138,7 +138,7 @@ XEO.GLTFLoaderUtils = Object.create(Object, {
                     delegate.streamAvailable(path, xhr.response);
 
                 } else {
-                    delegate.handleError(XEO.GLTFLoaderUtils.XMLHTTPREQUEST_STATUS_ERROR, this.status);
+                    delegate.handleError(xeogl.GLTFLoaderUtils.XMLHTTPREQUEST_STATUS_ERROR, this.status);
                 }
             };
             xhr.send(null);

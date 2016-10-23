@@ -2,12 +2,12 @@
 
     "use strict";
 
-    XEO.renderer = XEO.renderer || {};
+    xeogl.renderer = xeogl.renderer || {};
 
     /**
      *
      */
-    XEO.renderer.Renderer = function (stats, canvas, gl, options) {
+    xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
 
         options = options || {};
 
@@ -16,9 +16,9 @@
         this.gl = gl;
         this.canvas = canvas;
 
-        this._programFactory = new XEO.renderer.ProgramFactory(this.stats, gl);
-        this._objectFactory = new XEO.renderer.ObjectFactory();
-        this._chunkFactory = new XEO.renderer.ChunkFactory();
+        this._programFactory = new xeogl.renderer.ProgramFactory(this.stats, gl);
+        this._objectFactory = new xeogl.renderer.ObjectFactory();
+        this._chunkFactory = new xeogl.renderer.ChunkFactory();
 
         /**
          * Indicates if the canvas is transparent
@@ -64,7 +64,7 @@
          * The current ambient color.
          * @type Float32Array
          */
-        this.ambientColor = XEO.math.vec4([0,0,0,1]);
+        this.ambientColor = xeogl.math.vec4([0,0,0,1]);
 
         // Objects in a list, ordered by state
         this._objectList = [];
@@ -281,7 +281,7 @@
     /**
      * Reallocates WebGL resources for objects within this renderer.
      */
-    XEO.renderer.Renderer.prototype.webglRestored = function (gl) {
+    xeogl.renderer.Renderer.prototype.webglRestored = function (gl) {
 
         this.gl = gl;
 
@@ -303,15 +303,15 @@
     };
 
     /**
-     * Internally creates (or updates) a {@link XEO.renderer.Object} of the given
-     * ID from whatever component state cores are currently set on this {@link XEO.Renderer}.
+     * Internally creates (or updates) a {@link xeogl.renderer.Object} of the given
+     * ID from whatever component state cores are currently set on this {@link xeogl.Renderer}.
      * The object is created if it does not already exist in the display, otherwise
      * it is updated with the current states, possibly replacing states already
      * referenced by the object.
      *
      * @param {String} objectId ID of object to create or update
      */
-    XEO.renderer.Renderer.prototype.buildObject = function (objectId) {
+    xeogl.renderer.Renderer.prototype.buildObject = function (objectId) {
 
         var object = this.objects[objectId];
 
@@ -432,7 +432,7 @@
 
     /** Adds a render state chunk to a render graph object.
      */
-    XEO.renderer.Renderer.prototype._setChunk = function (object, order, type, state, neg) {
+    xeogl.renderer.Renderer.prototype._setChunk = function (object, order, type, state, neg) {
 
         var id;
 
@@ -464,7 +464,7 @@
     };
 
     // Sets the singular ambient light.
-    XEO.renderer.Renderer.prototype._setAmbient = function (state) {
+    xeogl.renderer.Renderer.prototype._setAmbient = function (state) {
 
         var lights = state.lights;
         var light;
@@ -485,7 +485,7 @@
      *
      * @param {String} objectId ID of object to remove
      */
-    XEO.renderer.Renderer.prototype.removeObject = function (objectId) {
+    xeogl.renderer.Renderer.prototype.removeObject = function (objectId) {
 
         var object = this.objects[objectId];
 
@@ -519,7 +519,7 @@
     /**
      * Renders a new frame, if neccessary.
      */
-    XEO.renderer.Renderer.prototype.render = function (params) {
+    xeogl.renderer.Renderer.prototype.render = function (params) {
 
         params = params || {};
 
@@ -555,7 +555,7 @@
     /**
      * Builds the object list from the object map
      */
-    XEO.renderer.Renderer.prototype._buildObjectList = function () {
+    xeogl.renderer.Renderer.prototype._buildObjectList = function () {
         this._objectListLen = 0;
         for (var objectId in this.objects) {
             if (this.objects.hasOwnProperty(objectId)) {
@@ -567,7 +567,7 @@
     /**
      * Generates object state sort keys
      */
-    XEO.renderer.Renderer.prototype._makeStateSortKeys = function () {
+    xeogl.renderer.Renderer.prototype._makeStateSortKeys = function () {
         var object;
         for (var i = 0, len = this._objectListLen; i < len; i++) {
             object = this._objectList[i];
@@ -588,19 +588,19 @@
     /**
      * State-sorts the object list
      */
-    XEO.renderer.Renderer.prototype._stateSort = function () {
+    xeogl.renderer.Renderer.prototype._stateSort = function () {
         this._objectList.length = this._objectListLen;
         this._objectList.sort(function (a, b) {
             return a.sortKey - b.sortKey;
         });
     };
 
-    XEO.renderer.Renderer.prototype._renderObjectList = function (params) {
+    xeogl.renderer.Renderer.prototype._renderObjectList = function (params) {
 
         var gl = this.gl;
 
         // The extensions needs to be re-queried in case the context was lost and has been recreated.
-        if (XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {
+        if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {
             gl.getExtension("OES_element_index_uint");
         }
 
@@ -642,7 +642,7 @@
         frameCtx.pickIndex = 0;
 
         // The extensions needs to be re-queried in case the context was lost and has been recreated.
-        if (XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {
+        if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) {
             gl.getExtension("OES_element_index_uint");
         }
 
@@ -835,9 +835,9 @@
      * @param {*} params Picking params.
      * @returns {*} Hit result, if any.
      */
-    XEO.renderer.Renderer.prototype.pick = (function () {
+    xeogl.renderer.Renderer.prototype.pick = (function () {
 
-        var math = XEO.math;
+        var math = xeogl.math;
 
         var tempVec3a = math.vec3();
         var tempMat4a = math.mat4();
@@ -850,7 +850,7 @@
             var pickBuf = this.pickBuf;
 
             if (!pickBuf) {  // Lazy-create the pick buffer
-                pickBuf = new XEO.renderer.webgl.RenderBuffer(this.canvas, this.gl);
+                pickBuf = new xeogl.renderer.webgl.RenderBuffer(this.canvas, this.gl);
                 this.pickBuf = pickBuf;
             }
 
@@ -965,10 +965,10 @@
      * @param {Number} len
      * @param {Boolean} opaqueOnly
      */
-    XEO.renderer.Renderer.prototype.readPixels = function (pixels, colors, len, opaqueOnly) {
+    xeogl.renderer.Renderer.prototype.readPixels = function (pixels, colors, len, opaqueOnly) {
 
         if (!this._readPixelBuf) {
-            this._readPixelBuf = new XEO.renderer.webgl.RenderBuffer(this.canvas, this.gl);
+            this._readPixelBuf = new xeogl.renderer.webgl.RenderBuffer(this.canvas, this.gl);
         }
 
         this._readPixelBuf.bind();
@@ -1004,7 +1004,7 @@
     /**
      * Destroys this Renderer.
      */
-    XEO.renderer.Renderer.prototype.destroy = function () {
+    xeogl.renderer.Renderer.prototype.destroy = function () {
         this._programFactory.destroy();
     };
 })();

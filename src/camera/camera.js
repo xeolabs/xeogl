@@ -27,20 +27,20 @@
  a {{#crossLink "Lookat"}}{{/crossLink}} view transform and a {{#crossLink "Perspective"}}{{/crossLink}} projection transform.
 
  ```` javascript
- var entity = new XEO.Entity({
-     camera: new XEO.Camera({
-         view: new XEO.Lookat({
+ var entity = new xeogl.Entity({
+     camera: new xeogl.Camera({
+         view: new xeogl.Lookat({
              eye: [0, 0, 10],
              look: [0, 0, 0],
              up: [0, 1, 0]
          }),
-         project: new XEO.Lookat({
+         project: new xeogl.Lookat({
              fovy: 60,
              near: 0.1,
              far: 1000
          })
      }),
-     geometry: new XEO.BoxGeometry()
+     geometry: new xeogl.BoxGeometry()
  });
 
  entity.scene.on("tick", function () {
@@ -49,7 +49,7 @@
  });
  ````
  @class Camera
- @module XEO
+ @module xeogl
  @submodule camera
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Camera within the
@@ -58,10 +58,10 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  You only need to supply an ID if you need to be able to find the Camera by ID within its parent {{#crossLink "Scene"}}Scene{{/crossLink}} later.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Camera.
- @param [cfg.view] {String|XEO.Transform} ID or instance of a view transform within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}. Defaults to the
+ @param [cfg.view] {String|xeogl.Transform} ID or instance of a view transform within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}} transform,
  which is a {{#crossLink "Lookat"}}Lookat{{/crossLink}}.
- @param [cfg.project] {String|XEO.Transform} ID or instance of a projection transform
+ @param [cfg.project] {String|xeogl.Transform} ID or instance of a projection transform
  within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}. Defaults to the parent
  {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/project:property"}}{{/crossLink}} transform,
  which is a {{#crossLink "Perspective"}}Perspective{{/crossLink}}.
@@ -71,9 +71,9 @@
 
     "use strict";
 
-    XEO.Camera = XEO.Component.extend({
+    xeogl.Camera = xeogl.Component.extend({
 
-        type: "XEO.Camera",
+        type: "xeogl.Camera",
 
         _init: function (cfg) {
 
@@ -107,7 +107,7 @@
                      */
                     this._attach({
                         name: "project",
-                        type: "XEO.Transform",
+                        type: "xeogl.Transform",
                         component: value,
                         sceneDefault: true,
                         on: {
@@ -149,7 +149,7 @@
                      */
                     this._attach({
                         name: "view",
-                        type: "XEO.Transform",
+                        type: "xeogl.Transform",
                         component: value,
                         sceneDefault: true,
                         on: {

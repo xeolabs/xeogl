@@ -27,7 +27,7 @@
      * @param vertex Source code for vertex shader
      * @param fragment Source code for fragment shader
      */
-    XEO.renderer.webgl.Program = function (stats, gl, vertex, fragment) {
+    xeogl.renderer.webgl.Program = function (stats, gl, vertex, fragment) {
 
         this.stats = stats;
 
@@ -71,8 +71,8 @@
 
         // Shaders
 
-        this._vertexShader = new XEO.renderer.webgl.Shader(gl, gl.VERTEX_SHADER, joinSansComments(vertex));
-        this._fragmentShader = new XEO.renderer.webgl.Shader(gl, gl.FRAGMENT_SHADER, joinSansComments(fragment));
+        this._vertexShader = new xeogl.renderer.webgl.Shader(gl, gl.VERTEX_SHADER, joinSansComments(vertex));
+        this._fragmentShader = new xeogl.renderer.webgl.Shader(gl, gl.FRAGMENT_SHADER, joinSansComments(fragment));
 
         if (!this._vertexShader.allocated) {
             this.errorLog = ["Vertex shader failed to allocate"].concat(this._vertexShader.errorLog);
@@ -121,7 +121,7 @@
 
         this.linked = gl.getProgramParameter(this.handle, gl.LINK_STATUS);
 
-        // HACK: Disable validation temporarily: https://github.com/xeolabs/xeoengine/issues/5
+        // HACK: Disable validation temporarily: https://github.com/xeolabs/xeogl/issues/5
         // Perhaps we should defer validation until render-time, when the program has values set for all inputs?
 
         //this.validated = this.linked ? gl.getProgramParameter(this.handle, gl.VALIDATE_STATUS) : false;
@@ -164,11 +164,11 @@
 
                 if ((u.type === gl.SAMPLER_2D) || (u.type === gl.SAMPLER_CUBE) || (u.type === 35682)) {
 
-                    this.samplers[uName] = new XEO.renderer.webgl.Sampler(gl, location);
+                    this.samplers[uName] = new xeogl.renderer.webgl.Sampler(gl, location);
 
                 } else {
 
-                    this.uniforms[uName] = new XEO.renderer.webgl.Uniform(stats.frame, gl, u.type, location);
+                    this.uniforms[uName] = new xeogl.renderer.webgl.Uniform(stats.frame, gl, u.type, location);
                 }
             }
         }
@@ -185,14 +185,14 @@
 
                 location = gl.getAttribLocation(this.handle, a.name);
 
-                this.attributes[a.name] = new XEO.renderer.webgl.Attribute(gl, location);
+                this.attributes[a.name] = new xeogl.renderer.webgl.Attribute(gl, location);
             }
         }
 
         this.allocated = true;
     };
 
-    XEO.renderer.webgl.Program.prototype.bind = function () {
+    xeogl.renderer.webgl.Program.prototype.bind = function () {
 
         if (!this.allocated) {
             return;
@@ -201,7 +201,7 @@
         this.gl.useProgram(this.handle);
     };
 
-    XEO.renderer.webgl.Program.prototype.setUniform = function (name, value) {
+    xeogl.renderer.webgl.Program.prototype.setUniform = function (name, value) {
 
         if (!this.allocated) {
             return;
@@ -214,7 +214,7 @@
         }
     };
 
-    XEO.renderer.webgl.Program.prototype.getUniform = function (name) {
+    xeogl.renderer.webgl.Program.prototype.getUniform = function (name) {
 
         if (!this.allocated) {
             return;
@@ -223,7 +223,7 @@
         return this.uniforms[name];
     };
 
-    XEO.renderer.webgl.Program.prototype.getAttribute = function (name) {
+    xeogl.renderer.webgl.Program.prototype.getAttribute = function (name) {
 
         if (!this.allocated) {
             return;
@@ -232,7 +232,7 @@
         return this.attributes[name];
     };
 
-    XEO.renderer.webgl.Program.prototype.bindTexture = function (name, texture, unit) {
+    xeogl.renderer.webgl.Program.prototype.bindTexture = function (name, texture, unit) {
 
         if (!this.allocated) {
             return false;
@@ -248,7 +248,7 @@
         }
     };
 
-    XEO.renderer.webgl.Program.prototype.destroy = function () {
+    xeogl.renderer.webgl.Program.prototype.destroy = function () {
 
         if (!this.allocated) {
             return;

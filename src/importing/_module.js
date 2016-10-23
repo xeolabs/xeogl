@@ -1,6 +1,6 @@
 /**
  * Imports content from files.
  *
- * @module XEO
+ * @module xeogl
  * @submodule importing
  */

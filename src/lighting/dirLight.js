@@ -10,7 +10,7 @@
  is relative to the World coordinate system, and will appear to move as the {{#crossLink "Camera"}}{{/crossLink}} moves.
  When in View-space, their direction is relative to the View coordinate system, and will behave as if fixed to the viewer's
  head as the {{#crossLink "Camera"}}{{/crossLink}} moves.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that DirLights create within xeoEngine's shaders.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that DirLights create within xeogl's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/DirLight.png"></img>
@@ -25,11 +25,11 @@
  ## Usage
 
  ```` javascript
- var entity = new XEO.Entity({
+ var entity = new xeogl.Entity({
 
-    lights: new XEO.Lights({
+    lights: new xeogl.Lights({
         lights: [
-            new XEO.DirLight({
+            new xeogl.DirLight({
 
                 // Note that this is the direction the light is shining,
                 // not the direction to the light source
@@ -42,19 +42,19 @@
         ]
     }),
 
-    material: new XEO.PhongMaterial({
+    material: new xeogl.PhongMaterial({
         ambient:    [0.3, 0.3, 0.3],
         diffuse:    [0.7, 0.7, 0.7],
         specular:   [1. 1, 1],
         shininess:  30
     }),
 
-    geometry: new XEO.BoxGeometry()
+    geometry: new xeogl.BoxGeometry()
 });
  ````
 
  @class DirLight
- @module XEO
+ @module xeogl
  @submodule lighting
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this DirLight within the
@@ -74,16 +74,16 @@
 
     "use strict";
 
-    XEO.DirLight = XEO.Component.extend({
+    xeogl.DirLight = xeogl.Component.extend({
 
-        type: "XEO.DirLight",
+        type: "xeogl.DirLight",
 
         _init: function (cfg) {
 
             this._state = {
                 type: "dir",
-                dir: XEO.math.vec3([1.0, 1.0, 1.0]),
-                color: XEO.math.vec3([0.7, 0.7, 0.8]),
+                dir: xeogl.math.vec3([1.0, 1.0, 1.0]),
+                color: xeogl.math.vec3([0.7, 0.7, 0.8]),
                 intensity: 1.0,
                 space: "view"
             };

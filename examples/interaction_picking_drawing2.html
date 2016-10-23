@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
 
     <script src="js/debug/debug.js"></script>
 
@@ -14,14 +14,14 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a>
+    <a href="http://xeogl.org">xeogl</a>
     <br><br>
     <ul>
         <li>
-            using the <a href="js/debug/debug.js" target="_docs">XEO.debug</a> helper utility to visualize the result
+            using the <a href="js/debug/debug.js" target="_docs">xeogl.debug</a> helper utility to visualize the result
             of
             the <a
-                href="../docs/classes/XEO.math.math.html#method_rayTriangleIntersect">XEO.math.rayTriangleIntersect</a>
+                href="../docs/classes/xeogl.math.math.html#method_rayTriangleIntersect">xeogl.math.rayTriangleIntersect</a>
             function
         </li>
     </ul>
@@ -56,11 +56,11 @@
         }
     })();
 
-    // Quick custom component that draws onto a given XEO.Texture
+    // Quick custom component that draws onto a given xeogl.Texture
 
-    XEO.TextureCanvas = XEO.Component.extend({
+    xeogl.TextureCanvas = xeogl.Component.extend({
 
-        type: "XEO.TextureCanvas",
+        type: "xeogl.TextureCanvas",
 
         _init: function (cfg) {
 
@@ -87,7 +87,7 @@
 
             this._tick = this.scene.on("tick",
                     function () {
-                        //XEO.scheduleTask(function () {
+                        //xeogl.scheduleTask(function () {
                         if (self._needBlit) {
                             if (self._texture) {
                                 self._image.src = self._canvas.toDataURL();
@@ -140,11 +140,11 @@
         }
     });
 
-//    var geometry = new XEO.TorusGeometry();
+//    var geometry = new xeogl.TorusGeometry();
 
     // Geometry that we're generating our UVs from
 
-    var geometry = new XEO.Geometry({
+    var geometry = new xeogl.Geometry({
         // The primitive type - allowed values are
         // "points", "lines", "line-loop", "line-strip",
         // "triangles", "triangle-strip" and "triangle-fan".
@@ -279,13 +279,13 @@
         ]
     });
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
         geometry: geometry,
-        material: new XEO.PhongMaterial({
-            diffuseMap: new XEO.Texture({
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/uvGrid2.jpg"
             }),
-            emissiveMap: new XEO.Texture({
+            emissiveMap: new xeogl.Texture({
                 // Will get an image from our TextureCanvas component
             }),
             lineWidth: 3,
@@ -295,11 +295,11 @@
 
     // Hook our drawing component up to the Entity's emissive texture
 
-    var textureCanvas = new XEO.TextureCanvas({
+    var textureCanvas = new xeogl.TextureCanvas({
         texture: entity.material.emissiveMap
     });
 
-    new XEO.CameraControl();
+    new xeogl.CameraControl();
 
     var scene = entity.scene;
 
@@ -367,7 +367,7 @@
                     return;
                 }
 
-                XEO.debug.hide("cone");
+                xeogl.debug.hide("cone");
 
                 // Pick a primitive on some Entity
 
@@ -378,7 +378,7 @@
 
                 if (hit && hit.worldPos && hit.normal) {
 
-                    XEO.debug
+                    xeogl.debug
                             .id("cone")
                             .pos(hit.worldPos)
                             .dir([-hit.normal[0], -hit.normal[1], -hit.normal[2]])
@@ -397,11 +397,11 @@
 
                         var bary = hit.bary;
 
-                        var uv = XEO.math.addVec3(
-                                XEO.math.addVec3(
-                                        XEO.math.mulVec2Scalar(uva, bary[0], tempVec3a),
-                                        XEO.math.mulVec2Scalar(uvb, bary[1], tempVec3b), tempVec3c),
-                                XEO.math.mulVec2Scalar(uvc, bary[2], tempVec3d), tempVec3e);
+                        var uv = xeogl.math.addVec3(
+                                xeogl.math.addVec3(
+                                        xeogl.math.mulVec2Scalar(uva, bary[0], tempVec3a),
+                                        xeogl.math.mulVec2Scalar(uvb, bary[1], tempVec3b), tempVec3c),
+                                xeogl.math.mulVec2Scalar(uvc, bary[2], tempVec3d), tempVec3e);
 
                         showUVPos(uv);
                         
@@ -460,7 +460,7 @@
             max: new Float32Array(2)
         };
 
-        var math = XEO.math;
+        var math = xeogl.math;
 
         // Output UVs
         var uvs = [];

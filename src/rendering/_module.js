@@ -1,6 +1,6 @@
 /**
  * Components that influence the way entities are rendered with WebGL.
  *
- * @module XEO
+ * @module xeogl
  * @submodule rendering
  */

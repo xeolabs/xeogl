@@ -5,7 +5,7 @@
     /**
      *
      */
-    XEO.renderer.ChunkFactory.createChunkType({
+    xeogl.renderer.ChunkFactory.createChunkType({
 
         type: "colorBuf",
 

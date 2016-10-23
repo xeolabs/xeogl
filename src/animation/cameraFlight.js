@@ -46,11 +46,11 @@
  {{#crossLink "Boundary3D"}}{{/crossLink}} via its {{#crossLink "Entity/worldBoundary:property"}}{{/crossLink}} property):
 
  ````Javascript
- var camera = new XEO.Camera();
+ var camera = new xeogl.Camera();
 
  // Create a CameraFlight that takes exactly twenty seconds to fly
  // the Camera to each specified target
- var cameraFlight = new XEO.CameraFlight({
+ var cameraFlight = new xeogl.CameraFlight({
     camera: camera,
     stopFOV: 45, // Default, degrees
     duration: 1 // Default, seconds
@@ -89,7 +89,7 @@
 
  @class CameraFlight
  @author xeolabs / http://xeolabs.org
- @module XEO
+ @module xeogl
  @submodule animation
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
@@ -109,11 +109,11 @@
 
     // Caches to avoid garbage collection
 
-    var tempVec3 = XEO.math.vec3();
-    var tempVec3b = XEO.math.vec3();
-    var tempVec3c = XEO.math.vec3();
+    var tempVec3 = xeogl.math.vec3();
+    var tempVec3b = xeogl.math.vec3();
+    var tempVec3c = xeogl.math.vec3();
 
-    XEO.CameraFlight = XEO.Component.extend({
+    xeogl.CameraFlight = xeogl.Component.extend({
 
         /**
          JavaScript class name for this Component.
@@ -122,17 +122,17 @@
          @type String
          @final
          */
-        type: "XEO.CameraFlight",
+        type: "xeogl.CameraFlight",
 
         _init: function (cfg) {
 
-            this._look1 = XEO.math.vec3();
-            this._eye1 = XEO.math.vec3();
-            this._up1 = XEO.math.vec3();
+            this._look1 = xeogl.math.vec3();
+            this._eye1 = xeogl.math.vec3();
+            this._up1 = xeogl.math.vec3();
 
-            this._look2 = XEO.math.vec3();
-            this._eye2 = XEO.math.vec3();
-            this._up2 = XEO.math.vec3();
+            this._look2 = xeogl.math.vec3();
+            this._eye2 = xeogl.math.vec3();
+            this._up2 = xeogl.math.vec3();
 
             this._flying = false;
 
@@ -153,9 +153,9 @@
             this.camera = cfg.camera;
 
             // Shows a wireframe box at the given boundary
-            this._boundaryIndicator = this.create(XEO.Entity, {
-                geometry: this.create(XEO.BoundaryGeometry, {
-                    material: this.create(XEO.PhongMaterial, {
+            this._boundaryIndicator = this.create(xeogl.Entity, {
+                geometry: this.create(xeogl.BoundaryGeometry, {
+                    material: this.create(xeogl.PhongMaterial, {
                         diffuse: [0, 0, 0],
                         ambient: [0, 0, 0],
                         specular: [0, 0, 0],
@@ -163,10 +163,10 @@
                         lineWidth: 3
                     })
                 }),
-                visibility: this.create(XEO.Visibility, {
+                visibility: this.create(xeogl.Visibility, {
                     visible: false
                 }),
-                modes: this.create(XEO.Modes, {
+                modes: this.create(xeogl.Modes, {
                     collidable: false // Effectively has no boundary
                 })
             });
@@ -272,14 +272,14 @@
 
                 var component = params;
 
-                if (XEO._isNumeric(component) || XEO._isString(component)) {
+                if (xeogl._isNumeric(component) || xeogl._isString(component)) {
 
                     componentId = component;
 
                     component = this.scene.components[componentId];
 
                     if (!component) {
-                        this.error("Component not found: " + XEO._inQuotes(componentId));
+                        this.error("Component not found: " + xeogl._inQuotes(componentId));
                         if (callback) {
                             if (scope) {
                                 callback.call(scope);
@@ -294,7 +294,7 @@
                 var worldBoundary = component.worldBoundary;
 
                 if (!worldBoundary) {
-                    this.error("Can't fly to component " + XEO._inQuotes(componentId) + " - does not have a worldBoundary");
+                    this.error("Can't fly to component " + xeogl._inQuotes(componentId) + " - does not have a worldBoundary");
                     if (callback) {
                         if (scope) {
                             callback.call(scope);
@@ -323,7 +323,7 @@
                 this._boundaryIndicator.geometry.aabb = aabb;
                 this._boundaryIndicator.visibility.visible = true;
 
-                var aabbCenter = XEO.math.getAABBCenter(aabb);
+                var aabbCenter = xeogl.math.getAABBCenter(aabb);
 
                 this._look2 = params.look || aabbCenter;
 
@@ -333,8 +333,8 @@
                     this._look2[2] += offset[2];
                 }
 
-                var vec = XEO.math.normalizeVec3(XEO.math.subVec3(this._eye1, this._look1, tempVec3));
-                var diag = (params.look && false) ? XEO.math.getAABBDiagPoint(aabb, params.look) : XEO.math.getAABBDiag(aabb);
+                var vec = xeogl.math.normalizeVec3(xeogl.math.subVec3(this._eye1, this._look1, tempVec3));
+                var diag = (params.look && false) ? xeogl.math.getAABBDiagPoint(aabb, params.look) : xeogl.math.getAABBDiag(aabb);
                 var sca = Math.abs((diag) / Math.tan((params.stopFOV || this._stopFOV) / 2));
 
                 this._eye2[0] = this._look2[0] + (vec[0] * sca);
@@ -371,7 +371,7 @@
 
             this._flying = true; // False as soon as we stop
 
-            XEO.scheduleTask(this._update, this);
+            xeogl.scheduleTask(this._update, this);
         },
 
         /**
@@ -447,14 +447,14 @@
 
                 var component = params;
 
-                if (XEO._isNumeric(component) || XEO._isString(component)) {
+                if (xeogl._isNumeric(component) || xeogl._isString(component)) {
 
                     componentId = component;
 
                     component = this.scene.components[componentId];
 
                     if (!component) {
-                        this.error("Component not found: " + XEO._inQuotes(componentId));
+                        this.error("Component not found: " + xeogl._inQuotes(componentId));
                         return;
                     }
                 }
@@ -462,7 +462,7 @@
                 var worldBoundary = component.worldBoundary;
 
                 if (!worldBoundary) {
-                    this.error("Can't jump to component " + XEO._inQuotes(componentId) + " - does not have a worldBoundary");
+                    this.error("Can't jump to component " + xeogl._inQuotes(componentId) + " - does not have a worldBoundary");
                     return;
                 }
 
@@ -480,10 +480,10 @@
                 }
 
                 eye = lookat.eye;
-                look = XEO.math.getAABBCenter(aabb);
+                look = xeogl.math.getAABBCenter(aabb);
 
-                var vec = XEO.math.normalizeVec3(XEO.math.subVec3(eye, look, tempVec3));
-                var diag = XEO.math.getAABBDiag(aabb);
+                var vec = xeogl.math.normalizeVec3(xeogl.math.subVec3(eye, look, tempVec3));
+                var diag = xeogl.math.getAABBDiag(aabb);
                 var sca = Math.abs((diag) / Math.tan((params.stopFOV || this._stopFOV) / 2));
 
                 lookat.eye = [look[0] + (vec[0] * sca), look[1] + (vec[1] * sca), look[2] + (vec[2] * sca)];
@@ -525,16 +525,16 @@
 
             var view = this._attached.camera.view;
 
-            view.eye = XEO.math.lerpVec3(t, 0, 1, this._eye1, this._eye2, tempVec3);
-            view.look = XEO.math.lerpVec3(t, 0, 1, this._look1, this._look2, tempVec3b);
-            view.up = XEO.math.lerpVec3(t, 0, 1, this._up1, this._up2, tempVec3c);
+            view.eye = xeogl.math.lerpVec3(t, 0, 1, this._eye1, this._eye2, tempVec3);
+            view.look = xeogl.math.lerpVec3(t, 0, 1, this._look1, this._look2, tempVec3b);
+            view.up = xeogl.math.lerpVec3(t, 0, 1, this._up1, this._up2, tempVec3c);
 
             if (stopping) {
                 this.stop();
                 return;
             }
 
-            XEO.scheduleTask(this._update, this); // Keep flying
+            xeogl.scheduleTask(this._update, this); // Keep flying
         },
 
         // Quadratic easing out - decelerating to zero velocity
@@ -617,7 +617,7 @@
                      */
                     this._attach({
                         name: "camera",
-                        type: "XEO.Camera",
+                        type: "xeogl.Camera",
                         component: value,
                         sceneDefault: true
                     });

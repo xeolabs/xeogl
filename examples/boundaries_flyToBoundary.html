@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <script src="js/debug/debug.js"></script>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>
     Demonstrates some engine features for visualizing parts assemblies:<br><br>
     <ul>
         <li>tracking World and Canvas boundaries of <a
@@ -33,7 +33,7 @@
 
     // Model loaded from glTF
 
-    var gearbox = new XEO.Model({
+    var gearbox = new xeogl.Model({
         src: "models/gltf/gearbox/gearbox_assy.gltf"
     });
 
@@ -65,22 +65,22 @@
     // World-space axis-aligned bounding box (AABB)
     // of each entity we fly to
 
-    var orientedBoundary = new XEO.Entity({
-        geometry: new XEO.BoundaryGeometry(),
-        material: new XEO.PhongMaterial({
+    var orientedBoundary = new xeogl.Entity({
+        geometry: new xeogl.BoundaryGeometry(),
+        material: new xeogl.PhongMaterial({
             diffuse: [0, 0, 0],
             ambient: [0, 0, 0],
             specular: [0, 0, 0],
             emissive: [1.0, 1.0, 0.5],
             lineWidth: 3
         }),
-        visibility: new XEO.Visibility({ // Boundary is initially invisible
+        visibility: new xeogl.Visibility({ // Boundary is initially invisible
             visible: false
         }),
-        modes: new XEO.Modes({
+        modes: new xeogl.Modes({
 
             // Does not contribute to the size of any enclosing boundaries
-            // that might be calculated by xeoEngine, eg. like that returned by XEO.Scene#worldBoundary
+            // that might be calculated by xeogl, eg. like that returned by xeogl.Scene#worldBoundary
             collidable: false
         })
     });
@@ -88,22 +88,22 @@
     // Red wireframe box indicates the World-space
     // oriented bounding box (OBB) of each entity we fly to
 
-    var axisBoundary = new XEO.Entity({
-        geometry: new XEO.BoundaryGeometry(),
-        material: new XEO.PhongMaterial({
+    var axisBoundary = new xeogl.Entity({
+        geometry: new xeogl.BoundaryGeometry(),
+        material: new xeogl.PhongMaterial({
             diffuse: [0, 0, 0],
             ambient: [0, 0, 0],
             specular: [0, 0, 0],
             emissive: [1.0, 0.5, 0.5],
             lineWidth: 2
         }),
-        visibility: new XEO.Visibility({ // Boundary is initially invisible
+        visibility: new xeogl.Visibility({ // Boundary is initially invisible
             visible: false
         }),
-        modes: new XEO.Modes({
+        modes: new xeogl.Modes({
 
             // Does not contribute to the size of any enclosing boundaries
-            // that might be calculated by xeoEngine, eg. like that returned by XEO.Scene#worldBoundary
+            // that might be calculated by xeogl, eg. like that returned by xeogl.Scene#worldBoundary
             collidable: false
         })
     });
@@ -140,7 +140,7 @@
     // Camera flight animation, flies the
     // default camera to each entity
 
-    var cameraFlight = new XEO.CameraFlight();
+    var cameraFlight = new xeogl.CameraFlight();
 
     // Wait until the glTF model is loaded
 
@@ -156,7 +156,7 @@
 
                 gearbox.collection.iterate(function (c) {
 
-                    if (c.type === "XEO.Entity") {
+                    if (c.type === "xeogl.Entity") {
 
                         c.material = c.material.clone();
                         c.material.opacity = 0.4;
@@ -200,7 +200,7 @@
                             axisBoundary.geometry.aabb = nextEntity.worldBoundary.aabb;
                             axisBoundary.visibility.visible = true;
 
-                            XEO.debug
+                            xeogl.debug
                                     .id("nextEntity")
                                     .fillColor([1.0, 1.0, 0.3])
                                     .color([0, 0, 0])
@@ -226,7 +226,7 @@
 
     // Allow user camera control
 
-    new XEO.CameraControl();
+    new xeogl.CameraControl();
 
 
     // Slowly orbit the camera

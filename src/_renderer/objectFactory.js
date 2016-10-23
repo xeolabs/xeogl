@@ -2,7 +2,7 @@
 
     "use strict";
 
-    XEO.renderer.ObjectFactory = function () {
+    xeogl.renderer.ObjectFactory = function () {
 
         var freeObjects = [];
         var numFreeObjects = 0;
@@ -22,7 +22,7 @@
                 return object;
             }
 
-            return new XEO.renderer.Object(id);
+            return new xeogl.renderer.Object(id);
         };
 
         this.put = function (object) {

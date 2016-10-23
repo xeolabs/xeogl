@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.js"></script>
+    <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
     <script src="./js/libs/jquery-1.8.3.min.js"></script>
@@ -23,7 +23,7 @@
 
 <div id="infoLight"
      style="left: 0; text-align: left; background: black; opacity: 0.7; padding: 8px; color: white; font-size: 14pt;">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br>
+    <a href="http://xeogl.org" target="_home">xeogl</a><br>
     <ul>
         <li><span>using <a
                 href="../docs/classes/Model.html"
@@ -58,7 +58,7 @@
         // Load glTF gearbox model into the default scene
         //---------------------------------------------------------------------------------------
 
-        var gearbox = new XEO.Model({
+        var gearbox = new xeogl.Model({
             src: "models/gltf/gearbox/gearbox_assy.gltf"
         });
 
@@ -78,14 +78,14 @@
         // Allow camera control with keyboard and mouse
         //----------------------------------------------------------------------------
 
-        new XEO.CameraControl();
+        new xeogl.CameraControl();
 
         //---------------------------------------------------------------------------------------
         // Create a camera flight animation, which flies the default camera to each Entity
         // as we select it in the explorer
         //---------------------------------------------------------------------------------------
 
-        var cameraFlight = new XEO.CameraFlight();
+        var cameraFlight = new xeogl.CameraFlight();
 
         gearbox.on("loaded", function () {
 
@@ -102,7 +102,7 @@
             //---------------------------------------------------------------------------------------
 
             var data = []; // JSTree data
-            var entities = gearbox.collection.types["XEO.Entity"];
+            var entities = gearbox.collection.types["xeogl.Entity"];
             var entity;
 
             for (var entityId in entities) {
@@ -130,11 +130,11 @@
 
                         // If an entity has a transform that has a parent, then the entity's
                         // transform hierarchy needs collapsing. Bake the hierarchy into
-                        // a matrix on a single XEO.Transform and set that as the entity's new transform.
+                        // a matrix on a single xeogl.Transform and set that as the entity's new transform.
                         // Store the new transform in the Model's Collection so that
                         // it gets destroyed when the Model is destroyed or reloaded
 
-                        gearbox.collection.add(entity.transform = new XEO.Transform({
+                        gearbox.collection.add(entity.transform = new xeogl.Transform({
                             matrix: entity.transform.leafMatrix
                         }));
                     }
@@ -197,21 +197,21 @@
         // Allow camera control with keyboard and mouse
         //----------------------------------------------------------------------------
 
-        var cameraControl = new XEO.CameraControl();
+        var cameraControl = new xeogl.CameraControl();
 
         //---------------------------------------------------
         // Create a zSpace effect and stylus control
         //---------------------------------------------------
 
-        var zspaceEffect = new XEO.ZSpaceEffect({
+        var zspaceEffect = new xeogl.ZSpaceEffect({
             canvasOffset: [310, 0]
         });
 
-        var zspaceStylusControl = new XEO.ZSpaceStylusControl();
+        var zspaceStylusControl = new xeogl.ZSpaceStylusControl();
 
         zspaceEffect.on("supported", function (supported) {
             if (!supported) {
-                document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. ";
+                document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeogl camera controls. ";
             }
         });
     });

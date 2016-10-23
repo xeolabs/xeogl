@@ -1,6 +1,6 @@
 /**
  * Modelling transform components.
  *
- * @module XEO
+ * @module xeogl
  * @submodule transforms
  */

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <script src="js/curves/curve.js"></script>
     <script src="js/curves/splineCurve.js"></script>
     <script src="js/debug/debug.js"></script>
@@ -15,7 +15,7 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a> - normal map <a href="../docs/classes/Texture.html" target="_docs">Texture</a>
+    <a href="http://xeogl.org">xeogl</a> - normal map <a href="../docs/classes/Texture.html" target="_docs">Texture</a>
     with World-space <a href="../docs/classes/PointLight.html" target="_docs">PointLight</a> animated
     along <a href="../docs/classes/SplineCurve.html" target="_docs">SplineCurve</a>
 </div>
@@ -23,32 +23,32 @@
 <script>
 
     // Remove all default scene lights
-    XEO.scene.lights.lights = [];
+    xeogl.scene.lights.lights = [];
 
     // Sphere for each of our normal-mapped objects
-    var geometry = new XEO.SphereGeometry({
+    var geometry = new xeogl.SphereGeometry({
         radius: 1.5,
         heightSegments: 60,
         widthSegments: 60
     });
     
     // Material for each of our normal-mapped objects
-    var material = new XEO.PhongMaterial({
+    var material = new xeogl.PhongMaterial({
         ambient: [0.3, 0.3, 0.3],
         shininess: 30,
-        diffuseMap: new XEO.Texture({
+        diffuseMap: new xeogl.Texture({
             src: "textures/diffuse/chesterfieldDiffuseMap.png",
             scale: [5, 5]
         }),
 
-        normalMap: new XEO.Texture({
+        normalMap: new xeogl.Texture({
             src: "textures/normal/chesterfieldNormalMap.png",
             scale: [5, 5]
         })
     });
 
     // The PointLight
-    var pointLight = new XEO.PointLight({
+    var pointLight = new xeogl.PointLight({
         pos: [0, 0, 0],
         color: [1.0, 1.0, 0.0],
         intensity: 1.0,
@@ -59,9 +59,9 @@
     });
 
     // Lights for our normal-mapped objects, containing the PointLight
-    var lights = new XEO.Lights({
+    var lights = new xeogl.Lights({
         lights: [
-            new XEO.AmbientLight({
+            new xeogl.AmbientLight({
                 color: [0.3, 0.3, 0.3]
             }),
             pointLight
@@ -72,25 +72,25 @@
     for (var x = -15; x <= 15; x += 4) {
         for (var z = -15; z <= 15; z += 4) {
 
-            new XEO.Entity({
+            new xeogl.Entity({
                 lights: lights,
                 geometry: geometry,
                 material: material,
-                transform: new XEO.Translate({
+                transform: new xeogl.Translate({
                     xyz: [x, 0, z]
                 })
             });
         }
     }
 
-    var scene = XEO.scene;
+    var scene = xeogl.scene;
     var view = scene.view;
 
     view.rotateEyeX(20);
     view.eye = [0, 20, -30];
 
     // SplineCurve to animate PointLight along
-    var splineCurve = new XEO.SplineCurve({
+    var splineCurve = new xeogl.SplineCurve({
         points: [
             [-16, 3, -16],
             [0, 3, -3],
@@ -105,34 +105,34 @@
     });
 
     // Entity to show the SplineCurve
-    new XEO.Entity({
-        geometry: new XEO.Geometry({
-            positions: XEO.math.flatten(splineCurve.getPoints(100))
+    new xeogl.Entity({
+        geometry: new xeogl.Geometry({
+            positions: xeogl.math.flatten(splineCurve.getPoints(100))
         }),
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuse: [0.5, 0.5, 0],
             lineWidth:7,
             opacity: 0.3
         }),
-        modes: new XEO.Modes({
+        modes: new xeogl.Modes({
             transparent: true
         }),
-        visibility: new XEO.Visibility({
+        visibility: new xeogl.Visibility({
             visible: true
         })
     });
 
     // Indicator sphere to show position of PointLight
-    var pointLightIndicator = new XEO.Entity({
-        geometry: new XEO.SphereGeometry({
+    var pointLightIndicator = new xeogl.Entity({
+        geometry: new xeogl.SphereGeometry({
             radius: .5
         }),
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             ambient: [0, 0, 0],
             diffuse: [0, 0, 0],
             emissive: [1.0, 0, 0]
         }),
-        transform: new XEO.Translate()
+        transform: new xeogl.Translate()
     });
 
     // Update position of indicator sphere in synch with PointLight's position
@@ -160,7 +160,7 @@
     });
 
     // Allow user camera control
-    new XEO.CameraControl();
+    new xeogl.CameraControl();
 
 </script>
 </body>

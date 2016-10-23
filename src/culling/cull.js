@@ -18,17 +18,17 @@
 
  ````javascript
  // Create a Cull component
- var cull = new XEO.Cull({
+ var cull = new xeogl.Cull({
     culled: false
 });
 
  // Create two Entities whose culling will be controlled by our Cull
 
- var entity1 = new XEO.Entity({
+ var entity1 = new xeogl.Entity({
     cull: cull
 });
 
- var entity2 = new XEO.Entity({
+ var entity2 = new xeogl.Entity({
     cull: cull
 });
 
@@ -49,7 +49,7 @@
  cull.destroy();
  ````
  @class Cull
- @module XEO
+ @module xeogl
  @submodule culling
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Cull in the default
@@ -64,13 +64,13 @@
 
     "use strict";
 
-    XEO.Cull = XEO.Component.extend({
+    xeogl.Cull = xeogl.Component.extend({
 
-        type: "XEO.Cull",
+        type: "xeogl.Cull",
 
         _init: function (cfg) {
 
-            this._state = new XEO.renderer.Cull({
+            this._state = new xeogl.renderer.Cull({
                 culled: true
             });
 

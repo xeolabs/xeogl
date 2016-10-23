@@ -2,7 +2,7 @@
 
     "use strict";
 
-    XEO.renderer.webgl.Uniform = function (renderStats, gl, type, location) {
+    xeogl.renderer.webgl.Uniform = function (renderStats, gl, type, location) {
 
         var func = null;
         var value = null;

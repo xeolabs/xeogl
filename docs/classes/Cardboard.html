@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Cardboard - xeoengine</title>
+    <title>Cardboard - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -14,12 +14,10 @@
 <div id="doc">
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
-
-                <h1 style="color:white;"><a href="../../">xeoEngine</a> / <a href="../../docs">API Docs</a></h1>
-
+                <h1><img src="../../assets/images/logo.png" title="xeogl"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.0</em>
+            <em>API Docs for: 1.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -27,7 +25,7 @@
         <div class="yui3-u-1-4">
             <div id="docs-sidebar" class="sidebar apidocs">
                 <div id="api-list">
-                
+                    <h2 class="off-left">APIs</h2>
                     <div id="api-tabview" class="tabview">
                         <ul class="tabs">
                             <li><a href="#api-classes">Classes</a></li>
@@ -83,7 +81,6 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/MegaTexture.html">MegaTexture</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
@@ -103,7 +100,6 @@
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
-                                <li><a href="../classes/Render.html">Render</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
@@ -125,41 +121,40 @@
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/WebVR.html">WebVR</a></li>
-                                <li><a href="../classes/XEO.html">XEO</a></li>
-                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
+                                <li><a href="../classes/xeogl.html">xeogl</a></li>
+                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
                                 <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
                                 <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
-                                <li><a href="..//modules/animation.html">animation</a></li>
-                                <li><a href="..//modules/boundaries.html">boundaries</a></li>
-                                <li><a href="..//modules/camera.html">camera</a></li>
-                                <li><a href="..//modules/canvas.html">canvas</a></li>
-                                <li><a href="..//modules/clipping.html">clipping</a></li>
-                                <li><a href="..//modules/collections.html">collections</a></li>
-                                <li><a href="..//modules/configs.html">configs</a></li>
-                                <li><a href="..//modules/controls.html">controls</a></li>
-                                <li><a href="..//modules/culling.html">culling</a></li>
-                                <li><a href="..//modules/curves.html">curves</a></li>
-                                <li><a href="..//modules/effects.html">effects</a></li>
-                                <li><a href="..//modules/entities.html">entities</a></li>
-                                <li><a href="..//modules/geometry.html">geometry</a></li>
-                                <li><a href="..//modules/importing.html">importing</a></li>
-                                <li><a href="..//modules/input.html">input</a></li>
-                                <li><a href="..//modules/interaction.html">interaction</a></li>
-                                <li><a href="..//modules/lighting.html">lighting</a></li>
-                                <li><a href="..//modules/materials.html">materials</a></li>
-                                <li><a href="..//modules/math.html">math</a></li>
-                                <li><a href="..//modules/paths.html">paths</a></li>
-                                <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/shaders.html">shaders</a></li>
-                                <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
-                                <li><a href="..//modules/transforms.html">transforms</a></li>
-                                <li><a href="..//modules/webvr.html">webvr</a></li>
-                                <li><a href="..//modules/xeo.html">xeo</a></li>
-                                <li><a href="..//modules/XEO.html">XEO</a></li>
-                                <li><a href="..//modules/xeogl.html">xeogl</a></li>
+                                <li><a href="../modules/animation.html">animation</a></li>
+                                <li><a href="../modules/boundaries.html">boundaries</a></li>
+                                <li><a href="../modules/camera.html">camera</a></li>
+                                <li><a href="../modules/canvas.html">canvas</a></li>
+                                <li><a href="../modules/clipping.html">clipping</a></li>
+                                <li><a href="../modules/collections.html">collections</a></li>
+                                <li><a href="../modules/configs.html">configs</a></li>
+                                <li><a href="../modules/controls.html">controls</a></li>
+                                <li><a href="../modules/culling.html">culling</a></li>
+                                <li><a href="../modules/curves.html">curves</a></li>
+                                <li><a href="../modules/effects.html">effects</a></li>
+                                <li><a href="../modules/entities.html">entities</a></li>
+                                <li><a href="../modules/geometry.html">geometry</a></li>
+                                <li><a href="../modules/importing.html">importing</a></li>
+                                <li><a href="../modules/input.html">input</a></li>
+                                <li><a href="../modules/interaction.html">interaction</a></li>
+                                <li><a href="../modules/lighting.html">lighting</a></li>
+                                <li><a href="../modules/materials.html">materials</a></li>
+                                <li><a href="../modules/math.html">math</a></li>
+                                <li><a href="../modules/paths.html">paths</a></li>
+                                <li><a href="../modules/rendering.html">rendering</a></li>
+                                <li><a href="../modules/shaders.html">shaders</a></li>
+                                <li><a href="../modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="../modules/transforms.html">transforms</a></li>
+                                <li><a href="../modules/webvr.html">webvr</a></li>
+                                <li><a href="../modules/xeo.html">xeo</a></li>
+                                <li><a href="../modules/xeogl.html">xeogl</a></li>
                             </ul>
                         </div>
                     </div>
@@ -167,33 +162,33 @@
             </div>
         </div>
         <div class="yui3-u-3-4">
-                <!--<div id="api-options">-->
-                    <!--Show:-->
-                    <!--<label for="api-show-inherited">-->
-                        <!--<input type="checkbox" id="api-show-inherited" checked>-->
-                        <!--Inherited-->
-                    <!--</label>-->
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
             
-                    <!--<label for="api-show-protected">-->
-                        <!--<input type="checkbox" id="api-show-protected">-->
-                        <!--Protected-->
-                    <!--</label>-->
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
             
-                    <!--<label for="api-show-private">-->
-                        <!--<input type="checkbox" id="api-show-private">-->
-                        <!--Private-->
-                    <!--</label>-->
-                    <!--<label for="api-show-deprecated">-->
-                        <!--<input type="checkbox" id="api-show-deprecated">-->
-                        <!--Deprecated-->
-                    <!--</label>-->
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
             
-                <!--</div>-->
+                </div>
             
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>Cardboard</h1>
+<h1>Cardboard Class</h1>
 <div class="box meta">
 
         <div class="extends">
@@ -201,7 +196,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/examples_js_webvr_cardboardNEW.js.html#l1"><code>examples&#x2F;js&#x2F;webvr&#x2F;cardboardNEW.js:1</code></a>
+            Defined in: <a href="../files/examples_js_webvr_cardboard.js.html#l1"><code>examples&#x2F;js&#x2F;webvr&#x2F;cardboard.js:1</code></a>
         </div>
 
             Module: <a href="../modules/webvr.html">webvr</a><br>
@@ -272,11 +267,10 @@ cardboard.active = true; // ..and then back to Cardboard stereo mode.
         
         
         
-        
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/examples_js_webvr_cardboardNEW.js.html#l1"><code>examples&#x2F;js&#x2F;webvr&#x2F;cardboardNEW.js:1</code></a>
+                <a href="../files/examples_js_webvr_cardboard.js.html#l1"><code>examples&#x2F;js&#x2F;webvr&#x2F;cardboard.js:1</code></a>
                 </p>
         
         
@@ -430,7 +424,7 @@ cardboard.active = true; // ..and then back to Cardboard stereo mode.
 
     <div>
         <div id="index" class="api-class-tabpanel index">
-            <h2 class="off-left">Index</h2>
+            <h2 class="off-left">Item Index</h2>
 
                 <div class="index-section methods">
                     <h3>Methods</h3>
@@ -488,14 +482,6 @@ cardboard.active = true; // ..and then back to Cardboard stereo mode.
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_active">active</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_aperture">aperture</a>
-
-                            </li>
-                            <li class="index-item property">
                                 <a href="#property_aperture">aperture</a>
 
                             </li>
@@ -504,10 +490,6 @@ cardboard.active = true; // ..and then back to Cardboard stereo mode.
 
                             </li>
                             <li class="index-item property inherited">
-                                <a href="#property_camera">camera</a>
-
-                            </li>
-                            <li class="index-item property">
                                 <a href="#property_camera">camera</a>
 
                             </li>
@@ -545,14 +527,6 @@ cardboard.active = true; // ..and then back to Cardboard stereo mode.
                             </li>
                             <li class="index-item property">
                                 <a href="#property_eyeSep">eyeSep</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_eyeSep">eyeSep</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_focalLength">focalLength</a>
 
                             </li>
                             <li class="index-item property">
@@ -663,10 +637,6 @@ cardboard.active = true; // ..and then back to Cardboard stereo mode.
                                 <a href="#property_Viewport">Viewport</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_Viewport">Viewport</a>
-
-                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_visibility">visibility</a>
 
@@ -688,14 +658,6 @@ cardboard.active = true; // ..and then back to Cardboard stereo mode.
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_active">active</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_aperture">aperture</a>
-
-                            </li>
-                            <li class="index-item event">
                                 <a href="#event_aperture">aperture</a>
 
                             </li>
@@ -704,10 +666,6 @@ cardboard.active = true; // ..and then back to Cardboard stereo mode.
 
                             </li>
                             <li class="index-item event inherited">
-                                <a href="#event_camera">camera</a>
-
-                            </li>
-                            <li class="index-item event">
                                 <a href="#event_camera">camera</a>
 
                             </li>
@@ -741,14 +699,6 @@ cardboard.active = true; // ..and then back to Cardboard stereo mode.
                             </li>
                             <li class="index-item event">
                                 <a href="#event_eyeSep">eyeSep</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_eyeSep">eyeSep</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_focalLength">focalLength</a>
 
                             </li>
                             <li class="index-item event">
@@ -807,10 +757,6 @@ cardboard.active = true; // ..and then back to Cardboard stereo mode.
                                 <a href="#event_Viewport">Viewport</a>
 
                             </li>
-                            <li class="index-item event">
-                                <a href="#event_Viewport">Viewport</a>
-
-                            </li>
                             <li class="index-item event inherited">
                                 <a href="#event_viewport">viewport</a>
 
@@ -853,7 +799,6 @@ cardboard.active = true; // ..and then back to Cardboard stereo mode.
 
 
 
-
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_create">Component</a>:
@@ -869,7 +814,7 @@ cardboard.active = true; // ..and then back to Cardboard stereo mode.
 <p>You would typically use this method to conveniently instantiate components that you&#39;d want to
 share (ie. &quot;instance&quot;) among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
 <p>The method is given a component type, configuration and optional instance ID, like so:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(XEO.PhongMaterial, {
+<pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(xeogl.PhongMaterial, {
      diffuse: [1,0,0],
      specular: [1,1,0]
 }, &quot;myMaterial&quot;);
@@ -878,7 +823,7 @@ share (ie. &quot;instance&quot;) among your <a href="../classes/Entity.html" cla
 <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, passing the given  attributes to the component&#39;s constructor.</p>
 <p>If you call this method again, specifying the same <code>type</code> and <code>instanceId</code>, the method will return the same
 component instance that it returned the first time, and will ignore the configuration:</p>
-<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, &quot;myMaterial&quot;);
+<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(xeogl.PhongMaterial, { specular: [1,1,0] }, &quot;myMaterial&quot;);
 </code></pre>
 <p>So in this example, our <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> will continue to have the red specular
 and diffuse color that we specified the first time.</p>
@@ -899,8 +844,8 @@ times as you got it, the Scene will destroy the component.</p>
 
 
                     <div class="param-description">
-                        <p>Component type - either a string like &quot;XEO.PhongMaterial&quot; or the actual
-constructor function, ie. XEO.PhongMaterial.</p>
+                        <p>Component type - either a string like &quot;xeogl.PhongMaterial&quot; or the actual
+constructor function, ie. xeogl.PhongMaterial.</p>
 
                     </div>
 
@@ -956,7 +901,6 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
 
 
 
-
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
@@ -990,7 +934,6 @@ defaults that this component overrode on them.</p>
                 </li>
             </ul><span class="paren">)</span>
         </div>
-
 
 
 
@@ -1054,7 +997,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                 </li>
             </ul><span class="paren">)</span>
         </div>
-
 
 
 
@@ -1145,7 +1087,6 @@ any subsequent notifications on that location as they are made.</p>
 
 
 
-
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_isType">Component</a>:
@@ -1163,14 +1104,14 @@ any subsequent notifications on that location as they are made.</p>
 property <a href="../classes/Component.html#property_superTypes" class="crosslink">superTypes</a>, returning true as soon as one of the type strings in
 the chain matches the given type, of false if none match.</p></p>
 <p><h4 id="examples-">Examples:</h4></p>
-<pre class="code prettyprint"><code class="lang-javascript">var myRotate = new XEO.Rotate({ ... });
+<pre class="code prettyprint"><code class="lang-javascript">var myRotate = new xeogl.Rotate({ ... });
 
-myRotate.isType(XEO.Component); // Returns true for all XEO components
-myRotate.isType("XEO.Component"); // Returns true for all XEO components
-myRotate.isType(XEO.Rotate); // Returns true
-myRotate.isType(XEO.Transform); // Returns true
-myRotate.isType("XEO.Transform"); // Returns true
-myRotate.isType(XEO.Entity); // Returns false, because XEO.Rotate does not (even indirectly) extend XEO.Entity
+myRotate.isType(xeogl.Component); // Returns true for all xeogl components
+myRotate.isType("xeogl.Component"); // Returns true for all xeogl components
+myRotate.isType(xeogl.Rotate); // Returns true
+myRotate.isType(xeogl.Transform); // Returns true
+myRotate.isType("xeogl.Transform"); // Returns true
+myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (even indirectly) extend xeogl.Entity
 </code></pre>
 
     </div>
@@ -1185,7 +1126,7 @@ myRotate.isType(XEO.Entity); // Returns false, because XEO.Rotate does not (even
 
 
                     <div class="param-description">
-                        <p>Component type to compare with, eg &quot;XEO.PhongMaterial&quot;, or a XEO component constructor.</p>
+                        <p>Component type to compare with, eg &quot;xeogl.PhongMaterial&quot;, or a xeogl component constructor.</p>
 
                     </div>
 
@@ -1215,7 +1156,6 @@ myRotate.isType(XEO.Entity); // Returns false, because XEO.Rotate does not (even
                 </li>
             </ul><span class="paren">)</span>
         </div>
-
 
 
 
@@ -1281,7 +1221,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 
-
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
@@ -1339,7 +1278,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
         <span class="returns-inline">
             <span class="type">String</span>
         </span>
-
 
 
 
@@ -1440,7 +1378,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 
-
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
@@ -1520,7 +1457,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 
-
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
@@ -1592,33 +1528,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_active" class="property item">
-                        <h3 class="name"><code>active</code></h3>
-                        <span class="type">Boolean</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_cardboardNEW.js.html#l292"><code>examples&#x2F;js&#x2F;webvr&#x2F;cardboardNEW.js:292</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Flag which indicates whether this Cardboard component is active or not.</p>
-                    <p>Fires an <a href="../classes/Cardboard.html#event_active" class="crosslink">active</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> true</p>
-                    
-                    
-                    </div>
                     <div id="property_aperture" class="property item">
                         <h3 class="name"><code>aperture</code></h3>
                         <span class="type">Number</span>
@@ -1631,33 +1540,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     <p>
                                     Defined in
                             <a href="../files/examples_js_webvr_cardboard.js.html#l257"><code>examples&#x2F;js&#x2F;webvr&#x2F;cardboard.js:257</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Aperture angle in degrees.</p>
-                    <p>Fires an <a href="../classes/Cardboard.html#event_aperture" class="crosslink">aperture</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 45</p>
-                    
-                    
-                    </div>
-                    <div id="property_aperture" class="property item">
-                        <h3 class="name"><code>aperture</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_cardboardNEW.js.html#l258"><code>examples&#x2F;js&#x2F;webvr&#x2F;cardboardNEW.js:258</code></a>
                             </p>
                     
                     
@@ -1719,37 +1601,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                 </a>
                                 but overwritten in
                             <a href="../files/examples_js_webvr_cardboard.js.html#l106"><code>examples&#x2F;js&#x2F;webvr&#x2F;cardboard.js:106</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The <a href="../classes/Camera.html" class="crosslink">Camera</a> attached to this Cardboard component.</p>
-                    <p>This Cardboard component will attach a <a href="../classes/Frustum.html" class="crosslink">Frustum</a> to its
-                    <a href="../classes/Camera.html" class="crosslink">Camera</a> if the <a href="../classes/Camera.html" class="crosslink">Camera</a> does not have
-                    one already, replacing the projection transform component that was already attached.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Cardboard. Defaults to the parent
-                    <a href="../classes/Scene.html" class="crosslink">Scene&#39;s</a> default <a href="../classes/Scene.html#property_camera" class="crosslink">camera</a> when set to
-                    a null or undefined value.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_camera" class="property item">
-                        <h3 class="name"><code>camera</code></h3>
-                        <span class="type"><a href="../classes/Camera.html" class="crosslink">Camera</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_cardboardNEW.js.html#l106"><code>examples&#x2F;js&#x2F;webvr&#x2F;cardboardNEW.js:106</code></a>
                             </p>
                     
                     
@@ -2022,33 +1873,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_cardboardNEW.js.html#l190"><code>examples&#x2F;js&#x2F;webvr&#x2F;cardboardNEW.js:190</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Eye separation distance.</p>
-                    <p>Fires an <a href="../classes/Cardboard.html#event_eyeSep" class="crosslink">eyeSep</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 0.2</p>
-                    
-                    
-                    </div>
-                    <div id="property_eyeSep" class="property item">
-                        <h3 class="name"><code>eyeSep</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
                             <a href="../files/examples_js_webvr_cardboard.js.html#l189"><code>examples&#x2F;js&#x2F;webvr&#x2F;cardboard.js:189</code></a>
                             </p>
                     
@@ -2062,33 +1886,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                             <p><strong>Default:</strong> 0.2</p>
-                    
-                    
-                    </div>
-                    <div id="property_focalLength" class="property item">
-                        <h3 class="name"><code>focalLength</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_cardboardNEW.js.html#l224"><code>examples&#x2F;js&#x2F;webvr&#x2F;cardboardNEW.js:224</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Focal length.</p>
-                    <p>Fires an <a href="../classes/Cardboard.html#event_focalLength" class="crosslink">focalLength</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 20</p>
                     
                     
                     </div>
@@ -2173,7 +1970,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                             <p>JSON object containing the (GLSL) source code of the shaders for this Entity.</p>
                     <p>This is sometimes useful to have as a reference
                     when constructing your own custom <a href="../classes/Shader.html" class="crosslink">Shader</a> components.</p>
-                    <p>Will return null if xeoEngine has not yet rendered this Entity.</p>
+                    <p>Will return null if xeogl has not yet rendered this Entity.</p>
                     
                         </div>
                     
@@ -2202,7 +1999,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                             <p>The (GLSL) source code of the shaders for this Entity, as a string.</p>
                     <p>This is sometimes useful to have as a reference
                     when constructing your own custom <a href="../classes/Shader.html" class="crosslink">Shader</a> components.</p>
-                    <p>Will return null if xeoEngine has not yet rendered this Entity.</p>
+                    <p>Will return null if xeogl has not yet rendered this Entity.</p>
                     
                         </div>
                     
@@ -2718,7 +2515,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     <p>For example, if this component is a <a href="../classes/Rotate.html" class="crosslink">Rotate</a>, which
                     extends <a href="../classes/Transform.html" class="crosslink">Transform</a>, which in turn extends <a href="../classes/Component.html" class="crosslink">Component</a>,
                     then this property will have the value:</p>
-                    <pre class="code prettyprint"><code class="lang-json">[&quot;XEO.Component&quot;, &quot;XEO.Transform&quot;]
+                    <pre class="code prettyprint"><code class="lang-json">[&quot;xeogl.Component&quot;, &quot;xeogl.Transform&quot;]
                     </code></pre>
                     <p>Note that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.</p>
                     
@@ -2781,7 +2578,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                             <p>JavaScript class name for this Component.</p>
                     <p>This is used when <a href="Scene.html#savingAndLoading">loading Scenes from JSON</a>, and is included in the JSON
                     representation of this Component, so that this class may be instantiated when loading it from the JSON representation.</p>
-                    <p>For example: &quot;XEO.AmbientLight&quot;, &quot;XEO.ColorTarget&quot;, &quot;XEO.Lights&quot; etc.</p>
+                    <p>For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.</p>
                     
                         </div>
                     
@@ -2887,34 +2684,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_Viewport" class="property item">
-                        <h3 class="name"><code>Viewport</code></h3>
-                        <span class="type"><a href="../classes/Viewport.html" class="crosslink">Viewport</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_cardboardNEW.js.html#l156"><code>examples&#x2F;js&#x2F;webvr&#x2F;cardboardNEW.js:156</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The <a href="../classes/Viewport.html" class="crosslink">Viewport</a> attached to this Cardboard.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Cardboard. Defaults to the parent
-                    <a href="../classes/Scene.html" class="crosslink">Scene&#39;s</a> default <a href="../classes/Scene.html#property_viewport" class="crosslink">Viewport</a> when set to
-                    a null or undefined value.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
                     <div id="property_visibility" class="property item inherited">
                         <h3 class="name"><code>visibility</code></h3>
                         <span class="type"><a href="../classes/Visibility.html" class="crosslink">Visibility</a></span>
@@ -2977,7 +2746,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     time it&#39;s referenced.</p>
                     <h4>Example</h4>
                     
-                    <p><a href="http://xeoengine.org/examples/#boundaries_Entity_worldBoundary">here</a></p>
+                    <p><a href="http://xeogl.org/examples/#boundaries_Entity_worldBoundary">here</a></p>
                     <h4>Performance</h4>
                     
                     <p>To minimize performance overhead, only reference this property if you need it, and destroy
@@ -3005,48 +2774,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_cardboardNEW.js.html#l315"><code>examples&#x2F;js&#x2F;webvr&#x2F;cardboardNEW.js:315</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Cardboard component&#39;s <a href="../classes/Cardboard.html#property_active" class="crosslink">active</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_active" class="events item">
-                        <h3 class="name"><code>active</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
                             <a href="../files/examples_js_webvr_cardboard.js.html#l314"><code>examples&#x2F;js&#x2F;webvr&#x2F;cardboard.js:314</code></a>
                             </p>
                     
@@ -3055,48 +2782,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this Cardboard component&#39;s <a href="../classes/Cardboard.html#property_active" class="crosslink">active</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_aperture" class="events item">
-                        <h3 class="name"><code>aperture</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_cardboardNEW.js.html#l279"><code>examples&#x2F;js&#x2F;webvr&#x2F;cardboardNEW.js:279</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Cardboard&#39;s <a href="../classes/Cardboard.html#property_aperture" class="crosslink">aperture</a> property changes.</p>
                     
                         </div>
                     
@@ -3220,49 +2905,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                 </a>
                                 but overwritten in
                             <a href="../files/examples_js_webvr_cardboard.js.html#l124"><code>examples&#x2F;js&#x2F;webvr&#x2F;cardboard.js:124</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Cardboard&#39;s <a href="../classes/Cardboard.html#property_camera" class="crosslink">camera</a>
-                    property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_camera" class="events item">
-                        <h3 class="name"><code>camera</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_cardboardNEW.js.html#l124"><code>examples&#x2F;js&#x2F;webvr&#x2F;cardboardNEW.js:124</code></a>
                             </p>
                     
                     
@@ -3582,48 +3224,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_webvr_cardboardNEW.js.html#l211"><code>examples&#x2F;js&#x2F;webvr&#x2F;cardboardNEW.js:211</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Cardboard&#39;s <a href="../classes/Cardboard.html#property_eyeSep" class="crosslink">eyeSep</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_eyeSep" class="events item">
-                        <h3 class="name"><code>eyeSep</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
                             <a href="../files/examples_js_webvr_cardboard.js.html#l210"><code>examples&#x2F;js&#x2F;webvr&#x2F;cardboard.js:210</code></a>
                             </p>
                     
@@ -3632,48 +3232,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this Cardboard&#39;s <a href="../classes/Cardboard.html#property_eyeSep" class="crosslink">eyeSep</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_focalLength" class="events item">
-                        <h3 class="name"><code>focalLength</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_cardboardNEW.js.html#l245"><code>examples&#x2F;js&#x2F;webvr&#x2F;cardboardNEW.js:245</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Cardboard&#39;s <a href="../classes/Cardboard.html#property_focalLength" class="crosslink">focalLength</a> property changes.</p>
                     
                         </div>
                     
@@ -4280,49 +3838,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     <p>
                                     Defined in
                             <a href="../files/examples_js_webvr_cardboard.js.html#l167"><code>examples&#x2F;js&#x2F;webvr&#x2F;cardboard.js:167</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this Cardboard&#39;s <a href="../classes/Cardboard.html#property_Viewport" class="crosslink">Viewport</a>
-                    property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_Viewport" class="events item">
-                        <h3 class="name"><code>Viewport</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_webvr_cardboardNEW.js.html#l170"><code>examples&#x2F;js&#x2F;webvr&#x2F;cardboardNEW.js:170</code></a>
                             </p>
                     
                     

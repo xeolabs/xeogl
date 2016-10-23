@@ -2,7 +2,7 @@
 
     "use strict";
 
-    XEO.renderer.ChunkFactory.createChunkType({
+    xeogl.renderer.ChunkFactory.createChunkType({
 
         type: "program",
 

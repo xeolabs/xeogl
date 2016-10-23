@@ -1,6 +1,6 @@
 /**
  * Components for controlling the visibility of Entities.
  *
- * @module XEO
+ * @module xeogl
  * @submodule culling
  */

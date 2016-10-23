@@ -7,7 +7,7 @@
  <li>When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a
  leaf {{#crossLink "Transform"}}{{/crossLink}} within a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, it will be
  transformed by each {{#crossLink "Transform"}}{{/crossLink}} on the path up to the root, in that order.</li>
- <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>
+ <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeogl's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/Quaternion.png"></img>
@@ -23,44 +23,44 @@
  The Entities share the same {{#crossLink "BoxGeometry"}}{{/crossLink}}.<br>
 
  ````javascript
- var quaternion = new XEO.Quaternion({
+ var quaternion = new xeogl.Quaternion({
     xyzw: [0, 0, 0, 1], // Unit quaternion
 });
 
- var translate1 = new XEO.Translate({
+ var translate1 = new xeogl.Translate({
    parent: quaternion,
    xyz: [-5, 0, 0] // Translate along -X axis
 });
 
- var translate2 = new XEO.Translate({
+ var translate2 = new xeogl.Translate({
    parent: quaternion,
    xyz: [5, 0, 0] // Translate along +X axis
 });
 
- var scale = new XEO.Scale({
+ var scale = new xeogl.Scale({
    parent: translate2,
    xyz: [1, 2, 1] // Scale x2 on Y axis
 });
 
- var geometry = new XEO.BoxGeometry();
+ var geometry = new xeogl.BoxGeometry();
 
- var entity1 = new XEO.Entity(scene, {
+ var entity1 = new xeogl.Entity(scene, {
    transform: translate1,
    geometry: geometry
 });
 
- var entity2 = new XEO.Entity({
+ var entity2 = new xeogl.Entity({
    transform: scale,
    geometry: geometry
 });
  ````
 
- Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
+ Since everything in xeogl is dynamically editable, we can restructure the transform hierarchy at any time.
 
  Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "Entity"}}{{/crossLink}}:
 
  ````javascript
- var scale2 = new XEO.Scale({
+ var scale2 = new xeogl.Scale({
    parent: translate1,
    xyz: [1, 1, 2] // Scale x2 on Z axis
 });
@@ -78,7 +78,7 @@
     });
  ````
  @class Quaternion
- @module XEO
+ @module xeogl
  @submodule transforms
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Quaternion in the default
@@ -94,9 +94,9 @@
 
     "use strict";
 
-    XEO.Quaternion = XEO.Transform.extend({
+    xeogl.Quaternion = xeogl.Transform.extend({
 
-        type: "XEO.Quaternion",
+        type: "xeogl.Quaternion",
 
         _init: function (cfg) {
 
@@ -121,11 +121,11 @@
 
                 set: function (value) {
 
-                    var math = XEO.math;
+                    var math = xeogl.math;
 
                     (this._xyzw = this._xyzw || new math.vec4()).set(value || math.identityQuaternion());
 
-                    this.matrix = math.quaternionToMat4(this._xyzw, this._matrix || (this._matrix = XEO.math.identityMat4()));
+                    this.matrix = math.quaternionToMat4(this._xyzw, this._matrix || (this._matrix = xeogl.math.identityMat4()));
 
                     /**
                      Fired whenever this Quaternion's {{#crossLink "Quaternion/xyzw:property"}}{{/crossLink}} property changes.
@@ -150,7 +150,7 @@
          */
         rotate: (function () {
 
-            var math = XEO.math;
+            var math = xeogl.math;
             var tempAngleAxis = math.vec4();
             var tempQuat = math.vec4();
 

@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a>
+    <a href="http://xeogl.org">xeogl</a>
     <br><br>
     <ul>
         <li>
@@ -48,17 +48,17 @@
 
     // A hundred randomly-positions spheres
 
-    var sphere = new XEO.SphereGeometry({
+    var sphere = new xeogl.SphereGeometry({
         radius: 2
     });
 
     for (var i = 0; i < 100; i++) {
 
-        new XEO.Entity({
+        new xeogl.Entity({
 
             geometry: sphere,
 
-            transform: new XEO.Translate({
+            transform: new xeogl.Translate({
                 xyz: [
                     Math.random() * 50 - 25,
                     Math.random() * 50 - 25,
@@ -66,7 +66,7 @@
                 ]
             }),
 
-            material: new XEO.PhongMaterial({
+            material: new xeogl.PhongMaterial({
                 specular: [1, 1, 1],
                 diffuse: [
                     0.4 + Math.random() * 0.6,
@@ -81,7 +81,7 @@
 
     // Set initial camera position
 
-    var scene = XEO.scene;
+    var scene = xeogl.scene;
 
     scene.camera.view.zoom(60);
 
@@ -90,7 +90,7 @@
 
     // Allow camera interaction
 
-    new XEO.CameraControl();
+    new xeogl.CameraControl();
 
     // Attempt to pick a Entity on each mouse click.
     // Highlight each Entity that we successfully pick.

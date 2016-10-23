@@ -11,13 +11,13 @@
 
      // Create an annotation manager
 
-     var manager = new XEO.AnnotationManager({
+     var manager = new xeogl.AnnotationManager({
          occlusionCull: true // Hide annotations when their pins are occluded
      });
 
      // Create a couple of annotations
 
-     var a1 = new XEO.Annotation({
+     var a1 = new xeogl.Annotation({
         manager: manager,
         entity: "6#n274017_gear_53t-node_1.entity.0",
         primIndex: 3081,
@@ -28,7 +28,7 @@
         open: true
      });
 
-     var a2 = new XEO.Annotation({
+     var a2 = new xeogl.Annotation({
          manager: manager,
          entity: "6#n273303_shaft-node.entity.0",
          primIndex: 14289,
@@ -42,7 +42,7 @@
 
      ````
      @class Annotation
-     @module XEO
+     @module xeogl
      @submodule annotations
      @constructor
      @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Annotation in the default
@@ -53,9 +53,9 @@
      @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Annotation.
      @extends Component
      */
-    XEO.Annotation = XEO.Component.extend({
+    xeogl.Annotation = xeogl.Component.extend({
 
-        type: "XEO.Annotation",
+        type: "xeogl.Annotation",
 
         _init: function (cfg) {
 
@@ -92,25 +92,25 @@
             // Entity which renders a small dot which we use for occlusion culling
             // We also use its boundary to track the position of the Annotation
 
-            this._pin = this.create(XEO.Entity, {
-                lights: this.create(XEO.Lights, {}, "lights"),
+            this._pin = this.create(xeogl.Entity, {
+                lights: this.create(xeogl.Lights, {}, "lights"),
 
-                geometry: this.create(XEO.Geometry, {
+                geometry: this.create(xeogl.Geometry, {
                         primitive: "points",
                         positions:[0,0,0],
                         indices: [0]
                     },
                     "pinGeometry"),
-                visibility: this.create(XEO.Visibility, {
+                visibility: this.create(xeogl.Visibility, {
                     visible: true
                 }),
-                material: this.create(XEO.PhongMaterial, {
+                material: this.create(xeogl.PhongMaterial, {
                         emissive: [1.0, 1.0, 0.0],
                         diffuse: [0,0,0],
                         pointSize: 3
                     },
                     "pinMaterial"),
-                transform: this.create(XEO.Translate, {
+                transform: this.create(xeogl.Translate, {
                     xyz: [0, 0, 0]
                 })
             });
@@ -174,7 +174,7 @@
              * Fires an {{#crossLink "Annotation/entity:event"}}{{/crossLink}} event on change.
              *
              * @property entity
-             * @type XEO.Entity
+             * @type xeogl.Entity
              */
             entity: {
                 set: function (value) {
@@ -186,7 +186,7 @@
                      */
                     this._attach({
                         name: "entity",
-                        type: "XEO.Entity",
+                        type: "xeogl.Entity",
                         component: value,
                         sceneDefault: false,
                         onAttached: {
@@ -244,7 +244,7 @@
              */
             bary: {
                 set: function (value) {
-                    this._bary = value || XEO.math.vec3([.3, .3, .3]);
+                    this._bary = value || xeogl.math.vec3([.3, .3, .3]);
                     this._setLocalPosDirty();
 
                     /**
@@ -463,7 +463,7 @@
         // Callback for _scheduleUpdate
         _update: (function () {
 
-            var math = XEO.math;
+            var math = xeogl.math;
             var a = math.vec3();
             var b = math.vec3();
             var c = math.vec3();

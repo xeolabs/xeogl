@@ -13,7 +13,7 @@
  <li>Use {{#crossLink "Frustum"}}{{/crossLink}} if you need to individually specify the position of each of the frustum
  planes, eg. for an asymmetrical view volume, such as those used for stereo viewing.</li>
  <li>Use {{#crossLink "Perspective"}}{{/crossLink}} if you need perspective projection.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Ortho components create within xeoEngine's shaders.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Ortho components create within xeogl's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/Ortho.png"></img>
@@ -27,29 +27,29 @@
  ## Usage
 
  ````Javascript
- new XEO.Entity({
+ new xeogl.Entity({
 
-     camera: XEO.Camera({
+     camera: xeogl.Camera({
 
-         view: new XEO.Lookat({
+         view: new xeogl.Lookat({
              eye: [0, 0, -4],
              look: [0, 0, 0],
              up: [0, 1, 0]
          }),
 
-         project: new XEO.Ortho(scene, {
+         project: new xeogl.Ortho(scene, {
              scale: 100.0,  // Fit at least 100 units within the ortho volume X & Y extents
              near: 0.1,
              far: 1000
          })
      }),
 
-     geometry: new XEO.BoxGeometry()
+     geometry: new xeogl.BoxGeometry()
  });
  ````
 
  @class Ortho
- @module XEO
+ @module xeogl
  @submodule transforms
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this Ortho within the
@@ -67,9 +67,9 @@
 
     "use strict";
 
-    XEO.Ortho = XEO.Transform.extend({
+    xeogl.Ortho = xeogl.Transform.extend({
 
-        type: "XEO.Ortho",
+        type: "xeogl.Ortho",
 
         _init: function (cfg) {
 
@@ -110,8 +110,8 @@
                 bottom = -halfSize;
             }
 
-            this.matrix = XEO.math.orthoMat4c( // Assign to XEO.Projection#matrix
-                left, right, bottom, top, this._near, this._far, this.__tempMat || (this.__tempMat = XEO.math.mat4()));
+            this.matrix = xeogl.math.orthoMat4c( // Assign to xeogl.Projection#matrix
+                left, right, bottom, top, this._near, this._far, this.__tempMat || (this.__tempMat = xeogl.math.mat4()));
         },
 
         _props: {

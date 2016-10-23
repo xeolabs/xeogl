@@ -31,20 +31,20 @@
  property over time:
 
  ````javascript
- var path = new XEO.Path({
+ var path = new xeogl.Path({
      curves: [
-         new XEO.CubicBezierCurve({
+         new xeogl.CubicBezierCurve({
              v0: [-10, 0, 0],
              v1: [-5, 15, 0],
              v2: [20, 15, 0],
              v3: [10, 0, 0]
          }),
-         new XEO.QuadraticBezierCurve({
+         new xeogl.QuadraticBezierCurve({
              v0: [10, 0, 0],
              v1: [20, 15, 0],
              v2: [10, 0, 0]
          }),
-         new XEO.SplineCurve({
+         new xeogl.SplineCurve({
              points: [
                  [10, 0, 0],
                  [-5, 15, 0],
@@ -97,13 +97,13 @@
  path.  Note that we need to flatten the points array for consumption by the {{#crossLink "Geometry"}}{{/crossLink}}.
 
  ````javascript
- var geometry = new XEO.Geometry({
-     positions: XEO.math.flatten(path.getPoints(50))
+ var geometry = new xeogl.Geometry({
+     positions: xeogl.math.flatten(path.getPoints(50))
  });
  ````
  
  @class Path
- @module XEO
+ @module xeogl
  @submodule paths
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
@@ -118,7 +118,7 @@
 
     "use strict";
 
-    XEO.Path = XEO.Curve.extend({
+    xeogl.Path = xeogl.Curve.extend({
 
         /**
          JavaScript class name for this Component.
@@ -127,7 +127,7 @@
          @type String
          @final
          */
-        type: "XEO.Path",
+        type: "xeogl.Path",
 
         _init: function (cfg) {
 
@@ -244,7 +244,7 @@
 
                         curve = value[i];
 
-                        if (XEO._isNumeric(curve) || XEO._isString(curve)) {
+                        if (xeogl._isNumeric(curve) || xeogl._isString(curve)) {
 
                             // ID given for curve - find the curve component
 
@@ -253,20 +253,20 @@
                             curve = this.scene.components[id];
 
                             if (!curve) {
-                                this.error("Component not found: " + XEO._inQuotes(id));
+                                this.error("Component not found: " + xeogl._inQuotes(id));
                                 continue;
                             }
                         }
 
                         var type = curve.type;
 
-                        if (type !== "XEO.SplineCurve" &&
-                            type !== "XEO.Path" &&
-                            type !== "XEO.CubicBezierCurve" &&
-                            type !== "XEO.QuadraticBezierCurve") {
+                        if (type !== "xeogl.SplineCurve" &&
+                            type !== "xeogl.Path" &&
+                            type !== "xeogl.CubicBezierCurve" &&
+                            type !== "xeogl.QuadraticBezierCurve") {
 
-                            this.error("Component " + XEO._inQuotes(curve.id)
-                                + " is not a XEO.SplineCurve, XEO.Path or XEO.QuadraticBezierCurve");
+                            this.error("Component " + xeogl._inQuotes(curve.id)
+                                + " is not a xeogl.SplineCurve, xeogl.Path or xeogl.QuadraticBezierCurve");
 
                             continue;
                         }

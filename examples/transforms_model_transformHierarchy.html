@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a>
+    <a href="http://xeogl.org">xeogl</a>
     <br><br>
     modelling transform hierarchy composed of <a href="../docs/classes/Rotate.html" target="_docs">Rotate</a>,
     <a href="../docs/classes/Translate.html" target="_docs">Translate</a> and <a
@@ -22,13 +22,13 @@
 
     // Position of entire table
 
-    var tablePos = new XEO.Translate({
+    var tablePos = new xeogl.Translate({
         xyz: [0, 6, 0]
     });
 
     // Orientation of entire table
 
-    var tableRotate = new XEO.Rotate({
+    var tableRotate = new xeogl.Rotate({
         xyz: [1, 1, 1],
         angle: 50,
         parent: tablePos
@@ -36,85 +36,85 @@
 
     // Red table leg
 
-    new XEO.Entity({
-        transform: new XEO.Scale({
+    new xeogl.Entity({
+        transform: new xeogl.Scale({
             xyz: [1, 3, 1],
-            parent: new XEO.Rotate({
+            parent: new xeogl.Rotate({
                 xyz: [0, 1, 0],
                 angle: 45,
-                parent: new XEO.Translate({
+                parent: new xeogl.Translate({
                     xyz: [-4, -6, -4],
                     parent: tableRotate
                 })
             })
         }),
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuse: [1, 0.3, 0.3]
         })
     });
 
     // Green table leg
 
-    new XEO.Entity({
-        transform: new XEO.Scale({
+    new xeogl.Entity({
+        transform: new xeogl.Scale({
             xyz: [1, 3, 1],
-            parent: new XEO.Rotate({
+            parent: new xeogl.Rotate({
                 xyz: [0, 1, 0],
                 angle: 45,
-                parent: new XEO.Translate({
+                parent: new xeogl.Translate({
                     xyz: [4, -6, -4],
                     parent: tableRotate
                 })
             })
         }),
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuse: [0.3, 1.0, 0.3]
         })
     });
 
     // Blue table leg
 
-    new XEO.Entity({
-        transform: new XEO.Scale({
+    new xeogl.Entity({
+        transform: new xeogl.Scale({
             xyz: [1, 3, 1],
-            parent: new XEO.Rotate({
+            parent: new xeogl.Rotate({
                 xyz: [0, 1, 0],
                 angle: 45,
-                parent: new XEO.Translate({
+                parent: new xeogl.Translate({
                     xyz: [4, -6, 4],
                     parent: tableRotate
                 })
             })
         }),
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuse: [0.3, 0.3, 1.0]
         })
     });
 
     // Yellow table leg
 
-    var yellowLeg = new XEO.Entity({
-        transform: new XEO.Scale({
+    var yellowLeg = new xeogl.Entity({
+        transform: new xeogl.Scale({
             xyz: [1, 3, 1],
-            parent: new XEO.Rotate({
+            parent: new xeogl.Rotate({
                 xyz: [0, 1, 0],
                 angle: 45,
-                parent: new XEO.Translate({
+                parent: new xeogl.Translate({
                     xyz: [-4, -6, 4],
                     parent: tableRotate
                 })
             })
         }),
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuse: [1.0, 1.0, 0.0]
         })
     });
 
-    new XEO.Entity({
-        geometry: new XEO.BoundaryGeometry({
+    new xeogl.Entity({
+        geometry: new xeogl.BoundaryGeometry({
             boundary: yellowLeg.worldBoundary
         }),
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuse: [0.5, 1.0, 0.5],
             emissive: [0.5, 1.0, 0.5],
             lineWidth: 2
@@ -123,22 +123,22 @@
 
     // Purple table top
 
-    var tableTop = new XEO.Entity({
-        transform: new XEO.Scale({
+    var tableTop = new xeogl.Entity({
+        transform: new xeogl.Scale({
             xyz: [6, 0.5, 6],
-            parent: new XEO.Translate({
+            parent: new xeogl.Translate({
                 xyz: [0, -3, 0],
                 parent: tableRotate
             })
         }),
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuse: [1.0, 0.3, 1.0]
         })
     });
 
     // Zoom camera out a bit
 
-    var scene = XEO.scene;
+    var scene = xeogl.scene;
 
     scene.camera.view.zoom(10);
 

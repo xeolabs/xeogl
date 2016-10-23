@@ -2,7 +2,7 @@
 
 ...
 
-##### xeoEngine version
+##### xeogl version
 
 - [ ] Dev
 - [ ] Master

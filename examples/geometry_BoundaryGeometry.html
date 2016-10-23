@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
@@ -10,19 +10,19 @@
     <script src="js/libs/dat.gui.min.js"></script>
     <link type="text/css" rel="stylesheet" href="css/dat-gui-swec.css">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br><a href="../docs/classes/BoundaryGeometry.html" target="_docs">BoundaryGeometry</a>
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br><a href="../docs/classes/BoundaryGeometry.html" target="_docs">BoundaryGeometry</a>
 </div>
 <div id="dat-gui-container">
 </div>
 
 <script>
 
-    var torus = new XEO.TorusGeometry({
+    var torus = new xeogl.TorusGeometry({
         radius: 1.0,
         tube: 0.3,
         radialSegments: 32,
@@ -30,12 +30,12 @@
         arc: Math.PI * 2.0
     });
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
         geometry: torus,
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             ambient: [0.3, 0.3, 0.3],
             shininess: 30,
-            diffuseMap: new XEO.Texture({
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/uvGrid2.jpg"
             }),
             lineWidth:2,
@@ -43,11 +43,11 @@
         })
     });
 
-    var boundaryObject = new XEO.Entity({
-        geometry: new XEO.BoundaryGeometry({
+    var boundaryObject = new xeogl.Entity({
+        geometry: new xeogl.BoundaryGeometry({
             boundary: entity.worldBoundary
         }),
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuse: [0.5, 1.0, 0.5],
             emissive: [0.5, 1.0, 0.5],
             lineWidth:2

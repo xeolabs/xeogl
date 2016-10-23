@@ -17,9 +17,9 @@
 
  // Create an entity
 
- var entity = new XEO.Entity({
-     geometry: new XEO.TorusGeometry(),
-     material: new XEO.PhongMaterial({         
+ var entity = new xeogl.Entity({
+     geometry: new xeogl.TorusGeometry(),
+     material: new xeogl.PhongMaterial({
          diffuse: [0.4, 0.4, 0.9]
      })
  });
@@ -31,7 +31,7 @@
 
  // Highlight the entity
 
- var entityHighlight = new XEO.HighlightEntityEffect();
+ var entityHighlight = new xeogl.HighlightEntityEffect();
 
  entityHighlight.entity = entity;
  entityHighlight.active = true;  // Active by default
@@ -55,35 +55,35 @@
 
     "use strict";
 
-    XEO.HighlightEntityEffect = XEO.Component.extend({
+    xeogl.HighlightEntityEffect = xeogl.Component.extend({
 
-        type: "XEO.HighlightEntityEffect",
+        type: "xeogl.HighlightEntityEffect",
 
         _init: function (cfg) {
 
-            this._helper = this.create(XEO.Entity, {
+            this._helper = this.create(xeogl.Entity, {
 
                 geometry: null,
                 transform: null,
 
-                material: this.create(XEO.PhongMaterial, {
+                material: this.create(xeogl.PhongMaterial, {
                     emissive: [0.6, 0.6, 0.6],
                     opacity: 0.6
                 }, "material"),
 
-                visibility: this.create(XEO.Visibility, {
+                visibility: this.create(xeogl.Visibility, {
                     visible: false
                 }),
 
-                modes: this.create(XEO.Modes, {
+                modes: this.create(xeogl.Modes, {
                     transparent: true
                 }, "modes"),
 
-                stage: this.create(XEO.Stage, {
+                stage: this.create(xeogl.Stage, {
                     priority: 2
                 }, "stage"),
 
-                depthBuf: this.create(XEO.DepthBuf, {
+                depthBuf: this.create(xeogl.DepthBuf, {
                     active: false
                 }, "depthBuf")
             });
@@ -116,7 +116,7 @@
                      */
                     this._attach({
                         name: "entity",
-                        type: "XEO.Entity",
+                        type: "xeogl.Entity",
                         component: value,
                         sceneDefault: false,
 

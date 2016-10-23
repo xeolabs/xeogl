@@ -16,28 +16,28 @@
  the viewpoint, as if far away.
 
  ````javascript
- new XEO.Entity({
+ new xeogl.Entity({
 
-     geometry: new XEO.BoxGeometry({
+     geometry: new xeogl.BoxGeometry({
          xSize: 1,
          ySize: 1,
          zSize: 1
      }),
 
-     material: new XEO.PhongMaterial({
-         diffuseMap: new XEO.Texture({
+     material: new xeogl.PhongMaterial({
+         diffuseMap: new xeogl.Texture({
             src: "textures/diffuse/uvGrid2.jpg"
          })
      }),
 
-     stationary: new XEO.Stationary({ // Locks position with respect to viewpoint
+     stationary: new xeogl.Stationary({ // Locks position with respect to viewpoint
          active: true
      })
  });
  ````
 
  @class Stationary
- @module XEO
+ @module xeogl
  @submodule transforms
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Stationary in the default
@@ -52,15 +52,15 @@
 
     "use strict";
 
-    XEO.Stationary = XEO.Component.extend({
+    xeogl.Stationary = xeogl.Component.extend({
 
-        type: "XEO.Stationary",
+        type: "xeogl.Stationary",
 
         _init: function (cfg) {
 
             this._super(cfg);
 
-            this._state = new XEO.renderer.Stationary({
+            this._state = new xeogl.renderer.Stationary({
                 active: true
             });
 

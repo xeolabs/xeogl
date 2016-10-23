@@ -1,39 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br><a
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br><a
         href="../docs/classes/KeyboardRotateCamera.html" target="_docs">KeyboardRotateCamera</a>
 </div>
 
 <script>
 
-    var camera = new XEO.Camera({
-        view: new XEO.Lookat({
+    var camera = new xeogl.Camera({
+        view: new xeogl.Lookat({
             gimbalLockY: false // Default is true
         })
     });
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
         camera: camera,
-        geometry: new XEO.BoxGeometry(),
-        material: new XEO.PhongMaterial({
-            diffuseMap: new XEO.Texture({
+        geometry: new xeogl.BoxGeometry(),
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/uvGrid2.jpg"
             })
         })
     });
 
-    var control = new XEO.KeyboardRotateCamera({
+    var control = new xeogl.KeyboardRotateCamera({
         camera: camera,
         sensitivity: 0.5
     });

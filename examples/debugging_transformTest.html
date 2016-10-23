@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
 
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a>
+    <a href="http://xeogl.org">xeogl</a>
     <br><br>
     <ul>
         <li>
-            <!--using the <a href="js/debug/debug.js" target="_docs">XEO.debug</a> helper utility to visualize the result of-->
-            <!--the <a href="../docs/classes/XEO.math.math.html#method_transformPoint4">XEO.math.rayTriangleIntersect</a> function-->
+            <!--using the <a href="js/debug/debug.js" target="_docs">xeogl.debug</a> helper utility to visualize the result of-->
+            <!--the <a href="../docs/classes/xeogl.math.math.html#method_transformPoint4">xeogl.math.rayTriangleIntersect</a> function-->
         </li>
     </ul>
 
@@ -42,19 +42,19 @@
 
     var axis = [0.3, 0.3, 0.3];
 
-    var matrix = XEO.math.mat4();
+    var matrix = xeogl.math.mat4();
 
-    var entity = new XEO.Entity({
-        geometry: new XEO.Geometry({
+    var entity = new xeogl.Entity({
+        geometry: new xeogl.Geometry({
             primitive: "lines",
-            positions: XEO.math.flatten(positions),
+            positions: xeogl.math.flatten(positions),
             indices: [
                 0, 1, 1, 2, 2, 3, 3, 0, 4,
                 5, 5, 6, 6, 7, 7, 4, 0, 4,
                 1, 5, 2, 6, 3, 7
             ]
         }),
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             emissive: [0.6, 0.9, 0.6],
             diffuse: [0, 0, 0],
             specular: [0, 0, 0],
@@ -62,9 +62,9 @@
         })
     });
 
-    var boundary = new XEO.Entity({
-        geometry: new XEO.BoundaryGeometry(),
-        material: new XEO.PhongMaterial({
+    var boundary = new xeogl.Entity({
+        geometry: new xeogl.BoundaryGeometry(),
+        material: new xeogl.PhongMaterial({
             emissive: [0.9, 0.6, 0.6],
             diffuse: [0, 0, 0],
             specular: [0, 0, 0],
@@ -82,26 +82,26 @@
 
     function update() {
 
-        var scale = XEO.math.scalingMat4v([0.5, 0.3, 0.3]);
-        var translate = XEO.math.translationMat4v([-2, 0, 0]);
-        var rotate = XEO.math.rotationMat4v(angle, axis);
+        var scale = xeogl.math.scalingMat4v([0.5, 0.3, 0.3]);
+        var translate = xeogl.math.translationMat4v([-2, 0, 0]);
+        var rotate = xeogl.math.rotationMat4v(angle, axis);
 
-        var matrix = XEO.math.mat4();
+        var matrix = xeogl.math.mat4();
 
-        XEO.math.identityMat4(matrix);
+        xeogl.math.identityMat4(matrix);
 
-        XEO.math.mulMat4(matrix, rotate, matrix);
-        XEO.math.mulMat4(matrix, translate, matrix);
+        xeogl.math.mulMat4(matrix, rotate, matrix);
+        xeogl.math.mulMat4(matrix, translate, matrix);
 
-        XEO.math.mulMat4(matrix, scale, matrix);
+        xeogl.math.mulMat4(matrix, scale, matrix);
 
-        XEO.math.transformPoints3(matrix, positions, positions2);
+        xeogl.math.transformPoints3(matrix, positions, positions2);
 
-        var aabb = XEO.math.points3ToAABB3(positions2);
+        var aabb = xeogl.math.points3ToAABB3(positions2);
 
         boundary.geometry.aabb = aabb;
 
-        entity.geometry.positions = XEO.math.flatten(positions2);
+        entity.geometry.positions = xeogl.math.flatten(positions2);
 
         angle += 0.01;
     }

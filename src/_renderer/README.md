@@ -1,1 +1,1 @@
-Private renderer at the core of xeoEngine
+Private renderer at the core of xeogl

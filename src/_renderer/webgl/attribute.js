@@ -3,16 +3,16 @@
     "use strict";
 
     /**
-     * An attribute within a {@link XEO.renderer.webgl.Shader}
+     * An attribute within a {@link xeogl.renderer.webgl.Shader}
      */
-    XEO.renderer.webgl.Attribute = function (gl, location) {
+    xeogl.renderer.webgl.Attribute = function (gl, location) {
 
         this.gl = gl;
 
         this.location = location;
     };
 
-    XEO.renderer.webgl.Attribute.prototype.bindFloatArrayBuffer = function (buffer) {
+    xeogl.renderer.webgl.Attribute.prototype.bindFloatArrayBuffer = function (buffer) {
 
         if (buffer) {
 
@@ -25,7 +25,7 @@
         }
     };
 
-    XEO.renderer.webgl.Attribute.prototype.bindInterleavedFloatArrayBuffer = function (components, stride, byteOffset) {
+    xeogl.renderer.webgl.Attribute.prototype.bindInterleavedFloatArrayBuffer = function (components, stride, byteOffset) {
 
         this.gl.enableVertexAttribArray(this.location);
 

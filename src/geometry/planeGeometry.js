@@ -13,9 +13,9 @@
  diffuse {{#crossLink "Texture"}}{{/crossLink}}:
 
  ````javascript
- new XEO.Entity({
+ new xeogl.Entity({
 
-     geometry: new XEO.PlaneGeometry({
+     geometry: new xeogl.PlaneGeometry({
          primitive: "triangles",
          xSize: 2,
          zSize: 2,
@@ -24,8 +24,8 @@
          lod: 1.0 // Default
      }),
 
-     material: new XEO.PhongMaterial({
-        diffuseMap: new XEO.Texture({
+     material: new xeogl.PhongMaterial({
+        diffuseMap: new xeogl.Texture({
             src: "textures/diffuse/uvGrid2.jpg"
         })
      })
@@ -33,7 +33,7 @@
  ````
 
  @class PlaneGeometry
- @module XEO
+ @module xeogl
  @submodule geometry
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this PlaneGeometry in the default
@@ -55,9 +55,9 @@
 
     "use strict";
 
-    XEO.PlaneGeometry = XEO.Geometry.extend({
+    xeogl.PlaneGeometry = xeogl.Geometry.extend({
 
-        type: "XEO.PlaneGeometry",
+        type: "xeogl.PlaneGeometry",
 
         _init: function (cfg) {
 

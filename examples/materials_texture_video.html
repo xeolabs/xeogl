@@ -1,43 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>diffuse video <a
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>diffuse video <a
         href="../docs/classes/Texture.html"
         target="_docs">Texture</a>
 </div>
 
 <script>
 
-    var geometry = new XEO.BoxGeometry({
+    var geometry = new xeogl.BoxGeometry({
         xSize: 1,
         ySize: 1,
         zSize: 1
     });
 
-    var diffuseMap = new XEO.Texture({
+    var diffuseMap = new xeogl.Texture({
         src: "textures/diffuse/testDiffuseMap.png"
     });
 
-    var material = new XEO.PhongMaterial({
+    var material = new xeogl.PhongMaterial({
         diffuseMap: diffuseMap
     });
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
         geometry: geometry,
         material: material,
 
         // Show backfaces
-        modes: new XEO.Modes({
+        modes: new xeogl.Modes({
             backfaces: true
         })
     });

@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
 
     <script src="js/effects/zSpaceEffect.js"></script>
     <script src="js/controls/zSpaceStylusControl.js"></script>
@@ -17,7 +17,7 @@
 
 <div id="infoLight"
      style="left: 0; text-align: left; background: black; opacity: 0.7; padding: 8px; color: white; font-size: 14pt;">
-    <span><a href="http://xeoengine.org" target="_home">xeoEngine</a><br>
+    <span><a href="http://xeogl.org" target="_home">xeogl</a><br>
         using <a
                 href="../docs/classes/Model.html"
                 target="_docs">Model</a> and <a
@@ -32,7 +32,7 @@
     // Load a glTF Reciprocating Saw model into the default Scene
     //----------------------------------------------------------------------------
 
-    var model = new XEO.Model({
+    var model = new xeogl.Model({
         src: "models/gltf/Reciprocating_Saw/Reciprocating_Saw.gltf"
     });
 
@@ -48,7 +48,7 @@
         // 2. Flatten each Entity's transform hierarchy down to one Transform.
         //---------------------------------------------------------------------------------------
 
-        var entities = model.collection.types["XEO.Entity"];
+        var entities = model.collection.types["xeogl.Entity"];
         var entity;
 
         for (var entityId in entities) {
@@ -68,11 +68,11 @@
 
                     // If an entity has a transform that has a parent, then the entity's
                     // transform hierarchy needs collapsing. Bake the hierarchy into
-                    // a matrix on a single XEO.Transform and set that as the entity's new transform.
+                    // a matrix on a single xeogl.Transform and set that as the entity's new transform.
                     // Store the new transform in the Model's Collection so that
                     // it gets destroyed when the Model is destroyed or reloaded
 
-                    model.collection.add(entity.transform = new XEO.Transform({
+                    model.collection.add(entity.transform = new xeogl.Transform({
                         matrix: entity.transform.leafMatrix
                     }));
                 }
@@ -97,22 +97,22 @@
     // Allow camera control with keyboard and mouse
     //----------------------------------------------------------------------------
 
-    var cameraControl = new XEO.CameraControl();
+    var cameraControl = new xeogl.CameraControl();
     cameraControl.mouseZoom.sensitivity = 3;
 
     //---------------------------------------------------
     // Create a zSpace effect and stylus control
     //---------------------------------------------------
 
-    var zspaceEffect = new XEO.ZSpaceEffect({
+    var zspaceEffect = new xeogl.ZSpaceEffect({
         canvasOffset: [310, 0]
     });
 
-    var zspaceStylusControl = new XEO.ZSpaceStylusControl();
+    var zspaceStylusControl = new xeogl.ZSpaceStylusControl();
 
     zspaceEffect.on("supported", function (supported) {
         if (!supported) {
-            document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. ";
+            document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeogl camera controls. ";
         }
     });
 

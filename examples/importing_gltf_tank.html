@@ -1,34 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>importing glTF using an <a
-        href="../docs/classes/Import.html" target="_docs">XEO.Import</a> component
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>importing glTF using an <a
+        href="../docs/classes/Import.html" target="_docs">xeogl.Import</a> component
 </div>
 
 <script>
 
-    var gearbox = new XEO.Import({
+    var gearbox = new xeogl.Import({
         src: "models/gltf/tank/tank.gltf"
     });
 
-    var collectionBoundary = new XEO.CollectionBoundary({
+    var collectionBoundary = new xeogl.CollectionBoundary({
         collection: gearbox.collection
     });
 
-    var control = new XEO.CameraControl();
+    var control = new xeogl.CameraControl();
 
-    var animation = new XEO.CameraFlight();
+    var animation = new xeogl.CameraFlight();
 
     gearbox.on("loaded",
             function () {

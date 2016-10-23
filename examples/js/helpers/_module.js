@@ -1,6 +1,6 @@
 /**
  * Components to help visualise other components.
  *
- * @module XEO
+ * @module xeogl
  * @submodule helpers
  */

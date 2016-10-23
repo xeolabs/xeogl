@@ -2,7 +2,7 @@
  A **ZSpaceEffect** makes its {{#crossLink "Scene"}}{{/crossLink}} viewable with a zSpace viewer.
 
  <ul>
- <li>Plug-and-play: just create a ZSpaceEffect within your xeoEngine {{#crossLink "Scene"}}{{/crossLink}} to make it viewable with a ZSpace display.</li>
+ <li>Plug-and-play: just create a ZSpaceEffect within your xeogl {{#crossLink "Scene"}}{{/crossLink}} to make it viewable with a ZSpace display.</li>
  <li>Activate or disable the ZSpaceEffect at any time to switch between zSpace mode and normal mono viewing mode.</li>
  <li>Requires WebGL2 and WebVR support, which you'll have if you're running on a zSpace viewer.</li>
  <li>Attaches to a {{#crossLink "Camera"}}{{/crossLink}}, defaults to its {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
@@ -28,22 +28,22 @@
 
  ## Usage
 
- In the following example we're going to set up a ZSpace-viewable scene with xeoEngine, defining the scene step-by-step to
- emphasize the plug-and-play design of xeoEngine's API.
+ In the following example we're going to set up a ZSpace-viewable scene with xeogl, defining the scene step-by-step to
+ emphasize the plug-and-play design of xeogl's API.
 
  **1. Create an entity**
 
- First we'll create a simple torus-shaped {{#crossLink "Entity"}}{{/crossLink}}, which will be within xeoEngine's default
+ First we'll create a simple torus-shaped {{#crossLink "Entity"}}{{/crossLink}}, which will be within xeogl's default
  {{#crossLink "Scene"}}{{/crossLink}}, since we're not defining the {{#crossLink "Scene"}}{{/crossLink}} component
  explicitly. Our {{#crossLink "Entity"}}{{/crossLink}} is also implicitly connected to the
  {{#crossLink "Scene"}}{{/crossLink}}'s default {{#crossLink "Camera"}}{{/crossLink}}, since we didn't explicitly create
  a {{#crossLink "Camera"}}{{/crossLink}} for it either.
 
  ````javascript
- var entity = new XEO.Entity({
-     geometry: new XEO.TorusGeometry(),
-     material: new XEO.PhongMaterial({
-        diffuseMap: new XEO.Texture({
+ var entity = new xeogl.Entity({
+     geometry: new xeogl.TorusGeometry(),
+     material: new xeogl.PhongMaterial({
+        diffuseMap: new xeogl.Texture({
             src: "textures/diffuse/uvGrid2.jpg"
         })
      })
@@ -55,7 +55,7 @@
  At this point we've got a textured torus floating in the middle of the canvas (which is also created automatically
  since we didn't specify one). Now we'll create a
  {{#crossLink "CameraControl"}}{{/crossLink}}, which immediately allows us to move our viewpoint around with the mouse and
- keyboard. This component is also within xeoEngine's default {{#crossLink "Scene"}}{{/crossLink}} and connected to the
+ keyboard. This component is also within xeogl's default {{#crossLink "Scene"}}{{/crossLink}} and connected to the
  {{#crossLink "Scene"}}{{/crossLink}}'s default {{#crossLink "Camera"}}{{/crossLink}}.
 
  ````javascript
@@ -94,9 +94,9 @@
 
             // Not a zSpace device
 
-            this.error("This computer is not a ZSpace viewer!"); // Log error on the XEO.ZSpaceEffect
+            this.error("This computer is not a ZSpace viewer!"); // Log error on the xeogl.ZSpaceEffect
 
-            // At this point you could just destroy the XEO.ZSpaceEffect to make it detach from the Camera
+            // At this point you could just destroy the xeogl.ZSpaceEffect to make it detach from the Camera
         }
     });
  ````
@@ -178,7 +178,7 @@
  });
  ````
  @class ZSpaceEffect
- @module XEO
+ @module xeogl
  @submodule effects
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this ZSpaceEffect in the default
@@ -203,11 +203,11 @@
 
     "use strict";
 
-    var math = XEO.math;
+    var math = xeogl.math;
 
-    XEO.ZSpaceEffect = XEO.Component.extend({
+    xeogl.ZSpaceEffect = xeogl.Component.extend({
 
-        type: "XEO.ZSpaceEffect",
+        type: "xeogl.ZSpaceEffect",
 
         _init: function (cfg) {
 
@@ -346,7 +346,7 @@
                 }
             }
 
-            // Set properties on this XEO.ZSpaceEffect (see _props below)
+            // Set properties on this xeogl.ZSpaceEffect (see _props below)
 
             this.camera = cfg.camera;
             this.canvasOffset = cfg.canvasOffset;
@@ -390,7 +390,7 @@
                      */
                     var camera = this._attach({
                         name: "camera",
-                        type: "XEO.Camera",
+                        type: "xeogl.Camera",
                         component: value,
                         sceneDefault: true
                     });
@@ -416,7 +416,7 @@
 
                 set: function (value) {
 
-                    (this._canvasOffset = this._canvasOffset || new XEO.math.vec2()).set(value || [0, 0]);
+                    (this._canvasOffset = this._canvasOffset || new xeogl.math.vec2()).set(value || [0, 0]);
 
                     this._renderer.imageDirty = true;
 
@@ -508,7 +508,7 @@
 
                 set: function (value) {
 
-                    (this._displayResolution = this._displayResolution || new XEO.math.vec2()).set(value || [1920, 1080]);
+                    (this._displayResolution = this._displayResolution || new xeogl.math.vec2()).set(value || [1920, 1080]);
 
                     this._renderer.imageDirty = true;
 
@@ -539,7 +539,7 @@
 
                 set: function (value) {
 
-                    (this._displaySize = this._displaySize || new XEO.math.vec2()).set(value || [0.521, 0.293]);
+                    (this._displaySize = this._displaySize || new xeogl.math.vec2()).set(value || [0.521, 0.293]);
 
                     this._renderer.imageDirty = true;
 
@@ -848,18 +848,18 @@
                 return; // Come back on next render, maybe we'll have a camera then
             }
 
-            // Need to have XEO.Transforms for viewing and projection
+            // Need to have xeogl.Transforms for viewing and projection
             // on the Camera, so that we can set matrices on them.
 
-            if (camera.project.type !== "XEO.Transform") {
-                this.warn("Replacing camera's projection transform with a XEO.Transform (needed for ZSpace)");
+            if (camera.project.type !== "xeogl.Transform") {
+                this.warn("Replacing camera's projection transform with a xeogl.Transform (needed for ZSpace)");
                 this._oldProject = camera.project; // Save so we can restore on deactivation
-                camera.project = camera.create(XEO.Transform);
+                camera.project = camera.create(xeogl.Transform);
             }
 
             if (!camera.view.parent) {
                 camera.view.postMultiply = true;
-                camera.view.parent = camera.create(XEO.Transform);
+                camera.view.parent = camera.create(xeogl.Transform);
             }
 
             // If we have not yet configured the scene to do two passes per frame,
@@ -1164,7 +1164,7 @@
 
         })(),
 
-        _deactivate: function () { // Deactivates this XEO.ZSpaceEffect
+        _deactivate: function () { // Deactivates this xeogl.ZSpaceEffect
 
             var scene = this.scene;
 

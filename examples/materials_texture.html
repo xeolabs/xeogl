@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>diffuse <a href="../docs/classes/Texture.html"
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>diffuse <a href="../docs/classes/Texture.html"
                                                                               target="_docs">Texture</a>
 </div>
 
 <script>
 
-    var geometry = new XEO.Sphere({
+    var geometry = new xeogl.Sphere({
         radius: 1.0,
         tube: 0.4,
         radialSegments: 32,
@@ -25,82 +25,82 @@
         arc: Math.PI * 2.0
     });
 
-    var ambientMap = new XEO.Texture({
+    var ambientMap = new xeogl.Texture({
         src: "textures/diffuse/crossGridColorMap.jpg"
     });
 
-    var diffuseMap = new XEO.Texture({
+    var diffuseMap = new xeogl.Texture({
         src: "textures/diffuse/crossGridColorMap.jpg"
     });
 
-    var emissiveMap = new XEO.Texture({
+    var emissiveMap = new xeogl.Texture({
         src: "textures/emissive/emissiveMap.jpg"
     });
 
-    var specularMap = new XEO.Texture({
+    var specularMap = new xeogl.Texture({
         src: "textures//specular/specularMap.jpg"
     });
 
-    var opacityMap = new XEO.Texture({
+    var opacityMap = new xeogl.Texture({
         src: "textures/opacity/crossGridOpacityMap.jpg"
     });
 
     // Diffuse map
 
-    new XEO.Entity({
+    new xeogl.Entity({
         geometry: geometry,
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuseMap: diffuseMap
         }),
-        transform: new XEO.Translate({
+        transform: new xeogl.Translate({
             xyz: [-6, 0, 0]
         })
     });
 
     // Emissive map
 
-    new XEO.Entity({
+    new xeogl.Entity({
         geometry: geometry,
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuse: [0,0,0],
             emissiveMap: emissiveMap
         }),
-        transform: new XEO.Translate({
+        transform: new xeogl.Translate({
             xyz: [-3, 0, 0]
         })
     });
 
     // Ambient map
 
-    new XEO.Entity({
+    new xeogl.Entity({
         geometry: geometry,
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             ambientMap: ambientMap
         }),
-        transform: new XEO.Translate({
+        transform: new xeogl.Translate({
             xyz: [0, 0, 0]
         })
     });
 
     // Specular map
 
-    new XEO.Entity({
+    new xeogl.Entity({
         geometry: geometry,
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             shininess: 30,
             specularMap: specularMap,
             diffuse: [0.1, 0.1, 0.4]
         }),
-        transform: new XEO.Translate({
+        transform: new xeogl.Translate({
             xyz: [3, 0, 0]
         })
     });
 
-    var scene = XEO.scene;
+    var scene = xeogl.scene;
 
     scene.camera.view.zoom(10);
 
-    new XEO.CameraControl();
+    new xeogl.CameraControl();
 
 </script>
 </body>

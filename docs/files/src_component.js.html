@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/component.js - xeoengine</title>
+    <title>src/component.js - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -14,12 +14,10 @@
 <div id="doc">
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
-
-                <h1 style="color:white;"><a href="../../">xeoEngine</a> / <a href="../../docs">API Docs</a></h1>
-
+                <h1><img src="../../assets/images/logo.png" title="xeogl"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.0</em>
+            <em>API Docs for: 1.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -27,7 +25,7 @@
         <div class="yui3-u-1-4">
             <div id="docs-sidebar" class="sidebar apidocs">
                 <div id="api-list">
-                
+                    <h2 class="off-left">APIs</h2>
                     <div id="api-tabview" class="tabview">
                         <ul class="tabs">
                             <li><a href="#api-classes">Classes</a></li>
@@ -83,7 +81,6 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/MegaTexture.html">MegaTexture</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
@@ -103,7 +100,6 @@
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
-                                <li><a href="../classes/Render.html">Render</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
@@ -125,41 +121,40 @@
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/WebVR.html">WebVR</a></li>
-                                <li><a href="../classes/XEO.html">XEO</a></li>
-                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
+                                <li><a href="../classes/xeogl.html">xeogl</a></li>
+                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
                                 <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
                                 <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
-                                <li><a href="..//modules/animation.html">animation</a></li>
-                                <li><a href="..//modules/boundaries.html">boundaries</a></li>
-                                <li><a href="..//modules/camera.html">camera</a></li>
-                                <li><a href="..//modules/canvas.html">canvas</a></li>
-                                <li><a href="..//modules/clipping.html">clipping</a></li>
-                                <li><a href="..//modules/collections.html">collections</a></li>
-                                <li><a href="..//modules/configs.html">configs</a></li>
-                                <li><a href="..//modules/controls.html">controls</a></li>
-                                <li><a href="..//modules/culling.html">culling</a></li>
-                                <li><a href="..//modules/curves.html">curves</a></li>
-                                <li><a href="..//modules/effects.html">effects</a></li>
-                                <li><a href="..//modules/entities.html">entities</a></li>
-                                <li><a href="..//modules/geometry.html">geometry</a></li>
-                                <li><a href="..//modules/importing.html">importing</a></li>
-                                <li><a href="..//modules/input.html">input</a></li>
-                                <li><a href="..//modules/interaction.html">interaction</a></li>
-                                <li><a href="..//modules/lighting.html">lighting</a></li>
-                                <li><a href="..//modules/materials.html">materials</a></li>
-                                <li><a href="..//modules/math.html">math</a></li>
-                                <li><a href="..//modules/paths.html">paths</a></li>
-                                <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/shaders.html">shaders</a></li>
-                                <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
-                                <li><a href="..//modules/transforms.html">transforms</a></li>
-                                <li><a href="..//modules/webvr.html">webvr</a></li>
-                                <li><a href="..//modules/xeo.html">xeo</a></li>
-                                <li><a href="..//modules/XEO.html">XEO</a></li>
-                                <li><a href="..//modules/xeogl.html">xeogl</a></li>
+                                <li><a href="../modules/animation.html">animation</a></li>
+                                <li><a href="../modules/boundaries.html">boundaries</a></li>
+                                <li><a href="../modules/camera.html">camera</a></li>
+                                <li><a href="../modules/canvas.html">canvas</a></li>
+                                <li><a href="../modules/clipping.html">clipping</a></li>
+                                <li><a href="../modules/collections.html">collections</a></li>
+                                <li><a href="../modules/configs.html">configs</a></li>
+                                <li><a href="../modules/controls.html">controls</a></li>
+                                <li><a href="../modules/culling.html">culling</a></li>
+                                <li><a href="../modules/curves.html">curves</a></li>
+                                <li><a href="../modules/effects.html">effects</a></li>
+                                <li><a href="../modules/entities.html">entities</a></li>
+                                <li><a href="../modules/geometry.html">geometry</a></li>
+                                <li><a href="../modules/importing.html">importing</a></li>
+                                <li><a href="../modules/input.html">input</a></li>
+                                <li><a href="../modules/interaction.html">interaction</a></li>
+                                <li><a href="../modules/lighting.html">lighting</a></li>
+                                <li><a href="../modules/materials.html">materials</a></li>
+                                <li><a href="../modules/math.html">math</a></li>
+                                <li><a href="../modules/paths.html">paths</a></li>
+                                <li><a href="../modules/rendering.html">rendering</a></li>
+                                <li><a href="../modules/shaders.html">shaders</a></li>
+                                <li><a href="../modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="../modules/transforms.html">transforms</a></li>
+                                <li><a href="../modules/webvr.html">webvr</a></li>
+                                <li><a href="../modules/xeo.html">xeo</a></li>
+                                <li><a href="../modules/xeogl.html">xeogl</a></li>
                             </ul>
                         </div>
                     </div>
@@ -167,28 +162,28 @@
             </div>
         </div>
         <div class="yui3-u-3-4">
-                <!--<div id="api-options">-->
-                    <!--Show:-->
-                    <!--<label for="api-show-inherited">-->
-                        <!--<input type="checkbox" id="api-show-inherited" checked>-->
-                        <!--Inherited-->
-                    <!--</label>-->
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
             
-                    <!--<label for="api-show-protected">-->
-                        <!--<input type="checkbox" id="api-show-protected">-->
-                        <!--Protected-->
-                    <!--</label>-->
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
             
-                    <!--<label for="api-show-private">-->
-                        <!--<input type="checkbox" id="api-show-private">-->
-                        <!--Private-->
-                    <!--</label>-->
-                    <!--<label for="api-show-deprecated">-->
-                        <!--<input type="checkbox" id="api-show-deprecated">-->
-                        <!--Deprecated-->
-                    <!--</label>-->
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
             
-                <!--</div>-->
+                </div>
             
             <div class="apidocs">
                 <div id="docs-main">
@@ -199,7 +194,7 @@
     <pre class="code prettyprint linenums">
 /**
 
- **Component** is the base class for all xeoEngine components.
+ **Component** is the base class for all xeogl components.
 
  ## Contents
 
@@ -213,28 +208,28 @@
 
  ## &lt;a name=&quot;ids&quot;&gt;Component IDs&lt;/a&gt;
 
- Every Component has an ID that&#x27;s unique within the parent {{#crossLink &quot;Scene&quot;}}{{/crossLink}}. xeoEngine generates
+ Every Component has an ID that&#x27;s unique within the parent {{#crossLink &quot;Scene&quot;}}{{/crossLink}}. xeogl generates
  the IDs automatically by default, however you can also specify them yourself. In the example below, we&#x27;re creating a
  scene comprised of {{#crossLink &quot;Scene&quot;}}{{/crossLink}}, {{#crossLink &quot;Material&quot;}}{{/crossLink}}, {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} and
- {{#crossLink &quot;Entity&quot;}}{{/crossLink}} components, while letting xeoEngine generate its own ID for
+ {{#crossLink &quot;Entity&quot;}}{{/crossLink}} components, while letting xeogl generate its own ID for
  the {{#crossLink &quot;Geometry&quot;}}{{/crossLink}}:
 
  &#x60;&#x60;&#x60;&#x60;javascript
  // The Scene is a Component too
- var scene = new XEO.Scene({
+ var scene = new xeogl.Scene({
     id: &quot;myScene&quot;
 });
 
- var material = new XEO.PhongMaterial(scene, {
+ var material = new xeogl.PhongMaterial(scene, {
     id: &quot;myMaterial&quot;
 });
 
- var geometry = new XEO.Geometry(scene, {
+ var geometry = new xeogl.Geometry(scene, {
     id: &quot;myGeometry&quot;
 });
 
- // Let xeoEngine automatically generate the ID for our Entity
- var entity = new XEO.Entity(scene, {
+ // Let xeogl automatically generate the ID for our Entity
+ var entity = new xeogl.Entity(scene, {
     material: material,
     geometry: geometry
 });
@@ -244,7 +239,7 @@
 
  &#x60;&#x60;&#x60;&#x60;javascript
  // Find the Scene
- var theScene = XEO.scenes[&quot;myScene&quot;];
+ var theScene = xeogl.scenes[&quot;myScene&quot;];
 
  // Find the Material
  var theMaterial = theScene.components[&quot;myMaterial&quot;];
@@ -252,7 +247,7 @@
 
  ## &lt;a name=&quot;componentProps&quot;&gt;Properties&lt;/a&gt;
 
- Almost every property on a xeoEngine Component fires a change event when you update it. For example, we can subscribe
+ Almost every property on a xeogl Component fires a change event when you update it. For example, we can subscribe
  to the {{#crossLink &quot;PhongMaterial/diffuse:event&quot;}}{{/crossLink}} event that a
  {{#crossLink &quot;Material&quot;}}{{/crossLink}} fires when its {{#crossLink &quot;PhongMaterial/diffuse:property&quot;}}{{/crossLink}}
  property is updated, like so:
@@ -282,7 +277,7 @@
 });
 
  // Now replace that Material with another
- entity1.material = new XEO.PhongMaterial({
+ entity1.material = new xeogl.PhongMaterial({
     id: &quot;myOtherMaterial&quot;,
     diffuse: [ 0.3, 0.3, 0.6 ]
     //..
@@ -297,7 +292,7 @@
 
  &#x60;&#x60;&#x60;&#x60;javascript
  // Scene with authoring metadata
- var scene = new XEO.Scene({
+ var scene = new xeogl.Scene({
     id: &quot;myScene&quot;,
     meta: {
         title: &quot;My awesome 3D scene&quot;,
@@ -307,7 +302,7 @@
 });
 
  // Material with descriptive metadata
- var material = new XEO.PhongMaterial(scene, {
+ var material = new xeogl.PhongMaterial(scene, {
     id: &quot;myMaterial&quot;,
     diffuse: [1, 0, 0],
     meta: {
@@ -381,20 +376,20 @@
  will then automatically link to the {{#crossLink &quot;Scene&quot;}}Scene&#x27;s{{/crossLink}} default {{#crossLink &quot;Scene/material:property&quot;}}{{/crossLink}}.
 
  @class Component
- @module XEO
+ @module xeogl
  @constructor
  @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this Component
  within the default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} DepthBuf configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Component.
- @param [cfg.isDefault] {Boolean} Set true when this is one of xeoEngine&#x27;s default components.
+ @param [cfg.isDefault] {Boolean} Set true when this is one of xeogl&#x27;s default components.
  */
 (function () {
 
     &quot;use strict&quot;;
 
-    XEO.Component = Class.extend({
+    xeogl.Component = Class.extend({
 
         __init: function () {
 
@@ -414,7 +409,7 @@
              */
             this.scene = null;
 
-            if (this.type === &quot;XEO.Scene&quot;) {
+            if (this.type === &quot;xeogl.Scene&quot;) {
 
                 this.scene = this;
 
@@ -426,7 +421,7 @@
 
                 if (arg1) {
 
-                    if (arg1.type === &quot;XEO.Scene&quot;) {
+                    if (arg1.type === &quot;xeogl.Scene&quot;) {
 
                         this.scene = arg1;
 
@@ -436,17 +431,17 @@
 
                     } else {
 
-                        // Create this component within the default XEO Scene
+                        // Create this component within the default xeogl Scene
 
-                        this.scene = XEO.scene;
+                        this.scene = xeogl.scene;
 
                         cfg = arg1;
                     }
                 } else {
 
-                    // Create this component within the default XEO Scene
+                    // Create this component within the default xeogl Scene
 
-                    this.scene = XEO.scene;
+                    this.scene = xeogl.scene;
                 }
 
                 this._renderer = this.scene._renderer;
@@ -503,7 +498,7 @@
             // Components created with #create
             this._sharedComponents = null; // Lazy-instantiated map
 
-            if (this.scene &amp;&amp; this.type !== &quot;XEO.Scene&quot;) { // HACK: Don&#x27;t add scene to itself
+            if (this.scene &amp;&amp; this.type !== &quot;xeogl.Scene&quot;) { // HACK: Don&#x27;t add scene to itself
 
                 // Register this component on its scene
                 // Assigns this component an automatic ID if not yet assigned
@@ -526,13 +521,13 @@
          This is used when &lt;a href=&quot;Scene.html#savingAndLoading&quot;&gt;loading Scenes from JSON&lt;/a&gt;, and is included in the JSON
          representation of this Component, so that this class may be instantiated when loading it from the JSON representation.
 
-         For example: &quot;XEO.AmbientLight&quot;, &quot;XEO.ColorTarget&quot;, &quot;XEO.Lights&quot; etc.
+         For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.
 
          @property type
          @type String
          @final
          */
-        type: &quot;XEO.Component&quot;,
+        type: &quot;xeogl.Component&quot;,
 
         /**
          An array of strings that indicates the chain of super-types within this component&#x27;s inheritance hierarchy.
@@ -542,7 +537,7 @@
          then this property will have the value:
 
          &#x60;&#x60;&#x60;&#x60;json
-         [&quot;XEO.Component&quot;, &quot;XEO.Transform&quot;]
+         [&quot;xeogl.Component&quot;, &quot;xeogl.Transform&quot;]
          &#x60;&#x60;&#x60;&#x60;
 
          Note that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.
@@ -565,23 +560,23 @@
          #### Examples:
 
          &#x60;&#x60;&#x60;&#x60;javascript
-         var myRotate = new XEO.Rotate({ ... });
+         var myRotate = new xeogl.Rotate({ ... });
 
-         myRotate.isType(XEO.Component); // Returns true for all XEO components
-         myRotate.isType(&quot;XEO.Component&quot;); // Returns true for all XEO components
-         myRotate.isType(XEO.Rotate); // Returns true
-         myRotate.isType(XEO.Transform); // Returns true
-         myRotate.isType(&quot;XEO.Transform&quot;); // Returns true
-         myRotate.isType(XEO.Entity); // Returns false, because XEO.Rotate does not (even indirectly) extend XEO.Entity
+         myRotate.isType(xeogl.Component); // Returns true for all xeogl components
+         myRotate.isType(&quot;xeogl.Component&quot;); // Returns true for all xeogl components
+         myRotate.isType(xeogl.Rotate); // Returns true
+         myRotate.isType(xeogl.Transform); // Returns true
+         myRotate.isType(&quot;xeogl.Transform&quot;); // Returns true
+         myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (even indirectly) extend xeogl.Entity
          &#x60;&#x60;&#x60;&#x60;
 
          @method isType
-         @param  {String|Function} type Component type to compare with, eg &quot;XEO.PhongMaterial&quot;, or a XEO component constructor.
+         @param  {String|Function} type Component type to compare with, eg &quot;xeogl.PhongMaterial&quot;, or a xeogl component constructor.
          @returns {Boolean} True if this component is of given type or is subclass of the given type.
          */
         isType: function (type) {
 
-            if (!XEO._isString(type)) {
+            if (!xeogl._isString(type)) {
 
                 // Handle constructor arg
 
@@ -591,7 +586,7 @@
                 }
             }
 
-            return XEO._isComponentType(this.type, type);
+            return xeogl._isComponentType(this.type, type);
         },
 
         /**
@@ -668,7 +663,7 @@
                 this._events = {};
             }
             if (!this._handleMap) {
-                this._handleMap = new XEO.utils.Map(); // Subscription handle pool
+                this._handleMap = new xeogl.utils.Map(); // Subscription handle pool
             }
             if (!this._handleEvents) {
                 this._handleEvents = {};
@@ -761,8 +756,8 @@
         },
 
         _message: function (message) {
-            // return &quot; [&quot; + (this.type.indexOf(&quot;XEO.&quot;) &gt; -1 ? this.type.substring(4) : this.type) + &quot; &quot; + XEO._inQuotes(this.id) + &quot;]: &quot; + message;
-            return &quot; [&quot; + this.type + &quot; &quot; + XEO._inQuotes(this.id) + &quot;]: &quot; + message;
+            // return &quot; [&quot; + (this.type.indexOf(&quot;xeogl.&quot;) &gt; -1 ? this.type.substring(4) : this.type) + &quot; &quot; + xeogl._inQuotes(this.id) + &quot;]: &quot; + message;
+            return &quot; [&quot; + this.type + &quot; &quot; + xeogl._inQuotes(this.id) + &quot;]: &quot; + message;
         },
 
         /**
@@ -834,7 +829,7 @@
 
             delete json.id;
 
-            return new this.constructor(this.scene, XEO._apply(cfg, json));
+            return new this.constructor(this.scene, xeogl._apply(cfg, json));
         },
 
         /**
@@ -880,7 +875,7 @@
 
             if (component) {
 
-                if (XEO._isNumeric(component) || XEO._isString(component)) {
+                if (xeogl._isNumeric(component) || xeogl._isString(component)) {
 
                     // Component ID given
                     // Both numeric and string IDs are supported
@@ -893,16 +888,16 @@
 
                         // Quote string IDs in errors
 
-                        this.error(&quot;Component not found: &quot; + XEO._inQuotes(id));
+                        this.error(&quot;Component not found: &quot; + xeogl._inQuotes(id));
                         return;
                     }
 
-                } else if (XEO._isObject(component)) {
+                } else if (xeogl._isObject(component)) {
 
                     // Component config given
 
                     var componentCfg = component;
-                    var componentType = componentCfg.type || type || &quot;XEO.Component&quot;;
+                    var componentType = componentCfg.type || type || &quot;xeogl.Component&quot;;
                     var componentClass = window[componentType];
 
                     if (!componentClass) {
@@ -911,7 +906,7 @@
                     }
 
                     if (type) {
-                        if (!XEO._isComponentType(componentType, type)) {
+                        if (!xeogl._isComponentType(componentType, type)) {
                             this.error(&quot;Expected a &quot; + type + &quot; type or subtype, not a &quot; + componentType);
                             return;
                         }
@@ -959,14 +954,14 @@
             if (component) {
 
                 if (component.scene.id !== this.scene.id) {
-                    this.error(&quot;Not in same scene: &quot; + component.type + &quot; &quot; + XEO._inQuotes(component.id));
+                    this.error(&quot;Not in same scene: &quot; + component.type + &quot; &quot; + xeogl._inQuotes(component.id));
                     return;
                 }
 
                 if (type) {
 
                     if (!component.isType(type)) {
-                        this.error(&quot;Expected a &quot; + type + &quot; type or subtype: &quot; + component.type + &quot; &quot; + XEO._inQuotes(component.id));
+                        this.error(&quot;Expected a &quot; + type + &quot; type or subtype: &quot; + component.type + &quot; &quot; + xeogl._inQuotes(component.id));
                         return;
                     }
                 }
@@ -1004,7 +999,7 @@
 
                 var onDetached = oldAttachment.params.onDetached;
                 if (onDetached) {
-                    if (XEO._isFunction(onDetached)) {
+                    if (xeogl._isFunction(onDetached)) {
                         onDetached(component);
                     } else {
                         onDetached.scope ? onDetached.callback.call(onDetached.scope, component) : onDetached.callback(component);
@@ -1056,7 +1051,7 @@
 
                 var onAttached = params.onAttached;
                 if (onAttached) {
-                    if (XEO._isFunction(onAttached)) {
+                    if (xeogl._isFunction(onAttached)) {
                         onAttached(component);
                     } else {
                         onAttached.scope ? onAttached.callback.call(onAttached.scope, component) : onAttached.callback(component);
@@ -1075,7 +1070,7 @@
 
                             handler = on[event];
 
-                            if (XEO._isFunction(handler)) {
+                            if (xeogl._isFunction(handler)) {
                                 callback = handler;
                                 scope = null;
                             } else {
@@ -1111,7 +1106,7 @@
          * The method is given a component type, configuration and optional instance ID, like so:
          *
          * &#x60;&#x60;&#x60;&#x60;javascript
-         * var material = myComponent.create(XEO.PhongMaterial, {
+         * var material = myComponent.create(xeogl.PhongMaterial, {
          *      diffuse: [1,0,0],
          *      specular: [1,1,0]
          * }, &quot;myMaterial&quot;);
@@ -1124,7 +1119,7 @@
          * component instance that it returned the first time, and will ignore the configuration:
          *
          * &#x60;&#x60;&#x60;&#x60;javascript
-         * var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, &quot;myMaterial&quot;);
+         * var material2 = component.create(xeogl.PhongMaterial, { specular: [1,1,0] }, &quot;myMaterial&quot;);
          * &#x60;&#x60;&#x60;&#x60;
          *
          * So in this example, our {{#crossLink &quot;PhongMaterial&quot;}}{{/crossLink}} will continue to have the red specular
@@ -1136,8 +1131,8 @@
          * times as you got it, the Scene will destroy the component.
          *
          * @method create
-         * @param {String} type Component type - either a string like &quot;XEO.PhongMaterial&quot; or the actual
-         * constructor function, ie. XEO.PhongMaterial.
+         * @param {String} type Component type - either a string like &quot;xeogl.PhongMaterial&quot; or the actual
+         * constructor function, ie. xeogl.PhongMaterial.
          * @param {*} [cfg] Configuration for the component instance - only used if this is the first time you are getting
          * the component, ignored when reusing an existing instance.
          * @param {String|Number} [instanceId] Identifies the shared component instance. Note that this is not used as the ID of the
@@ -1186,9 +1181,9 @@
             if (!this._updateScheduled) {
                 this._updateScheduled = true;
                 if (priority === 0) {
-                    XEO.deferTask(this._doUpdate, this);
+                    xeogl.deferTask(this._doUpdate, this);
                 } else {
-                    XEO.scheduleTask(this._doUpdate, this);
+                    xeogl.scheduleTask(this._doUpdate, this);
                 }
             }
         },
@@ -1215,7 +1210,7 @@
 
         /**
          * Protected template method, implemented by sub-classes to compile
-         * their state into their Scene&#x27;s XEO.renderer.Renderer.
+         * their state into their Scene&#x27;s xeogl.renderer.Renderer.
          *
          * @protected
          */
@@ -1243,11 +1238,11 @@
                         id: this.id // Only output user-defined IDs
                     };
 
-                    if (!XEO._isEmptyObject(this.meta)) {
+                    if (!xeogl._isEmptyObject(this.meta)) {
                         json.meta = this.meta;
                     }
 
-                    return this._getJSON ? XEO._apply(this._getJSON(), json) : json;
+                    return this._getJSON ? xeogl._apply(this._getJSON(), json) : json;
                 }
             }
             ,

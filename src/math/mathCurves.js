@@ -1,9 +1,9 @@
-XEO.math.tangentQuadraticBezier = function (t, p0, p1, p2) {
+xeogl.math.tangentQuadraticBezier = function (t, p0, p1, p2) {
     return 2 * ( 1 - t ) * ( p1 - p0 ) + 2 * t * ( p2 - p1 );
 
 };
 
-XEO.math.tangentQuadraticBezier = function (t, p0, p1, p2, p3) {
+xeogl.math.tangentQuadraticBezier = function (t, p0, p1, p2, p3) {
     return -3 * p0 * (1 - t) * (1 - t) +
         3 * p1 * (1 - t) * (1 - t) - 6 * t * p1 * (1 - t) +
         6 * t * p2 * (1 - t) - 3 * t * t * p2 +
@@ -11,7 +11,7 @@ XEO.math.tangentQuadraticBezier = function (t, p0, p1, p2, p3) {
 
 };
 
-XEO.math.tangentSpline = function (t, p0, p1, p2, p3) {
+xeogl.math.tangentSpline = function (t, p0, p1, p2, p3) {
 
     var h00 = 6 * t * t - 6 * t;
     var h10 = 3 * t * t - 4 * t + 1;
@@ -24,7 +24,7 @@ XEO.math.tangentSpline = function (t, p0, p1, p2, p3) {
 
 // Catmull-Rom
 
-XEO.math.catmullRomInterpolate = function (p0, p1, p2, p3, t) {
+xeogl.math.catmullRomInterpolate = function (p0, p1, p2, p3, t) {
     var v0 = ( p2 - p0 ) * 0.5;
     var v1 = ( p3 - p1 ) * 0.5;
     var t2 = t * t;
@@ -38,46 +38,46 @@ XEO.math.catmullRomInterpolate = function (p0, p1, p2, p3, t) {
 
 // Quad Bezier Functions
 
-XEO.math.b2p0 = function (t, p) {
+xeogl.math.b2p0 = function (t, p) {
     var k = 1 - t;
     return k * k * p;
 
 };
 
-XEO.math.b2p1 = function (t, p) {
+xeogl.math.b2p1 = function (t, p) {
     return 2 * ( 1 - t ) * t * p;
 };
 
-XEO.math.b2p2 = function (t, p) {
+xeogl.math.b2p2 = function (t, p) {
     return t * t * p;
 };
 
-XEO.math.b2 = function (t, p0, p1, p2) {
+xeogl.math.b2 = function (t, p0, p1, p2) {
     return this.b2p0(t, p0) + this.b2p1(t, p1) + this.b2p2(t, p2);
 };
 
 // Cubic Bezier Functions
 
-XEO.math.b3p0 = function (t, p) {
+xeogl.math.b3p0 = function (t, p) {
     var k = 1 - t;
     return k * k * k * p;
 };
 
-XEO.math.b3p1 = function (t, p) {
+xeogl.math.b3p1 = function (t, p) {
     var k = 1 - t;
     return 3 * k * k * t * p;
 };
 
-XEO.math.b3p2 = function (t, p) {
+xeogl.math.b3p2 = function (t, p) {
     var k = 1 - t;
     return 3 * k * t * t * p;
 };
 
-XEO.math.b3p3 = function (t, p) {
+xeogl.math.b3p3 = function (t, p) {
     return t * t * t * p;
 };
 
-XEO.math.b3 = function (t, p0, p1, p2, p3) {
+xeogl.math.b3 = function (t, p0, p1, p2, p3) {
     return this.b3p0(t, p0) + this.b3p1(t, p1) + this.b3p2(t, p2) + this.b3p3(t, p3);
 };
 

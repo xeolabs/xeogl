@@ -15,7 +15,7 @@
  </ul>
 
  @class Curve
- @module XEO
+ @module xeogl
  @submodule curves
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
@@ -29,7 +29,7 @@
 
     "use strict";
 
-    XEO.Curve = XEO.Component.extend({
+    xeogl.Curve = xeogl.Component.extend({
 
         /**
          JavaScript class name for this Component.
@@ -38,7 +38,7 @@
          @type String
          @final
          */
-        type: "XEO.Curve",
+        type: "xeogl.Curve",
 
         _init: function (cfg) {
 
@@ -137,9 +137,9 @@
             var pt1 = this.getPoint(t1);
             var pt2 = this.getPoint(t2);
 
-            var vec = XEO.math.subVec3(pt2, pt1, []);
+            var vec = xeogl.math.subVec3(pt2, pt1, []);
 
-            return XEO.math.normalizeVec3(vec, []);
+            return xeogl.math.normalizeVec3(vec, []);
         },
 
 
@@ -216,7 +216,7 @@
             for (p = 1; p <= divisions; p++) {
 
                 current = this.getPoint(p / divisions);
-                sum += XEO.math.lenVec3(XEO.math.subVec3(current, last, []));
+                sum += xeogl.math.lenVec3(xeogl.math.subVec3(current, last, []));
                 cache.push(sum);
                 last = current;
 

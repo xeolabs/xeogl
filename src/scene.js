@@ -8,8 +8,8 @@
  {{#crossLink "Lights"}}Lights{{/crossLink}} etc.  Each {{#crossLink "Entity"}}Entity{{/crossLink}} has a link to one of each of the other types,
  and the same component instances can be shared among many {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- *** Under the hood:*** Within xeoEngine, each {{#crossLink "Entity"}}Entity{{/crossLink}} represents a draw call,
- while its components define all the WebGL state that will be bound for that call. To render a Scene, xeoEngine traverses
+ *** Under the hood:*** Within xeogl, each {{#crossLink "Entity"}}Entity{{/crossLink}} represents a draw call,
+ while its components define all the WebGL state that will be bound for that call. To render a Scene, xeogl traverses
  the graph to bind the states and make the draw calls, while using many optimizations for efficiency (eg. draw list caching and GL state sorting).
 
  <img src="../../../assets/images/Scene.png"></img>
@@ -50,17 +50,17 @@
  override the default components that the Scene would have provided them, and that the same component instances may be shared among multiple Entities.
 
  ```` javascript
- var scene = new XEO.Scene({
+ var scene = new xeogl.Scene({
        id: "myScene"   // ID is optional on all components
   });
 
- var material = new XEO.PhongMaterial(myScene, {
+ var material = new xeogl.PhongMaterial(myScene, {
        id: "myMaterial",         // We'll use this ID to show how to find components by ID
        diffuse: [ 0.6, 0.6, 0.7 ],
        specular: [ 1.0, 1.0, 1.0 ]
    });
 
- var geometry = new XEO.Geometry(myScene, {
+ var geometry = new xeogl.Geometry(myScene, {
        primitive: "triangles",
        positions: [...],
        normals: [...],
@@ -68,16 +68,16 @@
        indices: [...]
   });
 
- var camera = new XEO.Camera(myScene);
+ var camera = new xeogl.Camera(myScene);
 
- var entity1 = new XEO.Entity(myScene, {
+ var entity1 = new xeogl.Entity(myScene, {
        material: myMaterial,
        geometry: myGeometry,
        camera: myCamera
   });
 
  // Second entity uses Scene's default Material
- var entity3 = new XEO.Entity(myScene, {
+ var entity3 = new xeogl.Entity(myScene, {
        geometry: myGeometry,
        camera: myCamera
   });
@@ -89,10 +89,10 @@
 
  ## <a name="findingByID">Finding Scenes and Components by ID</a>
 
- We can have as many Scenes as we want, and can find them by ID on the {{#crossLink "XEO"}}XEO{{/crossLink}} entity's {{#crossLink "XEO/scenes:property"}}scenes{{/crossLink}} map:
+ We can have as many Scenes as we want, and can find them by ID on the {{#crossLink "xeogl"}}xeogl{{/crossLink}} entity's {{#crossLink "xeogl/scenes:property"}}scenes{{/crossLink}} map:
 
  ````javascript
- var theScene = XEO.scenes["myScene"];
+ var theScene = xeogl.scenes["myScene"];
  ````
 
  Likewise we can find a Scene's components within the Scene itself, such as the {{#crossLink "Material"}}Material{{/crossLink}} we
@@ -104,18 +104,18 @@
 
  ## <a name="defaults">The Default Scene</a>
 
- When you create components without specifying a Scene for them, xeoEngine will put them in its default Scene.
+ When you create components without specifying a Scene for them, xeogl will put them in its default Scene.
 
  For example:
 
  ```` javascript
 
- var material2 = new XEO.PhongMaterial({
+ var material2 = new xeogl.PhongMaterial({
     diffuse: { r: 0.6, g: 0.6, b: 0.7 },
     specular: { 1.0, 1.0, 1.0 }
 });
 
- var geometry2 = new XEO.Geometry({
+ var geometry2 = new xeogl.Geometry({
      primitive: "triangles",
      positions: [...],
      normals: [...],
@@ -123,20 +123,20 @@
      indices: [...]
 });
 
- var camera = new XEO.Camera();
+ var camera = new xeogl.Camera();
 
- var entity1 = new XEO.Entity({
+ var entity1 = new xeogl.Entity({
      material: material2,
      geometry: geometry2,
      camera: camera2
 });
  ````
 
- You can then obtain the default Scene from the {{#crossLink "XEO"}}XEO{{/crossLink}} entity's
- {{#crossLink "XEO/scene:property"}}scene{{/crossLink}} property:
+ You can then obtain the default Scene from the {{#crossLink "xeogl"}}xeogl{{/crossLink}} entity's
+ {{#crossLink "xeogl/scene:property"}}scene{{/crossLink}} property:
 
  ````javascript
- var theScene = XEO.scene;
+ var theScene = xeogl.scene;
  ````
 
  or from one of the components we just created:
@@ -144,9 +144,9 @@
  var theScene = material2.scene;
  ````
 
- ***Note:*** xeoEngine creates the default Scene as soon as you either
+ ***Note:*** xeogl creates the default Scene as soon as you either
  create your first Sceneless {{#crossLink "Entity"}}Entity{{/crossLink}} or reference the
- {{#crossLink "XEO"}}XEO{{/crossLink}} entity's {{#crossLink "XEO/scene:property"}}scene{{/crossLink}} property. Expect to
+ {{#crossLink "xeogl"}}xeogl{{/crossLink}} entity's {{#crossLink "xeogl/scene:property"}}scene{{/crossLink}} property. Expect to
  see the HTML canvas for the default Scene magically appear in the page when you do that.
 
  ## <a name="webgl2">WebGL 2</a>
@@ -155,7 +155,7 @@
  You can force the Scene to use WebGL 1 by supplying this property to teh Scene's constructor:
 
  ````javascript
- var scene = new XEO.Scene({
+ var scene = new xeogl.Scene({
      webgl2: false // Default is true
  });
 
@@ -173,7 +173,7 @@
  var json = myScene.json;
 
  // Create another scene from that JSON, in a fresh canvas:
- var myOtherScene = new XEO.Scene({
+ var myOtherScene = new xeogl.Scene({
       json: json
   });
 
@@ -184,10 +184,10 @@
 
 
  @class Scene
- @module XEO
+ @module xeogl
  @constructor
  @param [cfg] Scene parameters
- @param [cfg.id] {String} Optional ID, unique among all Scenes in xeoEngine, generated automatically when omitted.
+ @param [cfg.id] {String} Optional ID, unique among all Scenes in xeogl, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Scene.
  @param [cfg.canvasId] {String} ID of existing HTML5 canvas in the DOM - creates a full-page canvas automatically if this is omitted
  @param [cfg.webgl2=true] {Boolean} Set this false when we **don't** want to use WebGL 2 for our Scene; the Scene will fall
@@ -222,9 +222,9 @@
      * @event warn
      * @param {String} value The warning message
      */
-    XEO.Scene = XEO.Component.extend({
+    xeogl.Scene = xeogl.Component.extend({
 
-        type: "XEO.Scene",
+        type: "xeogl.Scene",
 
         _init: function (cfg) {
 
@@ -232,7 +232,7 @@
 
             var transparent = !!cfg.transparent;
 
-            this._componentIDMap = new XEO.utils.Map();
+            this._componentIDMap = new xeogl.utils.Map();
 
             /**
              * The epoch time (in milliseconds since 1970) when this Scene was instantiated.
@@ -250,7 +250,7 @@
              * contained in {{#crossLink "Entity/components:property"}}{{/crossLink}}.
              *
              * @property components
-             * @type {String:XEO.Component}
+             * @type {String:xeogl.Component}
              */
             this.components = {};
 
@@ -259,7 +259,7 @@
              * IDs to instances.
              *
              * @property types
-             * @type {String:{String:XEO.Component}}
+             * @type {String:{String:xeogl.Component}}
              */
             this.types = {};
 
@@ -271,7 +271,7 @@
              * will also be contained in {{#crossLink "Entity/components:property"}}{{/crossLink}}.
              *
              * @property entities
-             * @type {String:XEO.Entity}
+             * @type {String:xeogl.Entity}
              */
             this.entities = {};
 
@@ -284,7 +284,7 @@
             // Count of references to components created with #getSharedComponent
             this._sharedCounts = {};
 
-            // Contains XEO.Entities that need to be recompiled back into this._renderer
+            // Contains xeogl.Entities that need to be recompiled back into this._renderer
             this._dirtyEntities = {};
 
             /**
@@ -294,7 +294,7 @@
              * @property configs
              * @type {Configs}
              */
-            this.configs = new XEO.Configs(this, cfg.configs);
+            this.configs = new xeogl.Configs(this, cfg.configs);
 
             /**
              * Manages the HTML5 canvas for this Scene.
@@ -302,7 +302,7 @@
              * @property canvas
              * @type {Canvas}
              */
-            this.canvas = new XEO.Canvas(this, {
+            this.canvas = new xeogl.Canvas(this, {
                 canvas: cfg.canvas, // Can be canvas ID, canvas element, or null
                 transparent: transparent,
                 backgroundColor: cfg.backgroundColor,
@@ -319,10 +319,10 @@
 
             this.canvas.on("webglContextFailed",
                 function () {
-                    alert("xeoEngine failed to find WebGL!");
+                    alert("xeogl failed to find WebGL!");
                 });
 
-            this._renderer = new XEO.renderer.Renderer(XEO.stats, this.canvas.canvas, this.canvas.gl, {
+            this._renderer = new xeogl.renderer.Renderer(xeogl.stats, this.canvas.canvas, this.canvas.gl, {
                 transparent: transparent
             });
 
@@ -333,17 +333,17 @@
              * @type {Input}
              * @final
              */
-            this.input = new XEO.Input(this, {
+            this.input = new xeogl.Input(this, {
                 element: this.canvas.overlay
             });
 
             // Register Scene on engine
             // Do this BEFORE we add components below
-            XEO._addScene(this);
+            xeogl._addScene(this);
 
             // Add components specified as JSON
             // This will also add the default components for this Scene,
-            // if this JSON was serialized from a XEO.Scene instance.
+            // if this JSON was serialized from a xeogl.Scene instance.
 
             var componentJSONs = cfg.components;
 
@@ -417,7 +417,7 @@
                 // User-supplied ID
 
                 if (this.components[c.id]) {
-                    this.error("Component " + XEO._inQuotes(c.id) + " already exists in Scene");
+                    this.error("Component " + xeogl._inQuotes(c.id) + " already exists in Scene");
                     return;
                 }
             } else {
@@ -431,7 +431,7 @@
 
             // Register for class type
 
-            //var type = c.type.indexOf("XEO.") > -1 ? c.type.substring(4) : c.type;
+            //var type = c.type.indexOf("xeogl.") > -1 ? c.type.substring(4) : c.type;
             var type = c.type;
 
             var types = this.types[c.type];
@@ -447,9 +447,9 @@
                 this._componentDestroyed(c);
             }, this);
 
-            if (c.isType("XEO.Entity")) {
+            if (c.isType("xeogl.Entity")) {
 
-                // Component is a XEO.Entity, or a subtype thereof
+                // Component is a xeogl.Entity, or a subtype thereof
 
                 c.on("dirty", this._entityDirty, this);
 
@@ -465,7 +465,7 @@
 
                 // Update scene statistics
 
-                XEO.stats.components.entities++;
+                xeogl.stats.components.entities++;
             }
 
             /**
@@ -475,7 +475,7 @@
              */
             this.fire("componentCreated", c, true);
 
-            //self.log("Created " + c.type + " " + XEO._inQuotes(c.id));
+            //self.log("Created " + c.type + " " + xeogl._inQuotes(c.id));
         },
 
         // Callbacks as members to reduce GC churn
@@ -492,20 +492,20 @@
 
                 delete types[c.id];
 
-                if (XEO._isEmptyObject(types)) {
+                if (xeogl._isEmptyObject(types)) {
                     delete this.types[c.type];
                 }
             }
 
-            if (c.isType("XEO.Entity")) {
+            if (c.isType("xeogl.Entity")) {
 
-                // Component is a XEO.Entity, or a subtype thereof
+                // Component is a xeogl.Entity, or a subtype thereof
 
                 // Update scene statistics,
                 // Unschedule any pending recompilation of
                 // the Entity into the renderer
 
-                XEO.stats.components.entities--;
+                xeogl.stats.components.entities--;
 
                 delete this.entities[c.id];
 
@@ -519,7 +519,7 @@
              */
             this.fire("componentDestroyed", c, true);
 
-            //this.log("Destroyed " + c.type + " " + XEO._inQuotes(c.id));
+            //this.log("Destroyed " + c.type + " " + xeogl._inQuotes(c.id));
         },
 
         _entityDirty: function (entity) {
@@ -536,7 +536,7 @@
                 // TODO: Getting 'location is not from current program' when this is
                 // uncommented on chrome/windows
 
-                //XEO.scheduleTask(function () {
+                //xeogl.scheduleTask(function () {
                 //    if (self._dirtyEntities[entity.id]) {
                 //        if (entity._valid()) {
                 //            entity._compile();
@@ -619,7 +619,7 @@
                     if (value === undefined || value === null) {
                         value = 1;
 
-                    } else if (!XEO._isNumeric(value) || value <= 0) {
+                    } else if (!xeogl._isNumeric(value) || value <= 0) {
 
                         this.error("Unsupported value for 'passes': '" + value +
                             "' - should be an integer greater than zero.");
@@ -707,7 +707,7 @@
 
                 get: function () {
                     return this.components["default.project"] ||
-                        new XEO.Perspective(this, {
+                        new xeogl.Perspective(this, {
                             id: "default.project",
                             isDefault: true
                         });
@@ -730,7 +730,7 @@
 
                 get: function () {
                     return this.components["default.view"] ||
-                        new XEO.Lookat(this, {
+                        new xeogl.Lookat(this, {
                             id: "default.view",
                             isDefault: true
                         });
@@ -753,7 +753,7 @@
 
                 get: function () {
                     return this.components["default.camera"] ||
-                        new XEO.Camera(this, {
+                        new xeogl.Camera(this, {
                             id: "default.camera",
                             isDefault: true,
                             project: "default.project",
@@ -779,7 +779,7 @@
 
                 get: function () {
                     return this.components["default.transform"] ||
-                        new XEO.Transform(this, {
+                        new xeogl.Transform(this, {
                             id: "default.transform",
                             isDefault: true
                         });
@@ -802,7 +802,7 @@
             billboard: {
                 get: function () {
                     return this.components["default.billboard"] ||
-                        new XEO.Billboard(this, {
+                        new xeogl.Billboard(this, {
                             id: "default.billboard",
                             active: false,
                             isDefault: true
@@ -826,7 +826,7 @@
             stationary: {
                 get: function () {
                     return this.components["default.stationary"] ||
-                        new XEO.Stationary(this, {
+                        new xeogl.Stationary(this, {
                             id: "default.stationary",
                             active: false,
                             isDefault: true
@@ -850,7 +850,7 @@
 
                 get: function () {
                     return this.components["default.clips"] ||
-                        new XEO.Clips(this, {
+                        new xeogl.Clips(this, {
                             id: "default.clips",
                             isDefault: true
                         });
@@ -873,7 +873,7 @@
 
                 get: function () {
                     return this.components["default.colorBuf"] ||
-                        new XEO.ColorBuf(this, {
+                        new xeogl.ColorBuf(this, {
                             id: "default.colorBuf",
                             isDefault: true
                         });
@@ -896,7 +896,7 @@
             colorTarget: {
                 get: function () {
                     return this.components["default.colorTarget"] ||
-                        new XEO.ColorTarget(this, {
+                        new xeogl.ColorTarget(this, {
                             id: "default.colorTarget",
                             isDefault: true,
                             active: false
@@ -920,7 +920,7 @@
             depthBuf: {
                 get: function () {
                     return this.components["default.depthBuf"] ||
-                        new XEO.DepthBuf(this, {
+                        new xeogl.DepthBuf(this, {
                             id: "default.depthBuf",
                             isDefault: true,
                             active: true
@@ -944,7 +944,7 @@
             depthTarget: {
                 get: function () {
                     return this.components["default.depthTarget"] ||
-                        new XEO.DepthTarget(this, {
+                        new xeogl.DepthTarget(this, {
                             id: "default.depthTarget",
                             isDefault: true,
                             active: false
@@ -967,7 +967,7 @@
             visibility: {
                 get: function () {
                     return this.components["default.visibility"] ||
-                        new XEO.Visibility(this, {
+                        new xeogl.Visibility(this, {
                             id: "default.visibility",
                             isDefault: true,
                             visible: true
@@ -990,7 +990,7 @@
             cull: {
                 get: function () {
                     return this.components["default.cull"] ||
-                        new XEO.Cull(this, {
+                        new xeogl.Cull(this, {
                             id: "default.cull",
                             isDefault: true,
                             culled: false
@@ -1013,7 +1013,7 @@
             modes: {
                 get: function () {
                     return this.components["default.modes"] ||
-                        new XEO.Modes(this, {
+                        new xeogl.Modes(this, {
                             id: "default.modes",
                             isDefault: true
                         });
@@ -1034,7 +1034,7 @@
             geometry: {
                 get: function () {
                     return this.components["default.geometry"] ||
-                        new XEO.BoxGeometry(this, {
+                        new xeogl.BoxGeometry(this, {
                             id: "default.geometry",
                             isDefault: true
                         });
@@ -1056,7 +1056,7 @@
             layer: {
                 get: function () {
                     return this.components["default.layer"] ||
-                        new XEO.Layer(this, {
+                        new xeogl.Layer(this, {
                             id: "default.layer",
                             isDefault: true,
                             priority: 0
@@ -1081,24 +1081,24 @@
             lights: {
                 get: function () {
                     return this.components["default.lights"] ||
-                        new XEO.Lights(this, {
+                        new xeogl.Lights(this, {
                             id: "default.lights",
                             isDefault: true,
 
-                            // By default a XEO.Lights has an empty lights
+                            // By default a xeogl.Lights has an empty lights
                             // property, so we must provide some lights
 
                             lights: [
 
                                 // Ambient light source #0
-                                new XEO.AmbientLight(this, {
+                                new xeogl.AmbientLight(this, {
                                     id: "default.light0",
                                     color: [0.45, 0.45, 0.5],
                                     intensity: 0.9
                                 }),
 
                                 // Directional light source #1
-                                new XEO.DirLight(this, {
+                                new xeogl.DirLight(this, {
                                     id: "default.light1",
                                     dir: [-0.5, 0.5, -0.6],
                                     color: [0.8, 0.8, 0.7],
@@ -1107,7 +1107,7 @@
                                 }),
                                 //
                                 // Directional light source #2
-                                new XEO.DirLight(this, {
+                                new xeogl.DirLight(this, {
                                     id: "default.light2",
                                     dir: [0.5, -0.5, -0.6],
                                     color: [0.8, 0.8, 0.8],
@@ -1135,7 +1135,7 @@
             material: {
                 get: function () {
                     return this.components["default.material"] ||
-                        new XEO.PhongMaterial(this, {
+                        new xeogl.PhongMaterial(this, {
                             id: "default.material",
                             isDefault: true
                         });
@@ -1157,7 +1157,7 @@
             morphTargets: {
                 get: function () {
                     return this.components["default.morphTargets"] ||
-                        new XEO.MorphTargets(this, {
+                        new xeogl.MorphTargets(this, {
                             id: "default.morphTargets",
                             isDefault: true
                         });
@@ -1180,7 +1180,7 @@
             reflect: {
                 get: function () {
                     return this.components["default.reflect"] ||
-                        new XEO.Reflect(this, {
+                        new xeogl.Reflect(this, {
                             id: "default.reflect",
                             isDefault: true
                         });
@@ -1203,7 +1203,7 @@
             shader: {
                 get: function () {
                     return this.components["default.shader"] ||
-                        this.components["default.shader"] || new XEO.Shader(this, {
+                        this.components["default.shader"] || new xeogl.Shader(this, {
                             id: "default.shader",
                             isDefault: true
                         });
@@ -1226,7 +1226,7 @@
             shaderParams: {
                 get: function () {
                     return this.components["default.shaderParams"] ||
-                        new XEO.ShaderParams(this, {
+                        new xeogl.ShaderParams(this, {
                             id: "default.shaderParams",
                             isDefault: true
                         });
@@ -1249,7 +1249,7 @@
             stage: {
                 get: function () {
                     return this.components["default.stage"] ||
-                        new XEO.Stage(this, {
+                        new xeogl.Stage(this, {
                             id: "default.stage",
                             priority: 0,
                             isDefault: true
@@ -1274,7 +1274,7 @@
             viewport: {
                 get: function () {
                     return this.components["default.viewport"] ||
-                        new XEO.Viewport(this, {
+                        new xeogl.Viewport(this, {
                             id: "default.viewport",
                             autoBoundary: true,
                             isDefault: true
@@ -1307,9 +1307,9 @@
                     if (!this._worldBoundary) {
 
                         var self = this;
-                        var aabb = XEO.math.AABB3();
+                        var aabb = xeogl.math.AABB3();
 
-                        this._worldBoundary = new XEO.Boundary3D(this.scene, {
+                        this._worldBoundary = new xeogl.Boundary3D(this.scene, {
 
                             getDirty: function () {
                                 return self._worldBoundaryDirty;
@@ -1317,7 +1317,7 @@
 
                             getAABB: function () {
 
-                                XEO.math.collapseAABB3(aabb);
+                                xeogl.math.collapseAABB3(aabb);
 
                                 var entities = self.entities;
                                 var entity;
@@ -1332,7 +1332,7 @@
                                             // Only include boundaries of entities that are allowed
                                             // to contribute to the size of an enclosing boundary
 
-                                            XEO.math.expandAABB3(aabb, entity.worldBoundary.aabb);
+                                            xeogl.math.expandAABB3(aabb, entity.worldBoundary.aabb);
                                         }
                                     }
                                 }
@@ -1454,7 +1454,7 @@
 
             // Cached vectors to avoid garbage collection
 
-            var math = XEO.math;
+            var math = xeogl.math;
 
             var localRayOrigin = math.vec3();
             var localRayDir = math.vec3();
@@ -1582,7 +1582,7 @@
 
                     var entity = this.entities[hit.entity];
 
-                    hit.entity = entity; // Swap string ID for XEO.Entity
+                    hit.entity = entity; // Swap string ID for xeogl.Entity
 
                     if (params.pickSurface) {
 
@@ -1780,7 +1780,7 @@
          * The method is given a component type, share ID and constructor attributes, like so:
          *
          * ````javascript
-         * var material = myScene.getComponent("XEO.PhongMaterial", "myMaterial", { diffuse: [1,0,0] });
+         * var material = myScene.getComponent("xeogl.PhongMaterial", "myMaterial", { diffuse: [1,0,0] });
          * ````
          *
          * The first time you call this method for the given ````type```` and ````instanceId````, this method will create the
@@ -1790,7 +1790,7 @@
          * component instance that it returned the first time, and will ignore the attributes:
          *
          * ````javascript
-         * var material2 = myScene.getComponent("XEO.PhongMaterial", "myMaterial", { specular: [1,1,0] });
+         * var material2 = myScene.getComponent("xeogl.PhongMaterial", "myMaterial", { specular: [1,1,0] });
          * ````
          *
          * Each time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a
@@ -1800,7 +1800,7 @@
          *
          * @method _getSharedComponent
          * @private
-         * @param {String|Function} type Component type, eg "XEO.PhongMaterial", or constructor.
+         * @param {String|Function} type Component type, eg "xeogl.PhongMaterial", or constructor.
          * @param {*} [cfg] Attributes for the component instance - only used if this is the first time you are getting
          * the component, ignored when reusing an existing shared component.
          * @param {String|Number} instanceId Identifies the shared component instance. Note that this is not used as the ID of the
@@ -1833,9 +1833,9 @@
 
             var clazz;
 
-            if (XEO._isString(type)) {
-                var type2 = type.substring(3); // Find constructor on the XEO namespace
-                clazz = XEO[type2];
+            if (xeogl._isString(type)) {
+                var type2 = type.substring(3); // Find constructor on the xeogl namespace
+                clazz = xeogl[type2];
                 if (!clazz) {
                     this.error("Component type not found: '" + type + "'");
                     return null;
@@ -1845,7 +1845,7 @@
             }
 
             if (cfg && cfg.id && this.components[cfg.id]) {
-                this.error("Component " + XEO._inQuotes(cfg.id) + " already exists in Scene");
+                this.error("Component " + xeogl._inQuotes(cfg.id) + " already exists in Scene");
                 return null;
             }
 
@@ -1918,7 +1918,7 @@
             }
 
             if (countCompiledEntities > 0) {
-                //    this.log("Compiled " + countCompiledEntities + " XEO.Entity" + (countCompiledEntities > 1 ? "s" : ""));
+                //    this.log("Compiled " + countCompiledEntities + " xeogl.Entity" + (countCompiledEntities > 1 ? "s" : ""));
             }
 
             // Render a frame
@@ -1948,7 +1948,7 @@
                     canvas.backgroundColor = ambientColor;
 
                     if (!this._lastAmbientColor) {
-                        this._lastAmbientColor = XEO.math.vec4();
+                        this._lastAmbientColor = xeogl.math.vec4();
                     }
 
                     this._lastAmbientColor.set(ambientColor);

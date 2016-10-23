@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>opacity <a href="../docs/classes/Fresnel.html"
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>opacity <a href="../docs/classes/Fresnel.html"
                                                                               target="_docs">Fresnel</a>
 </div>
 
@@ -19,21 +19,21 @@
 
     // Sphere
 
-    new XEO.Entity({
+    new xeogl.Entity({
 
-        geometry: new XEO.SphereGeometry({
+        geometry: new xeogl.SphereGeometry({
             radius: 2.0,
             widthSegments: 32,
             heightSegments: 24
         }),
 
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             ambient: [0.3, 0.3, 0.3],
             diffuse: [0.6, 0.9, 1.0],
             opacity: 1.0,
             shininess: 30,
 
-            diffuseMap: new XEO.Texture({
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/UVCheckerMap16.jpg",
                 minFilter: "linearMipmapLinear",
                 magFiler: "linear",
@@ -44,7 +44,7 @@
                 rotate: 0
             }),
 
-            opacityFresnel: new XEO.Fresnel({
+            opacityFresnel: new xeogl.Fresnel({
                 edgeBias: 0.4,
                 centerBias: 1.0,
                 edgeColor: [1.0, 0.0, 0.0],
@@ -53,31 +53,31 @@
             })
         }),
 
-        modes: new XEO.Modes({
+        modes: new xeogl.Modes({
             transparent: true
         })
     });
 
     // Torus
 
-    new XEO.Entity({
+    new xeogl.Entity({
 
-        geometry: new XEO.TorusGeometry({}),
+        geometry: new xeogl.TorusGeometry({}),
 
-        material: new XEO.PhongMaterial({
-            diffuseMap: new XEO.Texture({
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/uvGrid2.jpg"
             })
         }),
 
-        transform: new XEO.Translate({
+        transform: new xeogl.Translate({
             xyz: [0, 0, 0]
         })
     });
 
     // Animation
 
-    var scene = XEO.scene;
+    var scene = xeogl.scene;
 
     scene.camera.view.zoom(-5);
 

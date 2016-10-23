@@ -8,7 +8,7 @@
  ````
 
  @class CameraPathPlayer
- @module XEO
+ @module xeogl
  @submodule animation
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
@@ -26,7 +26,7 @@
 
     "use strict";
 
-    XEO.CameraPathPlayer = XEO.Component.extend({
+    xeogl.CameraPathPlayer = xeogl.Component.extend({
 
         /**
          JavaScript class name for this Component.
@@ -35,13 +35,13 @@
          @type String
          @final
          */
-        type: "XEO.CameraPathPlayer",
+        type: "xeogl.CameraPathPlayer",
 
         _init: function (cfg) {
 
             this.cameraPath = cfg.cameraPath;
 
-            this.cameraFlight = this.create(XEO.CameraFlight);
+            this.cameraFlight = this.create(xeogl.CameraFlight);
 
             if (this.cameraPath) {
                 this.cameraFlight.camera = this.cameraPath.camera;
@@ -112,7 +112,7 @@
                 set: function (value) {
                     this._attach({
                         name: "cameraPath",
-                        type: "XEO.CameraPath",
+                        type: "xeogl.CameraPath",
                         component: value,
                         sceneDefault: false
                     });

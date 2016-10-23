@@ -27,20 +27,20 @@
  an {{#crossLink "Entity"}}{{/crossLink}}, both added by instance.
 
  ````javascript
- var material = new XEO.PhongMaterial({
+ var material = new xeogl.PhongMaterial({
      id: "myMaterial",
      diffuse: [0.5, 0.5, 0.0]
  });
 
- var geometry = new XEO.BoxGeometry();
+ var geometry = new xeogl.BoxGeometry();
 
- var entity = new XEO.Entity({
+ var entity = new xeogl.Entity({
     id: "myEntity",
     material: material,
     geometry: geometry
  });
 
- var collection1 = new XEO.Collection({ // Initialize with the three components
+ var collection1 = new xeogl.Collection({ // Initialize with the three components
      components: [
          "myMaterial",
          geometry,
@@ -54,11 +54,11 @@
  that all the {{#crossLink "Entity"}}Entities{{/crossLink}} were in the Collection.
 
  ````javascript
- var collection2 = new XEO.Collection();
+ var collection2 = new xeogl.Collection();
 
  collection2.add([  // Add two components
     geometry,
-    "XEO.Entity",
+    "xeogl.Entity",
  ]);
  ````
 
@@ -68,7 +68,7 @@
 
  ````javascript
  collection1.iterate(function(component) {
-     if (component.isType("XEO.Entity")) {
+     if (component.isType("xeogl.Entity")) {
          this.log("Found the Entity: " + component.id);
      }
      //..
@@ -78,7 +78,7 @@
  A Collection also registers its components by type:
 
  ````javascript
- var entities = collection1.types["XEO.Entity"];
+ var entities = collection1.types["xeogl.Entity"];
  var theEntity = entities["myEntity"];
  ````
 
@@ -89,7 +89,7 @@
  ````javascript
  collection1.remove("myMaterial"); // Remove one component by ID
  collection1.remove([geometry, myEntity]); // Remove two components by instance
- collection2.remove("XEO.Geometry"); // Remove all Geometries
+ collection2.remove("xeogl.Geometry"); // Remove all Geometries
  ````
 
  ## Getting the boundary of a Collection
@@ -98,7 +98,7 @@
  dynamically fits to the collective World-space boundary of all the Components in a Collection.
 
  ````javascript
- var collectionBoundary = new XEO.CollectionBoundary({
+ var collectionBoundary = new xeogl.CollectionBoundary({
     collection: collection1
  });
 
@@ -126,7 +126,7 @@
 
 
  @class Collection
- @module XEO
+ @module xeogl
  @submodule collections
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
@@ -140,7 +140,7 @@
 
     "use strict";
 
-    XEO.Collection = XEO.Component.extend({
+    xeogl.Collection = xeogl.Component.extend({
 
         /**
          JavaScript class name for this Component.
@@ -149,7 +149,7 @@
          @type String
          @final
          */
-        type: "XEO.Collection",
+        type: "xeogl.Collection",
 
         _init: function (cfg) {
 
@@ -176,20 +176,20 @@
              * a map to IDs to {{#crossLink "Component"}}{{/crossLink}} instances, eg.
              *
              * ````
-             * "XEO.Geometry": {
-             *   "alpha": <XEO.Geometry>,
-             *   "beta": <XEO.Geometry>
+             * "xeogl.Geometry": {
+             *   "alpha": <xeogl.Geometry>,
+             *   "beta": <xeogl.Geometry>
              * },
-             * "XEO.Rotate": {
-             *   "charlie": <XEO.Rotate>,
-             *   "delta": <XEO.Rotate>,
-             *   "echo": <XEO.Rotate>,
+             * "xeogl.Rotate": {
+             *   "charlie": <xeogl.Rotate>,
+             *   "delta": <xeogl.Rotate>,
+             *   "echo": <xeogl.Rotate>,
              * },
              * //...
              * ````
              *
              * @property types
-             * @type {String:{String:XEO.Component}}
+             * @type {String:{String:xeogl.Component}}
              */
             this.types = {};
 
@@ -217,7 +217,7 @@
          */
         add: function (components) {
 
-            components = XEO._isArray(components) ? components : [components];
+            components = xeogl._isArray(components) ? components : [components];
 
             for (var i = 0, len = components.length; i < len; i++) {
                 this._add(components[i]);
@@ -237,7 +237,7 @@
 
                 component = c;
 
-            } else if (XEO._isNumeric(c) || XEO._isString(c)) {
+            } else if (xeogl._isNumeric(c) || xeogl._isString(c)) {
 
                 if (this.scene.types[c]) {
 
@@ -267,7 +267,7 @@
                     component = this.scene.components[c];
 
                     if (!component) {
-                        this.warn("Component not found: " + XEO._inQuotes(c));
+                        this.warn("Component not found: " + xeogl._inQuotes(c));
                         return;
                     }
                 }
@@ -281,7 +281,7 @@
 
                 // Component in wrong Scene
 
-                this.warn("Attempted to add component from different XEO.Scene: " + XEO._inQuotes(component.id));
+                this.warn("Attempted to add component from different xeogl.Scene: " + xeogl._inQuotes(component.id));
                 return;
             }
 
@@ -331,7 +331,7 @@
         _scheduleUpdate: function () {
             if (!this._dirty) {
                 this._dirty = true;
-                XEO.scheduleTask(this._notifyUpdated, this);
+                xeogl.scheduleTask(this._notifyUpdated, this);
             }
         },
 
@@ -388,7 +388,7 @@
          */
         remove: function (components) {
 
-            components = XEO._isArray(components) ? components : [components];
+            components = xeogl._isArray(components) ? components : [components];
 
             for (var i = 0, len = components.length; i < len; i++) {
                 this._remove(components[i]);
@@ -400,7 +400,7 @@
             var componentId = component.id;
 
             if (component.scene !== this.scene) {
-                this.warn("Attempted to remove component that's not in same XEO.Scene: '" + componentId + "'");
+                this.warn("Attempted to remove component that's not in same xeogl.Scene: '" + componentId + "'");
                 return;
             }
 

@@ -1,6 +1,6 @@
 /**
  * Components for viewing effects.
  *
- * @module XEO
+ * @module xeogl
  * @submodule effects
  */

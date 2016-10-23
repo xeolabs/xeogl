@@ -21,12 +21,12 @@
  </ul>
 
  ````javascript
- var depthTarget = new XEO.DepthTarget();
+ var depthTarget = new xeogl.DepthTarget();
 
  // First Entity renders to the DepthTarget
 
- var entity1 = new XEO.Entity({
-    geometry: new XEO.BoxGeometry(),
+ var entity1 = new xeogl.Entity({
+    geometry: new xeogl.BoxGeometry(),
     depthTarget: depthTarget
  });
 
@@ -34,17 +34,17 @@
  // Second Entity is textured with the
  // image of the first Entity
 
- var entity2 = new XEO.Entity({
-     geometry: new XEO.BoxGeometry()
-     material: new XEO.PhongMaterial({
-         diffuseMap: new XEO.Texture({
+ var entity2 = new xeogl.Entity({
+     geometry: new xeogl.BoxGeometry()
+     material: new xeogl.PhongMaterial({
+         diffuseMap: new xeogl.Texture({
             target: depthTarget
          })
      })
 });
  ````
  @class DepthTarget
- @module XEO
+ @module xeogl
  @submodule rendering
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this DepthTarget within the
@@ -60,14 +60,14 @@
 
     "use strict";
 
-    XEO.DepthTarget = XEO.Component.extend({
+    xeogl.DepthTarget = xeogl.Component.extend({
 
-        type: "XEO.DepthTarget",
+        type: "xeogl.DepthTarget",
 
         _init: function (cfg) {
 
-            this._state = new XEO.renderer.RenderTarget({
-                type: XEO.renderer.RenderTarget.DEPTH,
+            this._state = new xeogl.renderer.RenderTarget({
+                type: xeogl.renderer.RenderTarget.DEPTH,
                 renderBuf: null
             });
 
@@ -115,7 +115,7 @@
 
                         var canvas = this.scene.canvas;
 
-                        state.renderBuf = new XEO.renderer.webgl.RenderBuffer({
+                        state.renderBuf = new xeogl.renderer.webgl.RenderBuffer({
                             canvas: canvas.canvas,
                             gl: canvas.gl
                         });

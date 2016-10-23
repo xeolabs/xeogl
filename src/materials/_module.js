@@ -1,6 +1,6 @@
 /**
  * Components to define the surface appearance of Entities.
  *
- * @module XEO
+ * @module xeogl
  * @submodule materials
  */

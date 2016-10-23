@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <script src="js/geometry/heightmapGeometry.js"></script>
     <script src="js/effects/zSpaceEffect.js"></script>
     <script src="js/controls/zSpaceStylusControl.js"></script>
@@ -16,15 +16,15 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a>
+    <a href="http://xeogl.org" target="_home">xeogl</a>
     <br><br><a href="js/geometry/heightmapGeometry.js"
-               target="_docs">XEO.HeightmapGeometry</a>
+               target="_docs">xeogl.HeightmapGeometry</a>
 </div>
 
 <script>
 
-    var galeCrater = new XEO.Entity({
-        geometry: new XEO.HeightmapGeometry({
+    var galeCrater = new xeogl.Entity({
+        geometry: new xeogl.HeightmapGeometry({
             primitive: "triangles",
             src: "textures/height/gale-crater-mex-dem.png",
             xSize: 15,
@@ -35,13 +35,13 @@
             lod: 1.0, // Default
             autoNormals: true // Default
         }),
-        material: new XEO.PhongMaterial({
-            diffuseMap: new XEO.Texture({
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/gale-crater-mex-color-2-8192.jpg"
             }),
             specular: [0, 0, 0]
         }),
-        modes: new XEO.Modes({
+        modes: new xeogl.Modes({
             backfaces: true
         })
     });
@@ -56,21 +56,21 @@
     // Allow camera control with keyboard and mouse
     //----------------------------------------------------------------------------
 
-    var cameraControl = new XEO.CameraControl();
+    var cameraControl = new xeogl.CameraControl();
 
     //---------------------------------------------------
     // Create a zSpace effect and stylus control
     //---------------------------------------------------
 
-    var zspaceEffect = new XEO.ZSpaceEffect({
+    var zspaceEffect = new xeogl.ZSpaceEffect({
         canvasOffset: [310, 0]
     });
 
-    var zspaceStylusControl = new XEO.ZSpaceStylusControl();
+    var zspaceStylusControl = new xeogl.ZSpaceStylusControl();
 
     zspaceEffect.on("supported", function (supported) {
         if (!supported) {
-            document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeoEngine camera controls. ";
+            document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeogl camera controls. ";
         }
     });
 

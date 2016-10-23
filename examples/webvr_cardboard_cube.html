@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
 
     <script src="js/webvr/cardboard.js"></script>
 
@@ -15,7 +15,7 @@
 
 <div id="infoLight"
      style="left: 0; text-align: left; background: black; opacity: 0.7; padding: 8px; color: white; font-size: 14pt;">
-    <span><a href="http://xeoengine.org" target="_home">xeoEngine</a><br>using a <a
+    <span><a href="http://xeogl.org" target="_home">xeogl</a><br>using a <a
             href="../docs/classes/Cardboard.html"
             target="_docs">Cardboard</a> component to view a simple <a
             href="../docs/classes/Entity.html"
@@ -29,21 +29,21 @@
     // Create a spinning cube
     //---------------------------------------------------
 
-    var cube = new XEO.Entity({
-        geometry: new XEO.BoxGeometry({
+    var cube = new xeogl.Entity({
+        geometry: new xeogl.BoxGeometry({
             xSize: .6,
             ySize: .6,
             zSize: .6
         }),
-        material: new XEO.PhongMaterial({
-            diffuseMap: new XEO.Texture({
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/UVCheckerMap11-1024.png"
             })
         }),
-        modes: new XEO.Modes({
+        modes: new xeogl.Modes({
             backfaces: true
         }),
-        transform: new XEO.Rotate({
+        transform: new xeogl.Rotate({
             xyz: [0, 1, 0],
             angle: 0
         })
@@ -62,13 +62,13 @@
     // Create a Cardboard effect
     //---------------------------------------------------
 
-    var cardboard = new XEO.Cardboard();
+    var cardboard = new xeogl.Cardboard();
 
     //----------------------------------------------------------------------------
     // Allow camera control with keyboard and mouse
     //----------------------------------------------------------------------------
 
-    new XEO.CameraControl();
+    new xeogl.CameraControl();
 
 </script>
 </body>

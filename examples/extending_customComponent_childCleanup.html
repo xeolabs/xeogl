@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a>
+    <a href="http://xeogl.org">xeogl</a>
     <br><br>
 
     <ul>
-        <li>creating a new xeoEngine component type</li>
+        <li>creating a new xeogl component type</li>
         <li>making it automatically destroy its child components when destroyed</li>
     </ul>
     <br>
@@ -26,18 +26,18 @@
 
     // Define the ColoredTorus component class
 
-    XEO.ColoredTorus = XEO.Component.extend({
+    xeogl.ColoredTorus = xeogl.Component.extend({
 
-        type: "XEO.ColoredTorus",
+        type: "xeogl.ColoredTorus",
 
         _init: function (cfg) {
 
-            this._torus = this.create(XEO.Entity, {
-                geometry: this.create(XEO.TorusGeometry, {
+            this._torus = this.create(xeogl.Entity, {
+                geometry: this.create(xeogl.TorusGeometry, {
                     radius: 2,
                     tube: 0.6
                 }),
-                material: this.create(XEO.PhongMaterial, {
+                material: this.create(xeogl.PhongMaterial, {
                     diffuse: [0.5, 0.5, 0.5]
                 })
             });
@@ -66,9 +66,9 @@
         }
     });
 
-    // Instantiate a ColoredTorus (in the default XEO.Scene)
+    // Instantiate a ColoredTorus (in the default xeogl.Scene)
 
-    var coloredTorus = new XEO.ColoredTorus({
+    var coloredTorus = new xeogl.ColoredTorus({
         color: [0.3, 1.0, 0.3]
     });
 

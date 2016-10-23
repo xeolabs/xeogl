@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a>
+    <a href="http://xeogl.org">xeogl</a>
     <br><br>
     1000 spherical <a href="../docs/classes/Billboard.html" target="_docs">Billboards</a>
 </div>
@@ -20,7 +20,7 @@
 
     // Create some clouds
 
-    var geometry = new XEO.Geometry({
+    var geometry = new xeogl.Geometry({
         primitive: "triangles",
         positions: [20, 20, 0, -20, 20, 0, -20, -20, 0, 20, -20, 0],
         normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],
@@ -29,42 +29,42 @@
         indices: [2, 1, 0, 3, 2, 0]
     });
 
-    var material = new XEO.PhongMaterial({
+    var material = new xeogl.PhongMaterial({
         diffuse: [0, 0, 0],
         specular: [0, 0, 0],
         emissive: [1, 1, 1],
-        opacityMap: new XEO.Texture({
+        opacityMap: new xeogl.Texture({
             src: "textures/opacity/cloud10.png"
         }),
         opacity: 1.0
     });
 
-    var lights = new XEO.Lights({
+    var lights = new xeogl.Lights({
         lights: []
     });
 
-    var billboard = new XEO.Billboard({
+    var billboard = new xeogl.Billboard({
         spherical: true
     });
 
-    var transform = new XEO.Translate({
+    var transform = new xeogl.Translate({
         xyz: [0, 0, 0]
     });
 
-    var modes = new XEO.Modes({
+    var modes = new xeogl.Modes({
         transparent: true,
         pickable: false
     });
 
-//    var cloudsBoundary = new XEO.CollectionBoundary({
-//        collection: new XEO.Collection()
+//    var cloudsBoundary = new xeogl.CollectionBoundary({
+//        collection: new xeogl.Collection()
 //    });
 //
-//    new XEO.Entity({
-//        geometry: new XEO.BoundaryGeometry({
+//    new xeogl.Entity({
+//        geometry: new xeogl.BoundaryGeometry({
 //            boundary: cloudsBoundary.worldBoundary
 //        }),
-//        material: new XEO.PhongMaterial({
+//        material: new xeogl.PhongMaterial({
 //            diffuse: [0.5, 1.0, 0.5],
 //            emissive: [0.5, 1.0, 0.5],
 //            lineWidth: 2
@@ -78,14 +78,14 @@
 
         (function () {
 
-            var cloudObject = new XEO.Entity({
+            var cloudObject = new xeogl.Entity({
                 geometry: geometry,
                 material: material,
                 lights: lights,
                 billboard: billboard,
                 modes: modes,
 
-                transform: new XEO.Translate({
+                transform: new xeogl.Translate({
                     xyz: [
                         Math.random() * r - halfr,
                         // Math.random() * r - halfr,
@@ -94,7 +94,7 @@
                     ],
                     parent: transform
                 }),
-                layer: new XEO.Layer()
+                layer: new xeogl.Layer()
             });
 
             //cloudsBoundary.collection.add(cloudObject);
@@ -109,7 +109,7 @@
         })();
     }
 
-    var scene = XEO.scene;
+    var scene = xeogl.scene;
 
     // Move the camera a bit
 
@@ -126,11 +126,11 @@
                 view.rotateEyeY(0.2);
             });
 
-    var cameraControl = new XEO.CameraControl();
+    var cameraControl = new xeogl.CameraControl();
     cameraControl.mouseZoom.sensitivity = 5;
 
 //    setInterval(function() {
-//        (new XEO.CameraFlight()).flyTo(cloudsBoundary);
+//        (new xeogl.CameraFlight()).flyTo(cloudsBoundary);
 //    },3000);
 
 </script>

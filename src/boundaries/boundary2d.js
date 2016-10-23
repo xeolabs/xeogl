@@ -37,9 +37,9 @@
  ```` javascript
  // Entity With a Geometry and Transform
 
- var entity = new XEO.Entity({
-        geometry: new XEO.BoxGeometry(),
-        transform: new XEO.Translate({
+ var entity = new xeogl.Entity({
+        geometry: new xeogl.BoxGeometry(),
+        transform: new xeogl.Translate({
             xyz: [-5, 0, 0]
         })
   });
@@ -68,10 +68,10 @@
  ````
 
  @class Boundary2D
- @module XEO
+ @module xeogl
  @submodule boundaries
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Boundary2D within xeoEngine's default {{#crossLink "XEO/scene:property"}}scene{{/crossLink}} by default.
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Boundary2D within xeogl's default {{#crossLink "xeogl/scene:property"}}scene{{/crossLink}} by default.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Boundary.
@@ -93,9 +93,9 @@
 
     "use strict";
 
-    XEO.Boundary2D = XEO.Component.extend({
+    xeogl.Boundary2D = xeogl.Component.extend({
 
-        type: "XEO.Boundary2D",
+        type: "xeogl.Boundary2D",
 
         _init: function (cfg) {
 
@@ -233,7 +233,7 @@
 
         _buildBoundary: function () {
 
-            var math = XEO.math;
+            var math = xeogl.math;
 
             var canvas = this.scene.canvas.canvas;
             var width = canvas.width;
@@ -244,8 +244,8 @@
                 // Lazy-allocate
 
                 this._obb = [];
-                this._aabb = XEO.math.AABB2();
-                this._center = XEO.math.vec2();
+                this._aabb = xeogl.math.AABB2();
+                this._center = xeogl.math.vec2();
             }
 
             var obb = this._getOBB();

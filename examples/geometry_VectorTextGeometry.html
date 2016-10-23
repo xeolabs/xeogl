@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <script src="js/geometry/vectorTextGeometry.js"></script>
 
     <link href="css/styles.css" rel="stylesheet"/>
@@ -13,29 +13,29 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a>
+    <a href="http://xeogl.org">xeogl</a>
     <br><br>
-    <a href="../docs/classes/VectorTextGeometry.html" target="_docs">XEO.VectorTextGeometry</a> showing the sourcecode for its
+    <a href="../docs/classes/VectorTextGeometry.html" target="_docs">xeogl.VectorTextGeometry</a> showing the sourcecode for its
     scene definition
 </div>
 
 <script id="source">
 
-    var entity = new XEO.Entity({
-        geometry: new XEO.VectorTextGeometry({
+    var entity = new xeogl.Entity({
+        geometry: new xeogl.VectorTextGeometry({
             text: document.getElementById("source").innerText,
             xSize: 2,
             ySize: 2
         }),
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             emissive: [0.5, 1.0, 1.0],
             lineWidth: 2
 
         }),
-        lights: new XEO.Lights({
+        lights: new xeogl.Lights({
             lights: [] // No lights - rely on emissive color
         }),
-        transform: new XEO.Translate({
+        transform: new xeogl.Translate({
             xyz: [0, 40, 0]
         })
     });
@@ -58,7 +58,7 @@
     // Create user camera control
     // Make mouse zoom more sensitive
 
-    var cameraControl = new XEO.CameraControl();
+    var cameraControl = new xeogl.CameraControl();
     cameraControl.mouseZoom.sensitivity = 5;
 
 </script>

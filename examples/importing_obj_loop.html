@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
 
     <script src="js/importing/k3d.js"></script>
     <script src="js/importing/objGeometry.js"></script>
@@ -15,20 +15,20 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>loading .OBJ geometry using an <a
-        href="../docs/classes/OBJGeometry.html" target="_docs">XEO.OBJGeometry</a>
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>loading .OBJ geometry using an <a
+        href="../docs/classes/OBJGeometry.html" target="_docs">xeogl.OBJGeometry</a>
 </div>
 
 <script>
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
 
-        geometry: new XEO.OBJGeometry({
+        geometry: new xeogl.OBJGeometry({
             src: "models/obj/raptor.obj"
         })
     });
 
-    var flyCamera = new XEO.CameraFlight();
+    var flyCamera = new xeogl.CameraFlight();
 
     entity.geometry.on("loaded",
             function () {
@@ -40,7 +40,7 @@
 
     entity.worldBoundary.visible = true;
 
-    var control = new XEO.CameraControl();
+    var control = new xeogl.CameraControl();
 
     var models = [
         "models/obj/duck.obj",

@@ -3,11 +3,11 @@
     "use strict";
 
     /**
-     *  Manages {@link XEO.renderer.ProgramState} instances.
+     *  Manages {@link xeogl.renderer.ProgramState} instances.
      * @param stats Collects runtime statistics
      * @param gl WebGL context
      */
-    XEO.renderer.ProgramFactory = function (stats, gl) {
+    xeogl.renderer.ProgramFactory = function (stats, gl) {
 
         this.stats = stats;
 
@@ -21,7 +21,7 @@
      * Get a program that fits the given set of states.
      * Reuses any free program in the pool that matches the given hash.
      */
-    XEO.renderer.ProgramFactory.prototype.get = function (hash, states) {
+    xeogl.renderer.ProgramFactory.prototype.get = function (hash, states) {
 
         var programState = this._programStates[hash];
 
@@ -31,11 +31,11 @@
 
             // Create it and map it to the hash
 
-            var source = XEO.renderer.ProgramSourceFactory.getSource(hash, states);
+            var source = xeogl.renderer.ProgramSourceFactory.getSource(hash, states);
 
-            var program = new XEO.renderer.Program(this.stats, hash, source, this._gl);
+            var program = new xeogl.renderer.Program(this.stats, hash, source, this._gl);
 
-            programState = new XEO.renderer.ProgramState({
+            programState = new xeogl.renderer.ProgramState({
                 program: program,
                 useCount: 0
             });
@@ -53,7 +53,7 @@
     /**
      * Release a program back to the pool.
      */
-    XEO.renderer.ProgramFactory.prototype.put = function (programState) {
+    xeogl.renderer.ProgramFactory.prototype.put = function (programState) {
 
         if (--programState.useCount <= 0) {
 
@@ -63,7 +63,7 @@
             program.pickObject.destroy();
             program.pickPrimitive.destroy();
 
-            XEO.renderer.ProgramSourceFactory.putSource(program.hash);
+            xeogl.renderer.ProgramSourceFactory.putSource(program.hash);
 
             delete this._programStates[program.hash];
 
@@ -74,7 +74,7 @@
     /**
      * Rebuild all programs in the pool after WebGL context was lost and restored.
      */
-    XEO.renderer.ProgramFactory.prototype.webglRestored = function (gl) {
+    xeogl.renderer.ProgramFactory.prototype.webglRestored = function (gl) {
 
         this._gl = gl;
 
@@ -86,7 +86,7 @@
         }
     };
 
-    XEO.renderer.ProgramFactory.prototype.destroy = function () {
+    xeogl.renderer.ProgramFactory.prototype.destroy = function () {
     };
 
 })();

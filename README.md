@@ -1,24 +1,24 @@
-# xeoEngine
+# xeogl
 
-[http://xeoengine.org](http://xeoengine.org)
+[http://xeogl.org](http://xeogl.org)
 
-[![Codacy Badge](https://api.codacy.com/project/badge/grade/a834272d6bf448f7a77947d7b784f261)](https://www.codacy.com/app/lindsay-kay/xeoengine)
+[![Codacy Badge](https://api.codacy.com/project/badge/grade/a834272d6bf448f7a77947d7b784f261)](https://www.codacy.com/app/lindsay-kay/xeogl)
 
 ## About
 
-**xeoEngine** is a data-driven WebGL-based engine for quick and easy 3D visualization on the Web. 
+**xeogl** is a data-driven WebGL-based engine for quick and easy 3D visualization on the Web.
 
-Find out more in the [Getting Started](https://github.com/xeolabs/xeoengine/wiki/Getting-Started) guide.
+Find out more in the [Getting Started](https://github.com/xeolabs/xeogl/wiki/Getting-Started) guide.
 
 ## Links 
 
- - [Website](http://xeoengine.org)
- - [Examples](http://xeoengine.org/examples)
- - [Features](http://xeoengine.org#features)
- - [API Docs](http://xeoengine.org/docs/index.html)
- - [Wiki](https://github.com/xeolabs/xeoengine/wiki)
- - [Download](https://github.com/xeolabs/xeoengine/archive/master.zip)
- - [MIT License](https://github.com/xeolabs/xeoengine/blob/master/MIT-LICENSE)
+ - [Website](http://xeogl.org)
+ - [Examples](http://xeogl.org/examples)
+ - [Features](http://xeogl.org#features)
+ - [API Docs](http://xeogl.org/docs/index.html)
+ - [Wiki](https://github.com/xeolabs/xeogl/wiki)
+ - [Download](https://github.com/xeolabs/xeogl/archive/master.zip)
+ - [MIT License](https://github.com/xeolabs/xeogl/blob/master/MIT-LICENSE)
  
 ## Building
  

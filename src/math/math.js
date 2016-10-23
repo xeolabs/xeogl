@@ -45,19 +45,19 @@
 
 
     /**
-     * This utility object provides math functions that are used within xeoEngine. These functions are also part xeoEngine's
+     * This utility object provides math functions that are used within xeogl. These functions are also part xeogl's
      * public API and are therefore available for you to use within your application code.
-     * @module XEO
+     * @module xeogl
      * @submodule math
      * @class math
      * @static
      */
-    var math = XEO.math = {
+    var math = xeogl.math = {
 
         /**
          * The number of radiians in a degree (0.0174532925).
          * @property DEGTORAD
-         * @namespace XEO.math
+         * @namespace xeogl.math
          * @type {Number}
          */
         DEGTORAD: 0.0174532925,
@@ -219,7 +219,7 @@
          */
         fmod: function (a, b) {
             if (a < b) {
-                console.error("XEO.math.fmod : Attempting to find modulus within negative range - would be infinite loop - ignoring");
+                console.error("xeogl.math.fmod : Attempting to find modulus within negative range - would be infinite loop - ignoring");
                 return a;
             }
             while (b <= a) {

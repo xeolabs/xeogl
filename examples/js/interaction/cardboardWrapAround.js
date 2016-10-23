@@ -6,52 +6,52 @@
  Stereo view of an Entity with CardboardWrapAround control:
 
  ````javascript
- new XEO.Entity({
-     geometry: new XEO.BoxGeometry()
+ new xeogl.Entity({
+     geometry: new xeogl.BoxGeometry()
  });
 
  new Stereo();
 
- new XEO.CardboardWrapAround();
+ new xeogl.CardboardWrapAround();
  ````
 
  Stereo view of an Entity with CardboardWrapAround control, using custom Camera and Viewport:
 
  ````javascript
- var camera = new XEO.Camera({
-     view: new XEO.Lookat({
+ var camera = new xeogl.Camera({
+     view: new xeogl.Lookat({
          eye: [0, 0, 10],
          look: [0, 0, 0],
          up: [0, 1, 0]
      }),
-     project: new XEO.Perspective({
+     project: new xeogl.Perspective({
          fovy: 60,
          near: 0.1,
          far: 1000
      })
  });
 
- var viewport = new XEO.Viewport();
+ var viewport = new xeogl.Viewport();
 
- var entity = new XEO.Entity({
+ var entity = new xeogl.Entity({
      camera: camera,
      viewport: viewport,
-     geometry: new XEO.BoxGeometry()
+     geometry: new xeogl.BoxGeometry()
  });
 
- new XEO.Stereo({
+ new xeogl.Stereo({
      camera: camera,
      viewport: viewport
  });
 
- new XEO.CardboardWrapAround({
+ new xeogl.CardboardWrapAround({
      camera: camera,
      active: true // Default
  });
  ````
 
  @class CardboardWrapAround
- @module XEO
+ @module xeogl
  @submodule interaction
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this CardboardWrapAround in the default
@@ -70,9 +70,9 @@
 
     "use strict";
 
-    XEO.CardboardWrapAround = XEO.CameraController.extend({
+    xeogl.CardboardWrapAround = xeogl.CameraController.extend({
 
-        type: "XEO.CardboardWrapAround",
+        type: "xeogl.CardboardWrapAround",
 
         _init: function (cfg) {
 
@@ -88,7 +88,7 @@
             var orientation;
             var orientationAngle;
 
-            var math = XEO.math;
+            var math = xeogl.math;
             var euler = math.vec3();
             var tempVec3a = math.vec3();
             var tempVec3b = math.vec3();

@@ -2,11 +2,11 @@
 
     "use strict";
 
-    XEO.renderer.ChunkFactory.createChunkType({
+    xeogl.renderer.ChunkFactory.createChunkType({
 
         type: "draw",
 
-        // As we apply a list of state chunks in a {@link XEO.renderer.Renderer},
+        // As we apply a list of state chunks in a {@link xeogl.renderer.Renderer},
         // we track the ID of each chunk in order to avoid redundantly re-applying
         // the same chunk. We don't want that for draw chunks however, because
         // they contain drawElements calls, which we need to do for each object.

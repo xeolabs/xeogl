@@ -2,7 +2,7 @@
 
     "use strict";
 
-    XEO.renderer.webgl.Sampler = function (gl, location) {
+    xeogl.renderer.webgl.Sampler = function (gl, location) {
 
         this.bindTexture = function (texture, unit) {
 

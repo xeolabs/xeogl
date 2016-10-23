@@ -1,6 +1,6 @@
 /**
  * Math utilities.
  *
- * @module XEO
+ * @module xeogl
  * @submodule math
  */

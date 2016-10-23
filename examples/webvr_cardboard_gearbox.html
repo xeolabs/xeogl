@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
 
     <script src="js/webvr/cardboard.js"></script>
 
@@ -15,7 +15,7 @@
 
 <div id="infoLight"
      style="left: 0; text-align: left; background: black; opacity: 0.7; padding: 8px; color: white; font-size: 14pt;">
-    <span><a href="http://xeoengine.org" target="_home">xeoEngine</a><br>using a <a
+    <span><a href="http://xeogl.org" target="_home">xeogl</a><br>using a <a
             href="../docs/classes/Cardboard.html"
             target="_docs">Cardboard</a> component to view a glTF <a
             href="../docs/classes/Model.html"
@@ -30,7 +30,7 @@
     // Load a glTF gearbox model into the default Scene
     //----------------------------------------------------------------------------
 
-    var gearbox = new XEO.Model({
+    var gearbox = new xeogl.Model({
         src: "models/gltf/gearbox/gearbox_assy.gltf"
     });
 
@@ -48,7 +48,7 @@
     // Create a Cardboard effect
     //---------------------------------------------------
 
-    var cardboard = new XEO.Cardboard();
+    var cardboard = new xeogl.Cardboard();
 
 </script>
 </body>

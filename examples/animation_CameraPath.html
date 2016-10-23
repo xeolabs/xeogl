@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.js"></script>
+    <script src="../build/xeogl.js"></script>
 
     <script src="js/curves/curve.js"></script>
     <script src="js/curves/splineCurve.js"></script>
@@ -20,25 +20,25 @@
 
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a>
+    <a href="http://xeogl.org">xeogl</a>
     <br><br>
 
     <p>animating a <a href="../docs/classes/Camera.html" target="_docs">Camera</a> with a <a
-            href="js/animation/cameraPath.js" target="_docs">XEO.CameraPath</a> and a <a
-            href="js/animation/cameraPathPlayer.js" target="_docs">XEO.CameraPathPlayer</a>
+            href="js/animation/cameraPath.js" target="_docs">xeogl.CameraPath</a> and a <a
+            href="js/animation/cameraPathPlayer.js" target="_docs">xeogl.CameraPathPlayer</a>
 </div>
 
 <script>
 
     // Work in progress - components for animating cameras along paths.
 
-    var gearbox = new XEO.Model({
+    var gearbox = new xeogl.Model({
         src: "models/gltf/gearbox/gearbox_assy.gltf"
     });
 
     var scene = gearbox.scene;
 
-    var cameraPath = new XEO.CameraPath({
+    var cameraPath = new xeogl.CameraPath({
         frames: [
             {
                 t: 0,
@@ -583,7 +583,7 @@
         ]
     });
 
-    var cameraPathPlayer = new XEO.CameraPathPlayer({
+    var cameraPathPlayer = new xeogl.CameraPathPlayer({
         cameraPath: cameraPath
     });
 
@@ -591,7 +591,7 @@
         cameraPathPlayer.play();
     });
 
-    new XEO.AxisHelper({
+    new xeogl.AxisHelper({
         lookat: scene.camera.view,
         visible: true,
         size: [200, 200]

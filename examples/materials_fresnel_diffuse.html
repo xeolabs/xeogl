@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>diffuse <a href="../docs/classes/Fresnel.html"
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>diffuse <a href="../docs/classes/Fresnel.html"
                                                                               target="_docs">Fresnel</a>
 </div>
 
 <script>
 
-    var geometry = new XEO.TorusGeometry({
+    var geometry = new xeogl.TorusGeometry({
         radius: 1.0,
         tube: 0.4,
         radialSegments: 32,
@@ -25,11 +25,11 @@
         arc: Math.PI * 2.0
     });
 
-    var diffuseMap = new XEO.Texture({
+    var diffuseMap = new xeogl.Texture({
         src: "textures/diffuse/uvGrid2.jpg"
     });
 
-    var diffuseFresnel = new XEO.Fresnel({
+    var diffuseFresnel = new xeogl.Fresnel({
         edgeBias: 0.0,
         centerBias: 1.0,
         edgeColor: [1.0, 0.0, 0.0],
@@ -37,7 +37,7 @@
         power: 2.0
     });
 
-    var material = new XEO.PhongMaterial({
+    var material = new xeogl.PhongMaterial({
         ambient: [0.3, 0.3, 0.3],
         diffuse: [0.6, 0.6, 1.0],
         shininess: 30,
@@ -45,7 +45,7 @@
         diffuseFresnel: diffuseFresnel
     });
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
         geometry: geometry,
         material: material
     });

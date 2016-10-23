@@ -5,9 +5,9 @@
  @module entities
  @extends Component
  */
-XEO.SplineCurveHelper = XEO.Component.extend({
+xeogl.SplineCurveHelper = xeogl.Component.extend({
 
-    type: "XEO.SplineCurveHelper",
+    type: "xeogl.SplineCurveHelper",
 
     _init: function (cfg) {
 
@@ -15,13 +15,13 @@ XEO.SplineCurveHelper = XEO.Component.extend({
 
         this._divisions = 100;
 
-        this._line = new XEO.Entity(this.scene, {
-            geometry: new XEO.Geometry(this.scene, {
+        this._line = new xeogl.Entity(this.scene, {
+            geometry: new xeogl.Geometry(this.scene, {
                 primitive: "lines",
                 positions: [0, 0, 0],
                 indices: [0, 1]
             }),
-            material: new XEO.PhongMaterial(this.scene, {
+            material: new xeogl.PhongMaterial(this.scene, {
                 diffuse: [1, 0, 0]
             })
         });

@@ -15,7 +15,7 @@
  <li>Similarly, to render depth images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink "Reflect/target:property"}}{{/crossLink}}
  property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>For special effects, we often use rendered Reflects in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Reflects create within xeoEngine's shaders.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Reflects create within xeogl's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/Reflect.png"></img>
@@ -32,21 +32,21 @@
  </ul>
 
  ```` javascript
- var scene = new XEO.Scene();
+ var scene = new xeogl.Scene();
 
- var reflect1 = new XEO.Reflect(scene, {
+ var reflect1 = new xeogl.Reflect(scene, {
     src: "diffuseMap.jpg"
  });
 
- var reflect2 = new XEO.Reflect(scene, {
+ var reflect2 = new xeogl.Reflect(scene, {
     src: "normalMap.jpg"
  });
 
- var reflect3 = new XEO.Reflect(scene, {
+ var reflect3 = new xeogl.Reflect(scene, {
     src: "specularMap.jpg"
 });
 
- var material = new XEO.PhongMaterial(scene, {
+ var material = new xeogl.PhongMaterial(scene, {
     ambient: [0.3, 0.3, 0.3],
     shininess: 30,
     diffuseMap: reflect1,
@@ -54,16 +54,16 @@
     specularMap: reflect3
 });
 
- var light1 = new XEO.PointLight(scene, {
+ var light1 = new xeogl.PointLight(scene, {
     pos: [0, 100, 100],
     color: [0.5, 0.7, 0.5]
 });
 
- var light2 = new XEO.AmbientLight(scene, {
+ var light2 = new xeogl.AmbientLight(scene, {
     color: [0.5, 0.7, 0.5]
 });
 
- var lights = new XEO.Lights(scene, {
+ var lights = new xeogl.Lights(scene, {
     lights: [
         light1,
         light2
@@ -71,16 +71,16 @@
 });
 
  // Geometry without parameters will default to a 2x2x2 box.
- var geometry = new XEO.Geometry(scene);
+ var geometry = new xeogl.Geometry(scene);
 
- var entity = new XEO.Entity(scene, {
+ var entity = new xeogl.Entity(scene, {
     lights: lights,
     material: material,
     geometry: geometry
 });
  ````
  @class Reflect
- @module XEO
+ @module xeogl
  @submodule materials
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Reflect in the default
@@ -90,7 +90,7 @@
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Reflect.
  @param [cfg.src=null] {String} Path to image file to load into this Reflect. See the {{#crossLink "Reflect/src:property"}}{{/crossLink}} property for more info.
  @param [cfg.image=null] {HTMLImageElement} HTML Image object to load into this Reflect. See the {{#crossLink "Reflect/image:property"}}{{/crossLink}} property for more info.
- @param [cfg.target=null] {String | XEO.ColorTarget | XEO.DepthTarget} Instance or ID of a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} or
+ @param [cfg.target=null] {String | xeogl.ColorTarget | xeogl.DepthTarget} Instance or ID of a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} or
  {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} to source this Reflect from. See the {{#crossLink "Reflect/target:property"}}{{/crossLink}} property for more info.
  @param [cfg.minFilter="linearMipmapLinear"] {String} How the reflect is sampled when a texel covers less than one pixel. See the {{#crossLink "Reflect/minFilter:property"}}{{/crossLink}} property for more info.
  @param [cfg.magFilter="linear"] {String} How the reflect is sampled when a texel covers more than one pixel. See the {{#crossLink "Reflect/magFilter:property"}}{{/crossLink}} property for more info.
@@ -105,15 +105,15 @@
 
     "use strict";
 
-    XEO.Reflect = XEO.Component.extend({
+    xeogl.Reflect = xeogl.Component.extend({
 
-        type: "XEO.Reflect",
+        type: "xeogl.Reflect",
 
         _init: function (cfg) {
 
             // Rendering state
 
-            this._state = new XEO.renderer.Reflect({
+            this._state = new xeogl.renderer.Reflect({
                 texture: null
             });
 
@@ -131,7 +131,7 @@
 
             this.src = cfg.src;
 
-            XEO.stats.memory.textures++;
+            xeogl.stats.memory.textures++;
         },
 
         _webglContextRestored: function () {
@@ -199,7 +199,7 @@
                     // Keep self._src because that's where we loaded the image
                     // from, and we may need to save that in JSON later
 
-                    self._image = XEO.renderer.webgl.ensureImageSizePowerOfTwo(image);
+                    self._image = xeogl.renderer.webgl.ensureImageSizePowerOfTwo(image);
 
                     self._imageDirty = true;
                     self._srcDirty = false;
@@ -302,7 +302,7 @@
                 this._state.texture.destroy();
             }
 
-            XEO.stats.memory.textures--;
+            xeogl.stats.memory.textures--;
         }
     });
 

@@ -8,7 +8,7 @@
  ````
 
  @class PointLightHelper
- @module XEO
+ @module xeogl
  @submodule entities
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this PointLightHelper in the default
@@ -23,20 +23,20 @@
 
     "use strict";
 
-    XEO.PointLightHelper = XEO.Component.extend({
+    xeogl.PointLightHelper = xeogl.Component.extend({
 
-        type: "XEO.PointLightHelper",
+        type: "xeogl.PointLightHelper",
 
         _init: function (cfg) {
 
-            this._sphere = this.create(XEO.Entity, {
-                geometry: this.create(XEO.SphereGeometry, {
+            this._sphere = this.create(xeogl.Entity, {
+                geometry: this.create(xeogl.SphereGeometry, {
                     radius: 0.5
                 }, "sphere"),
-                material: this.create(XEO.PhongMaterial, {
+                material: this.create(xeogl.PhongMaterial, {
                     emissive: [1, 1, 1]
                 }),
-                transform: this.create(XEO.Translate, {
+                transform: this.create(xeogl.Translate, {
                     xyz: cfg.pos || [0, 0, 0]
                 })
             });
@@ -62,7 +62,7 @@
 
                     this._attach({
                         name: "pointLight",
-                        type: "XEO.PointLight",
+                        type: "xeogl.PointLight",
                         component: value,
                         on: {
                             pos: function (pos) {

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/_renderer/renderer.js - xeoengine</title>
+    <title>src/_renderer/renderer.js - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -14,12 +14,10 @@
 <div id="doc">
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
-
-                <h1 style="color:white;"><a href="../../">xeoEngine</a> / <a href="../../docs">API Docs</a></h1>
-
+                <h1><img src="../../assets/images/logo.png" title="xeogl"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.0</em>
+            <em>API Docs for: 1.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -27,7 +25,7 @@
         <div class="yui3-u-1-4">
             <div id="docs-sidebar" class="sidebar apidocs">
                 <div id="api-list">
-                
+                    <h2 class="off-left">APIs</h2>
                     <div id="api-tabview" class="tabview">
                         <ul class="tabs">
                             <li><a href="#api-classes">Classes</a></li>
@@ -83,7 +81,6 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/MegaTexture.html">MegaTexture</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
@@ -103,7 +100,6 @@
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
-                                <li><a href="../classes/Render.html">Render</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
@@ -125,41 +121,40 @@
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/WebVR.html">WebVR</a></li>
-                                <li><a href="../classes/XEO.html">XEO</a></li>
-                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
+                                <li><a href="../classes/xeogl.html">xeogl</a></li>
+                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
                                 <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
                                 <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
-                                <li><a href="..//modules/animation.html">animation</a></li>
-                                <li><a href="..//modules/boundaries.html">boundaries</a></li>
-                                <li><a href="..//modules/camera.html">camera</a></li>
-                                <li><a href="..//modules/canvas.html">canvas</a></li>
-                                <li><a href="..//modules/clipping.html">clipping</a></li>
-                                <li><a href="..//modules/collections.html">collections</a></li>
-                                <li><a href="..//modules/configs.html">configs</a></li>
-                                <li><a href="..//modules/controls.html">controls</a></li>
-                                <li><a href="..//modules/culling.html">culling</a></li>
-                                <li><a href="..//modules/curves.html">curves</a></li>
-                                <li><a href="..//modules/effects.html">effects</a></li>
-                                <li><a href="..//modules/entities.html">entities</a></li>
-                                <li><a href="..//modules/geometry.html">geometry</a></li>
-                                <li><a href="..//modules/importing.html">importing</a></li>
-                                <li><a href="..//modules/input.html">input</a></li>
-                                <li><a href="..//modules/interaction.html">interaction</a></li>
-                                <li><a href="..//modules/lighting.html">lighting</a></li>
-                                <li><a href="..//modules/materials.html">materials</a></li>
-                                <li><a href="..//modules/math.html">math</a></li>
-                                <li><a href="..//modules/paths.html">paths</a></li>
-                                <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/shaders.html">shaders</a></li>
-                                <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
-                                <li><a href="..//modules/transforms.html">transforms</a></li>
-                                <li><a href="..//modules/webvr.html">webvr</a></li>
-                                <li><a href="..//modules/xeo.html">xeo</a></li>
-                                <li><a href="..//modules/XEO.html">XEO</a></li>
-                                <li><a href="..//modules/xeogl.html">xeogl</a></li>
+                                <li><a href="../modules/animation.html">animation</a></li>
+                                <li><a href="../modules/boundaries.html">boundaries</a></li>
+                                <li><a href="../modules/camera.html">camera</a></li>
+                                <li><a href="../modules/canvas.html">canvas</a></li>
+                                <li><a href="../modules/clipping.html">clipping</a></li>
+                                <li><a href="../modules/collections.html">collections</a></li>
+                                <li><a href="../modules/configs.html">configs</a></li>
+                                <li><a href="../modules/controls.html">controls</a></li>
+                                <li><a href="../modules/culling.html">culling</a></li>
+                                <li><a href="../modules/curves.html">curves</a></li>
+                                <li><a href="../modules/effects.html">effects</a></li>
+                                <li><a href="../modules/entities.html">entities</a></li>
+                                <li><a href="../modules/geometry.html">geometry</a></li>
+                                <li><a href="../modules/importing.html">importing</a></li>
+                                <li><a href="../modules/input.html">input</a></li>
+                                <li><a href="../modules/interaction.html">interaction</a></li>
+                                <li><a href="../modules/lighting.html">lighting</a></li>
+                                <li><a href="../modules/materials.html">materials</a></li>
+                                <li><a href="../modules/math.html">math</a></li>
+                                <li><a href="../modules/paths.html">paths</a></li>
+                                <li><a href="../modules/rendering.html">rendering</a></li>
+                                <li><a href="../modules/shaders.html">shaders</a></li>
+                                <li><a href="../modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="../modules/transforms.html">transforms</a></li>
+                                <li><a href="../modules/webvr.html">webvr</a></li>
+                                <li><a href="../modules/xeo.html">xeo</a></li>
+                                <li><a href="../modules/xeogl.html">xeogl</a></li>
                             </ul>
                         </div>
                     </div>
@@ -167,28 +162,28 @@
             </div>
         </div>
         <div class="yui3-u-3-4">
-                <!--<div id="api-options">-->
-                    <!--Show:-->
-                    <!--<label for="api-show-inherited">-->
-                        <!--<input type="checkbox" id="api-show-inherited" checked>-->
-                        <!--Inherited-->
-                    <!--</label>-->
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
             
-                    <!--<label for="api-show-protected">-->
-                        <!--<input type="checkbox" id="api-show-protected">-->
-                        <!--Protected-->
-                    <!--</label>-->
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
             
-                    <!--<label for="api-show-private">-->
-                        <!--<input type="checkbox" id="api-show-private">-->
-                        <!--Private-->
-                    <!--</label>-->
-                    <!--<label for="api-show-deprecated">-->
-                        <!--<input type="checkbox" id="api-show-deprecated">-->
-                        <!--Deprecated-->
-                    <!--</label>-->
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
             
-                <!--</div>-->
+                </div>
             
             <div class="apidocs">
                 <div id="docs-main">
@@ -201,12 +196,12 @@
 
     &quot;use strict&quot;;
 
-    XEO.renderer = XEO.renderer || {};
+    xeogl.renderer = xeogl.renderer || {};
 
     /**
      *
      */
-    XEO.renderer.Renderer = function (stats, canvas, gl, options) {
+    xeogl.renderer.Renderer = function (stats, canvas, gl, options) {
 
         options = options || {};
 
@@ -215,9 +210,9 @@
         this.gl = gl;
         this.canvas = canvas;
 
-        this._programFactory = new XEO.renderer.ProgramFactory(this.stats, gl);
-        this._objectFactory = new XEO.renderer.ObjectFactory();
-        this._chunkFactory = new XEO.renderer.ChunkFactory();
+        this._programFactory = new xeogl.renderer.ProgramFactory(this.stats, gl);
+        this._objectFactory = new xeogl.renderer.ObjectFactory();
+        this._chunkFactory = new xeogl.renderer.ChunkFactory();
 
         /**
          * Indicates if the canvas is transparent
@@ -263,7 +258,7 @@
          * The current ambient color.
          * @type Float32Array
          */
-        this.ambientColor = XEO.math.vec4([0,0,0,1]);
+        this.ambientColor = xeogl.math.vec4([0,0,0,1]);
 
         // Objects in a list, ordered by state
         this._objectList = [];
@@ -480,7 +475,7 @@
     /**
      * Reallocates WebGL resources for objects within this renderer.
      */
-    XEO.renderer.Renderer.prototype.webglRestored = function (gl) {
+    xeogl.renderer.Renderer.prototype.webglRestored = function (gl) {
 
         this.gl = gl;
 
@@ -502,15 +497,15 @@
     };
 
     /**
-     * Internally creates (or updates) a {@link XEO.renderer.Object} of the given
-     * ID from whatever component state cores are currently set on this {@link XEO.Renderer}.
+     * Internally creates (or updates) a {@link xeogl.renderer.Object} of the given
+     * ID from whatever component state cores are currently set on this {@link xeogl.Renderer}.
      * The object is created if it does not already exist in the display, otherwise
      * it is updated with the current states, possibly replacing states already
      * referenced by the object.
      *
      * @param {String} objectId ID of object to create or update
      */
-    XEO.renderer.Renderer.prototype.buildObject = function (objectId) {
+    xeogl.renderer.Renderer.prototype.buildObject = function (objectId) {
 
         var object = this.objects[objectId];
 
@@ -631,7 +626,7 @@
 
     /** Adds a render state chunk to a render graph object.
      */
-    XEO.renderer.Renderer.prototype._setChunk = function (object, order, type, state, neg) {
+    xeogl.renderer.Renderer.prototype._setChunk = function (object, order, type, state, neg) {
 
         var id;
 
@@ -663,7 +658,7 @@
     };
 
     // Sets the singular ambient light.
-    XEO.renderer.Renderer.prototype._setAmbient = function (state) {
+    xeogl.renderer.Renderer.prototype._setAmbient = function (state) {
 
         var lights = state.lights;
         var light;
@@ -684,7 +679,7 @@
      *
      * @param {String} objectId ID of object to remove
      */
-    XEO.renderer.Renderer.prototype.removeObject = function (objectId) {
+    xeogl.renderer.Renderer.prototype.removeObject = function (objectId) {
 
         var object = this.objects[objectId];
 
@@ -718,7 +713,7 @@
     /**
      * Renders a new frame, if neccessary.
      */
-    XEO.renderer.Renderer.prototype.render = function (params) {
+    xeogl.renderer.Renderer.prototype.render = function (params) {
 
         params = params || {};
 
@@ -754,7 +749,7 @@
     /**
      * Builds the object list from the object map
      */
-    XEO.renderer.Renderer.prototype._buildObjectList = function () {
+    xeogl.renderer.Renderer.prototype._buildObjectList = function () {
         this._objectListLen = 0;
         for (var objectId in this.objects) {
             if (this.objects.hasOwnProperty(objectId)) {
@@ -766,7 +761,7 @@
     /**
      * Generates object state sort keys
      */
-    XEO.renderer.Renderer.prototype._makeStateSortKeys = function () {
+    xeogl.renderer.Renderer.prototype._makeStateSortKeys = function () {
         var object;
         for (var i = 0, len = this._objectListLen; i &lt; len; i++) {
             object = this._objectList[i];
@@ -787,19 +782,19 @@
     /**
      * State-sorts the object list
      */
-    XEO.renderer.Renderer.prototype._stateSort = function () {
+    xeogl.renderer.Renderer.prototype._stateSort = function () {
         this._objectList.length = this._objectListLen;
         this._objectList.sort(function (a, b) {
             return a.sortKey - b.sortKey;
         });
     };
 
-    XEO.renderer.Renderer.prototype._renderObjectList = function (params) {
+    xeogl.renderer.Renderer.prototype._renderObjectList = function (params) {
 
         var gl = this.gl;
 
         // The extensions needs to be re-queried in case the context was lost and has been recreated.
-        if (XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS[&quot;OES_element_index_uint&quot;]) {
+        if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS[&quot;OES_element_index_uint&quot;]) {
             gl.getExtension(&quot;OES_element_index_uint&quot;);
         }
 
@@ -841,7 +836,7 @@
         frameCtx.pickIndex = 0;
 
         // The extensions needs to be re-queried in case the context was lost and has been recreated.
-        if (XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS[&quot;OES_element_index_uint&quot;]) {
+        if (xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS[&quot;OES_element_index_uint&quot;]) {
             gl.getExtension(&quot;OES_element_index_uint&quot;);
         }
 
@@ -1034,9 +1029,9 @@
      * @param {*} params Picking params.
      * @returns {*} Hit result, if any.
      */
-    XEO.renderer.Renderer.prototype.pick = (function () {
+    xeogl.renderer.Renderer.prototype.pick = (function () {
 
-        var math = XEO.math;
+        var math = xeogl.math;
 
         var tempVec3a = math.vec3();
         var tempMat4a = math.mat4();
@@ -1049,7 +1044,7 @@
             var pickBuf = this.pickBuf;
 
             if (!pickBuf) {  // Lazy-create the pick buffer
-                pickBuf = new XEO.renderer.webgl.RenderBuffer(this.canvas, this.gl);
+                pickBuf = new xeogl.renderer.webgl.RenderBuffer(this.canvas, this.gl);
                 this.pickBuf = pickBuf;
             }
 
@@ -1164,10 +1159,10 @@
      * @param {Number} len
      * @param {Boolean} opaqueOnly
      */
-    XEO.renderer.Renderer.prototype.readPixels = function (pixels, colors, len, opaqueOnly) {
+    xeogl.renderer.Renderer.prototype.readPixels = function (pixels, colors, len, opaqueOnly) {
 
         if (!this._readPixelBuf) {
-            this._readPixelBuf = new XEO.renderer.webgl.RenderBuffer(this.canvas, this.gl);
+            this._readPixelBuf = new xeogl.renderer.webgl.RenderBuffer(this.canvas, this.gl);
         }
 
         this._readPixelBuf.bind();
@@ -1203,7 +1198,7 @@
     /**
      * Destroys this Renderer.
      */
-    XEO.renderer.Renderer.prototype.destroy = function () {
+    xeogl.renderer.Renderer.prototype.destroy = function () {
         this._programFactory.destroy();
     };
 })();

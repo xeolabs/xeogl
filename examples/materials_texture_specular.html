@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>specular <a href="../docs/classes/Texture.html"
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>specular <a href="../docs/classes/Texture.html"
                                                                                target="_docs">Texture</a>
     <br><br>
     <img src="textures/diffuse/crossGridColorMap.jpg" width="300px" height="300px">
@@ -22,15 +22,15 @@
     // Override default lights
     // to emphasise specular reflection
 
-    var lights = new XEO.Lights({
+    var lights = new xeogl.Lights({
         lights: [
 
-            new XEO.AmbientLight({
+            new xeogl.AmbientLight({
                 color: [0.8, 0.8, 1.0],
                 intensity: 0.3
             }),
 
-            new XEO.DirLight({
+            new xeogl.DirLight({
                 dir: [0.5, 0.5, 0.5],
                 color: [1.0, 1.0, 0.9],
                 intensity: 0.9,
@@ -40,7 +40,7 @@
         ]
     });
 
-    var geometry = new XEO.TorusGeometry({
+    var geometry = new xeogl.TorusGeometry({
         radius: 1.0,
         tube: 0.4,
         radialSegments: 32,
@@ -48,7 +48,7 @@
         arc: Math.PI * 2.0
     });
 
-    var texture = new XEO.Texture({
+    var texture = new xeogl.Texture({
         src: "textures/diffuse/crossGridColorMap.jpg",
         minFilter: "linearMipmapLinear",
         magFiler: "linear",
@@ -59,14 +59,14 @@
         rotate: 0
     });
 
-    var material = new XEO.PhongMaterial({
+    var material = new xeogl.PhongMaterial({
         ambient: [0.2, 0.2, 0.3],
         shininess: 30,
         specularMap: texture,
         diffuse: [0.1, 0.1, 0.4]
     });
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
         geometry: geometry,
         material: material,
         lights: lights

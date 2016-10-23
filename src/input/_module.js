@@ -1,6 +1,6 @@
 /**
  * Components for capturing user input.
  *
- * @module XEO
+ * @module xeogl
  * @submodule input
  */

@@ -13,9 +13,9 @@
  diffuse {{#crossLink "Texture"}}{{/crossLink}}:
 
  ````javascript
- new XEO.Entity({
+ new xeogl.Entity({
 
-     geometry: new XEO.TorusGeometry({
+     geometry: new xeogl.TorusGeometry({
          radius: 1.0,
          tube: 0.3,
          radialSegments: 32,
@@ -23,8 +23,8 @@
          arc: Math.PI * 2.0
      }),
 
-     material: new XEO.PhongMaterial({
-        diffuseMap: new XEO.Texture({
+     material: new xeogl.PhongMaterial({
+        diffuseMap: new xeogl.Texture({
             src: "textures/diffuse/uvGrid2.jpg"
         })
      })
@@ -32,7 +32,7 @@
  ````
 
  @class TorusGeometry
- @module XEO
+ @module xeogl
  @submodule geometry
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this TorusGeometry in the default
@@ -54,9 +54,9 @@
 
     "use strict";
 
-    XEO.TorusGeometry = XEO.Geometry.extend({
+    xeogl.TorusGeometry = xeogl.Geometry.extend({
 
-        type: "XEO.TorusGeometry",
+        type: "xeogl.TorusGeometry",
 
         _init: function (cfg) {
 
@@ -130,7 +130,7 @@
                     uvs.push(1 - (i / tubeSegments));
                     uvs.push(1 - (j / radialSegments));
 
-                    vec = XEO.math.normalizeVec3(XEO.math.subVec3([x, y, z], [centerX, centerY, centerZ], []), []);
+                    vec = xeogl.math.normalizeVec3(xeogl.math.subVec3([x, y, z], [centerX, centerY, centerZ], []), []);
 
                     normals.push(vec[0]);
                     normals.push(vec[1]);

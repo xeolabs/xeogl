@@ -15,17 +15,17 @@
  ## Usage
 
  ````javascript
- new XEO.Entity({
+ new xeogl.Entity({
 
-    geometry: new XEO.SphereGeometry(),
+    geometry: new xeogl.SphereGeometry(),
 
-    material: new XEO.PhongMaterial({
-        diffuseMap: new XEO.Texture({
+    material: new xeogl.PhongMaterial({
+        diffuseMap: new xeogl.Texture({
             src: "textures/diffuse/uvGrid2.jpg"
         })
     }),
 
-    viewport: new XEO.Viewport({
+    viewport: new xeogl.Viewport({
         boundary: [0, 0, 500, 400],
         autoBoundary: false // Don't autosize to canvas (default)
     })
@@ -33,7 +33,7 @@
  ````
 
  @class Viewport
- @module XEO
+ @module xeogl
  @submodule rendering
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}, creates this Viewport within the
@@ -54,13 +54,13 @@
 
     "use strict";
 
-    XEO.Viewport = XEO.Component.extend({
+    xeogl.Viewport = xeogl.Component.extend({
 
-        type: "XEO.Viewport",
+        type: "xeogl.Viewport",
 
         _init: function (cfg) {
 
-            this._state = new XEO.renderer.Viewport({
+            this._state = new xeogl.renderer.Viewport({
                 boundary: [0, 0, 100, 100]
             });
 

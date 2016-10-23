@@ -14,7 +14,7 @@
      TODO
 
      @class MorphTargets
-     @module XEO
+     @module xeogl
      @submodule animation
      @constructor
      @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this MorphTarget in the default
@@ -26,9 +26,9 @@
      @param [cfg.factor=0] {Number} The morph factor.
      @extends Component
      */
-    XEO.MorphTargets = XEO.Component.extend({
+    xeogl.MorphTargets = xeogl.Component.extend({
 
-        type: "XEO.MorphTargets",
+        type: "xeogl.MorphTargets",
 
         _init: function (cfg) {
 

@@ -1,6 +1,6 @@
 /**
  * Skybox components.
  *
- * @module XEO
+ * @module xeogl
  * @submodule skyboxes
  */

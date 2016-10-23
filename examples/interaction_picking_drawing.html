@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.js"></script>
+    <script src="../build/xeogl.js"></script>
 
     <script src="js/geometry/heightmapGeometry.js"></script>
 
@@ -16,7 +16,7 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a>
+    <a href="http://xeogl.org">xeogl</a>
     <br><br>
     <ul>
         <li>
@@ -32,11 +32,11 @@
 
 <script>
 
-    // Quick custom component that draws onto a given XEO.Texture
+    // Quick custom component that draws onto a given xeogl.Texture
 
-    XEO.TextureCanvas = XEO.Component.extend({
+    xeogl.TextureCanvas = xeogl.Component.extend({
 
-        type: "XEO.TextureCanvas",
+        type: "xeogl.TextureCanvas",
 
         _init: function (cfg) {
 
@@ -116,10 +116,10 @@
 
     // Heightmap Entity
 
-    var heightmap = new XEO.Entity({
+    var heightmap = new xeogl.Entity({
 
-        // XEO.HeightMap is defined in ./js/geometry/heightmapGeometry.js
-        geometry: new XEO.HeightmapGeometry({
+        // xeogl.HeightMap is defined in ./js/geometry/heightmapGeometry.js
+        geometry: new xeogl.HeightmapGeometry({
             primitive: "triangles",
             src: "textures/height/everest.png",
             xSize: 10,
@@ -128,15 +128,15 @@
             xSegments: 40,
             zSegments: 40
         }),
-        transform: new XEO.Rotate({
+        transform: new xeogl.Rotate({
             angle: 45,
             xyz: [.5,.5, 0]
         }),
-        material: new XEO.PhongMaterial({
-            diffuseMap: new XEO.Texture({
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/uvGrid2.jpg"
             }),
-            emissiveMap: new XEO.Texture({
+            emissiveMap: new xeogl.Texture({
                 // Will get an image from our TextureCanvas component
             }),
             lineWidth: 3,
@@ -146,14 +146,14 @@
 
     // Hook our drawing component up to the Entity's emissive texture
 
-    var textureCanvas = new XEO.TextureCanvas({
+    var textureCanvas = new xeogl.TextureCanvas({
         texture: heightmap.material.emissiveMap
     });
 
 
     // Set initial camera position
 
-    var scene = XEO.scene;
+    var scene = xeogl.scene;
 
     var view = scene.camera.view;
 
@@ -165,7 +165,7 @@
     // ------------ Interaction ------------------------------------------
 
 
-    new XEO.CameraControl();
+    new xeogl.CameraControl();
 
     var input = scene.input;
 
@@ -207,7 +207,7 @@
                     return;
                 }
 
-                XEO.debug.hide("cone");
+                xeogl.debug.hide("cone");
 
                 // Pick a primitive on some Entity
 
@@ -218,7 +218,7 @@
 
                 if (hit && hit.worldPos && hit.normal) {
 
-                    XEO.debug
+                    xeogl.debug
                             .id("cone")
                             .pos(hit.worldPos)
                             .dir([-hit.normal[0], -hit.normal[1], -hit.normal[2]])

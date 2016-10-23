@@ -52,7 +52,7 @@
  ````
 
  @class Spinner
- @module XEO
+ @module xeogl
  @submodule canvas
  @extends Component
  */
@@ -63,9 +63,9 @@
     // Ensures lazy-injected CSS only injected once  
     var spinnerCSSInjected = false;
 
-    XEO.Spinner = XEO.Component.extend({
+    xeogl.Spinner = xeogl.Component.extend({
 
-        type: "XEO.Spinner",
+        type: "xeogl.Spinner",
 
         serializable: false,
 

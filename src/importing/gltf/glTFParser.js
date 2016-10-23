@@ -74,7 +74,7 @@
         "animations"
     ];
 
-    XEO.glTFParser = Object.create(Object.prototype, {
+    xeogl.glTFParser = Object.create(Object.prototype, {
 
         _rootDescription: {value: null, writable: true},
 

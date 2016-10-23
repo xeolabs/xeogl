@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a>
+    <a href="http://xeogl.org">xeogl</a>
     <br><br>
     using a <a href="../docs/classes/CameraFlight.html" target="_docs">CameraFlight</a> to fly a <a
         href="../docs/classes/Camera.html" target="_docs">Camera</a> to AABBs of randomly selected <a
@@ -25,23 +25,23 @@
     var entities = [];
     var entity;
 
-    var torus = new XEO.TorusGeometry();
+    var torus = new xeogl.TorusGeometry();
 
 
     for (var i = 0; i < 20; i++) {
 
-        entity = new XEO.Entity({
+        entity = new xeogl.Entity({
 
             geometry: torus,
 
-            transform: new XEO.Scale({
+            transform: new xeogl.Scale({
                 xyz: [
                     0.5 + Math.random() * 2,
                     0.5 + Math.random() * 2,
                     0.5 + Math.random() * 2
                 ],
 
-                parent: new XEO.Rotate({
+                parent: new xeogl.Rotate({
                     xyz: [
                         Math.random(),
                         Math.random(),
@@ -49,7 +49,7 @@
                     ],
                     angle: Math.random() * 360,
 
-                    parent: new XEO.Translate({
+                    parent: new xeogl.Translate({
                         xyz: [
                             Math.random() * 15 - 7,
                             Math.random() * 15 - 7,
@@ -60,7 +60,7 @@
 
             }),
 
-            material: new XEO.PhongMaterial({
+            material: new xeogl.PhongMaterial({
                 diffuse: [
                     Math.random(),
                     Math.random(),
@@ -74,11 +74,11 @@
 
     // Target boundary indicator
 
-    var boundaryIndicator = new XEO.Entity({
-        geometry: new XEO.BoundaryGeometry({
+    var boundaryIndicator = new xeogl.Entity({
+        geometry: new xeogl.BoundaryGeometry({
             boundary: entities[0].worldBoundary
         }),
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuse: [1.0, 1.0, 0.0],
             emissive: [1.0, 1.0, 0.0],
             lineWidth: 4
@@ -87,7 +87,7 @@
 
     // Create a CameraFlight animation
 
-    var flight = new XEO.CameraFlight({
+    var flight = new xeogl.CameraFlight({
         duration: 1.5,
         stopFOV: 45
     });
@@ -95,8 +95,8 @@
     // Create a couple of camera controls so that
     // user can rotate and zoom camera while demo runs
 
-    new XEO.MouseRotateCamera({sensitivity: 0.2});
-    new XEO.MouseZoomCamera();
+    new xeogl.MouseRotateCamera({sensitivity: 0.2});
+    new xeogl.MouseZoomCamera();
 
 
     // Periodically highlight and fly to a randomly-selected entity

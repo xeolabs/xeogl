@@ -1,6 +1,6 @@
 /**
  * Camera components.
  *
- * @module XEO
+ * @module xeogl
  * @submodule camera
  */

@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeoengine.js"></script>
+    <script src="../build/xeogl.js"></script>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>picking <a
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>picking <a
         href="../docs/classes/Entity.html" target="_docs">Entities</a> using an arbitrarily-positioned World-space ray
 </div>
 
@@ -21,7 +21,7 @@
     //---- Model  ----------------------------------------------------------
 
     // Load glTF
-    var gearbox = new XEO.Model({
+    var gearbox = new xeogl.Model({
         src: "models/gltf/gearbox/gearbox_assy.gltf"
     });
 
@@ -33,11 +33,11 @@
 
     // Zoom camera out a bit
 
-    var scene = XEO.scene;
+    var scene = xeogl.scene;
 
     // Set initial camera position
     // Allow user camera control
-    new XEO.CameraControl();
+    new xeogl.CameraControl();
 
     //--------------------------------------------
     // Create helper to show the ray
@@ -45,19 +45,19 @@
 
     var rayHelper = new (function () {
 
-        var entity = new XEO.Entity({
-            geometry: new XEO.Geometry({
+        var entity = new xeogl.Entity({
+            geometry: new xeogl.Geometry({
                 primitive: "lines",
                 positions: [0, 0, 0, 0, 0, 0],
                 indices: [0, 1]
             }),
-            material: new XEO.PhongMaterial({
+            material: new xeogl.PhongMaterial({
                 emissive: [1, 0.3, 0.3],
                 diffuse: [0, 0, 0],
                 ambient: [0, 0, 0],
                 lineWidth: 2
             }),
-            modes: new XEO.Modes({pickable: false})
+            modes: new xeogl.Modes({pickable: false})
         });
 
         var positions = new Float32Array(6);
@@ -92,7 +92,7 @@
         // so we can highlight the entities separately
 
         gearbox.collection.iterate(function (c) {
-            if (c.isType("XEO.Entity")) {
+            if (c.isType("xeogl.Entity")) {
                 c.material = c.material.clone();
                 gearbox.collection.add(c.material); // Ensure new materials get destroyed with gearbox
             }

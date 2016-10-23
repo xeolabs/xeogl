@@ -12,7 +12,7 @@
      * @param itemSize Size of each item
      * @param usage Eg. STATIC_DRAW
      */
-    XEO.renderer.webgl.ArrayBuffer = function (gl, type, data, numItems, itemSize, usage) {
+    xeogl.renderer.webgl.ArrayBuffer = function (gl, type, data, numItems, itemSize, usage) {
 
         /**
          * True when this buffer is allocated and ready to go
@@ -44,7 +44,7 @@
      * @param data
      * @private
      */
-    XEO.renderer.webgl.ArrayBuffer.prototype._allocate = function (data) {
+    xeogl.renderer.webgl.ArrayBuffer.prototype._allocate = function (data) {
 
         this.allocated = false;
 
@@ -73,7 +73,7 @@
      * @param data
      * @param offset
      */
-    XEO.renderer.webgl.ArrayBuffer.prototype.setData = function (data, offset) {
+    xeogl.renderer.webgl.ArrayBuffer.prototype.setData = function (data, offset) {
 
         if (!this.allocated) {
             return;
@@ -105,7 +105,7 @@
     /**
      * Binds this buffer
      */
-    XEO.renderer.webgl.ArrayBuffer.prototype.bind = function () {
+    xeogl.renderer.webgl.ArrayBuffer.prototype.bind = function () {
 
         if (!this.allocated) {
             return;
@@ -117,7 +117,7 @@
     /**
      * Unbinds this buffer
      */
-    XEO.renderer.webgl.ArrayBuffer.prototype.unbind = function () {
+    xeogl.renderer.webgl.ArrayBuffer.prototype.unbind = function () {
 
         if (!this.allocated) {
             return;
@@ -129,7 +129,7 @@
     /**
      * Destroys this buffer
      */
-    XEO.renderer.webgl.ArrayBuffer.prototype.destroy = function () {
+    xeogl.renderer.webgl.ArrayBuffer.prototype.destroy = function () {
 
         if (!this.allocated) {
             return;

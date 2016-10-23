@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a>
+    <a href="http://xeogl.org">xeogl</a>
     <br><br>
     cloning an <a href="../docs/classes/Entity.html" target="_docs">Entity</a> 200 times
 </div>
@@ -20,9 +20,9 @@
 
     // Create a prototype Entity with all defaults.
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
 
-        geometry: new XEO.TorusGeometry({
+        geometry: new xeogl.TorusGeometry({
             radius: 1.0,
             tube: 0.3,
             radialSegments: 32,
@@ -46,7 +46,7 @@
 
         entity.clone({
 
-            transform: new XEO.Rotate({
+            transform: new xeogl.Rotate({
                 xyz: [
                     Math.random(),
                     Math.random(),
@@ -54,7 +54,7 @@
                 ],
                 angle: Math.random() * 360,
 
-                parent: new XEO.Translate({
+                parent: new xeogl.Translate({
                     xyz: [
                         Math.random() * 20 - 10,
                         Math.random() * 20 - 10,
@@ -64,7 +64,7 @@
 
             }),
 
-            material: new XEO.PhongMaterial({
+            material: new xeogl.PhongMaterial({
                 diffuse: color,
                 specular: color
             })
@@ -86,7 +86,7 @@
                 view.rotateEyeX(0.3);
             });
 
-new XEO.CameraControl();
+new xeogl.CameraControl();
 
 </script>
 </body>

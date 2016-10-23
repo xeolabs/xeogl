@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a>
+    <a href="http://xeogl.org">xeogl</a>
     <br><br>
     serializing a component to JSON
     <pre id="infoTxt" style="text-align: left">
@@ -22,14 +22,14 @@
 
     // Create a PhongMaterial
 
-    var material = new XEO.PhongMaterial({
+    var material = new xeogl.PhongMaterial({
         id: "myMaterial",
         diffuse: [1.0, 0.0, 0.0]
     });
 
     // Create a Entity with the PhongMaterial and all other defaults
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
         material: material
     });
 

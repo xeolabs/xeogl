@@ -10,25 +10,25 @@
  causes the {{#crossLink "Camera"}}{{/crossLink}} to move with that position along the {{#crossLink "SplineCurve"}}{{/crossLink}}.
 
  ````Javascript
- var camera = new XEO.Camera({
-     view: new XEO.Lookat({
+ var camera = new xeogl.Camera({
+     view: new xeogl.Lookat({
          eye: [0, 0, 10],
          look: [0, 0, 0],
          up: [0, 1, 0]
      }),
-     project: new XEO.Perspective({
+     project: new xeogl.Perspective({
          fovy: 60,
          near: 0.1,
          far: 1000
      })
  });
 
- var entity = new XEO.Entity({
+ var entity = new xeogl.Entity({
      camera: camera,
-     geometry: new XEO.BoxGeometry()
+     geometry: new xeogl.BoxGeometry()
  });
 
- var spline = new XEO.SplineCurve({
+ var spline = new xeogl.SplineCurve({
      points: [
          [0, 0, 100],
          [10, 5, 60],
@@ -37,7 +37,7 @@
      ]
  });
 
- new XEO.CameraPath({
+ new xeogl.CameraPath({
     camera: camera,
     SplineCurve: spline
  });
@@ -45,14 +45,14 @@
  // Periodically update the position 't' on the SplineCurve, which causes the CameraPath
  // to interpolate the Camera to that position
 
- XEO.scene.on("tick", function(e) {
+ xeogl.scene.on("tick", function(e) {
      var t = (e.time - e.startTime) * 0.01;
      spline.t = t;
  });
  ````
 
  @class CameraPath
- @module XEO
+ @module xeogl
  @submodule animation
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
@@ -70,7 +70,7 @@
 
     "use strict";
 
-    XEO.CameraPath = XEO.Component.extend({
+    xeogl.CameraPath = xeogl.Component.extend({
 
         /**
          JavaScript class name for this Component.
@@ -79,7 +79,7 @@
          @type String
          @final
          */
-        type: "XEO.CameraPath",
+        type: "xeogl.CameraPath",
 
         _init: function (cfg) {
 
@@ -87,9 +87,9 @@
 
             this.frames = [];
 
-            this._eyeCurve = this.create(XEO.SplineCurve);
-            this._lookCurve = this.create(XEO.SplineCurve);
-            this._upCurve = this.create(XEO.SplineCurve);
+            this._eyeCurve = this.create(xeogl.SplineCurve);
+            this._lookCurve = this.create(xeogl.SplineCurve);
+            this._upCurve = this.create(xeogl.SplineCurve);
 
             if (cfg.frames) {
                 this.addFrames(cfg.frames);
@@ -123,7 +123,7 @@
                      */
                     this._attach({
                         name: "camera",
-                        type: "XEO.Camera",
+                        type: "xeogl.Camera",
                         component: value,
                         sceneDefault: true
                     });
@@ -192,7 +192,7 @@
                 return;
             }
 
-            if (!view.isType("XEO.Lookat")) {
+            if (!view.isType("xeogl.Lookat")) {
                 this.error("Camera's view transform is not a Lookat - can't append frame.");
                 return;
             }

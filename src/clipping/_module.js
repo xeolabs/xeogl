@@ -1,6 +1,6 @@
 /**
  * Components for cross-section views of Entities.
  *
- * @module XEO
+ * @module xeogl
  * @submodule clipping
  */

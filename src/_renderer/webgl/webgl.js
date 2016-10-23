@@ -2,9 +2,9 @@
 
     "use strict";
 
-    XEO.renderer.webgl = {
+    xeogl.renderer.webgl = {
 
-        /** Maps XEO component parameter names to WebGL enum names
+        /** Maps xeogl component parameter names to WebGL enum names
          */
         enums: {
             funcAdd: "FUNC_ADD",

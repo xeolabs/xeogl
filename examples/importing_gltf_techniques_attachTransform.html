@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>importing glTF using a <a
-        href="../docs/classes/Model.html" target="_docs">XEO.Model</a> component, then attaching a
-    <a href="../docs/classes/Transform.html" target="_docs">XEO.Transform</a> afterwards
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>importing glTF using a <a
+        href="../docs/classes/Model.html" target="_docs">xeogl.Model</a> component, then attaching a
+    <a href="../docs/classes/Transform.html" target="_docs">xeogl.Transform</a> afterwards
 </div>
 
 <script>
 
     // Load a Model from a glTF file
-    var buggy = new XEO.Model({
+    var buggy = new xeogl.Model({
         src: "models/gltf/buggy/buggy.gltf"
     });
 
@@ -29,19 +29,19 @@
     view.eye = [0, 40, 100];
 
     // Allow user camera control
-    new XEO.CameraControl();
+    new xeogl.CameraControl();
 
     // Attach a transform hierarchy to the Model
     // Shrink the model 50%, rotate it about Y
-    buggy.transform = new XEO.Translate({ // Translate Model to rotate roughly about center
+    buggy.transform = new xeogl.Translate({ // Translate Model to rotate roughly about center
         xyz: [-35, 0, 0],
 
-        parent: new XEO.Rotate({ // Rotate about center
+        parent: new xeogl.Rotate({ // Rotate about center
             id: "buggyRotation",
             xyz: [0, 1, 0],
             angle: 0,
 
-            parent: new XEO.Scale({ // Scale just for kicks
+            parent: new xeogl.Scale({ // Scale just for kicks
                 xyz: [0.5, 0.5, 0.5]
             })
         })

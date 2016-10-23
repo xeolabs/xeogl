@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a>
+    <a href="http://xeogl.org">xeogl</a>
     <br><br>
     spherical <a href="../docs/classes/Billboard.html" target="_docs">Billboards</a>
 </div>
@@ -22,39 +22,39 @@
     // Hoops
     // Create a prototype hoop entity and clone it two times
 
-    new XEO.Entity({
-        geometry: new XEO.TorusGeometry({
+    new xeogl.Entity({
+        geometry: new xeogl.TorusGeometry({
             radius: 40,
             tube: 1,
             radialSegments: 20,
             tubeSegments: 120
         }),
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuse: [1, 1, 0.4],
-            diffuseMap: new XEO.Texture({
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/rust.jpg"
             })
         }),
-        transform: new XEO.Scale({
+        transform: new xeogl.Scale({
             xyz: [2.5, 2.5, 5.5],
-            parent: new XEO.Rotate({
+            parent: new xeogl.Rotate({
                 xyz: [0, 1, 0],
                 angle: 90
             })
         })
     })
             .clone({
-                transform: new XEO.Scale({
+                transform: new xeogl.Scale({
                     xyz: [2.5, 2.5, 5.5],
-                    parent: new XEO.Rotate({
+                    parent: new xeogl.Rotate({
                         xyz: [0, 1, 0],
                         angle: 0
                     })
                 })
             }).clone({
-                transform: new XEO.Scale({
+                transform: new xeogl.Scale({
                     xyz: [2.5, 2.5, 5.5],
-                    parent: new XEO.Rotate({
+                    parent: new xeogl.Rotate({
                         xyz: [1, 0, 0],
                         angle: 90
                     })
@@ -64,35 +64,35 @@
     // Balls at the intersections of the hoops
     // Create a prototype ball entity and clone it five times
 
-    new XEO.Entity({
-        geometry: new XEO.SphereGeometry({
+    new xeogl.Entity({
+        geometry: new xeogl.SphereGeometry({
             radius: 5
         }),
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuse: [1, 1, 0.4]
         }),
-        transform: new XEO.Translate({
+        transform: new xeogl.Translate({
             xyz: [-100, 0, 0]
         })
     })
             .clone({
-                transform: new XEO.Translate({
+                transform: new xeogl.Translate({
                     xyz: [100, 0, 0]
                 })
             }).clone({
-                transform: new XEO.Translate({
+                transform: new xeogl.Translate({
                     xyz: [0, -100, 0]
                 })
             }).clone({
-                transform: new XEO.Translate({
+                transform: new xeogl.Translate({
                     xyz: [0, 100, 0]
                 })
             }).clone({
-                transform: new XEO.Translate({
+                transform: new xeogl.Translate({
                     xyz: [0, 0, -100]
                 })
             }).clone({
-                transform: new XEO.Translate({
+                transform: new xeogl.Translate({
                     xyz: [0, 0, 100]
                 })
             });
@@ -100,7 +100,7 @@
 
     // Clouds
 
-    var geometry = new XEO.Geometry({
+    var geometry = new xeogl.Geometry({
         primitive: "triangles",
         positions: [20, 20, 0, -20, 20, 0, -20, -20, 0, 20, -20, 0],
         normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],
@@ -108,25 +108,25 @@
         indices: [0, 1, 2, 0, 2, 3] // Ensure these will be front-faces
     });
 
-    var material = new XEO.PhongMaterial({
+    var material = new xeogl.PhongMaterial({
         diffuse: [0, 0, 0],
         specular: [0, 0, 0],
         emissive: [1, 1, 1],
-        opacityMap: new XEO.Texture({
+        opacityMap: new xeogl.Texture({
             src: "textures/opacity/cloud10.png"
         }),
         opacity: 1.0
     });
 
-    var lights = new XEO.Lights({
+    var lights = new xeogl.Lights({
         lights: []
     });
 
-    var billboard = new XEO.Billboard({
+    var billboard = new xeogl.Billboard({
         spherical: true
     });
 
-    var modes = new XEO.Modes({
+    var modes = new xeogl.Modes({
         transparent: true,
         pickable: false
     });
@@ -138,12 +138,12 @@
         var r = (Math.random() + 0.1 ) * 200;
         var halfr = r / 2;
 
-        var entity = new XEO.Entity({
+        var entity = new xeogl.Entity({
             geometry: geometry,
             material: material,
             lights: lights,
             billboard: billboard,
-            transform: new XEO.Translate({
+            transform: new xeogl.Translate({
                 xyz: [
                     Math.random() * r - halfr,
                     Math.random() * r - halfr,
@@ -151,7 +151,7 @@
                 ]
             }),
             modes: modes,
-            layer: new XEO.Layer()
+            layer: new xeogl.Layer()
         });
 
         // Dynamically set the rendering order of each
@@ -168,7 +168,7 @@
         })();
     }
 
-    var scene = XEO.scene;
+    var scene = xeogl.scene;
 
     // Move the camera back a bit
 
@@ -185,7 +185,7 @@
                 view.rotateEyeX(0.3);
             });
 
-    var cameraControl = new XEO.CameraControl();
+    var cameraControl = new xeogl.CameraControl();
     cameraControl.mouseZoom.sensitivity = 5;
 
 

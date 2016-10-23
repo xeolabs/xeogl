@@ -35,7 +35,7 @@
  within the page. Then we subscribe to various events fired by that Canvas component.
 
  ```` javascript
- var scene = new XEO.Scene();
+ var scene = new xeogl.Scene();
 
  // Get the Canvas off the Scene
  // Since we did not configure the Scene with the ID of a DOM canvas element,
@@ -71,7 +71,7 @@
  ```` javascript
  // Create a Scene, this time configuring it with the
  // ID of an existing DOM canvas element
- var scene = new XEO.Scene({
+ var scene = new xeogl.Scene({
           canvasId: "myCanvas"
      });
 
@@ -83,7 +83,7 @@
  if that's absent. If you just want WebGL 1, disable WebGL 2 like so:
 
  ```` javascript
- var scene = new XEO.Scene({
+ var scene = new xeogl.Scene({
           canvasId: "myCanvas",
           webgl2 : true
      });
@@ -94,7 +94,7 @@
 
 
  @class Canvas
- @module XEO
+ @module xeogl
  @submodule canvas
  @static
  @param {Scene} scene Parent scene
@@ -104,9 +104,9 @@
 
     "use strict";
 
-    XEO.Canvas = XEO.Component.extend({
+    xeogl.Canvas = xeogl.Component.extend({
 
-        type: "XEO.Canvas",
+        type: "xeogl.Canvas",
 
         serializable: false,
 
@@ -196,7 +196,7 @@
 
                 // Canvas supplied
 
-                if (XEO._isString(cfg.canvas)) {
+                if (xeogl._isString(cfg.canvas)) {
 
                     // Canvas ID supplied - find the canvas
 
@@ -206,7 +206,7 @@
 
                         // Canvas not found - create one automatically
 
-                        this.error("Canvas element not found: " + XEO._inQuotes(cfg.canvas)
+                        this.error("Canvas element not found: " + xeogl._inQuotes(cfg.canvas)
                             + " - creating default canvas instead.");
 
                         this._createCanvas();
@@ -325,13 +325,13 @@
                             // TODO: Wasteful to re-count pixel size of each canvas on each canvas' resize
                             var countPixels = 0;
                             var scene;
-                            for (var sceneId in XEO.scenes) {
-                                if (XEO.scenes.hasOwnProperty(sceneId)) {
-                                    scene = XEO.scenes[sceneId];
+                            for (var sceneId in xeogl.scenes) {
+                                if (xeogl.scenes.hasOwnProperty(sceneId)) {
+                                    scene = xeogl.scenes[sceneId];
                                     countPixels += scene.canvas.canvas.clientWidth * scene.canvas.canvas.clientHeight;
                                 }
                             }
-                            XEO.stats.memory.pixels = countPixels;
+                            xeogl.stats.memory.pixels = countPixels;
 
                             canvas.width = canvas.clientWidth;
                             canvas.height = canvas.clientHeight;
@@ -367,7 +367,7 @@
             /**
              *
              */
-            this._spinner = new XEO.Spinner(this.scene, {
+            this._spinner = new xeogl.Spinner(this.scene, {
                 canvas: this.canvas
             });
 
@@ -382,7 +382,7 @@
          */
         _createCanvas: function () {
 
-            var canvasId = "XEO-canvas-" + XEO.math.createUUID();
+            var canvasId = "xeogl-canvas-" + xeogl.math.createUUID();
             var body = document.getElementsByTagName("body")[0];
             var div = document.createElement('div');
 
@@ -661,7 +661,7 @@
 
                     } else {
 
-                        (this._backgroundColor = this._backgroundColor || new XEO.math.vec4()).set(value || [0, 0, 0, 1]);
+                        (this._backgroundColor = this._backgroundColor || new xeogl.math.vec4()).set(value || [0, 0, 0, 1]);
 
                         if (!this._backgroundImageSrc) {
                             var rgb = "rgb(" + Math.round(this._backgroundColor[0] * 255) + ", " + Math.round(this._backgroundColor[1] * 255) + "," + Math.round(this._backgroundColor[2] * 255) + ")";
@@ -700,7 +700,7 @@
                         return;
                     }
 
-                    if (!XEO._isString(value)) {
+                    if (!xeogl._isString(value)) {
                         this.error("Value for 'backgroundImage' should be a string");
                         return;
                     }

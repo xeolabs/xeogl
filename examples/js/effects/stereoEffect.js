@@ -8,11 +8,11 @@
  ````javascript
  // Both the Entity and the StereoEffect use their Scene's default Camera and Viewport
 
- var entity = new XEO.Entity({
-     geometry: new XEO.BoxGeometry()
+ var entity = new xeogl.Entity({
+     geometry: new xeogl.BoxGeometry()
  });
 
- var stereo = new XEO.StereoEffect({
+ var stereo = new xeogl.StereoEffect({
      eyeSep: 0.2, // Default
      focalLength: 20, // Default
      aperture: 45, // Default
@@ -23,28 +23,28 @@
  Stereo view of an Entity with custom Camera and viewport:
 
  ````javascript
- var camera = new XEO.Camera({
-     view: new XEO.Lookat({
+ var camera = new xeogl.Camera({
+     view: new xeogl.Lookat({
          eye: [0, 0, 10],
          look: [0, 0, 0],
          up: [0, 1, 0]
      }),
-     project: new XEO.Perspective({
+     project: new xeogl.Perspective({
          fovy: 60,
          near: 0.1,
          far: 1000
      })
  });
 
- var viewport = new XEO.Viewport();
+ var viewport = new xeogl.Viewport();
 
- var entity = new XEO.Entity({
+ var entity = new xeogl.Entity({
      camera: camera,
      viewport: viewport,
-     geometry: new XEO.BoxGeometry()
+     geometry: new xeogl.BoxGeometry()
  });
 
- var stereo = new XEO.StereoEffect({
+ var stereo = new xeogl.StereoEffect({
      camera: camera,
      viewport: viewport,
      eyeSep: 0.2, // Default
@@ -55,7 +55,7 @@
  ````
 
  @class StereoEffect
- @module XEO
+ @module xeogl
  @submodule effects
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this StereoEffect in the default
@@ -80,9 +80,9 @@
 
     "use strict";
 
-    XEO.StereoEffect = XEO.Entity.extend({
+    xeogl.StereoEffect = xeogl.Entity.extend({
 
-        type: "XEO.StereoEffect",
+        type: "xeogl.StereoEffect",
 
         _init: function (cfg) {
 
@@ -123,7 +123,7 @@
                      */
                     var camera = this._attach({
                         name: "camera",
-                        type: "XEO.Camera",
+                        type: "xeogl.Camera",
                         component: value,
                         sceneDefault: true,
                         //onAdded: this._transformUpdated,
@@ -132,9 +132,9 @@
 
                     // Ensure that Camera has a Frustum projection
 
-                    if (camera.project.type !== "XEO.Frustum") {
-                        this.warn("Replacing camera's projection with a XEO.Frustum (needed for stereo)");
-                        camera.project = camera.project.create(XEO.Frustum);
+                    if (camera.project.type !== "xeogl.Frustum") {
+                        this.warn("Replacing camera's projection with a xeogl.Frustum (needed for stereo)");
+                        camera.project = camera.project.create(xeogl.Frustum);
                     }
                 },
 
@@ -166,7 +166,7 @@
                      */
                     this._attach({
                         name: "viewport",
-                        type: "XEO.Viewport",
+                        type: "xeogl.Viewport",
                         component: value,
                         sceneDefault: true,
                         //onAdded: this._transformUpdated,
@@ -334,7 +334,7 @@
             var look;
             var up;
 
-            var math = XEO.math;
+            var math = xeogl.math;
             var eyeVec = math.vec3();
             var sepVec = math.vec3();
             var leftEye = math.vec3();
@@ -354,13 +354,13 @@
 
                     var camera = self._attached.camera;
                     if (!camera) {
-                        self.error("Can't activate: no XEO.Camera attached");
+                        self.error("Can't activate: no xeogl.Camera attached");
                         return;
                     }
 
                     var viewport = self._attached.viewport;
                     if (!viewport) {
-                        self.error("Can't activate: no XEO.Viewport attached");
+                        self.error("Can't activate: no xeogl.Viewport attached");
                         return;
                     }
 

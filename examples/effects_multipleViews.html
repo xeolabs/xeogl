@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.js"></script>
+    <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>custom stereo view<br><br>
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>custom stereo view<br><br>
     <ul>
         <li>Click in the right half-space to pick objects</li>
     </ul>
@@ -20,7 +20,7 @@
 <script>
 
     // Load glTF model
-    var gearbox = new XEO.Model({
+    var gearbox = new xeogl.Model({
         src: "models/gltf/gearbox/gearbox_assy.gltf"
     });
 
@@ -39,65 +39,65 @@
     var virtualCameras = [
         {
             viewport: [0,0, 0.0, 0.5, 1.0],
-            camera: new XEO.Camera({
+            camera: new xeogl.Camera({
                 view: {
-                    type: "XEO.Lookat",
+                    type: "xeogl.Lookat",
                     eye: [184.21, 10.54, 7.03],
                     look: [159.20, 17.02, 3.21],
                     up: [-0.15, 0.97, 0.13]
                 },
                 project: {
-                    type: "XEO.Perspective"
+                    type: "xeogl.Perspective"
                 }
             })
         },
         {
             viewport: [0,5, 0.0, 1.0, 0.3],
-            camera: new XEO.Camera({
+            camera: new xeogl.Camera({
                 view: {
-                    type: "XEO.Lookat",
+                    type: "xeogl.Lookat",
                     eye: [184.21, 10.54, -7.03],
                     look: [159.20, 17.02, 3.21],
                     up: [-0.15, 0.97, 0.13]
                 },
                 project: {
-                    type: "XEO.Ortho"
+                    type: "xeogl.Ortho"
                 }
             })
         },
         {
             viewport: [0,5, 0.3, 1.0, 0.3],
-            camera: new XEO.Camera({
+            camera: new xeogl.Camera({
                 view: {
-                    type: "XEO.Lookat",
+                    type: "xeogl.Lookat",
                     eye: [-184.21, 10.54, -7.03],
                     look: [159.20, 17.02, 3.21],
                     up: [-0.15, 0.97, 0.13]
                 },
                 project: {
-                    type: "XEO.Ortho"
+                    type: "xeogl.Ortho"
                 }
             })
         },
         {
             viewport: [0,5, 0.6, 1.0, 1.0],
-            camera: new XEO.Camera({
+            camera: new xeogl.Camera({
                 view: {
-                    type: "XEO.Lookat",
+                    type: "xeogl.Lookat",
                     eye: [-184.21, 10.54, -7.03],
                     look: [159.20, 17.02, 3.21],
                     up: [-0.15, 0.97, 0.13]
                 },
                 project: {
-                    type: "XEO.Ortho"
+                    type: "xeogl.Ortho"
                 }
 
             })
         }];
 
     var realCamera = scene.camera;
-    realCamera.project = new XEO.Transform();
-    realCamera.view = new XEO.Transform();
+    realCamera.project = new xeogl.Transform();
+    realCamera.view = new xeogl.Transform();
 
 
     var viewport = scene.viewport;
@@ -194,7 +194,7 @@
                 }
             });
 
-    new XEO.CameraControl({
+    new xeogl.CameraControl({
         camera: camera0
     });
 

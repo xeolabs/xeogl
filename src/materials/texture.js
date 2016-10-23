@@ -13,7 +13,7 @@
  <li>Similarly, to render depth images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
  property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
  <li>For special effects, we often use rendered Textures in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Textures create within xeoEngine's shaders.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Textures create within xeogl's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/Texture.png"></img>
@@ -42,20 +42,20 @@
  <li>a {{#crossLink "TorusGeometry"}}{{/crossLink}}.</li>
  </ul>
 
- Note that xeoEngine will ignore the {{#crossLink "PhongMaterial"}}PhongMaterial's{{/crossLink}} {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}
+ Note that xeogl will ignore the {{#crossLink "PhongMaterial"}}PhongMaterial's{{/crossLink}} {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}
  and {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} properties, since we assigned {{#crossLink "Texture"}}Textures{{/crossLink}} to the {{#crossLink "PhongMaterial"}}PhongMaterial's{{/crossLink}} {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} and
  {{#crossLink "PhongMaterial/specularMap:property"}}{{/crossLink}} properties. The {{#crossLink "Texture"}}Textures'{{/crossLink}} pixel
  colors directly provide the diffuse and specular components for each fragment across the {{#crossLink "Geometry"}}{{/crossLink}} surface.
 
  ```` javascript
- var entity = new XEO.Entity({
+ var entity = new xeogl.Entity({
 
-    lights: new XEO.Lights({
+    lights: new xeogl.Lights({
         lights: [
-            new XEO.AmbientLight({
+            new xeogl.AmbientLight({
                 color: [0.7, 0.7, 0.7]
             }),
-            new XEO.DirLight({
+            new xeogl.DirLight({
                 dir: [-1, -1, -1],
                 color: [0.5, 0.7, 0.5],
                 intensity: [1.0, 1.0, 1.0],
@@ -64,26 +64,26 @@
         ]
     }),
 
-    material: new XEO.PhongMaterial({
+    material: new xeogl.PhongMaterial({
         ambient: [0.3, 0.3, 0.3],
         diffuse: [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below
         specular: [1.0, 1.0, 1.0],   // Ignored, since we have assigned a Texture to specularMap, below
-        diffuseMap: new XEO.Texture({
+        diffuseMap: new xeogl.Texture({
             src: "diffuseMap.jpg"
         }),
-        specularMap: new XEO.Fresnel({
+        specularMap: new xeogl.Fresnel({
             src: "diffuseMap.jpg"
         }),
         shininess: 80, // Default
         opacity: 1.0 // Default
     }),
 
-    geometry: new XEO.TorusGeometry()
+    geometry: new xeogl.TorusGeometry()
 });
  ````
 
  @class Texture
- @module XEO
+ @module xeogl
  @submodule materials
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Texture in the default
@@ -93,7 +93,7 @@
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Texture.
  @param [cfg.src=null] {String} Path to image file to load into this Texture. See the {{#crossLink "Texture/src:property"}}{{/crossLink}} property for more info.
  @param [cfg.image=null] {HTMLImageElement} HTML Image object to load into this Texture. See the {{#crossLink "Texture/image:property"}}{{/crossLink}} property for more info.
- @param [cfg.target=null] {String | XEO.ColorTarget | XEO.DepthTarget} Instance or ID of a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} or
+ @param [cfg.target=null] {String | xeogl.ColorTarget | xeogl.DepthTarget} Instance or ID of a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} or
  {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} to source this Texture from. See the {{#crossLink "Texture/target:property"}}{{/crossLink}} property for more info.
  @param [cfg.minFilter="linearMipmapLinear"] {String} How the texture is sampled when a texel covers less than one pixel. See the {{#crossLink "Texture/minFilter:property"}}{{/crossLink}} property for more info.
  @param [cfg.magFilter="linear"] {String} How the texture is sampled when a texel covers more than one pixel. See the {{#crossLink "Texture/magFilter:property"}}{{/crossLink}} property for more info.
@@ -109,17 +109,17 @@
 
     "use strict";
 
-    XEO.Texture = XEO.Component.extend({
+    xeogl.Texture = xeogl.Component.extend({
 
-        type: "XEO.Texture",
+        type: "xeogl.Texture",
 
         _init: function (cfg) {
 
             // Rendering state
 
-            this._state = new XEO.renderer.Texture({
+            this._state = new xeogl.renderer.Texture({
 
-                texture: null,  // XEO.renderer.webgl.Texture2D
+                texture: null,  // xeogl.renderer.webgl.Texture2D
                 matrix: null,   // Float32Array
 
                 // Texture properties
@@ -137,15 +137,15 @@
 
             this._src = null;   // URL string
             this._image = null; // HTMLImageElement
-            this._target = null;// XEO.RenderTarget
+            this._target = null;// xeogl.RenderTarget
 
             this._pageTable = null; // Float32Array
 
             // Transformation
 
-            this._translate = XEO.math.vec2([0, 0]);
-            this._scale = XEO.math.vec2([1, 1]);
-            this._rotate = XEO.math.vec2([0, 0]);
+            this._translate = xeogl.math.vec2([0, 0]);
+            this._scale = xeogl.math.vec2([1, 1]);
+            this._rotate = xeogl.math.vec2([0, 0]);
 
             // Dirty flags, processed in _buildTexture()
 
@@ -185,7 +185,7 @@
                 this.target = cfg.target; // Render target
             }
 
-            XEO.stats.memory.textures++;
+            xeogl.stats.memory.textures++;
         },
 
         _webglContextRestored: function () {
@@ -244,7 +244,7 @@
                     }
 
                     if (!state.texture) {
-                        state.texture = new XEO.renderer.webgl.Texture2D(gl);
+                        state.texture = new xeogl.renderer.webgl.Texture2D(gl);
                     }
 
                     state.texture.setImage(this._image, state);
@@ -284,17 +284,17 @@
                 var t;
 
                 if (this._translate[0] !== 0 || this._translate[2] !== 0) {
-                    matrix = XEO.math.translationMat4v([this._translate[0], this._translate[1], 0]);
+                    matrix = xeogl.math.translationMat4v([this._translate[0], this._translate[1], 0]);
                 }
 
                 if (this._scale[0] !== 1 || this._scale[1] !== 1) {
-                    t = XEO.math.scalingMat4v([this._scale[0], this._scale[1], 1]);
-                    matrix = matrix ? XEO.math.mulMat4(matrix, t) : t;
+                    t = xeogl.math.scalingMat4v([this._scale[0], this._scale[1], 1]);
+                    matrix = matrix ? xeogl.math.mulMat4(matrix, t) : t;
                 }
 
                 if (this._rotate !== 0) {
-                    t = XEO.math.rotationMat4v(this._rotate * 0.0174532925, [0, 0, 1]);
-                    matrix = matrix ? XEO.math.mulMat4(matrix, t) : t;
+                    t = xeogl.math.rotationMat4v(this._rotate * 0.0174532925, [0, 0, 1]);
+                    matrix = matrix ? xeogl.math.mulMat4(matrix, t) : t;
                 }
 
                 var oldMatrix = state.matrix;
@@ -306,7 +306,7 @@
                 if (!!matrix !== !!oldMatrix) {
 
                     // Matrix has been lazy-created, now need
-                    // to recompile xeoEngine shaders to use the matrix
+                    // to recompile xeogl shaders to use the matrix
 
                     this.fire("dirty");
                 }
@@ -340,7 +340,7 @@
                     }
 
                     if (!state.texture) {
-                        state.texture = new XEO.renderer.webgl.Texture2D(gl);
+                        state.texture = new xeogl.renderer.webgl.Texture2D(gl);
                     }
 
                     state.texture.setImage(this._image, state);
@@ -372,7 +372,7 @@
                     // Keep self._src because that's where we loaded the image
                     // from, and we may need to save that in JSON later
 
-                    self._image = XEO.renderer.webgl.ensureImageSizePowerOfTwo(image);
+                    self._image = xeogl.renderer.webgl.ensureImageSizePowerOfTwo(image);
 
                     self._imageDirty = true;
                     self._srcDirty = false;
@@ -448,7 +448,7 @@
 
                 set: function (value) {
 
-                    this._image = XEO.renderer.webgl.ensureImageSizePowerOfTwo(value);
+                    this._image = xeogl.renderer.webgl.ensureImageSizePowerOfTwo(value);
                     this._src = null;
 
                     this._imageDirty = true;
@@ -526,7 +526,7 @@
              *
              * @property target
              * @default null
-             * @type String | XEO.ColorTarget | XEO.DepthTarget
+             * @type String | xeogl.ColorTarget | xeogl.DepthTarget
              */
             target: {
 
@@ -558,7 +558,7 @@
                      * Fired whenever this Texture's   {{#crossLink "Texture/target:property"}}{{/crossLink}} property changes.
                      * @event target
                      * @param value The property's new value
-                     * @type String | XEO.ColorTarget | XEO.DepthTarget
+                     * @type String | xeogl.ColorTarget | xeogl.DepthTarget
                      */
                     this.fire("target", this._target);
                 },
@@ -834,7 +834,7 @@
              *     <li>**"mirroredRepeat"** - causes the *S* coordinate to be set to the fractional part of the texture coordinate
              *     if the integer part of *S* is even; if the integer part of *S* is odd, then the *S* texture coordinate is
              *     set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *S*.</li>
-             *     <li>**"repeat"** - **(default)** - causes the integer part of the *S* coordinate to be ignored; xeoEngine uses only the
+             *     <li>**"repeat"** - **(default)** - causes the integer part of the *S* coordinate to be ignored; xeogl uses only the
              *     fractional part, thereby creating a repeating pattern.</li>
              * </ul>
              *
@@ -886,7 +886,7 @@
              *     <li>**"mirroredRepeat"** - Causes the *T* coordinate to be set to the fractional part of the texture coordinate
              *     if the integer part of *T* is even; if the integer part of *T* is odd, then the *T* texture coordinate is
              *     set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *T*.</li>
-             *     <li>**"repeat"** - **(default)** - Causes the integer part of the *T* coordinate to be ignored; xeoEngine uses only the
+             *     <li>**"repeat"** - **(default)** - Causes the integer part of the *T* coordinate to be ignored; xeogl uses only the
              *     fractional part, thereby creating a repeating pattern.</li>
              * </ul>
              *
@@ -1028,7 +1028,7 @@
                 this._state.texture.destroy();
             }
 
-            XEO.stats.memory.textures--;
+            xeogl.stats.memory.textures--;
         }
     });
 

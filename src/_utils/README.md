@@ -1,1 +1,1 @@
-Private utilities used within xeoEngine
+Private utilities used within xeogl

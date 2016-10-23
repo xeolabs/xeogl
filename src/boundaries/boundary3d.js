@@ -9,7 +9,7 @@
  <li>{{#crossLink "Boundary3D/center:property"}}{{/crossLink}} - center coordinate</li>
  </ul>
 
- As shown in the diagram below, the following xeoEngine components have Boundary3Ds:
+ As shown in the diagram below, the following xeogl components have Boundary3Ds:
  * A {{#crossLink "Scene/worldBoundary:property"}}Scene's worldBoundary{{/crossLink}} provides the **World**-space boundary of all its {{#crossLink "Entity"}}Entities{{/crossLink}}
  * A {{#crossLink "Geometry/localBoundary:property"}}Geometry's localBoundary{{/crossLink}} provides the **Local**-space boundary of its {{#crossLink "Geometry/positions:property"}}positions{{/crossLink}}
  * An {{#crossLink "Entity/localBoundary:property"}}Entity's localBoundary{{/crossLink}} (also) provides the **Local**-space boundary of its {{#crossLink "Geometry"}}{{/crossLink}}
@@ -48,9 +48,9 @@
  ```` javascript
  // Entity With a Geometry and Transform
 
- var entity = new XEO.Entity({
-        geometry: new XEO.BoxGeometry(),
-        transform: new XEO.Translate({
+ var entity = new xeogl.Entity({
+        geometry: new xeogl.BoxGeometry(),
+        transform: new xeogl.Translate({
             xyz: [-5, 0, 0]
         })
   });
@@ -80,10 +80,10 @@
  ````
 
  @class Boundary3D
- @module XEO
+ @module xeogl
  @submodule boundaries
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Boundary3D within xeoEngine's default {{#crossLink "XEO/scene:property"}}scene{{/crossLink}} by default.
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Boundary3D within xeogl's default {{#crossLink "xeogl/scene:property"}}scene{{/crossLink}} by default.
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Boundary3D.
@@ -107,9 +107,9 @@
 
     "use strict";
 
-    XEO.Boundary3D = XEO.Component.extend({
+    xeogl.Boundary3D = xeogl.Component.extend({
 
-        type: "XEO.Boundary3D",
+        type: "xeogl.Boundary3D",
 
         _init: function (cfg) {
 
@@ -196,7 +196,7 @@
 
         _buildBoundary: function () {
 
-            var math = XEO.math;
+            var math = xeogl.math;
 
             // Lazy-allocate
 
@@ -205,11 +205,11 @@
             }
 
             if (!this._aabb) {
-                this._aabb = XEO.math.AABB3();
+                this._aabb = xeogl.math.AABB3();
             }
 
             if (!this._center) {
-                this._center = XEO.math.vec3();
+                this._center = xeogl.math.vec3();
             }
 
             var aabb = this._getAABB ? this._getAABB() : null;

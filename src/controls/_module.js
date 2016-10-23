@@ -1,6 +1,6 @@
 /**
  * Components for controlling things with user input.
  *
- * @module XEO
+ * @module xeogl
  * @submodule controls
  */

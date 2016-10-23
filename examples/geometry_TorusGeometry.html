@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
@@ -10,12 +10,12 @@
     <script src="js/libs/dat.gui.min.js"></script>
     <link type="text/css" rel="stylesheet" href="css/dat-gui-swec.css">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>
     <a href="../docs/classes/TorusGeometry.html" target="_docs">TorusGeometry</a>
     <br><br><br>
     <img src="textures/diffuse/uvGrid2.jpg" width="300px" height="300px">
@@ -25,7 +25,7 @@
 
 <script>
 
-    var torus = new XEO.TorusGeometry({
+    var torus = new xeogl.TorusGeometry({
         radius: 1.0,
         tube: 0.3,
         radialSegments: 32,
@@ -33,12 +33,12 @@
         arc: Math.PI * 2.0
     });
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
         geometry: torus,
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             ambient: [0.9, 0.3, 0.9],
             shininess: 30,
-            diffuseMap: new XEO.Texture({
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/uvGrid2.jpg"
             }),
             lineWidth:2,
@@ -61,7 +61,7 @@
 
     var Menu = function () {
 
-        this.message = "XEO.TorusGeometry";
+        this.message = "xeogl.TorusGeometry";
 
         this["primitive"] = torus.primitive;
         this["radius"] = torus.radius;
@@ -99,7 +99,7 @@
 
     var menu = new Menu();
 
-    var folder = gui.addFolder('XEO.TorusGeometry');
+    var folder = gui.addFolder('xeogl.TorusGeometry');
     folder.add(menu, 'primitive', ["triangles", "lines", "points"]);
     folder.add(menu, 'radius', 0.1, 5.0);
     folder.add(menu, 'tube', 0.1, 1.0);

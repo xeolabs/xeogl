@@ -2,13 +2,13 @@
 
     "use strict";
 
-    XEO.utils = XEO.utils || {};
+    xeogl.utils = xeogl.utils || {};
 
     /**
      * Generic map of IDs to items - can generate own IDs or accept given IDs. IDs should be strings in order to not
      * clash with internally generated IDs, which are numbers.
      */
-    XEO.utils.Map = function (items, baseId) {
+    xeogl.utils.Map = function (items, baseId) {
 
         /**
          * Items in this map

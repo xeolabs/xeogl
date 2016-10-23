@@ -1,6 +1,6 @@
 {
   "engine": [
-    "src/xeo.js",
+    "src/xeogl.js",
 
     "src/libs/canvas2image.js",
 

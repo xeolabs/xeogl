@@ -126,8 +126,8 @@ window['PR']
     var SH_KEYWORDS = FLOW_CONTROL_KEYWORDS + "case done elif esac eval fi " +
         "function in local set then until ";
     var ALL_KEYWORDS = (
-    CPP_KEYWORDS + CSHARP_KEYWORDS + JSCRIPT_KEYWORDS + PERL_KEYWORDS +
-    PYTHON_KEYWORDS + RUBY_KEYWORDS + SH_KEYWORDS);
+        CPP_KEYWORDS + CSHARP_KEYWORDS + JSCRIPT_KEYWORDS + PERL_KEYWORDS +
+            PYTHON_KEYWORDS + RUBY_KEYWORDS + SH_KEYWORDS);
 
     // token style names.  correspond to css classes
     /** token style for a string literal */
@@ -224,7 +224,7 @@ window['PR']
             if (regex.ignoreCase) {
                 ignoreCase = true;
             } else if (/[a-z]/i.test(regex.source.replace(
-                    /\\u[0-9a-f]{4}|\\x[0-9a-f]{2}|\\[^ux]/gi, ''))) {
+                /\\u[0-9a-f]{4}|\\x[0-9a-f]{2}|\\[^ux]/gi, ''))) {
                 needToFoldCase = true;
                 ignoreCase = false;
                 break;
@@ -265,12 +265,12 @@ window['PR']
             var charsetParts = charSet.substring(1, charSet.length - 1).match(
                 new RegExp(
                     '\\\\u[0-9A-Fa-f]{4}'
-                    + '|\\\\x[0-9A-Fa-f]{2}'
-                    + '|\\\\[0-3][0-7]{0,2}'
-                    + '|\\\\[0-7]{1,2}'
-                    + '|\\\\[\\s\\S]'
-                    + '|-'
-                    + '|[^-\\\\]',
+                        + '|\\\\x[0-9A-Fa-f]{2}'
+                        + '|\\\\[0-3][0-7]{0,2}'
+                        + '|\\\\[0-7]{1,2}'
+                        + '|\\\\[\\s\\S]'
+                        + '|-'
+                        + '|[^-\\\\]',
                     'g'));
             var groups = [];
             var ranges = [];
@@ -341,15 +341,15 @@ window['PR']
             var parts = regex.source.match(
                 new RegExp(
                     '(?:'
-                    + '\\[(?:[^\\x5C\\x5D]|\\\\[\\s\\S])*\\]'  // a character set
-                    + '|\\\\u[A-Fa-f0-9]{4}'  // a unicode escape
-                    + '|\\\\x[A-Fa-f0-9]{2}'  // a hex escape
-                    + '|\\\\[0-9]+'  // a back-reference or octal escape
-                    + '|\\\\[^ux0-9]'  // other escape sequence
-                    + '|\\(\\?[:!=]'  // start of a non-capturing group
-                    + '|[\\(\\)\\^]'  // start/emd of a group, or line start
-                    + '|[^\\x5B\\x5C\\(\\)\\^]+'  // run of other characters
-                    + ')',
+                        + '\\[(?:[^\\x5C\\x5D]|\\\\[\\s\\S])*\\]'  // a character set
+                        + '|\\\\u[A-Fa-f0-9]{4}'  // a unicode escape
+                        + '|\\\\x[A-Fa-f0-9]{2}'  // a hex escape
+                        + '|\\\\[0-9]+'  // a back-reference or octal escape
+                        + '|\\\\[^ux0-9]'  // other escape sequence
+                        + '|\\(\\?[:!=]'  // start of a non-capturing group
+                        + '|[\\(\\)\\^]'  // start/emd of a group, or line start
+                        + '|[^\\x5B\\x5C\\(\\)\\^]+'  // run of other characters
+                        + ')',
                     'g'));
             var n = parts.length;
 
@@ -797,15 +797,15 @@ window['PR']
                 // A regular expression literal starts with a slash that is
                 // not followed by * or / so that it is not confused with
                 // comments.
-            '/(?=[^/*])'
-                // and then contains any number of raw characters,
-            + '(?:[^/\\x5B\\x5C]'
-                // escape sequences (\x5C),
-            +    '|\\x5C[\\s\\S]'
-                // or non-nesting character sets (\x5B\x5D);
-            +    '|\\x5B(?:[^\\x5C\\x5D]|\\x5C[\\s\\S])*(?:\\x5D|$))+'
-                // finally closed by a /.
-            + '/');
+                '/(?=[^/*])'
+                    // and then contains any number of raw characters,
+                    + '(?:[^/\\x5B\\x5C]'
+                    // escape sequences (\x5C),
+                    +    '|\\x5C[\\s\\S]'
+                    // or non-nesting character sets (\x5B\x5D);
+                    +    '|\\x5B(?:[^\\x5C\\x5D]|\\x5C[\\s\\S])*(?:\\x5D|$))+'
+                    // finally closed by a /.
+                    + '/');
             fallthroughStylePatterns.push(
                 ['lang-regex',
                     new RegExp('^' + REGEXP_PRECEDER_PATTERN + '(' + REGEX_LITERAL + ')')
@@ -829,14 +829,14 @@ window['PR']
                 new RegExp(
                     '^(?:'
                         // A hex number
-                    + '0x[a-f0-9]+'
+                        + '0x[a-f0-9]+'
                         // or an octal or decimal number,
-                    + '|(?:\\d(?:_\\d+)*\\d*(?:\\.\\d*)?|\\.\\d\\+)'
+                        + '|(?:\\d(?:_\\d+)*\\d*(?:\\.\\d*)?|\\.\\d\\+)'
                         // possibly in scientific notation
-                    + '(?:e[+\\-]?\\d+)?'
-                    + ')'
+                        + '(?:e[+\\-]?\\d+)?'
+                        + ')'
                         // with an optional modifier like UL for unsigned long
-                    + '[a-z]*', 'i'),
+                        + '[a-z]*', 'i'),
                 null, '0123456789'],
             // Don't treat escaped quotes in bash as starting strings.  See issue 144.
             [PR_PLAIN,       /^\\[\s\S]?/, null],
@@ -1046,8 +1046,8 @@ window['PR']
             var startDec = decorations[start + 1];
             var end = start + 2;
             while (end + 2 <= nDecorations
-            && (decorations[end + 1] === startDec
-            || decorations[end] === decorations[end + 2])) {
+                && (decorations[end + 1] === startDec
+                || decorations[end] === decorations[end + 2])) {
                 end += 2;
             }
             decorations[decPos++] = startPos;
@@ -1112,15 +1112,15 @@ window['PR']
      *      of decorations.  Takes a single argument job which describes the
      *      state of the computation.   The single parameter has the form
      *      {@code {
-     *        source: {string} as plain text.
-     *        decorations: {Array.<number|string>} an array of style classes
-     *                     preceded by the position at which they start in
-     *                     job.source in order.
-     *                     The language handler should assigned this field.
-     *        basePos: {int} the position of source in the larger source chunk.
-     *                 All positions in the output decorations array are relative
-     *                 to the larger source chunk.
-     *      } }
+    *        source: {string} as plain text.
+    *        decorations: {Array.<number|string>} an array of style classes
+    *                     preceded by the position at which they start in
+    *                     job.source in order.
+    *                     The language handler should assigned this field.
+    *        basePos: {int} the position of source in the larger source chunk.
+    *                 All positions in the output decorations array are relative
+    *                 to the larger source chunk.
+    *      } }
      * @param {Array.<string>} fileExtensions
      */
     function registerLangHandler(handler, fileExtensions) {
@@ -1315,7 +1315,7 @@ window['PR']
 
         function doWork() {
             var endTime = (window['PR_SHOULD_USE_CONTINUATION'] ?
-            clock.now() + 250 /* ms */ :
+                clock.now() + 250 /* ms */ :
                 Infinity);
             for (; k < elements.length && clock.now() < endTime; k++) {
                 var cs = elements[k];

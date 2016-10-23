@@ -2,7 +2,7 @@
 
     "use strict";
 
-    XEO.renderer.webgl.Texture2D = function (gl) {
+    xeogl.renderer.webgl.Texture2D = function (gl) {
 
         this.gl = gl;
 
@@ -13,7 +13,7 @@
         this.allocated = true;
     };
 
-    XEO.renderer.webgl.Texture2D.prototype.setImage = function (image, props) {
+    xeogl.renderer.webgl.Texture2D.prototype.setImage = function (image, props) {
 
         var gl = this.gl;
 
@@ -26,7 +26,7 @@
         gl.bindTexture(this.target, null);
     };
 
-    XEO.renderer.webgl.Texture2D.prototype.setProps = function (props) {
+    xeogl.renderer.webgl.Texture2D.prototype.setProps = function (props) {
 
         var gl = this.gl;
 
@@ -74,13 +74,13 @@
         gl.bindTexture(this.target, null);
     };
 
-    XEO.renderer.webgl.Texture2D.prototype._getGLEnum = function (name, defaultVal) {
+    xeogl.renderer.webgl.Texture2D.prototype._getGLEnum = function (name, defaultVal) {
 
         if (name === undefined) {
             return defaultVal;
         }
 
-        var glName = XEO.renderer.webgl.enums[name];
+        var glName = xeogl.renderer.webgl.enums[name];
 
         if (glName === undefined) {
             return defaultVal;
@@ -90,7 +90,7 @@
     };
 
 
-    XEO.renderer.webgl.Texture2D.prototype.bind = function (unit) {
+    xeogl.renderer.webgl.Texture2D.prototype.bind = function (unit) {
 
         if (!this.allocated) {
             return;
@@ -110,7 +110,7 @@
         return false;
     };
 
-    XEO.renderer.webgl.Texture2D.prototype.unbind = function (unit) {
+    xeogl.renderer.webgl.Texture2D.prototype.unbind = function (unit) {
 
         if (!this.allocated) {
             return;
@@ -126,7 +126,7 @@
         }
     };
 
-    XEO.renderer.webgl.Texture2D.prototype.destroy = function () {
+    xeogl.renderer.webgl.Texture2D.prototype.destroy = function () {
 
         if (!this.allocated) {
             return;
@@ -141,7 +141,7 @@
     };
 
 
-    XEO.renderer.webgl.clampImageSize = function (image, numPixels) {
+    xeogl.renderer.webgl.clampImageSize = function (image, numPixels) {
 
         var n = image.width * image.height;
 
@@ -154,8 +154,8 @@
 
             var canvas = document.createElement("canvas");
 
-            canvas.width = XEO.renderer.webgl.nextHighestPowerOfTwo(width);
-            canvas.height = XEO.renderer.webgl.nextHighestPowerOfTwo(height);
+            canvas.width = xeogl.renderer.webgl.nextHighestPowerOfTwo(width);
+            canvas.height = xeogl.renderer.webgl.nextHighestPowerOfTwo(height);
 
             var ctx = canvas.getContext("2d");
 
@@ -167,14 +167,14 @@
         return image;
     };
 
-    XEO.renderer.webgl.ensureImageSizePowerOfTwo = function (image) {
+    xeogl.renderer.webgl.ensureImageSizePowerOfTwo = function (image) {
 
-        if (!XEO.renderer.webgl.isPowerOfTwo(image.width) || !XEO.renderer.webgl.isPowerOfTwo(image.height)) {
+        if (!xeogl.renderer.webgl.isPowerOfTwo(image.width) || !xeogl.renderer.webgl.isPowerOfTwo(image.height)) {
 
             var canvas = document.createElement("canvas");
 
-            canvas.width = XEO.renderer.webgl.nextHighestPowerOfTwo(image.width);
-            canvas.height = XEO.renderer.webgl.nextHighestPowerOfTwo(image.height);
+            canvas.width = xeogl.renderer.webgl.nextHighestPowerOfTwo(image.width);
+            canvas.height = xeogl.renderer.webgl.nextHighestPowerOfTwo(image.height);
 
             var ctx = canvas.getContext("2d");
 
@@ -187,11 +187,11 @@
         return image;
     };
 
-    XEO.renderer.webgl.isPowerOfTwo = function (x) {
+    xeogl.renderer.webgl.isPowerOfTwo = function (x) {
         return (x & (x - 1)) === 0;
     };
 
-    XEO.renderer.webgl.nextHighestPowerOfTwo = function (x) {
+    xeogl.renderer.webgl.nextHighestPowerOfTwo = function (x) {
         --x;
         for (var i = 1; i < 32; i <<= 1) {
             x = x | x >> i;

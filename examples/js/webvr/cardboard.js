@@ -10,20 +10,20 @@
 
  ## Usage
 
- In the following example we're going to set up a Cardboard-viewable scene with xeoEngine, creating the scene incrementally to
- emphasize the plug-and-play design of xeoEngine's API.
+ In the following example we're going to set up a Cardboard-viewable scene with xeogl, creating the scene incrementally to
+ emphasize the plug-and-play design of xeogl's API.
 
- First we'll create a simple torus-shaped {{#crossLink "Entity"}}{{/crossLink}}, which will be within xeoEngine's default
+ First we'll create a simple torus-shaped {{#crossLink "Entity"}}{{/crossLink}}, which will be within xeogl's default
  {{#crossLink "Scene"}}{{/crossLink}}, since we're not defining the {{#crossLink "Scene"}}{{/crossLink}} component
  explicitly. Our {{#crossLink "Entity"}}{{/crossLink}} is also implicitly connected to the
  {{#crossLink "Scene"}}{{/crossLink}}'s default {{#crossLink "Camera"}}{{/crossLink}}, since we didn't explicitly create
  a {{#crossLink "Camera"}}{{/crossLink}} for it either.
 
  ````javascript
- var entity = new XEO.Entity({
-     geometry: new XEO.TorusGeometry(),
-     material: new XEO.PhongMaterial({
-        diffuseMap: new XEO.Texture({
+ var entity = new xeogl.Entity({
+     geometry: new xeogl.TorusGeometry(),
+     material: new xeogl.PhongMaterial({
+        diffuseMap: new xeogl.Texture({
             src: "textures/diffuse/uvGrid2.jpg"
         })
      })
@@ -50,7 +50,7 @@
  ````
 
  @class Cardboard
- @module XEO
+ @module xeogl
  @submodule webvr
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Cardboard component in the default
@@ -75,9 +75,9 @@
 
     "use strict";
 
-    XEO.Cardboard = XEO.Entity.extend({
+    xeogl.Cardboard = xeogl.Entity.extend({
 
-        type: "XEO.Cardboard",
+        type: "xeogl.Cardboard",
 
         _init: function (cfg) {
 
@@ -130,7 +130,7 @@
                      */
                     var camera = this._attach({
                         name: "camera",
-                        type: "XEO.Camera",
+                        type: "xeogl.Camera",
                         component: value,
                         sceneDefault: true,
                         //onAdded: this._transformUpdated,
@@ -139,9 +139,9 @@
 
                     // Ensure that Camera has a Frustum projection
 
-                    if (camera.project.type !== "XEO.Frustum") {
-                        this.warn("Replacing camera's projection with a XEO.Frustum (needed for stereo)");
-                        camera.project = camera.project.create(XEO.Frustum);
+                    if (camera.project.type !== "xeogl.Frustum") {
+                        this.warn("Replacing camera's projection with a xeogl.Frustum (needed for stereo)");
+                        camera.project = camera.project.create(xeogl.Frustum);
                     }
                 },
 
@@ -173,7 +173,7 @@
                      */
                     this._attach({
                         name: "viewport",
-                        type: "XEO.Viewport",
+                        type: "xeogl.Viewport",
                         component: value,
                         sceneDefault: true,
                         //onAdded: this._transformUpdated,
@@ -343,7 +343,7 @@
             var look;
             var up;
 
-            var math = XEO.math;
+            var math = xeogl.math;
             var eyeVec = math.vec3();
             var sepVec = math.vec3();
             var leftEye = math.vec3();
@@ -364,13 +364,13 @@
 
                 var camera = self._attached.camera;
                 if (!camera) {
-                    self.error("Can't activate: no XEO.Camera attached");
+                    self.error("Can't activate: no xeogl.Camera attached");
                     return;
                 }
 
                 var viewport = self._attached.viewport;
                 if (!viewport) {
-                    self.error("Can't activate: no XEO.Viewport attached");
+                    self.error("Can't activate: no xeogl.Viewport attached");
                     return;
                 }
 

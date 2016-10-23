@@ -6,14 +6,14 @@
 <!--<![endif]-->
 <head>
     <meta charset="utf-8">
-    <title>xeoEngine - A WebGL-based 3D engine from @xeoLabs</title>
+    <title>xeogl - A WebGL-based 3D engine from @xeoLabs</title>
     <meta name="author" content="xeolabs.com">
-    <meta property="og:url" content="http://www.xeoengine.org"/>
+    <meta property="og:url" content="http://www.xeogl.org"/>
     <meta property="og:type" content="website"/>
-    <meta property="og:title" content="xeoEngine - WebGL-based 3D visualization engine"/>
+    <meta property="og:title" content="xeogl - WebGL-based 3D visualization engine"/>
     <meta property="og:description"
           content="A highly-optimized 3D visualization framework with an API that's fun to use"/>
-    <meta property="og:image" content="http://www.xeoengine.org/assets/images/torus.png"/>
+    <meta property="og:image" content="http://www.xeogl.org/assets/images/torus.png"/>
 
     <!-- Mobile Meta -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -79,12 +79,12 @@
 
                     <!--&lt;!&ndash; logo &ndash;&gt;-->
                     <!--<div class="logo smooth-scroll">-->
-                    <!--<a href="#banner"><img id="logo" src="assets/images/mesh_logo.png" alt="xeoEngine"></a>-->
+                    <!--<a href="#banner"><img id="logo" src="assets/images/mesh_logo.png" alt="xeogl"></a>-->
                     <!--</div>-->
 
                     <!-- name-and-slogan -->
                     <div class="site-name-and-slogan smooth-scroll">
-                        <div class="site-name"><a href="#banner">xeoEngine</a></div>
+                        <div class="site-name"><a href="#banner">xeogl</a></div>
                         <div class="site-slogan">A WebGL-based 3D engine by <a target="_blank"
                                                                                href="http://xeolabs.com">xeoLabs</a>
                         </div>
@@ -128,9 +128,9 @@
                                         <li><a href="#features">Features</a></li>
                                         <li><a href="../examples" target="_examples">Examples</a></li>
                                         <li><a href="../docs"  target="_docs">Docs</a></li>
-                                        <li><a href="https://github.com/xeolabs/xeoengine"  target="_github">GitHub</a></li>
+                                        <li><a href="https://github.com/xeolabs/xeogl"  target="_github">GitHub</a></li>
                                         <li>
-                                            <a href="https://github.com/xeolabs/xeoengine/archive/master.zip">Download</a>
+                                            <a href="https://github.com/xeolabs/xeogl/archive/master.zip">Download</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -181,10 +181,10 @@
                     <br><br>
                     <br><br>
 
-                    <p class="lead"><a href="https://github.com/xeolabs/xeoengine/archive/master.zip"
-                                       class="btn btn-default btn-lg">Download xeoEngine beta</a></p>
+                    <p class="lead"><a href="https://github.com/xeolabs/xeogl/archive/master.zip"
+                                       class="btn btn-default btn-lg">Download xeogl beta</a></p>
 
-                    <p class="lead">or <a href="https://github.com/xeolabs/xeoengine">clone the repository</a></p>
+                    <p class="lead">or <a href="https://github.com/xeolabs/xeogl">clone the repository</a></p>
                     <br><br><br>
 
                 </div>
@@ -201,7 +201,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <h1 id="concept" class="title"><span>xeoEngine</span> Concept</h1>
+                <h1 id="concept" class="title"><span>xeogl</span> Concept</h1>
 
                 <div class="space"></div>
                 <div class="row">
@@ -212,14 +212,14 @@
                         <p>In this walkthrough we'll create the
                             spinning torus scene shown in the screenshot below.</p>
 
-                        <p>To show how xeoEngine scenes are dynamically editable, we'll
+                        <p>To show how xeogl scenes are dynamically editable, we'll
                             create the scene incrementally: first we'll create the basic torus entity, then
                             set it spinning, and then add texture. </p>
 
-                        <p>Finally, to show how data-driven xeoEngine is, we'll clone the scene, which
+                        <p>Finally, to show how data-driven xeogl is, we'll clone the scene, which
                             involves serializing and deserializing it as JSON.</p>
                         <br>
-                        <a href="http://xeoengine.org/examples/#materials_fresnel_specular"><img
+                        <a href="http://xeogl.org/examples/#materials_fresnel_specular"><img
                                 src="assets/images/torus.png"></a>
 
                         <div class="space"></div>
@@ -227,11 +227,11 @@
                         <h4>Creating the 3D Scene</h4>
 
                         <p>First, include <a
-                                href="https://cdn.rawgit.com/xeolabs/xeoengine/master/build/xeoengine.min.js">xeoengine.min.js</a>
+                                href="https://cdn.rawgit.com/xeolabs/xeogl/master/build/xeogl.min.js">xeogl.min.js</a>
                             in your
                             HTML
                             page:</p>
-                        <pre>&lt;script src="https://cdn.rawgit.com/xeolabs/xeoengine/master/build/xeoengine.min.js"&gt;&lt;/script&gt;</pre>
+                        <pre>&lt;script src="https://cdn.rawgit.com/xeolabs/xeogl/master/build/xeogl.min.js"&gt;&lt;/script&gt;</pre>
 
                         <br>
 
@@ -243,15 +243,15 @@
                             together by <a href="./docs/classes/Entity.html" target="_docs">entities</a>.</p>
 
 <pre class="prettyprint lang-javascript">
-var scene = new XEO.Scene();
+var scene = new xeogl.Scene();
 
-var material = new XEO.PhongMaterial(scene, {
+var material = new xeogl.PhongMaterial(scene, {
     diffuse: [ 0.6, 0.6, 0.7 ]
 });
 
-var geometry = new XEO.TorusGeometry(scene);
+var geometry = new xeogl.TorusGeometry(scene);
 
-var entity = new XEO.Entity(scene, {
+var entity = new xeogl.Entity(scene, {
     material: material,
     geometry: geometry
 });
@@ -265,7 +265,7 @@ var entity = new XEO.Entity(scene, {
                         <div class="space"></div>
                         <h4>Defaults</h4>
 
-                        <p>xeoEngine provides defaults for pretty much everything, which means that we only need to
+                        <p>xeogl provides defaults for pretty much everything, which means that we only need to
                             create things wherever we need to override those defaults. For our entity,
                             we provided our own <a
                                     href="./docs/classes/PhongMaterial.html" target="_docs">material</a> and <a
@@ -281,7 +281,7 @@ var entity = new XEO.Entity(scene, {
                     <div class="col-md-6">
                         <h4>Animating</h4>
 
-                        <p>Animate scenes by updating component properties. Almost everything in xeoEngine
+                        <p>Animate scenes by updating component properties. Almost everything in xeogl
                             fires change events that you can subscribe to, which is quite handy for scripting.</p>
 
 <pre class="prettyprint lang-javascript">material.on("diffuse",
@@ -317,7 +317,7 @@ material.diffuse = [0.9, 0.9, 0.6];</pre>
                             appear on
                             our torus:</p>
 
-<pre class="prettyprint lang-javascript">material.diffuseMap = new XEO.Texture(scene, {
+<pre class="prettyprint lang-javascript">material.diffuseMap = new xeogl.Texture(scene, {
     src: "textures/uvGrid2.jpg"
 });</pre>
 
@@ -331,18 +331,18 @@ material.diffuse = [0.9, 0.9, 0.6];</pre>
 
  <pre class="prettyprint lang-javascript">var json = scene.json;
 
-var scene2 = new XEO.Scene({ json: json });</pre>
+var scene2 = new xeogl.Scene({ json: json });</pre>
                         <br>
 
                         <h4>Learn More</h4>
 
                         <ul>
                             <li><a
-                                    href="http://xeoengine.org/docs" target="_docs">API reference</a></li>
+                                    href="http://xeogl.org/docs" target="_docs">API reference</a></li>
                             <li><a
-                                    href="https://github.com/xeolabs/xeoengine/wiki" target="_wiki">Wiki</a></li>
+                                    href="https://github.com/xeolabs/xeogl/wiki" target="_wiki">Wiki</a></li>
                             <li><a
-                                    href="http://xeoengine.org/examples/#materials_fresnel_specular" target="_examples">Examples</a>
+                                    href="http://xeogl.org/examples/#materials_fresnel_specular" target="_examples">Examples</a>
                             </li>
                         </ul>
 
@@ -360,7 +360,7 @@ var scene2 = new XEO.Scene({ json: json });</pre>
 <!-- ================ -->
 <div class="section features">
     <div id="featureList" class="container object-non-visible" data-animation-effect="fadeIn">
-        <h1 id="features" class="title"><span>xeoEngine</span> Features</h1>
+        <h1 id="features" class="title"><span>xeogl</span> Features</h1>
 
         <div class="space"></div>
 
@@ -382,8 +382,8 @@ var scene2 = new XEO.Scene({ json: json });</pre>
             <div class="row">
                 <div class="col-sm-6">
 
-                    <p class="lead"><a href="https://github.com/xeolabs/xeoengine/archive/master.zip"
-                                       class="btn btn-default btn-lg">Download xeoEngine beta</a></p>
+                    <p class="lead"><a href="https://github.com/xeolabs/xeogl/archive/master.zip"
+                                       class="btn btn-default btn-lg">Download xeogl beta</a></p>
 
                 </div>
             </div>
@@ -397,7 +397,7 @@ var scene2 = new XEO.Scene({ json: json });</pre>
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <p class="text-center">Copyright © 2015 xeoEngine by <a target="_blank" href="http://xeolabs.com">xeoLabs</a>.
+                    <p class="text-center">Copyright © 2016 xeogl by <a target="_blank" href="http://xeolabs.com">xeoLabs</a>.
                     </p>
                 </div>
             </div>

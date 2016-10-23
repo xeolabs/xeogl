@@ -2,11 +2,11 @@
  A **Geometry** defines the geometric shape of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  <ul>
- <li>Like everything in xeoEngine, all properties on a Geometry are dynamically editable.</li>
+ <li>Like everything in xeogl, all properties on a Geometry are dynamically editable.</li>
  <li>When no shape is specified, a Geometry will be a 2x2x2 box by default.</li>
  <li>A {{#crossLink "Scene"}}{{/crossLink}} provides a 2x2x2 box for {{#crossLink "Entity"}}Entities{{/crossLink}}
  default to when they are not configured with a Geometry.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Geometries create within xeoEngine's shaders.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Geometries create within xeogl's shaders.</li>
  <li>A Geometry provides its local-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.</li>
  </ul>
 
@@ -27,8 +27,8 @@
  If you create a Geometry with no specified shape, it will default to a box-shaped triangle mesh with dimensions 2x2x2:
 
  ```` javascript
- var entity = new XEO.Entity({
-    geometry: new XEO.Geometry() // 2x2x2 box
+ var entity = new xeogl.Entity({
+    geometry: new xeogl.Geometry() // 2x2x2 box
 });
  ````
 
@@ -38,26 +38,26 @@
  default {{#crossLink "Scene/geometry:property"}}{{/crossLink}}, which is a 2x2x2 triangle mesh box:
 
  ```` javascript
- var entity2 = new XEO.Entity();
+ var entity2 = new xeogl.Entity();
  ````
 
  ## Sharing among Entities
 
- xeoEngine components can be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}}. For components like
+ xeogl components can be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}}. For components like
  Geometry and {{#crossLink "Texture"}}{{/crossLink}}, this can provide significant memory
- and performance savings. To render the example below, xeoEngine will issue two draw WebGL calls, one for
+ and performance savings. To render the example below, xeogl will issue two draw WebGL calls, one for
  each {{#crossLink "Entity"}}{{/crossLink}}, but will only need to bind the Geometry's arrays once on WebGL.
 
  ```` javascript
- var boxGeometry = new XEO.BoxGeometry();
+ var boxGeometry = new xeogl.BoxGeometry();
 
- new XEO.Entity({
+ new xeogl.Entity({
     geometry: boxGeometry
  });
 
- new XEO.Entity({
+ new xeogl.Entity({
     geometry: boxGeometry,
-    transform:  new XEO.Translate({
+    transform:  new xeogl.Translate({
         xyz: [5, 0, 0
     })
  });
@@ -68,7 +68,7 @@
  Let's create an {{#crossLink "Entity"}}{{/crossLink}} with a custom Geometry that's a quad-shaped triangle mesh:
 
  ```` javascript
- var quadGeometry = new XEO.Geometry({
+ var quadGeometry = new xeogl.Geometry({
 
         // Supported primitives are 'points', 'lines', 'line-loop', 'line-strip', 'triangles',
         // 'triangle-strip' and 'triangle-fan'.primitive: "triangles",
@@ -113,13 +113,13 @@
         ]
 });
 
- var quadEntity = new XEO.Entity({
+ var quadEntity = new xeogl.Entity({
     geometry: quadGeometry
  });
  ````
  ## Editing Geometry
 
- Recall that everything in xeoEngine is dynamically editable. Let's update the
+ Recall that everything in xeogl is dynamically editable. Let's update the
  {{#crossLink "Geometry/indices:property"}}{{/crossLink}} to reverse the direction of the triangles:
 
  ````javascript
@@ -141,7 +141,7 @@
  we can show or hide its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} back-faces:
 
  ```` javascript
- var modes = new XEO.Modes();
+ var modes = new xeogl.Modes();
 
  quadEntity.modes = modes;
 
@@ -155,7 +155,7 @@
  The <a href="https://www.opengl.org/wiki/Face_Culling" target="other">vertex winding order</a> of each face determines
  whether it's a front-face or a back-face.
 
- By default, xeoEngine considers faces to be front-faces if they have a counter-clockwise
+ By default, xeogl considers faces to be front-faces if they have a counter-clockwise
  winding order, but we can change that by setting the {{#crossLink "Modes"}}{{/crossLink}}
  {{#crossLink "Modes/frontface:property"}}{{/crossLink}} property:
 
@@ -182,7 +182,7 @@
  ````
 
  @class Geometry
- @module XEO
+ @module xeogl
  @submodule geometry
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Geometry in the default
@@ -205,15 +205,15 @@
 
     "use strict";
 
-    XEO.Geometry = XEO.Component.extend({
+    xeogl.Geometry = xeogl.Component.extend({
 
-        type: "XEO.Geometry",
+        type: "xeogl.Geometry",
 
         _init: function (cfg) {
 
             var self = this;
 
-            this._state = new XEO.renderer.Geometry({
+            this._state = new xeogl.renderer.Geometry({
 
                 primitive: null, // WebGL enum
                 primitiveName: null, // String
@@ -334,7 +334,7 @@
 
             this._webglContextRestored = this.scene.canvas.on("webglContextRestored", this._scheduleGeometryUpdate, this);
 
-            XEO.stats.memory.meshes++;
+            xeogl.stats.memory.meshes++;
         },
 
         /**
@@ -345,7 +345,7 @@
         _scheduleUpdate: function () {
             if (!this._updateScheduled) {
                 this._updateScheduled = true;
-                XEO.scheduleTask(this._doUpdate, this);
+                xeogl.scheduleTask(this._doUpdate, this);
             }
         },
 
@@ -355,7 +355,7 @@
 
                 this._geometryUpdateScheduled = true; // Prevents needless scheduling within _update()
 
-                if (this._update) { // Template method from XEO.Component
+                if (this._update) { // Template method from xeogl.Component
                     this._update();
                 }
 
@@ -370,7 +370,7 @@
         _scheduleGeometryUpdate: function () {
             if (!this._geometryUpdateScheduled) {
                 this._geometryUpdateScheduled = true;
-                XEO.scheduleTask(this._updateGeometry, this);
+                xeogl.scheduleTask(this._updateGeometry, this);
             }
         },
 
@@ -428,14 +428,14 @@
 
             var usage = gl.STATIC_DRAW;
 
-            var memoryStats = XEO.stats.memory;
+            var memoryStats = xeogl.stats.memory;
 
             if (this._positionsDirty) {
                 if (this._state.positions) {
                     memoryStats.positions -= this._state.positions.numItems;
                     this._state.positions.destroy();
                 }
-                this._state.positions = this._positionsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._positionsData, this._positionsData.length, 3, usage) : null;
+                this._state.positions = this._positionsData ? new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._positionsData, this._positionsData.length, 3, usage) : null;
                 if (this._state.positions) {
                     memoryStats.positions += this._state.positions.numItems;
                 }
@@ -451,7 +451,7 @@
                     memoryStats.colors -= this._state.colors.numItems;
                     this._state.colors.destroy();
                 }
-                this._state.colors = this._colorsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._colorsData, this._colorsData.length, 4, usage) : null;
+                this._state.colors = this._colorsData ? new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._colorsData, this._colorsData.length, 4, usage) : null;
                 if (this._state.colors) {
                     memoryStats.colors += this._state.colors.numItems;
                 }
@@ -467,10 +467,10 @@
                 // Automatic normal generation
 
                 if (this._autoNormals && this._positionsData && this._indicesData) {
-                    this._normalsData = XEO.math.buildNormals(this._positionsData, this._indicesData);
+                    this._normalsData = xeogl.math.buildNormals(this._positionsData, this._indicesData);
                 }
 
-                this._state.normals = this._normalsData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._normalsData, this._normalsData.length, 3, usage) : null;
+                this._state.normals = this._normalsData ? new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._normalsData, this._normalsData.length, 3, usage) : null;
                 if (this._state.normals) {
                     memoryStats.normals += this._state.normals.numItems;
                 }
@@ -487,7 +487,7 @@
                     memoryStats.uvs -= this._state.uv.numItems;
                     this._state.uv.destroy();
                 }
-                this._state.uv = this._uvData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._uvData, this._uvData.length, 2, usage) : null;
+                this._state.uv = this._uvData ? new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._uvData, this._uvData.length, 2, usage) : null;
                 if (this._state.uv) {
                     memoryStats.uvs += this._state.uv.numItems;
                 }
@@ -505,7 +505,7 @@
                     this._state.indices.destroy();
                 }
 
-                this._state.indices = this._indicesData ? new XEO.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, this._indicesData, this._indicesData.length, 1, usage) : null;
+                this._state.indices = this._indicesData ? new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, this._indicesData, this._indicesData.length, 1, usage) : null;
                 if (this._state.indices) {
                     memoryStats.indices += this._state.indices.numItems;
                 }
@@ -532,7 +532,7 @@
                 this._doUpdate();
             }
 
-            var memoryStats = XEO.stats.memory;
+            var memoryStats = xeogl.stats.memory;
 
             if (this._tangents) {
                 memoryStats.tangents -= this._tangents.numItems;
@@ -543,14 +543,14 @@
                 return null;
             }
 
-            this._tangentsData = XEO.math.buildTangents(this._positionsData, this._indicesData, this._uvData);
+            this._tangentsData = xeogl.math.buildTangents(this._positionsData, this._indicesData, this._uvData);
 
             var gl = this.scene.canvas.gl;
 
             var usage = gl.STATIC_DRAW;
 
             this._tangents = this._tangentsData ?
-                new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._tangentsData, this._tangentsData.length, 3, usage) : null;
+                new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, this._tangentsData, this._tangentsData.length, 3, usage) : null;
 
             if (this._tangents) {
                 memoryStats.tangents += this._tangents.numItems;
@@ -577,15 +577,15 @@
 
                 var usage = gl.STATIC_DRAW;
 
-                var arrays = XEO.math.getPickPrimitives(this._positionsData, this._indicesData);
+                var arrays = xeogl.math.getPickPrimitives(this._positionsData, this._indicesData);
 
                 var pickPositions = arrays.positions;
                 var pickColors = arrays.colors;
 
-                this._pickPositions = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickPositions, pickPositions.length, 3, usage);
-                this._pickColors = new XEO.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickColors, pickColors.length, 4, usage);
+                this._pickPositions = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickPositions, pickPositions.length, 3, usage);
+                this._pickColors = new xeogl.renderer.webgl.ArrayBuffer(gl, gl.ARRAY_BUFFER, pickColors, pickColors.length, 4, usage);
 
-                var memoryStats = XEO.stats.memory;
+                var memoryStats = xeogl.stats.memory;
 
                 memoryStats.positions += this._pickPositions.numItems;
                 memoryStats.colors += this._pickColors.numItems;
@@ -596,7 +596,7 @@
 
         _destroyPickVBOs: function () {
 
-            var memoryStats = XEO.stats.memory;
+            var memoryStats = xeogl.stats.memory;
 
             if (this._pickPositions) {
                 this._pickPositions.destroy();
@@ -722,7 +722,7 @@
             /**
              * The Geometry's positions array.
              *
-             * This property is a one-dimensional array - use  {{#crossLink "XEO.math/flatten:method"}}{{/crossLink}} to
+             * This property is a one-dimensional array - use  {{#crossLink "xeogl.math/flatten:method"}}{{/crossLink}} to
              * convert two-dimensional arrays for assignment to this property.
              *
              * Fires a {{#crossLink "Geometry/positions:event"}}{{/crossLink}} event on change.
@@ -937,7 +937,7 @@
             /**
              * The Geometry's indices array.
              *
-             * If ````XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]```` is true, then this can be
+             * If ````xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]```` is true, then this can be
              * a ````Uint32Array````, otherwise it needs to be a ````Uint16Array````.
              *
              * Fires a {{#crossLink "Geometry/indices:event"}}{{/crossLink}} event on change.
@@ -955,7 +955,7 @@
 
                     if (value) {
 
-                        var bigIndicesSupported = XEO.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"];
+                        var bigIndicesSupported = xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"];
 
                         if (!bigIndicesSupported && value.constructor === Uint32Array) {
                             this.error("This WebGL implementation does not support Uint32Array");
@@ -1024,7 +1024,7 @@
 
                         //this._setBoundaryDirty();
 
-                        this._localBoundary = new XEO.Boundary3D(this.scene, {
+                        this._localBoundary = new xeogl.Boundary3D(this.scene, {
 
                             // Inject callbacks through which this Geometry
                             // can manage caching for the boundary
@@ -1227,7 +1227,7 @@
 
             // Decrement geometry statistic
 
-            XEO.stats.memory.meshes--;
+            xeogl.stats.memory.meshes--;
         }
     });
 })();

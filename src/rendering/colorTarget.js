@@ -21,12 +21,12 @@
  </ul>
 
  ````javascript
- var colorTarget = new XEO.ColorTarget();
+ var colorTarget = new xeogl.ColorTarget();
 
  // First Entity renders to the ColorTarget
 
- var entity1 = new XEO.Entity({
-    geometry: new XEO.BoxGeometry(),
+ var entity1 = new xeogl.Entity({
+    geometry: new xeogl.BoxGeometry(),
     colorTarget: colorTarget
  });
 
@@ -34,10 +34,10 @@
  // Second Entity is textured with the
  // image of the first Entity
 
- var entity2 = new XEO.Entity({
-     geometry: new XEO.BoxGeometry()
-     material: new XEO.PhongMaterial({
-         diffuseMap: new XEO.Texture({
+ var entity2 = new xeogl.Entity({
+     geometry: new xeogl.BoxGeometry()
+     material: new xeogl.PhongMaterial({
+         diffuseMap: new xeogl.Texture({
             target: colorTarget
          })
      })
@@ -45,7 +45,7 @@
  ````
 
  @class ColorTarget
- @module XEO
+ @module xeogl
  @submodule rendering
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this ColorTarget within the
@@ -62,14 +62,14 @@
 
     "use strict";
 
-    XEO.ColorTarget = XEO.Component.extend({
+    xeogl.ColorTarget = xeogl.Component.extend({
 
-        type: "XEO.ColorTarget",
+        type: "xeogl.ColorTarget",
 
         _init: function (cfg) {
 
-            this._state = new XEO.renderer.RenderTarget({
-                type: XEO.renderer.RenderTarget.COLOR,
+            this._state = new xeogl.renderer.RenderTarget({
+                type: xeogl.renderer.RenderTarget.COLOR,
                 renderBuf: null
             });
 
@@ -152,7 +152,7 @@
 
                         var canvas = this.scene.canvas;
 
-                        state.renderBuf = new XEO.renderer.webgl.RenderBuffer({
+                        state.renderBuf = new xeogl.renderer.webgl.RenderBuffer({
                             canvas: canvas.canvas,
                             gl: canvas.gl,
                             size: this._size

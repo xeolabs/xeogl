@@ -27,31 +27,31 @@
  ## Usage
 
  ````Javascript
- var camera = new XEO.Camera({
-     view: new XEO.Lookat({
+ var camera = new xeogl.Camera({
+     view: new xeogl.Lookat({
          eye: [0, 0, 10],
          look: [0, 0, 0],
          up: [0, 1, 0]
      }),
-     project: new XEO.Perspective({
+     project: new xeogl.Perspective({
          fovy: 60,
          near: 0.1,
          far: 1000
      })
  });
 
- var entity = new XEO.Entity({
+ var entity = new xeogl.Entity({
      camera: camera,
-     geometry: new XEO.BoxGeometry()
+     geometry: new xeogl.BoxGeometry()
  });
 
- new XEO.KeyboardAxisCamera({
+ new xeogl.KeyboardAxisCamera({
      camera: camera
  });
  ````
 
  @class KeyboardAxisCamera
- @module XEO
+ @module xeogl
  @submodule controls
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
@@ -68,7 +68,7 @@
 
     "use strict";
 
-    XEO.KeyboardAxisCamera = XEO.Component.extend({
+    xeogl.KeyboardAxisCamera = xeogl.Component.extend({
 
         /**
          JavaScript class name for this Component.
@@ -77,7 +77,7 @@
          @type String
          @final
          */
-        type: "XEO.KeyboardAxisCamera",
+        type: "xeogl.KeyboardAxisCamera",
 
         _init: function (cfg) {
 
@@ -87,7 +87,7 @@
 
             // Animations
 
-            this._cameraFly = new XEO.CameraFlight(this.scene, {
+            this._cameraFly = new xeogl.CameraFlight(this.scene, {
                 duration: 1.0
             });
 
@@ -123,7 +123,7 @@
                      */
                     var camera = this._attach({
                         name: "camera",
-                        type: "XEO.Camera",
+                        type: "xeogl.Camera",
                         component: value,
                         sceneDefault: true
                     });
@@ -183,7 +183,7 @@
                                     || keyCode === input.KEY_NUM_6) {
 
 
-                                    XEO.scheduleTask(function () {
+                                    xeogl.scheduleTask(function () {
                                         self._fly(keyCode);
                                     });
                                 }
@@ -214,7 +214,7 @@
             var boundary = this.scene.worldBoundary;
             var aabb = boundary.aabb;
             var center = boundary.center;
-            var diag = XEO.math.getAABBDiag(aabb);
+            var diag = xeogl.math.getAABBDiag(aabb);
 
             this._stopFOV = 55;
             var dist = Math.abs((diag) / Math.tan(this._stopFOV / 2));

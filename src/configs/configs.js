@@ -6,14 +6,14 @@
  <li>Config property values are set on a Configs using its {{#crossLink "Configs/set:method"}}{{/crossLink}} method,
  and changes to properties may be subscribed to using {{#crossLink "Component/on:method"}}{{/crossLink}}.</li>
  <li>You can define your own properties in a Configs, but take care not to clobber the native properties used by
- xeoEngine (see table below).</li>
+ xeogl (see table below).</li>
  </ul>
 
  <img src="../../../assets/images/Configs.png"></img>
 
- ## Native xeoEngine config properties
+ ## Native xeogl config properties
 
- Don't use the following names for your own Configs properties, because these are already used by xeoEngine:
+ Don't use the following names for your own Configs properties, because these are already used by xeogl:
 
  | Name  | Description  |
  |---|---|
@@ -27,7 +27,7 @@
  property, which fires a change event.
 
  ````Javascript
- var scene = new XEO.Scene();
+ var scene = new xeogl.Scene();
 
  var configs = scene.configs;
 
@@ -47,7 +47,7 @@
  ````
 
  @class Configs
- @module XEO
+ @module xeogl
  @submodule configs
  @constructor
  @param [scene] {Scene} Parent scene - creates this component in the default scene when omitted.
@@ -58,9 +58,9 @@
 
     "use strict";
 
-    XEO.Configs = XEO.Component.extend({
+    xeogl.Configs = xeogl.Component.extend({
 
-        type: "XEO.Configs",
+        type: "xeogl.Configs",
 
         _init: function (cfg) {
 
@@ -93,7 +93,7 @@
         },
 
         _toJSON: function () {
-            return XEO._copy(this.props);
+            return xeogl._copy(this.props);
         }
     });
 

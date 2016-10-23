@@ -18,17 +18,17 @@
  two {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ````javascript
-var visibility = new XEO.Visibility({
+var visibility = new xeogl.Visibility({
     visible: true
 });
 
 // Create two Entities whose visibility will be controlled by our Visibility
 
-var entity1 = new XEO.Entity({
+var entity1 = new xeogl.Entity({
     visibility: visibility
 });
 
-var entity2 = new XEO.Entity({
+var entity2 = new xeogl.Entity({
     visibility: visibility
 });
 
@@ -49,7 +49,7 @@ visibility.off(handle);
 visibility.destroy();
  ````
  @class Visibility
- @module XEO
+ @module xeogl
  @submodule culling
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Visibility in the default
@@ -64,13 +64,13 @@ visibility.destroy();
 
     "use strict";
 
-    XEO.Visibility = XEO.Component.extend({
+    xeogl.Visibility = xeogl.Component.extend({
 
-        type: "XEO.Visibility",
+        type: "xeogl.Visibility",
 
         _init: function (cfg) {
 
-            this._state = new XEO.renderer.Visibility({
+            this._state = new xeogl.renderer.Visibility({
                 visible: true
             });
 

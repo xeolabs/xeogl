@@ -5,7 +5,7 @@
 
     "use strict";
 
-    XEO.renderer = XEO.renderer || {};
+    xeogl.renderer = xeogl.renderer || {};
 
 
     /**
@@ -13,12 +13,12 @@
      Base class for Renderer states.
 
      renderer.State
-     @module XEO
+     @module xeogl
      
      @constructor
      @param cfg {*} Configs
      */
-    XEO.renderer.State = Class.extend({
+    xeogl.renderer.State = Class.extend({
 
         __init: function (cfg) {
 
@@ -38,7 +38,7 @@
         }
     });
 
-    //XEO.renderer.State.prototype.destroy = function () {
+    //xeogl.renderer.State.prototype.destroy = function () {
     //    states.removeItem(this.id);
     //};
 
@@ -47,15 +47,15 @@
      Visibility state.
 
      renderer.Visibility
-     @module XEO
+     @module xeogl
      
      @constructor
      @param cfg {*} Configs
      @param cfg.visible {Boolean} Flag which controls visibility of the associated render objects.
      @extends renderer.State
      */
-    XEO.renderer.Visibility = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
+    xeogl.renderer.Visibility = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
     });
 
     /**
@@ -63,15 +63,15 @@
      Culling state.
 
      renderer.Cull
-     @module XEO
+     @module xeogl
 
      @constructor
      @param cfg {*} Configs
      @param cfg.culled {Boolean} Flag which controls cull state of the associated render objects.
      @extends renderer.State
      */
-    XEO.renderer.Cull = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
+    xeogl.renderer.Cull = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
     });
 
     /**
@@ -79,7 +79,7 @@
      Modes state.
 
      renderer.Mode
-     @module XEO
+     @module xeogl
      
      @constructor
      @param cfg {*} Configs
@@ -89,8 +89,8 @@
      @param cfg.frontFace {Boolean} Flag which determines winding order of backfaces on the associated render objects - true == "ccw", false == "cw".
      @extends renderer.State
      */
-    XEO.renderer.Modes = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
+    xeogl.renderer.Modes = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
     });
 
     /**
@@ -98,15 +98,15 @@
      Layer state.
 
      renderer.Layer
-     @module XEO
+     @module xeogl
      
      @constructor
      @param cfg {*} Configs
      @param cfg.priority {Number} Layer render priority.
      @extends renderer.State
      */
-    XEO.renderer.Layer = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
+    xeogl.renderer.Layer = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
     });
 
     /**
@@ -114,15 +114,15 @@
      Stage state.
 
      renderer.Stage
-     @module XEO
+     @module xeogl
      
      @constructor
      @param cfg {*} Configs
      @param cfg.priority {Number} Stage render priority.
      @extends renderer.State
      */
-    XEO.renderer.Stage = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
+    xeogl.renderer.Stage = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
     });
 
     /**
@@ -130,7 +130,7 @@
      Depth buffer state.
 
      renderer.DepthBuf
-     @module XEO
+     @module xeogl
      
      @constructor
      @param cfg {*} Configs
@@ -138,8 +138,8 @@
      @param cfg.depthBuf {String} Depth function
      @extends renderer.State
      */
-    XEO.renderer.DepthBuf = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
+    xeogl.renderer.DepthBuf = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
     });
 
     /**
@@ -147,7 +147,7 @@
      Color buffer state.
 
      renderer.ColorBuf
-     @module XEO
+     @module xeogl
      
      @constructor
      @param cfg {*} Configs
@@ -155,8 +155,8 @@
      @param cfg.colorMask {Array of String} The color mask
      @extends renderer.State
      */
-    XEO.renderer.ColorBuf = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
+    xeogl.renderer.ColorBuf = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
     });
 
     /**
@@ -164,15 +164,15 @@
      Renderer lights state.
 
      renderer.Lights
-     @module XEO
+     @module xeogl
      
      @constructor
      @param cfg {*} Configs
      @param cfg.colorMask {Array of Object} The light sources
      @extends renderer.State
      */
-    XEO.renderer.Lights = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
+    xeogl.renderer.Lights = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
     });
 
     /**
@@ -180,14 +180,14 @@
      PhongMaterial state.
 
      renderer.PhongMaterial
-     @module XEO
+     @module xeogl
      
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.PhongMaterial = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
+    xeogl.renderer.PhongMaterial = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
     });
 
     /**
@@ -195,14 +195,14 @@
      Environmental reflection state.
 
      renderer.Reflect
-     @module XEO
+     @module xeogl
      
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.Reflect = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
+    xeogl.renderer.Reflect = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
     });
 
     /**
@@ -210,14 +210,14 @@
      Transform state.
 
      renderer.Transform
-     @module XEO
+     @module xeogl
      
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.Transform = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
+    xeogl.renderer.Transform = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
     });
 
     /**
@@ -225,14 +225,14 @@
      Billboard transform state.
 
      renderer.Billboard
-     @module XEO
+     @module xeogl
      
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.Billboard = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
+    xeogl.renderer.Billboard = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
     });
 
     /**
@@ -240,14 +240,14 @@
      Stationary transform state.
 
      renderer.Stationary
-     @module XEO
+     @module xeogl
 
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.Stationary = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
+    xeogl.renderer.Stationary = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
     });
 
 
@@ -256,32 +256,32 @@
      Render target state.
 
      renderer.RenderTarget
-     @module XEO
+     @module xeogl
      
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.RenderTarget = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
+    xeogl.renderer.RenderTarget = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
     });
 
-    XEO.renderer.RenderTarget.DEPTH = 0;
-    XEO.renderer.RenderTarget.COLOR = 1;
+    xeogl.renderer.RenderTarget.DEPTH = 0;
+    xeogl.renderer.RenderTarget.COLOR = 1;
 
     /**
 
      Clip planes state.
 
      renderer.Clips
-     @module XEO
+     @module xeogl
      
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.Clips = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
+    xeogl.renderer.Clips = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
     });
 
     /**
@@ -289,14 +289,14 @@
      Renderer morph targets state.
 
      renderer.MorphTargets
-     @module XEO
+     @module xeogl
      
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.MorphTargets = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
+    xeogl.renderer.MorphTargets = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
     });
 
     /**
@@ -304,14 +304,14 @@
      Shader state.
 
      renderer.Shader
-     @module XEO
+     @module xeogl
      
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.Shader = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
+    xeogl.renderer.Shader = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
     });
 
     /**
@@ -319,14 +319,14 @@
      Shader parameters state.
 
      renderer.ShaderParams
-     @module XEO
+     @module xeogl
      
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.ShaderParams = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
+    xeogl.renderer.ShaderParams = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
     });
 
     /**
@@ -334,14 +334,14 @@
      Texture state.
 
      renderer.Texture
-     @module XEO
+     @module xeogl
      
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.Texture = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
+    xeogl.renderer.Texture = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
     });
 
 
@@ -350,14 +350,14 @@
      Fresnel state.
 
      renderer.Fresnel
-     @module XEO
+     @module xeogl
      
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.Fresnel = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
+    xeogl.renderer.Fresnel = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
     });
 
 
@@ -366,14 +366,14 @@
      Geometry state.
 
      renderer.Geometry
-     @module XEO
+     @module xeogl
      
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.Geometry = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
+    xeogl.renderer.Geometry = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
     });
 
     /**
@@ -381,14 +381,14 @@
      Program state.
 
      renderer.ProgramState
-     @module XEO
+     @module xeogl
      
      @constructor
      @param cfg {*} Configs
      @extends renderer.State
      */
-    XEO.renderer.ProgramState = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
+    xeogl.renderer.ProgramState = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
     });
 
     /**
@@ -396,15 +396,15 @@
      Viewport state.
 
      renderer.Viewport
-     @module XEO
+     @module xeogl
 
      @constructor
      @param cfg {*} Configs
      @param cfg.boundary {Float32Array} Canvas-space viewport extents.
      @extends renderer.State
      */
-    XEO.renderer.Viewport = XEO.renderer.State.extend({
-        _ids: new XEO.utils.Map({})
+    xeogl.renderer.Viewport = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
     });
 })();
 

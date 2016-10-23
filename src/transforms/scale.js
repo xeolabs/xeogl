@@ -7,7 +7,7 @@
  <li>When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
  within a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, it will be transformed by each {{#crossLink "Transform"}}{{/crossLink}}
  on the path up to the root, in that order.</li>
- <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeoEngine's shaders.</li>
+ <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeogl's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/Scale.png"></img>
@@ -26,45 +26,45 @@
  The Entities share the same {{#crossLink "BoxGeometry"}}{{/crossLink}}.<br>
 
  ````javascript
- var rotate = new XEO.Rotate({
+ var rotate = new xeogl.Rotate({
     xyz: [0, 1, 0], // Rotate 30 degrees about Y axis
     angle: 30
  });
 
- var translate1 = new XEO.Translate({
+ var translate1 = new xeogl.Translate({
     parent: rotate,
     xyz: [-5, 0, 0] // Translate along -X axis
  });
 
- var translate2 = new XEO.Translate({
+ var translate2 = new xeogl.Translate({
     parent: rotate,
     xyz: [5, 0, 0] // Translate along +X axis
  });
 
- var scale = new XEO.Scale({
+ var scale = new xeogl.Scale({
     parent: translate2,
     xyz: [1, 2, 1] // Scale x2 on Y axis
  });
 
- var geometry = new XEO.BoxGeometry();
+ var geometry = new xeogl.BoxGeometry();
 
- var entity1 = new XEO.Entity({
+ var entity1 = new xeogl.Entity({
     transform: translate1,
     geometry: geometry
  });
 
- var entity2 = new XEO.Entity({
+ var entity2 = new xeogl.Entity({
     transform: scale,
     geometry: geometry
  });
  ````
 
- Since everything in xeoEngine is dynamically editable, we can restructure the transform hierarchy at any time.
+ Since everything in xeogl is dynamically editable, we can restructure the transform hierarchy at any time.
 
  Let's insert a {{#crossLink "Scale"}}{{/crossLink}} between the first Translate and the first {{#crossLink "Entity"}}{{/crossLink}}:
 
  ````javascript
- var scale2 = new XEO.Scale({
+ var scale2 = new xeogl.Scale({
     parent: translate1,
     xyz: [1, 1, 2] // Scale x2 on Z axis
  });
@@ -81,7 +81,7 @@
  });
  ````
  @class Scale
- @module XEO
+ @module xeogl
  @submodule transforms
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Scale in the default
@@ -97,9 +97,9 @@
 
     "use strict";
 
-    XEO.Scale = XEO.Transform.extend({
+    xeogl.Scale = xeogl.Transform.extend({
 
-        type: "XEO.Scale",
+        type: "xeogl.Scale",
 
         _init: function (cfg) {
 
@@ -109,7 +109,7 @@
         },
 
         _update: function () {
-            this.matrix = XEO.math.scalingMat4v(this._xyz, this._matrix);
+            this.matrix = xeogl.math.scalingMat4v(this._xyz, this._matrix);
         },
 
         _props: {
@@ -125,7 +125,7 @@
 
                 set: function (value) {
 
-                    (this._xyz = this._xyz || new XEO.math.vec3()).set(value || [1, 1, 1]);
+                    (this._xyz = this._xyz || new xeogl.math.vec3()).set(value || [1, 1, 1]);
 
                     this._scheduleUpdate();
 

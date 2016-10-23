@@ -1,6 +1,6 @@
 /**
  * Canvas-related things.
  *
- * @module XEO
+ * @module xeogl
  * @submodule canvas
  */

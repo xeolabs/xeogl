@@ -15,7 +15,7 @@ module.exports = function (grunt) {
         concat: {
             options: {
                 banner: grunt.file.read('BANNER'),
-                footer: "XEO.version=\"<%= ENGINE_VERSION %>\";",
+                footer: "xeogl.version=\"<%= ENGINE_VERSION %>\";",
                 separator: ';',
                 process: true
             },
@@ -49,7 +49,7 @@ module.exports = function (grunt) {
                 version: '<%= pkg.version %>',
                 url: '<%= pkg.homepage %>',
                 options: {
-                    themedir: "yuiDocThemes/xeoengine",
+                    themedir: "yuiDocThemes/xeogl",
 
                     // Add paths here as we include more non-core components in API docs
                     paths: [

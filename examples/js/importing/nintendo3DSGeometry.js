@@ -15,24 +15,24 @@
      ## Usage
 
      ````javascript
-     var entity = new XEO.Entity({
+     var entity = new xeogl.Entity({
 
-        geometry: new XEO.Nintendo3DSGeometry({
+        geometry: new xeogl.Nintendo3DSGeometry({
             src: "models/3ds/lexus.3ds"
         }),
 
-        material: new XEO.PhongMaterial({
-            diffuseMap: new XEO.Texture({
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
                 src: "models/3ds/lexus.jpg"
             }),
             specular: [0, 0, 0]
         }),
 
         // We need to rotate this particular .3DS model
-        transform: new XEO.Rotate({
+        transform: new xeogl.Rotate({
             xyz: [1,0,0],
             angle: -90,
-            parent: new XEO.Rotate({
+            parent: new xeogl.Rotate({
                 xyz: [0,1,0],
                 angle: 90
             })
@@ -42,7 +42,7 @@
      // When the Nintendo3DSGeometry has loaded,
      // fly the camera to fit the entity in view
 
-     var cameraFlight = new XEO.CameraFlight();
+     var cameraFlight = new xeogl.CameraFlight();
 
      entity.geometry.on("loaded", function () {
 
@@ -53,7 +53,7 @@
      ````
 
      @class Nintendo3DSGeometry
-     @module XEO
+     @module xeogl
      @submodule geometry
      @constructor
      @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Nintendo3DSGeometry in the default
@@ -65,9 +65,9 @@
      @param [cfg.src] {String} Path to the .3DS file.
      @extends Geometry
      */
-    XEO.Nintendo3DSGeometry = XEO.Geometry.extend({
+    xeogl.Nintendo3DSGeometry = xeogl.Geometry.extend({
 
-        type: "XEO.Nintendo3DSGeometry",
+        type: "xeogl.Nintendo3DSGeometry",
 
         _init: function (cfg) {
 
@@ -94,7 +94,7 @@
                         return;
                     }
 
-                    if (!XEO._isString(value)) {
+                    if (!xeogl._isString(value)) {
                         this.error("Value for 'src' should be a string");
                         return;
                     }
@@ -111,7 +111,7 @@
                                 //    return;
                             }
 
-                            XEO.scheduleTask(function () {
+                            xeogl.scheduleTask(function () {
 
                                 var m = K3D.parse.from3DS(data);
 

@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org">xeoEngine</a>
+    <a href="http://xeogl.org">xeogl</a>
     <br><br>
     <ul>
         <li>a <a href="../docs/classes/CollectionBoundary.html" target="_docs">CollectionBoundary</a> hierarchy
@@ -24,12 +24,12 @@
 
     // Geometry shared by our Entities
 
-    var sphereGeometry = new XEO.SphereGeometry({
+    var sphereGeometry = new xeogl.SphereGeometry({
         radius: 5
     });
 
-    var material = new XEO.PhongMaterial({
-        diffuseMap: new XEO.Texture({
+    var material = new xeogl.PhongMaterial({
+        diffuseMap: new xeogl.Texture({
             src: "textures/diffuse/uvGrid2.jpg"
         })
     });
@@ -37,16 +37,16 @@
 
     // A hierarchy of CollectionBoundary's
 
-    var childCollectionBoundary1 = new XEO.CollectionBoundary({
-        collection: new XEO.Collection()
+    var childCollectionBoundary1 = new xeogl.CollectionBoundary({
+        collection: new xeogl.Collection()
     });
 
-    var childCollectionBoundary2 = new XEO.CollectionBoundary({
-        collection: new XEO.Collection()
+    var childCollectionBoundary2 = new xeogl.CollectionBoundary({
+        collection: new xeogl.Collection()
     });
 
-    var rootCollectionBoundary = new XEO.CollectionBoundary({
-        collection: new XEO.Collection({
+    var rootCollectionBoundary = new xeogl.CollectionBoundary({
+        collection: new xeogl.Collection({
             components: [
                 childCollectionBoundary1,
                 childCollectionBoundary2
@@ -56,26 +56,26 @@
 
     // Show the boundary of each CollectionBoundary as a wireframe box
 
-    new XEO.Entity({
-        geometry: new XEO.BoundaryGeometry({
+    new xeogl.Entity({
+        geometry: new xeogl.BoundaryGeometry({
             boundary: rootCollectionBoundary.worldBoundary
         }),
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuse: [0.5, 1.0, 0.5],
             emissive: [0.5, 1.0, 0.5],
             lineWidth: 2
         })
     });
 
-    new XEO.Entity({
-        geometry: new XEO.BoundaryGeometry({
+    new xeogl.Entity({
+        geometry: new xeogl.BoundaryGeometry({
             boundary: childCollectionBoundary1.worldBoundary
         }),
         material: material
     });
 
-    new XEO.Entity({
-        geometry: new XEO.BoundaryGeometry({
+    new xeogl.Entity({
+        geometry: new xeogl.BoundaryGeometry({
             boundary: childCollectionBoundary2.worldBoundary
         }),
         material: material
@@ -92,10 +92,10 @@
 
             // Create a randomly-positioned sphere Entity
 
-            var entity = new XEO.Entity({
+            var entity = new xeogl.Entity({
                 geometry: sphereGeometry,
                 material: material,
-                transform: new XEO.Translate({
+                transform: new xeogl.Translate({
                     xyz: [
                         Math.random() * r - halfr,
                         Math.random() * r - halfr,
@@ -139,17 +139,17 @@
 
     // Create a torus within the other child CollectionBoundary
 
-    var torus = new XEO.Entity({
-        geometry: new XEO.TorusGeometry({
+    var torus = new xeogl.Entity({
+        geometry: new xeogl.TorusGeometry({
             radius: 20,
             tube: 5
         }),
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuse: [
                 0.4, 0.4, 1.0
             ]
         }),
-        transform: new XEO.Translate({
+        transform: new xeogl.Translate({
             xyz: [
                 60, -60, -40
             ]
@@ -158,16 +158,16 @@
 
     childCollectionBoundary2.collection.add(torus);
 
-    var sphere = new XEO.Entity({
-        geometry: new XEO.SphereGeometry({
+    var sphere = new xeogl.Entity({
+        geometry: new xeogl.SphereGeometry({
             radius: 15
         }),
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuse: [
                 1.0, 1.0, 0.3
             ]
         }),
-        transform: new XEO.Translate({
+        transform: new xeogl.Translate({
             xyz: [
                 -60, -60, 40
             ]
@@ -181,7 +181,7 @@
                 //      torus.geometry.radius += 0.3;
             });
 
-    var scene = XEO.scene;
+    var scene = xeogl.scene;
 
     // Move the camera back a bit
 
@@ -197,7 +197,7 @@
 
     // Permit user camera control
 
-    var cameraControl = new XEO.CameraControl();
+    var cameraControl = new xeogl.CameraControl();
     cameraControl.mouseZoom.sensitivity = 5;
 
 </script>

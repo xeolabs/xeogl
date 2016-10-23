@@ -23,7 +23,7 @@
  {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}}, {{#crossLink "PhongMaterial/emissiveMap:property"}}{{/crossLink}},
  {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} and {{#crossLink "PhongMaterial/opacityMap:property"}}{{/crossLink}}
  will actually be applied, since those primitive types cannot be shaded.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that PhongMaterials create within xeoEngine's shaders.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that PhongMaterials create within xeogl's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/PhongMaterial.png"></img>
@@ -38,20 +38,20 @@
  <li>a {{#crossLink "TorusGeometry"}}{{/crossLink}}.</li>
  </ul>
 
- Note that xeoEngine will ignore the PhongMaterial's {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}
+ Note that xeogl will ignore the PhongMaterial's {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}
  property, since we assigned the {{#crossLink "Texture"}}{{/crossLink}} to the PhongMaterial's
  {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} property. The {{#crossLink "Texture"}}Texture's{{/crossLink}} pixel
  colors directly provide the diffuse color of each fragment across the {{#crossLink "Geometry"}}{{/crossLink}} surface.
 
  ```` javascript
- var entity = new XEO.Entity({
+ var entity = new xeogl.Entity({
 
-    lights: new XEO.Lights({
+    lights: new xeogl.Lights({
         lights: [
-            new XEO.AmbientLight({
+            new xeogl.AmbientLight({
                 color: [0.7, 0.7, 0.7]
             }),
-            new XEO.DirLight({
+            new xeogl.DirLight({
                 dir: [-1, -1, -1],
                 color: [0.5, 0.7, 0.5],
                 intensity: [1.0, 1.0, 1.0],
@@ -60,14 +60,14 @@
         ]
     }),
 
-    material: new XEO.PhongMaterial({
+    material: new xeogl.PhongMaterial({
         ambient: [0.3, 0.3, 0.3],
         diffuse: [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below
-        diffuseMap: new XEO.Texture({
+        diffuseMap: new xeogl.Texture({
             src: "diffuseMap.jpg"
         }),
         specular: [1, 1, 1],
-        specularFresnel: new XEO.Fresnel({
+        specularFresnel: new xeogl.Fresnel({
             leftColor: [1.0, 1.0, 1.0],
             rightColor: [0.0, 0.0, 0.0],
             power: 4
@@ -76,12 +76,12 @@
         opacity: 1.0 // Default
     }),
 
-    geometry: new XEO.TorusGeometry()
+    geometry: new xeogl.TorusGeometry()
 });
  ````
 
  @class PhongMaterial
- @module XEO
+ @module xeogl
  @submodule materials
  @constructor
  @extends Material
@@ -116,20 +116,20 @@
 
     "use strict";
 
-    XEO.PhongMaterial = XEO.Material.extend({
+    xeogl.PhongMaterial = xeogl.Material.extend({
 
-        type: "XEO.PhongMaterial",
+        type: "xeogl.PhongMaterial",
 
         _init: function (cfg) {
 
-            this._state = new XEO.renderer.PhongMaterial({
+            this._state = new xeogl.renderer.PhongMaterial({
 
                 type: "phongMaterial",
 
-                ambient: XEO.math.vec3([1.0, 1.0, 1.0]),
-                diffuse: XEO.math.vec3([1.0, 1.0, 1.0]),
-                specular: XEO.math.vec3([1.0, 1.0, 1.0]),
-                emissive: XEO.math.vec3([0.0, 0.0, 0.0]),
+                ambient: xeogl.math.vec3([1.0, 1.0, 1.0]),
+                diffuse: xeogl.math.vec3([1.0, 1.0, 1.0]),
+                specular: xeogl.math.vec3([1.0, 1.0, 1.0]),
+                emissive: xeogl.math.vec3([0.0, 0.0, 0.0]),
 
                 opacity: 1.0,
                 shininess: 30.0,
@@ -523,7 +523,7 @@
                      @event normalMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("XEO.Texture", "normalMap", texture);
+                    this._attachComponent("xeogl.Texture", "normalMap", texture);
                 },
 
                 get: function () {
@@ -552,7 +552,7 @@
                      @event ambientMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("XEO.Texture", "ambientMap", texture);
+                    this._attachComponent("xeogl.Texture", "ambientMap", texture);
                 },
 
                 get: function () {
@@ -581,7 +581,7 @@
                      @event diffuseMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("XEO.Texture", "diffuseMap", texture);
+                    this._attachComponent("xeogl.Texture", "diffuseMap", texture);
                 },
 
                 get: function () {
@@ -610,7 +610,7 @@
                      @event specularMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("XEO.Texture", "specularMap", texture);
+                    this._attachComponent("xeogl.Texture", "specularMap", texture);
                 },
 
                 get: function () {
@@ -639,7 +639,7 @@
                      @event emissiveMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("XEO.Texture", "emissiveMap", texture);
+                    this._attachComponent("xeogl.Texture", "emissiveMap", texture);
                 },
 
                 get: function () {
@@ -668,7 +668,7 @@
                      @event opacityMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("XEO.Texture", "opacityMap", texture);
+                    this._attachComponent("xeogl.Texture", "opacityMap", texture);
                 },
 
                 get: function () {
@@ -697,7 +697,7 @@
                      @event reflectivityMap
                      @param value Number The property's new value
                      */
-                    this._attachComponent("XEO.Texture", "reflectivityMap", texture);
+                    this._attachComponent("xeogl.Texture", "reflectivityMap", texture);
                 },
 
                 get: function () {
@@ -724,7 +724,7 @@
                      @event reflection
                      @param value {Reflect} The property's new value
                      */
-                    this._attachComponent("XEO.Reflect", "reflection", cubeMap);
+                    this._attachComponent("xeogl.Reflect", "reflection", cubeMap);
                 },
 
                 get: function () {
@@ -753,7 +753,7 @@
                      @event diffuseFresnel
                      @param value Number The property's new value
                      */
-                    this._attachComponent("XEO.Fresnel", "diffuseFresnel", fresnel);
+                    this._attachComponent("xeogl.Fresnel", "diffuseFresnel", fresnel);
                 },
 
                 get: function () {
@@ -782,7 +782,7 @@
                      @event specularFresnel
                      @param value Number The property's new value
                      */
-                    this._attachComponent("XEO.Fresnel", "specularFresnel", fresnel);
+                    this._attachComponent("xeogl.Fresnel", "specularFresnel", fresnel);
                 },
 
                 get: function () {
@@ -811,7 +811,7 @@
                      @event emissiveFresnel
                      @param value Number The property's new value
                      */
-                    this._attachComponent("XEO.Fresnel", "emissiveFresnel", fresnel);
+                    this._attachComponent("xeogl.Fresnel", "emissiveFresnel", fresnel);
                 },
 
                 get: function () {
@@ -840,7 +840,7 @@
                      @event opacityFresnel
                      @param value Number The property's new value
                      */
-                    this._attachComponent("XEO.Fresnel", "opacityFresnel", fresnel);
+                    this._attachComponent("xeogl.Fresnel", "opacityFresnel", fresnel);
                 },
 
                 get: function () {
@@ -869,7 +869,7 @@
                      @event reflectivityFresnel
                      @param value Number The property's new value
                      */
-                    this._attachComponent("XEO.Fresnel", "reflectivityFresnel", fresnel);
+                    this._attachComponent("xeogl.Fresnel", "reflectivityFresnel", fresnel);
                 },
 
                 get: function () {

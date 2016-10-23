@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>diffuse <a href="../docs/classes/Texture.html"
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>diffuse <a href="../docs/classes/Texture.html"
                                                                               target="_docs">Texture</a>
     <br><br>
     <img src="textures/diffuse/uvGrid2.jpg" width="300px" height="300px">
@@ -19,7 +19,7 @@
 
 <script>
 
-    var geometry = new XEO.TorusGeometry({
+    var geometry = new xeogl.TorusGeometry({
         radius: 1.0,
         tube: 0.4,
         radialSegments: 32,
@@ -29,7 +29,7 @@
 
     // Diffuse map with all defaults
 
-    var diffuseMap = new XEO.Texture({
+    var diffuseMap = new xeogl.Texture({
         src: "textures/diffuse/uvGrid2.jpg",
         minFilter: "linearMipmapLinear",
         magFiler: "linear",
@@ -41,14 +41,14 @@
         flipY: false // Default
     });
 
-    var material = new XEO.PhongMaterial({
+    var material = new xeogl.PhongMaterial({
         ambient: [0.3, 0.3, 0.3],
         diffuse: [0.3, 0.5, 0.5],
         shininess: 30,
         diffuseMap: diffuseMap
     });
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
         geometry: geometry,
         material: material
     });

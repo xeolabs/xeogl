@@ -15,9 +15,9 @@
  that uses the "less" depth comparison function and sets pixels depths to 0.5 whenever it's cleared.
 
  ````javascript
- new XEO.Entity({
-     geometry: new XEO.BoxGeometry(),
-     depthBuf: new XEO.ColorBuf({
+ new xeogl.Entity({
+     geometry: new xeogl.BoxGeometry(),
+     depthBuf: new xeogl.ColorBuf({
          clearDepth: 0.5,
          depthFunc: "less"
      })
@@ -25,7 +25,7 @@
  ````
 
  @class DepthBuf
- @module XEO
+ @module xeogl
  @submodule rendering
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this DepthBuf
@@ -42,13 +42,13 @@
 
     "use strict";
 
-    XEO.DepthBuf = XEO.Component.extend({
+    xeogl.DepthBuf = xeogl.Component.extend({
 
-        type: "XEO.DepthBuf",
+        type: "xeogl.DepthBuf",
 
         _init: function (cfg) {
 
-            this._state = new XEO.renderer.DepthBuf({
+            this._state = new xeogl.renderer.DepthBuf({
                 clearDepth: null,
                 depthFunc: null,
                 active: true

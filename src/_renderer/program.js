@@ -2,17 +2,17 @@
 
     "use strict";
 
-    XEO.renderer = XEO.renderer || {};
+    xeogl.renderer = xeogl.renderer || {};
 
     /**
      *  Vertex and fragment shaders for pick and draw
      *
      * @param {*} stats Collects runtime statistics
-     * @param {String} hash Hash code which uniquely identifies the capabilities of the program, computed from hashes on the {@link Scene_Core}s that the {@link XEO.renderer.ProgramSource} composed to render
-     * @param {XEO.renderer.ProgramSource} source Sourcecode from which the the program is compiled in {@link #build}
+     * @param {String} hash Hash code which uniquely identifies the capabilities of the program, computed from hashes on the {@link Scene_Core}s that the {@link xeogl.renderer.ProgramSource} composed to render
+     * @param {xeogl.renderer.ProgramSource} source Sourcecode from which the the program is compiled in {@link #build}
      * @param {WebGLRenderingContext} gl WebGL context
      */
-    XEO.renderer.Program = function (stats, hash, source, gl) {
+    xeogl.renderer.Program = function (stats, hash, source, gl) {
 
         this.stats = stats;
 
@@ -96,7 +96,7 @@
      *  Creates the render and pick programs.
      * This is also re-called to re-create them after WebGL context loss.
      */
-    XEO.renderer.Program.prototype.build = function (gl) {
+    xeogl.renderer.Program.prototype.build = function (gl) {
 
         this.gl = gl;
 
@@ -106,9 +106,9 @@
         this.validated = false;
         this.errorLog = null;
 
-        this.draw = new XEO.renderer.webgl.Program(this.stats, gl, this.source.vertexDraw, this.source.fragmentDraw);
-        this.pickObject = new XEO.renderer.webgl.Program(this.stats, gl, this.source.vertexPickObject, this.source.fragmentPickObject);
-        this.pickPrimitive = new XEO.renderer.webgl.Program(this.stats, gl, this.source.vertexPickPrimitive, this.source.fragmentPickPrimitive);
+        this.draw = new xeogl.renderer.webgl.Program(this.stats, gl, this.source.vertexDraw, this.source.fragmentDraw);
+        this.pickObject = new xeogl.renderer.webgl.Program(this.stats, gl, this.source.vertexPickObject, this.source.fragmentPickObject);
+        this.pickPrimitive = new xeogl.renderer.webgl.Program(this.stats, gl, this.source.vertexPickPrimitive, this.source.fragmentPickPrimitive);
 
         if (!this.draw.allocated) {
             this.errorLog = ["Draw program failed to allocate"].concat(this.draw.errorLog);

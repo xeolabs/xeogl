@@ -1,6 +1,6 @@
 /**
 
- **Component** is the base class for all xeoEngine components.
+ **Component** is the base class for all xeogl components.
 
  ## Contents
 
@@ -14,28 +14,28 @@
 
  ## <a name="ids">Component IDs</a>
 
- Every Component has an ID that's unique within the parent {{#crossLink "Scene"}}{{/crossLink}}. xeoEngine generates
+ Every Component has an ID that's unique within the parent {{#crossLink "Scene"}}{{/crossLink}}. xeogl generates
  the IDs automatically by default, however you can also specify them yourself. In the example below, we're creating a
  scene comprised of {{#crossLink "Scene"}}{{/crossLink}}, {{#crossLink "Material"}}{{/crossLink}}, {{#crossLink "Geometry"}}{{/crossLink}} and
- {{#crossLink "Entity"}}{{/crossLink}} components, while letting xeoEngine generate its own ID for
+ {{#crossLink "Entity"}}{{/crossLink}} components, while letting xeogl generate its own ID for
  the {{#crossLink "Geometry"}}{{/crossLink}}:
 
  ````javascript
  // The Scene is a Component too
- var scene = new XEO.Scene({
+ var scene = new xeogl.Scene({
     id: "myScene"
 });
 
- var material = new XEO.PhongMaterial(scene, {
+ var material = new xeogl.PhongMaterial(scene, {
     id: "myMaterial"
 });
 
- var geometry = new XEO.Geometry(scene, {
+ var geometry = new xeogl.Geometry(scene, {
     id: "myGeometry"
 });
 
- // Let xeoEngine automatically generate the ID for our Entity
- var entity = new XEO.Entity(scene, {
+ // Let xeogl automatically generate the ID for our Entity
+ var entity = new xeogl.Entity(scene, {
     material: material,
     geometry: geometry
 });
@@ -45,7 +45,7 @@
 
  ````javascript
  // Find the Scene
- var theScene = XEO.scenes["myScene"];
+ var theScene = xeogl.scenes["myScene"];
 
  // Find the Material
  var theMaterial = theScene.components["myMaterial"];
@@ -53,7 +53,7 @@
 
  ## <a name="componentProps">Properties</a>
 
- Almost every property on a xeoEngine Component fires a change event when you update it. For example, we can subscribe
+ Almost every property on a xeogl Component fires a change event when you update it. For example, we can subscribe
  to the {{#crossLink "PhongMaterial/diffuse:event"}}{{/crossLink}} event that a
  {{#crossLink "Material"}}{{/crossLink}} fires when its {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}
  property is updated, like so:
@@ -83,7 +83,7 @@
 });
 
  // Now replace that Material with another
- entity1.material = new XEO.PhongMaterial({
+ entity1.material = new xeogl.PhongMaterial({
     id: "myOtherMaterial",
     diffuse: [ 0.3, 0.3, 0.6 ]
     //..
@@ -98,7 +98,7 @@
 
  ````javascript
  // Scene with authoring metadata
- var scene = new XEO.Scene({
+ var scene = new xeogl.Scene({
     id: "myScene",
     meta: {
         title: "My awesome 3D scene",
@@ -108,7 +108,7 @@
 });
 
  // Material with descriptive metadata
- var material = new XEO.PhongMaterial(scene, {
+ var material = new xeogl.PhongMaterial(scene, {
     id: "myMaterial",
     diffuse: [1, 0, 0],
     meta: {
@@ -182,20 +182,20 @@
  will then automatically link to the {{#crossLink "Scene"}}Scene's{{/crossLink}} default {{#crossLink "Scene/material:property"}}{{/crossLink}}.
 
  @class Component
- @module XEO
+ @module xeogl
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Component
  within the default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
  @param [cfg] {*} DepthBuf configuration
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Component.
- @param [cfg.isDefault] {Boolean} Set true when this is one of xeoEngine's default components.
+ @param [cfg.isDefault] {Boolean} Set true when this is one of xeogl's default components.
  */
 (function () {
 
     "use strict";
 
-    XEO.Component = Class.extend({
+    xeogl.Component = Class.extend({
 
         __init: function () {
 
@@ -215,7 +215,7 @@
              */
             this.scene = null;
 
-            if (this.type === "XEO.Scene") {
+            if (this.type === "xeogl.Scene") {
 
                 this.scene = this;
 
@@ -227,7 +227,7 @@
 
                 if (arg1) {
 
-                    if (arg1.type === "XEO.Scene") {
+                    if (arg1.type === "xeogl.Scene") {
 
                         this.scene = arg1;
 
@@ -237,17 +237,17 @@
 
                     } else {
 
-                        // Create this component within the default XEO Scene
+                        // Create this component within the default xeogl Scene
 
-                        this.scene = XEO.scene;
+                        this.scene = xeogl.scene;
 
                         cfg = arg1;
                     }
                 } else {
 
-                    // Create this component within the default XEO Scene
+                    // Create this component within the default xeogl Scene
 
-                    this.scene = XEO.scene;
+                    this.scene = xeogl.scene;
                 }
 
                 this._renderer = this.scene._renderer;
@@ -304,7 +304,7 @@
             // Components created with #create
             this._sharedComponents = null; // Lazy-instantiated map
 
-            if (this.scene && this.type !== "XEO.Scene") { // HACK: Don't add scene to itself
+            if (this.scene && this.type !== "xeogl.Scene") { // HACK: Don't add scene to itself
 
                 // Register this component on its scene
                 // Assigns this component an automatic ID if not yet assigned
@@ -327,13 +327,13 @@
          This is used when <a href="Scene.html#savingAndLoading">loading Scenes from JSON</a>, and is included in the JSON
          representation of this Component, so that this class may be instantiated when loading it from the JSON representation.
 
-         For example: "XEO.AmbientLight", "XEO.ColorTarget", "XEO.Lights" etc.
+         For example: "xeogl.AmbientLight", "xeogl.ColorTarget", "xeogl.Lights" etc.
 
          @property type
          @type String
          @final
          */
-        type: "XEO.Component",
+        type: "xeogl.Component",
 
         /**
          An array of strings that indicates the chain of super-types within this component's inheritance hierarchy.
@@ -343,7 +343,7 @@
          then this property will have the value:
 
          ````json
-         ["XEO.Component", "XEO.Transform"]
+         ["xeogl.Component", "xeogl.Transform"]
          ````
 
          Note that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.
@@ -366,23 +366,23 @@
          #### Examples:
 
          ````javascript
-         var myRotate = new XEO.Rotate({ ... });
+         var myRotate = new xeogl.Rotate({ ... });
 
-         myRotate.isType(XEO.Component); // Returns true for all XEO components
-         myRotate.isType("XEO.Component"); // Returns true for all XEO components
-         myRotate.isType(XEO.Rotate); // Returns true
-         myRotate.isType(XEO.Transform); // Returns true
-         myRotate.isType("XEO.Transform"); // Returns true
-         myRotate.isType(XEO.Entity); // Returns false, because XEO.Rotate does not (even indirectly) extend XEO.Entity
+         myRotate.isType(xeogl.Component); // Returns true for all xeogl components
+         myRotate.isType("xeogl.Component"); // Returns true for all xeogl components
+         myRotate.isType(xeogl.Rotate); // Returns true
+         myRotate.isType(xeogl.Transform); // Returns true
+         myRotate.isType("xeogl.Transform"); // Returns true
+         myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (even indirectly) extend xeogl.Entity
          ````
 
          @method isType
-         @param  {String|Function} type Component type to compare with, eg "XEO.PhongMaterial", or a XEO component constructor.
+         @param  {String|Function} type Component type to compare with, eg "xeogl.PhongMaterial", or a xeogl component constructor.
          @returns {Boolean} True if this component is of given type or is subclass of the given type.
          */
         isType: function (type) {
 
-            if (!XEO._isString(type)) {
+            if (!xeogl._isString(type)) {
 
                 // Handle constructor arg
 
@@ -392,7 +392,7 @@
                 }
             }
 
-            return XEO._isComponentType(this.type, type);
+            return xeogl._isComponentType(this.type, type);
         },
 
         /**
@@ -469,7 +469,7 @@
                 this._events = {};
             }
             if (!this._handleMap) {
-                this._handleMap = new XEO.utils.Map(); // Subscription handle pool
+                this._handleMap = new xeogl.utils.Map(); // Subscription handle pool
             }
             if (!this._handleEvents) {
                 this._handleEvents = {};
@@ -562,8 +562,8 @@
         },
 
         _message: function (message) {
-            // return " [" + (this.type.indexOf("XEO.") > -1 ? this.type.substring(4) : this.type) + " " + XEO._inQuotes(this.id) + "]: " + message;
-            return " [" + this.type + " " + XEO._inQuotes(this.id) + "]: " + message;
+            // return " [" + (this.type.indexOf("xeogl.") > -1 ? this.type.substring(4) : this.type) + " " + xeogl._inQuotes(this.id) + "]: " + message;
+            return " [" + this.type + " " + xeogl._inQuotes(this.id) + "]: " + message;
         },
 
         /**
@@ -635,7 +635,7 @@
 
             delete json.id;
 
-            return new this.constructor(this.scene, XEO._apply(cfg, json));
+            return new this.constructor(this.scene, xeogl._apply(cfg, json));
         },
 
         /**
@@ -681,7 +681,7 @@
 
             if (component) {
 
-                if (XEO._isNumeric(component) || XEO._isString(component)) {
+                if (xeogl._isNumeric(component) || xeogl._isString(component)) {
 
                     // Component ID given
                     // Both numeric and string IDs are supported
@@ -694,16 +694,16 @@
 
                         // Quote string IDs in errors
 
-                        this.error("Component not found: " + XEO._inQuotes(id));
+                        this.error("Component not found: " + xeogl._inQuotes(id));
                         return;
                     }
 
-                } else if (XEO._isObject(component)) {
+                } else if (xeogl._isObject(component)) {
 
                     // Component config given
 
                     var componentCfg = component;
-                    var componentType = componentCfg.type || type || "XEO.Component";
+                    var componentType = componentCfg.type || type || "xeogl.Component";
                     var componentClass = window[componentType];
 
                     if (!componentClass) {
@@ -712,7 +712,7 @@
                     }
 
                     if (type) {
-                        if (!XEO._isComponentType(componentType, type)) {
+                        if (!xeogl._isComponentType(componentType, type)) {
                             this.error("Expected a " + type + " type or subtype, not a " + componentType);
                             return;
                         }
@@ -760,14 +760,14 @@
             if (component) {
 
                 if (component.scene.id !== this.scene.id) {
-                    this.error("Not in same scene: " + component.type + " " + XEO._inQuotes(component.id));
+                    this.error("Not in same scene: " + component.type + " " + xeogl._inQuotes(component.id));
                     return;
                 }
 
                 if (type) {
 
                     if (!component.isType(type)) {
-                        this.error("Expected a " + type + " type or subtype: " + component.type + " " + XEO._inQuotes(component.id));
+                        this.error("Expected a " + type + " type or subtype: " + component.type + " " + xeogl._inQuotes(component.id));
                         return;
                     }
                 }
@@ -805,7 +805,7 @@
 
                 var onDetached = oldAttachment.params.onDetached;
                 if (onDetached) {
-                    if (XEO._isFunction(onDetached)) {
+                    if (xeogl._isFunction(onDetached)) {
                         onDetached(component);
                     } else {
                         onDetached.scope ? onDetached.callback.call(onDetached.scope, component) : onDetached.callback(component);
@@ -857,7 +857,7 @@
 
                 var onAttached = params.onAttached;
                 if (onAttached) {
-                    if (XEO._isFunction(onAttached)) {
+                    if (xeogl._isFunction(onAttached)) {
                         onAttached(component);
                     } else {
                         onAttached.scope ? onAttached.callback.call(onAttached.scope, component) : onAttached.callback(component);
@@ -876,7 +876,7 @@
 
                             handler = on[event];
 
-                            if (XEO._isFunction(handler)) {
+                            if (xeogl._isFunction(handler)) {
                                 callback = handler;
                                 scope = null;
                             } else {
@@ -912,7 +912,7 @@
          * The method is given a component type, configuration and optional instance ID, like so:
          *
          * ````javascript
-         * var material = myComponent.create(XEO.PhongMaterial, {
+         * var material = myComponent.create(xeogl.PhongMaterial, {
          *      diffuse: [1,0,0],
          *      specular: [1,1,0]
          * }, "myMaterial");
@@ -925,7 +925,7 @@
          * component instance that it returned the first time, and will ignore the configuration:
          *
          * ````javascript
-         * var material2 = component.create(XEO.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
+         * var material2 = component.create(xeogl.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
          * ````
          *
          * So in this example, our {{#crossLink "PhongMaterial"}}{{/crossLink}} will continue to have the red specular
@@ -937,8 +937,8 @@
          * times as you got it, the Scene will destroy the component.
          *
          * @method create
-         * @param {String} type Component type - either a string like "XEO.PhongMaterial" or the actual
-         * constructor function, ie. XEO.PhongMaterial.
+         * @param {String} type Component type - either a string like "xeogl.PhongMaterial" or the actual
+         * constructor function, ie. xeogl.PhongMaterial.
          * @param {*} [cfg] Configuration for the component instance - only used if this is the first time you are getting
          * the component, ignored when reusing an existing instance.
          * @param {String|Number} [instanceId] Identifies the shared component instance. Note that this is not used as the ID of the
@@ -987,9 +987,9 @@
             if (!this._updateScheduled) {
                 this._updateScheduled = true;
                 if (priority === 0) {
-                    XEO.deferTask(this._doUpdate, this);
+                    xeogl.deferTask(this._doUpdate, this);
                 } else {
-                    XEO.scheduleTask(this._doUpdate, this);
+                    xeogl.scheduleTask(this._doUpdate, this);
                 }
             }
         },
@@ -1016,7 +1016,7 @@
 
         /**
          * Protected template method, implemented by sub-classes to compile
-         * their state into their Scene's XEO.renderer.Renderer.
+         * their state into their Scene's xeogl.renderer.Renderer.
          *
          * @protected
          */
@@ -1044,11 +1044,11 @@
                         id: this.id // Only output user-defined IDs
                     };
 
-                    if (!XEO._isEmptyObject(this.meta)) {
+                    if (!xeogl._isEmptyObject(this.meta)) {
                         json.meta = this.meta;
                     }
 
-                    return this._getJSON ? XEO._apply(this._getJSON(), json) : json;
+                    return this._getJSON ? xeogl._apply(this._getJSON(), json) : json;
                 }
             }
             ,

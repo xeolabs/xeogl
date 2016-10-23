@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
@@ -10,12 +10,12 @@
 
     <script src="js/libs/dat.gui.min.js"></script>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>
     <a href="../docs/classes/BoxGeometry.html" target="_docs">BoxGeometry</a>
     <br><br><br>
     <img src="textures/diffuse/uvGrid2.jpg" width="300px" height="300px">
@@ -25,18 +25,18 @@
 
 <script>
 
-    var box = new XEO.BoxGeometry({
+    var box = new xeogl.BoxGeometry({
         xSize: 1,
         ySize: 1,
         zSize: 1
     });
 
-    var entity = new XEO.Entity({
+    var entity = new xeogl.Entity({
         geometry: box,
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             ambient: [0.3, 0.3, 0.3],
             shininess: 30,
-            diffuseMap: new XEO.Texture({
+            diffuseMap: new xeogl.Texture({
                 src: "textures/diffuse/uvGrid2.jpg"
             }),
             pointSize: 5
@@ -58,7 +58,7 @@
 
     var Menu = function () {
 
-        this.message = "XEO.BoxGeometry";
+        this.message = "xeogl.BoxGeometry";
 
         this["primitive"] = box.primitive;
         this["xSize"] = box.xSize;
@@ -90,7 +90,7 @@
 
     var menu = new Menu();
 
-    var folder = gui.addFolder('XEO.BoxGeometry');
+    var folder = gui.addFolder('xeogl.BoxGeometry');
 
     folder.add(menu, 'primitive', ["triangles", "lines", "points"]);
     folder.add(menu, 'xSize', 0.1, 5.0);

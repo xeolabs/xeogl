@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>src/animation/cameraFlight.js - xeoengine</title>
+    <title>src/animation/cameraFlight.js - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -14,12 +14,10 @@
 <div id="doc">
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
-
-                <h1 style="color:white;"><a href="../../">xeoEngine</a> / <a href="../../docs">API Docs</a></h1>
-
+                <h1><img src="../../assets/images/logo.png" title="xeogl"></h1>
         </div>
         <div class="yui3-u-1-4 version">
-            <em>API Docs for: 0.1.0</em>
+            <em>API Docs for: 1.0.0</em>
         </div>
     </div>
     <div id="bd" class="yui3-g">
@@ -27,7 +25,7 @@
         <div class="yui3-u-1-4">
             <div id="docs-sidebar" class="sidebar apidocs">
                 <div id="api-list">
-                
+                    <h2 class="off-left">APIs</h2>
                     <div id="api-tabview" class="tabview">
                         <ul class="tabs">
                             <li><a href="#api-classes">Classes</a></li>
@@ -83,7 +81,6 @@
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
                                 <li><a href="../classes/Material.html">Material</a></li>
-                                <li><a href="../classes/MegaTexture.html">MegaTexture</a></li>
                                 <li><a href="../classes/Model.html">Model</a></li>
                                 <li><a href="../classes/Modes.html">Modes</a></li>
                                 <li><a href="../classes/MorphTargets.html">MorphTargets</a></li>
@@ -103,7 +100,6 @@
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
                                 <li><a href="../classes/Reflect.html">Reflect</a></li>
-                                <li><a href="../classes/Render.html">Render</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
@@ -125,41 +121,40 @@
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
                                 <li><a href="../classes/WebVR.html">WebVR</a></li>
-                                <li><a href="../classes/XEO.html">XEO</a></li>
-                                <li><a href="../classes/XEO.math.math.html">XEO.math.math</a></li>
+                                <li><a href="../classes/xeogl.html">xeogl</a></li>
+                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
                                 <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
                                 <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
-                                <li><a href="..//modules/animation.html">animation</a></li>
-                                <li><a href="..//modules/boundaries.html">boundaries</a></li>
-                                <li><a href="..//modules/camera.html">camera</a></li>
-                                <li><a href="..//modules/canvas.html">canvas</a></li>
-                                <li><a href="..//modules/clipping.html">clipping</a></li>
-                                <li><a href="..//modules/collections.html">collections</a></li>
-                                <li><a href="..//modules/configs.html">configs</a></li>
-                                <li><a href="..//modules/controls.html">controls</a></li>
-                                <li><a href="..//modules/culling.html">culling</a></li>
-                                <li><a href="..//modules/curves.html">curves</a></li>
-                                <li><a href="..//modules/effects.html">effects</a></li>
-                                <li><a href="..//modules/entities.html">entities</a></li>
-                                <li><a href="..//modules/geometry.html">geometry</a></li>
-                                <li><a href="..//modules/importing.html">importing</a></li>
-                                <li><a href="..//modules/input.html">input</a></li>
-                                <li><a href="..//modules/interaction.html">interaction</a></li>
-                                <li><a href="..//modules/lighting.html">lighting</a></li>
-                                <li><a href="..//modules/materials.html">materials</a></li>
-                                <li><a href="..//modules/math.html">math</a></li>
-                                <li><a href="..//modules/paths.html">paths</a></li>
-                                <li><a href="..//modules/rendering.html">rendering</a></li>
-                                <li><a href="..//modules/shaders.html">shaders</a></li>
-                                <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
-                                <li><a href="..//modules/transforms.html">transforms</a></li>
-                                <li><a href="..//modules/webvr.html">webvr</a></li>
-                                <li><a href="..//modules/xeo.html">xeo</a></li>
-                                <li><a href="..//modules/XEO.html">XEO</a></li>
-                                <li><a href="..//modules/xeogl.html">xeogl</a></li>
+                                <li><a href="../modules/animation.html">animation</a></li>
+                                <li><a href="../modules/boundaries.html">boundaries</a></li>
+                                <li><a href="../modules/camera.html">camera</a></li>
+                                <li><a href="../modules/canvas.html">canvas</a></li>
+                                <li><a href="../modules/clipping.html">clipping</a></li>
+                                <li><a href="../modules/collections.html">collections</a></li>
+                                <li><a href="../modules/configs.html">configs</a></li>
+                                <li><a href="../modules/controls.html">controls</a></li>
+                                <li><a href="../modules/culling.html">culling</a></li>
+                                <li><a href="../modules/curves.html">curves</a></li>
+                                <li><a href="../modules/effects.html">effects</a></li>
+                                <li><a href="../modules/entities.html">entities</a></li>
+                                <li><a href="../modules/geometry.html">geometry</a></li>
+                                <li><a href="../modules/importing.html">importing</a></li>
+                                <li><a href="../modules/input.html">input</a></li>
+                                <li><a href="../modules/interaction.html">interaction</a></li>
+                                <li><a href="../modules/lighting.html">lighting</a></li>
+                                <li><a href="../modules/materials.html">materials</a></li>
+                                <li><a href="../modules/math.html">math</a></li>
+                                <li><a href="../modules/paths.html">paths</a></li>
+                                <li><a href="../modules/rendering.html">rendering</a></li>
+                                <li><a href="../modules/shaders.html">shaders</a></li>
+                                <li><a href="../modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="../modules/transforms.html">transforms</a></li>
+                                <li><a href="../modules/webvr.html">webvr</a></li>
+                                <li><a href="../modules/xeo.html">xeo</a></li>
+                                <li><a href="../modules/xeogl.html">xeogl</a></li>
                             </ul>
                         </div>
                     </div>
@@ -167,28 +162,28 @@
             </div>
         </div>
         <div class="yui3-u-3-4">
-                <!--<div id="api-options">-->
-                    <!--Show:-->
-                    <!--<label for="api-show-inherited">-->
-                        <!--<input type="checkbox" id="api-show-inherited" checked>-->
-                        <!--Inherited-->
-                    <!--</label>-->
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
             
-                    <!--<label for="api-show-protected">-->
-                        <!--<input type="checkbox" id="api-show-protected">-->
-                        <!--Protected-->
-                    <!--</label>-->
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
             
-                    <!--<label for="api-show-private">-->
-                        <!--<input type="checkbox" id="api-show-private">-->
-                        <!--Private-->
-                    <!--</label>-->
-                    <!--<label for="api-show-deprecated">-->
-                        <!--<input type="checkbox" id="api-show-deprecated">-->
-                        <!--Deprecated-->
-                    <!--</label>-->
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
             
-                <!--</div>-->
+                </div>
             
             <div class="apidocs">
                 <div id="docs-main">
@@ -245,11 +240,11 @@
  {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} via its {{#crossLink &quot;Entity/worldBoundary:property&quot;}}{{/crossLink}} property):
 
  &#x60;&#x60;&#x60;&#x60;Javascript
- var camera = new XEO.Camera();
+ var camera = new xeogl.Camera();
 
  // Create a CameraFlight that takes exactly twenty seconds to fly
  // the Camera to each specified target
- var cameraFlight = new XEO.CameraFlight({
+ var cameraFlight = new xeogl.CameraFlight({
     camera: camera,
     stopFOV: 45, // Default, degrees
     duration: 1 // Default, seconds
@@ -288,7 +283,7 @@
 
  @class CameraFlight
  @author xeolabs / http://xeolabs.org
- @module XEO
+ @module xeogl
  @submodule animation
  @constructor
  @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
@@ -308,11 +303,11 @@
 
     // Caches to avoid garbage collection
 
-    var tempVec3 = XEO.math.vec3();
-    var tempVec3b = XEO.math.vec3();
-    var tempVec3c = XEO.math.vec3();
+    var tempVec3 = xeogl.math.vec3();
+    var tempVec3b = xeogl.math.vec3();
+    var tempVec3c = xeogl.math.vec3();
 
-    XEO.CameraFlight = XEO.Component.extend({
+    xeogl.CameraFlight = xeogl.Component.extend({
 
         /**
          JavaScript class name for this Component.
@@ -321,17 +316,17 @@
          @type String
          @final
          */
-        type: &quot;XEO.CameraFlight&quot;,
+        type: &quot;xeogl.CameraFlight&quot;,
 
         _init: function (cfg) {
 
-            this._look1 = XEO.math.vec3();
-            this._eye1 = XEO.math.vec3();
-            this._up1 = XEO.math.vec3();
+            this._look1 = xeogl.math.vec3();
+            this._eye1 = xeogl.math.vec3();
+            this._up1 = xeogl.math.vec3();
 
-            this._look2 = XEO.math.vec3();
-            this._eye2 = XEO.math.vec3();
-            this._up2 = XEO.math.vec3();
+            this._look2 = xeogl.math.vec3();
+            this._eye2 = xeogl.math.vec3();
+            this._up2 = xeogl.math.vec3();
 
             this._flying = false;
 
@@ -352,9 +347,9 @@
             this.camera = cfg.camera;
 
             // Shows a wireframe box at the given boundary
-            this._boundaryIndicator = this.create(XEO.Entity, {
-                geometry: this.create(XEO.BoundaryGeometry, {
-                    material: this.create(XEO.PhongMaterial, {
+            this._boundaryIndicator = this.create(xeogl.Entity, {
+                geometry: this.create(xeogl.BoundaryGeometry, {
+                    material: this.create(xeogl.PhongMaterial, {
                         diffuse: [0, 0, 0],
                         ambient: [0, 0, 0],
                         specular: [0, 0, 0],
@@ -362,10 +357,10 @@
                         lineWidth: 3
                     })
                 }),
-                visibility: this.create(XEO.Visibility, {
+                visibility: this.create(xeogl.Visibility, {
                     visible: false
                 }),
-                modes: this.create(XEO.Modes, {
+                modes: this.create(xeogl.Modes, {
                     collidable: false // Effectively has no boundary
                 })
             });
@@ -471,14 +466,14 @@
 
                 var component = params;
 
-                if (XEO._isNumeric(component) || XEO._isString(component)) {
+                if (xeogl._isNumeric(component) || xeogl._isString(component)) {
 
                     componentId = component;
 
                     component = this.scene.components[componentId];
 
                     if (!component) {
-                        this.error(&quot;Component not found: &quot; + XEO._inQuotes(componentId));
+                        this.error(&quot;Component not found: &quot; + xeogl._inQuotes(componentId));
                         if (callback) {
                             if (scope) {
                                 callback.call(scope);
@@ -493,7 +488,7 @@
                 var worldBoundary = component.worldBoundary;
 
                 if (!worldBoundary) {
-                    this.error(&quot;Can&#x27;t fly to component &quot; + XEO._inQuotes(componentId) + &quot; - does not have a worldBoundary&quot;);
+                    this.error(&quot;Can&#x27;t fly to component &quot; + xeogl._inQuotes(componentId) + &quot; - does not have a worldBoundary&quot;);
                     if (callback) {
                         if (scope) {
                             callback.call(scope);
@@ -522,7 +517,7 @@
                 this._boundaryIndicator.geometry.aabb = aabb;
                 this._boundaryIndicator.visibility.visible = true;
 
-                var aabbCenter = XEO.math.getAABBCenter(aabb);
+                var aabbCenter = xeogl.math.getAABBCenter(aabb);
 
                 this._look2 = params.look || aabbCenter;
 
@@ -532,8 +527,8 @@
                     this._look2[2] += offset[2];
                 }
 
-                var vec = XEO.math.normalizeVec3(XEO.math.subVec3(this._eye1, this._look1, tempVec3));
-                var diag = (params.look &amp;&amp; false) ? XEO.math.getAABBDiagPoint(aabb, params.look) : XEO.math.getAABBDiag(aabb);
+                var vec = xeogl.math.normalizeVec3(xeogl.math.subVec3(this._eye1, this._look1, tempVec3));
+                var diag = (params.look &amp;&amp; false) ? xeogl.math.getAABBDiagPoint(aabb, params.look) : xeogl.math.getAABBDiag(aabb);
                 var sca = Math.abs((diag) / Math.tan((params.stopFOV || this._stopFOV) / 2));
 
                 this._eye2[0] = this._look2[0] + (vec[0] * sca);
@@ -570,7 +565,7 @@
 
             this._flying = true; // False as soon as we stop
 
-            XEO.scheduleTask(this._update, this);
+            xeogl.scheduleTask(this._update, this);
         },
 
         /**
@@ -646,14 +641,14 @@
 
                 var component = params;
 
-                if (XEO._isNumeric(component) || XEO._isString(component)) {
+                if (xeogl._isNumeric(component) || xeogl._isString(component)) {
 
                     componentId = component;
 
                     component = this.scene.components[componentId];
 
                     if (!component) {
-                        this.error(&quot;Component not found: &quot; + XEO._inQuotes(componentId));
+                        this.error(&quot;Component not found: &quot; + xeogl._inQuotes(componentId));
                         return;
                     }
                 }
@@ -661,7 +656,7 @@
                 var worldBoundary = component.worldBoundary;
 
                 if (!worldBoundary) {
-                    this.error(&quot;Can&#x27;t jump to component &quot; + XEO._inQuotes(componentId) + &quot; - does not have a worldBoundary&quot;);
+                    this.error(&quot;Can&#x27;t jump to component &quot; + xeogl._inQuotes(componentId) + &quot; - does not have a worldBoundary&quot;);
                     return;
                 }
 
@@ -679,10 +674,10 @@
                 }
 
                 eye = lookat.eye;
-                look = XEO.math.getAABBCenter(aabb);
+                look = xeogl.math.getAABBCenter(aabb);
 
-                var vec = XEO.math.normalizeVec3(XEO.math.subVec3(eye, look, tempVec3));
-                var diag = XEO.math.getAABBDiag(aabb);
+                var vec = xeogl.math.normalizeVec3(xeogl.math.subVec3(eye, look, tempVec3));
+                var diag = xeogl.math.getAABBDiag(aabb);
                 var sca = Math.abs((diag) / Math.tan((params.stopFOV || this._stopFOV) / 2));
 
                 lookat.eye = [look[0] + (vec[0] * sca), look[1] + (vec[1] * sca), look[2] + (vec[2] * sca)];
@@ -724,16 +719,16 @@
 
             var view = this._attached.camera.view;
 
-            view.eye = XEO.math.lerpVec3(t, 0, 1, this._eye1, this._eye2, tempVec3);
-            view.look = XEO.math.lerpVec3(t, 0, 1, this._look1, this._look2, tempVec3b);
-            view.up = XEO.math.lerpVec3(t, 0, 1, this._up1, this._up2, tempVec3c);
+            view.eye = xeogl.math.lerpVec3(t, 0, 1, this._eye1, this._eye2, tempVec3);
+            view.look = xeogl.math.lerpVec3(t, 0, 1, this._look1, this._look2, tempVec3b);
+            view.up = xeogl.math.lerpVec3(t, 0, 1, this._up1, this._up2, tempVec3c);
 
             if (stopping) {
                 this.stop();
                 return;
             }
 
-            XEO.scheduleTask(this._update, this); // Keep flying
+            xeogl.scheduleTask(this._update, this); // Keep flying
         },
 
         // Quadratic easing out - decelerating to zero velocity
@@ -816,7 +811,7 @@
                      */
                     this._attach({
                         name: &quot;camera&quot;,
-                        type: &quot;XEO.Camera&quot;,
+                        type: &quot;xeogl.Camera&quot;,
                         component: value,
                         sceneDefault: true
                     });

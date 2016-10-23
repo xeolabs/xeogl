@@ -2,7 +2,7 @@
  A **CameraController** is the base class for components that control Cameras.
 
  @class CameraController
- @module XEO
+ @module xeogl
  @submodule interaction
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this CameraController in the default
@@ -21,9 +21,9 @@
 
     "use strict";
 
-    XEO.CameraController = XEO.Component.extend({
+    xeogl.CameraController = xeogl.Component.extend({
 
-        type: "XEO.CameraController",
+        type: "xeogl.CameraController",
 
         _init: function (cfg) {
             this.camera = cfg.camera;
@@ -55,7 +55,7 @@
                      */
                     this._attach({
                         name: "camera",
-                        type: "XEO.Camera",
+                        type: "xeogl.Camera",
                         component: value,
                         sceneDefault: true,
                         //onAdded: this._transformUpdated,

@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>importing glTF using a <a
-        href="../docs/classes/Model.html" target="_docs">XEO.Model</a><br>then optimizing the modelling
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>importing glTF using a <a
+        href="../docs/classes/Model.html" target="_docs">xeogl.Model</a><br>then optimizing the modelling
     transforms by baking hierarchies into single matrices
 </div>
 
@@ -26,7 +26,7 @@
     // a single level, with no more that one transform component per entity.
 
     // Load glTF gearbox model
-    var gearbox = new XEO.Model({
+    var gearbox = new xeogl.Model({
         id: "gearbox",
         src: "models/gltf/gearbox/gearbox_assy.gltf"
     });
@@ -35,7 +35,7 @@
 
         gearbox.collection.iterate(function (c) {
 
-            if (c.isType("XEO.Entity")) {
+            if (c.isType("xeogl.Entity")) {
 
                 var entity = c;
 
@@ -43,9 +43,9 @@
 
                     // If an entity has a transform that has a parent, then the entity's
                     // transform hierarchy needs collapsing. Bake the hierarchy into
-                    // a matrix on a single XEO.Transform and set that as the entity's new transform.
+                    // a matrix on a single xeogl.Transform and set that as the entity's new transform.
 
-                    entity.transform =  new XEO.Transform({
+                    entity.transform =  new xeogl.Transform({
                         matrix: entity.transform.leafMatrix
                     });
 
@@ -65,7 +65,7 @@
         view.up = [-0.15, 0.97, 0.13];
 
         // Allow user camera control
-        new XEO.CameraControl();
+        new xeogl.CameraControl();
 
         // Slowly orbit camera about model
         gearbox.scene.on("tick",

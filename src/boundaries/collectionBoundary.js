@@ -24,21 +24,21 @@
  Let's create a {{#crossLink "Collection"}}{{/crossLink}} that contains two {{#crossLink "Entity"}}Entities{{/crossLink}}:
 
  ````javascript
- var entity = new XEO.Entity({
-        geometry: new XEO.BoxGeometry(),
-        transform: new XEO.Translate({
+ var entity = new xeogl.Entity({
+        geometry: new xeogl.BoxGeometry(),
+        transform: new xeogl.Translate({
             xyz: [-5, 0, 0]
         })
   });
 
- var entity2 = new XEO.Entity({
-        geometry: new XEO.BoxGeometry(),
-        transform: new XEO.Translate({
+ var entity2 = new xeogl.Entity({
+        geometry: new xeogl.BoxGeometry(),
+        transform: new xeogl.Translate({
             xyz: [0, -5, 0]
         })
   });
 
- var collection = new XEO.Collection({
+ var collection = new xeogl.Collection({
     components: [
         entity1,
         entity2
@@ -50,7 +50,7 @@
  the {{#crossLink "Entity"}}Entities{{/crossLink}}:
 
  ````javascript
- var collectionBoundary = new XEO.CollectionBoundary({
+ var collectionBoundary = new xeogl.CollectionBoundary({
     collection: collection1
  });
 
@@ -79,7 +79,7 @@
  ````
 
  @class CollectionBoundary
- @module XEO
+ @module xeogl
  @submodule boundaries
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this CollectionBoundary within the
@@ -94,9 +94,9 @@
 
     "use strict";
 
-    XEO.CollectionBoundary = XEO.Component.extend({
+    xeogl.CollectionBoundary = xeogl.Component.extend({
 
-        type: "XEO.CollectionBoundary",
+        type: "xeogl.CollectionBoundary",
 
         _init: function (cfg) {
 
@@ -129,7 +129,7 @@
 
                     this._attach({
                         name: "collection",
-                        type: "XEO.Collection",
+                        type: "xeogl.Collection",
                         component: value, // Converts value from ID to instance if necessary
                         on: {
                             added: function (component) {
@@ -175,7 +175,7 @@
 
                         var self = this;
 
-                        this._worldBoundary = new XEO.Boundary3D(this.scene, {
+                        this._worldBoundary = new xeogl.Boundary3D(this.scene, {
 
                             getDirty: function () {
                                 if (self._aabbDirty) {
@@ -253,7 +253,7 @@
         _buildAABB: function () {
 
             if (!this._aabb) {
-                this._aabb = XEO.math.AABB3();
+                this._aabb = xeogl.math.AABB3();
             }
 
             var xmin = 100000;

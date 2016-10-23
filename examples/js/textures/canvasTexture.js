@@ -2,12 +2,12 @@
  A {{#crossLink "Texture"}}{{/crossLink}} that provides a canvas and 3D context to draw to.
 
  @class TextureCanvas
- @module XEO
+ @module xeogl
  @extends Component
  */
-XEO.TextureCanvas = XEO.Component.extend({
+xeogl.TextureCanvas = xeogl.Component.extend({
 
-    type: "XEO.TextureCanvas",
+    type: "xeogl.TextureCanvas",
 
     _init: function (cfg) {
 
@@ -17,7 +17,7 @@ XEO.TextureCanvas = XEO.Component.extend({
 
         this._tick = this.scene.on("tick",
             function () {
-                //XEO.scheduleTask(function () {
+                //xeogl.scheduleTask(function () {
                 if (self._needBlit) {
                     if (self._texture) {
                         self._image.src = self._canvas.toDataURL();

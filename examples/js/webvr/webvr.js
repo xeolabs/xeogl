@@ -2,7 +2,7 @@
  A **WebVR** component makes its {{#crossLink "Scene"}}{{/crossLink}} viewable with a webVR viewer.
 
  <ul>
- <li>Plug-and-play: just create a WebVR component within your xeoEngine {{#crossLink "Scene"}}{{/crossLink}} to make it viewable with a WebVR display.</li>
+ <li>Plug-and-play: just create a WebVR component within your xeogl {{#crossLink "Scene"}}{{/crossLink}} to make it viewable with a WebVR display.</li>
  <li>Activate or disable the WebVR component at any time to switch between webVR mode and normal mono viewing mode.</li>
  <li>Requires WebGL2 and WebVR support, which you'll have if you're running on a webVR viewer.</li>
  <li>Attaches to a {{#crossLink "Camera"}}{{/crossLink}}, defaults to its {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
@@ -25,22 +25,22 @@
 
  ## Usage
 
- In the following example we're going to set up a WebVR-viewable scene with xeoEngine, defining the scene step-by-step to
- emphasize the plug-and-play design of xeoEngine's API.
+ In the following example we're going to set up a WebVR-viewable scene with xeogl, defining the scene step-by-step to
+ emphasize the plug-and-play design of xeogl's API.
 
  **1. Create an entity**
 
- First we'll create a simple torus-shaped {{#crossLink "Entity"}}{{/crossLink}}, which will be within xeoEngine's default
+ First we'll create a simple torus-shaped {{#crossLink "Entity"}}{{/crossLink}}, which will be within xeogl's default
  {{#crossLink "Scene"}}{{/crossLink}}, since we're not defining the {{#crossLink "Scene"}}{{/crossLink}} component
  explicitly. Our {{#crossLink "Entity"}}{{/crossLink}} is also implicitly connected to the
  {{#crossLink "Scene"}}{{/crossLink}}'s default {{#crossLink "Camera"}}{{/crossLink}}, since we didn't explicitly create
  a {{#crossLink "Camera"}}{{/crossLink}} for it either.
 
  ````javascript
- var entity = new XEO.Entity({
-     geometry: new XEO.TorusGeometry(),
-     material: new XEO.PhongMaterial({
-        diffuseMap: new XEO.Texture({
+ var entity = new xeogl.Entity({
+     geometry: new xeogl.TorusGeometry(),
+     material: new xeogl.PhongMaterial({
+        diffuseMap: new xeogl.Texture({
             src: "textures/diffuse/uvGrid2.jpg"
         })
      })
@@ -52,7 +52,7 @@
  At this point we've got a textured torus floating in the middle of the canvas (which is also created automatically
  since we didn't specify one). Now we'll create a
  {{#crossLink "CameraControl"}}{{/crossLink}}, which immediately allows us to move our viewpoint around with the mouse and
- keyboard. This component is also within xeoEngine's default {{#crossLink "Scene"}}{{/crossLink}} and connected to the
+ keyboard. This component is also within xeogl's default {{#crossLink "Scene"}}{{/crossLink}} and connected to the
  {{#crossLink "Scene"}}{{/crossLink}}'s default {{#crossLink "Camera"}}{{/crossLink}}.
 
  ````javascript
@@ -91,14 +91,14 @@
 
             // Not a webVR device
 
-            this.error("This computer is not a WebVR viewer!"); // Log error on the XEO.WebVR component
+            this.error("This computer is not a WebVR viewer!"); // Log error on the xeogl.WebVR component
 
-            // At this point you could just destroy the XEO.WebVR to make it detach from the Camera
+            // At this point you could just destroy the xeogl.WebVR to make it detach from the Camera
         }
     });
  ````
  @class WebVR
- @module XEO
+ @module xeogl
  @submodule webvr
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this WebVR in the default
@@ -121,9 +121,9 @@
 
     "use strict";
 
-    XEO.WebVR = XEO.Component.extend({
+    xeogl.WebVR = xeogl.Component.extend({
 
-        type: "XEO.WebVR",
+        type: "xeogl.WebVR",
 
         _init: function (cfg) {
 
@@ -158,7 +158,7 @@
                 });
             }
 
-            // Set properties on this XEO.WebVR (see _props below)
+            // Set properties on this xeogl.WebVR (see _props below)
 
             this.camera = cfg.camera;
             this.viewport = cfg.viewport;
@@ -200,7 +200,7 @@
                      */
                     var camera = this._attach({
                         name: "camera",
-                        type: "XEO.Camera",
+                        type: "xeogl.Camera",
                         component: value,
                         sceneDefault: true
                     });
@@ -234,7 +234,7 @@
                      */
                     this._attach({
                         name: "viewport",
-                        type: "XEO.Viewport",
+                        type: "xeogl.Viewport",
                         component: value,
                         sceneDefault: true
                     });
@@ -372,18 +372,18 @@
                 return;
             }
 
-            // Need to have XEO.Transforms for viewing and projection
+            // Need to have xeogl.Transforms for viewing and projection
             // on the Camera, so that we can set matrices on them.
 
-            if (camera.project.type !== "XEO.Transform") {
-                this.warn("Replacing camera's projection transform with a XEO.Transform (needed for WebVR)");
+            if (camera.project.type !== "xeogl.Transform") {
+                this.warn("Replacing camera's projection transform with a xeogl.Transform (needed for WebVR)");
                 this._oldProject = camera.project; // Save so we can restore on deactivation
-                camera.project = camera.create(XEO.Transform);
+                camera.project = camera.create(xeogl.Transform);
             }
 
             if (!camera.view.parent) {
                 camera.view.postMultiply = true;
-                camera.view.parent = camera.create(XEO.Transform);
+                camera.view.parent = camera.create(xeogl.Transform);
             }
 
             // If we have not yet configured the scene to do two passes per frame,
@@ -424,7 +424,7 @@
             }
         },
 
-        _deactivate: function () { // Deactivates this XEO.WebVR
+        _deactivate: function () { // Deactivates this xeogl.WebVR
 
             var scene = this.scene;
 

@@ -1,8 +1,8 @@
 /**
- The xeoEngine namespace.
+ The xeogl namespace.
 
- @class XEO
- @main XEO
+ @class xeogl
+ @main xeogl
  @static
  @author xeolabs / http://xeolabs.com/
  */
@@ -10,13 +10,13 @@
 
     "use strict";
 
-    var XEO = function () {
+    var xeogl = function () {
 
         /**
          * Semantic version number. The value for this is set by an expression that's concatenated to
-         * the end of the built binary by the xeoEngine build script.
+         * the end of the built binary by the xeogl build script.
          * @property version
-         * @namespace XEO
+         * @namespace xeogl
          * @type {String}
          */
         this.version = null;
@@ -77,7 +77,7 @@
         })();
 
         /**
-         * Tracks statistics within xeoEngine, such as numbers of
+         * Tracks statistics within xeogl, such as numbers of
          * scenes, textures, geometries etc.
          * @final
          * @property stats
@@ -85,7 +85,7 @@
          */
         this.stats = {
             build: {
-                version: XEO.version
+                version: xeogl.version
             },
             client: {
                 browser: (navigator && navigator.userAgent) ? navigator.userAgent : "n/a"
@@ -103,7 +103,7 @@
             memory: {
 
                 // Note that these counts will include any positions, colors,
-                // normals and indices that xeoEngine internally creates on-demand
+                // normals and indices that xeogl internally creates on-demand
                 // to support color-index triangle picking.
 
                 meshes: 0,
@@ -139,8 +139,8 @@
         /**
          * Existing {{#crossLink "Scene"}}Scene{{/crossLink}}s , mapped to their IDs
          * @property scenes
-         * @namespace XEO
-         * @type {{String:XEO.Scene}}
+         * @namespace xeogl
+         * @type {{String:xeogl.Scene}}
          */
         this.scenes = {};
 
@@ -152,7 +152,7 @@
         this._superTypes = {};
 
         // Task queue, which is pumped on each frame;
-        // tasks are pushed to it with calls to XEO.schedule
+        // tasks are pushed to it with calls to xeogl.schedule
 
         this._taskQueue = [];
 
@@ -280,9 +280,9 @@
         })();
     };
 
-    XEO.prototype = {
+    xeogl.prototype = {
 
-        constructor: XEO,
+        constructor: xeogl,
 
         /**
          The default {{#crossLink "Scene"}}Scene{{/crossLink}}.
@@ -290,28 +290,28 @@
          Components created without an explicit parent {{#crossLink "Scene"}}Scene{{/crossLink}} will be created within this
          {{#crossLink "Scene"}}Scene{{/crossLink}} by default.
 
-         xeoEngine creates the default {{#crossLink "Scene"}}Scene{{/crossLink}} as soon as you either
+         xeogl creates the default {{#crossLink "Scene"}}Scene{{/crossLink}} as soon as you either
          reference this property for the first time, or create your first {{#crossLink "Entity"}}Entity{{/crossLink}} without
          a specified {{#crossLink "Scene"}}Scene{{/crossLink}}.
 
          @property scene
-         @namespace XEO
+         @namespace xeogl
          @final
          @type Scene
          */
         get scene() {
 
-            // XEO.Scene constructor will call this._addScene
-            // to register itself on XEO
+            // xeogl.Scene constructor will call this._addScene
+            // to register itself on xeogl
 
-            return this._scene || (this._scene = new window.XEO.Scene({
+            return this._scene || (this._scene = new window.xeogl.Scene({
                     id: "default.scene"
                 }));
         },
 
         /**
-         * Registers a scene on xeoEngine.
-         * This is called within the XEO.Scene constructor.
+         * Registers a scene on xeogl.
+         * This is called within the xeogl.Scene constructor.
          *
          * @method _addScene
          * @param {Scene} scene The scene
@@ -319,14 +319,14 @@
          */
         _addScene: function (scene) {
 
-            this._sceneIDMap = this._sceneIDMap || new window.XEO.utils.Map();
+            this._sceneIDMap = this._sceneIDMap || new window.xeogl.utils.Map();
 
             if (scene.id) {
 
                 // User-supplied ID
 
                 if (this.scenes[scene.id]) {
-                    console.error("[ERROR] Scene " + XEO._inQuotes(scene.id) + " already exists");
+                    console.error("[ERROR] Scene " + xeogl._inQuotes(scene.id) + " already exists");
                     return;
                 }
 
@@ -357,9 +357,9 @@
         },
 
         /**
-         * Schedule a task for xeoEngine to run at the next frame.
+         * Schedule a task for xeogl to run at the next frame.
          *
-         * Internally, this pushes the task to a FIFO queue. Within each frame interval, xeoEngine processes the queue
+         * Internally, this pushes the task to a FIFO queue. Within each frame interval, xeogl processes the queue
          * for a certain period of time, popping tasks and running them. After each frame interval, tasks that did not
          * get a chance to run during the task are left in the queue to be run next time.
          *
@@ -469,7 +469,7 @@
          * @private
          */
         _isID: function (value) {
-            return XEO._isString(value) || XEO._isNumeric(value);
+            return xeogl._isString(value) || xeogl._isNumeric(value);
         },
 
         /**
@@ -485,8 +485,8 @@
                 return false;
             }
 
-            var id1 = (XEO.prototype._isNumeric(c1) || XEO.prototype._isString(c1)) ? "" + c1 : c1.id;
-            var id2 = (XEO.prototype._isNumeric(c2) || XEO.prototype._isString(c2)) ? "" + c2 : c2.id;
+            var id1 = (xeogl.prototype._isNumeric(c1) || xeogl.prototype._isString(c1)) ? "" + c1 : c1.id;
+            var id2 = (xeogl.prototype._isNumeric(c2) || xeogl.prototype._isString(c2)) ? "" + c2 : c2.id;
 
             return id1 === id2;
         },
@@ -618,10 +618,10 @@
         }
     };
 
-    // Have a lower-case XEO namespace as well,
+    // Have a lower-case xeogl namespace as well,
     // just because it's easier to type when live-coding
 
-    window.XEO = window.XEO = new XEO();
+    window.xeogl = window.xeogl = new xeogl();
 
 })
 ();

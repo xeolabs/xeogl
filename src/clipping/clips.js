@@ -19,7 +19,7 @@
  <li>Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}}
  via the {{#crossLink "Modes/clipping:property"}}{{/crossLink}} flag on {{#crossLink "Modes"}}Modes{{/crossLink}} components
  attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Clips create within xeoEngine's shaders.</li>
+ <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Clips create within xeogl's shaders.</li>
  </ul>
  <img src="../../../assets/images/Clips.png"></img>
 
@@ -28,7 +28,7 @@
  See {{#crossLink "Clip"}}{{/crossLink}} for an example.
 
  @class Clips
- @module XEO
+ @module xeogl
  @submodule clipping
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Clips in the default
@@ -37,7 +37,7 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Clips.
- @param [cfg.clips] {Array(String)|Array(XEO.Clip)} Array containing either IDs or instances of
+ @param [cfg.clips] {Array(String)|Array(xeogl.Clip)} Array containing either IDs or instances of
  {{#crossLink "Clip"}}Clip{{/crossLink}} components within the parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
  @extends Component
  */
@@ -45,14 +45,14 @@
 
     "use strict";
 
-    XEO.Clips = XEO.Component.extend({
+    xeogl.Clips = xeogl.Component.extend({
 
-        type: "XEO.Clips",
+        type: "xeogl.Clips",
 
         _init: function (cfg) {
 
             // Renderer state contains the states of the child Clip components
-            this._state = new XEO.renderer.Clips({
+            this._state = new xeogl.renderer.Clips({
 
                 clips: [],
 
@@ -83,7 +83,7 @@
              *
              * @property clips
              * @default []
-             * @type Array(XEO.Clip)
+             * @type Array(xeogl.Clip)
              */
             clips: {
 
@@ -143,7 +143,7 @@
 
                         clip = value[i];
 
-                        if (XEO._isString(clip)) {
+                        if (xeogl._isString(clip)) {
 
                             // ID given for clip - find the clip component
 
@@ -152,13 +152,13 @@
                             clip = this.components[id];
 
                             if (!clip) {
-                                this.error("Component not found: " + XEO._inQuotes(id));
+                                this.error("Component not found: " + xeogl._inQuotes(id));
                                 continue;
                             }
                         }
 
-                        if (clip.type !== "XEO.Clip") {
-                            this.error("Component " + XEO._inQuotes(id) + " is not a XEO.Clip");
+                        if (clip.type !== "xeogl.Clip") {
+                            this.error("Component " + xeogl._inQuotes(id) + " is not a xeogl.Clip");
                             continue;
                         }
 
@@ -174,7 +174,7 @@
                     /**
                      Fired whenever this Clips' {{#crossLink "Clips/clips:property"}}{{/crossLink}} property changes.
                      @event clips
-                     @param value {Array of XEO.Clip} The property's new value
+                     @param value {Array of xeogl.Clip} The property's new value
                      */
                     this.fire("dirty", true);
                     this.fire("clips", this._clips);

@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>xeoEngine Example</title>
+    <title>xeogl Example</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeoengine.min.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeoengine.org" target="_home">xeoEngine</a><br><br>
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>
     Visualizing an <a href="../docs/classes/Entity.html" target="_docs">Entity's</a> View-space <a
         href="../docs/classes/Boundary3D.html" target="_docs">boundary</a> as we animate the Entity's modeling transforms
 
@@ -20,7 +20,7 @@
 
 <script>
 
-    new  XEO.CameraControl();
+    new  xeogl.CameraControl();
 
     // ------------------------------------------------------------------
     // Create a tumbling red torus
@@ -32,32 +32,32 @@
     var rotate0;
     var rotate1;
 
-    var torus = new XEO.Entity({
+    var torus = new xeogl.Entity({
 
-        geometry: new XEO.TorusGeometry({
+        geometry: new xeogl.TorusGeometry({
             radius: 1.0,
             tube: 0.3
         }),
 
-        material: new XEO.PhongMaterial({
+        material: new xeogl.PhongMaterial({
             diffuse: [1, 0.3, 0.3]
         }),
 
-        transform: new XEO.Scale({
+        transform: new xeogl.Scale({
             xyz: [0.5, 0.5, 0.5],
 
-            parent: rotate1 = new XEO.Rotate({
+            parent: rotate1 = new xeogl.Rotate({
                 xyz: [1, 1, 0],
                 angle: 45,
 
-                parent: new XEO.Rotate({
+                parent: new xeogl.Rotate({
                     xyz: [1, 0, 1],
                     angle: 25,
 
-                    parent: new XEO.Translate({
+                    parent: new xeogl.Translate({
                         xyz: [5, 0, 0]
                         ,
-                        parent: rotate0 = new XEO.Rotate({
+                        parent: rotate0 = new xeogl.Rotate({
                             xyz: [0, 0, 1],
                             angle: 40
                         })

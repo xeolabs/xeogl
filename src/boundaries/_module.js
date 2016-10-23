@@ -1,6 +1,6 @@
 /**
  * Components to support spatial queries (eg. collisions etc).
  *
- * @module XEO
+ * @module xeogl
  * @submodule boundaries
  */
