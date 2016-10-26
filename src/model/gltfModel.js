@@ -155,12 +155,10 @@
 
         _getJSON: function () {
 
-            var json = {
-                src: this._src
-            };
+            var json =  this._super();
 
-            if (this._attached.transform) {
-                json.transform = this._attached.transform.id;
+            if (this.src) {
+                json.src = this._src;
             }
 
             return json;

@@ -208,10 +208,10 @@
 
 
 <div class="box intro">
-    <p>A <strong>Model</strong> loads content from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file into its parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
-<ul><li>A Model begins loading as soon as it&#39;s Model/src:property
-property is set to the location of a valid glTF file.</li>
-<li>A Model keeps all its loaded components in a <a href="../classes/Collection.html" class="crosslink">Collection</a>.</li>
+    <p>A <strong>Model</strong> is a unit of content within a xeogl <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+<ul>
+<li>Subclassed by GlTF, which loads glTF files.</li>
+<li>A Model keeps all its components in a <a href="../classes/Collection.html" class="crosslink">Collection</a>.</li>
 <li>A Model can be attached to an animated and dynamically-editable
 modelling <a href="../classes/Transform.html" class="crosslink">Transform</a> hierarchy, to rotate, translate and scale it within the World-space coordinate system, in the
 same way that an <a href="../classes/Entity.html" class="crosslink">Entity</a> can.</li>
@@ -1104,10 +1104,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>A <a href="../classes/Collection.html" class="crosslink">Collection</a> containing the scene components loaded by this Model.</p>
-                    <p>Whenever Model/src:property is set to the location of a valid glTF file,
-                    and once the file has been loaded, this <a href="../classes/Collection.html" class="crosslink">Collection</a> will contain whatever
-                    components were loaded from that file.</p>
-                    <p>Note that prior to loading the file, the Model will destroy any components in the <a href="../classes/Collection.html" class="crosslink">Collection</a>.</p>
                     
                         </div>
                     
@@ -1339,7 +1335,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_model_model.js.html#l113"><code>src&#x2F;model&#x2F;model.js:113</code></a>
+                            <a href="../files/src_model_model.js.html#l107"><code>src&#x2F;model&#x2F;model.js:107</code></a>
                             </p>
                     
                     
@@ -1429,7 +1425,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_model_model.js.html#l131"><code>src&#x2F;model&#x2F;model.js:131</code></a>
+                            <a href="../files/src_model_model.js.html#l125"><code>src&#x2F;model&#x2F;model.js:125</code></a>
                             </p>
                     
                     
