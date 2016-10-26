@@ -13,7 +13,7 @@
 
 <div id="infoLight">
     <a href="http://xeogl.org" target="_home">xeogl</a><br><br>importing glTF using a <a
-        href="../docs/classes/Model.html" target="_docs">xeogl.Model</a><br>then optimizing the modelling
+        href="../docs/classes/glTFModel.html" target="_docs">xeogl.glTFModel</a><br>then optimizing the modelling
     transforms by baking hierarchies into single matrices
 </div>
 
@@ -26,7 +26,7 @@
     // a single level, with no more that one transform component per entity.
 
     // Load glTF gearbox model
-    var gearbox = new xeogl.Model({
+    var gearbox = new xeogl.glTFModel({
         id: "gearbox",
         src: "models/gltf/gearbox/gearbox_assy.gltf"
     });
@@ -49,8 +49,8 @@
                         matrix: entity.transform.leafMatrix
                     });
 
-                    // Store the new transform in the Model's Collection so that
-                    // it gets destroyed when the Model is destroyed or reloaded
+                    // Store the new transform in the glTFModel's Collection so that
+                    // it gets destroyed when the glTFModel is destroyed or reloaded
 
                     gearbox.collection.add(entity.transform);
                 }

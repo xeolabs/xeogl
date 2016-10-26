@@ -13,14 +13,14 @@
 
 <div id="infoLight">
     <a href="http://xeogl.org" target="_home">xeogl</a><br><br>importing glTF using a <a
-        href="../docs/classes/Model.html" target="_docs">xeogl.Model</a> component, then attaching a
+        href="../docs/classes/glTFModel.html" target="_docs">xeogl.glTFModel</a> component, then attaching a
     <a href="../docs/classes/Transform.html" target="_docs">xeogl.Transform</a> afterwards
 </div>
 
 <script>
 
-    // Load a Model from a glTF file
-    var buggy = new xeogl.Model({
+    // Load a glTFModel from a glTF file
+    var buggy = new xeogl.glTFModel({
         src: "models/gltf/buggy/buggy.gltf"
     });
 
@@ -31,9 +31,9 @@
     // Allow user camera control
     new xeogl.CameraControl();
 
-    // Attach a transform hierarchy to the Model
+    // Attach a transform hierarchy to the glTFModel
     // Shrink the model 50%, rotate it about Y
-    buggy.transform = new xeogl.Translate({ // Translate Model to rotate roughly about center
+    buggy.transform = new xeogl.Translate({ // Translate glTFModel to rotate roughly about center
         xyz: [-35, 0, 0],
 
         parent: new xeogl.Rotate({ // Rotate about center
@@ -47,7 +47,7 @@
         })
     });
 
-    // Slowly rotate Model
+    // Slowly rotate glTFModel
     var buggyRotation = buggy.scene.components["buggyRotation"];
     buggy.scene.on("tick",
             function () {

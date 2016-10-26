@@ -39,7 +39,7 @@
 
         // Load glTF
 
-        var gearbox = new xeogl.Model({
+        var gearbox = new xeogl.glTFModel({
             src: "models/gltf/gearbox/gearbox_assy.gltf"
         });
 
@@ -104,14 +104,14 @@
         gearbox.on("loaded",
                 function () {
 
-                    // When the Model has loaded, iterate over all the Entities in the Model:
+                    // When the glTFModel has loaded, iterate over all the Entities in the glTFModel:
                     //
                     // 1. Ensure that they each have their own Material and Modes components, so that
                     // we can set them transparent individually. This is quick-and-dirty, where we
                     // may be creating excess Materials and Modes, while needlessly keeping unused ones.
                     //
-                    // 2. Add the Material and Modes to the Model's Collection so that they get
-                    // destroyed whenever the Model is destroyed or reloaded.
+                    // 2. Add the Material and Modes to the glTFModel's Collection so that they get
+                    // destroyed whenever the glTFModel is destroyed or reloaded.
                     //
                     // 2. Add an item to the JSON data we'll build our explorer from.
 
@@ -132,13 +132,13 @@
                             entity.modes = entity.modes.clone();
                             entity.modes.transparent = true;
 
-                            // Add the Material and Modes to the Model's Collection
+                            // Add the Material and Modes to the glTFModel's Collection
                             // so that they get destroyed automatically
 
                             gearbox.collection.add(entity.material);
                             gearbox.collection.add(entity.modes);
 
-                            // To each Entity it loads, a Model will attach metadata
+                            // To each Entity it loads, a glTFModel will attach metadata
                             // containing a human-readable name - use that to list a 
                             // human-readable name in the explorer.
 

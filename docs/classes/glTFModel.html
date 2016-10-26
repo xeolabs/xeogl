@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>MouseZoomCamera - xeogl</title>
+    <title>glTFModel - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -190,195 +190,57 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>MouseZoomCamera Class</h1>
+<h1>glTFModel Class</h1>
 <div class="box meta">
 
         <div class="extends">
-            Extends <a href="../classes/Component.html" class="crosslink">Component</a>
+            Extends <a href="../classes/Model.html" class="crosslink">Model</a>
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_controls_mouseZoomCamera.js.html#l1"><code>src&#x2F;controls&#x2F;mouseZoomCamera.js:1</code></a>
+            Defined in: <a href="../files/src_model_gltfModel.js.html#l7"><code>src&#x2F;model&#x2F;gltfModel.js:7</code></a>
         </div>
 
-            Module: <a href="../modules/controls.html">controls</a><br>
+            Module: <a href="../modules/importing.html">importing</a><br>
             Parent Module: <a href="../modules/xeogl.html">xeogl</a>
 
 </div>
 
 
 <div class="box intro">
-    <p>A <strong>MouseZoomCamera</strong> zooms a <a href="../classes/Camera.html" class="crosslink">Camera</a> using the mouse wheel.</p>
-<ul>
-<li>A MouseZoomCamera updates the <a href="../classes/Lookat.html" class="crosslink">Lookat</a> attached to the target <a href="../classes/Camera.html" class="crosslink">Camera</a>.
-<li>Zooming involves translating the positions of the <a href="../classes/Lookat.html" class="crosslink">Lookat&#39;s</a>
-<a href="../classes/Lookat.html#property_eye" class="crosslink">eye</a> and <a href="../classes/Lookat.html#property_look" class="crosslink">look</a> back and forth
-along the <a href="../classes/Lookat.html#property_eye" class="crosslink">eye</a>-&gt;<a href="../classes/Lookat.html#property_look" class="crosslink">look</a> vector.</li>
+    <p>A <strong>glTF</strong> loads content from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file into its parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+<ul><li>A glTF begins loading as soon as it&#39;s GlTF/src:property
+property is set to the location of a valid glTF file.</li>
+<li>A glTF keeps all its loaded components in a <a href="../classes/Collection.html" class="crosslink">Collection</a>.</li>
+<li>A glTF can be attached to an animated and dynamically-editable
+glTFling <a href="../classes/Transform.html" class="crosslink">Transform</a> hierarchy, to rotate, translate and scale it within the World-space coordinate system, in the
+same way that an <a href="../classes/Entity.html" class="crosslink">Entity</a> can.</li>
+<li>You can set a glTF&#39;s GlTF/src:property property to a new file path at any time,
+which will cause it to load components from the new file (destroying any components loaded previously).</li>
 </ul>
 
+<p><img src="../../../assets/images/glTF.png"></img></p>
 <h2 id="examples">Examples</h2>
 <ul>
-<li><a href="../../examples/#interaction_MouseZoomCamera">MouseZoomCamera example</a></li>
-<li><a href="../../examples/#interaction_CameraControl">CameraControl example</a></li>
+<li><a href="../../examples/#importing_gltf_gearbox">Gearbox</a></li>
+<li><a href="../../examples/#importing_gltf_buggy">Buggy</a></li>
+<li><a href="../../examples/#importing_gltf_ReciprocatingSaw">Reciprocating Saw</a></li>
+<li><a href="../../examples/#importing_gltf_duck">Textured Duck</a></li>
+<li><a href="../../examples/#demos_ui_explorer">glTF with entity explorer UI</a></li>
+<li><a href="../../examples/#boundaries_flyToBoundary">Fly camera to glTF entities</a></li>
+<li><a href="../../examples/#importing_gltf_techniques_uniqueMaterials">Ensuring individual materials on glTF entities</a></li>
+<li><a href="../../examples/#importing_gltf_techniques_bakeTransforms">Baking transform hierarchies</a></li>
+<li><a href="../../examples/#importing_gltf_techniques_configTransform">Attaching transforms to glTFs, via constructor</a></li>
+<li><a href="../../examples/#importing_gltf_techniques_attachTransform">Attaching transforms to glTFs, via property</a></li>
 </ul>
 
-<h2 id="usage">Usage</h2>
-<pre class="code prettyprint"><code class="lang-Javascript">var camera = new xeogl.Camera({
-    view: new xeogl.Lookat({
-        eye: [0, 0, 10],
-        look: [0, 0, 0],
-        up: [0, 1, 0]
-    }),
-    project: new xeogl.Perspective({
-        fovy: 60,
-        near: 0.1,
-        far: 1000
-    })
-});
-
-var entity = new xeogl.Entity({
-    camera: camera,
-    geometry: new xeogl.BoxGeometry()
-});
-
-new xeogl.MouseZoomCamera({
-    camera: camera
-});
-</code></pre>
-
+<h2 id="tutorials">Tutorials</h2>
+<p>Find API documentation for glTF here:</p>
+<ul>
+<li><a href="https://github.com/xeolabs/xeogl/wiki/Importing-glTF">Importing glTF</a></li>
+</ul>
 </div>
 
-    <div class="constructor">
-        <h2>Constructor</h2>
-        <div id="method_MouseZoomCamera" class="method item">
-            <h3 class="name"><code>MouseZoomCamera</code></h3>
-        
-                <div class="args">
-                    <span class="paren">(</span><ul class="args-list inline commas">
-                        <li class="arg">
-                                <code class="optional">[scene]</code>
-                        </li>
-                        <li class="arg">
-                                <code class="optional">[cfg]</code>
-                        </li>
-                    </ul><span class="paren">)</span>
-                </div>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/src_controls_mouseZoomCamera.js.html#l1"><code>src&#x2F;controls&#x2F;mouseZoomCamera.js:1</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-                <div class="params">
-                    <h4>Parameters:</h4>
-        
-                    <ul class="params-list">
-                        <li class="param">
-                                <code class="param-name optional">[scene]</code>
-                                <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
-        
-                            </div>
-        
-                        </li>
-                        <li class="param">
-                                <code class="param-name optional">[cfg]</code>
-                                <span class="type"></span>
-                                <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-        
-                            <div class="param-description">
-                                <p>Configs</p>
-        
-                            </div>
-        
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name optional">[id]</code>
-                                            <span class="type">String</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Optional ID, unique among all components in the parent scene, generated automatically when omitted.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[meta]</code>
-                                            <span class="type">String:Object</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Optional map of user-defined metadata to attach to this MouseZoomCamera.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[camera]</code>
-                                            <span class="type">String | <a href="../classes/Camera.html" class="crosslink">Camera</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>ID or instance of a <a href="../classes/Camera.html" class="crosslink">Camera</a> to control.
-        Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this MouseZoomCamera. Defaults to the
-        parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance, <a href="../classes/Scene.html#property_camera" class="crosslink">camera</a>.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[sensitivity=0.5]</code>
-                                            <span class="type">Number</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Zoom sensitivity factor.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[active=true]</code>
-                                            <span class="type">Boolean</span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Whether or not this MouseZoomCamera is active.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                </ul>
-                        </li>
-                    </ul>
-                </div>
-        
-        
-        
-        </div>
-    </div>
 
 <div id="classdocs" class="tabview">
     <ul class="api-class-tabs">
@@ -444,12 +306,8 @@ new xeogl.MouseZoomCamera({
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
-                            <li class="index-item property">
-                                <a href="#property_active">active</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_camera">camera</a>
+                            <li class="index-item property inherited">
+                                <a href="#property_collection">collection</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -477,7 +335,7 @@ new xeogl.MouseZoomCamera({
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_sensitivity">sensitivity</a>
+                                <a href="#property_src">src</a>
 
                             </li>
                             <li class="index-item property inherited inherited">
@@ -486,6 +344,10 @@ new xeogl.MouseZoomCamera({
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_superTypes">superTypes</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_transform">transform</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -500,20 +362,24 @@ new xeogl.MouseZoomCamera({
                     <h3>Events</h3>
 
                     <ul class="index-list events extends">
-                            <li class="index-item event">
-                                <a href="#event_active">active</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_camera">camera</a>
-
-                            </li>
                             <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_sensitivity">sensitivity</a>
+                                <a href="#event_loaded">loaded</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_loaded">loaded</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_src">src</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_transform">transform</a>
 
                             </li>
                     </ul>
@@ -1252,55 +1118,30 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_active" class="property item">
-                        <h3 class="name"><code>active</code></h3>
-                        <span class="type">Boolean</span>
+                    <div id="property_collection" class="property item inherited">
+                        <h3 class="name"><code>collection</code></h3>
+                        <span class="type"><a href="../classes/Collection.html" class="crosslink">Collection</a></span>
                     
                     
                     
+                            <span class="flag final">final</span>
                     
                     
                         <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_controls_mouseZoomCamera.js.html#l154"><code>src&#x2F;controls&#x2F;mouseZoomCamera.js:154</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Model.html#property_collection">Model</a>:
+                            <a href="../files/src_model_model.js.html#l93"><code>src&#x2F;model&#x2F;model.js:93</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Indicates whether this MouseZoomCamera is active or not.</p>
-                    <p>Fires an <a href="../classes/MouseZoomCamera.html#event_active" class="crosslink">active</a> event on change.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_camera" class="property item">
-                        <h3 class="name"><code>camera</code></h3>
-                        <span class="type"><a href="../classes/Camera.html" class="crosslink">Camera</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_controls_mouseZoomCamera.js.html#l89"><code>src&#x2F;controls&#x2F;mouseZoomCamera.js:89</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The <a href="../classes/Camera.html" class="crosslink">Camera</a> attached to this MouseZoomCamera.</p>
-                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this MouseZoomCamera. Defaults to the parent
-                    <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default <a href="../classes/Scene.html#property_camera" class="crosslink">camera</a> when set to
-                    a null or undefined value.</p>
-                    <p>Fires a <a href="../classes/MouseZoomCamera.html#event_camera" class="crosslink">camera</a> event on change.</p>
+                            <p>A <a href="../classes/Collection.html" class="crosslink">Collection</a> containing the scene components loaded by this Model.</p>
+                    <p>Whenever Model/src:property is set to the location of a valid glTF file,
+                    and once the file has been loaded, this <a href="../classes/Collection.html" class="crosslink">Collection</a> will contain whatever
+                    components were loaded from that file.</p>
+                    <p>Note that prior to loading the file, the Model will destroy any components in the <a href="../classes/Collection.html" class="crosslink">Collection</a>.</p>
                     
                         </div>
                     
@@ -1460,9 +1301,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_sensitivity" class="property item">
-                        <h3 class="name"><code>sensitivity</code></h3>
-                        <span class="type">Number</span>
+                    <div id="property_src" class="property item">
+                        <h3 class="name"><code>src</code></h3>
+                        <span class="type">String</span>
                     
                     
                     
@@ -1471,19 +1312,20 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_mouseZoomCamera.js.html#l125"><code>src&#x2F;controls&#x2F;mouseZoomCamera.js:125</code></a>
+                            <a href="../files/src_model_gltfModel.js.html#l75"><code>src&#x2F;model&#x2F;gltfModel.js:75</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The sensitivity of this MouseZoomCamera.</p>
-                    <p>Fires a <a href="../classes/MouseZoomCamera.html#event_sensitivity" class="crosslink">sensitivity</a> event on change.</p>
+                            <p>Path to the glTF file.</p>
+                    <p>You can set this to a new file path at any time, which will cause the glTFModel to load components from
+                    the new file (after first destroying any components loaded from a previous file path).</p>
+                    <p>Fires a GlTFModel/src:event event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> 0.5</p>
                     
                     
                     </div>
@@ -1548,7 +1390,37 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_type" class="property item">
+                    <div id="property_transform" class="property item inherited">
+                        <h3 class="name"><code>transform</code></h3>
+                        <span class="type"><a href="../classes/Transform.html" class="crosslink">Transform</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Model.html#property_transform">Model</a>:
+                            <a href="../files/src_model_model.js.html#l113"><code>src&#x2F;model&#x2F;model.js:113</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The Local-to-World-space (modelling) <a href="../classes/Transform.html" class="crosslink">Transform</a> attached to this Model.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Model.</p>
+                    <p>Internally, the given <a href="../classes/Transform.html" class="crosslink">Transform</a> will be inserted above each top-most
+                    <a href="../classes/Transform.html" class="crosslink">Transform</a> that the Model attaches to
+                    its <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+                    <p>Fires an <a href="../classes/Model.html#event_transform" class="crosslink">transform</a> event on change.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_type" class="property item inherited">
                         <h3 class="name"><code>type</code></h3>
                         <span class="type">String</span>
                     
@@ -1558,12 +1430,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Component.html#property_type">
-                                    Component
-                                </a>
-                                but overwritten in
-                            <a href="../files/src_controls_mouseZoomCamera.js.html#l64"><code>src&#x2F;controls&#x2F;mouseZoomCamera.js:64</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_type">Component</a>:
+                            <a href="../files/src_component.js.html#l324"><code>src&#x2F;component.js:324</code></a>
                             </p>
                     
                     
@@ -1571,6 +1440,9 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>JavaScript class name for this Component.</p>
+                    <p>This is used when <a href="Scene.html#savingAndLoading">loading Scenes from JSON</a>, and is included in the JSON
+                    representation of this Component, so that this class may be instantiated when loading it from the JSON representation.</p>
+                    <p>For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.</p>
                     
                         </div>
                     
@@ -1583,90 +1455,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
-                    <div id="event_active" class="events item">
-                        <h3 class="name"><code>active</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_controls_mouseZoomCamera.js.html#l267"><code>src&#x2F;controls&#x2F;mouseZoomCamera.js:267</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this MouseZoomCamera&#39;s <a href="../classes/MouseZoomCamera.html#property_active" class="crosslink">active</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_camera" class="events item">
-                        <h3 class="name"><code>camera</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/src_controls_mouseZoomCamera.js.html#l105"><code>src&#x2F;controls&#x2F;mouseZoomCamera.js:105</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this MouseZoomCamera&#39;s <a href="../classes/MouseZoomCamera.html#property_camera" class="crosslink">camera</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
                     <div id="event_destroyed" class="events item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type"></span>
@@ -1692,8 +1480,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_sensitivity" class="events item">
-                        <h3 class="name"><code>sensitivity</code></h3>
+                    <div id="event_loaded" class="events item">
+                        <h3 class="name"><code>loaded</code></h3>
                         <span class="type"></span>
                     
                     
@@ -1703,14 +1491,108 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_controls_mouseZoomCamera.js.html#l140"><code>src&#x2F;controls&#x2F;mouseZoomCamera.js:140</code></a>
+                            <a href="../files/src_model_gltfModel.js.html#l101"><code>src&#x2F;model&#x2F;gltfModel.js:101</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this MouseZoomCamera&#39;s  <a href="../classes/MouseZoomCamera.html#property_sensitivity" class="crosslink">sensitivity</a> property changes.</p>
+                            <p>Fired whenever this glTFModel has finished loading components from the glTF file
+                    specified by GlTFModel/src:property.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="event_loaded" class="events item">
+                        <h3 class="name"><code>loaded</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_model_gltfModel.js.html#l134"><code>src&#x2F;model&#x2F;gltfModel.js:134</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this glTFModel has finished loading components from the glTF file
+                    specified by GlTFModel/src:property.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="event_src" class="events item">
+                        <h3 class="name"><code>src</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_model_gltfModel.js.html#l142"><code>src&#x2F;model&#x2F;gltfModel.js:142</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this glTFModel&#39;s GlTFModel/src:property property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_transform" class="events item inherited">
+                        <h3 class="name"><code>transform</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Model.html#event_transform">Model</a>:
+                            <a href="../files/src_model_model.js.html#l131"><code>src&#x2F;model&#x2F;model.js:131</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this Model&#39;s <a href="../classes/Model.html#property_transform" class="crosslink">transform</a> property changes.</p>
                     
                         </div>
                     

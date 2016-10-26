@@ -34,9 +34,9 @@
 
 <script>
 
-    // Model loaded from glTF
+    // glTFModel loaded from glTF
 
-    var gearbox = new xeogl.Model({
+    var gearbox = new xeogl.glTFModel({
         src: "models/gltf/gearbox/gearbox_assy.gltf"
     });
 
@@ -81,7 +81,7 @@
                 var entities = [];
                 var i = 0;
 
-                // Iterate over all the Entities in the Model and ensure that
+                // Iterate over all the Entities in the glTFModel and ensure that
                 // they each have their own Material and Modes components, so that
                 // we can set them transparent individually
 

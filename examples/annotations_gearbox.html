@@ -18,14 +18,14 @@
 <div id="infoLight">
     <a href="http://xeogl.org" target="_home">xeogl</a><br><br>attaching experimental
     <a href="js/annotations/annotation.js" target="_docs">xeogl.Annotations</a> to a <a
-        href="../docs/classes/Model.html" target="_docs">xeogl.Model</a> loaded from glTF<br>
+        href="../docs/classes/glTFModel.html" target="_docs">xeogl.glTFModel</a> loaded from glTF<br>
     click the objects to attach more annotations
 </div>
 
 <script>
 
     // Load glTF gearbox model
-    var gearbox = new xeogl.Model({
+    var gearbox = new xeogl.glTFModel({
         src: "models/gltf/gearbox/gearbox_assy.gltf"
     });
 
@@ -65,7 +65,7 @@
                             };
                         })());
 
-                // Create some initial annotations on the Model's Entities
+                // Create some initial annotations on the glTFModel's Entities
 
                 new xeogl.Annotation({
                     manager: manager,

@@ -573,38 +573,6 @@
             "fors": {},
             "namespaces": {}
         },
-        "src/importing/gltf/glTFLoader.js": {
-            "name": "src/importing/gltf/glTFLoader.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/importing/gltf/glTFLoaderUtils.js": {
-            "name": "src/importing/gltf/glTFLoaderUtils.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/importing/_module.js": {
-            "name": "src/importing/_module.js",
-            "modules": {
-                "importing": 1
-            },
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "src/importing/model.js": {
-            "name": "src/importing/model.js",
-            "modules": {},
-            "classes": {
-                "Model": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
         "src/input/_module.js": {
             "name": "src/input/_module.js",
             "modules": {
@@ -741,6 +709,47 @@
             "namespaces": {
                 "xeogl.math": 1
             }
+        },
+        "src/model/gltf/glTFLoader.js": {
+            "name": "src/model/gltf/glTFLoader.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/model/gltf/glTFLoaderUtils.js": {
+            "name": "src/model/gltf/glTFLoaderUtils.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/model/_module.js": {
+            "name": "src/model/_module.js",
+            "modules": {
+                "model": 1
+            },
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/model/gltfModel.js": {
+            "name": "src/model/gltfModel.js",
+            "modules": {},
+            "classes": {
+                "glTFModel": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/model/model.js": {
+            "name": "src/model/model.js",
+            "modules": {},
+            "classes": {
+                "Model": 1
+            },
+            "fors": {},
+            "namespaces": {}
         },
         "src/rendering/_module.js": {
             "name": "src/rendering/_module.js",
@@ -1224,11 +1233,12 @@
                 "culling": 1,
                 "entities": 1,
                 "geometry": 1,
-                "importing": 1,
                 "input": 1,
                 "lighting": 1,
                 "materials": 1,
                 "math": 1,
+                "model": 1,
+                "importing": 1,
                 "rendering": 1,
                 "shaders": 1,
                 "transforms": 1,
@@ -1274,7 +1284,6 @@
                 "PlaneGeometry": 1,
                 "SphereGeometry": 1,
                 "TorusGeometry": 1,
-                "Model": 1,
                 "Input": 1,
                 "AmbientLight": 1,
                 "DirLight": 1,
@@ -1286,6 +1295,8 @@
                 "Reflect": 1,
                 "Texture": 1,
                 "xeogl.math.math": 1,
+                "glTFModel": 1,
+                "Model": 1,
                 "ColorBuf": 1,
                 "ColorTarget": 1,
                 "DepthBuf": 1,
@@ -1554,21 +1565,6 @@
             "line": 1,
             "description": "Components for defining geometry."
         },
-        "importing": {
-            "name": "importing",
-            "submodules": {},
-            "classes": {
-                "Model": 1
-            },
-            "fors": {},
-            "is_submodule": 1,
-            "namespaces": {},
-            "module": "xeogl",
-            "namespace": "",
-            "file": "src/importing/model.js",
-            "line": 7,
-            "description": "Imports content from files."
-        },
         "input": {
             "name": "input",
             "submodules": {},
@@ -1638,6 +1634,35 @@
             "line": 47,
             "description": "Math utilities.",
             "static": 1
+        },
+        "model": {
+            "name": "model",
+            "submodules": {},
+            "classes": {},
+            "fors": {},
+            "is_submodule": 1,
+            "namespaces": {},
+            "module": "xeogl",
+            "namespace": "",
+            "file": "src/model/_module.js",
+            "line": 1,
+            "description": "Imports content from files."
+        },
+        "importing": {
+            "name": "importing",
+            "submodules": {},
+            "classes": {
+                "glTFModel": 1,
+                "Model": 1
+            },
+            "fors": {},
+            "is_submodule": 1,
+            "namespaces": {},
+            "module": "xeogl",
+            "namespace": "",
+            "description": "A **glTF** loads content from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file into its parent {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n<ul><li>A glTF begins loading as soon as it's {{#crossLink \"glTF/src:property\"}}{{/crossLink}}\nproperty is set to the location of a valid glTF file.</li>\n<li>A glTF keeps all its loaded components in a {{#crossLink \"Collection\"}}{{/crossLink}}.</li>\n<li>A glTF can be attached to an animated and dynamically-editable\nglTFling {{#crossLink \"Transform\"}}{{/crossLink}} hierarchy, to rotate, translate and scale it within the World-space coordinate system, in the\nsame way that an {{#crossLink \"Entity\"}}{{/crossLink}} can.</li>\n<li>You can set a glTF's {{#crossLink \"glTF/src:property\"}}{{/crossLink}} property to a new file path at any time,\nwhich will cause it to load components from the new file (destroying any components loaded previously).</li>\n</ul>\n\n<img src=\"../../../assets/images/glTF.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Gearbox](../../examples/#importing_gltf_gearbox)</li>\n<li>[Buggy](../../examples/#importing_gltf_buggy)</li>\n<li>[Reciprocating Saw](../../examples/#importing_gltf_ReciprocatingSaw)</li>\n<li>[Textured Duck](../../examples/#importing_gltf_duck)</li>\n<li>[glTF with entity explorer UI](../../examples/#demos_ui_explorer)</li>\n<li>[Fly camera to glTF entities](../../examples/#boundaries_flyToBoundary)</li>\n<li>[Ensuring individual materials on glTF entities](../../examples/#importing_gltf_techniques_uniqueMaterials)</li>\n<li>[Baking transform hierarchies](../../examples/#importing_gltf_techniques_bakeTransforms)</li>\n<li>[Attaching transforms to glTFs, via constructor](../../examples/#importing_gltf_techniques_configTransform)</li>\n<li>[Attaching transforms to glTFs, via property](../../examples/#importing_gltf_techniques_attachTransform)</li>\n</ul>\n\n## Tutorials\n\nFind API documentation for glTF here:\n\n<ul>\n<li>[Importing glTF](https://github.com/xeolabs/xeogl/wiki/Importing-glTF)</li>\n</ul>",
+            "file": "src/model/model.js",
+            "line": 5
         },
         "rendering": {
             "name": "rendering",
@@ -4024,22 +4049,6 @@
             ],
             "extends": "Geometry"
         },
-        "Model": {
-            "name": "Model",
-            "shortname": "Model",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "xeogl",
-            "namespace": "",
-            "file": "src/importing/model.js",
-            "line": 7,
-            "description": "A **Model** loads content from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file into its parent {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n<ul><li>A Model begins loading as soon as it's {{#crossLink \"Model/src:property\"}}{{/crossLink}}\nproperty is set to the location of a valid glTF file.</li>\n<li>A Model keeps all its loaded components in a {{#crossLink \"Collection\"}}{{/crossLink}}.</li>\n<li>A Model can be attached to an animated and dynamically-editable\nmodelling {{#crossLink \"Transform\"}}{{/crossLink}} hierarchy, to rotate, translate and scale it within the World-space coordinate system, in the\nsame way that an {{#crossLink \"Entity\"}}{{/crossLink}} can.</li>\n<li>You can set a Model's {{#crossLink \"Model/src:property\"}}{{/crossLink}} property to a new file path at any time,\nwhich will cause it to load components from the new file (destroying any components loaded previously).</li>\n</ul>\n\n<img src=\"../../../assets/images/Model.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Gearbox](../../examples/#importing_gltf_gearbox)</li>\n<li>[Buggy](../../examples/#importing_gltf_buggy)</li>\n<li>[Reciprocating Saw](../../examples/#importing_gltf_ReciprocatingSaw)</li>\n<li>[Textured Duck](../../examples/#importing_gltf_duck)</li>\n<li>[Model with entity explorer UI](../../examples/#demos_ui_explorer)</li>\n<li>[Fly camera to model entities](../../examples/#boundaries_flyToBoundary)</li>\n<li>[Ensuring individual materials on Model entities](../../examples/#importing_gltf_techniques_uniqueMaterials)</li>\n<li>[Baking transform hierarchies](../../examples/#importing_gltf_techniques_bakeTransforms)</li>\n<li>[Attaching transforms to Models, via constructor](../../examples/#importing_gltf_techniques_configTransform)</li>\n<li>[Attaching transforms to Models, via property](../../examples/#importing_gltf_techniques_attachTransform)</li>\n</ul>\n\n## Tutorials\n\nFind API documentation for Model here:\n\n<ul>\n<li>[Importing glTF](https://github.com/xeolabs/xeogl/wiki/Importing-glTF)</li>\n</ul>",
-            "submodule": "importing",
-            "extends": "Component"
-        },
         "Input": {
             "name": "Input",
             "shortname": "Input",
@@ -4860,6 +4869,38 @@
             "file": "src/math/math.js",
             "line": 47,
             "description": "This utility object provides math functions that are used within xeogl. These functions are also part xeogl's\npublic API and are therefore available for you to use within your application code."
+        },
+        "glTFModel": {
+            "name": "glTFModel",
+            "shortname": "glTFModel",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "src/model/gltfModel.js",
+            "line": 7,
+            "description": "A **glTF** loads content from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file into its parent {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n<ul><li>A glTF begins loading as soon as it's {{#crossLink \"glTF/src:property\"}}{{/crossLink}}\nproperty is set to the location of a valid glTF file.</li>\n<li>A glTF keeps all its loaded components in a {{#crossLink \"Collection\"}}{{/crossLink}}.</li>\n<li>A glTF can be attached to an animated and dynamically-editable\nglTFling {{#crossLink \"Transform\"}}{{/crossLink}} hierarchy, to rotate, translate and scale it within the World-space coordinate system, in the\nsame way that an {{#crossLink \"Entity\"}}{{/crossLink}} can.</li>\n<li>You can set a glTF's {{#crossLink \"glTF/src:property\"}}{{/crossLink}} property to a new file path at any time,\nwhich will cause it to load components from the new file (destroying any components loaded previously).</li>\n</ul>\n\n<img src=\"../../../assets/images/glTF.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Gearbox](../../examples/#importing_gltf_gearbox)</li>\n<li>[Buggy](../../examples/#importing_gltf_buggy)</li>\n<li>[Reciprocating Saw](../../examples/#importing_gltf_ReciprocatingSaw)</li>\n<li>[Textured Duck](../../examples/#importing_gltf_duck)</li>\n<li>[glTF with entity explorer UI](../../examples/#demos_ui_explorer)</li>\n<li>[Fly camera to glTF entities](../../examples/#boundaries_flyToBoundary)</li>\n<li>[Ensuring individual materials on glTF entities](../../examples/#importing_gltf_techniques_uniqueMaterials)</li>\n<li>[Baking transform hierarchies](../../examples/#importing_gltf_techniques_bakeTransforms)</li>\n<li>[Attaching transforms to glTFs, via constructor](../../examples/#importing_gltf_techniques_configTransform)</li>\n<li>[Attaching transforms to glTFs, via property](../../examples/#importing_gltf_techniques_attachTransform)</li>\n</ul>\n\n## Tutorials\n\nFind API documentation for glTF here:\n\n<ul>\n<li>[Importing glTF](https://github.com/xeolabs/xeogl/wiki/Importing-glTF)</li>\n</ul>",
+            "submodule": "importing",
+            "extends": "Model"
+        },
+        "Model": {
+            "name": "Model",
+            "shortname": "Model",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "src/model/model.js",
+            "line": 5,
+            "description": "A **Model** loads content from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file into its parent {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n<ul><li>A Model begins loading as soon as it's {{#crossLink \"Model/src:property\"}}{{/crossLink}}\nproperty is set to the location of a valid glTF file.</li>\n<li>A Model keeps all its loaded components in a {{#crossLink \"Collection\"}}{{/crossLink}}.</li>\n<li>A Model can be attached to an animated and dynamically-editable\nmodelling {{#crossLink \"Transform\"}}{{/crossLink}} hierarchy, to rotate, translate and scale it within the World-space coordinate system, in the\nsame way that an {{#crossLink \"Entity\"}}{{/crossLink}} can.</li>\n<li>You can set a Model's {{#crossLink \"Model/src:property\"}}{{/crossLink}} property to a new file path at any time,\nwhich will cause it to load components from the new file (destroying any components loaded previously).</li>\n</ul>\n\n<img src=\"../../../assets/images/Model.png\"></img>",
+            "submodule": "importing",
+            "extends": "Component"
         },
         "ColorBuf": {
             "name": "ColorBuf",
@@ -12938,106 +12979,6 @@
             "submodule": "geometry"
         },
         {
-            "file": "src/importing/gltf/glTFLoader.js",
-            "line": 1,
-            "description": "Private xeogl glTF loader core.\n\nAdapted from the THREE loader by Tony Parisi (http://www.tonyparisi.com)\nhttps://github.com/KhronosGroup/glTF/blob/master/loaders/threejs/glTFLoaderUtils.js",
-            "class": "Model",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/importing/gltf/glTFLoaderUtils.js",
-            "line": 1,
-            "description": "Private xeogl glTF loading utilities.\n\nAdapted from the THREE loader by Tony Parisi (http://www.tonyparisi.com)\nhttps://github.com/KhronosGroup/glTF/blob/master/loaders/threejs/glTFLoaderUtils.js",
-            "class": "Model",
-            "module": "xeogl"
-        },
-        {
-            "file": "src/importing/model.js",
-            "line": 89,
-            "description": "Path to the glTF file.\n\nYou can set this to a new file path at any time, which will cause the Model to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nFires a {{#crossLink \"Model/src:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "src",
-            "type": "String",
-            "class": "Model",
-            "module": "xeogl",
-            "submodule": "importing"
-        },
-        {
-            "file": "src/importing/model.js",
-            "line": 115,
-            "description": "Fired whenever this Model has finished loading components from the glTF file\nspecified by {{#crossLink \"Model/src:property\"}}{{/crossLink}}.",
-            "itemtype": "event",
-            "name": "loaded",
-            "class": "Model",
-            "module": "xeogl",
-            "submodule": "importing"
-        },
-        {
-            "file": "src/importing/model.js",
-            "line": 191,
-            "description": "Fired whenever this Model has finished loading components from the glTF file\nspecified by {{#crossLink \"Model/src:property\"}}{{/crossLink}}.",
-            "itemtype": "event",
-            "name": "loaded",
-            "class": "Model",
-            "module": "xeogl",
-            "submodule": "importing"
-        },
-        {
-            "file": "src/importing/model.js",
-            "line": 199,
-            "description": "Fired whenever this Model's {{#crossLink \"Model/src:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "src",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Model",
-            "module": "xeogl",
-            "submodule": "importing"
-        },
-        {
-            "file": "src/importing/model.js",
-            "line": 212,
-            "description": "A {{#crossLink \"Collection\"}}{{/crossLink}} containing the scene components loaded by this Model.\n\nWhenever {{#crossLink \"Model/src:property\"}}{{/crossLink}} is set to the location of a valid glTF file,\nand once the file has been loaded, this {{#crossLink \"Collection\"}}{{/crossLink}} will contain whatever\ncomponents were loaded from that file.\n\nNote that prior to loading the file, the Model will destroy any components in the {{#crossLink \"Collection\"}}{{/crossLink}}.",
-            "itemtype": "property",
-            "name": "collection",
-            "type": "Collection",
-            "final": 1,
-            "class": "Model",
-            "module": "xeogl",
-            "submodule": "importing"
-        },
-        {
-            "file": "src/importing/model.js",
-            "line": 232,
-            "description": "The Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} attached to this Model.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Model.\n\nInternally, the given {{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most\n{{#crossLink \"Transform\"}}Transform{{/crossLink}} that the Model attaches to\nits {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires an {{#crossLink \"Model/transform:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "transform",
-            "type": "Transform",
-            "class": "Model",
-            "module": "xeogl",
-            "submodule": "importing"
-        },
-        {
-            "file": "src/importing/model.js",
-            "line": 250,
-            "description": "Fired whenever this Model's {{#crossLink \"Model/transform:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "transform",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Model",
-            "module": "xeogl",
-            "submodule": "importing"
-        },
-        {
             "file": "src/input/input.js",
             "line": 113,
             "type": "{boolean}",
@@ -18817,6 +18758,116 @@
             "module": "xeogl",
             "submodule": "math",
             "namespace": "xeogl.math"
+        },
+        {
+            "file": "src/model/gltf/glTFLoader.js",
+            "line": 1,
+            "description": "Private xeogl glTF loader core.\n\nAdapted from the THREE loader by Tony Parisi (http://www.tonyparisi.com)\nhttps://github.com/KhronosGroup/glTF/blob/master/loaders/threejs/glTFLoaderUtils.js",
+            "class": "glTFModel",
+            "module": "xeogl",
+            "namespace": "xeogl.math"
+        },
+        {
+            "file": "src/model/gltf/glTFLoaderUtils.js",
+            "line": 1,
+            "description": "Private xeogl glTF loading utilities.\n\nAdapted from the THREE loader by Tony Parisi (http://www.tonyparisi.com)\nhttps://github.com/KhronosGroup/glTF/blob/master/loaders/threejs/glTFLoaderUtils.js",
+            "class": "glTFModel",
+            "module": "xeogl",
+            "namespace": "xeogl.math"
+        },
+        {
+            "file": "src/model/gltfModel.js",
+            "line": 75,
+            "description": "Path to the glTF file.\n\nYou can set this to a new file path at any time, which will cause the glTFModel to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nFires a {{#crossLink \"glTFModel/src:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "src",
+            "type": "String",
+            "class": "glTFModel",
+            "module": "xeogl",
+            "submodule": "importing"
+        },
+        {
+            "file": "src/model/gltfModel.js",
+            "line": 101,
+            "description": "Fired whenever this glTFModel has finished loading components from the glTF file\nspecified by {{#crossLink \"glTFModel/src:property\"}}{{/crossLink}}.",
+            "itemtype": "event",
+            "name": "loaded",
+            "class": "glTFModel",
+            "module": "xeogl",
+            "submodule": "importing"
+        },
+        {
+            "file": "src/model/gltfModel.js",
+            "line": 134,
+            "description": "Fired whenever this glTFModel has finished loading components from the glTF file\nspecified by {{#crossLink \"glTFModel/src:property\"}}{{/crossLink}}.",
+            "itemtype": "event",
+            "name": "loaded",
+            "class": "glTFModel",
+            "module": "xeogl",
+            "submodule": "importing"
+        },
+        {
+            "file": "src/model/gltfModel.js",
+            "line": 142,
+            "description": "Fired whenever this glTFModel's {{#crossLink \"glTFModel/src:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "src",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "glTFModel",
+            "module": "xeogl",
+            "submodule": "importing"
+        },
+        {
+            "file": "src/model/model.js",
+            "line": 93,
+            "description": "A {{#crossLink \"Collection\"}}{{/crossLink}} containing the scene components loaded by this Model.\n\nWhenever {{#crossLink \"Model/src:property\"}}{{/crossLink}} is set to the location of a valid glTF file,\nand once the file has been loaded, this {{#crossLink \"Collection\"}}{{/crossLink}} will contain whatever\ncomponents were loaded from that file.\n\nNote that prior to loading the file, the Model will destroy any components in the {{#crossLink \"Collection\"}}{{/crossLink}}.",
+            "itemtype": "property",
+            "name": "collection",
+            "type": "Collection",
+            "final": 1,
+            "class": "Model",
+            "module": "xeogl",
+            "submodule": "importing"
+        },
+        {
+            "file": "src/model/model.js",
+            "line": 113,
+            "description": "The Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} attached to this Model.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Model.\n\nInternally, the given {{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most\n{{#crossLink \"Transform\"}}Transform{{/crossLink}} that the Model attaches to\nits {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires an {{#crossLink \"Model/transform:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "transform",
+            "type": "Transform",
+            "class": "Model",
+            "module": "xeogl",
+            "submodule": "importing"
+        },
+        {
+            "file": "src/model/model.js",
+            "line": 131,
+            "description": "Fired whenever this Model's {{#crossLink \"Model/transform:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "transform",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Model",
+            "module": "xeogl",
+            "submodule": "importing"
+        },
+        {
+            "file": "src/model/model.js",
+            "line": 159,
+            "description": "Clears this Model.",
+            "class": "Model",
+            "module": "xeogl",
+            "submodule": "importing"
         },
         {
             "file": "src/rendering/colorBuf.js",
@@ -25142,14 +25193,6 @@
             "line": " src/geometry/torusGeometry.js:73"
         },
         {
-            "message": "Missing item type\nPrivate xeogl glTF loader core.\n\nAdapted from the THREE loader by Tony Parisi (http://www.tonyparisi.com)\nhttps://github.com/KhronosGroup/glTF/blob/master/loaders/threejs/glTFLoaderUtils.js",
-            "line": " src/importing/gltf/glTFLoader.js:1"
-        },
-        {
-            "message": "Missing item type\nPrivate xeogl glTF loading utilities.\n\nAdapted from the THREE loader by Tony Parisi (http://www.tonyparisi.com)\nhttps://github.com/KhronosGroup/glTF/blob/master/loaders/threejs/glTFLoaderUtils.js",
-            "line": " src/importing/gltf/glTFLoaderUtils.js:1"
-        },
-        {
             "message": "Missing item type",
             "line": " src/input/input.js:113"
         },
@@ -25200,6 +25243,18 @@
         {
             "message": "Missing item type\nInitializes a quaternion from Euler angles.",
             "line": " src/math/math.js:3148"
+        },
+        {
+            "message": "Missing item type\nPrivate xeogl glTF loader core.\n\nAdapted from the THREE loader by Tony Parisi (http://www.tonyparisi.com)\nhttps://github.com/KhronosGroup/glTF/blob/master/loaders/threejs/glTFLoaderUtils.js",
+            "line": " src/model/gltf/glTFLoader.js:1"
+        },
+        {
+            "message": "Missing item type\nPrivate xeogl glTF loading utilities.\n\nAdapted from the THREE loader by Tony Parisi (http://www.tonyparisi.com)\nhttps://github.com/KhronosGroup/glTF/blob/master/loaders/threejs/glTFLoaderUtils.js",
+            "line": " src/model/gltf/glTFLoaderUtils.js:1"
+        },
+        {
+            "message": "Missing item type\nClears this Model.",
+            "line": " src/model/model.js:159"
         },
         {
             "message": "Missing item type\nLookup GL depth function enums",

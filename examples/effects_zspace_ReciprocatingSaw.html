@@ -19,8 +19,8 @@
      style="left: 0; text-align: left; background: black; opacity: 0.7; padding: 8px; color: white; font-size: 14pt;">
     <span><a href="http://xeogl.org" target="_home">xeogl</a><br>
         using <a
-                href="../docs/classes/Model.html"
-                target="_docs">Model</a> and <a
+                href="../docs/classes/glTFModel.html"
+                target="_docs">glTFModel</a> and <a
                 href="../docs/classes/ZSpaceEffect.html"
                 target="_docs">ZSpaceEffect</a> components to view a glTF model in zSpace VR</span><br>
     <span id="log" style="color:red;font-size: 16px"></span>
@@ -32,18 +32,18 @@
     // Load a glTF Reciprocating Saw model into the default Scene
     //----------------------------------------------------------------------------
 
-    var model = new xeogl.Model({
+    var model = new xeogl.glTFModel({
         src: "models/gltf/Reciprocating_Saw/Reciprocating_Saw.gltf"
     });
 
     model.on("loaded", function () {
 
         //---------------------------------------------------------------------------------------
-        // When the Model has loaded, iterate over all the Entities in the Model:
+        // When the glTFModel has loaded, iterate over all the Entities in the glTFModel:
         //
         // 1. Ensure that each Entity has its own Material and Modes components, so that
-        // we can set it transparent individually. Add the Material and Modes to the Model's
-        // Collection so that they get destroyed whenever the Model is destroyed or reloaded.
+        // we can set it transparent individually. Add the Material and Modes to the glTFModel's
+        // Collection so that they get destroyed whenever the glTFModel is destroyed or reloaded.
         //
         // 2. Flatten each Entity's transform hierarchy down to one Transform.
         //---------------------------------------------------------------------------------------
@@ -57,7 +57,7 @@
                 entity = entities[entityId];
 
                 // Ensure the Entity has its own unique Material
-                // Add the Material and Modes to the Model's Collection
+                // Add the Material and Modes to the glTFModel's Collection
                 // so that they get destroyed automatically
 
                 model.collection.add(entity.material = entity.material.clone());
@@ -69,8 +69,8 @@
                     // If an entity has a transform that has a parent, then the entity's
                     // transform hierarchy needs collapsing. Bake the hierarchy into
                     // a matrix on a single xeogl.Transform and set that as the entity's new transform.
-                    // Store the new transform in the Model's Collection so that
-                    // it gets destroyed when the Model is destroyed or reloaded
+                    // Store the new transform in the glTFModel's Collection so that
+                    // it gets destroyed when the glTFModel is destroyed or reloaded
 
                     model.collection.add(entity.transform = new xeogl.Transform({
                         matrix: entity.transform.leafMatrix

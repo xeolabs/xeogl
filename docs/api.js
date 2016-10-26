@@ -86,6 +86,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "WebVR",
         "ZSpaceEffect",
         "ZSpaceStylusControl",
+        "glTFModel",
         "xeogl",
         "xeogl.math.math"
     ],
@@ -109,6 +110,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "lighting",
         "materials",
         "math",
+        "model",
         "paths",
         "rendering",
         "shaders",
@@ -187,7 +189,7 @@ YUI.add("yuidoc-meta", function(Y) {
         {
             "displayName": "importing",
             "name": "importing",
-            "description": "Imports content from files."
+            "description": "A **glTF** loads content from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file into its parent {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n<ul><li>A glTF begins loading as soon as it's {{#crossLink \"glTF/src:property\"}}{{/crossLink}}\nproperty is set to the location of a valid glTF file.</li>\n<li>A glTF keeps all its loaded components in a {{#crossLink \"Collection\"}}{{/crossLink}}.</li>\n<li>A glTF can be attached to an animated and dynamically-editable\nglTFling {{#crossLink \"Transform\"}}{{/crossLink}} hierarchy, to rotate, translate and scale it within the World-space coordinate system, in the\nsame way that an {{#crossLink \"Entity\"}}{{/crossLink}} can.</li>\n<li>You can set a glTF's {{#crossLink \"glTF/src:property\"}}{{/crossLink}} property to a new file path at any time,\nwhich will cause it to load components from the new file (destroying any components loaded previously).</li>\n</ul>\n\n<img src=\"../../../assets/images/glTF.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Gearbox](../../examples/#importing_gltf_gearbox)</li>\n<li>[Buggy](../../examples/#importing_gltf_buggy)</li>\n<li>[Reciprocating Saw](../../examples/#importing_gltf_ReciprocatingSaw)</li>\n<li>[Textured Duck](../../examples/#importing_gltf_duck)</li>\n<li>[glTF with entity explorer UI](../../examples/#demos_ui_explorer)</li>\n<li>[Fly camera to glTF entities](../../examples/#boundaries_flyToBoundary)</li>\n<li>[Ensuring individual materials on glTF entities](../../examples/#importing_gltf_techniques_uniqueMaterials)</li>\n<li>[Baking transform hierarchies](../../examples/#importing_gltf_techniques_bakeTransforms)</li>\n<li>[Attaching transforms to glTFs, via constructor](../../examples/#importing_gltf_techniques_configTransform)</li>\n<li>[Attaching transforms to glTFs, via property](../../examples/#importing_gltf_techniques_attachTransform)</li>\n</ul>\n\n## Tutorials\n\nFind API documentation for glTF here:\n\n<ul>\n<li>[Importing glTF](https://github.com/xeolabs/xeogl/wiki/Importing-glTF)</li>\n</ul>"
         },
         {
             "displayName": "input",
@@ -213,6 +215,11 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "math",
             "name": "math",
             "description": "Math utilities."
+        },
+        {
+            "displayName": "model",
+            "name": "model",
+            "description": "Imports content from files."
         },
         {
             "displayName": "paths",

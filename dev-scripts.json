@@ -108,11 +108,12 @@
     "src/lighting/dirLight.js",
     "src/lighting/pointLight.js",
 
-    "src/importing/_module.js",
-    "src/importing/gltf/glTFParser.js",
-    "src/importing/gltf/glTFLoaderUtils.js",
-    "src/importing/gltf/glTFLoader.js",
-    "src/importing/model.js",
+    "src/model/_module.js",
+    "src/model/model.js",
+    "src/model/gltf/glTFParser.js",
+    "src/model/gltf/glTFLoaderUtils.js",
+    "src/model/gltf/glTFLoader.js",
+    "src/model/gltfModel.js",
 
     "src/materials/_module.js",
     "src/materials/material.js",
