@@ -29,14 +29,18 @@
 
         _init: function (cfg) {
 
-            this._sphere = this.create(xeogl.Entity, {
-                geometry: this.create(xeogl.SphereGeometry, {
+            this._sphere = this.create( {
+                type:"xeogl.Entity",
+                geometry: this.create( {
+                    type:"xeogl.SphereGeometry",
                     radius: 0.5
                 }, "sphere"),
-                material: this.create(xeogl.PhongMaterial, {
+                material: this.create( {
+                    type:"xeogl.PhongMaterial",
                     emissive: [1, 1, 1]
                 }),
-                transform: this.create(xeogl.Translate, {
+                transform: this.create( {
+                    type:"xeogl.Translate",
                     xyz: cfg.pos || [0, 0, 0]
                 })
             });

@@ -68,24 +68,30 @@
 
             // Rotation point indicator
 
-            var pickHelper = this.create(xeogl.Entity, {
-                geometry: this.create(xeogl.SphereGeometry, {
+            var pickHelper = this.create({
+                type: "xeogl.Entity,",
+                geometry: this.create({
+                    type: "xeogl.SphereGeometry",
                     radius: 0.1
                 }),
-                material: this.create(xeogl.PhongMaterial, {
+                material: this.create({
+                    type: "xeogl.PhongMaterial",
                     diffuse: [0, 0, 0],
                     ambient: [0, 0, 0],
                     specular: [0, 0, 0],
                     emissive: [1.0, 1.0, 0.6], // Glowing
                     lineWidth: 4
                 }),
-                transform: this.create(xeogl.Translate, {
+                transform: this.create({
+                    type: "xeogl.Translate",
                     xyz: [0, 0, 0]
                 }),
-                visibility: this.create(xeogl.Visibility, {
+                visibility: this.create({
+                    type: "xeogl.Visibility",
                     visible: false // Initially invisible
                 }),
-                modes: this.create(xeogl.Modes, {
+                modes: this.create({
+                    type: "xeogl.Modes",
                     collidable: false // This helper has no collision boundary of its own
                 })
             });
@@ -542,7 +548,7 @@
 
             //---------------------------------------------------------------------------------------------------------
             // Mouse zoom
-            // Roll mouse wheel to move eye and look closer or further from center of rotationDeltas 
+            // Roll mouse wheel to move eye and look closer or further from center of rotationDeltas
             //---------------------------------------------------------------------------------------------------------
 
             (function () {
@@ -647,12 +653,13 @@
 
             //---------------------------------------------------------------------------------------------------------
             // Keyboard axis view
-            // Press 1,2,3,4,5 or 6 to view center of model from along an axis 
+            // Press 1,2,3,4,5 or 6 to view center of model from along an axis
             //---------------------------------------------------------------------------------------------------------
 
             (function () {
 
-                var flight = self.create(xeogl.CameraFlight, {
+                var flight = self.create({
+                    type: "xeogl.CameraFlight",
                     camera: camera,
                     duration: 1.0 // One second to fly to each new target
                 });

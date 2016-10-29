@@ -1147,11 +1147,9 @@
 
                         // this._setWorldBoundaryDirty();
 
-                        this._worldBoundary = new xeogl.Boundary3D(this.scene, {
+                        this._worldBoundary = this.create({
 
-                            meta: {
-                                desc: "Entity " + self.id + " World-space boundary" // For debugging
-                            },
+                            type:"xeogl.Boundary3D",
 
                             getDirty: function () {
                                 if (self._worldBoundaryDirty) {
@@ -1235,11 +1233,9 @@
 
                         //     this._setViewBoundaryDirty();
 
-                        this._viewBoundary = new xeogl.Boundary3D(this.scene, {
+                        this._viewBoundary = this.create({
 
-                            meta: {
-                                desc: "Entity " + self.id + " View-space boundary" // For debugging
-                            },
+                            type:"xeogl.Boundary3D",
 
                             getDirty: function () {
                                 if (self._viewBoundaryDirty) {
@@ -1306,11 +1302,9 @@
 
                         //   this._setCanvasBoundaryDirty();
 
-                        this._canvasBoundary = new xeogl.Boundary2D(this.scene, {
+                        this._canvasBoundary = this.create({
 
-                            meta: {
-                                desc: "Entity " + self.id + " Canvas-space boundary" // For debugging
-                            },
+                            type:"xeogl.Boundary2D",
 
                             getDirty: function () {
                                 if (self._canvasBoundaryDirty) {
@@ -1554,19 +1548,6 @@
         },
 
         _destroy: function () {
-
-            if (this._worldBoundary) {
-                this._worldBoundary.destroy();
-            }
-
-            if (this._viewBoundary) {
-                this._viewBoundary.destroy();
-            }
-
-            if (this._canvasBoundary) {
-                this._canvasBoundary.destroy();
-            }
-
             this._renderer.removeObject(this.id);
         }
     });

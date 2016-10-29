@@ -806,9 +806,9 @@
                 var onDetached = oldAttachment.params.onDetached;
                 if (onDetached) {
                     if (xeogl._isFunction(onDetached)) {
-                        onDetached(component);
+                        onDetached(oldComponent);
                     } else {
-                        onDetached.scope ? onDetached.callback.call(onDetached.scope, component) : onDetached.callback(component);
+                        onDetached.scope ? onDetached.callback.call(onDetached.scope, oldComponent) : onDetached.callback(oldComponent);
                     }
                 }
 
@@ -817,7 +817,7 @@
                     // Note that we just unsubscribed from all events fired by the child
                     // component, so destroying it won't fire events back at us now.
 
-                    component.destroy();
+                    oldComponent.destroy();
                 }
             }
 
@@ -937,20 +937,18 @@
          * times as you got it, the Scene will destroy the component.
          *
          * @method create
-         * @param {String} type Component type - either a string like "xeogl.PhongMaterial" or the actual
-         * constructor function, ie. xeogl.PhongMaterial.
          * @param {*} [cfg] Configuration for the component instance - only used if this is the first time you are getting
          * the component, ignored when reusing an existing instance.
          * @param {String|Number} [instanceId] Identifies the shared component instance. Note that this is not used as the ID of the
          * component - you can specify the component ID in the ````cfg```` parameter.
          * @returns {*}
          */
-        create: function (type, cfg, instanceId) {
+        create: function (cfg, instanceId) {
 
             // Create or reuse the component via this component's scene;
             // reusing if instanceId given, else getting unique instance otherwise
 
-            var component = this.scene._getSharedComponent(type, cfg, instanceId);
+            var component = this.scene._getSharedComponent(cfg, instanceId);
 
             if (component) {
 

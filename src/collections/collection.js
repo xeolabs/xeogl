@@ -57,8 +57,8 @@
  var collection2 = new xeogl.Collection();
 
  collection2.add([  // Add two components
-    geometry,
-    "xeogl.Entity",
+ geometry,
+ "xeogl.Entity",
  ]);
  ````
 
@@ -231,13 +231,7 @@
             var type;
             var types;
 
-            if (c.type) {
-
-                // Component instance
-
-                component = c;
-
-            } else if (xeogl._isNumeric(c) || xeogl._isString(c)) {
+            if (xeogl._isNumeric(c) || xeogl._isString(c)) {
 
                 if (this.scene.types[c]) {
 
@@ -271,6 +265,25 @@
                         return;
                     }
                 }
+
+            } else if (xeogl._isObject(c)) {
+
+                // Component config given
+
+                var type = c.type || "xeogl.Component";
+
+                if (!xeogl._isComponentType(type)) {
+                    this.error("Not a xeogl component type: " + type);
+                    return;
+                }
+
+                component = new window[type](this.scene, c);
+
+            } else if (c.type) {
+
+                // Component instance
+
+                component = c;
 
             } else {
 

@@ -1708,8 +1708,8 @@
                                     nc[2] = normals[ic3 + 2];
 
                                     var normal = math.addVec3(math.addVec3(
-                                            math.mulVec3Scalar(na, bary[0], tempVec3),
-                                            math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
+                                        math.mulVec3Scalar(na, bary[0], tempVec3),
+                                        math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
                                         math.mulVec3Scalar(nc, bary[2], tempVec3d), tempVec3e);
 
                                     hit.normal = math.transformVec3(entity.transform.leafMatrix, normal, tempVec3f);
@@ -1800,14 +1800,44 @@
          *
          * @method _getSharedComponent
          * @private
-         * @param {String|Function} type Component type, eg "xeogl.PhongMaterial", or constructor.
          * @param {*} [cfg] Attributes for the component instance - only used if this is the first time you are getting
          * the component, ignored when reusing an existing shared component.
          * @param {String|Number} instanceId Identifies the shared component instance. Note that this is not used as the ID of the
          * component - you can specify the component ID in the ````cfg```` parameter.
          * @returns {*}
          */
-        _getSharedComponent: function (type, cfg, instanceId) {
+        _getSharedComponent: function (cfg, instanceId) {
+
+            var type;
+            var claz;
+
+            if (xeogl._isObject(cfg)) { // Component config given
+
+                type = cfg.type || "xeogl.Component";
+                claz = xeogl[type.substring(6)];
+
+            } else if (xeogl._isString(cfg)) {
+
+                type = cfg;
+                claz = xeogl[type.substring(6)];
+
+            } else {
+
+                claz = cfg;
+                type = cfg.prototype.type;
+
+                // TODO: catch unknown component class
+            }
+
+            if (!claz) {
+                this.error("Component type not found: " + type);
+                return;
+            }
+
+            if (!xeogl._isComponentType(type, "xeogl.Component")) {
+                this.error("Expected a xeogl.Component type or subtype");
+                return;
+            }
 
             var component;
 
@@ -1831,25 +1861,12 @@
 
             // Component does not yet exist
 
-            var clazz;
-
-            if (xeogl._isString(type)) {
-                var type2 = type.substring(3); // Find constructor on the xeogl namespace
-                clazz = xeogl[type2];
-                if (!clazz) {
-                    this.error("Component type not found: '" + type + "'");
-                    return null;
-                }
-            } else {
-                clazz = type;
-            }
-
             if (cfg && cfg.id && this.components[cfg.id]) {
                 this.error("Component " + xeogl._inQuotes(cfg.id) + " already exists in Scene");
                 return null;
             }
 
-            component = new clazz(this, cfg);
+            component = new claz(this, cfg);
 
             if (instanceId !== undefined) {
 

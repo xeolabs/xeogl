@@ -7,6 +7,8 @@
  <li>{{#crossLink "Boundary3D/obb:property"}}{{/crossLink}} - an object-aligned bounding box (OBB), as an array of eight corner vertex positions</li>
  <li>{{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} - an axis-aligned bounding box (AABB), as minimum and maximum corner vertex positions</li>
  <li>{{#crossLink "Boundary3D/center:property"}}{{/crossLink}} - center coordinate</li>
+ <li>{{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} - a bounding sphere, given as [ x, y, z, radius ]</li>
+
  </ul>
 
  As shown in the diagram below, the following xeogl components have Boundary3Ds:
@@ -63,7 +65,7 @@
         obb = worldBoundary.obb;
         aabb = worldBoundary.aabb;
         center = worldBoundary.center;
-
+        sphere = worldBoundary.sphere();
         //...
     });
 
@@ -90,6 +92,7 @@
  @param [cfg.obb] {Array of Number} Optional initial 3D object-aligned bounding volume (OBB).
  @param [cfg.aabb] {Array of Number} Optional initial 3D axis-aligned bounding volume (AABB).
  @param [cfg.center] {Array of Number} Optional initial 3D center
+ @param [cfg.sphere] {Array of Number} Optional initial 3D bounding sphere.
  @param [cfg.getDirty] {Function} Optional callback to check if parent component has new OBB, positions or transform matrix.
  @param [cfg.getOBB] {Function} Optional callback to get new OBB from parent.
  @param [cfg.getMatrix] {Function} Optional callback to get new transform matrix from parent.
@@ -121,6 +124,10 @@
             // Cached center point
 
             this._center = cfg.center || null;
+
+            // Cached bounding sphere
+
+            this._sphere = cfg.sphere || null;
 
             // Owner injected callbacks to provide
             // resources on lazy-rebuild
@@ -189,10 +196,29 @@
 
                     return this._center;
                 }
+            },
+
+            /**
+             * 3D bounding sphere.
+             *
+             * @property sphere
+             * @final
+             * @type {Array of Number}
+             */
+            sphere: {
+
+                get: function () {
+
+                    if (this._getDirty()) {
+                        this._buildBoundary();
+                    }
+
+                    return this._sphere;
+                }
             }
         },
 
-        // (Re)builds the obb, aabb and center.
+        // (Re)builds the obb, aabb and sphere.
 
         _buildBoundary: function () {
 
@@ -210,6 +236,10 @@
 
             if (!this._center) {
                 this._center = xeogl.math.vec3();
+            }
+
+            if (!this._sphere) {
+                this._sphere = xeogl.math.vec4();
             }
 
             var aabb = this._getAABB ? this._getAABB() : null;
@@ -257,6 +287,7 @@
                     math.transformPoints3(matrix, this._obb);
                     math.points3ToAABB3(this._obb, this._aabb);
                     math.getAABBCenter(this._aabb, this._center);
+                    math.points3ToSphere3(this._obb, this._sphere);
 
                     return;
 
@@ -267,6 +298,7 @@
                 math.positions3ToAABB3(positions, this._aabb);
                 math.AABB3ToOBB3(this._aabb, this._obb);
                 math.getAABBCenter(this._aabb, this._center);
+                math.points3ToSphere3(this._obb, this._sphere);
 
                 return
             }
@@ -289,6 +321,7 @@
                     math.transformPoints3(matrix, obb, this._obb);
                     math.points3ToAABB3(this._obb, this._aabb);
                     math.getAABBCenter(this._aabb, this._center);
+                    math.points3ToSphere3(this._obb, this._sphere);
 
                     return;
                 }
@@ -303,6 +336,7 @@
 
                 math.points3ToAABB3(this._obb, this._aabb);
                 math.getAABBCenter(this._aabb, this._center);
+                math.points3ToSphere3(this._obb, this._sphere);
             }
         },
 
@@ -310,7 +344,8 @@
             return {
                 obb: this.obb,
                 aabb: this.aabb,
-                center: this.center
+                center: this.center,
+                sphere: this.sphere
             };
         }
     });

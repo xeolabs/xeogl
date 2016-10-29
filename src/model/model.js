@@ -39,13 +39,14 @@
             // Dummy transform to make it easy to graft user-supplied
             // transforms above loaded entities
 
-            this._dummyRootTransform = this.create(xeogl.Transform, {
+            this._dummyRootTransform = this.create({
+                type: "xeogl.Transform",
                 meta: "dummy"
             });
 
             var self = this;
 
-            this._collection.on("added", function(component) {
+            this._collection.on("added", function (component) {
 
                 if (component.isType("xeogl.Entity")) {
 
@@ -143,6 +144,59 @@
                 get: function () {
                     return this._attached.transform;
                 }
+            },
+
+            /**
+             * World-space 3D boundary of this Model.
+             *
+             * This is a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses the {{#crossLink "Entity"}}Entities{{/crossLink}}
+             * within this Model.
+             *
+             * The a {{#crossLink "Boundary3D"}}{{/crossLink}} is lazy-instantiated the first time that this
+             * property is referenced. If {{#crossLink "Component/destroy:method"}}{{/crossLink}} is then called on it,
+             * then this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance next
+             * time it's referenced.
+             *
+             * <h4>Example</h4>
+             *
+             * [here](http://xeogl.org/examples/#boundaries_Model_worldBoundary)
+             *
+             * <h4>Performance</h4>
+             *
+             * To minimize performance overhead, only reference this property if you need it, and destroy
+             * the {{#crossLink "Boundary3D"}}{{/crossLink}} as soon as you don't need it anymore.
+             *
+             * @property worldBoundary
+             * @type Boundary3D
+             * @final
+             */
+            worldBoundary: {
+
+                get: function () {
+
+                    if (!this._collectionBoundary) {
+
+                        // A CollectionBoundary provides an automatically resizing
+                        // world-space Boundary that encloses the Entities in our Model's Collection
+
+                        this._collectionBoundary = this.create({
+                            type: "xeogl.CollectionBoundary",
+                            collection: this._collection
+                        });
+
+                        // Dispose of the CollectionBoundary as soon as the
+                        // caller has destroyed the Boundary3D
+
+                        var self = this;
+
+                        this._collectionBoundary.worldBoundary.on("destroyed", function () {
+                            self._collectionBoundary.destroy();
+                            self._collectionBoundary = null;
+                        });
+                    }
+
+                    return this._collectionBoundary.worldBoundary;
+                }
             }
         },
 
@@ -158,8 +212,8 @@
             var c = [];
 
             this._collection.iterate(function (component) {
-                    c.push(component);
-                });
+                c.push(component);
+            });
 
             while (c.length) {
                 c.pop().destroy();
@@ -168,8 +222,7 @@
 
         _getJSON: function () {
 
-            var json = {
-            };
+            var json = {};
 
             if (this._attached.transform) {
                 json.transform = this._attached.transform.id;

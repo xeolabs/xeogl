@@ -61,29 +61,35 @@
 
         _init: function (cfg) {
 
-            this._helper = this.create(xeogl.Entity, {
+            this._helper = this.create({
+                type: "xeogl.Entity",
 
                 geometry: null,
                 transform: null,
 
-                material: this.create(xeogl.PhongMaterial, {
+                material: this.create({
+                    type: "xeogl.PhongMaterial, ",
                     emissive: [0.6, 0.6, 0.6],
                     opacity: 0.6
                 }, "material"),
 
-                visibility: this.create(xeogl.Visibility, {
+                visibility: this.create({
+                    type: "xeogl.Visibility",
                     visible: false
                 }),
 
-                modes: this.create(xeogl.Modes, {
+                modes: this.create({
+                    type: "xeogl.Modes",
                     transparent: true
                 }, "modes"),
 
-                stage: this.create(xeogl.Stage, {
+                stage: this.create({
+                    type: "xeogl.Stage",
                     priority: 2
                 }, "stage"),
 
-                depthBuf: this.create(xeogl.DepthBuf, {
+                depthBuf: this.create({
+                    type: "xeogl.DepthBuf",
                     active: false
                 }, "depthBuf")
             });

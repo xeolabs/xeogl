@@ -1450,25 +1450,25 @@
         scalingMat4c: function (x, y, z) {
             return math.scalingMat4v([x, y, z]);
         },
-        
-        scaleMat4v: function(v, m) {
-            
+
+        scaleMat4v: function (v, m) {
+
             var x = v[0];
-            var y = v[1]; 
+            var y = v[1];
             var z = v[2];
 
-            m[ 0 ] *= x;
-            m[ 4 ] *= y;
-            m[ 8 ] *= z;
-            m[ 1 ] *= x;
-            m[ 5 ] *= y;
-            m[ 9 ] *= z;
-            m[ 2 ] *= x;
-            m[ 6 ] *= y;
-            m[ 10 ] *= z;
-            m[ 3 ] *= x;
-            m[ 7 ] *= y;
-            m[ 11 ] *= z;
+            m[0] *= x;
+            m[4] *= y;
+            m[8] *= z;
+            m[1] *= x;
+            m[5] *= y;
+            m[9] *= z;
+            m[2] *= x;
+            m[6] *= y;
+            m[10] *= z;
+            m[3] *= x;
+            m[7] *= y;
+            m[11] *= z;
 
             return m;
         },
@@ -2274,6 +2274,7 @@
             return obb;
         },
 
+
         /**
          * Finds the minimum axis-aligned 3D boundary enclosing the 3D points given in a flattened,  1-dimensional array.
          *
@@ -2399,6 +2400,58 @@
 
             return aabb;
         },
+
+        /**
+         * Finds the minimum boundary sphere enclosing the given 3D points.
+         *
+         * @method points3ToSphere3
+         * @static
+         * @param {Array} points Oriented bounding box.
+         * @param {Float32Array} [sphere] Bounding sphere.
+         * @returns {*} Bounding sphere.
+         */
+        points3ToSphere3: (function () {
+
+            var tempVec3 = new Float32Array(3);
+
+            return function (points, sphere) {
+
+                sphere = sphere || math.vec4();
+
+                var x = 0;
+                var y = 0;
+                var z = 0;
+
+                var i;
+                var numPoints = points.length;
+
+                for (i = 0; i < numPoints; i++) {
+                    x += points[i][0];
+                    y += points[i][1];
+                    z += points[i][2];
+                }
+
+                sphere[0] = x / numPoints;
+                sphere[1] = y / numPoints;
+                sphere[2] = z / numPoints;
+
+                var radius = 0;
+                var dist;
+
+                for (i = 0; i < numPoints; i++) {
+
+                    dist = Math.abs(math.lenVec3(math.subVec3(points[i], sphere, tempVec3)));
+
+                    if (dist > radius) {
+                        radius = dist;
+                    }
+                }
+
+                sphere[3] = radius;
+
+                return sphere;
+            };
+        })(),
 
         /**
          * Expands the first axis-aligned 3D boundary to enclose the second, if required.
@@ -3453,7 +3506,7 @@
 
             return m;
         },
-        
+
         normalizeQuaternion: function (q, dest) {
             dest = dest || q;
             var len = math.lenVec4([q[0], q[1], q[2], q[3]]);

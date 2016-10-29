@@ -517,11 +517,13 @@
         /**
          * Tests if the given component type is a subtype of another component supertype.
          * @param {String} type
-         * @param {String} superType
+         * @param {String} [superType="xeogl.Component"]
          * @returns {boolean}
          * @private
          */
         _isComponentType: function (type, superType) {
+
+            superType = superType || "xeogl.Component";
 
             if (type === superType) {
                 return true;

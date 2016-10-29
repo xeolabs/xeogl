@@ -202,7 +202,7 @@
                     }
                 });
 
-                this.setPosition = (function() {
+                this.setPosition = (function () {
                     var positions = new Float32Array(6);
                     return function (pos, dir) {
                         positions[0] = pos[0]; // Origin
@@ -306,16 +306,17 @@
                             // Grab entity and begin dragging it
 
                             draggingEntity = hit.entity;
-                            
+
                             // Ensure that the entity has a single modelling transform
-                            // ZSPaceStylusControl cannot yet support articulation of hierarchies 
-                            
+                            // ZSPaceStylusControl cannot yet support articulation of hierarchies
+
                             if (draggingEntity.transform.parent) {
 
                                 self.warn("Flattening transform of " + draggingEntity.type + " " + draggingEntity.id);
 
                                 var transform = draggingEntity.transform;
-                                draggingEntity.transform = draggingEntity.create(xeogl.Transform, {
+                                draggingEntity.transform = draggingEntity.create({
+                                    type: "xeogl.Transform",
                                     matrix: transform.leafMatrix
                                 });
                             }
@@ -339,7 +340,7 @@
                             quat.fromMat3(entityRotation, rotationMatrix);
 
                             quat.multiply(startRotation, rotation, entityRotation);
-                            
+
                             draggingEntity.material.emissive = [0.25, 0.25, 0.0];
 
                         } else {

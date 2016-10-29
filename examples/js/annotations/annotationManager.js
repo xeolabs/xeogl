@@ -24,7 +24,8 @@
         _init: function (cfg) {
             this.annotations = {};
             this._listDirty = true;
-            this._cameraFlight = this.create(xeogl.CameraFlight, {
+            this._cameraFlight = this.create({
+                type:"xeogl.CameraFlight",
                 duration: 1.0
             });
             this.visible = cfg.visible;

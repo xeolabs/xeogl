@@ -99,7 +99,7 @@
  Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this CameraFlight. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
  @param [cfg.stopFOV=45] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
-  fill the canvas when calling {{#crossLink "CameraFlight/flyTo:method"}}{{/crossLink}} or {{#crossLink "CameraFlight/jumpTo:method"}}{{/crossLink}}.
+ fill the canvas when calling {{#crossLink "CameraFlight/flyTo:method"}}{{/crossLink}} or {{#crossLink "CameraFlight/jumpTo:method"}}{{/crossLink}}.
  @param [cfg.duration=1] {Number} Flight duration, in seconds, when calling {{#crossLink "CameraFlight/flyTo:method"}}{{/crossLink}}.
  @extends Component
  */
@@ -107,11 +107,16 @@
 
     "use strict";
 
+    var math = xeogl.math;
+
     // Caches to avoid garbage collection
 
-    var tempVec3 = xeogl.math.vec3();
-    var tempVec3b = xeogl.math.vec3();
-    var tempVec3c = xeogl.math.vec3();
+    var tempVec3 = math.vec3();
+    var tempVec3b = math.vec3();
+    var tempVec3c = math.vec3();
+    var tempVec3d = math.vec3();
+    var tempVec3e = math.vec3();
+    var tempVec3f = math.vec3();
 
     xeogl.CameraFlight = xeogl.Component.extend({
 
@@ -126,15 +131,16 @@
 
         _init: function (cfg) {
 
-            this._look1 = xeogl.math.vec3();
-            this._eye1 = xeogl.math.vec3();
-            this._up1 = xeogl.math.vec3();
+            this._look1 = math.vec3();
+            this._eye1 = math.vec3();
+            this._up1 = math.vec3();
 
-            this._look2 = xeogl.math.vec3();
-            this._eye2 = xeogl.math.vec3();
-            this._up2 = xeogl.math.vec3();
+            this._look2 = math.vec3();
+            this._eye2 = math.vec3();
+            this._up2 = math.vec3();
 
             this._flying = false;
+            this._flyEyeLookUp = false;
 
             this._callback = null;
             this._callbackScope = null;
@@ -153,9 +159,12 @@
             this.camera = cfg.camera;
 
             // Shows a wireframe box at the given boundary
-            this._boundaryIndicator = this.create(xeogl.Entity, {
-                geometry: this.create(xeogl.BoundaryGeometry, {
-                    material: this.create(xeogl.PhongMaterial, {
+            this._boundaryIndicator = this.create({
+                type: "xeogl.Entity",
+                geometry: this.create({
+                    type: "xeogl.BoundaryGeometry",
+                    material: this.create({
+                        type: "xeogl.PhongMaterial",
                         diffuse: [0, 0, 0],
                         ambient: [0, 0, 0],
                         specular: [0, 0, 0],
@@ -163,10 +172,12 @@
                         lineWidth: 3
                     })
                 }),
-                visibility: this.create(xeogl.Visibility, {
+                visibility: this.create({
+                    type: "xeogl.Visibility",
                     visible: false
                 }),
-                modes: this.create(xeogl.Modes, {
+                modes: this.create({
+                    type: "xeogl.Modes",
                     collidable: false // Effectively has no boundary
                 })
             });
@@ -323,7 +334,7 @@
                 this._boundaryIndicator.geometry.aabb = aabb;
                 this._boundaryIndicator.visibility.visible = true;
 
-                var aabbCenter = xeogl.math.getAABBCenter(aabb);
+                var aabbCenter = math.getAABBCenter(aabb);
 
                 this._look2 = params.look || aabbCenter;
 
@@ -333,8 +344,8 @@
                     this._look2[2] += offset[2];
                 }
 
-                var vec = xeogl.math.normalizeVec3(xeogl.math.subVec3(this._eye1, this._look1, tempVec3));
-                var diag = (params.look && false) ? xeogl.math.getAABBDiagPoint(aabb, params.look) : xeogl.math.getAABBDiag(aabb);
+                var vec = math.normalizeVec3(math.subVec3(this._eye1, this._look1, tempVec3));
+                var diag = (params.look && false) ? math.getAABBDiagPoint(aabb, params.look) : math.getAABBDiag(aabb);
                 var sca = Math.abs((diag) / Math.tan((params.stopFOV || this._stopFOV) / 2));
 
                 this._eye2[0] = this._look2[0] + (vec[0] * sca);
@@ -344,6 +355,8 @@
                 this._up2[0] = this._up1[0];
                 this._up2[1] = this._up1[1];
                 this._up2[2] = this._up1[2];
+
+                this._flyEyeLookUp = false;
 
             } else if (eye || look || up) {
 
@@ -362,6 +375,8 @@
                 this._up2[0] = up[0];
                 this._up2[1] = up[1];
                 this._up2[2] = up[2];
+
+                this._flyEyeLookUp = true;
             }
 
             this.fire("started", params, true);
@@ -410,8 +425,9 @@
             var lookat = camera.view;
 
             var aabb;
+            var sphere;
             var eye;
-            var look;
+            var look = math.vec3();
             var up;
             var componentId;
 
@@ -419,7 +435,11 @@
 
                 // Argument is a Component subtype with a worldBoundary
 
-                aabb = params.worldBoundary.aabb;
+                sphere = params.worldBoundary.sphere;
+
+            } else if (params.sphere) {
+
+                sphere = params.sphere;
 
             } else if (params.aabb) {
 
@@ -466,24 +486,43 @@
                     return;
                 }
 
-                aabb = worldBoundary.aabb;
+                sphere = worldBoundary.sphere;
             }
 
             var offset = params.offset;
 
-            if (aabb) {
+            if (aabb || sphere) {
 
-                if (aabb.max[0] <= aabb.min[0] || aabb.max[1] <= aabb.min[1] || aabb.max[2] <= aabb.min[2]) {
+                var diag;
 
-                    // Don't fly to an empty boundary
-                    return;
+                if (aabb) {
+
+                    if (aabb.max[0] <= aabb.min[0] || aabb.max[1] <= aabb.min[1] || aabb.max[2] <= aabb.min[2]) {
+
+                        // Don't fly to an empty boundary
+                        return;
+                    }
+
+                    diag = math.getAABBDiag(aabb);
+                    math.getAABBCenter(aabb, look);
+
+                } else {
+
+                    if (sphere[3] <= 0) {
+                        return;
+                    }
+
+                    diag = sphere[3] * 2;
+
+                    look[0] = sphere[0];
+                    look[1] = sphere[1];
+                    look[2] = sphere[2];
                 }
 
                 eye = lookat.eye;
-                look = xeogl.math.getAABBCenter(aabb);
 
-                var vec = xeogl.math.normalizeVec3(xeogl.math.subVec3(eye, look, tempVec3));
-                var diag = xeogl.math.getAABBDiag(aabb);
+
+                var vec = math.normalizeVec3(math.subVec3(eye, look, tempVec3));
                 var sca = Math.abs((diag) / Math.tan((params.stopFOV || this._stopFOV) / 2));
 
                 lookat.eye = [look[0] + (vec[0] * sca), look[1] + (vec[1] * sca), look[2] + (vec[2] * sca)];
@@ -525,9 +564,22 @@
 
             var view = this._attached.camera.view;
 
-            view.eye = xeogl.math.lerpVec3(t, 0, 1, this._eye1, this._eye2, tempVec3);
-            view.look = xeogl.math.lerpVec3(t, 0, 1, this._look1, this._look2, tempVec3b);
-            view.up = xeogl.math.lerpVec3(t, 0, 1, this._up1, this._up2, tempVec3c);
+            if (this._flyEyeLookUp) {
+
+                view.eye = math.lerpVec3(t, 0, 1, this._eye1, this._eye2, tempVec3);
+                view.look = math.lerpVec3(t, 0, 1, this._look1, this._look2, tempVec3b);
+                view.up = math.lerpVec3(t, 0, 1, this._up1, this._up2, tempVec3c);
+
+            } else {
+
+                var vec = math.subVec3(view.eye, view.look, tempVec3);
+                var normVec = math.normalizeVec3(vec, tempVec3b);
+                var eye2 = math.lerpVec3(t, 0, 1, this._eye1, this._eye2, tempVec3c);
+
+                view.look = math.lerpVec3(t, 0, 1, this._look1, this._look2, tempVec3d);
+                var dist = math.lenVec3(math.subVec3(eye2, view.look, tempVec3e));
+                view.eye = math.addVec3(view.look, math.mulVec3Scalar(normVec, dist), tempVec3f);
+            }
 
             if (stopping) {
                 this.stop();

@@ -252,7 +252,7 @@
             return this._tFrames[frame];
         },
 
-        getTFrame: function(t) {
+        getTFrame: function (t) {
 
         },
 

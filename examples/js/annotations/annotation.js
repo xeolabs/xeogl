@@ -92,25 +92,37 @@
             // Entity which renders a small dot which we use for occlusion culling
             // We also use its boundary to track the position of the Annotation
 
-            this._pin = this.create(xeogl.Entity, {
-                lights: this.create(xeogl.Lights, {}, "lights"),
+            this._pin = this.create({
+                type: "xeogl.Entity",
 
-                geometry: this.create(xeogl.Geometry, {
+                lights: this.create({
+                        type: "xeogl.Lights"
+                    },
+                    "lights"),
+
+                geometry: this.create({
+                        type: "xeogl.Geometry",
                         primitive: "points",
-                        positions:[0,0,0],
+                        positions: [0, 0, 0],
                         indices: [0]
                     },
                     "pinGeometry"),
-                visibility: this.create(xeogl.Visibility, {
+
+                visibility: this.create({
+                    type: "xeogl.Visibility",
                     visible: true
                 }),
-                material: this.create(xeogl.PhongMaterial, {
+
+                material: this.create({
+                        type: "xeogl.PhongMaterial,",
                         emissive: [1.0, 1.0, 0.0],
-                        diffuse: [0,0,0],
+                        diffuse: [0, 0, 0],
                         pointSize: 3
                     },
                     "pinMaterial"),
-                transform: this.create(xeogl.Translate, {
+
+                transform: this.create({
+                    type: "xeogl.Translate,",
                     xyz: [0, 0, 0]
                 })
             });
@@ -545,7 +557,7 @@
 
             var pinCanvasPos = this._pin.canvasBoundary.center;
 
-            pinElement.style.left = pinCanvasPos[0] -2 + "px";
+            pinElement.style.left = pinCanvasPos[0] - 2 + "px";
             pinElement.style.top = pinCanvasPos[1] - 2 + "px";
 
             var boundary = this.scene.canvas.boundary;

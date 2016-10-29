@@ -85,9 +85,12 @@
 
         _init: function (cfg) {
 
-            var cfg2 = {
+            this._skyboxEntity = this.create({
 
-                geometry: this.create(xeogl.Geometry, { // Box-shaped geometry
+                type: "xeogl.Entity",
+
+                geometry: this.create({ // Box-shaped geometry
+                        type: "xeogl.Geometry",
                         primitive: "triangles",
                         positions: [
                             1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1, // v0-v1-v2-v3 front
@@ -147,26 +150,31 @@
                     },
                     "geometryInstance"), // Use same Geometry for all Skyboxes
 
-                transform: this.create(xeogl.Scale, { // Scale the box
+                transform: this.create({ // Scale the box
+                    type: "xeogl.Scale",
                     xyz: [2000, 2000, 2000] // Overridden when we initialize the 'size' property, below
                 }),
 
-                material: this.create(xeogl.PhongMaterial, { // Emissive map of sky, no diffuse, ambient or specular reflection
+                material: this.create({ // Emissive map of sky, no diffuse, ambient or specular reflection
+                        type: "xeogl.PhongMaterial",
                         ambient: [0, 0, 0],
                         diffuse: [0, 0, 0],
                         specular: [0, 0, 0],
-                        emissiveMap: this.create(xeogl.Texture, {
+                        emissiveMap: this.create({
+                            type: "xeogl.Texture",
                             src: cfg.src
                         })
                     },
                     "materialInstance"), // Use same PhongMaterial for all Skyboxes
 
-                stationary: this.create(xeogl.Stationary, { // Lock skybox position with respect to viewpoint
+                stationary: this.create({ // Lock skybox position with respect to viewpoint
+                        type: "xeogl.Stationary",
                         active: true
                     },
                     "stationaryInstance"), // Use same Stationary for all SkyBoxes
 
-                modes: this.create(xeogl.Modes, {
+                modes: this.create({
+                        type: "xeogl.Modes",
                         backfaces: true, // Show interior faces of our skybox geometry
                         pickable: false, // Don't want to ba able to pick skybox
 
@@ -175,9 +183,7 @@
                         collidable: false
                     },
                     "modesInstance") // Use same Modes for all Skyboxes
-            };
-
-            this._skyboxEntity = this.create(xeogl.Entity, cfg2);
+            });
 
             this.size = cfg.size; // Sets 'xyz' property on the Entity's Scale transform
         },

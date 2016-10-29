@@ -175,7 +175,9 @@
 
                         var self = this;
 
-                        this._worldBoundary = new xeogl.Boundary3D(this.scene, {
+                        this._worldBoundary = this.create({
+
+                            type:"xeogl.Boundary3D",
 
                             getDirty: function () {
                                 if (self._aabbDirty) {
@@ -332,12 +334,7 @@
         },
 
         _destroy: function () {
-
             this.collection = null; // Unsubscribes from worldBoundary updates on Collection members
-
-            if (this._worldBoundary) {
-                this._worldBoundary.destroy();
-            }
         }
     });
 
