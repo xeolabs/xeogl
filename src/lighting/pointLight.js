@@ -13,7 +13,6 @@
  head as the {{#crossLink "Camera"}}{{/crossLink}} moves.</li>
  <li>PointLights have {{#crossLink "PointLight/constantAttenuation:property"}}{{/crossLink}}, {{#crossLink "PointLight/linearAttenuation:property"}}{{/crossLink}} and
  {{#crossLink "PointLight/quadraticAttenuation:property"}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that PointLights create within xeogl's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/PointLight.png"></img>

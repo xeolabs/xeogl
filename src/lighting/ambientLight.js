@@ -9,7 +9,6 @@
  <li>When the {{#crossLink "Entity"}}Entities{{/crossLink}} have {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}},
  AmbientLight {{#crossLink "AmbientLight/color:property"}}color{{/crossLink}} is multiplied by
  {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that AmbientLights create within xeogl's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/AmbientLight.png"></img>

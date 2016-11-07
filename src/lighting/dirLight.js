@@ -10,7 +10,6 @@
  is relative to the World coordinate system, and will appear to move as the {{#crossLink "Camera"}}{{/crossLink}} moves.
  When in View-space, their direction is relative to the View coordinate system, and will behave as if fixed to the viewer's
  head as the {{#crossLink "Camera"}}{{/crossLink}} moves.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that DirLights create within xeogl's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/DirLight.png"></img>
