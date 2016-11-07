@@ -406,8 +406,8 @@
         /**
          * Fires an event on this component.
          *
-         * Notifies existing subscribers to the event, retains the event to give to
-         * any subsequent notifications on that location as they are made.
+         * Notifies existing subscribers to the event, optionally retains the event to give to
+         * any subsequent notifications on the event as they are made.
          *
          * @method fire
          * @param {String} event The event type name

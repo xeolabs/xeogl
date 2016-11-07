@@ -1,5 +1,5 @@
 /**
- * Imports content from files.
+ * Units of xeogl content.
  *
  * @module xeogl
  * @submodule model

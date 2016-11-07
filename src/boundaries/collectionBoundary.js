@@ -268,8 +268,6 @@
             var component;
             var worldBoundary;
             var aabb;
-            var min;
-            var max;
 
             var collection = this.collection;
 
@@ -286,43 +284,41 @@
                         if (worldBoundary) {
 
                             aabb = worldBoundary.aabb;
-                            min = aabb.min;
-                            max = aabb.max;
 
-                            if (min[0] < xmin) {
-                                xmin = min[0];
+                            if (aabb[0] < xmin) {
+                                xmin = aabb[0];
                             }
 
-                            if (min[1] < ymin) {
-                                ymin = min[1];
+                            if (aabb[1] < ymin) {
+                                ymin = aabb[1];
                             }
 
-                            if (min[2] < zmin) {
-                                zmin = min[2];
+                            if (aabb[2] < zmin) {
+                                zmin = aabb[2];
                             }
 
-                            if (max[0] > xmax) {
-                                xmax = max[0];
+                            if (aabb[3] > xmax) {
+                                xmax = aabb[3];
                             }
 
-                            if (max[1] > ymax) {
-                                ymax = max[1];
+                            if (aabb[4] > ymax) {
+                                ymax = aabb[4];
                             }
 
-                            if (max[2] > zmax) {
-                                zmax = max[2];
+                            if (aabb[5] > zmax) {
+                                zmax = aabb[5];
                             }
                         }
                     }
                 }
             }
 
-            this._aabb.min[0] = xmin;
-            this._aabb.min[1] = ymin;
-            this._aabb.min[2] = zmin;
-            this._aabb.max[0] = xmax;
-            this._aabb.max[1] = ymax;
-            this._aabb.max[2] = zmax;
+            this._aabb[0] = xmin;
+            this._aabb[1] = ymin;
+            this._aabb[2] = zmin;
+            this._aabb[3] = xmax;
+            this._aabb[4] = ymax;
+            this._aabb[5] = zmax;
         },
 
         _getJSON: function () {

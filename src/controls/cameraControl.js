@@ -265,9 +265,9 @@
                 pos = e.worldPos
             }
 
-            var aabb;
-
-            aabb = e.entity.worldBoundary.aabb;
+            var worldBoundary = e.entity.worldBoundary;
+            var aabb = worldBoundary.aabb;
+            var sphere = worldBoundary.sphere;
 
             this._boundaryEntity.geometry.aabb = aabb;
             this._boundaryEntity.visibility.visible = true;

@@ -1,17 +1,19 @@
 /**
- A **Boundary3D** provides the axis-aligned and object-aligned extents of its owner component.
+ A **Boundary3D** provides the 3D extents of its parent component in a given coordinate system.
 
- A Boundary3D provides spatial info in these properties:
+ A Boundary3D provides its spatial info in these properties:
 
  <ul>
- <li>{{#crossLink "Boundary3D/obb:property"}}{{/crossLink}} - an object-aligned bounding box (OBB), as an array of eight corner vertex positions</li>
- <li>{{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} - an axis-aligned bounding box (AABB), as minimum and maximum corner vertex positions</li>
- <li>{{#crossLink "Boundary3D/center:property"}}{{/crossLink}} - center coordinate</li>
- <li>{{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} - a bounding sphere, given as [ x, y, z, radius ]</li>
-
+ <li>{{#crossLink "Boundary3D/obb:property"}}{{/crossLink}} - an oriented box (OBB) in a 32-element Float32Array
+ containing homogeneous coordinates for the eight corner vertices, ie. each having elements [x,y,z,w].</li>
+ <li>{{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} - an axis-aligned box (AABB) in a six-element Float32Array
+ containing the min/max extents of the axis-aligned volume, ie. ````[xmin,ymin,zmin,xmax,ymax,zmax]````,</li>
+ <li>{{#crossLink "Boundary3D/center:property"}}{{/crossLink}} - the center point as a Float32Array containing elements ````[x,y,z]```` and</li>
+ <li>{{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} - a bounding sphere, given as a Float32Array containingg elements````[x,y,z,radius]````.</li>
  </ul>
 
  As shown in the diagram below, the following xeogl components have Boundary3Ds:
+
  * A {{#crossLink "Scene/worldBoundary:property"}}Scene's worldBoundary{{/crossLink}} provides the **World**-space boundary of all its {{#crossLink "Entity"}}Entities{{/crossLink}}
  * A {{#crossLink "Geometry/localBoundary:property"}}Geometry's localBoundary{{/crossLink}} provides the **Local**-space boundary of its {{#crossLink "Geometry/positions:property"}}positions{{/crossLink}}
  * An {{#crossLink "Entity/localBoundary:property"}}Entity's localBoundary{{/crossLink}} (also) provides the **Local**-space boundary of its {{#crossLink "Geometry"}}{{/crossLink}}
@@ -22,6 +24,7 @@
  its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
  their transformation by both the {{#crossLink "Entity/transform:property"}}Entity's Modelling transform{{/crossLink}} **and** {{#crossLink "Camera/view:property"}}Viewing transform{{/crossLink}}.
  * A {{#crossLink "CollectionBoundary/worldBoundary:property"}}CollectionBoundary's worldBoundary{{/crossLink}} provides the **World**-space boundary of all the {{#crossLink "Entity"}}Entities{{/crossLink}} contained within its {{#crossLink "Collection"}}Collection{{/crossLink}}.
+ * A {{#crossLink "Model/worldBoundary:property"}}Model's worldBoundary{{/crossLink}} provides the **World**-space boundary of all its {{#crossLink "Entity"}}Entities{{/crossLink}}
 
  The diagram also shows an {{#crossLink "Entity/canvasBoundary:property"}}Entity's canvasBoundary{{/crossLink}}, which is a {{#crossLink "Boundary2D"}}{{/crossLink}} that provides the **Canvas**-space boundary of the {{#crossLink "Geometry"}}Geometry's{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
  their transformation by the {{#crossLink "Entity/transform:property"}}Entity's Modelling transform{{/crossLink}}, {{#crossLink "Camera/view:property"}}Viewing transform{{/crossLink}}
@@ -89,10 +92,10 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Boundary3D.
- @param [cfg.obb] {Array of Number} Optional initial 3D object-aligned bounding volume (OBB).
- @param [cfg.aabb] {Array of Number} Optional initial 3D axis-aligned bounding volume (AABB).
- @param [cfg.center] {Array of Number} Optional initial 3D center
- @param [cfg.sphere] {Array of Number} Optional initial 3D bounding sphere.
+ @param [cfg.obb] {Float32Array} Optional initial 3D object-aligned bounding volume (OBB).
+ @param [cfg.aabb] {Float32Array} Optional initial 3D axis-aligned bounding volume (AABB).
+ @param [cfg.center] {Float32Array} Optional initial 3D center
+ @param [cfg.sphere] {Float32Array} Optional initial 3D bounding sphere.
  @param [cfg.getDirty] {Function} Optional callback to check if parent component has new OBB, positions or transform matrix.
  @param [cfg.getOBB] {Function} Optional callback to get new OBB from parent.
  @param [cfg.getMatrix] {Function} Optional callback to get new transform matrix from parent.
@@ -102,8 +105,8 @@
 
 /**
  * Fired whenever this Boundary3D's {{#crossLink "Boundary3D/obb:property"}}{{/crossLink}},
- * {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} or {{#crossLink "Boundary3D/center:property"}}{{/crossLink}}.
- * properties change.
+ * {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}}, {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}}
+ * or {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} properties change.
  * @event updated
  */
 (function () {
@@ -116,22 +119,18 @@
 
         _init: function (cfg) {
 
-            // Cached bounding boxes (oriented and axis-aligned) 
-
+            // Cached bounding boxes (oriented and axis-aligned)
             this._obb = cfg.obb || null;
             this._aabb = cfg.aabb || null;
 
-            // Cached center point
-
-            this._center = cfg.center || null;
-
             // Cached bounding sphere
-
             this._sphere = cfg.sphere || null;
+
+            // Cached center point
+            this._center = cfg.center || null;
 
             // Owner injected callbacks to provide
             // resources on lazy-rebuild
-
             this._getDirty = cfg.getDirty;
             this._getOBB = cfg.getOBB;
             this._getAABB = cfg.getAABB;
@@ -142,11 +141,14 @@
         _props: {
 
             /**
-             * 3D oriented bounding box (OBB).
+             * An oriented box (OBB) representation of this 3D boundary.
              *
+             * The OBB is represented by a 32-element Float32Array containing the eight vertices of the box,
+             * where each vertex is a homogeneous coordinate having [x,y,z,w] elements.
+             *i
              * @property obb
              * @final
-             * @type {*}
+             * @type {Float32Array}
              */
             obb: {
 
@@ -161,11 +163,14 @@
             },
 
             /**
-             * 3D axis-aligned bounding box (AABB).
+             * An axis-aligned box (AABB) representation of this 3D boundary.
+             *
+             * The AABB is represented by a six-element Float32Array containing the min/max extents of the
+             * axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
              *
              * @property aabb
              * @final
-             * @type {*}
+             * @type {Float32Array}
              */
             aabb: {
 
@@ -180,11 +185,13 @@
             },
 
             /**
-             * 3D center point.
+             * The center point of this 3D boundary.
+             *
+             * The center point is represented by a Float32Array containing elements ````[x,y,z]````.
              *
              * @property center
              * @final
-             * @type {Array of Number}
+             * @type {Float32Array}
              */
             center: {
 
@@ -199,11 +206,14 @@
             },
 
             /**
-             * 3D bounding sphere.
+             * A spherical representation of this 3D boundary.
+             *
+             * The sphere is a four-element Float32Array containing the sphere center and
+             * radius, ie: ````[xcenter, ycenter, zcenter, radius ]````.
              *
              * @property sphere
              * @final
-             * @type {Array of Number}
+             * @type {Float32Array}
              */
             sphere: {
 
@@ -218,7 +228,7 @@
             }
         },
 
-        // (Re)builds the obb, aabb and sphere.
+        // Builds the obb, aabb, sphere and center.
 
         _buildBoundary: function () {
 
@@ -227,39 +237,40 @@
             // Lazy-allocate
 
             if (!this._obb) {
-                this._obb = [];
+                this._obb = xeogl.math.OBB3();
             }
 
             if (!this._aabb) {
                 this._aabb = xeogl.math.AABB3();
             }
 
-            if (!this._center) {
-                this._center = xeogl.math.vec3();
-            }
-
             if (!this._sphere) {
                 this._sphere = xeogl.math.vec4();
             }
 
+            if (!this._center) {
+                this._center = xeogl.math.vec3();
+            }
+            
             var aabb = this._getAABB ? this._getAABB() : null;
 
             if (aabb) {
 
                 // Got AABB
 
-                // Derive OBB and center
+                // Derive OBB, sphere and center
 
-                this._aabb.min[0] = aabb.min[0];
-                this._aabb.min[1] = aabb.min[1];
-                this._aabb.min[2] = aabb.min[2];
-                this._aabb.max[0] = aabb.max[0];
-                this._aabb.max[1] = aabb.max[1];
-                this._aabb.max[2] = aabb.max[2];
+                this._aabb[0] = aabb[0];
+                this._aabb[1] = aabb[1];
+                this._aabb[2] = aabb[2];
+                this._aabb[3] = aabb[3];
+                this._aabb[4] = aabb[4];
+                this._aabb[5] = aabb[5];
 
                 math.AABB3ToOBB3(this._aabb, this._obb);
-                math.getAABBCenter(this._aabb, this._center);
-
+                math.OBB3ToSphere3(this._obb, this._sphere);
+                math.getSphere3Center(this._sphere, this._center);
+                
                 return;
             }
 
@@ -279,27 +290,25 @@
 
                     // Got transform matrix
 
-                    // Transform OOBB by matrix,
-                    // derive AABB and center
+                    // Transform OBB by matrix, derive AABB, sphere and center
 
                     math.positions3ToAABB3(positions, this._aabb);
                     math.AABB3ToOBB3(this._aabb, this._obb);
-                    math.transformPoints3(matrix, this._obb);
-                    math.points3ToAABB3(this._obb, this._aabb);
-                    math.getAABBCenter(this._aabb, this._center);
-                    math.points3ToSphere3(this._obb, this._sphere);
+                    math.transformOBB3(matrix, this._obb);
+                    math.OBB3ToAABB3(this._obb, this._aabb);
+                    math.OBB3ToSphere3(this._obb, this._sphere);
+                    math.getSphere3Center(this._sphere, this._center);
 
                     return;
-
                 }
 
                 // No transform matrix
 
                 math.positions3ToAABB3(positions, this._aabb);
                 math.AABB3ToOBB3(this._aabb, this._obb);
-                math.getAABBCenter(this._aabb, this._center);
-                math.points3ToSphere3(this._obb, this._sphere);
-
+                math.OBB3ToSphere3(this._obb, this._sphere);
+                math.getSphere3Center(this._sphere, this._center);
+                
                 return
             }
 
@@ -307,7 +316,7 @@
 
             if (obb) {
 
-                // Got OOBB (array of eight four-element subarrays)
+                // Got OBB
 
                 matrix = this._getMatrix ? this._getMatrix() : null;
 
@@ -315,28 +324,28 @@
 
                     // Got transform matrix
 
-                    // Transform OOBB by matrix,
-                    // derive AABB and center
+                    // Transform OBB by matrix, derive AABB and center
 
-                    math.transformPoints3(matrix, obb, this._obb);
-                    math.points3ToAABB3(this._obb, this._aabb);
-                    math.getAABBCenter(this._aabb, this._center);
-                    math.points3ToSphere3(this._obb, this._sphere);
+                    math.transformOBB3(matrix, obb, this._obb);
+                    math.OBB3ToAABB3(this._obb, this._aabb);
+                    math.OBB3ToSphere3(this._obb, this._sphere);
+                    math.getSphere3Center(this._sphere, this._center);
 
                     return;
                 }
 
                 // No transform matrix
 
-                // Copy OOBB, derive AABB and center
+                // Copy OBB, derive AABB and center
 
                 for (var i = 0, len = obb.length; i < len; i++) {
                     this._obb[i] = obb[i];
                 }
 
-                math.points3ToAABB3(this._obb, this._aabb);
-                math.getAABBCenter(this._aabb, this._center);
-                math.points3ToSphere3(this._obb, this._sphere);
+                math.OBB3ToAABB3(this._obb, this._aabb);
+                math.OBB3ToSphere3(this._obb, this._sphere);
+                math.getSphere3Center(this._sphere, this._center);
+
             }
         },
 

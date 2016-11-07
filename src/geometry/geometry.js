@@ -577,7 +577,7 @@
 
                 var usage = gl.STATIC_DRAW;
 
-                var arrays = xeogl.math.getPickPrimitives(this._positionsData, this._indicesData);
+                var arrays = xeogl.math.buildPickTriangles(this._positionsData, this._indicesData);
 
                 var pickPositions = arrays.positions;
                 var pickColors = arrays.colors;

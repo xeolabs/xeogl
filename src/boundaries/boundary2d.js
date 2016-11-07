@@ -75,17 +75,16 @@
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Boundary.
- @param [cfg.aabb] {Array of Number} Optional initial canvas-space 2D axis-aligned bounding volume (AABB).
- @param [cfg.center] {Array of Number} Optional initial canvas-space 2D center
+ @param [cfg.aabb] {Float32Array} Optional initial canvas-space 2D axis-aligned bounding volume (AABB).
+ @param [cfg.center] {Float32Array} Optional initial canvas-space 2D center
  @param [cfg.getDirty] {Function} Optional callback to check if parent component has new OBB and matrix.
  @param [cfg.getOBB] {Function} Optional callback to get new view-space 3D OBB from parent.
  @param [cfg.getMatrix] {Function} Optional callback to get new projection matrix from parent.
- @param [cfg.shown] {Boolean} Set true to show a helper DIV that indicates the boundary.
  @extends Component
  */
 
 /**
- * Fired whenever this Boundary2D's {{#crossLink "Boundary2D/abb:property"}}{{/crossLink}} abd {{#crossLink "Boundary2D/center:property"}}{{/crossLink}}.
+ * Fired whenever this Boundary2D's {{#crossLink "Boundary2D/aabb:property"}}{{/crossLink}} and {{#crossLink "Boundary2D/center:property"}}{{/crossLink}}.
  * properties change.
  * @event updated
  */
@@ -99,11 +98,6 @@
 
         _init: function (cfg) {
 
-            // Indicator DIV
-
-            this._div = null;
-            this._shown = false;
-
             // Cached boundaries
 
             this._obb = null; // Private 3D View-space OBB
@@ -116,18 +110,19 @@
             this._getDirty = cfg.getDirty;
             this._getOBB = cfg.getOBB;
             this._getMatrix = cfg.getMatrix;
-
-            this.shown = cfg.shown;
         },
 
         _props: {
 
             /**
-             * 2D Canvas-space axis-aligned bounding box (AABB).
+             * An axis-aligned box (AABB) representation of this 2D boundary.
+             *
+             * The AABB is represented by a four-element Float32Array containing the min/max canvas-space
+             * extents of the axis-aligned volume, ie. ````[xmin,ymin,xmax,ymax]````.
              *
              * @property aabb
              * @final
-             * @type {*}
+             * @type {Float32Array}
              */
             aabb: {
 
@@ -142,11 +137,14 @@
             },
 
             /**
-             * 2D Canvas-space center point.
+             * The center point of this 2D boundary.
+             *
+             * The center point is represented by a Float32Array containing canvas-space coordinates,
+             * ie. ````[x,y]````.
              *
              * @property center
              * @final
-             * @type {Array of Number}
+             * @type {Float32Array}
              */
             center: {
 
@@ -157,74 +155,6 @@
                     }
 
                     return this._center;
-                }
-            },
-
-            /**
-             * When true, shows a helper DIV that indicates the boundary.
-             *
-             * @property shown
-             * @type {Boolean}
-             */
-            shown: {
-
-                set: function (value) {
-
-                    if (value === this._shown) {
-                        return;
-                    }
-
-                    if (value) {
-                        if (!this._div) {
-
-                            var body = document.getElementsByTagName("body")[0];
-                            var div = document.createElement('div');
-
-                            var style = div.style;
-                            style.position = "absolute";
-                            style.padding = "0";
-                            style.margin = "0";
-                            style.border = "3px solid #99FF99";
-                            style["border-radius"] = "10px";
-                            style["z-index"] = "1000";
-
-                            body.appendChild(div);
-
-                            var self = this;
-
-                            this.on("updated",
-                                function () {
-
-                                    var aabb = self.aabb;
-
-                                    div.style.left = aabb.min[0] + "px";
-                                    div.style.top = aabb.min[1] + "px";
-                                    div.style.width = (aabb.max[0] - aabb.min[0]) + "px";
-                                    div.style.height = (aabb.max[1] - aabb.min[1]) + "px";
-                                });
-
-                            this._div = div;
-                        }
-                    } else {
-                        if (this._div) {
-                            this._div.parentNode.removeChild(this._div);
-                            this._div = null;
-                        }
-                    }
-
-                    this._shown = value;
-
-                    /**
-                     * Fired whenever this Boundary2d's
-                     * {{#crossLink "Boundary2d/shown:property"}}{{/crossLink}} property changes.
-                     * @event shown
-                     * @param value The property's new value
-                     */
-                    this.fire("shown", this._shown);
-                },
-
-                get: function () {
-                    return this._shown;
                 }
             }
         },
@@ -243,9 +173,9 @@
 
                 // Lazy-allocate
 
-                this._obb = [];
-                this._aabb = xeogl.math.AABB2();
-                this._center = xeogl.math.vec2();
+                this._obb = math.OBB2();
+                this._aabb = math.AABB2();
+                this._center = math.vec2();
             }
 
             var obb = this._getOBB();
@@ -253,8 +183,8 @@
 
             if (obb && matrix) {
 
-                math.transformPoints3(matrix, obb, this._obb);
-                math.points3ToAABB2(this._obb, this._aabb);
+                math.transformOBB3(matrix, obb, this._obb);
+                math.OBB3ToAABB2(this._obb, this._aabb);
                 math.AABB2ToCanvas(this._aabb, width, height);
                 math.getAABB2Center(this._aabb, this._center);
             }
@@ -267,5 +197,4 @@
             };
         }
     });
-
 })();

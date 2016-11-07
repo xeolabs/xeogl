@@ -1685,7 +1685,7 @@
 
                                 // Get barycentric coordinates of the ray-triangle intersection
 
-                                math.cartesianToBarycentric2(position, a, b, c, bary);
+                                math.cartesianToBarycentric(position, a, b, c, bary);
 
                                 hit.bary = bary;
 

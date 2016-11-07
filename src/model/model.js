@@ -6,7 +6,7 @@
      A **Model** is a unit of content within a xeogl {{#crossLink "Scene"}}{{/crossLink}}.
 
      <ul>
-     <li>Subclassed by {{#crossLink "glTF"}}{{/crossLink}}, which loads glTF files.</li>
+     <li>Subclassed by {{#crossLink "GLTFModel"}}GLTFModel{{/crossLink}}, which loads glTF files.</li>
      <li>A Model keeps all its components in a {{#crossLink "Collection"}}{{/crossLink}}.</li>
      <li>A Model can be attached to an animated and dynamically-editable
      modelling {{#crossLink "Transform"}}{{/crossLink}} hierarchy, to rotate, translate and scale it within the World-space coordinate system, in the
@@ -19,7 +19,7 @@
 
      @class Model
      @module xeogl
-     @submodule importing
+     @submodule model
      @extends Component
      */
     xeogl.Model = xeogl.Component.extend({
@@ -156,12 +156,6 @@
              * property is referenced. If {{#crossLink "Component/destroy:method"}}{{/crossLink}} is then called on it,
              * then this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance next
              * time it's referenced.
-             *
-             * <h4>Example</h4>
-             *
-             * [here](http://xeogl.org/examples/#boundaries_Model_worldBoundary)
-             *
-             * <h4>Performance</h4>
              *
              * To minimize performance overhead, only reference this property if you need it, and destroy
              * the {{#crossLink "Boundary3D"}}{{/crossLink}} as soon as you don't need it anymore.

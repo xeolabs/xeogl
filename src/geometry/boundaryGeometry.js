@@ -197,27 +197,27 @@
 
         _setPositionsFromOBB: function (obb) {
             this.positions = [
-                obb[0][0], obb[0][1], obb[0][2],
-                obb[1][0], obb[1][1], obb[1][2],
-                obb[2][0], obb[2][1], obb[2][2],
-                obb[3][0], obb[3][1], obb[3][2],
-                obb[4][0], obb[4][1], obb[4][2],
-                obb[5][0], obb[5][1], obb[5][2],
-                obb[6][0], obb[6][1], obb[6][2],
-                obb[7][0], obb[7][1], obb[7][2]
+                obb[0], obb[1], obb[2],
+                obb[4], obb[5], obb[6],
+                obb[8], obb[9], obb[10],
+                obb[12], obb[13], obb[14],
+                obb[16], obb[17], obb[18],
+                obb[20], obb[21], obb[22],
+                obb[24], obb[25], obb[26],
+                obb[28], obb[29], obb[30]
             ];
         },
 
         _setPositionsFromAABB: function (aabb) {
             this.positions = [
-                aabb.max[0], aabb.max[1], aabb.max[2],
-                aabb.max[0], aabb.min[1], aabb.max[2],
-                aabb.min[0], aabb.min[1], aabb.max[2],
-                aabb.min[0], aabb.max[1], aabb.max[2],
-                aabb.max[0], aabb.max[1], aabb.min[2],
-                aabb.max[0], aabb.min[1], aabb.min[2],
-                aabb.min[0], aabb.min[1], aabb.min[2],
-                aabb.min[0], aabb.max[1], aabb.min[2]
+                aabb[3], aabb[4], aabb[5],
+                aabb[3], aabb[1], aabb[5],
+                aabb[0], aabb[1], aabb[5],
+                aabb[0], aabb[4], aabb[5],
+                aabb[3], aabb[4], aabb[2],
+                aabb[3], aabb[1], aabb[2],
+                aabb[0], aabb[1], aabb[2],
+                aabb[0], aabb[4], aabb[2]
             ];
         },
 
