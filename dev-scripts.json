@@ -9,6 +9,10 @@
 
     "src/math/_module.js",
     "src/math/math.js",
+    "src/math/mathTransforms.js",
+    "src/math/mathBoundaries.js",
+    "src/math/mathGeometry.js",
+    "src/math/mathGeometryBuild.js",
     "src/math/mathCurves.js",
 
     "src/_renderer/renderer.js",
