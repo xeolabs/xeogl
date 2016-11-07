@@ -599,6 +599,12 @@
 
                     this._setWorldBoundaryDirty();
 
+                    /**
+                     * Fired whenever this Entity's {{#crossLink "Entity/geometry:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event modes
+                     * @param value The property's new value
+                     */
                     this._attach({
                         name: "geometry",
                         type: "xeogl.Geometry",
