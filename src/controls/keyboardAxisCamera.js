@@ -214,10 +214,10 @@
             var boundary = this.scene.worldBoundary;
             var aabb = boundary.aabb;
             var center = boundary.center;
-            var diag = xeogl.math.getAABBDiag(aabb);
+            var diag = xeogl.math.getAABB3Diag(aabb);
 
-            this._stopFOV = 55;
-            var dist = Math.abs((diag) / Math.tan(this._stopFOV / 2));
+            this._fitFOV = 55;
+            var dist = Math.abs((diag) / Math.tan(this._fitFOV / 2));
 
             switch (keyCode) {
 
