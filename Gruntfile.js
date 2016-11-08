@@ -62,7 +62,7 @@ module.exports = function (grunt) {
                         'examples/js/curves',
                         'examples/js/skyboxes',
                         'examples/js/geometry',
-                        'examples/js/model'
+                        'examples/js/models'
                     ],
 
                     outdir: './docs/',

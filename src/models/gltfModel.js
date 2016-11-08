@@ -3,41 +3,54 @@
     "use strict";
 
     /**
-     A **GLTFModel** is a {{#crossLink "Model"}}{{/crossLink}} that loads its components from a
-     <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file into its parent {{#crossLink "Scene"}}{{/crossLink}}.
+     A **GLTFModel** is a {{#crossLink "Model"}}{{/crossLink}} that loads itself from a
+     <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file.
 
-     <ul><li>A GLTFModel begins loading as soon as it's {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}
-     property is set to the location of a valid glTF file.</li>
-     <li>You can set a GLTFModel's {{#crossLink "GLTFModel/src:property"}}{{/crossLink}} property to a new file path at any time,
-     which will cause it to load components from the new file (destroying any components loaded previously).</li>
+     <ul><li>A GLTFModel begins loading as soon as you set its {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}
+     property to the location of a valid glTF file.</li>
+     <li>You can set {{#crossLink "GLTFModel/src:property"}}{{/crossLink}} to a new file path at any time, which causes
+     the GLTFModel to clear itself and load components from the new file.</li>
+     </ul>
+
+     <img src="../../../assets/images/GLTFModel.png"></img>
+
+     ## Tutorials
+
+     <ul>
+     <li>[Importing glTF](https://github.com/xeolabs/xeogl/wiki/Models-glTF)</li>
      </ul>
 
      ## Examples
 
      <ul>
-     <li>[Gearbox](../../examples/#importing_gltf_gearbox)</li>
-     <li>[Buggy](../../examples/#importing_gltf_buggy)</li>
-     <li>[Reciprocating Saw](../../examples/#importing_gltf_ReciprocatingSaw)</li>
-     <li>[Textured Duck](../../examples/#importing_gltf_duck)</li>
+     <li>[Gearbox](../../examples/#models_GLTFModel_gearbox)</li>
+     <li>[Buggy](../../examples/#models_GLTFModel_buggy)</li>
+     <li>[Reciprocating Saw](../../examples/#models_GLTFModel_ReciprocatingSaw)</li>
+     <li>[Textured Duck](../../examples/#models_GLTFModel_duck)</li>
      <li>[GLTFModel with entity explorer UI](../../examples/#demos_ui_explorer)</li>
      <li>[Fly camera to GLTFModel entities](../../examples/#boundaries_flyToBoundary)</li>
-     <li>[Ensuring individual materials on GLTFModel entities](../../examples/#importing_gltf_techniques_uniqueMaterials)</li>
-     <li>[Baking transform hierarchies](../../examples/#importing_gltf_techniques_bakeTransforms)</li>
-     <li>[Attaching transforms to glTFs, via constructor](../../examples/#importing_gltf_techniques_configTransform)</li>
-     <li>[Attaching transforms to glTFs, via property](../../examples/#importing_gltf_techniques_attachTransform)</li>
-     </ul>
-
-     ## Tutorials
-
-     Find API documentation for GLTFModel here:
-
-     <ul>
-     <li>[Importing glTF](https://github.com/xeolabs/xeogl/wiki/Importing-glTF)</li>
+     <li>[Ensuring individual materials on GLTFModel entities](../../examples/#models__uniqueMaterials)</li>
+     <li>[Baking transform hierarchies](../../examples/#models_bakeTransforms)</li>
+     <li>[Attaching transforms to GLTFModel, via constructor](../../examples/#models_configureTransform)</li>
+     <li>[Attaching transforms to GLTFModel, via property](../../examples/#models_attachTransform)</li>
      </ul>
 
      @class GLTFModel
      @module xeogl
-     @submodule model
+     @submodule models
+     @constructor
+     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this GLTFModel in the default
+     {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+     @param [cfg] {*} Configs
+     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+     generated automatically when omitted.
+     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this GLTFModel.
+     @param [cfg.src] {String} Path to a glTF file. You can set this to a new file path at any time, which will cause the
+     GLTFModel to load components from the new file (after first destroying any components loaded from a previous file path).
+     @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this GLTFModel.
+     Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this GLTFModel. Internally, the given
+     {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
+     that the GLTFModel attaches to its {{#crossLink "Entity"}}Entities{{/crossLink}}.
      @extends Model
      */
     xeogl.GLTFModel = xeogl.Model.extend({
@@ -101,13 +114,13 @@
                         return;
                     }
 
-                    this.clear();
+                    this.destroyAll();
 
                     this._src = value;
 
                     var glTFLoader = xeogl.GLTFLoader;
 
-                    glTFLoader.setCollection(this.collection);
+                    glTFLoader.setModel(this);
                     glTFLoader.initWithPath(this.id, this._src);
 
                     var self = this;
@@ -150,7 +163,7 @@
 
         _getJSON: function () {
 
-            var json =  this._super();
+            var json =  {};
 
             if (this.src) {
                 json.src = this._src;
@@ -160,7 +173,7 @@
         },
 
         _destroy: function () {
-            this._clear();
+            this.destroyAll();
         }
     });
 

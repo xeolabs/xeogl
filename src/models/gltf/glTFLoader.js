@@ -155,9 +155,9 @@
 
     xeogl.GLTFLoader = Object.create(xeogl.glTFParser, {
 
-        setCollection: {
-            value: function (collection) {
-                this.collection = collection;
+        setModel: {
+            value: function (model) {
+                this.model = model;
             }
         },
 
@@ -165,8 +165,8 @@
             enumerable: true,
             value: function (userInfo, options, ok) {
 
-                if (!this.collection) {
-                    throw "collection not set";
+                if (!this.model) {
+                    throw "model not set";
                 }
 
                 this.resources = new Resources();
@@ -220,13 +220,13 @@
 
                 var image = this._json.images[description.source];
 
-                var texture = new xeogl.Texture(this.collection.scene, {
+                var texture = new xeogl.Texture(this.model.scene, {
                     id: this._makeID(entryID),
                     src: image.uri,
                     flipY: true
                 });
 
-                this.collection.add(texture);
+                this.model.add(texture);
 
                 this.resources.setEntry(entryID, texture, description);
 
@@ -289,9 +289,9 @@
                     }
                 }
 
-                var material = new xeogl.PhongMaterial(this.collection.scene, cfg);
+                var material = new xeogl.PhongMaterial(this.model.scene, cfg);
 
-                this.collection.add(material);
+                this.model.add(material);
 
                 this.resources.setEntry(entryID, material, description);
 
@@ -326,11 +326,11 @@
 
                     if (primitiveDescription.mode === WebGLRenderingContext.TRIANGLES) {
 
-                        var geometry = new xeogl.Geometry(this.collection.scene, {
+                        var geometry = new xeogl.Geometry(this.model.scene, {
                             id: this._makeID(entryID)
                         });
 
-                        this.collection.add(geometry);
+                        this.model.add(geometry);
 
                         var materialEntry = this.resources.getEntry(primitiveDescription.material);
                         var material = materialEntry.object;
@@ -450,8 +450,8 @@
                     return;
                 }
 
-                var collection = this.collection;
-                var scene = collection.scene;
+                var model = this.model;
+                var scene = model.scene;
 
                 if (node.matrix) {
                     var matrix = node.matrix;
@@ -460,7 +460,7 @@
                         matrix: matrix,
                         parent: transform
                     });
-                    collection.add(transform);
+                    model.add(transform);
                 }
 
                 if (node.translation) {
@@ -470,7 +470,7 @@
                         xyz: [translation[0], translation[1], translation[2]],
                         parent: transform
                     });
-                    collection.add(transform);
+                    model.add(transform);
                 }
 
                 if (node.rotation) {
@@ -481,7 +481,7 @@
                         angle: rotation[3],
                         parent: transform
                     });
-                    collection.add(transform);
+                    model.add(transform);
                 }
 
                 if (node.scale) {
@@ -491,7 +491,7 @@
                         xyz: [scale[0], scale[1], scale[2]],
                         parent: transform
                     });
-                    collection.add(transform);
+                    model.add(transform);
                 }
 
                 if (node.meshes) {
@@ -502,7 +502,7 @@
                         id: this._makeID(nodeId + ".visibility")
                     });
 
-                    collection.add(visibility);
+                    model.add(visibility);
 
                     // One xeogl.Cull per mesh group
 
@@ -510,7 +510,7 @@
                         id: this._makeID(nodeId + ".cull")
                     });
 
-                    collection.add(cull);
+                    model.add(cull);
 
                     // One xeogl.Modes per mesh group
 
@@ -518,7 +518,7 @@
                         id: this._makeID(nodeId + ".modes")
                     });
 
-                    collection.add(cull);
+                    model.add(cull);
 
                     // One xeogl.Entity per mesh, each sharing the same
                     // xeogl.Visibility, xeogl.Cull and xeogl.Nodes
@@ -576,7 +576,7 @@
                                 loading: true
                             });
 
-                            collection.add(entity);
+                            model.add(entity);
                         }
                     }
                 }

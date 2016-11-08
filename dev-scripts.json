@@ -100,9 +100,6 @@
     "src/geometry/planeGeometry.js",
     "src/geometry/latheGeometry.js",
 
-    "src/collections/_module.js",
-    "src/collections/collection.js",
-
     "src/input/_module.js",
     "src/input/input.js",
 
@@ -112,12 +109,12 @@
     "src/lighting/dirLight.js",
     "src/lighting/pointLight.js",
 
-    "src/model/_module.js",
-    "src/model/model.js",
-    "src/model/gltf/glTFParser.js",
-    "src/model/gltf/glTFLoaderUtils.js",
-    "src/model/gltf/glTFLoader.js",
-    "src/model/gltfModel.js",
+    "src/models/_module.js",
+    "src/models/model.js",
+    "src/models/gltf/glTFParser.js",
+    "src/models/gltf/glTFLoaderUtils.js",
+    "src/models/gltf/glTFLoader.js",
+    "src/models/gltfModel.js",
 
     "src/materials/_module.js",
     "src/materials/material.js",
@@ -146,7 +143,6 @@
     "src/boundaries/_module.js",
     "src/boundaries/boundary2d.js",
     "src/boundaries/boundary3d.js",
-    "src/boundaries/collectionBoundary.js",
 
     "src/transforms/_module.js",
     "src/transforms/transform.js",
