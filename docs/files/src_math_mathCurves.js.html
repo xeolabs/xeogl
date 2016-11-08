@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>importing - xeogl</title>
+    <title>src/math/mathCurves.js - xeogl</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -14,7 +14,9 @@
 <div id="doc">
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
-                <h1><img src="../../assets/images/logo.png" title="xeogl"></h1>
+
+                <h1 style="color:white;"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
+
         </div>
         <div class="yui3-u-1-4 version">
             <em>API Docs for: 1.0.0</em>
@@ -25,7 +27,7 @@
         <div class="yui3-u-1-4">
             <div id="docs-sidebar" class="sidebar apidocs">
                 <div id="api-list">
-                    <h2 class="off-left">APIs</h2>
+                
                     <div id="api-tabview" class="tabview">
                         <ul class="tabs">
                             <li><a href="#api-classes">Classes</a></li>
@@ -44,16 +46,18 @@
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
+                                <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraController.html">CameraController</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
+                                <li><a href="../classes/CameraFollow.html">CameraFollow</a></li>
+                                <li><a href="../classes/CameraPath.html">CameraPath</a></li>
+                                <li><a href="../classes/CameraPathPlayer.html">CameraPathPlayer</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Cardboard.html">Cardboard</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
-                                <li><a href="../classes/Collection.html">Collection</a></li>
-                                <li><a href="../classes/CollectionBoundary.html">CollectionBoundary</a></li>
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
@@ -69,7 +73,7 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/glTFModel.html">glTFModel</a></li>
+                                <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/HighlightEntityEffect.html">HighlightEntityEffect</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
@@ -129,34 +133,32 @@
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
-                                <li><a href="../modules/animation.html">animation</a></li>
-                                <li><a href="../modules/boundaries.html">boundaries</a></li>
-                                <li><a href="../modules/camera.html">camera</a></li>
-                                <li><a href="../modules/canvas.html">canvas</a></li>
-                                <li><a href="../modules/clipping.html">clipping</a></li>
-                                <li><a href="../modules/collections.html">collections</a></li>
-                                <li><a href="../modules/configs.html">configs</a></li>
-                                <li><a href="../modules/controls.html">controls</a></li>
-                                <li><a href="../modules/culling.html">culling</a></li>
-                                <li><a href="../modules/curves.html">curves</a></li>
-                                <li><a href="../modules/effects.html">effects</a></li>
-                                <li><a href="../modules/entities.html">entities</a></li>
-                                <li><a href="../modules/geometry.html">geometry</a></li>
-                                <li><a href="../modules/importing.html">importing</a></li>
-                                <li><a href="../modules/input.html">input</a></li>
-                                <li><a href="../modules/interaction.html">interaction</a></li>
-                                <li><a href="../modules/lighting.html">lighting</a></li>
-                                <li><a href="../modules/materials.html">materials</a></li>
-                                <li><a href="../modules/math.html">math</a></li>
-                                <li><a href="../modules/model.html">model</a></li>
-                                <li><a href="../modules/paths.html">paths</a></li>
-                                <li><a href="../modules/rendering.html">rendering</a></li>
-                                <li><a href="../modules/shaders.html">shaders</a></li>
-                                <li><a href="../modules/skyboxes.html">skyboxes</a></li>
-                                <li><a href="../modules/transforms.html">transforms</a></li>
-                                <li><a href="../modules/webvr.html">webvr</a></li>
-                                <li><a href="../modules/xeo.html">xeo</a></li>
-                                <li><a href="../modules/xeogl.html">xeogl</a></li>
+                                <li><a href="..//modules/animation.html">animation</a></li>
+                                <li><a href="..//modules/boundaries.html">boundaries</a></li>
+                                <li><a href="..//modules/camera.html">camera</a></li>
+                                <li><a href="..//modules/canvas.html">canvas</a></li>
+                                <li><a href="..//modules/clipping.html">clipping</a></li>
+                                <li><a href="..//modules/configs.html">configs</a></li>
+                                <li><a href="..//modules/controls.html">controls</a></li>
+                                <li><a href="..//modules/culling.html">culling</a></li>
+                                <li><a href="..//modules/curves.html">curves</a></li>
+                                <li><a href="..//modules/effects.html">effects</a></li>
+                                <li><a href="..//modules/entities.html">entities</a></li>
+                                <li><a href="..//modules/geometry.html">geometry</a></li>
+                                <li><a href="..//modules/input.html">input</a></li>
+                                <li><a href="..//modules/interaction.html">interaction</a></li>
+                                <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/materials.html">materials</a></li>
+                                <li><a href="..//modules/math.html">math</a></li>
+                                <li><a href="..//modules/models.html">models</a></li>
+                                <li><a href="..//modules/paths.html">paths</a></li>
+                                <li><a href="..//modules/rendering.html">rendering</a></li>
+                                <li><a href="..//modules/shaders.html">shaders</a></li>
+                                <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="..//modules/transforms.html">transforms</a></li>
+                                <li><a href="..//modules/webvr.html">webvr</a></li>
+                                <li><a href="..//modules/xeo.html">xeo</a></li>
+                                <li><a href="..//modules/xeogl.html">xeogl</a></li>
                             </ul>
                         </div>
                     </div>
@@ -164,98 +166,120 @@
             </div>
         </div>
         <div class="yui3-u-3-4">
-                <div id="api-options">
-                    Show:
-                    <label for="api-show-inherited">
-                        <input type="checkbox" id="api-show-inherited" checked>
-                        Inherited
-                    </label>
+                <!--<div id="api-options">-->
+                    <!--Show:-->
+                    <!--<label for="api-show-inherited">-->
+                        <!--<input type="checkbox" id="api-show-inherited" checked>-->
+                        <!--Inherited-->
+                    <!--</label>-->
             
-                    <label for="api-show-protected">
-                        <input type="checkbox" id="api-show-protected">
-                        Protected
-                    </label>
+                    <!--<label for="api-show-protected">-->
+                        <!--<input type="checkbox" id="api-show-protected">-->
+                        <!--Protected-->
+                    <!--</label>-->
             
-                    <label for="api-show-private">
-                        <input type="checkbox" id="api-show-private">
-                        Private
-                    </label>
-                    <label for="api-show-deprecated">
-                        <input type="checkbox" id="api-show-deprecated">
-                        Deprecated
-                    </label>
+                    <!--<label for="api-show-private">-->
+                        <!--<input type="checkbox" id="api-show-private">-->
+                        <!--Private-->
+                    <!--</label>-->
+                    <!--<label for="api-show-deprecated">-->
+                        <!--<input type="checkbox" id="api-show-deprecated">-->
+                        <!--Deprecated-->
+                    <!--</label>-->
             
-                </div>
+                <!--</div>-->
             
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>importing Module</h1>
-<div class="box clearfix meta">
+<h1 class="file-heading">File: src/math/mathCurves.js</h1>
 
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ * Curve math functions.
+ */
+(function () {
 
-        <div class="foundat">
-            Defined in: <a href="../files/src_model_model.js.html#l5"><code>src&#x2F;model&#x2F;model.js:5</code></a>
-        </div>
+    &quot;use strict&quot;;
 
-</div>
+    var math = xeogl.math;
 
+    math.tangentQuadraticBezier = function (t, p0, p1, p2) {
+        return 2 * ( 1 - t ) * ( p1 - p0 ) + 2 * t * ( p2 - p1 );
+    };
 
-<div class="box intro">
-    <p>A <strong>glTF</strong> loads content from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file into its parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
-<ul><li>A glTF begins loading as soon as it&#39;s GlTF/src:property
-property is set to the location of a valid glTF file.</li>
-<li>A glTF keeps all its loaded components in a <a href="../classes/Collection.html" class="crosslink">Collection</a>.</li>
-<li>A glTF can be attached to an animated and dynamically-editable
-glTFling <a href="../classes/Transform.html" class="crosslink">Transform</a> hierarchy, to rotate, translate and scale it within the World-space coordinate system, in the
-same way that an <a href="../classes/Entity.html" class="crosslink">Entity</a> can.</li>
-<li>You can set a glTF&#39;s GlTF/src:property property to a new file path at any time,
-which will cause it to load components from the new file (destroying any components loaded previously).</li>
-</ul>
+    math.tangentQuadraticBezier = function (t, p0, p1, p2, p3) {
+        return -3 * p0 * (1 - t) * (1 - t) +
+            3 * p1 * (1 - t) * (1 - t) - 6 * t * p1 * (1 - t) +
+            6 * t * p2 * (1 - t) - 3 * t * t * p2 +
+            3 * t * t * p3;
+    };
 
-<p><img src="../../../assets/images/glTF.png"></img></p>
-<h2 id="examples">Examples</h2>
-<ul>
-<li><a href="../../examples/#importing_gltf_gearbox">Gearbox</a></li>
-<li><a href="../../examples/#importing_gltf_buggy">Buggy</a></li>
-<li><a href="../../examples/#importing_gltf_ReciprocatingSaw">Reciprocating Saw</a></li>
-<li><a href="../../examples/#importing_gltf_duck">Textured Duck</a></li>
-<li><a href="../../examples/#demos_ui_explorer">glTF with entity explorer UI</a></li>
-<li><a href="../../examples/#boundaries_flyToBoundary">Fly camera to glTF entities</a></li>
-<li><a href="../../examples/#importing_gltf_techniques_uniqueMaterials">Ensuring individual materials on glTF entities</a></li>
-<li><a href="../../examples/#importing_gltf_techniques_bakeTransforms">Baking transform hierarchies</a></li>
-<li><a href="../../examples/#importing_gltf_techniques_configTransform">Attaching transforms to glTFs, via constructor</a></li>
-<li><a href="../../examples/#importing_gltf_techniques_attachTransform">Attaching transforms to glTFs, via property</a></li>
-</ul>
+    math.tangentSpline = function (t) {
+        var h00 = 6 * t * t - 6 * t;
+        var h10 = 3 * t * t - 4 * t + 1;
+        var h01 = -6 * t * t + 6 * t;
+        var h11 = 3 * t * t - 2 * t;
+        return h00 + h10 + h01 + h11;
+    };
 
-<h2 id="tutorials">Tutorials</h2>
-<p>Find API documentation for glTF here:</p>
-<ul>
-<li><a href="https://github.com/xeolabs/xeogl/wiki/Importing-glTF">Importing glTF</a></li>
-</ul>
-</div>
+    math.catmullRomInterpolate = function (p0, p1, p2, p3, t) {
+        var v0 = ( p2 - p0 ) * 0.5;
+        var v1 = ( p3 - p1 ) * 0.5;
+        var t2 = t * t;
+        var t3 = t * t2;
+        return ( 2 * p1 - 2 * p2 + v0 + v1 ) * t3 + ( -3 * p1 + 3 * p2 - 2 * v0 - v1 ) * t2 + v0 * t + p1;
+    };
 
+    // Bezier Curve formulii from http://en.wikipedia.org/wiki/B%C3%A9zier_curve
 
-<div class="yui3-g">
-    <div class="yui3-u-1-2">
-            <p>This module provides the following classes:</p>
+    // Quad Bezier Functions
 
-            <ul class="module-classes">
-                <li class="module-class">
-                    <a href="../classes/glTFModel.html">
-                        glTFModel
-                    </a>
-                </li>
-                <li class="module-class">
-                    <a href="../classes/Model.html">
-                        Model
-                    </a>
-                </li>
-            </ul>
-    </div>
+    math.b2p0 = function (t, p) {
+        var k = 1 - t;
+        return k * k * p;
 
-    <div class="yui3-u-1-2">
-    </div>
+    };
+
+    math.b2p1 = function (t, p) {
+        return 2 * ( 1 - t ) * t * p;
+    };
+
+    math.b2p2 = function (t, p) {
+        return t * t * p;
+    };
+
+    math.b2 = function (t, p0, p1, p2) {
+        return this.b2p0(t, p0) + this.b2p1(t, p1) + this.b2p2(t, p2);
+    };
+
+    // Cubic Bezier Functions
+
+    math.b3p0 = function (t, p) {
+        var k = 1 - t;
+        return k * k * k * p;
+    };
+
+    math.b3p1 = function (t, p) {
+        var k = 1 - t;
+        return 3 * k * k * t * p;
+    };
+
+    math.b3p2 = function (t, p) {
+        var k = 1 - t;
+        return 3 * k * t * t * p;
+    };
+
+    math.b3p3 = function (t, p) {
+        return t * t * t * p;
+    };
+
+    math.b3 = function (t, p0, p1, p2, p3) {
+        return this.b3p0(t, p0) + this.b3p1(t, p1) + this.b3p2(t, p2) + this.b3p3(t, p3);
+    };
+})();
+    </pre>
 </div>
                     </div>
                 </div>

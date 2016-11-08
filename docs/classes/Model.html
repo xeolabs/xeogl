@@ -14,7 +14,9 @@
 <div id="doc">
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
-                <h1><img src="../../assets/images/logo.png" title="xeogl"></h1>
+
+                <h1 style="color:white;"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
+
         </div>
         <div class="yui3-u-1-4 version">
             <em>API Docs for: 1.0.0</em>
@@ -25,7 +27,7 @@
         <div class="yui3-u-1-4">
             <div id="docs-sidebar" class="sidebar apidocs">
                 <div id="api-list">
-                    <h2 class="off-left">APIs</h2>
+                
                     <div id="api-tabview" class="tabview">
                         <ul class="tabs">
                             <li><a href="#api-classes">Classes</a></li>
@@ -44,16 +46,18 @@
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
+                                <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraController.html">CameraController</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
+                                <li><a href="../classes/CameraFollow.html">CameraFollow</a></li>
+                                <li><a href="../classes/CameraPath.html">CameraPath</a></li>
+                                <li><a href="../classes/CameraPathPlayer.html">CameraPathPlayer</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Cardboard.html">Cardboard</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
-                                <li><a href="../classes/Collection.html">Collection</a></li>
-                                <li><a href="../classes/CollectionBoundary.html">CollectionBoundary</a></li>
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
@@ -69,7 +73,7 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/glTFModel.html">glTFModel</a></li>
+                                <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/HighlightEntityEffect.html">HighlightEntityEffect</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
@@ -129,34 +133,32 @@
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
-                                <li><a href="../modules/animation.html">animation</a></li>
-                                <li><a href="../modules/boundaries.html">boundaries</a></li>
-                                <li><a href="../modules/camera.html">camera</a></li>
-                                <li><a href="../modules/canvas.html">canvas</a></li>
-                                <li><a href="../modules/clipping.html">clipping</a></li>
-                                <li><a href="../modules/collections.html">collections</a></li>
-                                <li><a href="../modules/configs.html">configs</a></li>
-                                <li><a href="../modules/controls.html">controls</a></li>
-                                <li><a href="../modules/culling.html">culling</a></li>
-                                <li><a href="../modules/curves.html">curves</a></li>
-                                <li><a href="../modules/effects.html">effects</a></li>
-                                <li><a href="../modules/entities.html">entities</a></li>
-                                <li><a href="../modules/geometry.html">geometry</a></li>
-                                <li><a href="../modules/importing.html">importing</a></li>
-                                <li><a href="../modules/input.html">input</a></li>
-                                <li><a href="../modules/interaction.html">interaction</a></li>
-                                <li><a href="../modules/lighting.html">lighting</a></li>
-                                <li><a href="../modules/materials.html">materials</a></li>
-                                <li><a href="../modules/math.html">math</a></li>
-                                <li><a href="../modules/model.html">model</a></li>
-                                <li><a href="../modules/paths.html">paths</a></li>
-                                <li><a href="../modules/rendering.html">rendering</a></li>
-                                <li><a href="../modules/shaders.html">shaders</a></li>
-                                <li><a href="../modules/skyboxes.html">skyboxes</a></li>
-                                <li><a href="../modules/transforms.html">transforms</a></li>
-                                <li><a href="../modules/webvr.html">webvr</a></li>
-                                <li><a href="../modules/xeo.html">xeo</a></li>
-                                <li><a href="../modules/xeogl.html">xeogl</a></li>
+                                <li><a href="..//modules/animation.html">animation</a></li>
+                                <li><a href="..//modules/boundaries.html">boundaries</a></li>
+                                <li><a href="..//modules/camera.html">camera</a></li>
+                                <li><a href="..//modules/canvas.html">canvas</a></li>
+                                <li><a href="..//modules/clipping.html">clipping</a></li>
+                                <li><a href="..//modules/configs.html">configs</a></li>
+                                <li><a href="..//modules/controls.html">controls</a></li>
+                                <li><a href="..//modules/culling.html">culling</a></li>
+                                <li><a href="..//modules/curves.html">curves</a></li>
+                                <li><a href="..//modules/effects.html">effects</a></li>
+                                <li><a href="..//modules/entities.html">entities</a></li>
+                                <li><a href="..//modules/geometry.html">geometry</a></li>
+                                <li><a href="..//modules/input.html">input</a></li>
+                                <li><a href="..//modules/interaction.html">interaction</a></li>
+                                <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/materials.html">materials</a></li>
+                                <li><a href="..//modules/math.html">math</a></li>
+                                <li><a href="..//modules/models.html">models</a></li>
+                                <li><a href="..//modules/paths.html">paths</a></li>
+                                <li><a href="..//modules/rendering.html">rendering</a></li>
+                                <li><a href="..//modules/shaders.html">shaders</a></li>
+                                <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="..//modules/transforms.html">transforms</a></li>
+                                <li><a href="..//modules/webvr.html">webvr</a></li>
+                                <li><a href="..//modules/xeo.html">xeo</a></li>
+                                <li><a href="..//modules/xeogl.html">xeogl</a></li>
                             </ul>
                         </div>
                     </div>
@@ -164,33 +166,33 @@
             </div>
         </div>
         <div class="yui3-u-3-4">
-                <div id="api-options">
-                    Show:
-                    <label for="api-show-inherited">
-                        <input type="checkbox" id="api-show-inherited" checked>
-                        Inherited
-                    </label>
+                <!--<div id="api-options">-->
+                    <!--Show:-->
+                    <!--<label for="api-show-inherited">-->
+                        <!--<input type="checkbox" id="api-show-inherited" checked>-->
+                        <!--Inherited-->
+                    <!--</label>-->
             
-                    <label for="api-show-protected">
-                        <input type="checkbox" id="api-show-protected">
-                        Protected
-                    </label>
+                    <!--<label for="api-show-protected">-->
+                        <!--<input type="checkbox" id="api-show-protected">-->
+                        <!--Protected-->
+                    <!--</label>-->
             
-                    <label for="api-show-private">
-                        <input type="checkbox" id="api-show-private">
-                        Private
-                    </label>
-                    <label for="api-show-deprecated">
-                        <input type="checkbox" id="api-show-deprecated">
-                        Deprecated
-                    </label>
+                    <!--<label for="api-show-private">-->
+                        <!--<input type="checkbox" id="api-show-private">-->
+                        <!--Private-->
+                    <!--</label>-->
+                    <!--<label for="api-show-deprecated">-->
+                        <!--<input type="checkbox" id="api-show-deprecated">-->
+                        <!--Deprecated-->
+                    <!--</label>-->
             
-                </div>
+                <!--</div>-->
             
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>Model Class</h1>
+<h1>Model</h1>
 <div class="box meta">
 
         <div class="extends">
@@ -198,10 +200,10 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/src_model_model.js.html#l5"><code>src&#x2F;model&#x2F;model.js:5</code></a>
+            Defined in: <a href="../files/src_models_model.js.html#l5"><code>src&#x2F;models&#x2F;model.js:5</code></a>
         </div>
 
-            Module: <a href="../modules/importing.html">importing</a><br>
+            Module: <a href="../modules/models.html">models</a><br>
             Parent Module: <a href="../modules/xeogl.html">xeogl</a>
 
 </div>
@@ -210,19 +212,130 @@
 <div class="box intro">
     <p>A <strong>Model</strong> is a unit of content within a xeogl <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 <ul>
-<li>Subclassed by GlTF, which loads glTF files.</li>
-<li>A Model keeps all its components in a <a href="../classes/Collection.html" class="crosslink">Collection</a>.</li>
-<li>A Model can be attached to an animated and dynamically-editable
-modelling <a href="../classes/Transform.html" class="crosslink">Transform</a> hierarchy, to rotate, translate and scale it within the World-space coordinate system, in the
-same way that an <a href="../classes/Entity.html" class="crosslink">Entity</a> can.</li>
-<li>You can set a Model&#39;s Model/src:property property to a new file path at any time,
-which will cause it to load components from the new file (destroying any components loaded previously).</li>
+<li>A Model is a container of <a href="../classes/Component.html" class="crosslink">Components</a>.</li>
+<li>Can be transformed within World-space by attached it to a <a href="../classes/Transform.html" class="crosslink">Transform</a>.</li>
+<li>Provides its World-space boundary as a <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>.</li>
+<li>Subclassed by <a href="../classes/GLTFModel.html" class="crosslink">GLTFModel</a>, which loads glTF files.</li>
+<li>Subclassed by <a href="../classes/BuildableModel.html" class="crosslink">BuildableModel</a>, which provides a fluent API for building itself.</li>
 </ul>
 
 <p><img src="../../../assets/images/Model.png"></img></p>
 
 </div>
 
+    <div class="constructor">
+        <h2>Constructor</h2>
+        <div id="method_Model" class="method item">
+            <h3 class="name"><code>Model</code></h3>
+        
+                <div class="args">
+                    <span class="paren">(</span><ul class="args-list inline commas">
+                        <li class="arg">
+                                <code class="optional">[scene]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[cfg]</code>
+                        </li>
+                    </ul><span class="paren">)</span>
+                </div>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+            <div class="meta">
+                        <p>
+                        Defined in
+                <a href="../files/src_models_model.js.html#l5"><code>src&#x2F;models&#x2F;model.js:5</code></a>
+                </p>
+        
+        
+        
+            </div>
+        
+            <div class="description">
+                
+            </div>
+        
+                <div class="params">
+                    <h4>Parameters:</h4>
+        
+                    <ul class="params-list">
+                        <li class="param">
+                                <code class="param-name optional">[scene]</code>
+                                <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this ModelModel in the default
+        <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
+        
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[cfg]</code>
+                                <span class="type"></span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>Configs</p>
+        
+                            </div>
+        
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name optional">[id]</code>
+                                            <span class="type">String</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Optional ID, unique among all components in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>,
+        generated automatically when omitted.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[meta]</code>
+                                            <span class="type">String:Object</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Optional map of user-defined metadata to attach to this ModelModel.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[transform]</code>
+                                            <span class="type">Number | String | <a href="../classes/Transform.html" class="crosslink">Transform</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>A Local-to-World-space (modelling) <a href="../classes/Transform.html" class="crosslink">Transform</a> to attach to this Model.
+        Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Model. Internally, the given
+        <a href="../classes/Transform.html" class="crosslink">Transform</a> will be inserted above each top-most <a href="../classes/Transform.html" class="crosslink">Transform</a>
+        that the Model attaches to its <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                </ul>
+                        </li>
+                    </ul>
+                </div>
+        
+        
+        
+        </div>
+    </div>
 
 <div id="classdocs" class="tabview">
     <ul class="api-class-tabs">
@@ -235,18 +348,26 @@ which will cause it to load components from the new file (destroying any compone
 
     <div>
         <div id="index" class="api-class-tabpanel index">
-            <h2 class="off-left">Item Index</h2>
+            <h2 class="off-left">Index</h2>
 
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
                     <ul class="index-list methods extends">
+                            <li class="index-item method">
+                                <a href="#method_add">add</a>
+
+                            </li>
                             <li class="index-item method inherited">
                                 <a href="#method_create">create</a>
 
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_destroy">destroy</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_destroyAll">destroyAll</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -259,6 +380,10 @@ which will cause it to load components from the new file (destroying any compone
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_isType">isType</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_iterate">iterate</a>
 
                             </li>
                             <li class="index-item method inherited">
@@ -277,6 +402,10 @@ which will cause it to load components from the new file (destroying any compone
                                 <a href="#method_once">once</a>
 
                             </li>
+                            <li class="index-item method">
+                                <a href="#method_removeAll">removeAll</a>
+
+                            </li>
                             <li class="index-item method inherited">
                                 <a href="#method_warn">warn</a>
 
@@ -289,7 +418,7 @@ which will cause it to load components from the new file (destroying any compone
 
                     <ul class="index-list properties extends">
                             <li class="index-item property">
-                                <a href="#property_collection">collection</a>
+                                <a href="#property_components">components</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -312,6 +441,10 @@ which will cause it to load components from the new file (destroying any compone
                                 <a href="#property_metadata">metadata</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_numComponents">numComponents</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_scene">scene</a>
 
@@ -332,6 +465,14 @@ which will cause it to load components from the new file (destroying any compone
                                 <a href="#property_type">type</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_types">types</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_worldBoundary">worldBoundary</a>
+
+                            </li>
                     </ul>
                 </div>
 
@@ -340,8 +481,16 @@ which will cause it to load components from the new file (destroying any compone
                     <h3>Events</h3>
 
                     <ul class="index-list events extends">
+                            <li class="index-item event">
+                                <a href="#event_added">added</a>
+
+                            </li>
                             <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_removed">removed</a>
 
                             </li>
                             <li class="index-item event">
@@ -355,14 +504,70 @@ which will cause it to load components from the new file (destroying any compone
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
+<div id="method_add" class="method item">
+    <h3 class="name"><code>add</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>components</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_models_model.js.html#l108"><code>src&#x2F;models&#x2F;model.js:108</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Adds one or more <a href="../classes/Component.html" class="crosslink">Components</a>s to this Model.</p>
+<p>The <a href="../classes/Component.html" class="crosslink">Component(s)</a> may be specified by instance, ID or type.</p>
+<p>See class comment for usage examples.</p>
+<p>The <a href="../classes/Component.html" class="crosslink">Components</a> must be in the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Model.</p>
+<p>Fires an <a href="../classes/Model.html#event_added" class="crosslink">added</a> event.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">components</code>
+                        <span class="type">Array of Component</span>
+
+
+                    <div class="param-description">
+                        <p>Array of <a href="../classes/Component.html" class="crosslink">Components</a> instances.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
 <div id="method_create" class="method item inherited">
     <h3 class="name"><code>create</code></h3>
 
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>type</code>
-                </li>
                 <li class="arg">
                         <code class="optional">[cfg]</code>
                 </li>
@@ -375,6 +580,7 @@ which will cause it to load components from the new file (destroying any compone
         <span class="returns-inline">
             <span class="type"></span>
         </span>
+
 
 
 
@@ -421,18 +627,6 @@ times as you got it, the Scene will destroy the component.</p>
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">type</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                        <p>Component type - either a string like &quot;xeogl.PhongMaterial&quot; or the actual
-constructor function, ie. xeogl.PhongMaterial.</p>
-
-                    </div>
-
-                </li>
                 <li class="param">
                         <code class="param-name optional">[cfg]</code>
                         <span class="type"></span>
@@ -484,10 +678,11 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
 
 
 
+
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l1089"><code>src&#x2F;component.js:1089</code></a>
+        <a href="../files/src_component.js.html#l1087"><code>src&#x2F;component.js:1087</code></a>
         </p>
 
 
@@ -507,6 +702,38 @@ defaults that this component overrode on them.</p>
 
 
 </div>
+<div id="method_destroyAll" class="method item">
+    <h3 class="name"><code>destroyAll</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_models_model.js.html#l309"><code>src&#x2F;models&#x2F;model.js:309</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Destroys all <a href="../classes/Component.html" class="crosslink">Components</a> in this Model.</p>
+
+    </div>
+
+
+
+
+</div>
 <div id="method_error" class="method item inherited">
     <h3 class="name"><code>error</code></h3>
 
@@ -517,6 +744,7 @@ defaults that this component overrode on them.</p>
                 </li>
             </ul><span class="paren">)</span>
         </div>
+
 
 
 
@@ -588,6 +816,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 
+
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
@@ -600,8 +829,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
     <div class="description">
         <p>Fires an event on this component.</p>
-<p>Notifies existing subscribers to the event, retains the event to give to
-any subsequent notifications on that location as they are made.</p>
+<p>Notifies existing subscribers to the event, optionally retains the event to give to
+any subsequent notifications on the event as they are made.</p>
 
     </div>
 
@@ -670,6 +899,7 @@ any subsequent notifications on that location as they are made.</p>
 
 
 
+
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_isType">Component</a>:
@@ -729,6 +959,76 @@ myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (
 
 
 </div>
+<div id="method_iterate" class="method item">
+    <h3 class="name"><code>iterate</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>callback</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[scope=this]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_models_model.js.html#l383"><code>src&#x2F;models&#x2F;model.js:383</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Iterates with a callback over the <a href="../classes/Component.html" class="crosslink">Components</a> in this Model.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">callback</code>
+                        <span class="type">Function</span>
+
+
+                    <div class="param-description">
+                        <p>Callback called for each <a href="../classes/Component.html" class="crosslink">Component</a>.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[scope=this]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Optional scope for the callback, defaults to this Model.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
 <div id="method_log" class="method item inherited">
     <h3 class="name"><code>log</code></h3>
 
@@ -739,6 +1039,7 @@ myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (
                 </li>
             </ul><span class="paren">)</span>
         </div>
+
 
 
 
@@ -804,6 +1105,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 
+
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_off">Component</a>:
@@ -861,6 +1163,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
         <span class="returns-inline">
             <span class="type">String</span>
         </span>
+
 
 
 
@@ -961,6 +1264,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 
+
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
@@ -1022,6 +1326,38 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 </div>
+<div id="method_removeAll" class="method item">
+    <h3 class="name"><code>removeAll</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_models_model.js.html#l321"><code>src&#x2F;models&#x2F;model.js:321</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Removes all <a href="../classes/Component.html" class="crosslink">Components</a> from this Model.</p>
+
+    </div>
+
+
+
+
+</div>
 <div id="method_warn" class="method item inherited">
     <h3 class="name"><code>warn</code></h3>
 
@@ -1032,6 +1368,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                 </li>
             </ul><span class="paren">)</span>
         </div>
+
 
 
 
@@ -1084,26 +1421,26 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="properties" class="api-class-tabpanel">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_collection" class="property item">
-                        <h3 class="name"><code>collection</code></h3>
-                        <span class="type"><a href="../classes/Collection.html" class="crosslink">Collection</a></span>
+                    <div id="property_components" class="property item">
+                        <h3 class="name"><code>components</code></h3>
+                        <span class="type">String:Component</span>
                     
                     
                     
-                            <span class="flag final">final</span>
                     
                     
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_model_model.js.html#l93"><code>src&#x2F;model&#x2F;model.js:93</code></a>
+                            <a href="../files/src_models_model.js.html#l47"><code>src&#x2F;models&#x2F;model.js:47</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>A <a href="../classes/Collection.html" class="crosslink">Collection</a> containing the scene components loaded by this Model.</p>
+                            <p>The Components within this Model, mapped to their IDs.</p>
+                    <p>Fires an Model/updated:event event on change.</p>
                     
                         </div>
                     
@@ -1198,7 +1535,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l1028"><code>src&#x2F;component.js:1028</code></a>
+                            <a href="../files/src_component.js.html#l1026"><code>src&#x2F;component.js:1026</code></a>
                             </p>
                     
                     
@@ -1231,6 +1568,31 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Arbitrary, user-defined metadata on this component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_numComponents" class="property item">
+                        <h3 class="name"><code>numComponents</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_models_model.js.html#l57"><code>src&#x2F;models&#x2F;model.js:57</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The number of Components within this Model.</p>
                     
                         </div>
                     
@@ -1278,7 +1640,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l1056"><code>src&#x2F;component.js:1056</code></a>
+                            <a href="../files/src_component.js.html#l1054"><code>src&#x2F;component.js:1054</code></a>
                             </p>
                     
                     
@@ -1335,7 +1697,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_model_model.js.html#l107"><code>src&#x2F;model&#x2F;model.js:107</code></a>
+                            <a href="../files/src_models_model.js.html#l402"><code>src&#x2F;models&#x2F;model.js:402</code></a>
                             </p>
                     
                     
@@ -1354,7 +1716,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_type" class="property item inherited">
+                    <div id="property_type" class="property item">
                         <h3 class="name"><code>type</code></h3>
                         <span class="type">String</span>
                     
@@ -1364,9 +1726,12 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                         <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Component.html#property_type">Component</a>:
-                            <a href="../files/src_component.js.html#l324"><code>src&#x2F;component.js:324</code></a>
+                                <p>Inherited from
+                                <a href="../classes/Component.html#property_type">
+                                    Component
+                                </a>
+                                but overwritten in
+                            <a href="../files/src_models_model.js.html#l36"><code>src&#x2F;models&#x2F;model.js:36</code></a>
                             </p>
                     
                     
@@ -1374,9 +1739,71 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>JavaScript class name for this Component.</p>
-                    <p>This is used when <a href="Scene.html#savingAndLoading">loading Scenes from JSON</a>, and is included in the JSON
-                    representation of this Component, so that this class may be instantiated when loading it from the JSON representation.</p>
-                    <p>For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_types" class="property item">
+                        <h3 class="name"><code>types</code></h3>
+                        <span class="type">String:{String:xeogl.Component}</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_models_model.js.html#l65"><code>src&#x2F;models&#x2F;model.js:65</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>A map of maps; for each <a href="../classes/Component.html" class="crosslink">Component</a> type in this Model,
+                    a map to IDs to <a href="../classes/Component.html" class="crosslink">Component</a> instances, eg.</p>
+                    <pre class="code prettyprint"><code>"xeogl.Geometry": {
+                      "alpha": &lt;xeogl.Geometry&gt;,
+                      "beta": &lt;xeogl.Geometry&gt;
+                    },
+                    "xeogl.Rotate": {
+                      "charlie": &lt;xeogl.Rotate&gt;,
+                      "delta": &lt;xeogl.Rotate&gt;,
+                      "echo": &lt;xeogl.Rotate&gt;,
+                    },
+                    //...
+                    </code></pre>
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_worldBoundary" class="property item">
+                        <h3 class="name"><code>worldBoundary</code></h3>
+                        <span class="type"><a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a></span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_models_model.js.html#l443"><code>src&#x2F;models&#x2F;model.js:443</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>World-space 3D boundary enclosing all the components in this Model.</p>
+                    <p>If you call <a href="../classes/Component.html#method_destroy" class="crosslink">destroy</a> on this boundary, then
+                    this property will be assigned to a fresh <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> instance next
+                    time you reference it.</p>
                     
                         </div>
                     
@@ -1389,6 +1816,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
             <div id="events" class="api-class-tabpanel">
                 <h2 class="off-left">Events</h2>
 
+                    <div id="event_added" class="events item">
+                        <h3 class="name"><code>added</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_models_model.js.html#l277"><code>src&#x2F;models&#x2F;model.js:277</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever an individual <a href="../classes/Component.html" class="crosslink">Component</a> is added to this <a href="../classes/Model.html" class="crosslink">Model</a>.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type"><a href="../classes/Component.html" class="crosslink">Component</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The <a href="../classes/Component.html" class="crosslink">Component</a> that was added.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_destroyed" class="events item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type"></span>
@@ -1400,7 +1869,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1159"><code>src&#x2F;component.js:1159</code></a>
+                            <a href="../files/src_component.js.html#l1157"><code>src&#x2F;component.js:1157</code></a>
                             </p>
                     
                     
@@ -1411,6 +1880,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
+                    
+                    
+                    </div>
+                    <div id="event_removed" class="events item">
+                        <h3 class="name"><code>removed</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_models_model.js.html#l371"><code>src&#x2F;models&#x2F;model.js:371</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever an individual <a href="../classes/Component.html" class="crosslink">Component</a> is removed from this <a href="../classes/Model.html" class="crosslink">Model</a>.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type"><a href="../classes/Component.html" class="crosslink">Component</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The <a href="../classes/Component.html" class="crosslink">Component</a> that was removed.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
                     
                     
                     </div>
@@ -1425,7 +1936,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_model_model.js.html#l125"><code>src&#x2F;model&#x2F;model.js:125</code></a>
+                            <a href="../files/src_models_model.js.html#l420"><code>src&#x2F;models&#x2F;model.js:420</code></a>
                             </p>
                     
                     

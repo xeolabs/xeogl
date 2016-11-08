@@ -14,7 +14,9 @@
 <div id="doc">
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
-                <h1><img src="../../assets/images/logo.png" title="xeogl"></h1>
+
+                <h1 style="color:white;"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
+
         </div>
         <div class="yui3-u-1-4 version">
             <em>API Docs for: 1.0.0</em>
@@ -25,7 +27,7 @@
         <div class="yui3-u-1-4">
             <div id="docs-sidebar" class="sidebar apidocs">
                 <div id="api-list">
-                    <h2 class="off-left">APIs</h2>
+                
                     <div id="api-tabview" class="tabview">
                         <ul class="tabs">
                             <li><a href="#api-classes">Classes</a></li>
@@ -44,16 +46,18 @@
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
+                                <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraController.html">CameraController</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
+                                <li><a href="../classes/CameraFollow.html">CameraFollow</a></li>
+                                <li><a href="../classes/CameraPath.html">CameraPath</a></li>
+                                <li><a href="../classes/CameraPathPlayer.html">CameraPathPlayer</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Cardboard.html">Cardboard</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
-                                <li><a href="../classes/Collection.html">Collection</a></li>
-                                <li><a href="../classes/CollectionBoundary.html">CollectionBoundary</a></li>
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
@@ -69,7 +73,7 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/glTFModel.html">glTFModel</a></li>
+                                <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/HighlightEntityEffect.html">HighlightEntityEffect</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
@@ -129,34 +133,32 @@
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
-                                <li><a href="../modules/animation.html">animation</a></li>
-                                <li><a href="../modules/boundaries.html">boundaries</a></li>
-                                <li><a href="../modules/camera.html">camera</a></li>
-                                <li><a href="../modules/canvas.html">canvas</a></li>
-                                <li><a href="../modules/clipping.html">clipping</a></li>
-                                <li><a href="../modules/collections.html">collections</a></li>
-                                <li><a href="../modules/configs.html">configs</a></li>
-                                <li><a href="../modules/controls.html">controls</a></li>
-                                <li><a href="../modules/culling.html">culling</a></li>
-                                <li><a href="../modules/curves.html">curves</a></li>
-                                <li><a href="../modules/effects.html">effects</a></li>
-                                <li><a href="../modules/entities.html">entities</a></li>
-                                <li><a href="../modules/geometry.html">geometry</a></li>
-                                <li><a href="../modules/importing.html">importing</a></li>
-                                <li><a href="../modules/input.html">input</a></li>
-                                <li><a href="../modules/interaction.html">interaction</a></li>
-                                <li><a href="../modules/lighting.html">lighting</a></li>
-                                <li><a href="../modules/materials.html">materials</a></li>
-                                <li><a href="../modules/math.html">math</a></li>
-                                <li><a href="../modules/model.html">model</a></li>
-                                <li><a href="../modules/paths.html">paths</a></li>
-                                <li><a href="../modules/rendering.html">rendering</a></li>
-                                <li><a href="../modules/shaders.html">shaders</a></li>
-                                <li><a href="../modules/skyboxes.html">skyboxes</a></li>
-                                <li><a href="../modules/transforms.html">transforms</a></li>
-                                <li><a href="../modules/webvr.html">webvr</a></li>
-                                <li><a href="../modules/xeo.html">xeo</a></li>
-                                <li><a href="../modules/xeogl.html">xeogl</a></li>
+                                <li><a href="..//modules/animation.html">animation</a></li>
+                                <li><a href="..//modules/boundaries.html">boundaries</a></li>
+                                <li><a href="..//modules/camera.html">camera</a></li>
+                                <li><a href="..//modules/canvas.html">canvas</a></li>
+                                <li><a href="..//modules/clipping.html">clipping</a></li>
+                                <li><a href="..//modules/configs.html">configs</a></li>
+                                <li><a href="..//modules/controls.html">controls</a></li>
+                                <li><a href="..//modules/culling.html">culling</a></li>
+                                <li><a href="..//modules/curves.html">curves</a></li>
+                                <li><a href="..//modules/effects.html">effects</a></li>
+                                <li><a href="..//modules/entities.html">entities</a></li>
+                                <li><a href="..//modules/geometry.html">geometry</a></li>
+                                <li><a href="..//modules/input.html">input</a></li>
+                                <li><a href="..//modules/interaction.html">interaction</a></li>
+                                <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/materials.html">materials</a></li>
+                                <li><a href="..//modules/math.html">math</a></li>
+                                <li><a href="..//modules/models.html">models</a></li>
+                                <li><a href="..//modules/paths.html">paths</a></li>
+                                <li><a href="..//modules/rendering.html">rendering</a></li>
+                                <li><a href="..//modules/shaders.html">shaders</a></li>
+                                <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="..//modules/transforms.html">transforms</a></li>
+                                <li><a href="..//modules/webvr.html">webvr</a></li>
+                                <li><a href="..//modules/xeo.html">xeo</a></li>
+                                <li><a href="..//modules/xeogl.html">xeogl</a></li>
                             </ul>
                         </div>
                     </div>
@@ -164,33 +166,33 @@
             </div>
         </div>
         <div class="yui3-u-3-4">
-                <div id="api-options">
-                    Show:
-                    <label for="api-show-inherited">
-                        <input type="checkbox" id="api-show-inherited" checked>
-                        Inherited
-                    </label>
+                <!--<div id="api-options">-->
+                    <!--Show:-->
+                    <!--<label for="api-show-inherited">-->
+                        <!--<input type="checkbox" id="api-show-inherited" checked>-->
+                        <!--Inherited-->
+                    <!--</label>-->
             
-                    <label for="api-show-protected">
-                        <input type="checkbox" id="api-show-protected">
-                        Protected
-                    </label>
+                    <!--<label for="api-show-protected">-->
+                        <!--<input type="checkbox" id="api-show-protected">-->
+                        <!--Protected-->
+                    <!--</label>-->
             
-                    <label for="api-show-private">
-                        <input type="checkbox" id="api-show-private">
-                        Private
-                    </label>
-                    <label for="api-show-deprecated">
-                        <input type="checkbox" id="api-show-deprecated">
-                        Deprecated
-                    </label>
+                    <!--<label for="api-show-private">-->
+                        <!--<input type="checkbox" id="api-show-private">-->
+                        <!--Private-->
+                    <!--</label>-->
+                    <!--<label for="api-show-deprecated">-->
+                        <!--<input type="checkbox" id="api-show-deprecated">-->
+                        <!--Deprecated-->
+                    <!--</label>-->
             
-                </div>
+                <!--</div>-->
             
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>Boundary3D Class</h1>
+<h1>Boundary3D</h1>
 <div class="box meta">
 
         <div class="extends">
@@ -208,12 +210,15 @@
 
 
 <div class="box intro">
-    <p>A <strong>Boundary3D</strong> provides the axis-aligned and object-aligned extents of its owner component.</p>
-<p>A Boundary3D provides spatial info in these properties:</p>
+    <p>A <strong>Boundary3D</strong> provides the 3D extents of its parent component in a given coordinate system.</p>
+<p>A Boundary3D provides its spatial info in these properties:</p>
 <ul>
-<li><a href="../classes/Boundary3D.html#property_obb" class="crosslink">obb</a> - an object-aligned bounding box (OBB), as an array of eight corner vertex positions</li>
-<li><a href="../classes/Boundary3D.html#property_aabb" class="crosslink">aabb</a> - an axis-aligned bounding box (AABB), as minimum and maximum corner vertex positions</li>
-<li><a href="../classes/Boundary3D.html#property_center" class="crosslink">center</a> - center coordinate</li>
+<li><a href="../classes/Boundary3D.html#property_obb" class="crosslink">obb</a> - an oriented box (OBB) in a 32-element Float32Array
+containing homogeneous coordinates for the eight corner vertices, ie. each having elements [x,y,z,w].</li>
+<li><a href="../classes/Boundary3D.html#property_aabb" class="crosslink">aabb</a> - an axis-aligned box (AABB) in a six-element Float32Array
+containing the min/max extents of the axis-aligned volume, ie. <code>[xmin,ymin,zmin,xmax,ymax,zmax]</code>,</li>
+<li><a href="../classes/Boundary3D.html#property_center" class="crosslink">center</a> - the center point as a Float32Array containing elements <code>[x,y,z]</code> and</li>
+<li><a href="../classes/Boundary3D.html#property_sphere" class="crosslink">sphere</a> - a bounding sphere, given as a Float32Array containingg elements<code>[x,y,z,radius]</code>.</li>
 </ul>
 
 <p>As shown in the diagram below, the following xeogl components have Boundary3Ds:</p>
@@ -227,7 +232,8 @@ their transformation by the <a href="../classes/Entity.html#property_transform" 
 <li>An <a href="../classes/Entity.html#property_viewBoundary" class="crosslink">Entity&#39;s viewBoundary</a> provides the <strong>View</strong>-space boundary of
 its <a href="../classes/Geometry.html" class="crosslink">Geometry&#39;s</a> <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a> after
 their transformation by both the <a href="../classes/Entity.html#property_transform" class="crosslink">Entity&#39;s Modelling transform</a> <strong>and</strong> <a href="../classes/Camera.html#property_view" class="crosslink">Viewing transform</a>.</li>
-<li>A <a href="../classes/CollectionBoundary.html#property_worldBoundary" class="crosslink">CollectionBoundary&#39;s worldBoundary</a> provides the <strong>World</strong>-space boundary of all the <a href="../classes/Entity.html" class="crosslink">Entities</a> contained within its <a href="../classes/Collection.html" class="crosslink">Collection</a>.</li>
+<li>A CollectionBoundary/worldBoundary:property provides the <strong>World</strong>-space boundary of all the <a href="../classes/Entity.html" class="crosslink">Entities</a> contained within its Collection.</li>
+<li>A <a href="../classes/Model.html#property_worldBoundary" class="crosslink">Model&#39;s worldBoundary</a> provides the <strong>World</strong>-space boundary of all its <a href="../classes/Entity.html" class="crosslink">Entities</a></li>
 </ul>
 <p>The diagram also shows an <a href="../classes/Entity.html#property_canvasBoundary" class="crosslink">Entity&#39;s canvasBoundary</a>, which is a <a href="../classes/Boundary2D.html" class="crosslink">Boundary2D</a> that provides the <strong>Canvas</strong>-space boundary of the <a href="../classes/Geometry.html" class="crosslink">Geometry&#39;s</a> <a href="../classes/Geometry.html#property_positions" class="crosslink">positions</a> after
 their transformation by the <a href="../classes/Entity.html#property_transform" class="crosslink">Entity&#39;s Modelling transform</a>, <a href="../classes/Camera.html#property_view" class="crosslink">Viewing transform</a>
@@ -265,7 +271,7 @@ worldBoundary.on("updated", function() {
        obb = worldBoundary.obb;
        aabb = worldBoundary.aabb;
        center = worldBoundary.center;
-
+       sphere = worldBoundary.sphere();
        //...
    });
 
@@ -298,6 +304,7 @@ entity.scene.on("tick", function() {
                         </li>
                     </ul><span class="paren">)</span>
                 </div>
+        
         
         
         
@@ -372,7 +379,7 @@ entity.scene.on("tick", function() {
                                     </li>
                                     <li class="param">
                                             <code class="param-name optional">[obb]</code>
-                                            <span class="type">Array of Number</span>
+                                            <span class="type">Float32Array</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
@@ -383,7 +390,7 @@ entity.scene.on("tick", function() {
                                     </li>
                                     <li class="param">
                                             <code class="param-name optional">[aabb]</code>
-                                            <span class="type">Array of Number</span>
+                                            <span class="type">Float32Array</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
@@ -394,11 +401,22 @@ entity.scene.on("tick", function() {
                                     </li>
                                     <li class="param">
                                             <code class="param-name optional">[center]</code>
-                                            <span class="type">Array of Number</span>
+                                            <span class="type">Float32Array</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
                                             <p>Optional initial 3D center</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[sphere]</code>
+                                            <span class="type">Float32Array</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Optional initial 3D bounding sphere.</p>
         
                                         </div>
         
@@ -468,7 +486,7 @@ entity.scene.on("tick", function() {
 
     <div>
         <div id="index" class="api-class-tabpanel index">
-            <h2 class="off-left">Item Index</h2>
+            <h2 class="off-left">Index</h2>
 
                 <div class="index-section methods">
                     <h3>Methods</h3>
@@ -557,6 +575,10 @@ entity.scene.on("tick", function() {
                                 <a href="#property_scene">scene</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_sphere">sphere</a>
+
+                            </li>
                             <li class="index-item property inherited inherited">
                                 <a href="#property_string">string</a>
 
@@ -598,9 +620,6 @@ entity.scene.on("tick", function() {
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>type</code>
-                </li>
-                <li class="arg">
                         <code class="optional">[cfg]</code>
                 </li>
                 <li class="arg">
@@ -612,6 +631,7 @@ entity.scene.on("tick", function() {
         <span class="returns-inline">
             <span class="type"></span>
         </span>
+
 
 
 
@@ -658,18 +678,6 @@ times as you got it, the Scene will destroy the component.</p>
             <h4>Parameters:</h4>
 
             <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">type</code>
-                        <span class="type">String</span>
-
-
-                    <div class="param-description">
-                        <p>Component type - either a string like &quot;xeogl.PhongMaterial&quot; or the actual
-constructor function, ie. xeogl.PhongMaterial.</p>
-
-                    </div>
-
-                </li>
                 <li class="param">
                         <code class="param-name optional">[cfg]</code>
                         <span class="type"></span>
@@ -721,10 +729,11 @@ component - you can specify the component ID in the <code>cfg</code> parameter.<
 
 
 
+
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_destroy">Component</a>:
-        <a href="../files/src_component.js.html#l1089"><code>src&#x2F;component.js:1089</code></a>
+        <a href="../files/src_component.js.html#l1087"><code>src&#x2F;component.js:1087</code></a>
         </p>
 
 
@@ -754,6 +763,7 @@ defaults that this component overrode on them.</p>
                 </li>
             </ul><span class="paren">)</span>
         </div>
+
 
 
 
@@ -825,6 +835,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 
+
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_fire">Component</a>:
@@ -837,8 +848,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
     <div class="description">
         <p>Fires an event on this component.</p>
-<p>Notifies existing subscribers to the event, retains the event to give to
-any subsequent notifications on that location as they are made.</p>
+<p>Notifies existing subscribers to the event, optionally retains the event to give to
+any subsequent notifications on the event as they are made.</p>
 
     </div>
 
@@ -900,6 +911,7 @@ any subsequent notifications on that location as they are made.</p>
         <span class="returns-inline">
             <span class="type">Boolean</span>
         </span>
+
 
 
 
@@ -984,6 +996,7 @@ myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (
 
 
 
+
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_log">Component</a>:
@@ -1033,6 +1046,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                 </li>
             </ul><span class="paren">)</span>
         </div>
+
 
 
 
@@ -1098,6 +1112,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
         <span class="returns-inline">
             <span class="type">String</span>
         </span>
+
 
 
 
@@ -1198,6 +1213,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 
+
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_once">Component</a>:
@@ -1277,6 +1293,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
 
 
+
     <div class="meta">
                 <p>Inherited from
                 <a href="../classes/Component.html#method_warn">Component</a>:
@@ -1323,7 +1340,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 
                     <div id="property_aabb" class="property item">
                         <h3 class="name"><code>aabb</code></h3>
-                        <span class="type"></span>
+                        <span class="type">Float32Array</span>
                     
                     
                     
@@ -1333,14 +1350,16 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_boundaries_boundary3d.js.html#l156"><code>src&#x2F;boundaries&#x2F;boundary3d.js:156</code></a>
+                            <a href="../files/src_boundaries_boundary3d.js.html#l165"><code>src&#x2F;boundaries&#x2F;boundary3d.js:165</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>3D axis-aligned bounding box (AABB).</p>
+                            <p>An axis-aligned box (AABB) representation of this 3D boundary.</p>
+                    <p>The AABB is represented by a six-element Float32Array containing the min/max extents of the
+                    axis-aligned volume, ie. <code>[xmin, ymin,zmin,xmax,ymax, zmax]</code>.</p>
                     
                         </div>
                     
@@ -1349,7 +1368,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     </div>
                     <div id="property_center" class="property item">
                         <h3 class="name"><code>center</code></h3>
-                        <span class="type">Array of Number</span>
+                        <span class="type">Float32Array</span>
                     
                     
                     
@@ -1359,14 +1378,15 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_boundaries_boundary3d.js.html#l175"><code>src&#x2F;boundaries&#x2F;boundary3d.js:175</code></a>
+                            <a href="../files/src_boundaries_boundary3d.js.html#l187"><code>src&#x2F;boundaries&#x2F;boundary3d.js:187</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>3D center point.</p>
+                            <p>The center point of this 3D boundary.</p>
+                    <p>The center point is represented by a Float32Array containing elements <code>[x,y,z]</code>.</p>
                     
                         </div>
                     
@@ -1461,7 +1481,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#property_json">Component</a>:
-                            <a href="../files/src_component.js.html#l1028"><code>src&#x2F;component.js:1028</code></a>
+                            <a href="../files/src_component.js.html#l1026"><code>src&#x2F;component.js:1026</code></a>
                             </p>
                     
                     
@@ -1502,7 +1522,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     </div>
                     <div id="property_obb" class="property item">
                         <h3 class="name"><code>obb</code></h3>
-                        <span class="type"></span>
+                        <span class="type">Float32Array</span>
                     
                     
                     
@@ -1512,14 +1532,17 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_boundaries_boundary3d.js.html#l137"><code>src&#x2F;boundaries&#x2F;boundary3d.js:137</code></a>
+                            <a href="../files/src_boundaries_boundary3d.js.html#l143"><code>src&#x2F;boundaries&#x2F;boundary3d.js:143</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>3D oriented bounding box (OBB).</p>
+                            <p>An oriented box (OBB) representation of this 3D boundary.</p>
+                    <p>The OBB is represented by a 32-element Float32Array containing the eight vertices of the box,
+                    where each vertex is a homogeneous coordinate having [x,y,z,w] elements.
+                    i</p>
                     
                         </div>
                     
@@ -1552,6 +1575,34 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_sphere" class="property item">
+                        <h3 class="name"><code>sphere</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_boundaries_boundary3d.js.html#l208"><code>src&#x2F;boundaries&#x2F;boundary3d.js:208</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>A spherical representation of this 3D boundary.</p>
+                    <p>The sphere is a four-element Float32Array containing the sphere center and
+                    radius, ie: <code>[xcenter, ycenter, zcenter, radius ]</code>.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_string" class="property item inherited">
                         <h3 class="name"><code>string</code></h3>
                         <span class="type">String</span>
@@ -1567,7 +1618,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_component.js.html#l1056"><code>src&#x2F;component.js:1056</code></a>
+                            <a href="../files/src_component.js.html#l1054"><code>src&#x2F;component.js:1054</code></a>
                             </p>
                     
                     
@@ -1659,7 +1710,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>Inherited from
                                     <a href="../classes/Component.html#event_destroyed">Component</a>:
-                            <a href="../files/src_component.js.html#l1159"><code>src&#x2F;component.js:1159</code></a>
+                            <a href="../files/src_component.js.html#l1157"><code>src&#x2F;component.js:1157</code></a>
                             </p>
                     
                     
@@ -1684,7 +1735,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_boundaries_boundary3d.js.html#l100"><code>src&#x2F;boundaries&#x2F;boundary3d.js:100</code></a>
+                            <a href="../files/src_boundaries_boundary3d.js.html#l106"><code>src&#x2F;boundaries&#x2F;boundary3d.js:106</code></a>
                             </p>
                     
                     
@@ -1692,8 +1743,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this Boundary3D&#39;s <a href="../classes/Boundary3D.html#property_obb" class="crosslink">obb</a>,
-                    <a href="../classes/Boundary3D.html#property_aabb" class="crosslink">aabb</a> or <a href="../classes/Boundary3D.html#property_center" class="crosslink">center</a>.
-                    properties change.</p>
+                    <a href="../classes/Boundary3D.html#property_aabb" class="crosslink">aabb</a>, <a href="../classes/Boundary3D.html#property_sphere" class="crosslink">sphere</a>
+                    or <a href="../classes/Boundary3D.html#property_center" class="crosslink">center</a> properties change.</p>
                     
                         </div>
                     

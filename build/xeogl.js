@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2016-10-26
+ * Built on 2016-11-08
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -531,11 +531,13 @@
         /**
          * Tests if the given component type is a subtype of another component supertype.
          * @param {String} type
-         * @param {String} superType
+         * @param {String} [superType="xeogl.Component"]
          * @returns {boolean}
          * @private
          */
         _isComponentType: function (type, superType) {
+
+            superType = superType || "xeogl.Component";
 
             if (type === superType) {
                 return true;
@@ -1073,46 +1075,11 @@ var Canvas2Image = (function () {
 
     var tempMat1 = new Float32Array(16);
     var tempMat2 = new Float32Array(16);
-    var tempVec3 = new Float32Array(3);
-    var tempVec3b = new Float32Array(3);
-    var tempVec3c = new Float32Array(3);
-    var tempVec3d = new Float32Array(3);
-    var tempVec3e = new Float32Array(3);
-    var tempVec3f = new Float32Array(3);
-    var tempVec3g = new Float32Array(3);
 
     var tempVec4 = new Float32Array(4);
 
-    /*
-     * Optimizations made based on glMatrix by Brandon Jones
-     */
-
-    /*
-     * Copyright (c) 2010 Brandon Jones
-     *
-     * This software is provided 'as-is', without any express or implied
-     * warranty. In no event will the authors be held liable for any damages
-     * arising from the use of this software.
-     *
-     * Permission is granted to anyone to use this software for any purpose,
-     * including commercial applications, and to alter it and redistribute it
-     * freely, subject to the following restrictions:
-     *
-     *    1. The origin of this software must not be misrepresented; you must not
-     *    claim that you wrote the original software. If you use this software
-     *    in a product, an acknowledgment in the product documentation would be
-     *    appreciated but is not required.
-     *
-     *    2. Altered source versions must be plainly marked as such, and must not
-     *    be misrepresented as being the original software.
-     *
-     *    3. This notice may not be removed or altered from any source
-     *    distribution.
-     */
-
-
     /**
-     * This utility object provides math functions that are used within xeogl. These functions are also part xeogl's
+     * This utility object provides math functions that are used within xeogl. These functions are also part of xeogl's
      * public API and are therefore available for you to use within your application code.
      * @module xeogl
      * @submodule math
@@ -1209,32 +1176,6 @@ var Canvas2Image = (function () {
         },
 
         /**
-         * Returns a new, uninitialized 3D axis-aligned bounding box.
-         * @method AABB3
-         * @static
-         * @returns {*} The bounding box.
-         */
-        AABB3: function () {
-            return {
-                min: new Float32Array(3),
-                max: new Float32Array(3)
-            }
-        },
-
-        /**
-         * Returns a new, uninitialized 2D axis-aligned bounding box.
-         * @method AABB2
-         * @static
-         * @returns {*} The bounding box.
-         */
-        AABB2: function () {
-            return {
-                min: new Float32Array(2),
-                max: new Float32Array(2)
-            }
-        },
-
-        /**
          * Returns a new UUID.
          * @method createUUID
          * @static
@@ -1273,7 +1214,6 @@ var Canvas2Image = (function () {
          */
         clamp: function (value, min, max) {
             return Math.max(min, Math.min(max, value));
-
         },
 
         /**
@@ -2517,25 +2457,25 @@ var Canvas2Image = (function () {
         scalingMat4c: function (x, y, z) {
             return math.scalingMat4v([x, y, z]);
         },
-        
-        scaleMat4v: function(v, m) {
-            
+
+        scaleMat4v: function (v, m) {
+
             var x = v[0];
-            var y = v[1]; 
+            var y = v[1];
             var z = v[2];
 
-            m[ 0 ] *= x;
-            m[ 4 ] *= y;
-            m[ 8 ] *= z;
-            m[ 1 ] *= x;
-            m[ 5 ] *= y;
-            m[ 9 ] *= z;
-            m[ 2 ] *= x;
-            m[ 6 ] *= y;
-            m[ 10 ] *= z;
-            m[ 3 ] *= x;
-            m[ 7 ] *= y;
-            m[ 11 ] *= z;
+            m[0] *= x;
+            m[4] *= y;
+            m[8] *= z;
+            m[1] *= x;
+            m[5] *= y;
+            m[9] *= z;
+            m[2] *= x;
+            m[6] *= y;
+            m[10] *= z;
+            m[3] *= x;
+            m[7] *= y;
+            m[11] *= z;
 
             return m;
         },
@@ -3008,6 +2948,54 @@ var Canvas2Image = (function () {
         },
 
         /**
+         * Transforms an array of positions by a 4x4 matrix.
+         * @method transformPositions3
+         * @static
+         */
+        transformPositions3: function (m, p, p2) {
+
+            p2 = p2 || p;
+
+            var i;
+            var len = p.length;
+
+            var x;
+            var y;
+            var z;
+
+            var m0 = m[0];
+            var m1 = m[1];
+            var m2 = m[2];
+            var m3 = m[3];
+            var m4 = m[4];
+            var m5 = m[5];
+            var m6 = m[6];
+            var m7 = m[7];
+            var m8 = m[8];
+            var m9 = m[9];
+            var m10 = m[10];
+            var m11 = m[11];
+            var m12 = m[12];
+            var m13 = m[13];
+            var m14 = m[14];
+            var m15 = m[15];
+
+            for (i = 0; i < len; i += 3) {
+
+                x = p[i + 0];
+                y = p[i + 1];
+                z = p[i + 2];
+
+                p2[i + 0] = (m0 * x) + (m4 * y) + (m8 * z) + m12;
+                p2[i + 1] = (m1 * x) + (m5 * y) + (m9 * z) + m13;
+                p2[i + 2] = (m2 * x) + (m6 * y) + (m10 * z) + m14;
+                p2[i + 3] = (m3 * x) + (m7 * y) + (m11 * z) + m15;
+            }
+
+            return p2;
+        },
+
+        /**
          * Transforms a three-element vector by a 4x4 matrix.
          * @method transformVec3
          * @static
@@ -3166,718 +3154,6 @@ var Canvas2Image = (function () {
             return result;
         },
 
-        /**
-         * Gets the diagonal size of a boundary given as minima and maxima.
-         * @method getAABBDiag
-         * @static
-         */
-        getAABBDiag: function (aabb) {
-            math.subVec3(aabb.max, aabb.min, tempVec3c);
-            return Math.abs(math.lenVec3(tempVec3c));
-        },
-
-        /**
-         * Get a diagonal boundary size that is symmetrical about the given point.
-         *
-         * @method getAABBDiagPoint
-         * @static
-         */
-        getAABBDiagPoint: function (aabb, p) {
-
-            var diagVec = math.subVec3(aabb.max, aabb.min, tempVec3c);
-
-            var xneg = p[0] - aabb.min[0];
-            var xpos = aabb.max[0] - p[0];
-            var yneg = p[1] - aabb.min[1];
-            var ypos = aabb.max[1] - p[1];
-            var zneg = p[2] - aabb.min[2];
-            var zpos = aabb.max[2] - p[2];
-
-            diagVec[0] += (xneg > xpos) ? xneg : xpos;
-            diagVec[1] += (yneg > ypos) ? yneg : ypos;
-            diagVec[2] += (zneg > zpos) ? zneg : zpos;
-
-            return Math.abs(math.lenVec3(diagVec));
-        },
-
-        /**
-         * Gets the center of an AABB.
-         * @method getAABBCenter
-         * @static
-         */
-        getAABBCenter: function (aabb, dest) {
-            var r = dest || math.vec3();
-
-            r[0] = (aabb.max[0] + aabb.min[0] ) * 0.5;
-            r[1] = (aabb.max[1] + aabb.min[1] ) * 0.5;
-            r[2] = (aabb.max[2] + aabb.min[2] ) * 0.5;
-
-            return r;
-        },
-
-        /**
-         * Gets the center of a 2D AABB.
-         * @method getAABB2Center
-         * @static
-         */
-        getAABB2Center: function (aabb, dest) {
-            var r = dest || math.vec2();
-
-            r[0] = (aabb.max[0] + aabb.min[0] ) / 2;
-            r[1] = (aabb.max[1] + aabb.min[1] ) / 2;
-
-            return r;
-        },
-
-        /**
-         * Collapses a 3D axis-aligned boundary, ready to expand to fit 3D points.
-         * Creates new AABB if none supplied.
-         *
-         * @method collapseAABB3
-         * @static
-         * @param {*} [aabb] 3D axis-aligned bounding box.
-         * @returns {*} 3D axis-aligned bounding box.
-         */
-        collapseAABB3: function (aabb) {
-
-            aabb = aabb || math.AABB2();
-
-            aabb.min[0] = 10000000;
-            aabb.min[1] = 10000000;
-            aabb.min[2] = 10000000;
-            aabb.max[0] = -10000000;
-            aabb.max[1] = -10000000;
-            aabb.max[2] = -10000000;
-
-            return aabb;
-        },
-
-        /**
-         * Converts an axis-aligned 3D boundary into an oriented boundary consisting of
-         * an array of eight 3D positions, one for each corner of the boundary.
-         *
-         * @method AABB3ToOBB3
-         * @static
-         * @param {*} aabb Axis-aligned boundary.
-         * @param {Array} [obb] Oriented bounding box.
-         * @returns {*} Oriented bounding box.
-         */
-        AABB3ToOBB3: function (aabb, obb) {
-
-            obb = obb || [];
-
-            if (!obb[0]) {
-                obb[0] = [];
-            }
-
-            obb[0][0] = aabb.min[0];
-            obb[0][1] = aabb.min[1];
-            obb[0][2] = aabb.min[2];
-            obb[0][3] = 1;
-
-            if (!obb[1]) {
-                obb[1] = [];
-            }
-
-            obb[1][0] = aabb.max[0];
-            obb[1][1] = aabb.min[1];
-            obb[1][2] = aabb.min[2];
-            obb[1][3] = 1;
-
-            if (!obb[2]) {
-                obb[2] = [];
-            }
-
-            obb[2][0] = aabb.max[0];
-            obb[2][1] = aabb.max[1];
-            obb[2][2] = aabb.min[2];
-            obb[2][3] = 1;
-
-            if (!obb[3]) {
-                obb[3] = [];
-            }
-
-            obb[3][0] = aabb.min[0];
-            obb[3][1] = aabb.max[1];
-            obb[3][2] = aabb.min[2];
-            obb[3][3] = 1;
-
-            if (!obb[4]) {
-                obb[4] = [];
-            }
-
-            obb[4][0] = aabb.min[0];
-            obb[4][1] = aabb.min[1];
-            obb[4][2] = aabb.max[2];
-            obb[4][3] = 1;
-
-            if (!obb[5]) {
-                obb[5] = [];
-            }
-
-            obb[5][0] = aabb.max[0];
-            obb[5][1] = aabb.min[1];
-            obb[5][2] = aabb.max[2];
-            obb[5][3] = 1;
-
-            if (!obb[6]) {
-                obb[6] = [];
-            }
-
-            obb[6][0] = aabb.max[0];
-            obb[6][1] = aabb.max[1];
-            obb[6][2] = aabb.max[2];
-            obb[6][3] = 1;
-
-            if (!obb[7]) {
-                obb[7] = [];
-            }
-
-            obb[7][0] = aabb.min[0];
-            obb[7][1] = aabb.max[1];
-            obb[7][2] = aabb.max[2];
-            obb[7][3] = 1;
-
-            return obb;
-        },
-
-        /**
-         * Finds the minimum axis-aligned 3D boundary enclosing the 3D points given in a flattened,  1-dimensional array.
-         *
-         * @method positions3ToAABB3
-         * @static
-         * @param {Array} positions Flattened 3D positions array
-         * @param {*} [aabb] Axis-aligned bounding box.
-         * @returns {*} Axis-aligned bounding box.
-         */
-        positions3ToAABB3: function (positions, aabb) {
-
-            aabb = aabb || math.AABB3();
-
-            var xmin = 100000;
-            var ymin = 100000;
-            var zmin = 100000;
-            var xmax = -100000;
-            var ymax = -100000;
-            var zmax = -100000;
-
-            var x, y, z;
-
-            for (var i = 0, len = positions.length - 2; i < len; i += 3) {
-
-                x = positions[i + 0];
-                y = positions[i + 1];
-                z = positions[i + 2];
-
-                if (x < xmin) {
-                    xmin = x;
-                }
-
-                if (y < ymin) {
-                    ymin = y;
-                }
-
-                if (z < zmin) {
-                    zmin = z;
-                }
-
-                if (x > xmax) {
-                    xmax = x;
-                }
-
-                if (y > ymax) {
-                    ymax = y;
-                }
-
-                if (z > zmax) {
-                    zmax = z;
-                }
-            }
-
-            aabb.min[0] = xmin;
-            aabb.min[1] = ymin;
-            aabb.min[2] = zmin;
-            aabb.max[0] = xmax;
-            aabb.max[1] = ymax;
-            aabb.max[2] = zmax;
-
-            return aabb;
-        },
-
-        /**
-         * Finds the minimum axis-aligned 3D boundary enclosing the given 3D points.
-         *
-         * @method points3ToAABB3
-         * @static
-         * @param {Array} points Oriented bounding box.
-         * @param {*} [aabb] Axis-aligned bounding box.
-         * @returns {*} Axis-aligned bounding box.
-         */
-        points3ToAABB3: function (points, aabb) {
-
-            aabb = aabb || math.AABB3();
-
-            var xmin = 100000;
-            var ymin = 100000;
-            var zmin = 100000;
-            var xmax = -100000;
-            var ymax = -100000;
-            var zmax = -100000;
-
-            var x, y, z;
-
-            for (var i = 0, len = points.length; i < len; i++) {
-
-                x = points[i][0];
-                y = points[i][1];
-                z = points[i][2];
-
-                if (x < xmin) {
-                    xmin = x;
-                }
-
-                if (y < ymin) {
-                    ymin = y;
-                }
-
-                if (z < zmin) {
-                    zmin = z;
-                }
-
-                if (x > xmax) {
-                    xmax = x;
-                }
-
-                if (y > ymax) {
-                    ymax = y;
-                }
-
-                if (z > zmax) {
-                    zmax = z;
-                }
-            }
-
-            aabb.min[0] = xmin;
-            aabb.min[1] = ymin;
-            aabb.min[2] = zmin;
-            aabb.max[0] = xmax;
-            aabb.max[1] = ymax;
-            aabb.max[2] = zmax;
-
-            return aabb;
-        },
-
-        /**
-         * Expands the first axis-aligned 3D boundary to enclose the second, if required.
-         *
-         * @method expandAABB3
-         * @static
-         * @param {*} aabb1 First AABB
-         * @param {*} aabb2 Second AABB
-         * @returns {*} The second AABB
-         */
-        expandAABB3: function (aabb1, aabb2) {
-
-            if (aabb1.min[0] > aabb2.min[0]) {
-                aabb1.min[0] = aabb2.min[0];
-            }
-
-            if (aabb1.min[1] > aabb2.min[1]) {
-                aabb1.min[1] = aabb2.min[1];
-            }
-
-            if (aabb1.min[2] > aabb2.min[2]) {
-                aabb1.min[2] = aabb2.min[2];
-            }
-
-            if (aabb1.max[0] < aabb2.max[0]) {
-                aabb1.max[0] = aabb2.max[0];
-            }
-
-            if (aabb1.max[1] < aabb2.max[1]) {
-                aabb1.max[1] = aabb2.max[1];
-            }
-
-            if (aabb1.max[2] < aabb2.max[2]) {
-                aabb1.max[2] = aabb2.max[2];
-            }
-
-            return aabb2;
-        },
-
-        /**
-         * Expands an axis-aligned 3D boundary to enclose the given point, if needed.
-         *
-         * @method expandAABB3Point3
-         * @static
-         * @param {*} aabb AABB
-         * @param {*} p Point
-         * @returns {*} The AABB
-         */
-        expandAABB3Point3: function (aabb, p) {
-
-            if (aabb.min[0] < p[0]) {
-                aabb.min[0] = p[0];
-            }
-
-            if (aabb.min[1] < p[1]) {
-                aabb.min[1] = p[1];
-            }
-
-            if (aabb.min[2] < p[2]) {
-                aabb.min[2] = p[2];
-            }
-
-            if (aabb.max[0] > p[0]) {
-                aabb.max[0] = p[0];
-            }
-
-            if (aabb.max[1] > p[1]) {
-                aabb.max[1] = p[1];
-            }
-
-            if (aabb.max[2] > p[2]) {
-                aabb.max[2] = p[2];
-            }
-
-            return aabb;
-        },
-
-        /**
-         * Collapses a 2D axis-aligned boundary, ready to expand to fit 2D points.
-         * Creates new AABB if none supplied.
-         *
-         * @method collapseAABB2
-         * @static
-         * @param {*} [aabb] 2D axis-aligned bounding box.
-         * @returns {*} 2D axis-aligned bounding box.
-         */
-        collapseAABB2: function (aabb) {
-
-            aabb = aabb || math.AABB2();
-
-            aabb.min[0] = 10000000;
-            aabb.min[1] = 10000000;
-            aabb.max[0] = -10000000;
-            aabb.max[1] = -10000000;
-
-            return aabb;
-        },
-
-        /**
-         * Finds the minimum 2D projected axis-aligned boundary enclosing the given 3D points.
-         *
-         * @method points3ToAABB2
-         * @static
-         * @param {Array} points 3D Points.
-         * @param {*} [aabb] 2D axis-aligned bounding box.
-         * @returns {*} 2D axis-aligned bounding box.
-         */
-        points3ToAABB2: function (points, aabb) {
-
-            aabb = aabb || math.AABB2();
-
-            var xmin = 10000000;
-            var ymin = 10000000;
-            var xmax = -10000000;
-            var ymax = -10000000;
-
-            var x;
-            var y;
-            var w;
-            var f;
-
-            for (var i = 0, len = points.length; i < len; i++) {
-
-                x = points[i][0];
-                y = points[i][1];
-                w = points[i][3] || 1.0;
-
-                f = 1.0 / w;
-
-                x *= f;
-                y *= f;
-
-                if (x < xmin) {
-                    xmin = x;
-                }
-
-                if (y < ymin) {
-                    ymin = y;
-                }
-
-                if (x > xmax) {
-                    xmax = x;
-                }
-
-                if (y > ymax) {
-                    ymax = y;
-                }
-            }
-
-            aabb.min[0] = xmin;
-            aabb.min[1] = ymin;
-            aabb.max[0] = xmax;
-            aabb.max[1] = ymax;
-
-            return aabb;
-        },
-
-        /**
-         * Expands the first axis-aligned 2D boundary to enclose the second, if required.
-         *
-         * @method expandAABB3
-         * @static
-         * @param {*} aabb1 First AABB
-         * @param {*} aabb2 Second AABB
-         * @returns {*} The second AABB
-         */
-        expandAABB2: function (aabb1, aabb2) {
-
-            if (aabb1.min[0] > aabb2.min[0]) {
-                aabb1.min[0] = aabb2.min[0];
-            }
-
-            if (aabb1.min[1] > aabb2.min[1]) {
-                aabb1.min[1] = aabb2.min[1];
-            }
-
-            if (aabb1.max[0] < aabb2.max[0]) {
-                aabb1.max[0] = aabb2.max[0];
-            }
-
-            if (aabb1.max[1] < aabb2.max[1]) {
-                aabb1.max[1] = aabb2.max[1];
-            }
-
-            return aabb2;
-        },
-
-        /**
-         * Expands an axis-aligned 2D boundary to enclose the given point, if required.
-         *
-         * @method expandAABB2Point2
-         * @static
-         * @param {*} aabb AABB
-         * @param {*} p Point
-         * @returns {*} The AABB
-         */
-        expandAABB2Point2: function (aabb, p) {
-
-            if (aabb.min[0] > p[0]) {
-                aabb.min[0] = p[0];
-            }
-
-            if (aabb.min[1] > p[1]) {
-                aabb.min[1] = p[1];
-            }
-
-            if (aabb.max[0] < p[0]) {
-                aabb.max[0] = p[0];
-            }
-
-            if (aabb.max[1] < p[1]) {
-                aabb.max[1] = p[1];
-            }
-
-            return aabb;
-        },
-
-        AABB2ToCanvas: function (aabb, canvasWidth, canvasHeight, aabb2) {
-
-            aabb2 = aabb2 || aabb;
-
-            var xmin = (aabb.min[0] + 1.0) * 0.5;
-            var ymin = (aabb.min[1] + 1.0) * 0.5;
-            var xmax = (aabb.max[0] + 1.0) * 0.5;
-            var ymax = (aabb.max[1] + 1.0) * 0.5;
-
-            aabb2.min[0] = Math.floor(xmin * canvasWidth);
-            aabb2.min[1] = canvasHeight - Math.floor(ymax * canvasHeight);
-            aabb2.max[0] = Math.floor(xmax * canvasWidth);
-            aabb2.max[1] = canvasHeight - Math.floor(ymin * canvasHeight);
-
-            return aabb;
-        },
-
-        /**
-         * Calculates the normal vector of a triangle
-         *
-         * @method triangleNormal
-         * @param a
-         * @param b
-         * @param c
-         * @param normal
-         * @returns {*}
-         */
-        triangleNormal: function (a, b, c, normal) {
-
-            normal = normal || math.vec3();
-
-            var p1x = b[0] - a[0];
-            var p1y = b[1] - a[1];
-            var p1z = b[2] - a[2];
-
-            var p2x = c[0] - a[0];
-            var p2y = c[1] - a[1];
-            var p2z = c[2] - a[2];
-
-            var p3x = p1y * p2z - p1z * p2y;
-            var p3y = p1z * p2x - p1x * p2z;
-            var p3z = p1x * p2y - p1y * p2x;
-
-            var mag = Math.sqrt(p3x * p3x + p3y * p3y + p3z * p3z);
-            if (mag === 0) {
-                normal[0] = 0;
-                normal[1] = 0;
-                normal[2] = 0;
-            } else {
-                normal[0] = p3x / mag;
-                normal[1] = p3y / mag;
-                normal[2] = p3z / mag;
-            }
-
-            return normal
-        },
-
-        /**
-         * Builds normal vectors from positions and indices.
-         *
-         * @method buildNormals
-         * @static
-         * @param {Float32Array} positions One-dimensional flattened array of positions.
-         * @param {Float32Array} indices One-dimensional flattened array of indices.*
-         * @returns {Float32Array} One-dimensional flattened array of normal vectors.
-         */
-        buildNormals: function (positions, indices) {
-
-            var i;
-            var len;
-            var nvecs = new Array(positions.length / 3);
-            var j0;
-            var j1;
-            var j2;
-            var v1;
-            var v2;
-            var v3;
-
-            for (i = 0, len = indices.length; i < len; i += 3) {
-                j0 = indices[i + 0];
-                j1 = indices[i + 1];
-                j2 = indices[i + 2];
-
-                v1 = [positions[j0 * 3 + 0], positions[j0 * 3 + 1], positions[j0 * 3 + 2]];
-                v2 = [positions[j1 * 3 + 0], positions[j1 * 3 + 1], positions[j1 * 3 + 2]];
-                v3 = [positions[j2 * 3 + 0], positions[j2 * 3 + 1], positions[j2 * 3 + 2]];
-
-                v2 = math.subVec3(v2, v1, [0, 0, 0]);
-                v3 = math.subVec3(v3, v1, [0, 0, 0]);
-
-                var n = math.normalizeVec3(math.cross3Vec3(v2, v3, [0, 0, 0]), [0, 0, 0]);
-
-                if (!nvecs[j0]) {
-                    nvecs[j0] = [];
-                }
-                if (!nvecs[j1]) {
-                    nvecs[j1] = [];
-                }
-                if (!nvecs[j2]) {
-                    nvecs[j2] = [];
-                }
-
-                nvecs[j0].push(n);
-                nvecs[j1].push(n);
-                nvecs[j2].push(n);
-            }
-
-            var normals = new Float32Array(positions.length);
-
-            // now go through and average out everything
-            for (i = 0, len = nvecs.length; i < len; i++) {
-                var count = nvecs[i].length;
-                var x = 0;
-                var y = 0;
-                var z = 0;
-                for (var j = 0; j < count; j++) {
-                    x += nvecs[i][j][0];
-                    y += nvecs[i][j][1];
-                    z += nvecs[i][j][2];
-                }
-                normals[i * 3 + 0] = (x / count);
-                normals[i * 3 + 1] = (y / count);
-                normals[i * 3 + 2] = (z / count);
-            }
-
-            return normals;
-        },
-
-
-        /**
-         * Builds vertex tangent vectors from positions, UVs and indices
-         *
-         * @method buildTangents
-         * @static
-         * @param {Float32Array} positions One-dimensional flattened array of positions.
-         * @param {Float32Array} indices One-dimensional flattened array of indices.
-         * @param {Float32Array} uv One-dimensional flattened array of UV coordinates.
-         * @returns {Float32Array} One-dimensional flattened array of tangents.
-         */
-        buildTangents: function (positions, indices, uv) {
-
-            var tangents = new Float32Array(positions.length);
-
-            // The vertex arrays needs to be calculated
-            // before the calculation of the tangents
-
-            for (var location = 0; location < indices.length; location += 3) {
-
-                // Recontructing each vertex and UV coordinate into the respective vectors
-
-                var index = indices[location];
-
-                var v0 = positions.subarray(index * 3, index * 3 + 3);
-                var uv0 = uv.subarray(index * 2, index * 2 + 2);
-
-                index = indices[location + 1];
-
-                var v1 = positions.subarray(index * 3, index * 3 + 3);
-                var uv1 = uv.subarray(index * 2, index * 2 + 2);
-
-                index = indices[location + 2];
-
-                var v2 = positions.subarray(index * 3, index * 3 + 3);
-                var uv2 = uv.subarray(index * 2, index * 2 + 2);
-
-                var deltaPos1 = math.subVec3(v1, v0, tempVec3);
-                var deltaPos2 = math.subVec3(v2, v0, tempVec3b);
-
-                var deltaUV1 = math.subVec2(uv1, uv0, tempVec3c);
-                var deltaUV2 = math.subVec2(uv2, uv0, tempVec3d);
-
-                var r = 1 / ((deltaUV1[0] * deltaUV2[1]) - (deltaUV1[1] * deltaUV2[0]));
-
-                var tangent = math.mulVec3Scalar(
-                    math.subVec3(
-                        math.mulVec3Scalar(deltaPos1, deltaUV2[1], tempVec3e),
-                        math.mulVec3Scalar(deltaPos2, deltaUV1[1], tempVec3f),
-                        tempVec3g
-                    ),
-                    r,
-                    tempVec3f
-                );
-
-                // Average the value of the vectors outs
-                for (var v = 0; v < 3; v++) {
-                    var addTo = indices[location + v] * 3;
-
-                    tangents[addTo] += tangent[0];
-                    tangents[addTo + 1] += tangent[1];
-                    tangents[addTo + 2] += tangent[2];
-                }
-            }
-
-            return tangents;
-        },
 
         /**
          * Flattens a two-dimensional array into a one-dimensional array.
@@ -3905,301 +3181,6 @@ var Canvas2Image = (function () {
             }
 
             return result;
-        },
-
-        /**
-         * Builds vertex and index arrays needed by color-indexed triangle picking.
-         *
-         * @method getPickPrimitives
-         * @static
-         * @param {Float32Array} positions One-dimensional flattened array of positions.
-         * @param {Float32Array} indices One-dimensional flattened array of indices.
-         * @returns {*} Object containing the arrays, created by this method or reused from 'pickTris' parameter.
-         */
-        getPickPrimitives: function (positions, indices) {
-
-            var numIndices = indices.length;
-
-            var pickPositions = new Float32Array(numIndices * 30); // FIXME: Why do we need to extend size like this to make large meshes pickable?
-            var pickColors = new Float32Array(numIndices * 40);
-
-            var primIndex = 0;
-
-            // Positions array index
-            var vi;
-
-            // Picking positions array index
-            var pvi;
-
-            // Picking color array index
-            var pci;
-
-            // Triangle indices
-
-            var i;
-            var r;
-            var g;
-            var b;
-            var a;
-
-            for (var location = 0; location < numIndices; location += 3) {
-
-                pvi = location * 3;
-                pci = location * 4;
-
-                // Primitive-indexed triangle pick color
-
-                a = (primIndex >> 24 & 0xFF) / 255.0;
-                b = (primIndex >> 16 & 0xFF) / 255.0;
-                g = (primIndex >> 8 & 0xFF) / 255.0;
-                r = (primIndex & 0xFF) / 255.0;
-
-                // A
-
-                i = indices[location];
-                vi = i * 3;
-
-                pickPositions[pvi] = positions[vi];
-                pickPositions[pvi + 1] = positions[vi + 1];
-                pickPositions[pvi + 2] = positions[vi + 2];
-
-                pickColors[pci] = r;
-                pickColors[pci + 1] = g;
-                pickColors[pci + 2] = b;
-                pickColors[pci + 3] = a;
-
-
-                // B
-
-                i = indices[location + 1];
-                vi = i * 3;
-
-                pickPositions[pvi + 3] = positions[vi];
-                pickPositions[pvi + 4] = positions[vi + 1];
-                pickPositions[pvi + 5] = positions[vi + 2];
-
-                pickColors[pci + 4] = r;
-                pickColors[pci + 5] = g;
-                pickColors[pci + 6] = b;
-                pickColors[pci + 7] = a;
-
-
-                // C
-
-                i = indices[location + 2];
-                vi = i * 3;
-
-                pickPositions[pvi + 6] = positions[vi];
-                pickPositions[pvi + 7] = positions[vi + 1];
-                pickPositions[pvi + 8] = positions[vi + 2];
-
-                pickColors[pci + 8] = r;
-                pickColors[pci + 9] = g;
-                pickColors[pci + 10] = b;
-                pickColors[pci + 11] = a;
-
-                primIndex++;
-            }
-
-            return {
-                positions: pickPositions,
-                colors: pickColors
-            };
-        },
-
-        /**
-         * Finds the intersection of a 3D ray with a 3D triangle.
-         *
-         * @method rayTriangleIntersect
-         * @static
-         * @param {Float32Array} origin Ray origin.
-         * @param {Float32Array} dir Ray direction.
-         * @param {Float32Array} a First triangle vertex.
-         * @param {Float32Array} b Second triangle vertex.
-         * @param {Float32Array} c Third triangle vertex.
-         * @param {Float32Array} [isect] Intersection point.
-         * @returns {Float32Array} The intersection point, or null if no intersection found.
-         */
-        rayTriangleIntersect: function (origin, dir, a, b, c, isect) {
-
-            isect = isect || math.vec3();
-
-            var EPSILON = 0.000001;
-
-            var edge1 = math.subVec3(b, a, tempVec3);
-            var edge2 = math.subVec3(c, a, tempVec3b);
-
-            var pvec = math.cross3Vec3(dir, edge2, tempVec3c);
-            var det = math.dotVec3(edge1, pvec);
-            if (det < EPSILON) {
-                return null;
-            }
-
-            var tvec = math.subVec3(origin, a, tempVec3d);
-            var u = math.dotVec3(tvec, pvec);
-            if (u < 0 || u > det) {
-                return null;
-            }
-
-            var qvec = math.cross3Vec3(tvec, edge1, tempVec3e);
-            var v = math.dotVec3(dir, qvec);
-            if (v < 0 || u + v > det) {
-                return null;
-            }
-
-            var t = math.dotVec3(edge2, qvec) / det;
-            isect[0] = origin[0] + t * dir[0];
-            isect[1] = origin[1] + t * dir[1];
-            isect[2] = origin[2] + t * dir[2];
-
-            return isect;
-        },
-
-        /**
-         * Finds the intersection of a 3D ray with a plane defined by 3 points.
-         *
-         * @method rayPlaneIntersect
-         * @static
-         * @param {Float32Array} origin Ray origin.
-         * @param {Float32Array} dir Ray direction.
-         * @param {Float32Array} a First point on plane.
-         * @param {Float32Array} b Second point on plane.
-         * @param {Float32Array} c Third point on plane.
-         * @param {Float32Array} [isect] Intersection point.
-         * @returns {Float32Array} The intersection point.
-         */
-        rayPlaneIntersect: function (origin, dir, a, b, c, isect) {
-
-            isect = isect || math.vec3();
-
-            dir = math.normalizeVec3(dir, tempVec3);
-
-            var edge1 = math.subVec3(b, a, tempVec3b);
-            var edge2 = math.subVec3(c, a, tempVec3c);
-
-            var n = math.cross3Vec3(edge1, edge2, tempVec3d);
-            math.normalizeVec3(n, n);
-
-            var d = -math.dotVec3(a, n);
-
-            var t = -(math.dotVec3(origin, n) + d) / math.dotVec3(dir, n);
-
-            isect[0] = origin[0] + t * dir[0];
-            isect[1] = origin[1] + t * dir[1];
-            isect[2] = origin[2] + t * dir[2];
-
-            return isect;
-        },
-
-        /**
-         * Gets barycentric coordinates from cartesian coordinates within a triangle.
-         *
-         * @method cartesianToBaryCentric
-         * @static
-         * @param {Float32Array} cartesian Cartesian coordinates.
-         * @param {Float32Array} a First triangle vertex.
-         * @param {Float32Array} b Second triangle vertex.
-         * @param {Float32Array} c Third triangle vertex.
-         * @param {Float32Array} [bary] The barycentric coordinates.
-         * @returns {Float32Array} The barycentric coordinates, or null if the triangle was invalid.
-         * @returns {*}
-         */
-        cartesianToBarycentric: function (cartesian, a, b, c, bary) {
-
-            var f1 = math.subVec3(a, cartesian, tempVec3);
-            var f2 = math.subVec3(b, cartesian, tempVec3b);
-            var f3 = math.subVec3(c, cartesian, tempVec3c);
-
-            var t1 = math.subVec3(a, b, tempVec3d);
-            var t2 = math.subVec3(a, c, tempVec3e);
-
-            var a0 = math.lenVec3(math.cross3Vec3(t1, t2, tempVec3f));
-
-            bary[0] = math.lenVec3(math.cross3Vec3(f2, f3, tempVec3f)) / a0;
-            bary[1] = math.lenVec3(math.cross3Vec3(f3, f1, tempVec3f)) / a0;
-            bary[2] = math.lenVec3(math.cross3Vec3(f1, f2, tempVec3f)) / a0;
-
-            return bary;
-        },
-
-        cartesianToBarycentric2: function (cartesian, a, b, c, dest) {
-
-            var v0 = math.subVec3(c, a, tempVec3);
-            var v1 = math.subVec3(b, a, tempVec3b);
-            var v2 = math.subVec3(cartesian, a, tempVec3c);
-
-            var dot00 = math.dotVec3(v0, v0);
-            var dot01 = math.dotVec3(v0, v1);
-            var dot02 = math.dotVec3(v0, v2);
-            var dot11 = math.dotVec3(v1, v1);
-            var dot12 = math.dotVec3(v1, v2);
-
-            var denom = ( dot00 * dot11 - dot01 * dot01 );
-
-            // Colinear or singular triangle
-
-            if (denom === 0) {
-
-                // Arbitrary location outside of triangle
-
-                return null;
-            }
-
-            var invDenom = 1 / denom;
-
-            var u = ( dot11 * dot02 - dot01 * dot12 ) * invDenom;
-            var v = ( dot00 * dot12 - dot01 * dot02 ) * invDenom;
-
-            dest[0] = 1 - u - v;
-            dest[1] = v;
-            dest[2] = u;
-
-            return dest;
-        },
-
-        /**
-         * Returns true if the given barycentric coordinates are within their triangle.
-         *
-         * @method barycentricInsideTriangle
-         * @static
-         * @param {Float32Array} bary Barycentric coordinates.
-         * @returns {Boolean} True if the barycentric coordinates are inside their triangle.
-         * @returns {*}
-         */
-        barycentricInsideTriangle: function (bary) {
-
-            var v = bary[1];
-            var u = bary[2];
-
-            return (u >= 0) && (v >= 0) && (u + v < 1);
-        },
-
-        /**
-         * Gets cartesian coordinates from barycentric coordinates within a triangle.
-         *
-         * @method barycentricToCartesian
-         * @static
-         * @param {Float32Array} bary The barycentric coordinate.
-         * @param {Float32Array} a First triangle vertex.
-         * @param {Float32Array} b Second triangle vertex.
-         * @param {Float32Array} c Third triangle vertex.
-         * @param {Float32Array} [cartesian] Cartesian coordinates.
-         * @returns {Float32Array} The cartesian coordinates, or null if the triangle was invalid.
-         * @returns {*}
-         */
-        barycentricToCartesian2: function (bary, a, b, c, cartesian) {
-
-            cartesian = cartesian || math.vec3();
-
-            var u = bary[0];
-            var v = bary[1];
-            var w = bary[2];
-
-            cartesian[0] = a[0] * u + b[0] * v + c[0] * w;
-            cartesian[1] = a[1] * u + b[1] * v + c[1] * w;
-            cartesian[2] = a[2] * u + b[2] * v + c[2] * w;
-
-            return cartesian;
         },
 
 
@@ -4520,7 +3501,7 @@ var Canvas2Image = (function () {
 
             return m;
         },
-        
+
         normalizeQuaternion: function (q, dest) {
             dest = dest || q;
             var len = math.lenVec4([q[0], q[1], q[2], q[3]]);
@@ -4564,90 +3545,1315 @@ var Canvas2Image = (function () {
         }
     };
 
-})();;xeogl.math.tangentQuadraticBezier = function (t, p0, p1, p2) {
-    return 2 * ( 1 - t ) * ( p1 - p0 ) + 2 * t * ( p2 - p1 );
+})();;/**
+ * Boundary math functions.
+ */
+(function () {
 
-};
+    "use strict";
 
-xeogl.math.tangentQuadraticBezier = function (t, p0, p1, p2, p3) {
-    return -3 * p0 * (1 - t) * (1 - t) +
-        3 * p1 * (1 - t) * (1 - t) - 6 * t * p1 * (1 - t) +
-        6 * t * p2 * (1 - t) - 3 * t * t * p2 +
-        3 * t * t * p3;
+    var math = xeogl.math;
 
-};
+    /**
+     * Returns a new, uninitialized 3D axis-aligned bounding box.
+     *
+     * @private
+     */
+    math.AABB3 = function (values) {
+        return new Float32Array(values || 6);
+    };
 
-xeogl.math.tangentSpline = function (t, p0, p1, p2, p3) {
+    /**
+     * Returns a new, uninitialized 2D axis-aligned bounding box.
+     *
+     * @private
+     */
+    math.AABB2 = function (values) {
+        return new Float32Array(values || 4);
+    };
 
-    var h00 = 6 * t * t - 6 * t;
-    var h10 = 3 * t * t - 4 * t + 1;
-    var h01 = -6 * t * t + 6 * t;
-    var h11 = 3 * t * t - 2 * t;
+    /**
+     * Returns a new, uninitialized 3D oriented bounding box (OBB).
+     *
+     * @private
+     */
+    math.OBB3 = function (values) {
+        return new Float32Array(values || 32);
+    };
 
-    return h00 + h10 + h01 + h11;
+    /**
+     * Returns a new, uninitialized 2D oriented bounding box (OBB).
+     *
+     * @private
+     */
+    math.OBB2 = function (values) {
+        return new Float32Array(values || 16);
+    };
 
-};
 
-// Catmull-Rom
+    /**
+     * Transforms an OBB3 by a 4x4 matrix.
+     *
+     * @private
+     */
+    math.transformOBB3 = function (m, p, p2) {
 
-xeogl.math.catmullRomInterpolate = function (p0, p1, p2, p3, t) {
-    var v0 = ( p2 - p0 ) * 0.5;
-    var v1 = ( p3 - p1 ) * 0.5;
-    var t2 = t * t;
-    var t3 = t * t2;
-    return ( 2 * p1 - 2 * p2 + v0 + v1 ) * t3 + ( -3 * p1 + 3 * p2 - 2 * v0 - v1 ) * t2 + v0 * t + p1;
+        p2 = p2 || p;
 
-};
+        var i;
+        var len = p.length;
 
-// Bezier Curves formulas obtained from
-// http://en.wikipedia.org/wiki/B%C3%A9zier_curve
+        var x;
+        var y;
+        var z;
 
-// Quad Bezier Functions
+        var m0 = m[0];
+        var m1 = m[1];
+        var m2 = m[2];
+        var m3 = m[3];
+        var m4 = m[4];
+        var m5 = m[5];
+        var m6 = m[6];
+        var m7 = m[7];
+        var m8 = m[8];
+        var m9 = m[9];
+        var m10 = m[10];
+        var m11 = m[11];
+        var m12 = m[12];
+        var m13 = m[13];
+        var m14 = m[14];
+        var m15 = m[15];
 
-xeogl.math.b2p0 = function (t, p) {
-    var k = 1 - t;
-    return k * k * p;
+        for (i = 0; i < len; i += 4) {
 
-};
+            x = p[i + 0];
+            y = p[i + 1];
+            z = p[i + 2];
 
-xeogl.math.b2p1 = function (t, p) {
-    return 2 * ( 1 - t ) * t * p;
-};
+            p2[i + 0] = (m0 * x) + (m4 * y) + (m8 * z) + m12;
+            p2[i + 1] = (m1 * x) + (m5 * y) + (m9 * z) + m13;
+            p2[i + 2] = (m2 * x) + (m6 * y) + (m10 * z) + m14;
+            p2[i + 3] = (m3 * x) + (m7 * y) + (m11 * z) + m15;
+        }
 
-xeogl.math.b2p2 = function (t, p) {
-    return t * t * p;
-};
+        return p2;
+    };
 
-xeogl.math.b2 = function (t, p0, p1, p2) {
-    return this.b2p0(t, p0) + this.b2p1(t, p1) + this.b2p2(t, p2);
-};
+    /**
+     * Gets the diagonal size of an AABB3 given as minima and maxima.
+     *
+     * @private
+     */
+    math.getAABB3Diag = (function () {
 
-// Cubic Bezier Functions
+        var min = new Float32Array(3);
+        var max = new Float32Array(3);
+        var tempVec3 = new Float32Array(3);
 
-xeogl.math.b3p0 = function (t, p) {
-    var k = 1 - t;
-    return k * k * k * p;
-};
+        return function (aabb) {
 
-xeogl.math.b3p1 = function (t, p) {
-    var k = 1 - t;
-    return 3 * k * k * t * p;
-};
+            min[0] = aabb[0];
+            min[1] = aabb[1];
+            min[2] = aabb[2];
 
-xeogl.math.b3p2 = function (t, p) {
-    var k = 1 - t;
-    return 3 * k * t * t * p;
-};
+            max[0] = aabb[3];
+            max[1] = aabb[4];
+            max[2] = aabb[5];
 
-xeogl.math.b3p3 = function (t, p) {
-    return t * t * t * p;
-};
+            math.subVec3(max, min, tempVec3);
 
-xeogl.math.b3 = function (t, p0, p1, p2, p3) {
-    return this.b3p0(t, p0) + this.b3p1(t, p1) + this.b3p2(t, p2) + this.b3p3(t, p3);
-};
+            return Math.abs(math.lenVec3(tempVec3));
+        };
+    })();
 
-;(function () {
+    /**
+     * Get a diagonal boundary size that is symmetrical about the given point.
+     *
+     * @private
+     */
+    math.getAABB3DiagPoint = (function () {
+
+        var min = new Float32Array(3);
+        var max = new Float32Array(3);
+        var tempVec3 = new Float32Array(3);
+
+        return function (aabb, p) {
+
+            min[0] = aabb[0];
+            min[1] = aabb[1];
+            min[2] = aabb[2];
+
+            max[0] = aabb[3];
+            max[1] = aabb[4];
+            max[2] = aabb[5];
+
+            var diagVec = math.subVec3(max, min, tempVec3);
+
+            var xneg = p[0] - aabb[0];
+            var xpos = aabb[3] - p[0];
+            var yneg = p[1] - aabb[1];
+            var ypos = aabb[4] - p[1];
+            var zneg = p[2] - aabb[2];
+            var zpos = aabb[5] - p[2];
+
+            diagVec[0] += (xneg > xpos) ? xneg : xpos;
+            diagVec[1] += (yneg > ypos) ? yneg : ypos;
+            diagVec[2] += (zneg > zpos) ? zneg : zpos;
+
+            return Math.abs(math.lenVec3(diagVec));
+        };
+    })();
+
+    /**
+     * Gets the center of an AABB.
+     *
+     * @private
+     */
+    math.getAABB3Center = function (aabb, dest) {
+        var r = dest || math.vec3();
+
+        r[0] = (aabb[3] + aabb[0] ) * 0.5;
+        r[1] = (aabb[4] + aabb[1] ) * 0.5;
+        r[2] = (aabb[5] + aabb[2] ) * 0.5;
+
+        return r;
+    };
+
+    /**
+     * Gets the center of a 2D AABB.
+     *
+     * @private
+     */
+    math.getAABB2Center = function (aabb, dest) {
+        var r = dest || math.vec2();
+
+        r[0] = (aabb[2] + aabb[0] ) / 2;
+        r[1] = (aabb[3] + aabb[1] ) / 2;
+
+        return r;
+    };
+
+    /**
+     * Collapses a 3D axis-aligned boundary, ready to expand to fit 3D points.
+     * Creates new AABB if none supplied.
+     *
+     * @private
+     */
+    math.collapseAABB3 = function (aabb) {
+
+        aabb = aabb || math.AABB3();
+
+        aabb[0] = 10000000;
+        aabb[1] = 10000000;
+        aabb[2] = 10000000;
+        aabb[3] = -10000000;
+        aabb[4] = -10000000;
+        aabb[5] = -10000000;
+
+        return aabb;
+    };
+
+    /**
+     * Converts an axis-aligned 3D boundary into an oriented boundary consisting of
+     * an array of eight 3D positions, one for each corner of the boundary.
+     *
+     * @private
+     */
+    math.AABB3ToOBB3 = function (aabb, obb) {
+
+        obb = obb || math.OBB3();
+
+        obb[0] = aabb[0];
+        obb[1] = aabb[1];
+        obb[2] = aabb[2];
+        obb[3] = 1;
+
+        obb[4] = aabb[3];
+        obb[5] = aabb[1];
+        obb[6] = aabb[2];
+        obb[7] = 1;
+
+        obb[8] = aabb[3];
+        obb[9] = aabb[4];
+        obb[10] = aabb[2];
+        obb[11] = 1;
+
+        obb[12] = aabb[0];
+        obb[13] = aabb[4];
+        obb[14] = aabb[2];
+        obb[15] = 1;
+
+        obb[16] = aabb[0];
+        obb[17] = aabb[1];
+        obb[18] = aabb[5];
+        obb[19] = 1;
+
+        obb[20] = aabb[3];
+        obb[21] = aabb[1];
+        obb[22] = aabb[5];
+        obb[23] = 1;
+
+        obb[24] = aabb[3];
+        obb[25] = aabb[4];
+        obb[26] = aabb[5];
+        obb[27] = 1;
+
+        obb[28] = aabb[0];
+        obb[29] = aabb[4];
+        obb[30] = aabb[5];
+        obb[31] = 1;
+
+        return obb;
+    };
+
+    /**
+     * Finds the minimum axis-aligned 3D boundary enclosing the homogeneous 3D points (x,y,z,w) given in a flattened array.
+     *
+     * @private
+     */
+    math.positions3ToAABB3 = function (positions, aabb) {
+
+        aabb = aabb || math.AABB3();
+
+        var xmin = 100000;
+        var ymin = 100000;
+        var zmin = 100000;
+        var xmax = -100000;
+        var ymax = -100000;
+        var zmax = -100000;
+
+        var x, y, z;
+
+        for (var i = 0, len = positions.length; i < len; i += 3) {
+
+            x = positions[i + 0];
+            y = positions[i + 1];
+            z = positions[i + 2];
+
+            if (x < xmin) {
+                xmin = x;
+            }
+
+            if (y < ymin) {
+                ymin = y;
+            }
+
+            if (z < zmin) {
+                zmin = z;
+            }
+
+            if (x > xmax) {
+                xmax = x;
+            }
+
+            if (y > ymax) {
+                ymax = y;
+            }
+
+            if (z > zmax) {
+                zmax = z;
+            }
+        }
+
+        aabb[0] = xmin;
+        aabb[1] = ymin;
+        aabb[2] = zmin;
+        aabb[3] = xmax;
+        aabb[4] = ymax;
+        aabb[5] = zmax;
+
+        return aabb;
+    };
+
+    /**
+     * Finds the minimum axis-aligned 3D boundary enclosing the homogeneous 3D points (x,y,z,w) given in a flattened array.
+     *
+     * @private
+     */
+    math.OBB3ToAABB3 = function (obb, aabb) {
+
+        aabb = aabb || math.AABB3();
+
+        var xmin = 100000;
+        var ymin = 100000;
+        var zmin = 100000;
+        var xmax = -100000;
+        var ymax = -100000;
+        var zmax = -100000;
+
+        var x, y, z;
+
+        for (var i = 0, len = obb.length; i < len; i += 4) {
+
+            x = obb[i + 0];
+            y = obb[i + 1];
+            z = obb[i + 2];
+
+            if (x < xmin) {
+                xmin = x;
+            }
+
+            if (y < ymin) {
+                ymin = y;
+            }
+
+            if (z < zmin) {
+                zmin = z;
+            }
+
+            if (x > xmax) {
+                xmax = x;
+            }
+
+            if (y > ymax) {
+                ymax = y;
+            }
+
+            if (z > zmax) {
+                zmax = z;
+            }
+        }
+
+        aabb[0] = xmin;
+        aabb[1] = ymin;
+        aabb[2] = zmin;
+        aabb[3] = xmax;
+        aabb[4] = ymax;
+        aabb[5] = zmax;
+
+        return aabb;
+    };
+
+    /**
+     * Finds the minimum axis-aligned 3D boundary enclosing the given 3D points.
+     *
+     * @private
+     */
+    math.points3ToAABB3 = function (points, aabb) {
+
+        aabb = aabb || math.AABB3();
+
+        var xmin = 100000;
+        var ymin = 100000;
+        var zmin = 100000;
+        var xmax = -100000;
+        var ymax = -100000;
+        var zmax = -100000;
+
+        var x, y, z;
+
+        for (var i = 0, len = points.length; i < len; i++) {
+
+            x = points[i][0];
+            y = points[i][1];
+            z = points[i][2];
+
+            if (x < xmin) {
+                xmin = x;
+            }
+
+            if (y < ymin) {
+                ymin = y;
+            }
+
+            if (z < zmin) {
+                zmin = z;
+            }
+
+            if (x > xmax) {
+                xmax = x;
+            }
+
+            if (y > ymax) {
+                ymax = y;
+            }
+
+            if (z > zmax) {
+                zmax = z;
+            }
+        }
+
+        aabb[0] = xmin;
+        aabb[1] = ymin;
+        aabb[2] = zmin;
+        aabb[3] = xmax;
+        aabb[4] = ymax;
+        aabb[5] = zmax;
+
+        return aabb;
+    };
+
+    /**
+     * Finds the minimum boundary sphere enclosing the given 3D points.
+     *
+     * @private
+     */
+    math.points3ToSphere3 = (function () {
+
+        var tempVec3 = new Float32Array(3);
+
+        return function (points, sphere) {
+
+            sphere = sphere || math.vec4();
+
+            var x = 0;
+            var y = 0;
+            var z = 0;
+
+            var i;
+            var numPoints = points.length;
+
+            for (i = 0; i < numPoints; i++) {
+                x += points[i][0];
+                y += points[i][1];
+                z += points[i][2];
+            }
+
+            sphere[0] = x / numPoints;
+            sphere[1] = y / numPoints;
+            sphere[2] = z / numPoints;
+
+            var radius = 0;
+            var dist;
+
+            for (i = 0; i < numPoints; i++) {
+
+                dist = Math.abs(math.lenVec3(math.subVec3(points[i], sphere, tempVec3)));
+
+                if (dist > radius) {
+                    radius = dist;
+                }
+            }
+
+            sphere[3] = radius;
+
+            return sphere;
+        };
+    })();
+
+    /**
+     * Finds the minimum boundary sphere enclosing the given 3D points.
+     *
+     * @private
+     */
+    math.OBB3ToSphere3 = (function () {
+
+        var point = new Float32Array(3);
+        var tempVec3 = new Float32Array(3);
+
+        return function (points, sphere) {
+
+            sphere = sphere || math.vec4();
+
+            var x = 0;
+            var y = 0;
+            var z = 0;
+
+            var i;
+            var lenPoints = points.length;
+            var numPoints = lenPoints / 4;
+
+            for (i = 0; i < lenPoints; i += 4) {
+                x += points[i + 0];
+                y += points[i + 1];
+                z += points[i + 2];
+            }
+
+            sphere[0] = x / numPoints;
+            sphere[1] = y / numPoints;
+            sphere[2] = z / numPoints;
+
+            var radius = 0;
+            var dist;
+
+            for (i = 0; i < lenPoints; i += 4) {
+
+                point[0] = points[i + 0];
+                point[1] = points[i + 1];
+                point[2] = points[i + 2];
+
+                dist = Math.abs(math.lenVec3(math.subVec3(point, sphere, tempVec3)));
+
+                if (dist > radius) {
+                    radius = dist;
+                }
+            }
+
+            sphere[3] = radius;
+
+            return sphere;
+        };
+    })();
+
+    /**
+     * Gets the center of a bounding sphere.
+     *
+     * @private
+     */
+    math.getSphere3Center = function (sphere, dest) {
+        dest = dest || math.vec3();
+
+        dest[0] = sphere[0];
+        dest[1] = sphere[1];
+        dest[2] = sphere[2];
+
+        return dest;
+    };
+
+    /**
+     * Expands the first axis-aligned 3D boundary to enclose the second, if required.
+     *
+     * @private
+     */
+    math.expandAABB3 = function (aabb1, aabb2) {
+
+        if (aabb1[0] > aabb2[0]) {
+            aabb1[0] = aabb2[0];
+        }
+
+        if (aabb1[1] > aabb2[1]) {
+            aabb1[1] = aabb2[1];
+        }
+
+        if (aabb1[2] > aabb2[2]) {
+            aabb1[2] = aabb2[2];
+        }
+
+        if (aabb1[3] < aabb2[3]) {
+            aabb1[3] = aabb2[3];
+        }
+
+        if (aabb1[4] < aabb2[4]) {
+            aabb1[4] = aabb2[4];
+        }
+
+        if (aabb1[5] < aabb2[5]) {
+            aabb1[5] = aabb2[5];
+        }
+
+        return aabb1;
+    };
+
+    /**
+     * Expands an axis-aligned 3D boundary to enclose the given point, if needed.
+     *
+     * @private
+     */
+    math.expandAABB3Point3 = function (aabb, p) {
+
+        if (aabb[0] < p[0]) {
+            aabb[0] = p[0];
+        }
+
+        if (aabb[1] < p[1]) {
+            aabb[1] = p[1];
+        }
+
+        if (aabb[2] < p[2]) {
+            aabb[2] = p[2];
+        }
+
+        if (aabb[3] > p[0]) {
+            aabb[3] = p[0];
+        }
+
+        if (aabb[4] > p[1]) {
+            aabb[4] = p[1];
+        }
+
+        if (aabb[5] > p[2]) {
+            aabb[5] = p[2];
+        }
+
+        return aabb;
+    };
+
+    /**
+     * Collapses a 2D axis-aligned boundary, ready to expand to fit 2D points.
+     * Creates new AABB if none supplied.
+     *
+     * @private
+     */
+    math.collapseAABB2 = function (aabb) {
+
+        aabb = aabb || math.AABB2();
+
+        aabb[0] = 10000000;
+        aabb[1] = 10000000;
+        aabb[2] = -10000000;
+        aabb[3] = -10000000;
+
+        return aabb;
+    };
+
+    /**
+     * Finds the minimum 2D projected axis-aligned boundary enclosing the given 3D points.
+     *
+     * @private
+     */
+    math.OBB3ToAABB2 = function (points, aabb) {
+
+        aabb = aabb || math.AABB2();
+
+        var xmin = 10000000;
+        var ymin = 10000000;
+        var xmax = -10000000;
+        var ymax = -10000000;
+
+        var x;
+        var y;
+        var w;
+        var f;
+
+        for (var i = 0, len = points.length; i < len; i += 4) {
+
+            x = points[i + 0];
+            y = points[i + 1];
+            w = points[i + 3] || 1.0;
+
+            f = 1.0 / w;
+
+            x *= f;
+            y *= f;
+
+            if (x < xmin) {
+                xmin = x;
+            }
+
+            if (y < ymin) {
+                ymin = y;
+            }
+
+            if (x > xmax) {
+                xmax = x;
+            }
+
+            if (y > ymax) {
+                ymax = y;
+            }
+        }
+
+        aabb[0] = xmin;
+        aabb[1] = ymin;
+        aabb[2] = xmax;
+        aabb[3] = ymax;
+
+        return aabb;
+    };
+
+    /**
+     * Expands the first axis-aligned 2D boundary to enclose the second, if required.
+     *
+     * @private
+     */
+    math.expandAABB2 = function (aabb1, aabb2) {
+
+        if (aabb1[0] > aabb2[0]) {
+            aabb1[0] = aabb2[0];
+        }
+
+        if (aabb1[1] > aabb2[1]) {
+            aabb1[1] = aabb2[1];
+        }
+
+        if (aabb1[2] < aabb2[2]) {
+            aabb1[2] = aabb2[2];
+        }
+
+        if (aabb1[3] < aabb2[3]) {
+            aabb1[3] = aabb2[3];
+        }
+
+        return aabb1;
+    };
+
+    /**
+     * Expands an axis-aligned 2D boundary to enclose the given point, if required.
+     *
+     * @private
+     */
+    math.expandAABB2Point2 = function (aabb, p) {
+
+        if (aabb[0] > p[0]) {
+            aabb[0] = p[0];
+        }
+
+        if (aabb[1] > p[1]) {
+            aabb[1] = p[1];
+        }
+
+        if (aabb[2] < p[0]) {
+            aabb[2] = p[0];
+        }
+
+        if (aabb[3] < p[1]) {
+            aabb[3] = p[1];
+        }
+
+        return aabb;
+    };
+
+    math.AABB2ToCanvas = function (aabb, canvasWidth, canvasHeight, aabb2) {
+
+        aabb2 = aabb2 || aabb;
+
+        var xmin = (aabb[0] + 1.0) * 0.5;
+        var ymin = (aabb[1] + 1.0) * 0.5;
+        var xmax = (aabb[2] + 1.0) * 0.5;
+        var ymax = (aabb[3] + 1.0) * 0.5;
+
+        aabb2[0] = Math.floor(xmin * canvasWidth);
+        aabb2[1] = canvasHeight - Math.floor(ymax * canvasHeight);
+        aabb2[2] = Math.floor(xmax * canvasWidth);
+        aabb2[3] = canvasHeight - Math.floor(ymin * canvasHeight);
+
+        return aabb2;
+    };
+
+})();;/**
+ * Boundary math functions.
+ */
+(function () {
+
+    "use strict";
+
+    var math = xeogl.math;
+
+    /**
+     * Calculates the normal vector of a trianglel.
+     *
+     * @private
+     */
+    math.triangleNormal = function (a, b, c, normal) {
+
+        normal = normal || math.vec3();
+
+        var p1x = b[0] - a[0];
+        var p1y = b[1] - a[1];
+        var p1z = b[2] - a[2];
+
+        var p2x = c[0] - a[0];
+        var p2y = c[1] - a[1];
+        var p2z = c[2] - a[2];
+
+        var p3x = p1y * p2z - p1z * p2y;
+        var p3y = p1z * p2x - p1x * p2z;
+        var p3z = p1x * p2y - p1y * p2x;
+
+        var mag = Math.sqrt(p3x * p3x + p3y * p3y + p3z * p3z);
+        if (mag === 0) {
+            normal[0] = 0;
+            normal[1] = 0;
+            normal[2] = 0;
+        } else {
+            normal[0] = p3x / mag;
+            normal[1] = p3y / mag;
+            normal[2] = p3z / mag;
+        }
+
+        return normal
+    };
+
+    /**
+     * Finds the intersection of a 3D ray with a 3D triangle.
+     *
+     * @private
+     */
+    math.rayTriangleIntersect = (function() {
+
+        var tempVec3 = new Float32Array(3);
+        var tempVec3b = new Float32Array(3);
+        var tempVec3c = new Float32Array(3);
+        var tempVec3d = new Float32Array(3);
+        var tempVec3e = new Float32Array(3);
+
+        return function (origin, dir, a, b, c, isect) {
+
+            isect = isect || math.vec3();
+
+            var EPSILON = 0.000001;
+
+            var edge1 = math.subVec3(b, a, tempVec3);
+            var edge2 = math.subVec3(c, a, tempVec3b);
+
+            var pvec = math.cross3Vec3(dir, edge2, tempVec3c);
+            var det = math.dotVec3(edge1, pvec);
+            if (det < EPSILON) {
+                return null;
+            }
+
+            var tvec = math.subVec3(origin, a, tempVec3d);
+            var u = math.dotVec3(tvec, pvec);
+            if (u < 0 || u > det) {
+                return null;
+            }
+
+            var qvec = math.cross3Vec3(tvec, edge1, tempVec3e);
+            var v = math.dotVec3(dir, qvec);
+            if (v < 0 || u + v > det) {
+                return null;
+            }
+
+            var t = math.dotVec3(edge2, qvec) / det;
+            isect[0] = origin[0] + t * dir[0];
+            isect[1] = origin[1] + t * dir[1];
+            isect[2] = origin[2] + t * dir[2];
+
+            return isect;
+        };
+    })();
+
+    /**
+     * Finds the intersection of a 3D ray with a plane defined by 3 points.
+     *
+     * @private
+     */
+    math.rayPlaneIntersect = (function() {
+
+        var tempVec3 = new Float32Array(3);
+        var tempVec3b = new Float32Array(3);
+        var tempVec3c = new Float32Array(3);
+        var tempVec3d = new Float32Array(3);
+
+        return function (origin, dir, a, b, c, isect) {
+
+            isect = isect || math.vec3();
+
+            dir = math.normalizeVec3(dir, tempVec3);
+
+            var edge1 = math.subVec3(b, a, tempVec3b);
+            var edge2 = math.subVec3(c, a, tempVec3c);
+
+            var n = math.cross3Vec3(edge1, edge2, tempVec3d);
+            math.normalizeVec3(n, n);
+
+            var d = -math.dotVec3(a, n);
+
+            var t = -(math.dotVec3(origin, n) + d) / math.dotVec3(dir, n);
+
+            isect[0] = origin[0] + t * dir[0];
+            isect[1] = origin[1] + t * dir[1];
+            isect[2] = origin[2] + t * dir[2];
+
+            return isect;
+        };
+    })();
+
+    /**
+     * Gets barycentric coordinates from cartesian coordinates within a triangle.
+     *
+     * @private
+     */
+    math.cartesianToBarycentric = (function() {
+
+        var tempVec3 = new Float32Array(3);
+        var tempVec3b = new Float32Array(3);
+        var tempVec3c = new Float32Array(3);
+
+        return function (cartesian, a, b, c, dest) {
+
+            var v0 = math.subVec3(c, a, tempVec3);
+            var v1 = math.subVec3(b, a, tempVec3b);
+            var v2 = math.subVec3(cartesian, a, tempVec3c);
+
+            var dot00 = math.dotVec3(v0, v0);
+            var dot01 = math.dotVec3(v0, v1);
+            var dot02 = math.dotVec3(v0, v2);
+            var dot11 = math.dotVec3(v1, v1);
+            var dot12 = math.dotVec3(v1, v2);
+
+            var denom = ( dot00 * dot11 - dot01 * dot01 );
+
+            // Colinear or singular triangle
+
+            if (denom === 0) {
+
+                // Arbitrary location outside of triangle
+
+                return null;
+            }
+
+            var invDenom = 1 / denom;
+
+            var u = ( dot11 * dot02 - dot01 * dot12 ) * invDenom;
+            var v = ( dot00 * dot12 - dot01 * dot02 ) * invDenom;
+
+            dest[0] = 1 - u - v;
+            dest[1] = v;
+            dest[2] = u;
+
+            return dest;
+        };
+    })();
+
+    /**
+     * Returns true if the given barycentric coordinates are within their triangle.
+     *
+     * @private
+     */
+    math.barycentricInsideTriangle = function (bary) {
+
+        var v = bary[1];
+        var u = bary[2];
+
+        return (u >= 0) && (v >= 0) && (u + v < 1);
+    };
+
+    /**
+     * Gets cartesian coordinates from barycentric coordinates within a triangle.
+     *
+     * @private
+     */
+    math.barycentricToCartesian = function (bary, a, b, c, cartesian) {
+
+        cartesian = cartesian || math.vec3();
+
+        var u = bary[0];
+        var v = bary[1];
+        var w = bary[2];
+
+        cartesian[0] = a[0] * u + b[0] * v + c[0] * w;
+        cartesian[1] = a[1] * u + b[1] * v + c[1] * w;
+        cartesian[2] = a[2] * u + b[2] * v + c[2] * w;
+
+        return cartesian;
+    };
+
+})();;/**
+ * Boundary math functions.
+ */
+(function () {
+
+    "use strict";
+
+    var math = xeogl.math;
+
+    /**
+     * Builds normal vectors from positions and indices.
+     *
+     * @private
+     */
+    math.buildNormals = (function () {
+
+        var a = math.vec3();
+        var b = math.vec3();
+        var c = math.vec3();
+        var ab = math.vec3();
+        var ac = math.vec3();
+        var crossVec = math.vec3();
+        var normVec = math.vec3();
+
+        return function (positions, indices) {
+
+            var i;
+            var len;
+            var nvecs = new Array(positions.length / 3);
+            var j0;
+            var j1;
+            var j2;
+
+            for (i = 0, len = indices.length; i < len; i += 3) {
+
+                j0 = indices[i];
+                j1 = indices[i + 1];
+                j2 = indices[i + 2];
+
+                a[0] = positions[j0 * 3];
+                a[1] = positions[j0 * 3 + 1];
+                a[2] = positions[j0 * 3 + 2];
+
+                b[0] = positions[j1 * 3];
+                b[1] = positions[j1 * 3 + 1];
+                b[2] = positions[j1 * 3 + 2];
+
+                c[0] = positions[j2 * 3];
+                c[1] = positions[j2 * 3 + 1];
+                c[2] = positions[j2 * 3 + 2];
+
+                math.subVec3(b, a, ab);
+                math.subVec3(c, a, ac);
+
+                math.normalizeVec3(math.cross3Vec3(ab, ac, crossVec), normVec);
+
+                if (!nvecs[j0]) {
+                    nvecs[j0] = [];
+                }
+                if (!nvecs[j1]) {
+                    nvecs[j1] = [];
+                }
+                if (!nvecs[j2]) {
+                    nvecs[j2] = [];
+                }
+
+                nvecs[j0].push(normVec);
+                nvecs[j1].push(normVec);
+                nvecs[j2].push(normVec);
+            }
+
+            var normals = new Float32Array(positions.length);
+
+            // now go through and average out everything
+            for (i = 0, len = nvecs.length; i < len; i++) {
+                var count = nvecs[i].length;
+                var x = 0;
+                var y = 0;
+                var z = 0;
+                for (var j = 0; j < count; j++) {
+                    x += nvecs[i][j][0];
+                    y += nvecs[i][j][1];
+                    z += nvecs[i][j][2];
+                }
+                normals[i * 3] = (x / count);
+                normals[i * 3 + 1] = (y / count);
+                normals[i * 3 + 2] = (z / count);
+            }
+
+            return normals;
+        };
+    })();
+
+    /**
+     * Builds vertex tangent vectors from positions, UVs and indices.
+     *
+     * @private
+     */
+    math.buildTangents = (function () {
+
+        var tempVec3 = new Float32Array(3);
+        var tempVec3b = new Float32Array(3);
+        var tempVec3c = new Float32Array(3);
+        var tempVec3d = new Float32Array(3);
+        var tempVec3e = new Float32Array(3);
+        var tempVec3f = new Float32Array(3);
+        var tempVec3g = new Float32Array(3);
+
+        return function (positions, indices, uv) {
+
+            var tangents = new Float32Array(positions.length);
+
+            // The vertex arrays needs to be calculated
+            // before the calculation of the tangents
+
+            for (var location = 0; location < indices.length; location += 3) {
+
+                // Recontructing each vertex and UV coordinate into the respective vectors
+
+                var index = indices[location];
+
+                var v0 = positions.subarray(index * 3, index * 3 + 3);
+                var uv0 = uv.subarray(index * 2, index * 2 + 2);
+
+                index = indices[location + 1];
+
+                var v1 = positions.subarray(index * 3, index * 3 + 3);
+                var uv1 = uv.subarray(index * 2, index * 2 + 2);
+
+                index = indices[location + 2];
+
+                var v2 = positions.subarray(index * 3, index * 3 + 3);
+                var uv2 = uv.subarray(index * 2, index * 2 + 2);
+
+                var deltaPos1 = math.subVec3(v1, v0, tempVec3);
+                var deltaPos2 = math.subVec3(v2, v0, tempVec3b);
+
+                var deltaUV1 = math.subVec2(uv1, uv0, tempVec3c);
+                var deltaUV2 = math.subVec2(uv2, uv0, tempVec3d);
+
+                var r = 1 / ((deltaUV1[0] * deltaUV2[1]) - (deltaUV1[1] * deltaUV2[0]));
+
+                var tangent = math.mulVec3Scalar(
+                    math.subVec3(
+                        math.mulVec3Scalar(deltaPos1, deltaUV2[1], tempVec3e),
+                        math.mulVec3Scalar(deltaPos2, deltaUV1[1], tempVec3f),
+                        tempVec3g
+                    ),
+                    r,
+                    tempVec3f
+                );
+
+                // Average the value of the vectors
+
+                var addTo;
+
+                for (var v = 0; v < 3; v++) {
+                    addTo = indices[location + v] * 3;
+                    tangents[addTo] += tangent[0];
+                    tangents[addTo + 1] += tangent[1];
+                    tangents[addTo + 2] += tangent[2];
+                }
+            }
+
+            return tangents;
+        };
+    })();
+
+    /**
+     * Builds vertex and index arrays needed by color-indexed triangle picking.
+     *
+     * @private
+     */
+    math.buildPickTriangles = function (positions, indices) {
+
+        var numIndices = indices.length;
+        var pickPositions = new Float32Array(numIndices * 30); // FIXME: Why do we need to extend size like this to make large meshes pickable?
+        var pickColors = new Float32Array(numIndices * 40);
+        var primIndex = 0;
+        var vi;// Positions array index
+        var pvi;// Picking positions array index
+        var pci; // Picking color array index
+
+        // Triangle indices
+        var i;
+        var r;
+        var g;
+        var b;
+        var a;
+
+        for (var location = 0; location < numIndices; location += 3) {
+
+            pvi = location * 3;
+            pci = location * 4;
+
+            // Primitive-indexed triangle pick color
+
+            a = (primIndex >> 24 & 0xFF) / 255.0;
+            b = (primIndex >> 16 & 0xFF) / 255.0;
+            g = (primIndex >> 8 & 0xFF) / 255.0;
+            r = (primIndex & 0xFF) / 255.0;
+
+            // A
+
+            i = indices[location];
+            vi = i * 3;
+
+            pickPositions[pvi] = positions[vi];
+            pickPositions[pvi + 1] = positions[vi + 1];
+            pickPositions[pvi + 2] = positions[vi + 2];
+
+            pickColors[pci] = r;
+            pickColors[pci + 1] = g;
+            pickColors[pci + 2] = b;
+            pickColors[pci + 3] = a;
+
+            // B
+
+            i = indices[location + 1];
+            vi = i * 3;
+
+            pickPositions[pvi + 3] = positions[vi];
+            pickPositions[pvi + 4] = positions[vi + 1];
+            pickPositions[pvi + 5] = positions[vi + 2];
+
+            pickColors[pci + 4] = r;
+            pickColors[pci + 5] = g;
+            pickColors[pci + 6] = b;
+            pickColors[pci + 7] = a;
+
+            // C
+
+            i = indices[location + 2];
+            vi = i * 3;
+
+            pickPositions[pvi + 6] = positions[vi];
+            pickPositions[pvi + 7] = positions[vi + 1];
+            pickPositions[pvi + 8] = positions[vi + 2];
+
+            pickColors[pci + 8] = r;
+            pickColors[pci + 9] = g;
+            pickColors[pci + 10] = b;
+            pickColors[pci + 11] = a;
+
+            primIndex++;
+        }
+
+        return {
+            positions: pickPositions,
+            colors: pickColors
+        };
+    };
+}());;/**
+ * Curve math functions.
+ */
+(function () {
+
+    "use strict";
+
+    var math = xeogl.math;
+
+    math.tangentQuadraticBezier = function (t, p0, p1, p2) {
+        return 2 * ( 1 - t ) * ( p1 - p0 ) + 2 * t * ( p2 - p1 );
+    };
+
+    math.tangentQuadraticBezier = function (t, p0, p1, p2, p3) {
+        return -3 * p0 * (1 - t) * (1 - t) +
+            3 * p1 * (1 - t) * (1 - t) - 6 * t * p1 * (1 - t) +
+            6 * t * p2 * (1 - t) - 3 * t * t * p2 +
+            3 * t * t * p3;
+    };
+
+    math.tangentSpline = function (t) {
+        var h00 = 6 * t * t - 6 * t;
+        var h10 = 3 * t * t - 4 * t + 1;
+        var h01 = -6 * t * t + 6 * t;
+        var h11 = 3 * t * t - 2 * t;
+        return h00 + h10 + h01 + h11;
+    };
+
+    math.catmullRomInterpolate = function (p0, p1, p2, p3, t) {
+        var v0 = ( p2 - p0 ) * 0.5;
+        var v1 = ( p3 - p1 ) * 0.5;
+        var t2 = t * t;
+        var t3 = t * t2;
+        return ( 2 * p1 - 2 * p2 + v0 + v1 ) * t3 + ( -3 * p1 + 3 * p2 - 2 * v0 - v1 ) * t2 + v0 * t + p1;
+    };
+
+    // Bezier Curve formulii from http://en.wikipedia.org/wiki/B%C3%A9zier_curve
+
+    // Quad Bezier Functions
+
+    math.b2p0 = function (t, p) {
+        var k = 1 - t;
+        return k * k * p;
+
+    };
+
+    math.b2p1 = function (t, p) {
+        return 2 * ( 1 - t ) * t * p;
+    };
+
+    math.b2p2 = function (t, p) {
+        return t * t * p;
+    };
+
+    math.b2 = function (t, p0, p1, p2) {
+        return this.b2p0(t, p0) + this.b2p1(t, p1) + this.b2p2(t, p2);
+    };
+
+    // Cubic Bezier Functions
+
+    math.b3p0 = function (t, p) {
+        var k = 1 - t;
+        return k * k * k * p;
+    };
+
+    math.b3p1 = function (t, p) {
+        var k = 1 - t;
+        return 3 * k * k * t * p;
+    };
+
+    math.b3p2 = function (t, p) {
+        var k = 1 - t;
+        return 3 * k * t * t * p;
+    };
+
+    math.b3p3 = function (t, p) {
+        return t * t * t * p;
+    };
+
+    math.b3 = function (t, p0, p1, p2, p3) {
+        return this.b3p0(t, p0) + this.b3p1(t, p1) + this.b3p2(t, p2) + this.b3p3(t, p3);
+    };
+})();;(function () {
 
     "use strict";
 
@@ -10588,8 +10794,8 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
         /**
          * Fires an event on this component.
          *
-         * Notifies existing subscribers to the event, retains the event to give to
-         * any subsequent notifications on that location as they are made.
+         * Notifies existing subscribers to the event, optionally retains the event to give to
+         * any subsequent notifications on the event as they are made.
          *
          * @method fire
          * @param {String} event The event type name
@@ -10988,9 +11194,9 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                 var onDetached = oldAttachment.params.onDetached;
                 if (onDetached) {
                     if (xeogl._isFunction(onDetached)) {
-                        onDetached(component);
+                        onDetached(oldComponent);
                     } else {
-                        onDetached.scope ? onDetached.callback.call(onDetached.scope, component) : onDetached.callback(component);
+                        onDetached.scope ? onDetached.callback.call(onDetached.scope, oldComponent) : onDetached.callback(oldComponent);
                     }
                 }
 
@@ -10999,7 +11205,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                     // Note that we just unsubscribed from all events fired by the child
                     // component, so destroying it won't fire events back at us now.
 
-                    component.destroy();
+                    oldComponent.destroy();
                 }
             }
 
@@ -11119,20 +11325,18 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
          * times as you got it, the Scene will destroy the component.
          *
          * @method create
-         * @param {String} type Component type - either a string like "xeogl.PhongMaterial" or the actual
-         * constructor function, ie. xeogl.PhongMaterial.
          * @param {*} [cfg] Configuration for the component instance - only used if this is the first time you are getting
          * the component, ignored when reusing an existing instance.
          * @param {String|Number} [instanceId] Identifies the shared component instance. Note that this is not used as the ID of the
          * component - you can specify the component ID in the ````cfg```` parameter.
          * @returns {*}
          */
-        create: function (type, cfg, instanceId) {
+        create: function (cfg, instanceId) {
 
             // Create or reuse the component via this component's scene;
             // reusing if instanceId given, else getting unique instance otherwise
 
-            var component = this.scene._getSharedComponent(type, cfg, instanceId);
+            var component = this.scene._getSharedComponent(cfg, instanceId);
 
             if (component) {
 
@@ -13043,7 +13247,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
                                 // Get barycentric coordinates of the ray-triangle intersection
 
-                                math.cartesianToBarycentric2(position, a, b, c, bary);
+                                math.cartesianToBarycentric(position, a, b, c, bary);
 
                                 hit.bary = bary;
 
@@ -13066,8 +13270,8 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                                     nc[2] = normals[ic3 + 2];
 
                                     var normal = math.addVec3(math.addVec3(
-                                            math.mulVec3Scalar(na, bary[0], tempVec3),
-                                            math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
+                                        math.mulVec3Scalar(na, bary[0], tempVec3),
+                                        math.mulVec3Scalar(nb, bary[1], tempVec3b), tempVec3c),
                                         math.mulVec3Scalar(nc, bary[2], tempVec3d), tempVec3e);
 
                                     hit.normal = math.transformVec3(entity.transform.leafMatrix, normal, tempVec3f);
@@ -13158,14 +13362,44 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
          *
          * @method _getSharedComponent
          * @private
-         * @param {String|Function} type Component type, eg "xeogl.PhongMaterial", or constructor.
          * @param {*} [cfg] Attributes for the component instance - only used if this is the first time you are getting
          * the component, ignored when reusing an existing shared component.
          * @param {String|Number} instanceId Identifies the shared component instance. Note that this is not used as the ID of the
          * component - you can specify the component ID in the ````cfg```` parameter.
          * @returns {*}
          */
-        _getSharedComponent: function (type, cfg, instanceId) {
+        _getSharedComponent: function (cfg, instanceId) {
+
+            var type;
+            var claz;
+
+            if (xeogl._isObject(cfg)) { // Component config given
+
+                type = cfg.type || "xeogl.Component";
+                claz = xeogl[type.substring(6)];
+
+            } else if (xeogl._isString(cfg)) {
+
+                type = cfg;
+                claz = xeogl[type.substring(6)];
+
+            } else {
+
+                claz = cfg;
+                type = cfg.prototype.type;
+
+                // TODO: catch unknown component class
+            }
+
+            if (!claz) {
+                this.error("Component type not found: " + type);
+                return;
+            }
+
+            if (!xeogl._isComponentType(type, "xeogl.Component")) {
+                this.error("Expected a xeogl.Component type or subtype");
+                return;
+            }
 
             var component;
 
@@ -13189,25 +13423,12 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
             // Component does not yet exist
 
-            var clazz;
-
-            if (xeogl._isString(type)) {
-                var type2 = type.substring(3); // Find constructor on the xeogl namespace
-                clazz = xeogl[type2];
-                if (!clazz) {
-                    this.error("Component type not found: '" + type + "'");
-                    return null;
-                }
-            } else {
-                clazz = type;
-            }
-
             if (cfg && cfg.id && this.components[cfg.id]) {
                 this.error("Component " + xeogl._inQuotes(cfg.id) + " already exists in Scene");
                 return null;
             }
 
-            component = new clazz(this, cfg);
+            component = new claz(this, cfg);
 
             if (instanceId !== undefined) {
 
@@ -13505,8 +13726,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
  <ul>
  <li>specific ````eye````, ````look```` and ````up```` positions,</li>
  <li>a World-space {{#crossLink "Boundary3D"}}{{/crossLink}},</li>
- <li>an instance or ID of any {{#crossLink "Component"}}{{/crossLink}} subtype that provides a World-space</li>
- {{#crossLink "Boundary3D"}}{{/crossLink}} in a "worldBoundary" property, or</li>
+ <li>an instance or ID of any {{#crossLink "Component"}}{{/crossLink}} subtype that provides a World-space {{#crossLink "Boundary3D"}}{{/crossLink}} in a "worldBoundary" property, or</li>
  <li>an axis-aligned World-space bounding box.</li>
  </ul>
 
@@ -13527,7 +13747,6 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
     eye: [-5,-5,-5],
     look: [0,0,0]
     up: [0,1,0],
-    stopFOV: 45, // Default, degrees
     duration: 1 // Default, seconds
  }, function() {
     // Arrived
@@ -13536,7 +13755,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
  ## Flying to an Entity
 
  Flying to an {{#crossLink "Entity"}}{{/crossLink}} (which provides a World-space
- {{#crossLink "Boundary3D"}}{{/crossLink}} via its {{#crossLink "Entity/worldBoundary:property"}}{{/crossLink}} property):
+ {{#crossLink "Boundary3D"}}{{/crossLink}} via its {{#crossLink "Entity/worldBoundary:property"}}{{/crossLink}} property:
 
  ````Javascript
  var camera = new xeogl.Camera();
@@ -13545,7 +13764,8 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
  // the Camera to each specified target
  var cameraFlight = new xeogl.CameraFlight({
     camera: camera,
-    stopFOV: 45, // Default, degrees
+    fit: true, // Default
+    fitFOV: 45, // Default, degrees
     duration: 1 // Default, seconds
  });
 
@@ -13588,11 +13808,15 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CameraFlight.
- @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
+ @param [cfg.camera] {Number|String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
  Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this CameraFlight. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
- @param [cfg.stopFOV=45] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
-  fill the canvas when calling {{#crossLink "CameraFlight/flyTo:method"}}{{/crossLink}} or {{#crossLink "CameraFlight/jumpTo:method"}}{{/crossLink}}.
+ @param [cfg.fit=false] {Boolean} When true, will ensure that when this CameraFlight has flown or jumped to a boundary
+ it will adjust the distance between the {{#crossLink "CameraFlight/camera:property"}}camera{{/crossLink}}'s {{#crossLink "Lookat/eye:property"}}eye{{/crossLink}}
+ and {{#crossLink "Lookat/look:property"}}{{/crossLink}} position so as to ensure that the target boundary is filling the view volume.
+ @param [cfg.fitFOV=45] {Number} How much field-of-view, in degrees, that a target boundary should
+ fill the canvas when fitting the {{#crossLink "Camera"}}Camera{{/crossLink}} to the target boundary.
+ @param [cfg.trail] {Boolean} When true, will cause this CameraFlight to point the {{#crossLink "Camera"}}{{/crossLink}} in the direction that it is travelling.
  @param [cfg.duration=1] {Number} Flight duration, in seconds, when calling {{#crossLink "CameraFlight/flyTo:method"}}{{/crossLink}}.
  @extends Component
  */
@@ -13600,11 +13824,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
     "use strict";
 
-    // Caches to avoid garbage collection
-
-    var tempVec3 = xeogl.math.vec3();
-    var tempVec3b = xeogl.math.vec3();
-    var tempVec3c = xeogl.math.vec3();
+    var math = xeogl.math;
 
     xeogl.CameraFlight = xeogl.Component.extend({
 
@@ -13619,36 +13839,40 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
         _init: function (cfg) {
 
-            this._look1 = xeogl.math.vec3();
-            this._eye1 = xeogl.math.vec3();
-            this._up1 = xeogl.math.vec3();
+            this._look1 = math.vec3();
+            this._eye1 = math.vec3();
+            this._up1 = math.vec3();
 
-            this._look2 = xeogl.math.vec3();
-            this._eye2 = xeogl.math.vec3();
-            this._up2 = xeogl.math.vec3();
+            this._look2 = math.vec3();
+            this._eye2 = math.vec3();
+            this._up2 = math.vec3();
 
             this._flying = false;
+            this._flyEyeLookUp = false;
 
             this._callback = null;
             this._callbackScope = null;
 
             this._onTick = null;
 
-            this._stopFOV = 55;
-
             this._time1 = null;
             this._time2 = null;
 
             this.easing = cfg.easing !== false;
 
-            this.duration = cfg.duration || 0.5;
-
+            this.duration = cfg.duration;
+            this.fit = cfg.fit;
+            this.fitFOV = cfg.fitFOV;
+            this.trail = cfg.trail;
             this.camera = cfg.camera;
 
             // Shows a wireframe box at the given boundary
-            this._boundaryIndicator = this.create(xeogl.Entity, {
-                geometry: this.create(xeogl.BoundaryGeometry, {
-                    material: this.create(xeogl.PhongMaterial, {
+            this._boundaryHelper = this.create({
+                type: "xeogl.Entity",
+                geometry: this.create({
+                    type: "xeogl.BoundaryGeometry",
+                    material: this.create({
+                        type: "xeogl.PhongMaterial",
                         diffuse: [0, 0, 0],
                         ambient: [0, 0, 0],
                         specular: [0, 0, 0],
@@ -13656,10 +13880,12 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                         lineWidth: 3
                     })
                 }),
-                visibility: this.create(xeogl.Visibility, {
+                visibility: this.create({
+                    type: "xeogl.Visibility",
                     visible: false
                 }),
-                modes: this.create(xeogl.Modes, {
+                modes: this.create({
+                    type: "xeogl.Modes",
                     collidable: false // Effectively has no boundary
                 })
             });
@@ -13674,120 +13900,37 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
          *     <li>When the target is an explicit {{#crossLink "Camera"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````
          *      vectors, then this CameraFlight will interpolate the {{#crossLink "Camera"}}{{/crossLink}} to that target and stop there.</li>
          * @method flyTo
-         * @param params  {*|Component} Either a parameters object or a {{#crossLink "Component"}}{{/crossLink}} subtype that has a {{#crossLink "WorldBoundary"}}{{/crossLink}}.
+         * @param [params=scene]  {*|Component} Either a parameters object or a {{#crossLink "Component"}}{{/crossLink}} subtype that has a {{#crossLink "WorldBoundary"}}{{/crossLink}}.
          * @param[params.arc=0]  {Number} Factor in range [0..1] indicating how much the
          * {{#crossLink "Camera/eye:property"}}Camera's eye{{/crossLink}} position will
          * swing away from its {{#crossLink "Camera/eye:property"}}look{{/crossLink}} position as it flies to the target.
-         * @param [params.component] {String|Component} ID or instance of a component to fly to.
+         * @param [params.component] {Number|String|Component} ID or instance of a component to fly to. Defaults to the entire {{#crossLink "Scene"}}{{/crossLink}}.
          * @param [params.aabb] {*}  World-space axis-aligned bounding box (AABB) target to fly to.
-         * @param [params.eye] {Array of Number} Position to fly the eye position to.
-         * @param [params.look] {Array of Number} Position to fly the look position to.
-         * @param [params.up] {Array of Number} Position to fly the up vector to.
-         * @param [params.stopFOV=45] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
-         * fill the canvas on arrival.
-         * @param [params.duration=1] {Number} Flight duration in seconds.
+         * @param [params.eye] {Float32Array} Position to fly the eye position to.
+         * @param [params.look] {Float32Array} Position to fly the look position to.
+         * @param [params.up] {Float32Array} Position to fly the up vector to.
+         * @param [params.fitFOV] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
+         * fill the canvas on arrival. Overrides {{#crossLink "CameraFlight/fitFOV:property"}}{{/crossLink}}.
+         * @param [params.fit] {Boolean} Whether to fit the target to the view volume. Overrides {{#crossLink "CameraFlight/fit:property"}}{{/crossLink}}.
+         * @param [params.duration] {Number} Flight duration in seconds.  Overrides {{#crossLink "CameraFlight/duration:property"}}{{/crossLink}}.
          * @param [callback] {Function} Callback fired on arrival
          * @param [scope] {Object} Optional scope for callback
          */
-        flyTo: function (params, callback, scope) {
+        flyTo: (function () {
 
-            if (this._flying) {
-                this.stop();
-            }
+            var tempVec3 = math.vec3();
 
-            var camera = this._attached.camera;
+            return function (params, callback, scope) {
 
-            if (!camera) {
-                if (callback) {
-                    if (scope) {
-                        callback.call(scope);
-                    } else {
-                        callback();
-                    }
-                }
-                return;
-            }
+                params = params || this.scene;
 
-            this._flying = false;
-
-            this._callback = callback;
-            this._callbackScope = scope;
-
-            var lookat = camera.view;
-
-            this._eye1[0] = lookat.eye[0];
-            this._eye1[1] = lookat.eye[1];
-            this._eye1[2] = lookat.eye[2];
-
-            this._look1[0] = lookat.look[0];
-            this._look1[1] = lookat.look[1];
-            this._look1[2] = lookat.look[2];
-
-            this._up1[0] = lookat.up[0];
-            this._up1[1] = lookat.up[1];
-            this._up1[2] = lookat.up[2];
-
-            var aabb;
-            var eye;
-            var look;
-            var up;
-            var componentId;
-
-            if (params.worldBoundary) {
-
-                // Argument is a Component subtype with a worldBoundary
-
-                aabb = params.worldBoundary.aabb;
-
-            } else if (params.aabb) {
-
-                aabb = params.aabb;
-
-                // Argument is a Boundary3D
-
-            } else if (params.min !== undefined && params.max !== undefined) {
-
-                // Argument is an AABB
-
-                aabb = params;
-
-            } else if (params.eye || params.look || params.up) {
-
-                // Argument is eye, look and up positions
-
-                eye = params.eye;
-                look = params.look;
-                up = params.up;
-
-            } else {
-
-                // Argument must be an instance or ID of a Component (subtype)
-
-                var component = params;
-
-                if (xeogl._isNumeric(component) || xeogl._isString(component)) {
-
-                    componentId = component;
-
-                    component = this.scene.components[componentId];
-
-                    if (!component) {
-                        this.error("Component not found: " + xeogl._inQuotes(componentId));
-                        if (callback) {
-                            if (scope) {
-                                callback.call(scope);
-                            } else {
-                                callback();
-                            }
-                        }
-                        return;
-                    }
+                if (this._flying) {
+                    this.stop();
                 }
 
-                var worldBoundary = component.worldBoundary;
+                var camera = this._attached.camera;
 
-                if (!worldBoundary) {
-                    this.error("Can't fly to component " + xeogl._inQuotes(componentId) + " - does not have a worldBoundary");
+                if (!camera) {
                     if (callback) {
                         if (scope) {
                             callback.call(scope);
@@ -13798,74 +13941,169 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                     return;
                 }
 
-                aabb = worldBoundary.aabb;
-            }
+                this._flying = false;
 
-            var offset = params.offset;
+                this._callback = callback;
+                this._callbackScope = scope;
 
-            if (aabb) {
+                var view = camera.view;
 
-                if (aabb.max[0] <= aabb.min[0] || aabb.max[1] <= aabb.min[1] || aabb.max[2] <= aabb.min[2]) {
+                this._eye1[0] = view.eye[0];
+                this._eye1[1] = view.eye[1];
+                this._eye1[2] = view.eye[2];
 
-                    // Don't fly to an empty boundary
-                    return;
+                this._look1[0] = view.look[0];
+                this._look1[1] = view.look[1];
+                this._look1[2] = view.look[2];
+
+                this._up1[0] = view.up[0];
+                this._up1[1] = view.up[1];
+                this._up1[2] = view.up[2];
+
+                var aabb;
+                var eye;
+                var look;
+                var up;
+                var componentId;
+
+                if (params.worldBoundary) {
+
+                    // Argument is a Component subtype with a worldBoundary
+
+                    aabb = params.worldBoundary.aabb;
+
+                } else if (params.aabb) {
+
+                    aabb = params.aabb;
+
+                    // Argument is a Boundary3D
+
+                } else if (params.length === 6) {
+
+                    // Argument is an AABB
+
+                    aabb = params;
+
+                } else if (params.eye || params.look || params.up) {
+
+                    // Argument is eye, look and up positions
+
+                    eye = params.eye;
+                    look = params.look;
+                    up = params.up;
+
+                } else {
+
+                    // Argument must be an instance or ID of a Component (subtype)
+
+                    var component = params;
+
+                    if (xeogl._isNumeric(component) || xeogl._isString(component)) {
+
+                        componentId = component;
+
+                        component = this.scene.components[componentId];
+
+                        if (!component) {
+                            this.error("Component not found: " + xeogl._inQuotes(componentId));
+                            if (callback) {
+                                if (scope) {
+                                    callback.call(scope);
+                                } else {
+                                    callback();
+                                }
+                            }
+                            return;
+                        }
+                    }
+
+                    var worldBoundary = component.worldBoundary;
+
+                    if (!worldBoundary) {
+                        this.error("Can't fly to component " + xeogl._inQuotes(componentId) + " - does not have a worldBoundary");
+                        if (callback) {
+                            if (scope) {
+                                callback.call(scope);
+                            } else {
+                                callback();
+                            }
+                        }
+                        return;
+                    }
+
+                    aabb = worldBoundary.aabb;
                 }
 
-                // Show boundary
+                var offset = params.offset;
 
-                this._boundaryIndicator.geometry.aabb = aabb;
-                this._boundaryIndicator.visibility.visible = true;
+                if (aabb) {
 
-                var aabbCenter = xeogl.math.getAABBCenter(aabb);
+                    if (aabb[3] <= aabb[0] || aabb[4] <= aabb[1] || aabb[5] <= aabb[2]) {
 
-                this._look2 = params.look || aabbCenter;
+                        // Don't fly to an empty boundary
+                        return;
+                    }
 
-                if (offset) {
-                    this._look2[0] += offset[0];
-                    this._look2[1] += offset[1];
-                    this._look2[2] += offset[2];
+                    // Show boundary
+
+                    this._boundaryHelper.geometry.aabb = aabb;
+                    this._boundaryHelper.visibility.visible = true;
+
+                    var aabbCenter = math.getAABB3Center(aabb);
+
+                    this._look2 = params.look || aabbCenter;
+
+                    if (offset) {
+                        this._look2[0] += offset[0];
+                        this._look2[1] += offset[1];
+                        this._look2[2] += offset[2];
+                    }
+
+                    var vec = math.normalizeVec3(math.subVec3(this._eye1, this._look1, tempVec3));
+                    var diag = (params.look && false) ? math.getAABB3DiagPoint(aabb, params.look) : math.getAABB3Diag(aabb);
+                    var sca = Math.abs((diag) / Math.tan((params.fitFOV || this._fitFOV) / 2));
+
+                    this._eye2[0] = this._look2[0] + (vec[0] * sca);
+                    this._eye2[1] = this._look2[1] + (vec[1] * sca);
+                    this._eye2[2] = this._look2[2] + (vec[2] * sca);
+
+                    this._up2[0] = this._up1[0];
+                    this._up2[1] = this._up1[1];
+                    this._up2[2] = this._up1[2];
+
+                    this._flyEyeLookUp = false;
+
+                } else if (eye || look || up) {
+
+                    look = look || this._look1;
+                    eye = eye || this._eye1;
+                    up = up || this._up1;
+
+                    this._look2[0] = look[0];
+                    this._look2[1] = look[1];
+                    this._look2[2] = look[2];
+
+                    this._eye2[0] = eye[0];
+                    this._eye2[1] = eye[1];
+                    this._eye2[2] = eye[2];
+
+                    this._up2[0] = up[0];
+                    this._up2[1] = up[1];
+                    this._up2[2] = up[2];
+
+                    this._flyEyeLookUp = true;
                 }
 
-                var vec = xeogl.math.normalizeVec3(xeogl.math.subVec3(this._eye1, this._look1, tempVec3));
-                var diag = (params.look && false) ? xeogl.math.getAABBDiagPoint(aabb, params.look) : xeogl.math.getAABBDiag(aabb);
-                var sca = Math.abs((diag) / Math.tan((params.stopFOV || this._stopFOV) / 2));
+                this.fire("started", params, true);
 
-                this._eye2[0] = this._look2[0] + (vec[0] * sca);
-                this._eye2[1] = this._look2[1] + (vec[1] * sca);
-                this._eye2[2] = this._look2[2] + (vec[2] * sca);
+                this._time1 = Date.now();
+                this._time2 = this._time1 + (params.duration ? params.duration * 1000 : this._duration);
 
-                this._up2[0] = this._up1[0];
-                this._up2[1] = this._up1[1];
-                this._up2[2] = this._up1[2];
+                this._flying = true; // False as soon as we stop
 
-            } else if (eye || look || up) {
-
-                look = look || this._look1;
-                eye = eye || this._eye1;
-                up = up || this._up1;
-
-                this._look2[0] = look[0];
-                this._look2[1] = look[1];
-                this._look2[2] = look[2];
-
-                this._eye2[0] = eye[0];
-                this._eye2[1] = eye[1];
-                this._eye2[2] = eye[2];
-
-                this._up2[0] = up[0];
-                this._up2[1] = up[1];
-                this._up2[2] = up[2];
-            }
-
-            this.fire("started", params, true);
-
-            this._time1 = Date.now();
-            this._time2 = this._time1 + (params.duration ? params.duration * 1000 : this._duration);
-
-            this._flying = true; // False as soon as we stop
-
-            xeogl.scheduleTask(this._update, this);
-        },
+                xeogl.scheduleTask(this._update, this);
+            };
+        })(),
 
         /**
          * Jumps this CameraFlight's {{#crossLink "Camera"}}{{/crossLink}} to the given target.
@@ -13880,155 +14118,234 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
          * @param[params.arc=0]  {Number} Factor in range [0..1] indicating how much the
          * {{#crossLink "Camera/eye:property"}}Camera's eye{{/crossLink}} position will
          * swing away from its {{#crossLink "Camera/eye:property"}}look{{/crossLink}} position as it flies to the target.
-         * @param [params.component] {String|Component} ID or instance of a component to fly to.
+         * @param [params.component] {Number|String|Component} ID or instance of a component to fly to.
          * @param [params.aabb] {*}  World-space axis-aligned bounding box (AABB) target to fly to.
-         * @param [params.eye] {Array of Number} Position to fly the eye position to.
-         * @param [params.look] {Array of Number} Position to fly the look position to.
-         * @param [params.up] {Array of Number} Position to fly the up vector to.
-         * @param [params.stopFOV] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
-         * fill the canvas on arrival.
+         * @param [params.eye] {Float32Array} Position to fly the eye position to.
+         * @param [params.look] {Float32Array} Position to fly the look position to.
+         * @param [params.up] {Float32Array} Position to fly the up vector to.
+         * @param [params.fitFOV] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
+         * fill the canvas on arrival. Overrides {{#crossLink "CameraFlight/fitFOV:property"}}{{/crossLink}}.
+         * @param [params.fit] {Boolean} Whether to fit the target to the view volume. Overrides {{#crossLink "CameraFlight/fit:property"}}{{/crossLink}}.
          */
-        jumpTo: function (params) {
+        jumpTo: (function () {
 
-            if (this._flying) {
-                this.stop();
-            }
+            var eyeLookVec = math.vec3();
+            var newEye = math.vec3();
+            var newLook = math.vec3();
+            var newUp = math.vec3();
+            var newLookEyeVec = math.vec3();
+            var tempVec3e = math.vec3();
 
-            var camera = this._attached.camera;
+            return function (params) {
 
-            if (!camera) {
-                return;
-            }
+                if (this._flying) {
+                    this.stop();
+                }
 
-            var lookat = camera.view;
+                var camera = this._attached.camera;
 
-            var aabb;
-            var eye;
-            var look;
-            var up;
-            var componentId;
+                if (!camera) {
+                    return;
+                }
 
-            if (params.worldBoundary) {
+                var view = camera.view;
 
-                // Argument is a Component subtype with a worldBoundary
+                var aabb;
+                var sphere;
+                var componentId;
 
-                aabb = params.worldBoundary.aabb;
+                if (params.worldBoundary) {
 
-            } else if (params.aabb) {
+                    // Argument is a Component subtype with a worldBoundary
 
-                aabb = params.aabb;
+                    sphere = params.worldBoundary.sphere;
 
-                // Argument is a Boundary3D
+                } else if (params.sphere) {
 
-            } else if (params.min !== undefined && params.max !== undefined) {
+                    sphere = params.sphere;
 
-                // Argument is an AABB
+                } else if (params.aabb) {
 
-                aabb = params;
+                    aabb = params.aabb;
 
-            } else if (params.eye || params.look || params.up) {
+                    // Argument is a Boundary3D
 
-                // Argument is eye, look and up positions
+                } else if (params.length === 6) {
 
-                eye = params.eye;
-                look = params.look;
-                up = params.up;
+                    // Argument is an AABB
 
-            } else {
+                    aabb = params;
 
-                // Argument must be an instance or ID of a Component (subtype)
+                } else if (params.eye || params.look || params.up) {
 
-                var component = params;
+                    // Argument is eye, look and up positions
 
-                if (xeogl._isNumeric(component) || xeogl._isString(component)) {
+                    newEye = params.eye;
+                    newLook = params.look;
+                    newUp = params.up;
 
-                    componentId = component;
+                } else {
 
-                    component = this.scene.components[componentId];
+                    // Argument must be an instance or ID of a Component (subtype)
 
-                    if (!component) {
-                        this.error("Component not found: " + xeogl._inQuotes(componentId));
+                    var component = params;
+
+                    if (xeogl._isNumeric(component) || xeogl._isString(component)) {
+
+                        componentId = component;
+
+                        component = this.scene.components[componentId];
+
+                        if (!component) {
+                            this.error("Component not found: " + xeogl._inQuotes(componentId));
+                            return;
+                        }
+                    }
+
+                    var worldBoundary = component.worldBoundary;
+
+                    if (!worldBoundary) {
+                        this.error("Can't jump to component " + xeogl._inQuotes(componentId) + " - does not have a worldBoundary");
                         return;
                     }
+
+                    sphere = worldBoundary.sphere;
                 }
 
-                var worldBoundary = component.worldBoundary;
+                var offset = params.offset;
 
-                if (!worldBoundary) {
-                    this.error("Can't jump to component " + xeogl._inQuotes(componentId) + " - does not have a worldBoundary");
+                if (aabb || sphere) {
+
+                    var diag;
+
+                    if (aabb) {
+
+                        if (aabb[3] <= aabb[0] || aabb[4] <= aabb[1] || aabb[5] <= aabb[2]) {
+
+                            // Don't fly to an empty boundary
+                            return;
+                        }
+
+                        diag = math.getAABB3Diag(aabb);
+                        math.getAABB3Center(aabb, newLook);
+
+                    } else {
+
+                        if (sphere[3] <= 0) {
+                            return;
+                        }
+
+                        diag = sphere[3] * 2;
+
+                        newLook[0] = sphere[0];
+                        newLook[1] = sphere[1];
+                        newLook[2] = sphere[2];
+                    }
+
+                    if (this._trail) {
+                        math.subVec3(view.look, newLook, newLookEyeVec);
+                    } else {
+                        math.subVec3(view.eye, view.look, newLookEyeVec);
+                    }
+
+                    math.normalizeVec3(newLookEyeVec);
+
+                    var dist;
+
+                    if (params.fit || this._fit) {
+                        dist = Math.abs((diag) / Math.tan((params.fitFOV || this._fitFOV) / 2));
+
+                    } else {
+                        dist = math.lenVec3(math.subVec3(view.eye, view.look, tempVec3e));
+                    }
+
+                    math.mulVec3Scalar(newLookEyeVec, dist);
+
+                    view.eye = math.addVec3(newLook, newLookEyeVec, newEye);
+                    view.look = newLook;
+
+                } else if (newEye || newLook || newUp) {
+
+                    if (newEye) {
+                        view.eye = newEye;
+                    }
+
+                    if (newLook) {
+                        view.look = newLook;
+                    }
+
+                    if (newUp) {
+                        view.up = newUp;
+                    }
+                }
+            };
+        })(),
+
+        _update: (function () {
+
+            var newLookEyeVec = math.vec3();
+            var newEye = math.vec3();
+            var newLook = math.vec3();
+            var newUp = math.vec3();
+            var lookEyeVec = math.vec3();
+
+            return function () {
+
+                if (!this._flying) {
                     return;
                 }
 
-                aabb = worldBoundary.aabb;
-            }
+                var time = Date.now();
 
-            var offset = params.offset;
+                var t = (time - this._time1) / (this._time2 - this._time1);
 
-            if (aabb) {
+                var stopping = (t >= 1);
 
-                if (aabb.max[0] <= aabb.min[0] || aabb.max[1] <= aabb.min[1] || aabb.max[2] <= aabb.min[2]) {
+                if (t > 1) {
+                    t = 1;
+                }
 
-                    // Don't fly to an empty boundary
+                t = this.easing ? this._ease(t, 0, 1, 1) : t;
+
+                var view = this._attached.camera.view;
+
+                if (this._flyEyeLookUp) {
+
+                    view.eye = math.lerpVec3(t, 0, 1, this._eye1, this._eye2, newEye);
+                    view.look = math.lerpVec3(t, 0, 1, this._look1, this._look2, newLook);
+                    view.up = math.lerpVec3(t, 0, 1, this._up1, this._up2, newUp);
+
+                } else {
+
+                    math.lerpVec3(t, 0, 1, this._look1, this._look2, newLook);
+
+                    var dist;
+
+                    if (this._trail) {
+                        math.subVec3(newLook, view.look, newLookEyeVec);
+
+                    } else {
+                        math.subVec3(view.eye, view.look, newLookEyeVec);
+                    }
+
+                    math.normalizeVec3(newLookEyeVec);
+                    math.lerpVec3(t, 0, 1, this._eye1, this._eye2, newEye);
+                    math.subVec3(newEye, newLook, lookEyeVec);
+                    dist = math.lenVec3(lookEyeVec);
+                    math.mulVec3Scalar(newLookEyeVec, dist);
+
+                    view.eye = math.addVec3(newLook, newLookEyeVec, newEye);
+                    view.look = newLook;
+                }
+
+                if (stopping) {
+                    this.stop();
                     return;
                 }
 
-                eye = lookat.eye;
-                look = xeogl.math.getAABBCenter(aabb);
-
-                var vec = xeogl.math.normalizeVec3(xeogl.math.subVec3(eye, look, tempVec3));
-                var diag = xeogl.math.getAABBDiag(aabb);
-                var sca = Math.abs((diag) / Math.tan((params.stopFOV || this._stopFOV) / 2));
-
-                lookat.eye = [look[0] + (vec[0] * sca), look[1] + (vec[1] * sca), look[2] + (vec[2] * sca)];
-                lookat.look = look;
-
-            } else if (eye || look || up) {
-
-                if (eye) {
-                    lookat.eye = eye;
-                }
-
-                if (look) {
-                    lookat.look = look;
-                }
-
-                if (up) {
-                    lookat.up = up;
-                }
-            }
-        },
-
-        _update: function () {
-
-            if (!this._flying) {
-                return;
-            }
-
-            var time = Date.now();
-
-            var t = (time - this._time1) / (this._time2 - this._time1);
-
-            var stopping = (t >= 1);
-
-            if (t > 1) {
-                t = 1;
-            }
-
-            t = this.easing ? this._ease(t, 0, 1, 1) : t;
-
-            var view = this._attached.camera.view;
-
-            view.eye = xeogl.math.lerpVec3(t, 0, 1, this._eye1, this._eye2, tempVec3);
-            view.look = xeogl.math.lerpVec3(t, 0, 1, this._look1, this._look2, tempVec3b);
-            view.up = xeogl.math.lerpVec3(t, 0, 1, this._up1, this._up2, tempVec3c);
-
-            if (stopping) {
-                this.stop();
-                return;
-            }
-
-            xeogl.scheduleTask(this._update, this); // Keep flying
-        },
+                xeogl.scheduleTask(this._update, this); // Keep flying
+            };
+        })(),
 
         // Quadratic easing out - decelerating to zero velocity
         // http://gizma.com/easing
@@ -14048,7 +14365,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                 return;
             }
 
-            this._boundaryIndicator.visibility.visible = false;
+            this._boundaryHelper.visibility.visible = false;
 
             this._flying = false;
 
@@ -14081,7 +14398,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                 return;
             }
 
-            this._boundaryIndicator.visibility.visible = false;
+            this._boundaryHelper.visibility.visible = false;
 
             this._flying = false;
 
@@ -14097,6 +14414,18 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
         _props: {
 
+            /**
+             * The {{#crossLink "Camera"}}{{/crossLink}} being controlled by this CameraFlight.
+             *
+             * Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this CameraFlight. Defaults to the parent
+             * {{#crossLink "Scene"}}Scene's{{/crossLink}} default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * Fires a {{#crossLink "CameraFlight/camera:event"}}{{/crossLink}} event on change.
+             *
+             * @property camera
+             * @type Camera
+             */
             camera: {
 
                 set: function (value) {
@@ -14131,14 +14460,14 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
              * Fires a {{#crossLink "CameraFlight/duration:event"}}{{/crossLink}} event on change.
              *
              * @property duration
-             * @default 1
+             * @default 0.5
              * @type Number
              */
             duration: {
 
                 set: function (value) {
 
-                    value = value || 1.0;
+                    value = value || 0.5;
 
                     /**
                      Fired whenever this CameraFlight's {{#crossLink "CameraFlight/duration:property"}}{{/crossLink}} property changes.
@@ -14157,32 +14486,98 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
             },
 
             /**
+             * When true, will ensure that this CameraFlight is flying to a boundary it will always adjust the distance between the
+             * {{#crossLink "CameraFlight/camera:property"}}camera{{/crossLink}}'s {{#crossLink "Lookat/eye:property"}}eye{{/crossLink}}
+             * and {{#crossLink "Lookat/look:property"}}{{/crossLink}}
+             * so as to ensure that the target boundary is always filling the view volume.
+             *
+             * When false, the eye will remain at its current distance from the look position.
+             *
+             * Fires a {{#crossLink "CameraFlight/fit:event"}}{{/crossLink}} event on change.
+             *
+             * @property fit
+             * @type Boolean
+             * @default false
+             */
+            fit: {
+
+                set: function (value) {
+
+                    this._fit = !!value;
+
+                    /**
+                     * Fired whenever this CameraFlight's
+                     * {{#crossLink "CameraFlight/fit:property"}}{{/crossLink}} property changes.
+                     * @event fit
+                     * @param value The property's new value
+                     */
+                    this.fire("fit", this._fit);
+                },
+
+                get: function () {
+                    return this._fit;
+                }
+            },
+
+
+            /**
              * How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
              * fill the canvas when calling {{#crossLink "CameraFlight/flyTo:method"}}{{/crossLink}} or {{#crossLink "CameraFlight/jumpTo:method"}}{{/crossLink}}.
              *
-             * Fires a {{#crossLink "CameraFlight/stopFOV:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CameraFlight/fitFOV:event"}}{{/crossLink}} event on change.
              *
-             * @property stopFOV
+             * @property fitFOV
              * @default 45
              * @type Number
              */
-            stopFOV: {
+            fitFOV: {
 
                 set: function (value) {
 
                     value = value || 45;
 
                     /**
-                     Fired whenever this CameraFlight's {{#crossLink "CameraFlight/stopFOV:property"}}{{/crossLink}} property changes.
+                     Fired whenever this CameraFlight's {{#crossLink "CameraFlight/fitFOV:property"}}{{/crossLink}} property changes.
 
-                     @event stopFOV
+                     @event fitFOV
                      @param value {Number} The property's new value
                      */
-                    this._stopFOV = value;
+                    this._fitFOV = value;
                 },
 
                 get: function () {
-                    return this._stopFOV;
+                    return this._fitFOV;
+                }
+            },
+
+            /**
+             * When true, will cause this CameraFlight to point the {{#crossLink "CameraFlight/camera:property"}}{{/crossLink}}
+             * in the direction that it is travelling.
+             *
+             * Fires a {{#crossLink "CameraFlight/trail:event"}}{{/crossLink}} event on change.
+             *
+             * @property trail
+             * @type Boolean
+             * @default false
+             */
+            trail: {
+
+                set: function (value) {
+
+                    this._trail = !!value;
+
+                    /**
+                     * Fired whenever this CameraFlight's {{#crossLink "CameraFlight/trail:property"}}{{/crossLink}}
+                     * property changes.
+                     *
+                     * @event trail
+                     * @param value The property's new value
+                     */
+                    this.fire("trail", this._trail);
+                },
+
+                get: function () {
+                    return this._trail;
                 }
             }
         },
@@ -14191,7 +14586,9 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
 
             var json = {
                 duration: this._duration,
-                stopFOV: this._stopFOV
+                fitFOV: this._fitFOV,
+                fit: this._fit,
+                trail: this._trail
             };
 
             if (this._attached.camera) {
@@ -16222,20 +16619,25 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
             var scene = this.scene;
 
             // Shows a bounding box around each Entity we fly to
-            this._boundaryEntity = this.create(xeogl.Entity, {
-                geometry: this.create(xeogl.BoundaryGeometry),
-                material: this.create(xeogl.PhongMaterial, {
+            this._boundaryHelper = this.create({
+                type: "xeogl.Entity",
+                geometry: this.create({
+                    type: "xeogl.BoundaryGeometry"
+                }),
+                material: this.create({
+                    type: "xeogl.PhongMaterial",
                     diffuse: [0, 0, 0],
                     ambient: [0, 0, 0],
                     specular: [0, 0, 0],
                     emissive: [1.0, 1.0, 0.6],
                     lineWidth: 4
                 }),
-                visibility: this.create(xeogl.Visibility, {
+                visibility: this.create({
+                    type: "xeogl.Visibility",
                     visible: false
                 }),
-                modes: this.create(xeogl.Modes, {
-
+                modes: this.create({
+                    type: "xeogl.Modes",
                     // Does not contribute to the size of any enclosing boundaries
                     // that might be calculated by xeogl, eg. like that returned by xeogl.Scene#worldBoundary
                     collidable: false
@@ -16364,12 +16766,12 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
                 pos = e.worldPos
             }
 
-            var aabb;
+            var worldBoundary = e.entity.worldBoundary;
+            var aabb = worldBoundary.aabb;
+            var sphere = worldBoundary.sphere;
 
-            aabb = e.entity.worldBoundary.aabb;
-
-            this._boundaryEntity.geometry.aabb = aabb;
-            this._boundaryEntity.visibility.visible = true;
+            this._boundaryHelper.geometry.aabb = aabb;
+            //    this._boundaryHelper.visibility.visible = true;
 
             if (pos) {
 
@@ -16398,7 +16800,7 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
         },
 
         _hideEntityBoundary: function () {
-            this._boundaryEntity.visibility.visible = false;
+            this._boundaryHelper.visibility.visible = false;
         },
 
         _props: {
@@ -16891,10 +17293,10 @@ xeogl.math.b3 = function (t, p0, p1, p2, p3) {
             var boundary = this.scene.worldBoundary;
             var aabb = boundary.aabb;
             var center = boundary.center;
-            var diag = xeogl.math.getAABBDiag(aabb);
+            var diag = xeogl.math.getAABB3Diag(aabb);
 
-            this._stopFOV = 55;
-            var dist = Math.abs((diag) / Math.tan(this._stopFOV / 2));
+            this._fitFOV = 55;
+            var dist = Math.abs((diag) / Math.tan(this._fitFOV / 2));
 
             switch (keyCode) {
 
@@ -19945,7 +20347,7 @@ visibility.destroy();
 
                 var usage = gl.STATIC_DRAW;
 
-                var arrays = xeogl.math.getPickPrimitives(this._positionsData, this._indicesData);
+                var arrays = xeogl.math.buildPickTriangles(this._positionsData, this._indicesData);
 
                 var pickPositions = arrays.positions;
                 var pickColors = arrays.colors;
@@ -21177,27 +21579,27 @@ visibility.destroy();
 
         _setPositionsFromOBB: function (obb) {
             this.positions = [
-                obb[0][0], obb[0][1], obb[0][2],
-                obb[1][0], obb[1][1], obb[1][2],
-                obb[2][0], obb[2][1], obb[2][2],
-                obb[3][0], obb[3][1], obb[3][2],
-                obb[4][0], obb[4][1], obb[4][2],
-                obb[5][0], obb[5][1], obb[5][2],
-                obb[6][0], obb[6][1], obb[6][2],
-                obb[7][0], obb[7][1], obb[7][2]
+                obb[0], obb[1], obb[2],
+                obb[4], obb[5], obb[6],
+                obb[8], obb[9], obb[10],
+                obb[12], obb[13], obb[14],
+                obb[16], obb[17], obb[18],
+                obb[20], obb[21], obb[22],
+                obb[24], obb[25], obb[26],
+                obb[28], obb[29], obb[30]
             ];
         },
 
         _setPositionsFromAABB: function (aabb) {
             this.positions = [
-                aabb.max[0], aabb.max[1], aabb.max[2],
-                aabb.max[0], aabb.min[1], aabb.max[2],
-                aabb.min[0], aabb.min[1], aabb.max[2],
-                aabb.min[0], aabb.max[1], aabb.max[2],
-                aabb.max[0], aabb.max[1], aabb.min[2],
-                aabb.max[0], aabb.min[1], aabb.min[2],
-                aabb.min[0], aabb.min[1], aabb.min[2],
-                aabb.min[0], aabb.max[1], aabb.min[2]
+                aabb[3], aabb[4], aabb[5],
+                aabb[3], aabb[1], aabb[5],
+                aabb[0], aabb[1], aabb[5],
+                aabb[0], aabb[4], aabb[5],
+                aabb[3], aabb[4], aabb[2],
+                aabb[3], aabb[1], aabb[2],
+                aabb[0], aabb[1], aabb[2],
+                aabb[0], aabb[4], aabb[2]
             ];
         },
 
@@ -23542,485 +23944,6 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
 })();
 ;/**
- * Components for managing collections of components.
- *
- * @module xeogl
- * @submodule collections
- */;/**
- A **Collection** is a set of {{#crossLink "Component"}}Components{{/crossLink}}.
-
- <ul>
- <li>A {{#crossLink "Component"}}Component{{/crossLink}} can be included in more than one Collection.</li>
- <li>{{#crossLink "Component"}}Components{{/crossLink}} can be added to a Collection by instance, ID or type.</li>
- <li>A Collection supports iteration over its {{#crossLink "Component"}}Components{{/crossLink}}.</li>
- <li>A {{#crossLink "Model"}}Model{{/crossLink}} stores the {{#crossLink "Component"}}Components{{/crossLink}} it has loaded in a Collection.</li>
- <li>A {{#crossLink "CollectionBoundary"}}CollectionBoundary{{/crossLink}} provides a World-space {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses a Collection.</li>
- </ul>
-
- <img src="../../../assets/images/Collection.png"></img>
-
- ## Examples
-
- <ul>
- <li>[Adding Entities to a Collection](../../examples/#collections_Collection_creating_add)</li>
- <li>[Adding components types to a Collection](../../examples/#collections_Collection_creating_type)</li>
- <li>[Iterating a Collection](../../examples/#boundaries_Collection_iterating)</li>
- <li>[Visualizing World-space boundary of a Collection](../../examples/#boundaries_CollectionBoundary)</li>
- <li>[Visualizing World-space boundaries of a hierarchy of Collections](../../examples/#boundaries_CollectionBoundary_hierarchy)</li>
- </ul>
-
- ## Creating Collections
-
- Our first Collection contains a {{#crossLink "PhongMaterial"}}{{/crossLink}}, added by ID, plus a {{#crossLink "BoxGeometry"}}{{/crossLink}} and
- an {{#crossLink "Entity"}}{{/crossLink}}, both added by instance.
-
- ````javascript
- var material = new xeogl.PhongMaterial({
-     id: "myMaterial",
-     diffuse: [0.5, 0.5, 0.0]
- });
-
- var geometry = new xeogl.BoxGeometry();
-
- var entity = new xeogl.Entity({
-    id: "myEntity",
-    material: material,
-    geometry: geometry
- });
-
- var collection1 = new xeogl.Collection({ // Initialize with the three components
-     components: [
-         "myMaterial",
-         geometry,
-         myEntity
-     ]
- });
- ````
- Our second Collection includes the {{#crossLink "BoxGeometry"}}{{/crossLink}}, added by instance,
- and the {{#crossLink "Entity"}}{{/crossLink}}, added by type. If there were more than
- one {{#crossLink "Entity"}}{{/crossLink}} in the scene, then that type would ensure
- that all the {{#crossLink "Entity"}}Entities{{/crossLink}} were in the Collection.
-
- ````javascript
- var collection2 = new xeogl.Collection();
-
- collection2.add([  // Add two components
-    geometry,
-    "xeogl.Entity",
- ]);
- ````
-
- ## Accessing Components
-
- Iterate over the components in a Collection using the convenience iterator:
-
- ````javascript
- collection1.iterate(function(component) {
-     if (component.isType("xeogl.Entity")) {
-         this.log("Found the Entity: " + component.id);
-     }
-     //..
- });
- ````
-
- A Collection also registers its components by type:
-
- ````javascript
- var entities = collection1.types["xeogl.Entity"];
- var theEntity = entities["myEntity"];
- ````
-
- ## Removing Components
-
- We can remove components from a Collection by instance, ID or type:
-
- ````javascript
- collection1.remove("myMaterial"); // Remove one component by ID
- collection1.remove([geometry, myEntity]); // Remove two components by instance
- collection2.remove("xeogl.Geometry"); // Remove all Geometries
- ````
-
- ## Getting the boundary of a Collection
-
- A {{#crossLink "CollectionBoundary"}}{{/crossLink}} provides a {{#crossLink "Boundary3D"}}{{/crossLink}} that
- dynamically fits to the collective World-space boundary of all the Components in a Collection.
-
- ````javascript
- var collectionBoundary = new xeogl.CollectionBoundary({
-    collection: collection1
- });
-
- var worldBoundary = collectionBoundary.worldBoundary;
- ````
- The {{#crossLink "Boundary3D"}}{{/crossLink}}
- will automatically update whenever we add, remove or update any Components that have World-space boundaries. We can subscribe
- to updates on it like so:
-
- ````javascript
- worldBoundary.on("updated", function() {
-     obb = worldBoundary.obb;
-     aabb = worldBoundary.aabb;
-     center = worldBoundary.center;
-     //...
- });
- ````
-
- Now, if we now re-insert our {{#crossLink "Entity"}}{{/crossLink}} into to our Collection,
- the {{#crossLink "Boundary3D"}}{{/crossLink}} will fire our update handler.
-
- ````javascript
- collection1.add(myEntity);
- ````
-
-
- @class Collection
- @module xeogl
- @submodule collections
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent scene, generated automatically when omitted.
- @param [cfg.meta] {String:Component} Optional map of user-defined metadata to attach to this Collection.
- @param [cfg.components] {{Array of String|Component}} Array of {{#crossLink "Component"}}{{/crossLink}} IDs or instances.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    xeogl.Collection = xeogl.Component.extend({
-
-        /**
-         JavaScript class name for this Component.
-
-         @property type
-         @type String
-         @final
-         */
-        type: "xeogl.Collection",
-
-        _init: function (cfg) {
-
-            /**
-             * The {{#crossLink "Components"}}{{/crossLink}} within this Collection, mapped to their IDs.
-             *
-             * Fires an {{#crossLink "Collection/updated:event"}}{{/crossLink}} event on change.
-             *
-             * @property components
-             * @type {{String:Component}}
-             */
-            this.components = {};
-
-            /**
-             * The number of {{#crossLink "Components"}}{{/crossLink}} within this Collection.
-             *
-             * @property numComponents
-             * @type Number
-             */
-            this.numComponents = 0;
-
-            /**
-             * A map of maps; for each {{#crossLink "Component"}}{{/crossLink}} type in this Collection,
-             * a map to IDs to {{#crossLink "Component"}}{{/crossLink}} instances, eg.
-             *
-             * ````
-             * "xeogl.Geometry": {
-             *   "alpha": <xeogl.Geometry>,
-             *   "beta": <xeogl.Geometry>
-             * },
-             * "xeogl.Rotate": {
-             *   "charlie": <xeogl.Rotate>,
-             *   "delta": <xeogl.Rotate>,
-             *   "echo": <xeogl.Rotate>,
-             * },
-             * //...
-             * ````
-             *
-             * @property types
-             * @type {String:{String:xeogl.Component}}
-             */
-            this.types = {};
-
-            // Subscriptions to "destroyed" events from components
-            this._destroyedSubs = {};
-
-            if (cfg.components) {
-                this.add(cfg.components);
-            }
-        },
-
-        /**
-         * Adds one or more {{#crossLink "Component"}}Components{{/crossLink}}s to this Collection.
-         *
-         * The {{#crossLink "Component"}}Component(s){{/crossLink}} may be specified by instance, ID or type.
-         *
-         * See class comment for usage examples.
-         *
-         * The {{#crossLink "Component"}}Components{{/crossLink}} must be in the same {{#crossLink "Scene"}}{{/crossLink}} as this Collection.
-         *
-         * Fires an {{#crossLink "Collection/added:event"}}{{/crossLink}} event.
-         *
-         * @method add
-         * @param {Array of Component} components Array of {{#crossLink "Component"}}Components{{/crossLink}} instances.
-         */
-        add: function (components) {
-
-            components = xeogl._isArray(components) ? components : [components];
-
-            for (var i = 0, len = components.length; i < len; i++) {
-                this._add(components[i]);
-            }
-        },
-
-        _add: function (c) {
-
-            var componentId;
-            var component;
-            var type;
-            var types;
-
-            if (c.type) {
-
-                // Component instance
-
-                component = c;
-
-            } else if (xeogl._isNumeric(c) || xeogl._isString(c)) {
-
-                if (this.scene.types[c]) {
-
-                    // Component type
-
-                    type = c;
-
-                    types = this.scene.types[type];
-
-                    if (!types) {
-                        this.warn("Component type not found: '" + type + "'");
-                        return;
-                    }
-
-                    for (componentId in types) {
-                        if (types.hasOwnProperty(componentId)) {
-                            this._add(types[componentId]);
-                        }
-                    }
-
-                    return;
-
-                } else {
-
-                    // Component ID
-
-                    component = this.scene.components[c];
-
-                    if (!component) {
-                        this.warn("Component not found: " + xeogl._inQuotes(c));
-                        return;
-                    }
-                }
-
-            } else {
-
-                return;
-            }
-
-            if (component.scene !== this.scene) {
-
-                // Component in wrong Scene
-
-                this.warn("Attempted to add component from different xeogl.Scene: " + xeogl._inQuotes(component.id));
-                return;
-            }
-
-            // Add component to this map
-
-            if (this.components[component.id]) {
-
-                // Component already in this Collection
-                return;
-            }
-
-            this.components[component.id] = component;
-
-            // Register component for its type
-
-            types = this.types[component.type];
-
-            if (!types) {
-                types = this.types[component.type] = {};
-            }
-
-            types[component.id] = component;
-
-            this.numComponents++;
-
-            // Remove component when it's destroyed
-
-            var self = this;
-
-            this._destroyedSubs[component.id] = component.on("destroyed",
-                function () {
-                    self._remove(component);
-                });
-
-            /**
-             * Fired whenever an individual {{#crossLink "Component"}}{{/crossLink}} is added to this {{#crossLink "Collection"}}{{/crossLink}}.
-             * @event added
-             * @param value {Component} The {{#crossLink "Component"}}{{/crossLink}} that was added.
-             */
-            this.fire("added", component);
-
-            if (!this._dirty) {
-                this._scheduleUpdate();
-            }
-        },
-
-        _scheduleUpdate: function () {
-            if (!this._dirty) {
-                this._dirty = true;
-                xeogl.scheduleTask(this._notifyUpdated, this);
-            }
-        },
-
-        _notifyUpdated: function () {
-
-            /* Fired on the next {{#crossLink "Scene/tick.animate:event"}}{{/crossLink}} whenever
-             * {{#crossLink "Component"}}Components{{/crossLink}} were added or removed since the
-             * last {{#crossLink "Scene/tick.animate:event"}}{{/crossLink}} event, to provide a batched change event
-             * for subscribers who don't want to react to every individual addition or removal on this Collection.
-             *
-             * @event updated
-             */
-            this.fire("updated");
-            this._dirty = false;
-        },
-
-        /**
-         * Removes all {{#crossLink "Component"}}Components{{/crossLink}} from this Collection.
-         *
-         * Fires an {{#crossLink "Collection/updated:event"}}{{/crossLink}} event.
-         *
-         * @method clear
-         */
-        clear: function () {
-
-            this.iterate(function (component) {
-                this._remove(component);
-            });
-        },
-
-        /**
-         * Destroys all {{#crossLink "Component"}}Components{{/crossLink}} in this Collection.
-         *
-         * @method destroyAll
-         */
-        destroyAll: function () {
-
-            this.iterate(function (component) {
-                component.destroy();
-            });
-        },
-
-        /**
-         * Removes one or more {{#crossLink "Component"}}Components{{/crossLink}} from this Collection.
-         *
-         * The {{#crossLink "Component"}}Component(s){{/crossLink}} may be specified by instance, ID or type.
-         *
-         * See class comment for usage examples.
-         *
-         * Fires a {{#crossLink "Collection/removed:event"}}{{/crossLink}} event.
-         *
-         * @method remove
-         * @param {Array of Components} components Array of {{#crossLink "Component"}}Components{{/crossLink}} instances.
-         */
-        remove: function (components) {
-
-            components = xeogl._isArray(components) ? components : [components];
-
-            for (var i = 0, len = components.length; i < len; i++) {
-                this._remove(components[i]);
-            }
-        },
-
-        _remove: function (component) {
-
-            var componentId = component.id;
-
-            if (component.scene !== this.scene) {
-                this.warn("Attempted to remove component that's not in same xeogl.Scene: '" + componentId + "'");
-                return;
-            }
-
-            delete this.components[componentId];
-
-            // Unsubscribe from component destruction
-
-            component.off(this._destroyedSubs[componentId]);
-
-            delete this._destroyedSubs[componentId];
-
-            // Unregister component for its type
-
-            var types = this.types[component.type];
-
-            if (types) {
-                delete types[component.id];
-            }
-
-            this.numComponents--;
-
-            /**
-             * Fired whenever an individual {{#crossLink "Component"}}{{/crossLink}} is removed from this {{#crossLink "Collection"}}{{/crossLink}}.
-             * @event removed
-             * @param value {Component} The {{#crossLink "Component"}}{{/crossLink}} that was removed.
-             */
-            this.fire("removed", component);
-
-            if (!this._dirty) {
-                this._scheduleUpdate();
-            }
-        },
-
-        /**
-         * Iterates with a callback over the {{#crossLink "Component"}}Components{{/crossLink}} in this Collection.
-         *
-         * @method iterate
-         * @param {Function} callback Callback called for each {{#crossLink "Component"}}{{/crossLink}}.
-         * @param {Object} [scope=this] Optional scope for the callback, defaults to this Collection.
-         */
-        iterate: function (callback, scope) {
-            scope = scope || this;
-            var components = this.components;
-            for (var componentId in components) {
-                if (components.hasOwnProperty(componentId)) {
-                    callback.call(scope, components[componentId]);
-                }
-            }
-        },
-
-        _getJSON: function () {
-
-            var componentIds = [];
-
-            for (var componentId in this.components) {
-                if (this.components.hasOwnProperty(componentId)) {
-                    componentIds.push(this.components[componentId].id); // Don't convert numbers into strings
-                }
-            }
-
-            return {
-                components: componentIds
-            };
-        },
-
-        _destroy: function () {
-
-            this.clear();
-        }
-    });
-
-})();;/**
  * Components for capturing user input.
  *
  * @module xeogl
@@ -25780,7 +25703,6 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  <li>When the {{#crossLink "Entity"}}Entities{{/crossLink}} have {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}},
  AmbientLight {{#crossLink "AmbientLight/color:property"}}color{{/crossLink}} is multiplied by
  {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that AmbientLights create within xeogl's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/AmbientLight.png"></img>
@@ -25929,7 +25851,6 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  is relative to the World coordinate system, and will appear to move as the {{#crossLink "Camera"}}{{/crossLink}} moves.
  When in View-space, their direction is relative to the View coordinate system, and will behave as if fixed to the viewer's
  head as the {{#crossLink "Camera"}}{{/crossLink}} moves.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that DirLights create within xeogl's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/DirLight.png"></img>
@@ -26172,7 +26093,6 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  head as the {{#crossLink "Camera"}}{{/crossLink}} moves.</li>
  <li>PointLights have {{#crossLink "PointLight/constantAttenuation:property"}}{{/crossLink}}, {{#crossLink "PointLight/linearAttenuation:property"}}{{/crossLink}} and
  {{#crossLink "PointLight/quadraticAttenuation:property"}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that PointLights create within xeogl's shaders.</li>
  </ul>
 
  <img src="../../../assets/images/PointLight.png"></img>
@@ -26504,10 +26424,10 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
 })();
 ;/**
- * Imports content from files.
+ * Models are units of xeogl content.
  *
  * @module xeogl
- * @submodule model
+ * @submodule models
  */;(function () {
 
     "use strict";
@@ -26516,103 +26436,398 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
      A **Model** is a unit of content within a xeogl {{#crossLink "Scene"}}{{/crossLink}}.
 
      <ul>
-     <li>Subclassed by {{#crossLink "glTF"}}{{/crossLink}}, which loads glTF files.</li>
-     <li>A Model keeps all its components in a {{#crossLink "Collection"}}{{/crossLink}}.</li>
-     <li>A Model can be attached to an animated and dynamically-editable
-     modelling {{#crossLink "Transform"}}{{/crossLink}} hierarchy, to rotate, translate and scale it within the World-space coordinate system, in the
-     same way that an {{#crossLink "Entity"}}{{/crossLink}} can.</li>
-     <li>You can set a Model's {{#crossLink "Model/src:property"}}{{/crossLink}} property to a new file path at any time,
-     which will cause it to load components from the new file (destroying any components loaded previously).</li>
+     <li>A Model is a container of {{#crossLink "Component"}}Components{{/crossLink}}.</li>
+     <li>Can be transformed within World-space by attached it to a {{#crossLink "Transform"}}{{/crossLink}}.</li>
+     <li>Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.</li>
+     <li>Subclassed by {{#crossLink "GLTFModel"}}{{/crossLink}}, which loads glTF files.</li>
+     <li>Subclassed by {{#crossLink "BuildableModel"}}{{/crossLink}}, which provides a fluent API for building itself.</li>
      </ul>
 
      <img src="../../../assets/images/Model.png"></img>
 
      @class Model
      @module xeogl
-     @submodule importing
+     @submodule models
+     @constructor
+     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this ModelModel in the default
+     {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+     @param [cfg] {*} Configs
+     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+     generated automatically when omitted.
+     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ModelModel.
+     @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this Model.
+     Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Model. Internally, the given
+     {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
+     that the Model attaches to its {{#crossLink "Entity"}}Entities{{/crossLink}}.
      @extends Component
      */
     xeogl.Model = xeogl.Component.extend({
 
+        /**
+         JavaScript class name for this Component.
+
+         @property type
+         @type String
+         @final
+         */
         type: "xeogl.Model",
 
         _init: function (cfg) {
 
-            this._super(cfg);
+            /**
+             * The {{#crossLink "Components"}}{{/crossLink}} within this Model, mapped to their IDs.
+             *
+             * Fires an {{#crossLink "Model/updated:event"}}{{/crossLink}} event on change.
+             *
+             * @property components
+             * @type {{String:Component}}
+             */
+            this.components = {};
 
-            // The xeogl.Collection that will hold all the components
-            // in this Model; this will be available
-            // as a public, immutable #collection property
+            /**
+             * The number of {{#crossLink "Components"}}{{/crossLink}} within this Model.
+             *
+             * @property numComponents
+             * @type Number
+             */
+            this.numComponents = 0;
 
-            this._collection = this.create(xeogl.Collection);
+            /**
+             * A map of maps; for each {{#crossLink "Component"}}{{/crossLink}} type in this Model,
+             * a map to IDs to {{#crossLink "Component"}}{{/crossLink}} instances, eg.
+             *
+             * ````
+             * "xeogl.Geometry": {
+             *   "alpha": <xeogl.Geometry>,
+             *   "beta": <xeogl.Geometry>
+             * },
+             * "xeogl.Rotate": {
+             *   "charlie": <xeogl.Rotate>,
+             *   "delta": <xeogl.Rotate>,
+             *   "echo": <xeogl.Rotate>,
+             * },
+             * //...
+             * ````
+             *
+             * @property types
+             * @type {String:{String:xeogl.Component}}
+             */
+            this.types = {};
 
-            // Dummy transform to make it easy to graft user-supplied
-            // transforms above loaded entities
+            // Subscriptions to "destroyed" events from components
+            this._onDestroyed = {};
 
-            this._dummyRootTransform = this.create(xeogl.Transform, {
+            // Subscriptions to "updated" events from components' worldBoundaries
+            this._onWorldBoundaryUpdated = {};
+
+            this._aabbDirty = true;
+
+            // Dummy transform to make it easy to graft user-supplied transforms above added entities
+            this._dummyRootTransform = this.create({
+                type: "xeogl.Transform",
                 meta: "dummy"
             });
 
+            this.transform = cfg.transform;
+
+            if (cfg.components) {
+                this.add(cfg.components);
+            }
+        },
+
+        /**
+         * Adds one or more {{#crossLink "Component"}}Components{{/crossLink}}s to this Model.
+         *
+         * The {{#crossLink "Component"}}Component(s){{/crossLink}} may be specified by instance, ID or type.
+         *
+         * See class comment for usage examples.
+         *
+         * The {{#crossLink "Component"}}Components{{/crossLink}} must be in the same {{#crossLink "Scene"}}{{/crossLink}} as this Model.
+         *
+         * Fires an {{#crossLink "Model/added:event"}}{{/crossLink}} event.
+         *
+         * @method add
+         * @param {Array of Component} components Array of {{#crossLink "Component"}}Components{{/crossLink}} instances.
+         */
+        add: function (components) {
+
+            components = xeogl._isArray(components) ? components : [components];
+
+            for (var i = 0, len = components.length; i < len; i++) {
+                this._add(components[i]);
+            }
+        },
+
+        _add: function (c) {
+
+            var componentId;
+            var component;
+            var type;
+            var types;
+
+            if (xeogl._isNumeric(c) || xeogl._isString(c)) {
+
+                if (this.scene.types[c]) {
+
+                    // Component type
+
+                    type = c;
+
+                    types = this.scene.types[type];
+
+                    if (!types) {
+                        this.warn("Component type not found: '" + type + "'");
+                        return;
+                    }
+
+                    for (componentId in types) {
+                        if (types.hasOwnProperty(componentId)) {
+                            this._add(types[componentId]);
+                        }
+                    }
+
+                    return;
+
+                } else {
+
+                    // Component ID
+
+                    component = this.scene.components[c];
+
+                    if (!component) {
+                        this.warn("Component not found: " + xeogl._inQuotes(c));
+                        return;
+                    }
+                }
+
+            } else if (xeogl._isObject(c)) {
+
+                // Component config given
+
+                var type = c.type || "xeogl.Component";
+
+                if (!xeogl._isComponentType(type)) {
+                    this.error("Not a xeogl component type: " + type);
+                    return;
+                }
+
+                component = new window[type](this.scene, c);
+
+            } else if (c.type) {
+
+                // Component instance
+
+                component = c;
+
+            } else {
+
+                return;
+            }
+
+            if (component.scene !== this.scene) {
+
+                // Component in wrong Scene
+
+                this.warn("Attempted to add component from different xeogl.Scene: " + xeogl._inQuotes(component.id));
+                return;
+            }
+
+            // Add component to this map
+
+            if (this.components[component.id]) {
+
+                // Component already in this Model
+                return;
+            }
+
+            this.components[component.id] = component;
+
+            // Register component for its type
+
+            types = this.types[component.type];
+
+            if (!types) {
+                types = this.types[component.type] = {};
+            }
+
+            types[component.id] = component;
+
+            this.numComponents++;
+
+            // Remove component when it's destroyed
+
             var self = this;
 
-            this._collection.on("added", function(component) {
+            this._onDestroyed[component.id] = component.on("destroyed", function () {
+                self._remove(component);
+            });
 
-                if (component.isType("xeogl.Entity")) {
+            if (component.isType("xeogl.Entity")) {
 
-                    // Insert the dummy transform above
-                    // each entity we just loaded
+                // Insert the dummy transform above
+                // each entity we just loaded
 
-                    var rootTransform = component.transform;
+                var rootTransform = component.transform;
 
-                    if (!rootTransform) {
+                if (!rootTransform) {
 
-                        component.transform = self._dummyRootTransform;
+                    component.transform = self._dummyRootTransform;
 
-                    } else {
+                } else {
 
-                        while (rootTransform.parent) {
-
-                            if (rootTransform.id === self._dummyRootTransform.id) {
-
-                                // Since transform hierarchies may contain
-                                // transforms that share the same parents, there is potential to find
-                                // our dummy root transform while walking up an entity's transform
-                                // path, when that path is joins a path that belongs to an Entity that
-                                // we processed earlier
-
-                                return;
-                            }
-
-                            rootTransform = rootTransform.parent;
-                        }
+                    while (rootTransform.parent) {
 
                         if (rootTransform.id === self._dummyRootTransform.id) {
+
+                            // Since transform hierarchies may contain
+                            // transforms that share the same parents, there is potential to find
+                            // our dummy root transform while walking up an entity's transform
+                            // path, when that path is joins a path that belongs to an Entity that
+                            // we processed earlier
+
                             return;
                         }
 
+                        rootTransform = rootTransform.parent;
+                    }
+
+                    if (rootTransform.id !== self._dummyRootTransform.id) {
                         rootTransform.parent = self._dummyRootTransform;
                     }
                 }
-            });
+            }
 
-            this.transform = cfg.transform;
+            if (component.worldBoundary) {
+                this._onWorldBoundaryUpdated[c.id] = component.worldBoundary.on("updated", this._updated, this);
+                if (!this._aabbDirty) {
+                    this._setAABBDirty();
+                }
+            }
+
+            /**
+             * Fired whenever an individual {{#crossLink "Component"}}{{/crossLink}} is added to this {{#crossLink "Model"}}{{/crossLink}}.
+             * @event added
+             * @param value {Component} The {{#crossLink "Component"}}{{/crossLink}} that was added.
+             */
+            this.fire("added", component);
+
+            if (!this._dirty) {
+                this._scheduleUpdate();
+            }
+        },
+
+        _scheduleUpdate: function () {
+            if (!this._dirty) {
+                this._dirty = true;
+                xeogl.scheduleTask(this._notifyUpdated, this);
+            }
+        },
+
+        _notifyUpdated: function () {
+
+            /* Fired on the next {{#crossLink "Scene/tick.animate:event"}}{{/crossLink}} whenever
+             * {{#crossLink "Component"}}Components{{/crossLink}} were added or removed since the
+             * last {{#crossLink "Scene/tick.animate:event"}}{{/crossLink}} event, to provide a batched change event
+             * for subscribers who don't want to react to every individual addition or removal on this Model.
+             *
+             * @event updated
+             */
+            this.fire("updated");
+            this._dirty = false;
+        },
+
+        /**
+         * Destroys all {{#crossLink "Component"}}Components{{/crossLink}} in this Model.
+         *
+         * @method destroyAll
+         */
+        destroyAll: function () {
+
+            this.iterate(function (component) {
+                component.destroy();
+            });
+        },
+
+        /**
+         * Removes all {{#crossLink "Component"}}Components{{/crossLink}} from this Model.
+         *
+         * @method removeAll
+         */
+        removeAll: function () {
+
+            // this.iterate(function (component) {
+            //     component.destroy();
+            // });
+        },
+
+        _remove: function (component) {
+
+            var componentId = component.id;
+
+            if (component.scene !== this.scene) {
+                this.warn("Attempted to remove component that's not in same xeogl.Scene: '" + componentId + "'");
+                return;
+            }
+
+            delete this.components[componentId];
+
+            // Unsubscribe from component destruction
+
+            component.off(this._onDestroyed[componentId]);
+            delete this._onDestroyed[componentId];
+
+            // Unregister component for its type
+
+            var types = this.types[component.type];
+
+            if (types) {
+                delete types[component.id];
+            }
+
+            this.numComponents--;
+
+            //
+
+            if (component.worldBoundary) {
+                component.worldBoundary.off(this._onWorldBoundaryUpdated[component.id]);
+                delete this._onWorldBoundaryUpdated[component.id];
+            }
+
+            if (!this._aabbDirty) {
+                this._setAABBDirty();
+            }
+
+
+            /**
+             * Fired whenever an individual {{#crossLink "Component"}}{{/crossLink}} is removed from this {{#crossLink "Model"}}{{/crossLink}}.
+             * @event removed
+             * @param value {Component} The {{#crossLink "Component"}}{{/crossLink}} that was removed.
+             */
+            this.fire("removed", component);
+
+            if (!this._dirty) {
+                this._scheduleUpdate();
+            }
+        },
+
+        /**
+         * Iterates with a callback over the {{#crossLink "Component"}}Components{{/crossLink}} in this Model.
+         *
+         * @method iterate
+         * @param {Function} callback Callback called for each {{#crossLink "Component"}}{{/crossLink}}.
+         * @param {Object} [scope=this] Optional scope for the callback, defaults to this Model.
+         */
+        iterate: function (callback, scope) {
+            scope = scope || this;
+            var components = this.components;
+            for (var componentId in components) {
+                if (components.hasOwnProperty(componentId)) {
+                    callback.call(scope, components[componentId]);
+                }
+            }
         },
 
         _props: {
-
-            /**
-             * A {{#crossLink "Collection"}}{{/crossLink}} containing the scene components loaded by this Model.
-             *
-             * @property collection
-             * @type Collection
-             * @final
-             */
-            collection: {
-
-                get: function () {
-                    return this._collection;
-                }
-            },
 
             /**
              * The Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} attached to this Model.
@@ -26653,6 +26868,53 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                 get: function () {
                     return this._attached.transform;
                 }
+            },
+
+            /**
+             * World-space 3D boundary enclosing all the components in this Model.
+             *
+             * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
+             * this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance next
+             * time you reference it.
+             *
+             * @property worldBoundary
+             * @type Boundary3D
+             * @final
+             */
+            worldBoundary: {
+
+                get: function () {
+
+                    if (!this._worldBoundary) {
+
+                        var self = this;
+
+                        this._worldBoundary = this.create({
+
+                            type: "xeogl.Boundary3D",
+
+                            getDirty: function () {
+                                if (self._aabbDirty) {
+                                    self._buildAABB();
+                                    self._aabbDirty = false;
+                                    return true;
+                                }
+                                return false;
+                            },
+
+                            getAABB: function () {
+                                return self._aabb;
+                            }
+                        });
+
+                        this._worldBoundary.on("destroyed",
+                            function () {
+                                self._worldBoundary = null;
+                            });
+                    }
+
+                    return this._worldBoundary;
+                }
             }
         },
 
@@ -26660,38 +26922,89 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
             this._dummyRootTransform.parent = transform;
         },
 
-        /**
-         * Clears this Model.
-         */
-        clear: function () {
-
-            var c = [];
-
-            this._collection.iterate(function (component) {
-                    c.push(component);
-                });
-
-            while (c.length) {
-                c.pop().destroy();
+        _updated: function () {
+            if (!this._aabbDirty) {
+                this._setAABBDirty();
             }
         },
 
-        _getJSON: function () {
+        _setAABBDirty: function () {
+            this._aabbDirty = true;
+            if (this._worldBoundary) {
+                this._worldBoundary.fire("updated", true);
+            }
+        },
 
-            var json = {
-            };
+        _buildAABB: function () {
 
-            if (this._attached.transform) {
-                json.transform = this._attached.transform.id;
+            if (!this._aabb) {
+                this._aabb = xeogl.math.AABB3();
             }
 
-            return json;
+            var xmin = 100000;
+            var ymin = 100000;
+            var zmin = 100000;
+            var xmax = -100000;
+            var ymax = -100000;
+            var zmax = -100000;
+
+            var component;
+            var worldBoundary;
+            var aabb;
+
+            var components = this.components;
+
+            for (var componentId in components) {
+                if (components.hasOwnProperty(componentId)) {
+
+                    component = components[componentId];
+
+                    worldBoundary = component.worldBoundary;
+
+                    if (worldBoundary) {
+
+                        aabb = worldBoundary.aabb;
+
+                        if (aabb[0] < xmin) {
+                            xmin = aabb[0];
+                        }
+
+                        if (aabb[1] < ymin) {
+                            ymin = aabb[1];
+                        }
+
+                        if (aabb[2] < zmin) {
+                            zmin = aabb[2];
+                        }
+
+                        if (aabb[3] > xmax) {
+                            xmax = aabb[3];
+                        }
+
+                        if (aabb[4] > ymax) {
+                            ymax = aabb[4];
+                        }
+
+                        if (aabb[5] > zmax) {
+                            zmax = aabb[5];
+                        }
+                    }
+                }
+            }
+
+            this._aabb[0] = xmin;
+            this._aabb[1] = ymin;
+            this._aabb[2] = zmin;
+            this._aabb[3] = xmax;
+            this._aabb[4] = ymax;
+            this._aabb[5] = zmax;
         },
 
         _destroy: function () {
-            this.clear();
+            this.removeAll();
         }
     });
+
 })();;// Copyright (c) 2013 Fabrice Robinet
 // All rights reserved.
 //
@@ -27542,9 +27855,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
     xeogl.GLTFLoader = Object.create(xeogl.glTFParser, {
 
-        setCollection: {
-            value: function (collection) {
-                this.collection = collection;
+        setModel: {
+            value: function (model) {
+                this.model = model;
             }
         },
 
@@ -27552,8 +27865,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             enumerable: true,
             value: function (userInfo, options, ok) {
 
-                if (!this.collection) {
-                    throw "collection not set";
+                if (!this.model) {
+                    throw "model not set";
                 }
 
                 this.resources = new Resources();
@@ -27607,13 +27920,13 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                 var image = this._json.images[description.source];
 
-                var texture = new xeogl.Texture(this.collection.scene, {
+                var texture = new xeogl.Texture(this.model.scene, {
                     id: this._makeID(entryID),
                     src: image.uri,
                     flipY: true
                 });
 
-                this.collection.add(texture);
+                this.model.add(texture);
 
                 this.resources.setEntry(entryID, texture, description);
 
@@ -27676,9 +27989,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                     }
                 }
 
-                var material = new xeogl.PhongMaterial(this.collection.scene, cfg);
+                var material = new xeogl.PhongMaterial(this.model.scene, cfg);
 
-                this.collection.add(material);
+                this.model.add(material);
 
                 this.resources.setEntry(entryID, material, description);
 
@@ -27713,11 +28026,11 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     if (primitiveDescription.mode === WebGLRenderingContext.TRIANGLES) {
 
-                        var geometry = new xeogl.Geometry(this.collection.scene, {
+                        var geometry = new xeogl.Geometry(this.model.scene, {
                             id: this._makeID(entryID)
                         });
 
-                        this.collection.add(geometry);
+                        this.model.add(geometry);
 
                         var materialEntry = this.resources.getEntry(primitiveDescription.material);
                         var material = materialEntry.object;
@@ -27837,8 +28150,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                     return;
                 }
 
-                var collection = this.collection;
-                var scene = collection.scene;
+                var model = this.model;
+                var scene = model.scene;
 
                 if (node.matrix) {
                     var matrix = node.matrix;
@@ -27847,7 +28160,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                         matrix: matrix,
                         parent: transform
                     });
-                    collection.add(transform);
+                    model.add(transform);
                 }
 
                 if (node.translation) {
@@ -27857,7 +28170,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                         xyz: [translation[0], translation[1], translation[2]],
                         parent: transform
                     });
-                    collection.add(transform);
+                    model.add(transform);
                 }
 
                 if (node.rotation) {
@@ -27868,7 +28181,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                         angle: rotation[3],
                         parent: transform
                     });
-                    collection.add(transform);
+                    model.add(transform);
                 }
 
                 if (node.scale) {
@@ -27878,7 +28191,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                         xyz: [scale[0], scale[1], scale[2]],
                         parent: transform
                     });
-                    collection.add(transform);
+                    model.add(transform);
                 }
 
                 if (node.meshes) {
@@ -27889,7 +28202,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                         id: this._makeID(nodeId + ".visibility")
                     });
 
-                    collection.add(visibility);
+                    model.add(visibility);
 
                     // One xeogl.Cull per mesh group
 
@@ -27897,7 +28210,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                         id: this._makeID(nodeId + ".cull")
                     });
 
-                    collection.add(cull);
+                    model.add(cull);
 
                     // One xeogl.Modes per mesh group
 
@@ -27905,7 +28218,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                         id: this._makeID(nodeId + ".modes")
                     });
 
-                    collection.add(cull);
+                    model.add(cull);
 
                     // One xeogl.Entity per mesh, each sharing the same
                     // xeogl.Visibility, xeogl.Cull and xeogl.Nodes
@@ -27963,7 +28276,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                                 loading: true
                             });
 
-                            collection.add(entity);
+                            model.add(entity);
                         }
                     }
                 }
@@ -27988,54 +28301,60 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
     "use strict";
 
-    var glTFLoader = xeogl.GLTFLoader;
-
     /**
-     A **glTF** loads content from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file into its parent {{#crossLink "Scene"}}{{/crossLink}}.
+     A **GLTFModel** is a {{#crossLink "Model"}}{{/crossLink}} that loads itself from a
+     <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file.
 
-     <ul><li>A glTF begins loading as soon as it's {{#crossLink "glTF/src:property"}}{{/crossLink}}
-     property is set to the location of a valid glTF file.</li>
-     <li>A glTF keeps all its loaded components in a {{#crossLink "Collection"}}{{/crossLink}}.</li>
-     <li>A glTF can be attached to an animated and dynamically-editable
-     glTFling {{#crossLink "Transform"}}{{/crossLink}} hierarchy, to rotate, translate and scale it within the World-space coordinate system, in the
-     same way that an {{#crossLink "Entity"}}{{/crossLink}} can.</li>
-     <li>You can set a glTF's {{#crossLink "glTF/src:property"}}{{/crossLink}} property to a new file path at any time,
-     which will cause it to load components from the new file (destroying any components loaded previously).</li>
+     <ul><li>A GLTFModel begins loading as soon as you set its {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}
+     property to the location of a valid glTF file.</li>
+     <li>You can set {{#crossLink "GLTFModel/src:property"}}{{/crossLink}} to a new file path at any time, which causes
+     the GLTFModel to clear itself and load components from the new file.</li>
      </ul>
 
-     <img src="../../../assets/images/glTF.png"></img>
+     <img src="../../../assets/images/GLTFModel.png"></img>
+
+     ## Tutorials
+
+     <ul>
+     <li>[Importing glTF](https://github.com/xeolabs/xeogl/wiki/Models-glTF)</li>
+     </ul>
 
      ## Examples
 
      <ul>
-     <li>[Gearbox](../../examples/#importing_gltf_gearbox)</li>
-     <li>[Buggy](../../examples/#importing_gltf_buggy)</li>
-     <li>[Reciprocating Saw](../../examples/#importing_gltf_ReciprocatingSaw)</li>
-     <li>[Textured Duck](../../examples/#importing_gltf_duck)</li>
-     <li>[glTF with entity explorer UI](../../examples/#demos_ui_explorer)</li>
-     <li>[Fly camera to glTF entities](../../examples/#boundaries_flyToBoundary)</li>
-     <li>[Ensuring individual materials on glTF entities](../../examples/#importing_gltf_techniques_uniqueMaterials)</li>
-     <li>[Baking transform hierarchies](../../examples/#importing_gltf_techniques_bakeTransforms)</li>
-     <li>[Attaching transforms to glTFs, via constructor](../../examples/#importing_gltf_techniques_configTransform)</li>
-     <li>[Attaching transforms to glTFs, via property](../../examples/#importing_gltf_techniques_attachTransform)</li>
+     <li>[Gearbox](../../examples/#models_GLTFModel_gearbox)</li>
+     <li>[Buggy](../../examples/#models_GLTFModel_buggy)</li>
+     <li>[Reciprocating Saw](../../examples/#models_GLTFModel_ReciprocatingSaw)</li>
+     <li>[Textured Duck](../../examples/#models_GLTFModel_duck)</li>
+     <li>[GLTFModel with entity explorer UI](../../examples/#demos_ui_explorer)</li>
+     <li>[Fly camera to GLTFModel entities](../../examples/#boundaries_flyToBoundary)</li>
+     <li>[Ensuring individual materials on GLTFModel entities](../../examples/#models__uniqueMaterials)</li>
+     <li>[Baking transform hierarchies](../../examples/#models_bakeTransforms)</li>
+     <li>[Attaching transforms to GLTFModel, via constructor](../../examples/#models_configureTransform)</li>
+     <li>[Attaching transforms to GLTFModel, via property](../../examples/#models_attachTransform)</li>
      </ul>
 
-     ## Tutorials
-
-     Find API documentation for glTF here:
-
-     <ul>
-     <li>[Importing glTF](https://github.com/xeolabs/xeogl/wiki/Importing-glTF)</li>
-     </ul>
-
-     @class glTFModel
+     @class GLTFModel
      @module xeogl
-     @submodule importing
+     @submodule models
+     @constructor
+     @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this GLTFModel in the default
+     {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+     @param [cfg] {*} Configs
+     @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+     generated automatically when omitted.
+     @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this GLTFModel.
+     @param [cfg.src] {String} Path to a glTF file. You can set this to a new file path at any time, which will cause the
+     GLTFModel to load components from the new file (after first destroying any components loaded from a previous file path).
+     @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink "Transform"}}{{/crossLink}} to attach to this GLTFModel.
+     Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this GLTFModel. Internally, the given
+     {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
+     that the GLTFModel attaches to its {{#crossLink "Entity"}}Entities{{/crossLink}}.
      @extends Model
      */
-    xeogl.glTFModel = xeogl.Model.extend({
+    xeogl.GLTFModel = xeogl.Model.extend({
 
-        type: "xeogl.glTFModel",
+        type: "xeogl.GLTFModel",
 
         _init: function (cfg) {
 
@@ -28059,12 +28378,12 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         _props: {
 
             /**
-             Path to the glTF file.
+             Path to a glTF file.
 
-             You can set this to a new file path at any time, which will cause the glTFModel to load components from
+             You can set this to a new file path at any time, which will cause the GLTFModel to load components from
              the new file (after first destroying any components loaded from a previous file path).
 
-             Fires a {{#crossLink "glTFModel/src:event"}}{{/crossLink}} event on change.
+             Fires a {{#crossLink "GLTFModel/src:event"}}{{/crossLink}} event on change.
 
              @property src
              @type String
@@ -28082,11 +28401,11 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                         return;
                     }
 
-                    if (value === this._src) { // Already loaded this glTFModel
+                    if (value === this._src) { // Already loaded this GLTFModel
 
                         /**
-                         Fired whenever this glTFModel has finished loading components from the glTF file
-                         specified by {{#crossLink "glTFModel/src:property"}}{{/crossLink}}.
+                         Fired whenever this GLTFModel has finished loading components from the glTF file
+                         specified by {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}.
                          @event loaded
                          */
                         this.fire("loaded");
@@ -28094,11 +28413,13 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                         return;
                     }
 
-                    this.clear();
+                    this.destroyAll();
 
                     this._src = value;
 
-                    glTFLoader.setCollection(this.collection);
+                    var glTFLoader = xeogl.GLTFLoader;
+
+                    glTFLoader.setModel(this);
                     glTFLoader.initWithPath(this.id, this._src);
 
                     var self = this;
@@ -28118,15 +28439,15 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                         spinner.processes--;
 
                         /**
-                         Fired whenever this glTFModel has finished loading components from the glTF file
-                         specified by {{#crossLink "glTFModel/src:property"}}{{/crossLink}}.
+                         Fired whenever this GLTFModel has finished loading components from the glTF file
+                         specified by {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}.
                          @event loaded
                          */
                         self.fire("loaded");
                     });
 
                     /**
-                     Fired whenever this glTFModel's {{#crossLink "glTFModel/src:property"}}{{/crossLink}} property changes.
+                     Fired whenever this GLTFModel's {{#crossLink "GLTFModel/src:property"}}{{/crossLink}} property changes.
                      @event src
                      @param value The property's new value
                      */
@@ -28141,7 +28462,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
         _getJSON: function () {
 
-            var json =  this._super();
+            var json =  {};
 
             if (this.src) {
                 json.src = this._src;
@@ -28151,10 +28472,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         },
 
         _destroy: function () {
-            this._clear();
+            this.destroyAll();
         }
     });
-
 
 })();;/**
  * Components to define the surface appearance of Entities.
@@ -31490,6 +31810,12 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     this._setWorldBoundaryDirty();
 
+                    /**
+                     * Fired whenever this Entity's {{#crossLink "Entity/geometry:property"}}{{/crossLink}} property changes.
+                     *
+                     * @event modes
+                     * @param value The property's new value
+                     */
                     this._attach({
                         name: "geometry",
                         type: "xeogl.Geometry",
@@ -32038,11 +32364,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                         // this._setWorldBoundaryDirty();
 
-                        this._worldBoundary = new xeogl.Boundary3D(this.scene, {
+                        this._worldBoundary = this.create({
 
-                            meta: {
-                                desc: "Entity " + self.id + " World-space boundary" // For debugging
-                            },
+                            type:"xeogl.Boundary3D",
 
                             getDirty: function () {
                                 if (self._worldBoundaryDirty) {
@@ -32126,11 +32450,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                         //     this._setViewBoundaryDirty();
 
-                        this._viewBoundary = new xeogl.Boundary3D(this.scene, {
+                        this._viewBoundary = this.create({
 
-                            meta: {
-                                desc: "Entity " + self.id + " View-space boundary" // For debugging
-                            },
+                            type:"xeogl.Boundary3D",
 
                             getDirty: function () {
                                 if (self._viewBoundaryDirty) {
@@ -32197,11 +32519,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                         //   this._setCanvasBoundaryDirty();
 
-                        this._canvasBoundary = new xeogl.Boundary2D(this.scene, {
+                        this._canvasBoundary = this.create({
 
-                            meta: {
-                                desc: "Entity " + self.id + " Canvas-space boundary" // For debugging
-                            },
+                            type:"xeogl.Boundary2D",
 
                             getDirty: function () {
                                 if (self._canvasBoundaryDirty) {
@@ -32445,19 +32765,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         },
 
         _destroy: function () {
-
-            if (this._worldBoundary) {
-                this._worldBoundary.destroy();
-            }
-
-            if (this._viewBoundary) {
-                this._viewBoundary.destroy();
-            }
-
-            if (this._canvasBoundary) {
-                this._canvasBoundary.destroy();
-            }
-
             this._renderer.removeObject(this.id);
         }
     });
@@ -34815,17 +35122,16 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Boundary.
- @param [cfg.aabb] {Array of Number} Optional initial canvas-space 2D axis-aligned bounding volume (AABB).
- @param [cfg.center] {Array of Number} Optional initial canvas-space 2D center
+ @param [cfg.aabb] {Float32Array} Optional initial canvas-space 2D axis-aligned bounding volume (AABB).
+ @param [cfg.center] {Float32Array} Optional initial canvas-space 2D center
  @param [cfg.getDirty] {Function} Optional callback to check if parent component has new OBB and matrix.
  @param [cfg.getOBB] {Function} Optional callback to get new view-space 3D OBB from parent.
  @param [cfg.getMatrix] {Function} Optional callback to get new projection matrix from parent.
- @param [cfg.shown] {Boolean} Set true to show a helper DIV that indicates the boundary.
  @extends Component
  */
 
 /**
- * Fired whenever this Boundary2D's {{#crossLink "Boundary2D/abb:property"}}{{/crossLink}} abd {{#crossLink "Boundary2D/center:property"}}{{/crossLink}}.
+ * Fired whenever this Boundary2D's {{#crossLink "Boundary2D/aabb:property"}}{{/crossLink}} and {{#crossLink "Boundary2D/center:property"}}{{/crossLink}}.
  * properties change.
  * @event updated
  */
@@ -34839,11 +35145,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
         _init: function (cfg) {
 
-            // Indicator DIV
-
-            this._div = null;
-            this._shown = false;
-
             // Cached boundaries
 
             this._obb = null; // Private 3D View-space OBB
@@ -34856,18 +35157,19 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             this._getDirty = cfg.getDirty;
             this._getOBB = cfg.getOBB;
             this._getMatrix = cfg.getMatrix;
-
-            this.shown = cfg.shown;
         },
 
         _props: {
 
             /**
-             * 2D Canvas-space axis-aligned bounding box (AABB).
+             * An axis-aligned box (AABB) representation of this 2D boundary.
+             *
+             * The AABB is represented by a four-element Float32Array containing the min/max canvas-space
+             * extents of the axis-aligned volume, ie. ````[xmin,ymin,xmax,ymax]````.
              *
              * @property aabb
              * @final
-             * @type {*}
+             * @type {Float32Array}
              */
             aabb: {
 
@@ -34882,11 +35184,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * 2D Canvas-space center point.
+             * The center point of this 2D boundary.
+             *
+             * The center point is represented by a Float32Array containing canvas-space coordinates,
+             * ie. ````[x,y]````.
              *
              * @property center
              * @final
-             * @type {Array of Number}
+             * @type {Float32Array}
              */
             center: {
 
@@ -34897,74 +35202,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
                     }
 
                     return this._center;
-                }
-            },
-
-            /**
-             * When true, shows a helper DIV that indicates the boundary.
-             *
-             * @property shown
-             * @type {Boolean}
-             */
-            shown: {
-
-                set: function (value) {
-
-                    if (value === this._shown) {
-                        return;
-                    }
-
-                    if (value) {
-                        if (!this._div) {
-
-                            var body = document.getElementsByTagName("body")[0];
-                            var div = document.createElement('div');
-
-                            var style = div.style;
-                            style.position = "absolute";
-                            style.padding = "0";
-                            style.margin = "0";
-                            style.border = "3px solid #99FF99";
-                            style["border-radius"] = "10px";
-                            style["z-index"] = "1000";
-
-                            body.appendChild(div);
-
-                            var self = this;
-
-                            this.on("updated",
-                                function () {
-
-                                    var aabb = self.aabb;
-
-                                    div.style.left = aabb.min[0] + "px";
-                                    div.style.top = aabb.min[1] + "px";
-                                    div.style.width = (aabb.max[0] - aabb.min[0]) + "px";
-                                    div.style.height = (aabb.max[1] - aabb.min[1]) + "px";
-                                });
-
-                            this._div = div;
-                        }
-                    } else {
-                        if (this._div) {
-                            this._div.parentNode.removeChild(this._div);
-                            this._div = null;
-                        }
-                    }
-
-                    this._shown = value;
-
-                    /**
-                     * Fired whenever this Boundary2d's
-                     * {{#crossLink "Boundary2d/shown:property"}}{{/crossLink}} property changes.
-                     * @event shown
-                     * @param value The property's new value
-                     */
-                    this.fire("shown", this._shown);
-                },
-
-                get: function () {
-                    return this._shown;
                 }
             }
         },
@@ -34983,9 +35220,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                 // Lazy-allocate
 
-                this._obb = [];
-                this._aabb = xeogl.math.AABB2();
-                this._center = xeogl.math.vec2();
+                this._obb = math.OBB2();
+                this._aabb = math.AABB2();
+                this._center = math.vec2();
             }
 
             var obb = this._getOBB();
@@ -34993,8 +35230,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
             if (obb && matrix) {
 
-                math.transformPoints3(matrix, obb, this._obb);
-                math.points3ToAABB2(this._obb, this._aabb);
+                math.transformOBB3(matrix, obb, this._obb);
+                math.OBB3ToAABB2(this._obb, this._aabb);
                 math.AABB2ToCanvas(this._aabb, width, height);
                 math.getAABB2Center(this._aabb, this._center);
             }
@@ -35007,20 +35244,23 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             };
         }
     });
-
 })();
 ;/**
- A **Boundary3D** provides the axis-aligned and object-aligned extents of its owner component.
+ A **Boundary3D** provides the 3D extents of its parent component in a given coordinate system.
 
- A Boundary3D provides spatial info in these properties:
+ A Boundary3D provides its spatial info in these properties:
 
  <ul>
- <li>{{#crossLink "Boundary3D/obb:property"}}{{/crossLink}} - an object-aligned bounding box (OBB), as an array of eight corner vertex positions</li>
- <li>{{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} - an axis-aligned bounding box (AABB), as minimum and maximum corner vertex positions</li>
- <li>{{#crossLink "Boundary3D/center:property"}}{{/crossLink}} - center coordinate</li>
+ <li>{{#crossLink "Boundary3D/obb:property"}}{{/crossLink}} - an oriented box (OBB) in a 32-element Float32Array
+ containing homogeneous coordinates for the eight corner vertices, ie. each having elements [x,y,z,w].</li>
+ <li>{{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} - an axis-aligned box (AABB) in a six-element Float32Array
+ containing the min/max extents of the axis-aligned volume, ie. ````[xmin,ymin,zmin,xmax,ymax,zmax]````,</li>
+ <li>{{#crossLink "Boundary3D/center:property"}}{{/crossLink}} - the center point as a Float32Array containing elements ````[x,y,z]```` and</li>
+ <li>{{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} - a bounding sphere, given as a Float32Array containingg elements````[x,y,z,radius]````.</li>
  </ul>
 
  As shown in the diagram below, the following xeogl components have Boundary3Ds:
+
  * A {{#crossLink "Scene/worldBoundary:property"}}Scene's worldBoundary{{/crossLink}} provides the **World**-space boundary of all its {{#crossLink "Entity"}}Entities{{/crossLink}}
  * A {{#crossLink "Geometry/localBoundary:property"}}Geometry's localBoundary{{/crossLink}} provides the **Local**-space boundary of its {{#crossLink "Geometry/positions:property"}}positions{{/crossLink}}
  * An {{#crossLink "Entity/localBoundary:property"}}Entity's localBoundary{{/crossLink}} (also) provides the **Local**-space boundary of its {{#crossLink "Geometry"}}{{/crossLink}}
@@ -35031,6 +35271,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
  their transformation by both the {{#crossLink "Entity/transform:property"}}Entity's Modelling transform{{/crossLink}} **and** {{#crossLink "Camera/view:property"}}Viewing transform{{/crossLink}}.
  * A {{#crossLink "CollectionBoundary/worldBoundary:property"}}CollectionBoundary's worldBoundary{{/crossLink}} provides the **World**-space boundary of all the {{#crossLink "Entity"}}Entities{{/crossLink}} contained within its {{#crossLink "Collection"}}Collection{{/crossLink}}.
+ * A {{#crossLink "Model/worldBoundary:property"}}Model's worldBoundary{{/crossLink}} provides the **World**-space boundary of all its {{#crossLink "Entity"}}Entities{{/crossLink}}
 
  The diagram also shows an {{#crossLink "Entity/canvasBoundary:property"}}Entity's canvasBoundary{{/crossLink}}, which is a {{#crossLink "Boundary2D"}}{{/crossLink}} that provides the **Canvas**-space boundary of the {{#crossLink "Geometry"}}Geometry's{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
  their transformation by the {{#crossLink "Entity/transform:property"}}Entity's Modelling transform{{/crossLink}}, {{#crossLink "Camera/view:property"}}Viewing transform{{/crossLink}}
@@ -35074,7 +35315,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         obb = worldBoundary.obb;
         aabb = worldBoundary.aabb;
         center = worldBoundary.center;
-
+        sphere = worldBoundary.sphere();
         //...
     });
 
@@ -35098,9 +35339,10 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  @param [cfg] {*} Configs
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Boundary3D.
- @param [cfg.obb] {Array of Number} Optional initial 3D object-aligned bounding volume (OBB).
- @param [cfg.aabb] {Array of Number} Optional initial 3D axis-aligned bounding volume (AABB).
- @param [cfg.center] {Array of Number} Optional initial 3D center
+ @param [cfg.obb] {Float32Array} Optional initial 3D object-aligned bounding volume (OBB).
+ @param [cfg.aabb] {Float32Array} Optional initial 3D axis-aligned bounding volume (AABB).
+ @param [cfg.center] {Float32Array} Optional initial 3D center
+ @param [cfg.sphere] {Float32Array} Optional initial 3D bounding sphere.
  @param [cfg.getDirty] {Function} Optional callback to check if parent component has new OBB, positions or transform matrix.
  @param [cfg.getOBB] {Function} Optional callback to get new OBB from parent.
  @param [cfg.getMatrix] {Function} Optional callback to get new transform matrix from parent.
@@ -35110,8 +35352,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 /**
  * Fired whenever this Boundary3D's {{#crossLink "Boundary3D/obb:property"}}{{/crossLink}},
- * {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} or {{#crossLink "Boundary3D/center:property"}}{{/crossLink}}.
- * properties change.
+ * {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}}, {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}}
+ * or {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} properties change.
  * @event updated
  */
 (function () {
@@ -35124,18 +35366,18 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
         _init: function (cfg) {
 
-            // Cached bounding boxes (oriented and axis-aligned) 
-
+            // Cached bounding boxes (oriented and axis-aligned)
             this._obb = cfg.obb || null;
             this._aabb = cfg.aabb || null;
 
-            // Cached center point
+            // Cached bounding sphere
+            this._sphere = cfg.sphere || null;
 
+            // Cached center point
             this._center = cfg.center || null;
 
             // Owner injected callbacks to provide
             // resources on lazy-rebuild
-
             this._getDirty = cfg.getDirty;
             this._getOBB = cfg.getOBB;
             this._getAABB = cfg.getAABB;
@@ -35146,11 +35388,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         _props: {
 
             /**
-             * 3D oriented bounding box (OBB).
+             * An oriented box (OBB) representation of this 3D boundary.
              *
+             * The OBB is represented by a 32-element Float32Array containing the eight vertices of the box,
+             * where each vertex is a homogeneous coordinate having [x,y,z,w] elements.
+             *i
              * @property obb
              * @final
-             * @type {*}
+             * @type {Float32Array}
              */
             obb: {
 
@@ -35165,11 +35410,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * 3D axis-aligned bounding box (AABB).
+             * An axis-aligned box (AABB) representation of this 3D boundary.
+             *
+             * The AABB is represented by a six-element Float32Array containing the min/max extents of the
+             * axis-aligned volume, ie. ````[xmin, ymin,zmin,xmax,ymax, zmax]````.
              *
              * @property aabb
              * @final
-             * @type {*}
+             * @type {Float32Array}
              */
             aabb: {
 
@@ -35184,11 +35432,13 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             },
 
             /**
-             * 3D center point.
+             * The center point of this 3D boundary.
+             *
+             * The center point is represented by a Float32Array containing elements ````[x,y,z]````.
              *
              * @property center
              * @final
-             * @type {Array of Number}
+             * @type {Float32Array}
              */
             center: {
 
@@ -35200,10 +35450,32 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     return this._center;
                 }
+            },
+
+            /**
+             * A spherical representation of this 3D boundary.
+             *
+             * The sphere is a four-element Float32Array containing the sphere center and
+             * radius, ie: ````[xcenter, ycenter, zcenter, radius ]````.
+             *
+             * @property sphere
+             * @final
+             * @type {Float32Array}
+             */
+            sphere: {
+
+                get: function () {
+
+                    if (this._getDirty()) {
+                        this._buildBoundary();
+                    }
+
+                    return this._sphere;
+                }
             }
         },
 
-        // (Re)builds the obb, aabb and center.
+        // Builds the obb, aabb, sphere and center.
 
         _buildBoundary: function () {
 
@@ -35212,35 +35484,40 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             // Lazy-allocate
 
             if (!this._obb) {
-                this._obb = [];
+                this._obb = xeogl.math.OBB3();
             }
 
             if (!this._aabb) {
                 this._aabb = xeogl.math.AABB3();
             }
 
+            if (!this._sphere) {
+                this._sphere = xeogl.math.vec4();
+            }
+
             if (!this._center) {
                 this._center = xeogl.math.vec3();
             }
-
+            
             var aabb = this._getAABB ? this._getAABB() : null;
 
             if (aabb) {
 
                 // Got AABB
 
-                // Derive OBB and center
+                // Derive OBB, sphere and center
 
-                this._aabb.min[0] = aabb.min[0];
-                this._aabb.min[1] = aabb.min[1];
-                this._aabb.min[2] = aabb.min[2];
-                this._aabb.max[0] = aabb.max[0];
-                this._aabb.max[1] = aabb.max[1];
-                this._aabb.max[2] = aabb.max[2];
+                this._aabb[0] = aabb[0];
+                this._aabb[1] = aabb[1];
+                this._aabb[2] = aabb[2];
+                this._aabb[3] = aabb[3];
+                this._aabb[4] = aabb[4];
+                this._aabb[5] = aabb[5];
 
                 math.AABB3ToOBB3(this._aabb, this._obb);
-                math.getAABBCenter(this._aabb, this._center);
-
+                math.OBB3ToSphere3(this._obb, this._sphere);
+                math.getSphere3Center(this._sphere, this._center);
+                
                 return;
             }
 
@@ -35260,25 +35537,25 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     // Got transform matrix
 
-                    // Transform OOBB by matrix,
-                    // derive AABB and center
+                    // Transform OBB by matrix, derive AABB, sphere and center
 
                     math.positions3ToAABB3(positions, this._aabb);
                     math.AABB3ToOBB3(this._aabb, this._obb);
-                    math.transformPoints3(matrix, this._obb);
-                    math.points3ToAABB3(this._obb, this._aabb);
-                    math.getAABBCenter(this._aabb, this._center);
+                    math.transformOBB3(matrix, this._obb);
+                    math.OBB3ToAABB3(this._obb, this._aabb);
+                    math.OBB3ToSphere3(this._obb, this._sphere);
+                    math.getSphere3Center(this._sphere, this._center);
 
                     return;
-
                 }
 
                 // No transform matrix
 
                 math.positions3ToAABB3(positions, this._aabb);
                 math.AABB3ToOBB3(this._aabb, this._obb);
-                math.getAABBCenter(this._aabb, this._center);
-
+                math.OBB3ToSphere3(this._obb, this._sphere);
+                math.getSphere3Center(this._sphere, this._center);
+                
                 return
             }
 
@@ -35286,7 +35563,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
             if (obb) {
 
-                // Got OOBB (array of eight four-element subarrays)
+                // Got OBB
 
                 matrix = this._getMatrix ? this._getMatrix() : null;
 
@@ -35294,26 +35571,28 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                     // Got transform matrix
 
-                    // Transform OOBB by matrix,
-                    // derive AABB and center
+                    // Transform OBB by matrix, derive AABB and center
 
-                    math.transformPoints3(matrix, obb, this._obb);
-                    math.points3ToAABB3(this._obb, this._aabb);
-                    math.getAABBCenter(this._aabb, this._center);
+                    math.transformOBB3(matrix, obb, this._obb);
+                    math.OBB3ToAABB3(this._obb, this._aabb);
+                    math.OBB3ToSphere3(this._obb, this._sphere);
+                    math.getSphere3Center(this._sphere, this._center);
 
                     return;
                 }
 
                 // No transform matrix
 
-                // Copy OOBB, derive AABB and center
+                // Copy OBB, derive AABB and center
 
                 for (var i = 0, len = obb.length; i < len; i++) {
                     this._obb[i] = obb[i];
                 }
 
-                math.points3ToAABB3(this._obb, this._aabb);
-                math.getAABBCenter(this._aabb, this._center);
+                math.OBB3ToAABB3(this._obb, this._aabb);
+                math.OBB3ToSphere3(this._obb, this._sphere);
+                math.getSphere3Center(this._sphere, this._center);
+
             }
         },
 
@@ -35321,357 +35600,13 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             return {
                 obb: this.obb,
                 aabb: this.aabb,
-                center: this.center
+                center: this.center,
+                sphere: this.sphere
             };
         }
     });
 
 })();
-;/**
- A **CollectionBoundary** provides the World-space boundary of the components within a {{#crossLink "Collection"}}{{/crossLink}}.
-
- <ul>
- <li>A CollectionBoundary provides its boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.</li>
- <li>The {{#crossLink "Boundary3D"}}{{/crossLink}} dynamically fits to the collective boundary of components
- that provide their own World-space {{#crossLink "Boundary3D"}}Boundar3Ds{{/crossLink}}.</li>
- <li>The {{#crossLink "Boundary3D"}}{{/crossLink}} automatically resizes whenever we add or remove components that
- have World-space {{#crossLink "Boundary3D"}}Boundary3Ds{{/crossLink}}, or whenever
- we cause those components to update their {{#crossLink "Boundary3D"}}Boundary3Ds{{/crossLink}}.</li>
- </ul>
-
- <img src="../../../assets/images/CollectionBoundary.png"></img>
-
- ## Examples
-
- <ul>
- <li>[Visualizing a CollectionBoundary](../../examples/#boundaries_CollectionBoundary)</li>
- <li>[Visualizing a CollectionBoundary hierarchy](../../examples/#boundaries_CollectionBoundary_hierarchy)</li>
- </ul>
-
- ## Usage
-
- Let's create a {{#crossLink "Collection"}}{{/crossLink}} that contains two {{#crossLink "Entity"}}Entities{{/crossLink}}:
-
- ````javascript
- var entity = new xeogl.Entity({
-        geometry: new xeogl.BoxGeometry(),
-        transform: new xeogl.Translate({
-            xyz: [-5, 0, 0]
-        })
-  });
-
- var entity2 = new xeogl.Entity({
-        geometry: new xeogl.BoxGeometry(),
-        transform: new xeogl.Translate({
-            xyz: [0, -5, 0]
-        })
-  });
-
- var collection = new xeogl.Collection({
-    components: [
-        entity1,
-        entity2
-    ]
- });
- ````
- Now we'll create a {{#crossLink "CollectionBoundary"}}{{/crossLink}} that provides
- a World-space {{#crossLink "Boundary3D"}}{{/crossLink}} that will dynamically fit to the collective World-space boundary of
- the {{#crossLink "Entity"}}Entities{{/crossLink}}:
-
- ````javascript
- var collectionBoundary = new xeogl.CollectionBoundary({
-    collection: collection1
- });
-
- var worldBoundary = collectionBoundary.worldBoundary;
- ````
- The {{#crossLink "Boundary3D"}}{{/crossLink}}
- will automatically update whenever we add, remove or update any Components within the {{#crossLink "Collection"}}{{/crossLink}}
- that have World-space boundaries.
-
- We can subscribe to updates on it like so:
-
- ````javascript
- worldBoundary.on("updated", function() {
-     obb = worldBoundary.obb;
-     aabb = worldBoundary.aabb;
-     center = worldBoundary.center;
-     //...
- });
- ````
-
- Now, if we now remove one of our {{#crossLink "Entity"}}Entities{{/crossLink}} from our {{#crossLink "Collection"}}{{/crossLink}},
- the {{#crossLink "Boundary3D"}}{{/crossLink}} will fire our update handler:
-
- ````javascript
- collection1.add(myEntity);
- ````
-
- @class CollectionBoundary
- @module xeogl
- @submodule boundaries
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}, creates this CollectionBoundary within the
- default {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} CollectionBoundary configuration
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CollectionBoundary.
- @param [cfg.collection=null] {Collection} A {{#crossLink "Collection"}}Collection{{/crossLink}} to fit the {{#crossLink "CollectionBoundary/worldBoundary:property"}}{{/crossLink}} to. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this CollectionBoundary.
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    xeogl.CollectionBoundary = xeogl.Component.extend({
-
-        type: "xeogl.CollectionBoundary",
-
-        _init: function (cfg) {
-
-            this._onAdded = {};
-            this._onUpdated = {};
-            this._onRemoved = {};
-
-            this._aabb = null;
-            this._aabbDirty = false;
-            this._worldBoundary = null;
-
-            this.collection = cfg.collection;
-        },
-
-        _props: {
-
-            /**
-             * The {{#crossLink "Collection"}}{{/crossLink}} attached to this CollectionBoundary.
-             *
-             * Fires a {{#crossLink "CollectionBoundary/collection:event"}}{{/crossLink}} event on change.
-             *
-             * @property collection
-             * @type Collection
-             */
-            collection: {
-
-                set: function (value) {
-
-                    var self = this;
-
-                    this._attach({
-                        name: "collection",
-                        type: "xeogl.Collection",
-                        component: value, // Converts value from ID to instance if necessary
-                        on: {
-                            added: function (component) {
-                                self._added(component);
-                            },
-                            removed: function (component) {
-                                self._removed(component);
-                            }
-                        },
-                        onAttached: function (collection) {
-                            collection.iterate(self._bind, self);
-                            self._setAABBDirty();
-                        },
-                        onDetached: function (collection) {
-                            collection.iterate(self._unbind, self);
-                        }
-                    });
-
-                    this._setAABBDirty();
-                },
-
-                get: function () {
-                    return this._attached.collection;
-                }
-            },
-
-            /**
-             * World-space 3D boundary enclosing all the components contained in {{#crossLink "CollectionBoundary/collection:property"}}{{/crossLink}}.
-             *
-             * If you call {{#crossLink "Component/destroy:method"}}{{/crossLink}} on this boundary, then
-             * this property will be assigned to a fresh {{#crossLink "Boundary3D"}}{{/crossLink}} instance next
-             * time you reference it.
-             *
-             * @property worldBoundary
-             * @type Boundary3D
-             * @final
-             */
-            worldBoundary: {
-
-                get: function () {
-
-                    if (!this._worldBoundary) {
-
-                        var self = this;
-
-                        this._worldBoundary = new xeogl.Boundary3D(this.scene, {
-
-                            getDirty: function () {
-                                if (self._aabbDirty) {
-                                    self._buildAABB();
-                                    self._aabbDirty = false;
-                                    return true;
-                                }
-                                return false;
-                            },
-
-                            getAABB: function () {
-                                return self._aabb;
-                            }
-                        });
-
-                        this._worldBoundary.on("destroyed",
-                            function () {
-                                self._worldBoundary = null;
-                            });
-                    }
-
-                    return this._worldBoundary;
-                }
-            }
-        },
-
-        _added: function (c) {
-            if (c.worldBoundary) {
-                this._bind(c);
-            }
-            if (!this._aabbDirty) {
-                this._setAABBDirty();
-            }
-        },
-
-        _removed: function (c) {
-            if (c.worldBoundary) {
-                this._unbind(c);
-            }
-            if (!this._aabbDirty) {
-                this._setAABBDirty();
-            }
-        },
-
-        _bind: function (c) {
-            var worldBoundary = c.worldBoundary;
-            if (!worldBoundary) {
-                return;
-            }
-            this._onUpdated[c.id] = worldBoundary.on("updated", this._updated, this);
-        },
-
-        _updated: function () {
-            if (!this._aabbDirty) {
-                this._setAABBDirty();
-            }
-        },
-
-        _unbind: function (c) {
-            var worldBoundary = c.worldBoundary;
-            if (!worldBoundary) {
-                return;
-            }
-            worldBoundary.off(this._onUpdated[c.id]);
-            delete this._onUpdated[c.id];
-        },
-
-        _setAABBDirty: function () {
-            this._aabbDirty = true;
-            if (this._worldBoundary) {
-                this._worldBoundary.fire("updated", true);
-            }
-        },
-
-        _buildAABB: function () {
-
-            if (!this._aabb) {
-                this._aabb = xeogl.math.AABB3();
-            }
-
-            var xmin = 100000;
-            var ymin = 100000;
-            var zmin = 100000;
-            var xmax = -100000;
-            var ymax = -100000;
-            var zmax = -100000;
-
-            var component;
-            var worldBoundary;
-            var aabb;
-            var min;
-            var max;
-
-            var collection = this.collection;
-
-            if (collection) {
-
-                var components = collection.components;
-
-                for (var componentId in components) {
-                    if (components.hasOwnProperty(componentId)) {
-
-                        component = components[componentId];
-
-                        worldBoundary = component.worldBoundary;
-                        if (worldBoundary) {
-
-                            aabb = worldBoundary.aabb;
-                            min = aabb.min;
-                            max = aabb.max;
-
-                            if (min[0] < xmin) {
-                                xmin = min[0];
-                            }
-
-                            if (min[1] < ymin) {
-                                ymin = min[1];
-                            }
-
-                            if (min[2] < zmin) {
-                                zmin = min[2];
-                            }
-
-                            if (max[0] > xmax) {
-                                xmax = max[0];
-                            }
-
-                            if (max[1] > ymax) {
-                                ymax = max[1];
-                            }
-
-                            if (max[2] > zmax) {
-                                zmax = max[2];
-                            }
-                        }
-                    }
-                }
-            }
-
-            this._aabb.min[0] = xmin;
-            this._aabb.min[1] = ymin;
-            this._aabb.min[2] = zmin;
-            this._aabb.max[0] = xmax;
-            this._aabb.max[1] = ymax;
-            this._aabb.max[2] = zmax;
-        },
-
-        _getJSON: function () {
-            var json = {};
-            if (this.collection) {
-                json.collection = this.collection.id
-            }
-            return json;
-        },
-
-        _destroy: function () {
-
-            this.collection = null; // Unsubscribes from worldBoundary updates on Collection members
-
-            if (this._worldBoundary) {
-                this._worldBoundary.destroy();
-            }
-        }
-    });
-
-})
-();
 ;/**
  * Modelling transform components.
  *

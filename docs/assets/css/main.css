@@ -26,7 +26,11 @@ html {
 
 body {
     /*font: 13px/1.4 'Lucida Grande', 'Lucida Sans Unicode', 'DejaVu Sans', 'Bitstream Vera Sans', 'Helvetica', 'Arial', sans-serif;*/
-    font: 13px/1.4 'Helvetica', 'Arial', sans-serif;
+    /*font: 13px/1.4 'Helvetica', 'Arial', sans-serif;*/
+    font-family: 'Raleway', sans-serif;
+    font-size: 15px;
+    line-height: 1.50;
+    color: #333333;
     margin: 0;
     padding: 0;
 }
@@ -345,10 +349,8 @@ ul li p {
 }
 
 #hd {
-    background: whiteSmoke;
-    background: -moz-linear-gradient(top,#DCDBD9 0,#F6F5F3 100%);
-    background: -webkit-gradient(linear,left top,left bottom,color-stop(0%,#DCDBD9),color-stop(100%,#F6F5F3));
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#dcdbd9',endColorstr='#F6F5F3',GradientType=0);
+    background: black;
+
     border-bottom: 1px solid #DFDFDF;
     padding: 0 15px 1px 20px;
     margin-bottom: 15px;

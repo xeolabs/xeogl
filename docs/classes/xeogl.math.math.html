@@ -14,7 +14,9 @@
 <div id="doc">
     <div id="hd" class="yui3-g header">
         <div class="yui3-u-3-4">
-                <h1><img src="../../assets/images/logo.png" title="xeogl"></h1>
+
+                <h1 style="color:white;"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
+
         </div>
         <div class="yui3-u-1-4 version">
             <em>API Docs for: 1.0.0</em>
@@ -25,7 +27,7 @@
         <div class="yui3-u-1-4">
             <div id="docs-sidebar" class="sidebar apidocs">
                 <div id="api-list">
-                    <h2 class="off-left">APIs</h2>
+                
                     <div id="api-tabview" class="tabview">
                         <ul class="tabs">
                             <li><a href="#api-classes">Classes</a></li>
@@ -44,16 +46,18 @@
                                 <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
                                 <li><a href="../classes/BoundaryGeometry.html">BoundaryGeometry</a></li>
                                 <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
+                                <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
                                 <li><a href="../classes/Camera.html">Camera</a></li>
                                 <li><a href="../classes/CameraControl.html">CameraControl</a></li>
                                 <li><a href="../classes/CameraController.html">CameraController</a></li>
                                 <li><a href="../classes/CameraFlight.html">CameraFlight</a></li>
+                                <li><a href="../classes/CameraFollow.html">CameraFollow</a></li>
+                                <li><a href="../classes/CameraPath.html">CameraPath</a></li>
+                                <li><a href="../classes/CameraPathPlayer.html">CameraPathPlayer</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
                                 <li><a href="../classes/Cardboard.html">Cardboard</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
-                                <li><a href="../classes/Collection.html">Collection</a></li>
-                                <li><a href="../classes/CollectionBoundary.html">CollectionBoundary</a></li>
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
                                 <li><a href="../classes/ColorTarget.html">ColorTarget</a></li>
                                 <li><a href="../classes/Component.html">Component</a></li>
@@ -69,7 +73,7 @@
                                 <li><a href="../classes/Fresnel.html">Fresnel</a></li>
                                 <li><a href="../classes/Frustum.html">Frustum</a></li>
                                 <li><a href="../classes/Geometry.html">Geometry</a></li>
-                                <li><a href="../classes/glTFModel.html">glTFModel</a></li>
+                                <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
                                 <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
                                 <li><a href="../classes/HighlightEntityEffect.html">HighlightEntityEffect</a></li>
                                 <li><a href="../classes/Input.html">Input</a></li>
@@ -129,34 +133,32 @@
                             </ul>
                 
                             <ul id="api-modules" class="apis modules">
-                                <li><a href="../modules/animation.html">animation</a></li>
-                                <li><a href="../modules/boundaries.html">boundaries</a></li>
-                                <li><a href="../modules/camera.html">camera</a></li>
-                                <li><a href="../modules/canvas.html">canvas</a></li>
-                                <li><a href="../modules/clipping.html">clipping</a></li>
-                                <li><a href="../modules/collections.html">collections</a></li>
-                                <li><a href="../modules/configs.html">configs</a></li>
-                                <li><a href="../modules/controls.html">controls</a></li>
-                                <li><a href="../modules/culling.html">culling</a></li>
-                                <li><a href="../modules/curves.html">curves</a></li>
-                                <li><a href="../modules/effects.html">effects</a></li>
-                                <li><a href="../modules/entities.html">entities</a></li>
-                                <li><a href="../modules/geometry.html">geometry</a></li>
-                                <li><a href="../modules/importing.html">importing</a></li>
-                                <li><a href="../modules/input.html">input</a></li>
-                                <li><a href="../modules/interaction.html">interaction</a></li>
-                                <li><a href="../modules/lighting.html">lighting</a></li>
-                                <li><a href="../modules/materials.html">materials</a></li>
-                                <li><a href="../modules/math.html">math</a></li>
-                                <li><a href="../modules/model.html">model</a></li>
-                                <li><a href="../modules/paths.html">paths</a></li>
-                                <li><a href="../modules/rendering.html">rendering</a></li>
-                                <li><a href="../modules/shaders.html">shaders</a></li>
-                                <li><a href="../modules/skyboxes.html">skyboxes</a></li>
-                                <li><a href="../modules/transforms.html">transforms</a></li>
-                                <li><a href="../modules/webvr.html">webvr</a></li>
-                                <li><a href="../modules/xeo.html">xeo</a></li>
-                                <li><a href="../modules/xeogl.html">xeogl</a></li>
+                                <li><a href="..//modules/animation.html">animation</a></li>
+                                <li><a href="..//modules/boundaries.html">boundaries</a></li>
+                                <li><a href="..//modules/camera.html">camera</a></li>
+                                <li><a href="..//modules/canvas.html">canvas</a></li>
+                                <li><a href="..//modules/clipping.html">clipping</a></li>
+                                <li><a href="..//modules/configs.html">configs</a></li>
+                                <li><a href="..//modules/controls.html">controls</a></li>
+                                <li><a href="..//modules/culling.html">culling</a></li>
+                                <li><a href="..//modules/curves.html">curves</a></li>
+                                <li><a href="..//modules/effects.html">effects</a></li>
+                                <li><a href="..//modules/entities.html">entities</a></li>
+                                <li><a href="..//modules/geometry.html">geometry</a></li>
+                                <li><a href="..//modules/input.html">input</a></li>
+                                <li><a href="..//modules/interaction.html">interaction</a></li>
+                                <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/materials.html">materials</a></li>
+                                <li><a href="..//modules/math.html">math</a></li>
+                                <li><a href="..//modules/models.html">models</a></li>
+                                <li><a href="..//modules/paths.html">paths</a></li>
+                                <li><a href="..//modules/rendering.html">rendering</a></li>
+                                <li><a href="..//modules/shaders.html">shaders</a></li>
+                                <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="..//modules/transforms.html">transforms</a></li>
+                                <li><a href="..//modules/webvr.html">webvr</a></li>
+                                <li><a href="..//modules/xeo.html">xeo</a></li>
+                                <li><a href="..//modules/xeogl.html">xeogl</a></li>
                             </ul>
                         </div>
                     </div>
@@ -164,38 +166,38 @@
             </div>
         </div>
         <div class="yui3-u-3-4">
-                <div id="api-options">
-                    Show:
-                    <label for="api-show-inherited">
-                        <input type="checkbox" id="api-show-inherited" checked>
-                        Inherited
-                    </label>
+                <!--<div id="api-options">-->
+                    <!--Show:-->
+                    <!--<label for="api-show-inherited">-->
+                        <!--<input type="checkbox" id="api-show-inherited" checked>-->
+                        <!--Inherited-->
+                    <!--</label>-->
             
-                    <label for="api-show-protected">
-                        <input type="checkbox" id="api-show-protected">
-                        Protected
-                    </label>
+                    <!--<label for="api-show-protected">-->
+                        <!--<input type="checkbox" id="api-show-protected">-->
+                        <!--Protected-->
+                    <!--</label>-->
             
-                    <label for="api-show-private">
-                        <input type="checkbox" id="api-show-private">
-                        Private
-                    </label>
-                    <label for="api-show-deprecated">
-                        <input type="checkbox" id="api-show-deprecated">
-                        Deprecated
-                    </label>
+                    <!--<label for="api-show-private">-->
+                        <!--<input type="checkbox" id="api-show-private">-->
+                        <!--Private-->
+                    <!--</label>-->
+                    <!--<label for="api-show-deprecated">-->
+                        <!--<input type="checkbox" id="api-show-deprecated">-->
+                        <!--Deprecated-->
+                    <!--</label>-->
             
-                </div>
+                <!--</div>-->
             
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>xeogl.math.math Class</h1>
+<h1>xeogl.math.math</h1>
 <div class="box meta">
 
 
         <div class="foundat">
-            Defined in: <a href="../files/src_math_math.js.html#l47"><code>src&#x2F;math&#x2F;math.js:47</code></a>
+            Defined in: <a href="../files/src_math_math.js.html#l12"><code>src&#x2F;math&#x2F;math.js:12</code></a>
         </div>
 
             Module: <a href="../modules/math.html">math</a><br>
@@ -205,7 +207,7 @@
 
 
 <div class="box intro">
-    <p>This utility object provides math functions that are used within xeogl. These functions are also part xeogl&#39;s
+    <p>This utility object provides math functions that are used within xeogl. These functions are also part of xeogl&#39;s
 public API and are therefore available for you to use within your application code.</p>
 
 </div>
@@ -221,27 +223,12 @@ public API and are therefore available for you to use within your application co
 
     <div>
         <div id="index" class="api-class-tabpanel index">
-            <h2 class="off-left">Item Index</h2>
+            <h2 class="off-left">Index</h2>
 
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
                     <ul class="index-list methods">
-                            <li class="index-item method">
-                                <a href="#method_AABB2">AABB2</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_AABB3">AABB3</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_AABB3ToOBB3">AABB3ToOBB3</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
                             <li class="index-item method">
                                 <a href="#method_addMat4">addMat4</a>
 
@@ -274,41 +261,6 @@ public API and are therefore available for you to use within your application co
                             </li>
                             <li class="index-item method">
                                 <a href="#method_addVec4Scalar">addVec4Scalar</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_barycentricInsideTriangle">barycentricInsideTriangle</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_barycentricToCartesian">barycentricToCartesian</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_buildNormals">buildNormals</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_buildTangents">buildTangents</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_cartesianToBaryCentric">cartesianToBaryCentric</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_collapseAABB2">collapseAABB2</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_collapseAABB3">collapseAABB3</a>
 
                                     <span class="flag static">static</span>
                             </li>
@@ -393,26 +345,6 @@ public API and are therefore available for you to use within your application co
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
-                                <a href="#method_expandAABB2Point2">expandAABB2Point2</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_expandAABB3">expandAABB3</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_expandAABB3">expandAABB3</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_expandAABB3Point3">expandAABB3Point3</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
                                 <a href="#method_flatten">flatten</a>
 
                                     <span class="flag static">static</span>
@@ -429,31 +361,6 @@ public API and are therefore available for you to use within your application co
                             </li>
                             <li class="index-item method">
                                 <a href="#method_frustumMat4v">frustumMat4v</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_getAABB2Center">getAABB2Center</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_getAABBCenter">getAABBCenter</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_getAABBDiag">getAABBDiag</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_getAABBDiagPoint">getAABBDiagPoint</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_getPickPrimitives">getPickPrimitives</a>
 
                                     <span class="flag static">static</span>
                             </li>
@@ -602,32 +509,7 @@ public API and are therefore available for you to use within your application co
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
-                                <a href="#method_points3ToAABB2">points3ToAABB2</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_points3ToAABB3">points3ToAABB3</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_positions3ToAABB3">positions3ToAABB3</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
                                 <a href="#method_projectVec4">projectVec4</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_rayPlaneIntersect">rayPlaneIntersect</a>
-
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_rayTriangleIntersect">rayTriangleIntersect</a>
 
                                     <span class="flag static">static</span>
                             </li>
@@ -752,6 +634,11 @@ public API and are therefore available for you to use within your application co
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
+                                <a href="#method_transformPositions3">transformPositions3</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
                                 <a href="#method_transformVec3">transformVec3</a>
 
                                     <span class="flag static">static</span>
@@ -780,10 +667,6 @@ public API and are therefore available for you to use within your application co
                                 <a href="#method_transposeMat4">transposeMat4</a>
 
                                     <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_triangleNormal">triangleNormal</a>
-
                             </li>
                             <li class="index-item method">
                                 <a href="#method_vec2">vec2</a>
@@ -820,177 +703,6 @@ public API and are therefore available for you to use within your application co
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
 
-<div id="method_AABB2" class="method item">
-    <h3 class="name"><code>AABB2</code></h3>
-
-        <span class="paren">()</span>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l157"><code>src&#x2F;math&#x2F;math.js:157</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Returns a new, uninitialized 2D axis-aligned bounding box.</p>
-
-    </div>
-
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type"></span>:
-                    <p>The bounding box.</p>
-
-            </div>
-        </div>
-
-
-</div>
-<div id="method_AABB3" class="method item">
-    <h3 class="name"><code>AABB3</code></h3>
-
-        <span class="paren">()</span>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l144"><code>src&#x2F;math&#x2F;math.js:144</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Returns a new, uninitialized 3D axis-aligned bounding box.</p>
-
-    </div>
-
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type"></span>:
-                    <p>The bounding box.</p>
-
-            </div>
-        </div>
-
-
-</div>
-<div id="method_AABB3ToOBB3" class="method item">
-    <h3 class="name"><code>AABB3ToOBB3</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>aabb</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[obb]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l2188"><code>src&#x2F;math&#x2F;math.js:2188</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Converts an axis-aligned 3D boundary into an oriented boundary consisting of
-an array of eight 3D positions, one for each corner of the boundary.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">aabb</code>
-                        <span class="type"></span>
-
-
-                    <div class="param-description">
-                        <p>Axis-aligned boundary.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[obb]</code>
-                        <span class="type">Array</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Oriented bounding box.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type"></span>:
-                    <p>Oriented bounding box.</p>
-
-            </div>
-        </div>
-
-
-</div>
 <div id="method_addMat4" class="method item">
     <h3 class="name"><code>addMat4</code></h3>
 
@@ -1004,10 +716,11 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l982"><code>src&#x2F;math&#x2F;math.js:982</code></a>
+        <a href="../files/src_math_math.js.html#l920"><code>src&#x2F;math&#x2F;math.js:920</code></a>
         </p>
 
 
@@ -1036,10 +749,11 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1010"><code>src&#x2F;math&#x2F;math.js:1010</code></a>
+        <a href="../files/src_math_math.js.html#l948"><code>src&#x2F;math&#x2F;math.js:948</code></a>
         </p>
 
 
@@ -1068,10 +782,11 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1038"><code>src&#x2F;math&#x2F;math.js:1038</code></a>
+        <a href="../files/src_math_math.js.html#l976"><code>src&#x2F;math&#x2F;math.js:976</code></a>
         </p>
 
 
@@ -1115,10 +830,11 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l290"><code>src&#x2F;math&#x2F;math.js:290</code></a>
+        <a href="../files/src_math_math.js.html#l228"><code>src&#x2F;math&#x2F;math.js:228</code></a>
         </p>
 
 
@@ -1211,10 +927,11 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l250"><code>src&#x2F;math&#x2F;math.js:250</code></a>
+        <a href="../files/src_math_math.js.html#l188"><code>src&#x2F;math&#x2F;math.js:188</code></a>
         </p>
 
 
@@ -1307,10 +1024,11 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l270"><code>src&#x2F;math&#x2F;math.js:270</code></a>
+        <a href="../files/src_math_math.js.html#l208"><code>src&#x2F;math&#x2F;math.js:208</code></a>
         </p>
 
 
@@ -1403,10 +1121,11 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l309"><code>src&#x2F;math&#x2F;math.js:309</code></a>
+        <a href="../files/src_math_math.js.html#l247"><code>src&#x2F;math&#x2F;math.js:247</code></a>
         </p>
 
 
@@ -1471,629 +1190,6 @@ an array of eight 3D positions, one for each corner of the boundary.</p>
 
 
 </div>
-<div id="method_barycentricInsideTriangle" class="method item">
-    <h3 class="name"><code>barycentricInsideTriangle</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>bary</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l3093"><code>src&#x2F;math&#x2F;math.js:3093</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Returns true if the given barycentric coordinates are within their triangle.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">bary</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>Barycentric coordinates.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type"></span>:
-            </div>
-        </div>
-
-
-</div>
-<div id="method_barycentricToCartesian" class="method item">
-    <h3 class="name"><code>barycentricToCartesian</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>bary</code>
-                </li>
-                <li class="arg">
-                        <code>a</code>
-                </li>
-                <li class="arg">
-                        <code>b</code>
-                </li>
-                <li class="arg">
-                        <code>c</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[cartesian]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l3110"><code>src&#x2F;math&#x2F;math.js:3110</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Gets cartesian coordinates from barycentric coordinates within a triangle.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">bary</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>The barycentric coordinate.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">a</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>First triangle vertex.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">b</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>Second triangle vertex.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">c</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>Third triangle vertex.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[cartesian]</code>
-                        <span class="type">Float32Array</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Cartesian coordinates.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type"></span>:
-            </div>
-        </div>
-
-
-</div>
-<div id="method_buildNormals" class="method item">
-    <h3 class="name"><code>buildNormals</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>positions</code>
-                </li>
-                <li class="arg">
-                        <code>indices</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type">Float32Array</span>
-        </span>
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l2676"><code>src&#x2F;math&#x2F;math.js:2676</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Builds normal vectors from positions and indices.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">positions</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>One-dimensional flattened array of positions.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">indices</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>One-dimensional flattened array of indices.*</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">Float32Array</span>:
-                    <p>One-dimensional flattened array of normal vectors.</p>
-
-            </div>
-        </div>
-
-
-</div>
-<div id="method_buildTangents" class="method item">
-    <h3 class="name"><code>buildTangents</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>positions</code>
-                </li>
-                <li class="arg">
-                        <code>indices</code>
-                </li>
-                <li class="arg">
-                        <code>uv</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type">Float32Array</span>
-        </span>
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l2748"><code>src&#x2F;math&#x2F;math.js:2748</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Builds vertex tangent vectors from positions, UVs and indices</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">positions</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>One-dimensional flattened array of positions.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">indices</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>One-dimensional flattened array of indices.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">uv</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>One-dimensional flattened array of UV coordinates.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">Float32Array</span>:
-                    <p>One-dimensional flattened array of tangents.</p>
-
-            </div>
-        </div>
-
-
-</div>
-<div id="method_cartesianToBaryCentric" class="method item">
-    <h3 class="name"><code>cartesianToBaryCentric</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>cartesian</code>
-                </li>
-                <li class="arg">
-                        <code>a</code>
-                </li>
-                <li class="arg">
-                        <code>b</code>
-                </li>
-                <li class="arg">
-                        <code>c</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[bary]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l3027"><code>src&#x2F;math&#x2F;math.js:3027</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Gets barycentric coordinates from cartesian coordinates within a triangle.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">cartesian</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>Cartesian coordinates.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">a</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>First triangle vertex.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">b</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>Second triangle vertex.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">c</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>Third triangle vertex.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[bary]</code>
-                        <span class="type">Float32Array</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>The barycentric coordinates.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type"></span>:
-            </div>
-        </div>
-
-
-</div>
-<div id="method_collapseAABB2" class="method item">
-    <h3 class="name"><code>collapseAABB2</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code class="optional">[aabb]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l2479"><code>src&#x2F;math&#x2F;math.js:2479</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Collapses a 2D axis-aligned boundary, ready to expand to fit 2D points.
-Creates new AABB if none supplied.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name optional">[aabb]</code>
-                        <span class="type"></span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>2D axis-aligned bounding box.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type"></span>:
-                    <p>2D axis-aligned bounding box.</p>
-
-            </div>
-        </div>
-
-
-</div>
-<div id="method_collapseAABB3" class="method item">
-    <h3 class="name"><code>collapseAABB3</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code class="optional">[aabb]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l2165"><code>src&#x2F;math&#x2F;math.js:2165</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Collapses a 3D axis-aligned boundary, ready to expand to fit 3D points.
-Creates new AABB if none supplied.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name optional">[aabb]</code>
-                        <span class="type"></span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>3D axis-aligned bounding box.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type"></span>:
-                    <p>3D axis-aligned bounding box.</p>
-
-            </div>
-        </div>
-
-
-</div>
 <div id="method_createUUID" class="method item">
     <h3 class="name"><code>createUUID</code></h3>
 
@@ -2110,10 +1206,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l170"><code>src&#x2F;math&#x2F;math.js:170</code></a>
+        <a href="../files/src_math_math.js.html#l109"><code>src&#x2F;math&#x2F;math.js:109</code></a>
         </p>
 
 
@@ -2162,10 +1259,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l650"><code>src&#x2F;math&#x2F;math.js:650</code></a>
+        <a href="../files/src_math_math.js.html#l588"><code>src&#x2F;math&#x2F;math.js:588</code></a>
         </p>
 
 
@@ -2242,10 +1340,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l632"><code>src&#x2F;math&#x2F;math.js:632</code></a>
+        <a href="../files/src_math_math.js.html#l570"><code>src&#x2F;math&#x2F;math.js:570</code></a>
         </p>
 
 
@@ -2310,10 +1409,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1261"><code>src&#x2F;math&#x2F;math.js:1261</code></a>
+        <a href="../files/src_math_math.js.html#l1199"><code>src&#x2F;math&#x2F;math.js:1199</code></a>
         </p>
 
 
@@ -2342,10 +1442,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l889"><code>src&#x2F;math&#x2F;math.js:889</code></a>
+        <a href="../files/src_math_math.js.html#l827"><code>src&#x2F;math&#x2F;math.js:827</code></a>
         </p>
 
 
@@ -2374,10 +1475,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l898"><code>src&#x2F;math&#x2F;math.js:898</code></a>
+        <a href="../files/src_math_math.js.html#l836"><code>src&#x2F;math&#x2F;math.js:836</code></a>
         </p>
 
 
@@ -2421,10 +1523,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l541"><code>src&#x2F;math&#x2F;math.js:541</code></a>
+        <a href="../files/src_math_math.js.html#l479"><code>src&#x2F;math&#x2F;math.js:479</code></a>
         </p>
 
 
@@ -2515,10 +1618,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l600"><code>src&#x2F;math&#x2F;math.js:600</code></a>
+        <a href="../files/src_math_math.js.html#l538"><code>src&#x2F;math&#x2F;math.js:538</code></a>
         </p>
 
 
@@ -2609,10 +1713,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l502"><code>src&#x2F;math&#x2F;math.js:502</code></a>
+        <a href="../files/src_math_math.js.html#l440"><code>src&#x2F;math&#x2F;math.js:440</code></a>
         </p>
 
 
@@ -2705,10 +1810,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l560"><code>src&#x2F;math&#x2F;math.js:560</code></a>
+        <a href="../files/src_math_math.js.html#l498"><code>src&#x2F;math&#x2F;math.js:498</code></a>
         </p>
 
 
@@ -2799,10 +1905,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l521"><code>src&#x2F;math&#x2F;math.js:521</code></a>
+        <a href="../files/src_math_math.js.html#l459"><code>src&#x2F;math&#x2F;math.js:459</code></a>
         </p>
 
 
@@ -2895,10 +2002,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l579"><code>src&#x2F;math&#x2F;math.js:579</code></a>
+        <a href="../files/src_math_math.js.html#l517"><code>src&#x2F;math&#x2F;math.js:517</code></a>
         </p>
 
 
@@ -2986,10 +2094,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l620"><code>src&#x2F;math&#x2F;math.js:620</code></a>
+        <a href="../files/src_math_math.js.html#l558"><code>src&#x2F;math&#x2F;math.js:558</code></a>
         </p>
 
 
@@ -3066,10 +2175,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l686"><code>src&#x2F;math&#x2F;math.js:686</code></a>
+        <a href="../files/src_math_math.js.html#l624"><code>src&#x2F;math&#x2F;math.js:624</code></a>
         </p>
 
 
@@ -3146,10 +2256,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l698"><code>src&#x2F;math&#x2F;math.js:698</code></a>
+        <a href="../files/src_math_math.js.html#l636"><code>src&#x2F;math&#x2F;math.js:636</code></a>
         </p>
 
 
@@ -3214,10 +2325,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l821"><code>src&#x2F;math&#x2F;math.js:821</code></a>
+        <a href="../files/src_math_math.js.html#l759"><code>src&#x2F;math&#x2F;math.js:759</code></a>
         </p>
 
 
@@ -3230,330 +2342,6 @@ Creates new AABB if none supplied.</p>
     </div>
 
 
-
-
-</div>
-<div id="method_expandAABB2Point2" class="method item">
-    <h3 class="name"><code>expandAABB2Point2</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>aabb</code>
-                </li>
-                <li class="arg">
-                        <code>p</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l2589"><code>src&#x2F;math&#x2F;math.js:2589</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Expands an axis-aligned 2D boundary to enclose the given point, if required.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">aabb</code>
-                        <span class="type"></span>
-
-
-                    <div class="param-description">
-                        <p>AABB</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">p</code>
-                        <span class="type"></span>
-
-
-                    <div class="param-description">
-                        <p>Point</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type"></span>:
-                    <p>The AABB</p>
-
-            </div>
-        </div>
-
-
-</div>
-<div id="method_expandAABB3" class="method item">
-    <h3 class="name"><code>expandAABB3</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>aabb1</code>
-                </li>
-                <li class="arg">
-                        <code>aabb2</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l2559"><code>src&#x2F;math&#x2F;math.js:2559</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Expands the first axis-aligned 2D boundary to enclose the second, if required.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">aabb1</code>
-                        <span class="type"></span>
-
-
-                    <div class="param-description">
-                        <p>First AABB</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">aabb2</code>
-                        <span class="type"></span>
-
-
-                    <div class="param-description">
-                        <p>Second AABB</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type"></span>:
-                    <p>The second AABB</p>
-
-            </div>
-        </div>
-
-
-</div>
-<div id="method_expandAABB3" class="method item">
-    <h3 class="name"><code>expandAABB3</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>aabb1</code>
-                </li>
-                <li class="arg">
-                        <code>aabb2</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l2403"><code>src&#x2F;math&#x2F;math.js:2403</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Expands the first axis-aligned 3D boundary to enclose the second, if required.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">aabb1</code>
-                        <span class="type"></span>
-
-
-                    <div class="param-description">
-                        <p>First AABB</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">aabb2</code>
-                        <span class="type"></span>
-
-
-                    <div class="param-description">
-                        <p>Second AABB</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type"></span>:
-                    <p>The second AABB</p>
-
-            </div>
-        </div>
-
-
-</div>
-<div id="method_expandAABB3Point3" class="method item">
-    <h3 class="name"><code>expandAABB3Point3</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>aabb</code>
-                </li>
-                <li class="arg">
-                        <code>p</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l2441"><code>src&#x2F;math&#x2F;math.js:2441</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Expands an axis-aligned 3D boundary to enclose the given point, if needed.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">aabb</code>
-                        <span class="type"></span>
-
-
-                    <div class="param-description">
-                        <p>AABB</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">p</code>
-                        <span class="type"></span>
-
-
-                    <div class="param-description">
-                        <p>Point</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type"></span>:
-                    <p>The AABB</p>
-
-            </div>
-        </div>
 
 
 </div>
@@ -3579,10 +2367,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2815"><code>src&#x2F;math&#x2F;math.js:2815</code></a>
+        <a href="../files/src_math_math.js.html#l2089"><code>src&#x2F;math&#x2F;math.js:2089</code></a>
         </p>
 
 
@@ -3648,10 +2437,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l212"><code>src&#x2F;math&#x2F;math.js:212</code></a>
+        <a href="../files/src_math_math.js.html#l150"><code>src&#x2F;math&#x2F;math.js:150</code></a>
         </p>
 
 
@@ -3713,10 +2503,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1772"><code>src&#x2F;math&#x2F;math.js:1772</code></a>
+        <a href="../files/src_math_math.js.html#l1754"><code>src&#x2F;math&#x2F;math.js:1754</code></a>
         </p>
 
 
@@ -3745,10 +2536,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1816"><code>src&#x2F;math&#x2F;math.js:1816</code></a>
+        <a href="../files/src_math_math.js.html#l1710"><code>src&#x2F;math&#x2F;math.js:1710</code></a>
         </p>
 
 
@@ -3761,215 +2553,6 @@ Creates new AABB if none supplied.</p>
     </div>
 
 
-
-
-</div>
-<div id="method_getAABB2Center" class="method item">
-    <h3 class="name"><code>getAABB2Center</code></h3>
-
-        <span class="paren">()</span>
-
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l2151"><code>src&#x2F;math&#x2F;math.js:2151</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Gets the center of a 2D AABB.</p>
-
-    </div>
-
-
-
-
-</div>
-<div id="method_getAABBCenter" class="method item">
-    <h3 class="name"><code>getAABBCenter</code></h3>
-
-        <span class="paren">()</span>
-
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l2136"><code>src&#x2F;math&#x2F;math.js:2136</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Gets the center of an AABB.</p>
-
-    </div>
-
-
-
-
-</div>
-<div id="method_getAABBDiag" class="method item">
-    <h3 class="name"><code>getAABBDiag</code></h3>
-
-        <span class="paren">()</span>
-
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l2102"><code>src&#x2F;math&#x2F;math.js:2102</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Gets the diagonal size of a boundary given as minima and maxima.</p>
-
-    </div>
-
-
-
-
-</div>
-<div id="method_getAABBDiagPoint" class="method item">
-    <h3 class="name"><code>getAABBDiagPoint</code></h3>
-
-        <span class="paren">()</span>
-
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l2112"><code>src&#x2F;math&#x2F;math.js:2112</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Get a diagonal boundary size that is symmetrical about the given point.</p>
-
-    </div>
-
-
-
-
-</div>
-<div id="method_getPickPrimitives" class="method item">
-    <h3 class="name"><code>getPickPrimitives</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>positions</code>
-                </li>
-                <li class="arg">
-                        <code>indices</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l2843"><code>src&#x2F;math&#x2F;math.js:2843</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Builds vertex and index arrays needed by color-indexed triangle picking.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">positions</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>One-dimensional flattened array of positions.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">indices</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>One-dimensional flattened array of indices.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type"></span>:
-                    <p>Object containing the arrays, created by this method or reused from &#39;pickTris&#39; parameter.</p>
-
-            </div>
-        </div>
 
 
 </div>
@@ -3986,10 +2569,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l907"><code>src&#x2F;math&#x2F;math.js:907</code></a>
+        <a href="../files/src_math_math.js.html#l845"><code>src&#x2F;math&#x2F;math.js:845</code></a>
         </p>
 
 
@@ -4018,10 +2602,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1280"><code>src&#x2F;math&#x2F;math.js:1280</code></a>
+        <a href="../files/src_math_math.js.html#l1218"><code>src&#x2F;math&#x2F;math.js:1218</code></a>
         </p>
 
 
@@ -4050,10 +2635,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l939"><code>src&#x2F;math&#x2F;math.js:939</code></a>
+        <a href="../files/src_math_math.js.html#l877"><code>src&#x2F;math&#x2F;math.js:877</code></a>
         </p>
 
 
@@ -4091,10 +2677,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l731"><code>src&#x2F;math&#x2F;math.js:731</code></a>
+        <a href="../files/src_math_math.js.html#l669"><code>src&#x2F;math&#x2F;math.js:669</code></a>
         </p>
 
 
@@ -4157,10 +2744,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l720"><code>src&#x2F;math&#x2F;math.js:720</code></a>
+        <a href="../files/src_math_math.js.html#l658"><code>src&#x2F;math&#x2F;math.js:658</code></a>
         </p>
 
 
@@ -4223,10 +2811,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l675"><code>src&#x2F;math&#x2F;math.js:675</code></a>
+        <a href="../files/src_math_math.js.html#l613"><code>src&#x2F;math&#x2F;math.js:613</code></a>
         </p>
 
 
@@ -4280,10 +2869,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2088"><code>src&#x2F;math&#x2F;math.js:2088</code></a>
+        <a href="../files/src_math_math.js.html#l2074"><code>src&#x2F;math&#x2F;math.js:2074</code></a>
         </p>
 
 
@@ -4312,10 +2902,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1727"><code>src&#x2F;math&#x2F;math.js:1727</code></a>
+        <a href="../files/src_math_math.js.html#l1665"><code>src&#x2F;math&#x2F;math.js:1665</code></a>
         </p>
 
 
@@ -4361,10 +2952,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1632"><code>src&#x2F;math&#x2F;math.js:1632</code></a>
+        <a href="../files/src_math_math.js.html#l1570"><code>src&#x2F;math&#x2F;math.js:1570</code></a>
         </p>
 
 
@@ -4452,10 +3044,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l843"><code>src&#x2F;math&#x2F;math.js:843</code></a>
+        <a href="../files/src_math_math.js.html#l781"><code>src&#x2F;math&#x2F;math.js:781</code></a>
         </p>
 
 
@@ -4493,10 +3086,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l98"><code>src&#x2F;math&#x2F;math.js:98</code></a>
+        <a href="../files/src_math_math.js.html#l63"><code>src&#x2F;math&#x2F;math.js:63</code></a>
         </p>
 
 
@@ -4562,10 +3156,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l109"><code>src&#x2F;math&#x2F;math.js:109</code></a>
+        <a href="../files/src_math_math.js.html#l74"><code>src&#x2F;math&#x2F;math.js:74</code></a>
         </p>
 
 
@@ -4638,10 +3233,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l121"><code>src&#x2F;math&#x2F;math.js:121</code></a>
+        <a href="../files/src_math_math.js.html#l86"><code>src&#x2F;math&#x2F;math.js:86</code></a>
         </p>
 
 
@@ -4695,10 +3291,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l830"><code>src&#x2F;math&#x2F;math.js:830</code></a>
+        <a href="../files/src_math_math.js.html#l768"><code>src&#x2F;math&#x2F;math.js:768</code></a>
         </p>
 
 
@@ -4739,10 +3336,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l132"><code>src&#x2F;math&#x2F;math.js:132</code></a>
+        <a href="../files/src_math_math.js.html#l97"><code>src&#x2F;math&#x2F;math.js:97</code></a>
         </p>
 
 
@@ -4806,10 +3404,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1131"><code>src&#x2F;math&#x2F;math.js:1131</code></a>
+        <a href="../files/src_math_math.js.html#l1069"><code>src&#x2F;math&#x2F;math.js:1069</code></a>
         </p>
 
 
@@ -4838,10 +3437,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1172"><code>src&#x2F;math&#x2F;math.js:1172</code></a>
+        <a href="../files/src_math_math.js.html#l1110"><code>src&#x2F;math&#x2F;math.js:1110</code></a>
         </p>
 
 
@@ -4870,10 +3470,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1200"><code>src&#x2F;math&#x2F;math.js:1200</code></a>
+        <a href="../files/src_math_math.js.html#l1138"><code>src&#x2F;math&#x2F;math.js:1138</code></a>
         </p>
 
 
@@ -4917,10 +3518,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l484"><code>src&#x2F;math&#x2F;math.js:484</code></a>
+        <a href="../files/src_math_math.js.html#l422"><code>src&#x2F;math&#x2F;math.js:422</code></a>
         </p>
 
 
@@ -5013,10 +3615,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l425"><code>src&#x2F;math&#x2F;math.js:425</code></a>
+        <a href="../files/src_math_math.js.html#l363"><code>src&#x2F;math&#x2F;math.js:363</code></a>
         </p>
 
 
@@ -5109,10 +3712,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l445"><code>src&#x2F;math&#x2F;math.js:445</code></a>
+        <a href="../files/src_math_math.js.html#l383"><code>src&#x2F;math&#x2F;math.js:383</code></a>
         </p>
 
 
@@ -5205,10 +3809,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l465"><code>src&#x2F;math&#x2F;math.js:465</code></a>
+        <a href="../files/src_math_math.js.html#l403"><code>src&#x2F;math&#x2F;math.js:403</code></a>
         </p>
 
 
@@ -5286,10 +3891,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l954"><code>src&#x2F;math&#x2F;math.js:954</code></a>
+        <a href="../files/src_math_math.js.html#l892"><code>src&#x2F;math&#x2F;math.js:892</code></a>
         </p>
 
 
@@ -5330,10 +3936,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l231"><code>src&#x2F;math&#x2F;math.js:231</code></a>
+        <a href="../files/src_math_math.js.html#l169"><code>src&#x2F;math&#x2F;math.js:169</code></a>
         </p>
 
 
@@ -5400,10 +4007,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l778"><code>src&#x2F;math&#x2F;math.js:778</code></a>
+        <a href="../files/src_math_math.js.html#l716"><code>src&#x2F;math&#x2F;math.js:716</code></a>
         </p>
 
 
@@ -5412,6 +4020,39 @@ Creates new AABB if none supplied.</p>
 
     <div class="description">
         <p>Normalizes a two-element vector</p>
+
+    </div>
+
+
+
+
+</div>
+<div id="method_normalizeVec4" class="method item">
+    <h3 class="name"><code>normalizeVec4</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_math.js.html#l706"><code>src&#x2F;math&#x2F;math.js:706</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Normalizes a three-element vector</p>
 
     </div>
 
@@ -5444,10 +4085,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l754"><code>src&#x2F;math&#x2F;math.js:754</code></a>
+        <a href="../files/src_math_math.js.html#l692"><code>src&#x2F;math&#x2F;math.js:692</code></a>
         </p>
 
 
@@ -5499,38 +4141,6 @@ Creates new AABB if none supplied.</p>
 
 
 </div>
-<div id="method_normalizeVec4" class="method item">
-    <h3 class="name"><code>normalizeVec4</code></h3>
-
-        <span class="paren">()</span>
-
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l768"><code>src&#x2F;math&#x2F;math.js:768</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Normalizes a three-element vector</p>
-
-    </div>
-
-
-
-
-</div>
 <div id="method_orthoMat4c" class="method item">
     <h3 class="name"><code>orthoMat4c</code></h3>
 
@@ -5544,10 +4154,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1736"><code>src&#x2F;math&#x2F;math.js:1736</code></a>
+        <a href="../files/src_math_math.js.html#l1674"><code>src&#x2F;math&#x2F;math.js:1674</code></a>
         </p>
 
 
@@ -5576,10 +4187,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1847"><code>src&#x2F;math&#x2F;math.js:1847</code></a>
+        <a href="../files/src_math_math.js.html#l1785"><code>src&#x2F;math&#x2F;math.js:1785</code></a>
         </p>
 
 
@@ -5592,252 +4204,6 @@ Creates new AABB if none supplied.</p>
     </div>
 
 
-
-
-</div>
-<div id="method_points3ToAABB2" class="method item">
-    <h3 class="name"><code>points3ToAABB2</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>points</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[aabb]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l2500"><code>src&#x2F;math&#x2F;math.js:2500</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Finds the minimum 2D projected axis-aligned boundary enclosing the given 3D points.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">points</code>
-                        <span class="type">Array</span>
-
-
-                    <div class="param-description">
-                        <p>3D Points.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[aabb]</code>
-                        <span class="type"></span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>2D axis-aligned bounding box.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type"></span>:
-                    <p>2D axis-aligned bounding box.</p>
-
-            </div>
-        </div>
-
-
-</div>
-<div id="method_points3ToAABB3" class="method item">
-    <h3 class="name"><code>points3ToAABB3</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>points</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[aabb]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l2340"><code>src&#x2F;math&#x2F;math.js:2340</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Finds the minimum axis-aligned 3D boundary enclosing the given 3D points.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">points</code>
-                        <span class="type">Array</span>
-
-
-                    <div class="param-description">
-                        <p>Oriented bounding box.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[aabb]</code>
-                        <span class="type"></span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Axis-aligned bounding box.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type"></span>:
-                    <p>Axis-aligned bounding box.</p>
-
-            </div>
-        </div>
-
-
-</div>
-<div id="method_positions3ToAABB3" class="method item">
-    <h3 class="name"><code>positions3ToAABB3</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>positions</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[aabb]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l2277"><code>src&#x2F;math&#x2F;math.js:2277</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Finds the minimum axis-aligned 3D boundary enclosing the 3D points given in a flattened,  1-dimensional array.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">positions</code>
-                        <span class="type">Array</span>
-
-
-                    <div class="param-description">
-                        <p>Flattened 3D positions array</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[aabb]</code>
-                        <span class="type"></span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Axis-aligned bounding box.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type"></span>:
-                    <p>Axis-aligned bounding box.</p>
-
-            </div>
-        </div>
 
 
 </div>
@@ -5866,10 +4232,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2071"><code>src&#x2F;math&#x2F;math.js:2071</code></a>
+        <a href="../files/src_math_math.js.html#l2057"><code>src&#x2F;math&#x2F;math.js:2057</code></a>
         </p>
 
 
@@ -5922,282 +4289,6 @@ Creates new AABB if none supplied.</p>
 
 
 </div>
-<div id="method_rayPlaneIntersect" class="method item">
-    <h3 class="name"><code>rayPlaneIntersect</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>origin</code>
-                </li>
-                <li class="arg">
-                        <code>dir</code>
-                </li>
-                <li class="arg">
-                        <code>a</code>
-                </li>
-                <li class="arg">
-                        <code>b</code>
-                </li>
-                <li class="arg">
-                        <code>c</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[isect]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type">Float32Array</span>
-        </span>
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l2991"><code>src&#x2F;math&#x2F;math.js:2991</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Finds the intersection of a 3D ray with a plane defined by 3 points.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">origin</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>Ray origin.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">dir</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>Ray direction.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">a</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>First point on plane.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">b</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>Second point on plane.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">c</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>Third point on plane.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[isect]</code>
-                        <span class="type">Float32Array</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Intersection point.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">Float32Array</span>:
-                    <p>The intersection point.</p>
-
-            </div>
-        </div>
-
-
-</div>
-<div id="method_rayTriangleIntersect" class="method item">
-    <h3 class="name"><code>rayTriangleIntersect</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>origin</code>
-                </li>
-                <li class="arg">
-                        <code>dir</code>
-                </li>
-                <li class="arg">
-                        <code>a</code>
-                </li>
-                <li class="arg">
-                        <code>b</code>
-                </li>
-                <li class="arg">
-                        <code>c</code>
-                </li>
-                <li class="arg">
-                        <code class="optional">[isect]</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type">Float32Array</span>
-        </span>
-
-
-
-
-        <span class="flag static">static</span>
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l2943"><code>src&#x2F;math&#x2F;math.js:2943</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Finds the intersection of a 3D ray with a 3D triangle.</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">origin</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>Ray origin.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">dir</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>Ray direction.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">a</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>First triangle vertex.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">b</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>Second triangle vertex.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">c</code>
-                        <span class="type">Float32Array</span>
-
-
-                    <div class="param-description">
-                        <p>Third triangle vertex.</p>
-
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name optional">[isect]</code>
-                        <span class="type">Float32Array</span>
-                        <span class="flag optional" title="This parameter is optional.">optional</span>
-
-
-                    <div class="param-description">
-                        <p>Intersection point.</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type">Float32Array</span>:
-                    <p>The intersection point, or null if no intersection found.</p>
-
-            </div>
-        </div>
-
-
-</div>
 <div id="method_rcpVec3" class="method item">
     <h3 class="name"><code>rcpVec3</code></h3>
 
@@ -6223,10 +4314,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l742"><code>src&#x2F;math&#x2F;math.js:742</code></a>
+        <a href="../files/src_math_math.js.html#l680"><code>src&#x2F;math&#x2F;math.js:680</code></a>
         </p>
 
 
@@ -6308,10 +4400,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1972"><code>src&#x2F;math&#x2F;math.js:1972</code></a>
+        <a href="../files/src_math_math.js.html#l1958"><code>src&#x2F;math&#x2F;math.js:1958</code></a>
         </p>
 
 
@@ -6417,10 +4510,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2005"><code>src&#x2F;math&#x2F;math.js:2005</code></a>
+        <a href="../files/src_math_math.js.html#l1991"><code>src&#x2F;math&#x2F;math.js:1991</code></a>
         </p>
 
 
@@ -6526,10 +4620,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l2038"><code>src&#x2F;math&#x2F;math.js:2038</code></a>
+        <a href="../files/src_math_math.js.html#l2024"><code>src&#x2F;math&#x2F;math.js:2024</code></a>
         </p>
 
 
@@ -6617,10 +4712,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1423"><code>src&#x2F;math&#x2F;math.js:1423</code></a>
+        <a href="../files/src_math_math.js.html#l1361"><code>src&#x2F;math&#x2F;math.js:1361</code></a>
         </p>
 
 
@@ -6649,10 +4745,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1371"><code>src&#x2F;math&#x2F;math.js:1371</code></a>
+        <a href="../files/src_math_math.js.html#l1309"><code>src&#x2F;math&#x2F;math.js:1309</code></a>
         </p>
 
 
@@ -6681,10 +4778,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1445"><code>src&#x2F;math&#x2F;math.js:1445</code></a>
+        <a href="../files/src_math_math.js.html#l1383"><code>src&#x2F;math&#x2F;math.js:1383</code></a>
         </p>
 
 
@@ -6713,10 +4811,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1476"><code>src&#x2F;math&#x2F;math.js:1476</code></a>
+        <a href="../files/src_math_math.js.html#l1414"><code>src&#x2F;math&#x2F;math.js:1414</code></a>
         </p>
 
 
@@ -6745,10 +4844,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1432"><code>src&#x2F;math&#x2F;math.js:1432</code></a>
+        <a href="../files/src_math_math.js.html#l1370"><code>src&#x2F;math&#x2F;math.js:1370</code></a>
         </p>
 
 
@@ -6777,10 +4877,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l875"><code>src&#x2F;math&#x2F;math.js:875</code></a>
+        <a href="../files/src_math_math.js.html#l813"><code>src&#x2F;math&#x2F;math.js:813</code></a>
         </p>
 
 
@@ -6809,10 +4910,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l866"><code>src&#x2F;math&#x2F;math.js:866</code></a>
+        <a href="../files/src_math_math.js.html#l804"><code>src&#x2F;math&#x2F;math.js:804</code></a>
         </p>
 
 
@@ -6841,10 +4943,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l857"><code>src&#x2F;math&#x2F;math.js:857</code></a>
+        <a href="../files/src_math_math.js.html#l795"><code>src&#x2F;math&#x2F;math.js:795</code></a>
         </p>
 
 
@@ -6873,10 +4976,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1047"><code>src&#x2F;math&#x2F;math.js:1047</code></a>
+        <a href="../files/src_math_math.js.html#l985"><code>src&#x2F;math&#x2F;math.js:985</code></a>
         </p>
 
 
@@ -6905,10 +5009,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1075"><code>src&#x2F;math&#x2F;math.js:1075</code></a>
+        <a href="../files/src_math_math.js.html#l1013"><code>src&#x2F;math&#x2F;math.js:1013</code></a>
         </p>
 
 
@@ -6937,10 +5042,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1103"><code>src&#x2F;math&#x2F;math.js:1103</code></a>
+        <a href="../files/src_math_math.js.html#l1041"><code>src&#x2F;math&#x2F;math.js:1041</code></a>
         </p>
 
 
@@ -6984,10 +5090,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l405"><code>src&#x2F;math&#x2F;math.js:405</code></a>
+        <a href="../files/src_math_math.js.html#l343"><code>src&#x2F;math&#x2F;math.js:343</code></a>
         </p>
 
 
@@ -7080,10 +5187,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l367"><code>src&#x2F;math&#x2F;math.js:367</code></a>
+        <a href="../files/src_math_math.js.html#l305"><code>src&#x2F;math&#x2F;math.js:305</code></a>
         </p>
 
 
@@ -7176,10 +5284,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l348"><code>src&#x2F;math&#x2F;math.js:348</code></a>
+        <a href="../files/src_math_math.js.html#l286"><code>src&#x2F;math&#x2F;math.js:286</code></a>
         </p>
 
 
@@ -7272,10 +5381,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l328"><code>src&#x2F;math&#x2F;math.js:328</code></a>
+        <a href="../files/src_math_math.js.html#l266"><code>src&#x2F;math&#x2F;math.js:266</code></a>
         </p>
 
 
@@ -7368,10 +5478,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l385"><code>src&#x2F;math&#x2F;math.js:385</code></a>
+        <a href="../files/src_math_math.js.html#l323"><code>src&#x2F;math&#x2F;math.js:323</code></a>
         </p>
 
 
@@ -7449,10 +5560,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1330"><code>src&#x2F;math&#x2F;math.js:1330</code></a>
+        <a href="../files/src_math_math.js.html#l1268"><code>src&#x2F;math&#x2F;math.js:1268</code></a>
         </p>
 
 
@@ -7481,10 +5593,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1884"><code>src&#x2F;math&#x2F;math.js:1884</code></a>
+        <a href="../files/src_math_math.js.html#l1806"><code>src&#x2F;math&#x2F;math.js:1806</code></a>
         </p>
 
 
@@ -7492,7 +5605,7 @@ Creates new AABB if none supplied.</p>
     </div>
 
     <div class="description">
-        <p>Transforms a homogeneous coordinate by a 4x4 matrix.</p>
+        <p>Transforms a three-element position by a 4x4 matrix.</p>
 
     </div>
 
@@ -7513,10 +5626,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1868"><code>src&#x2F;math&#x2F;math.js:1868</code></a>
+        <a href="../files/src_math_math.js.html#l1822"><code>src&#x2F;math&#x2F;math.js:1822</code></a>
         </p>
 
 
@@ -7524,7 +5638,7 @@ Creates new AABB if none supplied.</p>
     </div>
 
     <div class="description">
-        <p>Transforms a three-element position by a 4x4 matrix.</p>
+        <p>Transforms a homogeneous coordinate by a 4x4 matrix.</p>
 
     </div>
 
@@ -7545,10 +5659,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1902"><code>src&#x2F;math&#x2F;math.js:1902</code></a>
+        <a href="../files/src_math_math.js.html#l1840"><code>src&#x2F;math&#x2F;math.js:1840</code></a>
         </p>
 
 
@@ -7557,6 +5672,39 @@ Creates new AABB if none supplied.</p>
 
     <div class="description">
         <p>Transforms an array of three-element positions by a 4x4 matrix.</p>
+
+    </div>
+
+
+
+
+</div>
+<div id="method_transformPositions3" class="method item">
+    <h3 class="name"><code>transformPositions3</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_math_math.js.html#l1881"><code>src&#x2F;math&#x2F;math.js:1881</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Transforms an array of positions by a 4x4 matrix.</p>
 
     </div>
 
@@ -7577,10 +5725,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1943"><code>src&#x2F;math&#x2F;math.js:1943</code></a>
+        <a href="../files/src_math_math.js.html#l1929"><code>src&#x2F;math&#x2F;math.js:1929</code></a>
         </p>
 
 
@@ -7609,10 +5758,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1957"><code>src&#x2F;math&#x2F;math.js:1957</code></a>
+        <a href="../files/src_math_math.js.html#l1943"><code>src&#x2F;math&#x2F;math.js:1943</code></a>
         </p>
 
 
@@ -7641,10 +5791,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1339"><code>src&#x2F;math&#x2F;math.js:1339</code></a>
+        <a href="../files/src_math_math.js.html#l1277"><code>src&#x2F;math&#x2F;math.js:1277</code></a>
         </p>
 
 
@@ -7673,10 +5824,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1352"><code>src&#x2F;math&#x2F;math.js:1352</code></a>
+        <a href="../files/src_math_math.js.html#l1290"><code>src&#x2F;math&#x2F;math.js:1290</code></a>
         </p>
 
 
@@ -7705,10 +5857,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1361"><code>src&#x2F;math&#x2F;math.js:1361</code></a>
+        <a href="../files/src_math_math.js.html#l1299"><code>src&#x2F;math&#x2F;math.js:1299</code></a>
         </p>
 
 
@@ -7737,10 +5890,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l1215"><code>src&#x2F;math&#x2F;math.js:1215</code></a>
+        <a href="../files/src_math_math.js.html#l1153"><code>src&#x2F;math&#x2F;math.js:1153</code></a>
         </p>
 
 
@@ -7753,108 +5907,6 @@ Creates new AABB if none supplied.</p>
     </div>
 
 
-
-
-</div>
-<div id="method_triangleNormal" class="method item">
-    <h3 class="name"><code>triangleNormal</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>a</code>
-                </li>
-                <li class="arg">
-                        <code>b</code>
-                </li>
-                <li class="arg">
-                        <code>c</code>
-                </li>
-                <li class="arg">
-                        <code>normal</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-
-
-
-
-
-
-
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/src_math_math.js.html#l2636"><code>src&#x2F;math&#x2F;math.js:2636</code></a>
-        </p>
-
-
-
-    </div>
-
-    <div class="description">
-        <p>Calculates the normal vector of a triangle</p>
-
-    </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">a</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">b</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">c</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-                <li class="param">
-                        <code class="param-name">normal</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                </li>
-            </ul>
-        </div>
-
-        <div class="returns">
-            <h4>Returns:</h4>
-
-            <div class="returns-description">
-                        <span class="type"></span>:
-            </div>
-        </div>
 
 
 </div>
@@ -7880,10 +5932,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l65"><code>src&#x2F;math&#x2F;math.js:65</code></a>
+        <a href="../files/src_math_math.js.html#l30"><code>src&#x2F;math&#x2F;math.js:30</code></a>
         </p>
 
 
@@ -7946,10 +5999,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l76"><code>src&#x2F;math&#x2F;math.js:76</code></a>
+        <a href="../files/src_math_math.js.html#l41"><code>src&#x2F;math&#x2F;math.js:41</code></a>
         </p>
 
 
@@ -8012,10 +6066,11 @@ Creates new AABB if none supplied.</p>
 
 
 
+
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_math_math.js.html#l87"><code>src&#x2F;math&#x2F;math.js:87</code></a>
+        <a href="../files/src_math_math.js.html#l52"><code>src&#x2F;math&#x2F;math.js:52</code></a>
         </p>
 
 
@@ -8072,7 +6127,7 @@ Creates new AABB if none supplied.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_math_math.js.html#l57"><code>src&#x2F;math&#x2F;math.js:57</code></a>
+                            <a href="../files/src_math_math.js.html#l22"><code>src&#x2F;math&#x2F;math.js:22</code></a>
                             </p>
                     
                     
