@@ -103,10 +103,10 @@
 
                 var aabb = torus.canvasBoundary.aabb;
 
-                div.style.left = aabb.min[0] + "px";
-                div.style.top = aabb.min[1] + "px";
-                div.style.width = (aabb.max[0] - aabb.min[0]) + "px";
-                div.style.height = (aabb.max[1] - aabb.min[1]) + "px";
+                div.style.left = aabb[0] + "px";
+                div.style.top = aabb[1] + "px";
+                div.style.width = (aabb[2] - aabb[0]) + "px";
+                div.style.height = (aabb[3] - aabb[1]) + "px";
 
                 log("torus.canvasBoundary.aabb", torus.canvasBoundary.aabb);
             });

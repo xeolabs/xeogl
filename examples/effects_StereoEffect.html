@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.js"></script>
+    <script src="../build/xeogl.min.js"></script>
 
     <script src="js/effects/stereoEffect.js"></script>
 
@@ -15,8 +15,8 @@
 
 <div id="infoLight">
     <a href="http://xeogl.org" target="_home">xeogl</a><br><br>stereo view using a <a
-        href="js/effects/stereoEffect.js"
-        target="_docs">xeogl.StereoEffect</a><br><br>
+        href="../docs/classes/StereoEffect.html"
+        target="_docs">StereoEffect</a><br><br>
     <ul>
         <li>Click in the right half-space to pick objects</li>
     </ul>
@@ -25,7 +25,7 @@
 <script>
 
     // Load glTF model
-    var gearbox = new xeogl.glTFModel({
+    var gearbox = new xeogl.GLTFModel({
         src: "models/gltf/gearbox/gearbox_assy.gltf"
     });
 
@@ -39,20 +39,8 @@
     view.up = [-0.15, 0.97, 0.13];
 
 
-    // Orbit the Camera
-    scene.on("tick",
-            function () {
-
-                var view = scene.camera.view;
-//
-//                view.rotateEyeY(0.6);
-//                view.rotateEyeX(0.3);
-            });
-
-    // xeogl.StereoEffect with all defaults
+    // StereoEffect with all defaults
     var stereoEffect = new xeogl.StereoEffect({
-        camera: scene.camera,
-        viewport: scene.viewport,
         eyeSep: 1.2,
         focalDist: 20,
         aperture: 45,

@@ -7,7 +7,7 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeogl.js"></script>
+    <script src="../build/xeogl.min.js"></script>
 
     <script src="js/effects/zSpaceEffect.js"></script>
     <script src="js/controls/zSpaceStylusControl.js"></script>
@@ -19,8 +19,8 @@
      style="left: 0; text-align: left; background: black; opacity: 0.7; padding: 8px; color: white; font-size: 14pt;">
     <span><a href="http://xeogl.org" target="_home">xeogl</a><br>
         using <a
-                href="../docs/classes/glTFModel.html"
-                target="_docs">glTFModel</a> and <a
+                href="../docs/classes/GLTFModel.html"
+                target="_docs">GLTFModel</a> and <a
                 href="../docs/classes/ZSpaceEffect.html"
                 target="_docs">ZSpaceEffect</a> components to view a glTF model in zSpace VR</span><br>
     <span id="log" style="color:red;font-size: 16px"></span>
@@ -32,23 +32,23 @@
     // Load a glTF gearbox model into the default Scene
     //----------------------------------------------------------------------------
 
-    var gearbox = new xeogl.glTFModel({
+    var gearbox = new xeogl.GLTFModel({
         src: "models/gltf/gearbox/gearbox_assy.gltf"
     });
 
     gearbox.on("loaded", function () {
 
         //---------------------------------------------------------------------------------------
-        // When the glTFModel has loaded, iterate over all the Entities in the glTFModel:
+        // When the GLTFModel has loaded, iterate over all the Entities in the GLTFModel:
         //
         // 1. Ensure that each Entity has its own Material and Modes components, so that
-        // we can set it transparent individually. Add the Material and Modes to the glTFModel's
-        // Collection so that they get destroyed whenever the glTFModel is destroyed or reloaded.
+        // we can set it transparent individually. Add the Material and Modes to the GLTFModel
+        // so that they get destroyed whenever the GLTFModel is destroyed or reloaded.
         //
         // 2. Flatten each Entity's transform hierarchy down to one Transform.
         //---------------------------------------------------------------------------------------
 
-        var entities = gearbox.collection.types["xeogl.Entity"];
+        var entities = gearbox.types["xeogl.Entity"];
         var entity;
 
         for (var entityId in entities) {
@@ -57,10 +57,10 @@
                 entity = entities[entityId];
 
                 // Ensure the Entity has its own unique Material
-                // Add the Material and Modes to the glTFModel's Collection
+                // Add the Material and Modes to the GLTFModel
                 // so that they get destroyed automatically
 
-                gearbox.collection.add(entity.material = entity.material.clone());
+                gearbox.add(entity.material = entity.material.clone());
 
                 // Flatten modelling transform hierarchies
 
@@ -69,10 +69,10 @@
                     // If an entity has a transform that has a parent, then the entity's
                     // transform hierarchy needs collapsing. Bake the hierarchy into
                     // a matrix on a single xeogl.Transform and set that as the entity's new transform.
-                    // Store the new transform in the glTFModel's Collection so that
-                    // it gets destroyed when the glTFModel is destroyed or reloaded
+                    // Store the new transform in the GLTFModel so that
+                    // it gets destroyed when the GLTFModel is destroyed or reloaded
 
-                    gearbox.collection.add(entity.transform = new xeogl.Transform({
+                    gearbox.add(entity.transform = new xeogl.Transform({
                         matrix: entity.transform.leafMatrix
                     }));
 //                }

@@ -219,11 +219,6 @@
             "animation_CameraPath"
         ],
 
-        "Annotations": [
-            "#attaching labels to 3D objects",
-            "annotations_gearbox"
-        ],
-
         "Billboards": [
             "billboards_spherical",
             "billboards_spherical_clouds",
@@ -232,14 +227,17 @@
         ],
 
         "Boundaries": [
-            "#getting boundaries of Entities",
+
+            "#entities",
             "boundaries_Entity_worldBoundary",
             "boundaries_Entity_viewBoundary",
             "boundaries_Entity_canvasBoundary",
-            "boundaries_flyToBoundary",
 
-            "#utilities",
-            "boundaries_CollectionBoundary"
+            "#models",
+            "boundaries_Model_worldBoundary",
+
+            "#animations",
+            "boundaries_flyToBoundary"
         ],
 
         "Camera": [
@@ -261,18 +259,6 @@
             "canvas_multipleViewports",
             "canvas_snapshot",
             "canvas_transparent"
-        ],
-
-
-        "Collections": [
-            "#managing components in collections",
-            "collections_Collection_creating_add",
-            "collections_Collection_creating_type",
-            "collections_Collection_iterating",
-
-            "#querying boundaries of collections",
-            "boundaries_CollectionBoundary",
-            "boundaries_CollectionBoundary_hierarchy"
         ],
 
         "Components": [
@@ -329,7 +315,7 @@
             "effects_HighlightEntityEffect",
 
             "#Stereo",
-            "effects_stereo",
+            "effects_StereoEffect",
             "effects_stereo_custom",
 
             "#ZSpace",
@@ -373,6 +359,13 @@
             "geometry_TeapotGeometry",
             "geometry_TorusGeometry",
 
+            "#importing from Wavefront .OBJ",
+            "geometry_OBJGeometry_raptor",
+
+            "#importing from Nintendo .3DS",
+            "geometry_Nintendo3DSGeometry_lexus",
+            "geometry_Nintendo3DSGeometry_osiris",
+
             "#text",
             "geometry_VectorTextGeometry",
 
@@ -383,26 +376,6 @@
         "Helpers": [
             "#Utilities to help you develop scenes",
             "helpers_axisHelper"
-        ],
-
-        "Importing": [
-            "#Wavefront OBJ",
-            "importing_obj_raptor",
-
-            "#Nintendo 3DS",
-            "importing_3ds_lexus",
-
-            "#glTF",
-            "importing_gltf_gearbox",
-            "importing_gltf_buggy",
-            "importing_gltf_ReciprocatingSaw",
-            "importing_gltf_duck",
-
-            "#glTF techniques",
-            "importing_gltf_techniques_configTransform",
-            "importing_gltf_techniques_attachTransform",
-            "importing_gltf_techniques_uniqueMaterials",
-            "importing_gltf_techniques_bakeTransforms"
         ],
 
         "Interaction": [
@@ -466,6 +439,26 @@
 
             "#Z-sorting transparent entities",
             "materials_techniques_transparencySort"
+        ],
+
+        "Models": [
+
+            "#transforming",
+            "models_configureTransform",
+            "models_attachTransform",
+
+            "#modifying",
+            "models_uniqueMaterials",
+            "models_bakeTransforms",
+
+            "#generating",
+            "models_BuildableModel",
+
+            "#loading from glTF",
+            "models_GLTFModel_gearbox",
+            "models_GLTFModel_buggy",
+            "models_GLTFModel_ReciprocatingSaw",
+            "models_GLTFModel_duck"
         ],
 
         "Profiling": [

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.min.js"></script>
+    <script src="js/models/buildableModel.js"></script>
+    <script src="js/animation/cameraFollow.js"></script>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>building a 3D scene using a <a
+        href="../docs/classes/BuildableModel.html" target="_docs">BuildableModel</a> component
+</div>
+
+<script>
+
+    // We're going to construct this BuildableModel
+    var buildableModel = new xeogl.BuildableModel();
+
+    // Construct the BuildableModel
+
+    buildableModel.asset("box", {
+        type: "xeogl.BoxGeometry",
+        xSize: 1,
+        ySize: 1,
+        zSize: 1
+    });
+
+    buildableModel.asset("highRiseGlass", {
+        type: "xeogl.PhongMaterial",
+        diffuseMap: {
+            src: "textures/city/highRiseGlass.jpg"
+        },
+        specularMap: {
+            src: "textures/city/highRiseGlassSpecular.jpg"
+        }
+    });
+
+    buildableModel.asset("highRiseWindows", {
+        type: "xeogl.PhongMaterial",
+        diffuseMap: {
+            src: "textures/city/highRiseWindows.jpg"
+        }
+    });
+
+    buildableModel.asset("pixelCityWindows", {
+        type: "xeogl.PhongMaterial",
+        diffuseMap: {
+            src: "textures/city/pixelCityWindows.jpg"
+        }
+    });
+
+    buildableModel.asset("lightConcrete", {
+        type: "xeogl.PhongMaterial",
+        diffuse: [0.8, 0.8, 0.8]
+    });
+
+    buildableModel.geometry("box");
+
+    for (var x = -100; x <= 100; x += 60) {
+        for (var z = -100; z <= 100; z += 60) {
+            addBuilding(x + 2, z + 2, x + 60 - 2, z + 60 - 2);
+        }
+    }
+
+    function addBuilding(xmin, zmin, xmax, zmax) {
+
+        var xpos = (xmin + xmax) * 0.5;
+        var ypos = 0;
+        var zpos = (zmin + zmax) * 0.5;
+
+//        buildableModel.material("lightConcrete");
+//        buildableModel.pos(xpos, ypos, zpos);
+//        buildableModel.scale((xmax - xmin) / 2, 1.0, (zmax - zmin) / 2);
+//        buildableModel.entity();
+
+        var yMaxSize = (Math.random() * 30) + 15;
+        var ySize = yMaxSize + 10;
+        var width;
+        var axis;
+        var sign;
+
+        var xminBox;
+        var zminBox;
+        var xmaxBox;
+        var zmaxBox;
+
+        while (ySize > 5) {
+
+            width = (Math.random() * 5) + 2;
+            axis = Math.round(Math.random());
+            sign = Math.round(Math.random());
+
+            switch (axis) {
+
+                case 0:
+
+                    if (sign == 0) {
+                        xminBox = xmin;
+                        zminBox = zpos - width;
+                        xmaxBox = xpos + width;
+                        zmaxBox = zpos + width;
+
+                    } else {
+                        xminBox = xpos - width;
+                        zminBox = zpos - width;
+                        xmaxBox = xmax;
+                        zmaxBox = zpos + width;
+                    }
+
+                    break;
+
+                case 1:
+
+                    if (sign == 0) {
+                        xminBox = xpos - width;
+                        zminBox = zmin;
+                        xmaxBox = xpos + width;
+                        zmaxBox = zpos + width;
+
+                    } else {
+                        xminBox = xpos - width;
+                        zminBox = zpos - width;
+                        xmaxBox = xpos + width;
+                        zmaxBox = zmax;
+                    }
+
+                    break;
+            }
+
+            var id = xeogl.math.createUUID();
+
+            buildableModel.asset(id, {
+                type: "xeogl.BoxGeometry",
+                xSize: (xmaxBox - xminBox) / 2,
+                ySize: ySize,
+                zSize: (xmaxBox - xminBox) / 2
+            });
+
+            buildableModel.geometry(id);
+
+            buildableModel.material("pixelCityWindows");
+            buildableModel.pos(xpos, ypos + ySize, zpos);
+            buildableModel.scale(1,1,1);
+          //  buildableModel.scale((xmaxBox - xminBox) / 2, ySize, (zmaxBox - zminBox) / 2);
+            buildableModel.entity();
+
+            ySize -= (Math.random() * 5) + 2;
+        }
+    }
+
+    new xeogl.CameraFollow({
+        worldBoundary: buildableModel.worldBoundary,
+        fit: true,
+        fitFOV: 55
+    });
+
+    // Allow user camera control
+    new xeogl.CameraControl();
+
+    // Slowly orbit camera about model
+
+    var lookat = buildableModel.scene.camera.view;
+
+    lookat.rotateEyeX(10.0);
+
+    buildableModel.scene.on("tick", function () {
+        lookat.rotateEyeY(0.3);
+
+    });
+
+</script>
+</body>
+</html>

@@ -13,14 +13,14 @@
 
 <div id="infoLight">
     <a href="http://xeogl.org" target="_home">xeogl</a><br><br>importing glTF using a <a
-        href="../docs/classes/glTFModel.html" target="_docs">xeogl.glTFModel</a> component
+        href="../docs/classes/GLTFModel.html" target="_docs">GLTFModel</a> component
 </div>
 
 <script>
 
     // Load glTF
 
-    var buggy = new xeogl.glTFModel({
+    var buggy = new xeogl.GLTFModel({
 
         // Source glTF file
         src: "models/gltf/buggy/buggy.gltf",
@@ -62,7 +62,7 @@
 
     new xeogl.CameraControl();
 
-    // Slowly spin the rotations within the glTFModel's
+    // Slowly spin the rotations within the GLTFModel's
     // modeling transform hierarchy
 
     buggy.scene.on("tick",

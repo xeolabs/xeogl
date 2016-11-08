@@ -13,7 +13,7 @@
 <div id="infoLight">
     <a href="http://xeogl.org">xeogl</a>
     <br><br>
-    a <a href="../docs/classes/CollectionBoundary.html" target="_docs">CollectionBoundary</a> containing
+    a <a href="../docs/classes/Model.html" target="_docs">Model</a> containing
     1000 animated <a href="../docs/classes/Entity.html" target="_docs">Entities</a>
     <br>
     <br>
@@ -28,16 +28,14 @@
 
 <script>
 
-    // The CollectionBoundary
-    var collectionBoundary = new xeogl.CollectionBoundary({
-        collection: new xeogl.Collection()
-    });
+    // The Model
+    var model = new xeogl.Model();
 
-    // Entity which shows the boundary of the CollectionBoundary
+    // Entity which shows the boundary of the Model
     // as a wireframe box
-    var collectionBoundaryIndicator = new xeogl.Entity({
+     new xeogl.Entity({
         geometry: new xeogl.BoundaryGeometry({
-            boundary: collectionBoundary.worldBoundary
+            boundary: model.worldBoundary
         }),
         material: new xeogl.PhongMaterial({
             diffuse: [0.5, 1.0, 0.5],
@@ -46,16 +44,7 @@
         })
     });
 
-    // Create 1000 moving Entities within the CollectionBoundary
-
-    // Geometry shared by our Entities
-    var sphereGeometry =new xeogl.TorusGeometry({
-        radius: 6.0,
-        tube: 2.0,
-        radialSegments: 60,
-        tubeSegments: 60,
-        arc: Math.PI * 2.0
-    });
+    // Create 1000 moving Entities within the Model
 
     var boxGeometry = new xeogl.BoxGeometry({
         xSize: 6,
@@ -123,9 +112,9 @@
                         entity.transform.angle += 0.5 + spin;
                     });
 
-            // Add the Entity to the CollectionBoundary
+            // Add the Entity to the Model
 
-            collectionBoundary.collection.add(entity);
+            model.add(entity);
 
         })();
     }

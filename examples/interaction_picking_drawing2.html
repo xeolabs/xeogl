@@ -18,7 +18,7 @@
     <br><br>
     <ul>
         <li>
-            using the <a href="js/debug/debug.js" target="_docs">xeogl.debug</a> helper utility to visualize the result
+            using the <a href="js/debug/debug.js" target="_docs">debug</a> helper utility to visualize the result
             of
             the <a
                 href="../docs/classes/xeogl.math.math.html#method_rayTriangleIntersect">xeogl.math.rayTriangleIntersect</a>
@@ -568,10 +568,10 @@
 
             // "Pack" the triangle against the other triangles within the X,Y plane
 
-            offsetX = aabbTriangle.min[0] - offsetBump;
-            offsetY = aabbTriangle.min[1];
+            offsetX = aabbTriangle[0] - offsetBump;
+            offsetY = aabbTriangle[1];
 
-            offsetBump += (aabbTriangle.max[0] - aabbTriangle.min[0]);
+            offsetBump += (aabbTriangle[2] - aabbTriangle[0]);
 
             va[0] -= offsetX;
             va[1] -= offsetY;
@@ -600,8 +600,8 @@
 
         // Normalize the UVs into [0..1, 0..1] range
 
-        var meshSizeX = aabbMesh.max[0] - aabbMesh.min[0];
-        var meshSizeY = aabbMesh.max[1] - aabbMesh.min[1];
+        var meshSizeX = aabbMesh[2] - aabbMesh[0];
+        var meshSizeY = aabbMesh[3] - aabbMesh[1];
 
         var scaleX = 1 / meshSizeX;
         var scaleY = 1 / meshSizeY;

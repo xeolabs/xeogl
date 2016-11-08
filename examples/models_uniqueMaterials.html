@@ -13,9 +13,9 @@
 
 <div id="infoLight">
     <a href="http://xeogl.org" target="_home">xeogl</a><br><br>importing glTF using a <a
-        href="../docs/classes/glTFModel.html" target="_docs">xeogl.glTFModel</a> then ensuring that each
-    <a href="../docs/classes/Entity.html" target="_docs">xeogl.Entity</a><br>gets its own copy of its
-    <a href="../docs/classes/PhongMaterial.html" target="_docs">xeogl.PhongMaterial</a>, which we then
+        href="../docs/classes/GLTFModel.html" target="_docs">GLTFModel</a> then ensuring that each
+    <a href="../docs/classes/Entity.html" target="_docs">Entity</a><br>gets its own copy of its
+    <a href="../docs/classes/PhongMaterial.html" target="_docs">PhongMaterial</a>, which we then
     adjust to a random color
 </div>
 
@@ -27,25 +27,25 @@
     // have their own Material instance.
 
     // This example demonstrates how to ensure that each Entity loaded
-    // in a glTFModel gets its own unique Material instance.
+    // in a GLTFModel gets its own unique Material instance.
 
     // Load glTF gearbox model
-    var gearbox = new xeogl.glTFModel({
+    var gearbox = new xeogl.GLTFModel({
         id: "gearbox",
         src: "models/gltf/gearbox/gearbox_assy.gltf"
     });
 
-    // Once the glTFModel is loaded, iterate over its Entity's
+    // Once the GLTFModel is loaded, iterate over its Entity's
     // and replace each of their PhongMaterials with a clone,
-    // while storing the clone in the glTFModel's Collection so that
-    // it gets destroyed when the glTFModel is destroyed or reloaded.
+    // while storing the clone in the GLTFModel so that
+    // it gets destroyed when the GLTFModel is destroyed or reloaded.
 
     // Also, just to show the uniqueness, we'll set the diffuse
     // color on each Material to a random value.
 
     gearbox.on("loaded", function () {
 
-        gearbox.collection.iterate(function (c) {
+        gearbox.iterate(function (c) {
 
             if (c.isType("xeogl.Entity")) {
 
@@ -55,7 +55,7 @@
 
                 c.material.diffuse = [Math.random(), Math.random(), Math.random()];
 
-                gearbox.collection.add(material);
+                gearbox.add(material);
             }
         });
 

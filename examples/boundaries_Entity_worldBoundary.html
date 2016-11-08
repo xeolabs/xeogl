@@ -8,6 +8,8 @@
     <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
+    <script src="js/animation/cameraFollow.js"></script>
+
 <body>
 
 <div id="infoLight">
@@ -19,6 +21,57 @@
 </div>
 
 <script>
+
+
+    var entities = [];
+    var entity;
+
+    var torus = new xeogl.TorusGeometry();
+
+
+    for (var i = 0; i < 20; i++) {
+
+        entity = new xeogl.Entity({
+
+            geometry: torus,
+
+            transform: new xeogl.Scale({
+                xyz: [
+                    0.5 + Math.random() * 2,
+                    0.5 + Math.random() * 2,
+                    0.5 + Math.random() * 2
+                ],
+
+                parent: new xeogl.Rotate({
+                    xyz: [
+                        Math.random(),
+                        Math.random(),
+                        Math.random()
+                    ],
+                    angle: Math.random() * 360,
+
+                    parent: new xeogl.Translate({
+                        xyz: [
+                            Math.random() * 15 - 7,
+                            Math.random() * 15 - 7,
+                            Math.random() * 15 - 7
+                        ]
+                    })
+                })
+
+            }),
+
+            material: new xeogl.PhongMaterial({
+                diffuse: [
+                    Math.random(),
+                    Math.random(),
+                    Math.random()
+                ]
+            })
+        });
+
+        entities.push(entity);
+    }
 
     // ------------------------------------------------------------------
     // Create a tumbling red torus
@@ -71,11 +124,16 @@
     // ------------------------------------------------------------------
 
     var a = 0;
+    var i = 0;
 
     rotate1.scene.on("tick",
             function () {
-                rotate0.angle = a * 0.1;
-                rotate1.angle = a += 4;
+            a+=4;
+            //    if (++i > 10) {
+                    i = 0;
+                    rotate0.angle = a * 0.1;
+              //  }
+               // rotate1.angle = a ;
             });
 
 
@@ -90,7 +148,7 @@
     // boundary entity will automatically update to the
     // shape of the torus' World-space oriented boundary.
 
-    var boundaryObject = new xeogl.Entity({
+    new xeogl.Entity({
 
         geometry: new xeogl.BoundaryGeometry({
             boundary: torus.worldBoundary
@@ -133,6 +191,16 @@
     // Allow user camera control
 
     new xeogl.CameraControl();
+
+    new xeogl.CameraFollow({
+        worldBoundary: torus.worldBoundary,
+        fly: false,
+        fit: false,
+        fitFOV: 45,
+        trail: false
+    });
+
+    rotate1.scene.camera.view.gimbalLockY = false;
 
 </script>
 </body>

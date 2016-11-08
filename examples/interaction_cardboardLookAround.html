@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.js"></script>
+    <script src="../build/xeogl.min.js"></script>
 
     <script src="js/effects/stereo.js"></script>
     <script src="js/interaction/cardboardLookAround.js"></script>
@@ -17,14 +17,14 @@
 <div id="infoLight">
     <a href="http://xeogl.org" target="_home">xeogl</a><br><br>Google Cardboard viewing using a <a
         href="js/effects/stereo.js"
-        target="_docs">xeogl.Stereo</a> and a <a href="js/interaction/cardboardLookAround.js"
-                                               target="_docs">xeogl.CardboardLookAround</a>
+        target="_docs">Stereo</a> and a <a href="js/interaction/cardboardLookAround.js"
+                                               target="_docs">CardboardLookAround</a>
 </div>
 
 <script>
 
     // Load glTF model
-    var gearbox = new xeogl.glTFModel({
+    var gearbox = new xeogl.GLTFModel({
 //        src: "models/gltf/gearbox/gearbox_assy.gltf"
         src: "models/gltf/buggy/buggy.gltf"
     });

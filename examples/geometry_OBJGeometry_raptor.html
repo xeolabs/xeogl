@@ -16,7 +16,7 @@
 
 <div id="infoLight">
     <a href="http://xeogl.org" target="_home">xeogl</a><br><br>loading .OBJ geometry using an <a
-        href="../docs/classes/OBJGeometry.html" target="_docs">xeogl.OBJGeometry</a>
+        href="../docs/classes/OBJGeometry.html" target="_docs">OBJGeometry</a>
 </div>
 
 <script>
@@ -43,7 +43,7 @@
 
             emissive: [1, 1, 1],
 
-            emissiveFresnel:  new xeogl.Fresnel({
+            emissiveFresnel: new xeogl.Fresnel({
                 edgeBias: 0.3,
                 centerBias: 0.8,
                 edgeColor: [0.3, 0.3, 0.4],
@@ -62,25 +62,23 @@
         })
     });
 
-    var control = new xeogl.CameraControl();
+    new xeogl.CameraControl();
 
-    var animation = new xeogl.CameraFlight();
+    var cameraFlight = new xeogl.CameraFlight();
 
-    entity.geometry.on("loaded",
-            function () {
-                animation.flyTo({
-                    aabb: entity.worldBoundary.aabb
-                });
-            });
+    entity.geometry.on("loaded", function () {
 
-    entity.scene.on("tick",
-            function () {
+        cameraFlight.jumpTo({
+            worldBoundary: entity.worldBoundary,
+            fit: true,
+            fitFOV: 55
+        });
 
-                var view = entity.scene.camera.view;
+        entity.scene.on("tick", function () {
+            entity.scene.camera.view.rotateEyeY(-0.4);
+        });
+    });
 
-                view.rotateEyeY(0.4);
-//                view.rotateEyeX(0.15);
-            });
 
 </script>
 </body>

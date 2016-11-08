@@ -16,7 +16,7 @@
 
 <div id="infoLight">
     <a href="http://xeogl.org" target="_home">xeogl</a><br><br>loading .3DS geometry using an <a
-        href="../docs/classes/Nintendo3DSGeometry.html" target="_docs">xeogl.Nintendo3DSGeometry</a>
+        href="../docs/classes/Nintendo3DSGeometry.html" target="_docs">Nintendo3DSGeometry</a>
 </div>
 
 <script>
@@ -24,13 +24,12 @@
     var entity = new xeogl.Entity({
 
         geometry: new xeogl.Nintendo3DSGeometry({
-            src: "models/3ds/lexus.3ds"
+            src: "models/3ds/osiris.3ds",
+            normals: "auto"
         }),
 
         material: new xeogl.PhongMaterial({
-            diffuseMap: new xeogl.Texture({
-                src: "models/3ds/lexus.jpg"
-            }),
+            diffuse: [0.6,0.6,0.6],
             specular: [0, 0, 0]
         }),
 

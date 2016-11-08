@@ -7,21 +7,23 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeogl.js"></script>
+    <script src="../build/xeogl.min.js"></script>
+    <script src="js/animation/cameraFollow.js"></script>
 
 <body>
 
 <div id="infoLight">
     <a href="http://xeogl.org" target="_home">xeogl</a><br><br>importing glTF using a <a
-        href="../docs/classes/glTFModel.html" target="_docs">xeogl.glTFModel</a> component
+        href="../docs/classes/GLTFModel.html" target="_docs">GLTFModel</a> component
 </div>
 
 <script>
 
-    // Load glTF
-    var gearbox = new xeogl.glTFModel({
+    var gearbox = new xeogl.GLTFModel({
         src: "models/gltf/gearbox/gearbox_assy.gltf"
     });
+
+    new xeogl.CameraControl();
 
     // Set initial camera position
     var view = gearbox.scene.camera.view;
@@ -36,8 +38,8 @@
     // Slowly orbit camera about model
     gearbox.scene.on("tick",
             function () {
-                view.rotateEyeY(0.3);
-                view.rotateEyeX(0.1);
+                view.rotateEyeY(0.1);
+                view.rotateEyeX(0.02);
             });
 
 </script>

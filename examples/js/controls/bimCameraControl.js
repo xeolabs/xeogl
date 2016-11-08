@@ -702,8 +702,8 @@
                         var aabb = boundary.aabb;
                         var center = boundary.center;
                         var diag = xeogl.math.getAABBDiag(aabb);
-                        var stopFOV = 55;
-                        var dist = Math.abs((diag) / Math.tan(stopFOV / 2));
+                        var fitFOV = 55;
+                        var dist = Math.abs((diag) / Math.tan(fitFOV / 2));
 
                         switch (keyCode) {
 

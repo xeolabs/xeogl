@@ -86,7 +86,7 @@
 
     var flight = new xeogl.CameraFlight({
         duration: 1.5,
-        stopFOV: 45
+        fitFOV: 45
     });
 
     // Target boundary indicator
@@ -101,12 +101,6 @@
             lineWidth: 4
         })
     });
-
-    // Create a couple of camera controls so that
-    // user can rotate and zoom camera while demo runs
-
-    new xeogl.MouseRotateCamera({sensitivity: 0.2});
-    new xeogl.MouseZoomCamera();
 
 
     // Periodically highlight and fly to a randomly-selected entity
@@ -135,14 +129,16 @@
 
     // Slowly the eye position about the look position.
 
-    entity.scene.on("tick",
-            function () {
+//    entity.scene.on("tick",
+//            function () {
+//
+//                var view = entity.camera.view;
+//
+//                view.rotateEyeY(0.3);
+//                view.rotateEyeX(0.2);
+//            });
 
-                var view = entity.camera.view;
-
-                view.rotateEyeY(0.3);
-                view.rotateEyeX(0.2);
-            });
+    new xeogl.CameraControl();
 
 </script>
 </body>

@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
     <style>
@@ -126,7 +126,7 @@
     scene3.camera.view.look = [159.20, 17.02, 3.21];
     scene3.camera.view.up = [-0.15, 0.97, 0.13];
 
-    var gearbox = new xeogl.glTFModel(scene3, {
+    var gearbox = new xeogl.GLTFModel(scene3, {
         src: "models/gltf/gearbox/gearbox_assy.gltf"
     });
 

@@ -526,7 +526,7 @@
                     c[1] = positions[ic3 + 1];
                     c[2] = positions[ic3 + 2];
 
-                    math.barycentricToCartesian2(this._bary, a, b, c, localPos);
+                    math.barycentricToCartesian(this._bary, a, b, c, localPos);
 
                     math.triangleNormal(a, b, c, normal);
                     math.mulVec3Scalar(normal, 0.05, normal);
