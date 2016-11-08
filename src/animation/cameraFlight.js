@@ -153,7 +153,7 @@
             this.camera = cfg.camera;
 
             // Shows a wireframe box at the given boundary
-            this._boundaryIndicator = this.create({
+            this._boundaryHelper = this.create({
                 type: "xeogl.Entity",
                 geometry: this.create({
                     type: "xeogl.BoundaryGeometry",
@@ -332,8 +332,8 @@
 
                     // Show boundary
 
-                    this._boundaryIndicator.geometry.aabb = aabb;
-                    this._boundaryIndicator.visibility.visible = true;
+                    this._boundaryHelper.geometry.aabb = aabb;
+                    this._boundaryHelper.visibility.visible = true;
 
                     var aabbCenter = math.getAABB3Center(aabb);
 
@@ -651,7 +651,7 @@
                 return;
             }
 
-            this._boundaryIndicator.visibility.visible = false;
+            this._boundaryHelper.visibility.visible = false;
 
             this._flying = false;
 
@@ -684,7 +684,7 @@
                 return;
             }
 
-            this._boundaryIndicator.visibility.visible = false;
+            this._boundaryHelper.visibility.visible = false;
 
             this._flying = false;
 
