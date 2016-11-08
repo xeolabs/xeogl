@@ -123,20 +123,25 @@
             var scene = this.scene;
 
             // Shows a bounding box around each Entity we fly to
-            this._boundaryEntity = this.create(xeogl.Entity, {
-                geometry: this.create(xeogl.BoundaryGeometry),
-                material: this.create(xeogl.PhongMaterial, {
+            this._boundaryHelper = this.create({
+                type: "xeogl.Entity",
+                geometry: this.create({
+                    type: "xeogl.BoundaryGeometry"
+                }),
+                material: this.create({
+                    type: "xeogl.PhongMaterial",
                     diffuse: [0, 0, 0],
                     ambient: [0, 0, 0],
                     specular: [0, 0, 0],
                     emissive: [1.0, 1.0, 0.6],
                     lineWidth: 4
                 }),
-                visibility: this.create(xeogl.Visibility, {
+                visibility: this.create({
+                    type: "xeogl.Visibility",
                     visible: false
                 }),
-                modes: this.create(xeogl.Modes, {
-
+                modes: this.create({
+                    type: "xeogl.Modes",
                     // Does not contribute to the size of any enclosing boundaries
                     // that might be calculated by xeogl, eg. like that returned by xeogl.Scene#worldBoundary
                     collidable: false
@@ -269,8 +274,8 @@
             var aabb = worldBoundary.aabb;
             var sphere = worldBoundary.sphere;
 
-            this._boundaryEntity.geometry.aabb = aabb;
-            this._boundaryEntity.visibility.visible = true;
+            this._boundaryHelper.geometry.aabb = aabb;
+            //    this._boundaryHelper.visibility.visible = true;
 
             if (pos) {
 
@@ -299,7 +304,7 @@
         },
 
         _hideEntityBoundary: function () {
-            this._boundaryEntity.visibility.visible = false;
+            this._boundaryHelper.visibility.visible = false;
         },
 
         _props: {
