@@ -1,6 +1,10 @@
 /**
  A **Texture** specifies a texture map.
 
+ <a href="../../examples/#materials_texture_diffuse"><img src="../../assets/images/screenshots/TorusGeometry.png"></img></a>
+
+ ## Overview
+
  <ul>
  <li>Textures are grouped within {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}}s, which are attached to
  {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>

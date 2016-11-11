@@ -23613,7 +23613,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  });
  ````
 
- @class LatheGeometry
+
  @module xeogl
  @submodule geometry
  @constructor
@@ -29617,6 +29617,10 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 ;/**
  A **Texture** specifies a texture map.
 
+ <a href="../../examples/#materials_texture_diffuse"><img src="../../assets/images/screenshots/TorusGeometry.png"></img></a>
+
+ ## Overview
+
  <ul>
  <li>Textures are grouped within {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}}s, which are attached to
  {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
@@ -30650,12 +30654,15 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- A **Fresnel** specifies a Fresnel effect.
+ A **Fresnel** specifies a Fresnel effect for attached {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}}.
+
+ <a href="../../examples/#materials_fresnel_specular"><img src="../../assets/images/screenshots/diffuseFresnel.png"></img></a>
+
+ ## Overview
 
  <ul>
  <li>Fresnels are grouped within {{#crossLink "PhongMaterial"}}{{/crossLink}}s, which are attached to
  {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Fresnels create within xeogl's shaders.</li>
  </ul>
 
  ## Examples
@@ -30993,7 +31000,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     geometry: geometry
 });
  ````
- @class Reflect
+
  @module xeogl
  @submodule materials
  @constructor

@@ -6,6 +6,14 @@
      An **ObjGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that's loaded from a
      <a href="https://en.wikipedia.org/wiki/Wavefront_.obj_file" target = "_other">Wavefront .OBJ</a> file.
 
+     <a href="../../examples/#geometry_OBJGeometry_raptor"><img src="../../assets/images/screenshots/OBJGeometry.png"></img></a>
+
+     ## Overview
+
+     * An OBJGeometry mesh is determined by the Wavefront .OBJ file referenced by the OBJGeometry's {{#crossLink "OBJGeometry/src:property"}}{{/crossLink}} property.
+     * An OBJGeometry only parses the geometry data from the .OBJ file and ignores any associated .MTL file.
+     * Set the {{#crossLink "OBJGeometry/src:property"}}{{/crossLink}} property to a different file at any time, to regenerate the OBJGeometry's mesh from the new file.
+
      ## Examples
 
      <ul>

@@ -1,6 +1,10 @@
 /**
  A **ZSpaceEffect** makes its {{#crossLink "Scene"}}{{/crossLink}} viewable with a zSpace viewer.
 
+ <a href="../../examples/#effects_zspace_gearbox"><img src="../../assets/images/screenshots/ZSpaceEffect.png"></img></a>
+
+ ## Overview
+
  <ul>
  <li>Plug-and-play: just create a ZSpaceEffect within your xeogl {{#crossLink "Scene"}}{{/crossLink}} to make it viewable with a ZSpace display.</li>
  <li>Activate or disable the ZSpaceEffect at any time to switch between zSpace mode and normal mono viewing mode.</li>

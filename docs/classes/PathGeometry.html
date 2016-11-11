@@ -81,7 +81,6 @@
                                 <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
                                 <li><a href="../classes/KeyboardRotateCamera.html">KeyboardRotateCamera</a></li>
                                 <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
-                                <li><a href="../classes/LatheGeometry.html">LatheGeometry</a></li>
                                 <li><a href="../classes/Layer.html">Layer</a></li>
                                 <li><a href="../classes/Lights.html">Lights</a></li>
                                 <li><a href="../classes/Lookat.html">Lookat</a></li>
@@ -104,7 +103,6 @@
                                 <li><a href="../classes/PointLight.html">PointLight</a></li>
                                 <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
                                 <li><a href="../classes/Quaternion.html">Quaternion</a></li>
-                                <li><a href="../classes/Reflect.html">Reflect</a></li>
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
@@ -351,6 +349,10 @@
                                 <a href="#property_localBoundary">localBoundary</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_lod">lod</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_metadata">metadata</a>
 
@@ -363,6 +365,18 @@
                                 <a href="#property_path">path</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_phiLength">phiLength</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_phiStart">phiStart</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_points">points</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_positions">positions</a>
 
@@ -373,6 +387,10 @@
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_scene">scene</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_segments">segments</a>
 
                             </li>
                             <li class="index-item property inherited inherited">
@@ -419,6 +437,10 @@
                                 <a href="#event_indices">indices</a>
 
                             </li>
+                            <li class="index-item event">
+                                <a href="#event_lod">lod</a>
+
+                            </li>
                             <li class="index-item event inherited">
                                 <a href="#event_normals">normals</a>
 
@@ -427,12 +449,28 @@
                                 <a href="#event_path">path</a>
 
                             </li>
+                            <li class="index-item event">
+                                <a href="#event_phiLength">phiLength</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_phiStart">phiStart</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_points">points</a>
+
+                            </li>
                             <li class="index-item event inherited inherited">
                                 <a href="#event_positions">positions</a>
 
                             </li>
                             <li class="index-item event inherited">
                                 <a href="#event_primitive">primitive</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_segments">segments</a>
 
                             </li>
                             <li class="index-item event inherited">
@@ -1421,6 +1459,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_lod" class="property item">
+                        <h3 class="name"><code>lod</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_geometry_latheGeometry.js.html#l196"><code>src&#x2F;geometry&#x2F;latheGeometry.js:196</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The LatheGeometry&#39;s level-of-detail factor.</p>
+                    <p>Fires a LatheGeometry/lod:event event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 1</p>
+                    
+                    
+                    </div>
                     <div id="property_metadata" class="property item inherited">
                         <h3 class="name"><code>metadata</code></h3>
                         <span class="type">Object</span>
@@ -1496,6 +1561,87 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
+                    
+                    
+                    </div>
+                    <div id="property_phiLength" class="property item">
+                        <h3 class="name"><code>phiLength</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_geometry_latheGeometry.js.html#l280"><code>src&#x2F;geometry&#x2F;latheGeometry.js:280</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Angle at which this LatheGeometry&#39;s rotation starts.</p>
+                    <p>Fires a LatheGeometry/phiLength:event event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 1</p>
+                    
+                    
+                    </div>
+                    <div id="property_phiStart" class="property item">
+                        <h3 class="name"><code>phiStart</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_geometry_latheGeometry.js.html#l238"><code>src&#x2F;geometry&#x2F;latheGeometry.js:238</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Angle at which this LatheGeometry&#39;s rotation starts.</p>
+                    <p>Fires a LatheGeometry/phiStart:event event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 0</p>
+                    
+                    
+                    </div>
+                    <div id="property_points" class="property item">
+                        <h3 class="name"><code>points</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_geometry_latheGeometry.js.html#l165"><code>src&#x2F;geometry&#x2F;latheGeometry.js:165</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Profile points on this LatheGeometry.</p>
+                    <p>Fires a LatheGeometry/points:event event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> []</p>
                     
                     
                     </div>
@@ -1579,6 +1725,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
+                    
+                    
+                    </div>
+                    <div id="property_segments" class="property item">
+                        <h3 class="name"><code>segments</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_geometry_latheGeometry.js.html#l322"><code>src&#x2F;geometry&#x2F;latheGeometry.js:322</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The LatheGeometry&#39;s number of segments of rotation.</p>
+                    <p>Fires a LatheGeometry/segments:event event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 4</p>
                     
                     
                     </div>
@@ -1884,6 +2057,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="event_lod" class="events item">
+                        <h3 class="name"><code>lod</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_geometry_latheGeometry.js.html#l224"><code>src&#x2F;geometry&#x2F;latheGeometry.js:224</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this LatheGeometry&#39;s LatheGeometry/lod:property property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_normals" class="events item inherited">
                         <h3 class="name"><code>normals</code></h3>
                         <span class="type"></span>
@@ -1945,6 +2160,133 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this CameraPaths&#39;s CameraPath/path:property property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_phiLength" class="events item">
+                        <h3 class="name"><code>phiLength</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_geometry_latheGeometry.js.html#l308"><code>src&#x2F;geometry&#x2F;latheGeometry.js:308</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this LatheGeometry&#39;s LatheGeometry/phiLength:property property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_phiStart" class="events item">
+                        <h3 class="name"><code>phiStart</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_geometry_latheGeometry.js.html#l266"><code>src&#x2F;geometry&#x2F;latheGeometry.js:266</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this LatheGeometry&#39;s LatheGeometry/phiStart:property property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_points" class="events item">
+                        <h3 class="name"><code>points</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_geometry_latheGeometry.js.html#l182"><code>src&#x2F;geometry&#x2F;latheGeometry.js:182</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this LatheGeometry&#39;s
+                    LatheGeometry/points:property property changes.</p>
                     
                         </div>
                     
@@ -2032,6 +2374,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this Geometry&#39;s <a href="../classes/Geometry.html#property_primitive" class="crosslink">primitive</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_segments" class="events item">
+                        <h3 class="name"><code>segments</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_geometry_latheGeometry.js.html#l350"><code>src&#x2F;geometry&#x2F;latheGeometry.js:350</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this LatheGeometry&#39;s LatheGeometry/segments:property property changes.</p>
                     
                         </div>
                     

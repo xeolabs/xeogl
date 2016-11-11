@@ -1,6 +1,8 @@
 /**
  A **StereoEffect** sets up a stereo view for its Scene.
 
+ <a href="../../examples/#effects_sterer"><img src="../../assets/images/screenshots/StereoEffect.png"></img></a>
+
  ## Usage
 
  Stereo view of an Entity using Scene's default Camera and viewport:

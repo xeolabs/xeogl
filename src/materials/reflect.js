@@ -79,7 +79,7 @@
     geometry: geometry
 });
  ````
- @class Reflect
+
  @module xeogl
  @submodule materials
  @constructor

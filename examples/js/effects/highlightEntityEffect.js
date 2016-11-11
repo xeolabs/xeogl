@@ -69,7 +69,8 @@
 
                 material: this.create({
                     type: "xeogl.PhongMaterial, ",
-                    emissive: [0.6, 0.6, 0.6],
+                    emissive: [0.9, 0.9, 0.3],
+                    diffuse: [0,0,0],
                     opacity: 0.6
                 }, "material"),
 
@@ -131,8 +132,8 @@
                         on: {
                             material: function (material) {
                                 if (material) {
-                                    helper.material.diffuse = material.diffuse;
-                                    helper.material.ambient = material.ambient;
+                                    //helper.material.diffuse = material.diffuse;
+                                    //helper.material.ambient = material.ambient;
                                 }
                             },
                             geometry: function (geometry) {

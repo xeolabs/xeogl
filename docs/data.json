@@ -504,9 +504,7 @@
         "src/geometry/latheGeometry.js": {
             "name": "src/geometry/latheGeometry.js",
             "modules": {},
-            "classes": {
-                "LatheGeometry": 1
-            },
+            "classes": {},
             "fors": {},
             "namespaces": {}
         },
@@ -648,9 +646,7 @@
         "src/materials/reflect.js": {
             "name": "src/materials/reflect.js",
             "modules": {},
-            "classes": {
-                "Reflect": 1
-            },
+            "classes": {},
             "fors": {},
             "namespaces": {}
         },
@@ -1140,24 +1136,6 @@
             "fors": {},
             "namespaces": {}
         },
-        "examples/js/importing/nintendo3DSGeometry.js": {
-            "name": "examples/js/importing/nintendo3DSGeometry.js",
-            "modules": {},
-            "classes": {
-                "Nintendo3DSGeometry": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
-        "examples/js/importing/objGeometry.js": {
-            "name": "examples/js/importing/objGeometry.js",
-            "modules": {},
-            "classes": {
-                "OBJGeometry": 1
-            },
-            "fors": {},
-            "namespaces": {}
-        },
         "examples/js/curves/_module.js": {
             "name": "examples/js/curves/_module.js",
             "modules": {
@@ -1242,6 +1220,24 @@
             "modules": {},
             "classes": {
                 "HeightmapGeometry": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "examples/js/geometry/nintendo3DSGeometry.js": {
+            "name": "examples/js/geometry/nintendo3DSGeometry.js",
+            "modules": {},
+            "classes": {
+                "Nintendo3DSGeometry": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "examples/js/geometry/objGeometry.js": {
+            "name": "examples/js/geometry/objGeometry.js",
+            "modules": {},
+            "classes": {
+                "OBJGeometry": 1
             },
             "fors": {},
             "namespaces": {}
@@ -1340,7 +1336,6 @@
                 "BoxGeometry": 1,
                 "CylinderGeometry": 1,
                 "Geometry": 1,
-                "LatheGeometry": 1,
                 "PathGeometry": 1,
                 "PlaneGeometry": 1,
                 "SphereGeometry": 1,
@@ -1353,7 +1348,6 @@
                 "Fresnel": 1,
                 "Material": 1,
                 "PhongMaterial": 1,
-                "Reflect": 1,
                 "Texture": 1,
                 "xeogl.math.math": 1,
                 "GLTFModel": 1,
@@ -1389,8 +1383,6 @@
                 "ZSpaceEffect": 1,
                 "Cardboard": 1,
                 "WebVR": 1,
-                "Nintendo3DSGeometry": 1,
-                "OBJGeometry": 1,
                 "CubicBezierCurve": 1,
                 "Curve": 1,
                 "Path": 1,
@@ -1398,6 +1390,8 @@
                 "SplineCurve": 1,
                 "Skybox": 1,
                 "HeightmapGeometry": 1,
+                "Nintendo3DSGeometry": 1,
+                "OBJGeometry": 1,
                 "TeapotGeometry": 1,
                 "VectorTextGeometry": 1,
                 "BuildableModel": 1
@@ -1597,14 +1591,13 @@
                 "BoxGeometry": 1,
                 "CylinderGeometry": 1,
                 "Geometry": 1,
-                "LatheGeometry": 1,
                 "PathGeometry": 1,
                 "PlaneGeometry": 1,
                 "SphereGeometry": 1,
                 "TorusGeometry": 1,
+                "HeightmapGeometry": 1,
                 "Nintendo3DSGeometry": 1,
                 "OBJGeometry": 1,
-                "HeightmapGeometry": 1,
                 "TeapotGeometry": 1,
                 "VectorTextGeometry": 1
             },
@@ -1615,7 +1608,78 @@
             "namespace": "",
             "file": "examples/js/geometry/vectorTextGeometry.js",
             "line": 1,
-            "description": "Components for defining geometry."
+            "description": "Components for defining geometry.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this LatheGeometry in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this LatheGeometry.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "primitive",
+                            "description": "The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"triangles\""
+                        },
+                        {
+                            "name": "points",
+                            "description": "Profile points.",
+                            "optional": true,
+                            "optdefault": "[]"
+                        },
+                        {
+                            "name": "segments",
+                            "description": "Number of revolution segments.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "4"
+                        },
+                        {
+                            "name": "phiStart",
+                            "description": "Angle in degrees at which revolution starts.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0"
+                        },
+                        {
+                            "name": "phiLength",
+                            "description": "Length of revolution in degrees.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "360"
+                        },
+                        {
+                            "name": "lod",
+                            "description": ".",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1]  Level-of-detail, in range [0..1"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Geometry"
         },
         "input": {
             "name": "input",
@@ -1657,7 +1721,6 @@
                 "Fresnel": 1,
                 "Material": 1,
                 "PhongMaterial": 1,
-                "Reflect": 1,
                 "Texture": 1
             },
             "fors": {},
@@ -1667,7 +1730,107 @@
             "namespace": "",
             "file": "src/materials/texture.js",
             "line": 1,
-            "description": "Components to define the surface appearance of Entities."
+            "description": "Components to define the surface appearance of Entities.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Reflect in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID for this Reflect, unique among all components in the parent scene, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Reflect.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "src",
+                            "description": "Path to image file to load into this Reflect. See the {{#crossLink \"Reflect/src:property\"}}{{/crossLink}} property for more info.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "null"
+                        },
+                        {
+                            "name": "image",
+                            "description": "HTML Image object to load into this Reflect. See the {{#crossLink \"Reflect/image:property\"}}{{/crossLink}} property for more info.",
+                            "type": "HTMLImageElement",
+                            "optional": true,
+                            "optdefault": "null"
+                        },
+                        {
+                            "name": "target",
+                            "description": "Instance or ID of a {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} or\n{{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} to source this Reflect from. See the {{#crossLink \"Reflect/target:property\"}}{{/crossLink}} property for more info.",
+                            "type": "String | xeogl.ColorTarget | xeogl.DepthTarget",
+                            "optional": true,
+                            "optdefault": "null"
+                        },
+                        {
+                            "name": "minFilter",
+                            "description": "How the reflect is sampled when a texel covers less than one pixel. See the {{#crossLink \"Reflect/minFilter:property\"}}{{/crossLink}} property for more info.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"linearMipmapLinear\""
+                        },
+                        {
+                            "name": "magFilter",
+                            "description": "How the reflect is sampled when a texel covers more than one pixel. See the {{#crossLink \"Reflect/magFilter:property\"}}{{/crossLink}} property for more info.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"linear\""
+                        },
+                        {
+                            "name": "wrapS",
+                            "description": "Wrap parameter for reflect coordinate *S*. See the {{#crossLink \"Reflect/wrapS:property\"}}{{/crossLink}} property for more info.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"repeat\""
+                        },
+                        {
+                            "name": "wrapT",
+                            "description": "Wrap parameter for reflect coordinate *S*. See the {{#crossLink \"Reflect/wrapT:property\"}}{{/crossLink}} property for more info.",
+                            "type": "String",
+                            "optional": true,
+                            "optdefault": "\"repeat\""
+                        },
+                        {
+                            "name": "translate",
+                            "description": "2D translation vector that will be added to reflect's *S* and *T* coordinates.",
+                            "type": "Array of Number",
+                            "optional": true,
+                            "optdefault": "[0,0]"
+                        },
+                        {
+                            "name": "scale",
+                            "description": "2D scaling vector that will be applied to reflect's *S* and *T* coordinates.",
+                            "type": "Array of Number",
+                            "optional": true,
+                            "optdefault": "[1,1]"
+                        },
+                        {
+                            "name": "rotate",
+                            "description": "Rotation, in degrees, that will be applied to reflect's *S* and *T* coordinates.",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "0"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Component"
         },
         "math": {
             "name": "math",
@@ -3636,92 +3799,6 @@
             ],
             "extends": "Component"
         },
-        "LatheGeometry": {
-            "name": "LatheGeometry",
-            "shortname": "LatheGeometry",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "xeogl",
-            "namespace": "",
-            "file": "src/geometry/latheGeometry.js",
-            "line": 1,
-            "description": "A **LatheGeometry** is a {{#crossLink \"Geometry\"}}{{/crossLink}} that's defined as the revolution of a profile about an exis.\n\n## Usage\n\nAn {{#crossLink \"Entity\"}}{{/crossLink}} with a LatheGeometry and a {{#crossLink \"PhongMaterial\"}}{{/crossLink}} with\ndiffuse {{#crossLink \"Texture\"}}{{/crossLink}}:\n\n````javascript\nnew xeogl.Entity({\n\n    geometry: new xeogl.LatheGeometry({\n       primitive: \"triangles\",\n       points: [\n           [ 0, 0,  8],\n           [-2, 0,  5],\n           [-1, 0,  5.1],\n           [-1, 0, -2],\n           [ 0, 0, -2]\n       ],\n       segments: 10,\n       phiStart: 0,\n       phiLength:90,\n       lod: 1.0, // Default\n       autoNormals: true // Default\n    }),\n\n    material: new xeogl.PhongMaterial({\n       diffuseMap: new xeogl.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n       })\n    })\n});\n````",
-            "submodule": "geometry",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this LatheGeometry in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "Configs",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this LatheGeometry.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "primitive",
-                            "description": "The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.",
-                            "type": "String",
-                            "optional": true,
-                            "optdefault": "\"triangles\""
-                        },
-                        {
-                            "name": "points",
-                            "description": "Profile points.",
-                            "optional": true,
-                            "optdefault": "[]"
-                        },
-                        {
-                            "name": "segments",
-                            "description": "Number of revolution segments.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "4"
-                        },
-                        {
-                            "name": "phiStart",
-                            "description": "Angle in degrees at which revolution starts.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "0"
-                        },
-                        {
-                            "name": "phiLength",
-                            "description": "Length of revolution in degrees.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "360"
-                        },
-                        {
-                            "name": "lod",
-                            "description": ".",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "1]  Level-of-detail, in range [0..1"
-                        }
-                    ]
-                }
-            ],
-            "extends": "Geometry"
-        },
         "PathGeometry": {
             "name": "PathGeometry",
             "shortname": "PathGeometry",
@@ -4297,7 +4374,7 @@
             "namespace": "",
             "file": "src/materials/fresnel.js",
             "line": 1,
-            "description": "A **Fresnel** specifies a Fresnel effect.\n\n<ul>\n<li>Fresnels are grouped within {{#crossLink \"PhongMaterial\"}}{{/crossLink}}s, which are attached to\n{{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Fresnels create within xeogl's shaders.</li>\n</ul>\n\n## Examples\n\n<ul>\n<li>[Diffuse Fresnel](../../examples/#materials_fresnel_diffuse)</li>\n<li>[Specular Fresnel](../../examples/#materials_fresnel_specular)</li>\n<li>[Opacity Fresnel](../../examples/#materials_fresnel_opacity)</li>\n<li>[Emissive Fresnel](../../examples/#materials_fresnel_emissive)</li>\n</ul>\n\n<img src=\"../../../assets/images/Fresnel.png\"></img>\n\n## Usage\n\n````javascript\nvar entity = new xeogl.Entity({\n\n    material: new xeogl.PhongMaterial({\n        ambient: [0.3, 0.3, 0.3],\n        shininess: 30,\n\n        diffuseFresnel: new xeogl.Fresnel({\n            edgeColor: [1.0, 1.0, 1.0],\n            centerColor: [0.0, 0.0, 0.0],\n            power: 4,\n            bias: 0.6\n        }),\n\n        specularFresnel: new xeogl.Fresnel({\n            edgeColor: [1.0, 1.0, 1.0],\n            centerColor: [0.0, 0.0, 0.0],\n            power: 4,\n            bias: 0.2\n        })\n    }),\n\n    new xeogl.TorusGeometry()\n});\n````",
+            "description": "A **Fresnel** specifies a Fresnel effect for attached {{#crossLink \"PhongMaterial\"}}PhongMaterials{{/crossLink}}.\n\n<a href=\"../../examples/#materials_fresnel_specular\"><img src=\"../../assets/images/screenshots/diffuseFresnel.png\"></img></a>\n\n## Overview\n\n<ul>\n<li>Fresnels are grouped within {{#crossLink \"PhongMaterial\"}}{{/crossLink}}s, which are attached to\n{{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n</ul>\n\n## Examples\n\n<ul>\n<li>[Diffuse Fresnel](../../examples/#materials_fresnel_diffuse)</li>\n<li>[Specular Fresnel](../../examples/#materials_fresnel_specular)</li>\n<li>[Opacity Fresnel](../../examples/#materials_fresnel_opacity)</li>\n<li>[Emissive Fresnel](../../examples/#materials_fresnel_emissive)</li>\n</ul>\n\n<img src=\"../../../assets/images/Fresnel.png\"></img>\n\n## Usage\n\n````javascript\nvar entity = new xeogl.Entity({\n\n    material: new xeogl.PhongMaterial({\n        ambient: [0.3, 0.3, 0.3],\n        shininess: 30,\n\n        diffuseFresnel: new xeogl.Fresnel({\n            edgeColor: [1.0, 1.0, 1.0],\n            centerColor: [0.0, 0.0, 0.0],\n            power: 4,\n            bias: 0.6\n        }),\n\n        specularFresnel: new xeogl.Fresnel({\n            edgeColor: [1.0, 1.0, 1.0],\n            centerColor: [0.0, 0.0, 0.0],\n            power: 4,\n            bias: 0.2\n        })\n    }),\n\n    new xeogl.TorusGeometry()\n});\n````",
             "submodule": "materials",
             "is_constructor": 1,
             "params": [
@@ -4568,121 +4645,6 @@
                 }
             ]
         },
-        "Reflect": {
-            "name": "Reflect",
-            "shortname": "Reflect",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "xeogl",
-            "namespace": "",
-            "file": "src/materials/reflect.js",
-            "line": 1,
-            "description": "A **Reflect** specifies a reflect map.\n\n## Overview\n\n<ul>\n<li>Reflects are grouped within {{#crossLink \"Material\"}}Material{{/crossLink}}s, which are attached to\n{{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>To create a Reflect from an image file, set the Reflect's {{#crossLink \"Reflect/src:property\"}}{{/crossLink}}\nproperty to the image file path.</li>\n<li>To create a Reflect from an HTML DOM Image object, set the Reflect's {{#crossLink \"Reflect/image:property\"}}{{/crossLink}}\nproperty to the entity.</li>\n<li>To render color images of {{#crossLink \"Entity\"}}Entities{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink \"Reflect/target:property\"}}{{/crossLink}}\nproperty to a {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>Similarly, to render depth images of {{#crossLink \"Entity\"}}Entities{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink \"Reflect/target:property\"}}{{/crossLink}}\nproperty to a {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>For special effects, we often use rendered Reflects in combination with {{#crossLink \"Shader\"}}Shaders{{/crossLink}} and {{#crossLink \"Stage\"}}Stages{{/crossLink}}.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Reflects create within xeogl's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Reflect.png\"></img>\n\n## Usage\n\nThe example below has:\n<ul>\n<li>three Reflects,</li>\n<li>a {{#crossLink \"PhongMaterial\"}}{{/crossLink}} which applies the {{#crossLink \"Reflect\"}}{{/crossLink}}s as diffuse, normal and specular maps,</li>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing an {{#crossLink \"AmbientLight\"}}{{/crossLink}} and a {{#crossLink \"PointLight\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"Geometry\"}}{{/crossLink}} that has the default box shape, and\n<li>an {{#crossLink \"Entity\"}}{{/crossLink}} attached to all of the above.</li>\n</ul>\n\n```` javascript\nvar scene = new xeogl.Scene();\n\nvar reflect1 = new xeogl.Reflect(scene, {\n   src: \"diffuseMap.jpg\"\n});\n\nvar reflect2 = new xeogl.Reflect(scene, {\n   src: \"normalMap.jpg\"\n});\n\nvar reflect3 = new xeogl.Reflect(scene, {\n   src: \"specularMap.jpg\"\n});\n\nvar material = new xeogl.PhongMaterial(scene, {\n   ambient: [0.3, 0.3, 0.3],\n   shininess: 30,\n   diffuseMap: reflect1,\n   normalMap: reflect2,\n   specularMap: reflect3\n});\n\nvar light1 = new xeogl.PointLight(scene, {\n   pos: [0, 100, 100],\n   color: [0.5, 0.7, 0.5]\n});\n\nvar light2 = new xeogl.AmbientLight(scene, {\n   color: [0.5, 0.7, 0.5]\n});\n\nvar lights = new xeogl.Lights(scene, {\n   lights: [\n       light1,\n       light2\n   ]\n});\n\n// Geometry without parameters will default to a 2x2x2 box.\nvar geometry = new xeogl.Geometry(scene);\n\nvar entity = new xeogl.Entity(scene, {\n   lights: lights,\n   material: material,\n   geometry: geometry\n});\n````",
-            "submodule": "materials",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Reflect in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "Configs",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID for this Reflect, unique among all components in the parent scene, generated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this Reflect.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "src",
-                            "description": "Path to image file to load into this Reflect. See the {{#crossLink \"Reflect/src:property\"}}{{/crossLink}} property for more info.",
-                            "type": "String",
-                            "optional": true,
-                            "optdefault": "null"
-                        },
-                        {
-                            "name": "image",
-                            "description": "HTML Image object to load into this Reflect. See the {{#crossLink \"Reflect/image:property\"}}{{/crossLink}} property for more info.",
-                            "type": "HTMLImageElement",
-                            "optional": true,
-                            "optdefault": "null"
-                        },
-                        {
-                            "name": "target",
-                            "description": "Instance or ID of a {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} or\n{{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} to source this Reflect from. See the {{#crossLink \"Reflect/target:property\"}}{{/crossLink}} property for more info.",
-                            "type": "String | xeogl.ColorTarget | xeogl.DepthTarget",
-                            "optional": true,
-                            "optdefault": "null"
-                        },
-                        {
-                            "name": "minFilter",
-                            "description": "How the reflect is sampled when a texel covers less than one pixel. See the {{#crossLink \"Reflect/minFilter:property\"}}{{/crossLink}} property for more info.",
-                            "type": "String",
-                            "optional": true,
-                            "optdefault": "\"linearMipmapLinear\""
-                        },
-                        {
-                            "name": "magFilter",
-                            "description": "How the reflect is sampled when a texel covers more than one pixel. See the {{#crossLink \"Reflect/magFilter:property\"}}{{/crossLink}} property for more info.",
-                            "type": "String",
-                            "optional": true,
-                            "optdefault": "\"linear\""
-                        },
-                        {
-                            "name": "wrapS",
-                            "description": "Wrap parameter for reflect coordinate *S*. See the {{#crossLink \"Reflect/wrapS:property\"}}{{/crossLink}} property for more info.",
-                            "type": "String",
-                            "optional": true,
-                            "optdefault": "\"repeat\""
-                        },
-                        {
-                            "name": "wrapT",
-                            "description": "Wrap parameter for reflect coordinate *S*. See the {{#crossLink \"Reflect/wrapT:property\"}}{{/crossLink}} property for more info.",
-                            "type": "String",
-                            "optional": true,
-                            "optdefault": "\"repeat\""
-                        },
-                        {
-                            "name": "translate",
-                            "description": "2D translation vector that will be added to reflect's *S* and *T* coordinates.",
-                            "type": "Array of Number",
-                            "optional": true,
-                            "optdefault": "[0,0]"
-                        },
-                        {
-                            "name": "scale",
-                            "description": "2D scaling vector that will be applied to reflect's *S* and *T* coordinates.",
-                            "type": "Array of Number",
-                            "optional": true,
-                            "optdefault": "[1,1]"
-                        },
-                        {
-                            "name": "rotate",
-                            "description": "Rotation, in degrees, that will be applied to reflect's *S* and *T* coordinates.",
-                            "type": "Number",
-                            "optional": true,
-                            "optdefault": "0"
-                        }
-                    ]
-                }
-            ],
-            "extends": "Component"
-        },
         "Texture": {
             "name": "Texture",
             "shortname": "Texture",
@@ -4695,7 +4657,7 @@
             "namespace": "",
             "file": "src/materials/texture.js",
             "line": 1,
-            "description": "A **Texture** specifies a texture map.\n\n<ul>\n<li>Textures are grouped within {{#crossLink \"PhongMaterial\"}}PhongMaterials{{/crossLink}}s, which are attached to\n{{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>To create a Texture from an image file, set the Texture's {{#crossLink \"Texture/src:property\"}}{{/crossLink}}\nproperty to the image file path.</li>\n<li>To create a Texture from an HTMLImageElement, set the Texture's {{#crossLink \"Texture/image:property\"}}{{/crossLink}}\nproperty to the HTMLImageElement.</li>\n<li>To render color images of {{#crossLink \"Entity\"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink \"Texture/target:property\"}}{{/crossLink}}\nproperty to a {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>Similarly, to render depth images of {{#crossLink \"Entity\"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink \"Texture/target:property\"}}{{/crossLink}}\nproperty to a {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>For special effects, we often use rendered Textures in combination with {{#crossLink \"Shader\"}}Shaders{{/crossLink}} and {{#crossLink \"Stage\"}}Stages{{/crossLink}}.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Textures create within xeogl's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Texture.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Diffuse Texture](../../examples/#materials_texture_diffuse)</li>\n<li>[Specular Texture](../../examples/#materials_texture_specular)</li>\n<li>[Opacity Texture](../../examples/#materials_texture_opacity)</li>\n<li>[Emissive Texture](../../examples/#materials_texture_emissive)</li>\n<li>[Reflectivity Texture](../../examples/#materials_texture_reflectivity)</li>\n<li>[Normal map](../../examples/#materials_texture_normalMap)</li>\n<li>[Diffuse Video Texture](../../examples/#materials_texture_video)</li>\n<li>[Diffuse Procedural Texture](../../examples/#materials_texture_procedural)</li>\n<li>[Texture Animation](../../examples/#materials_texture_animation)</li>\n</ul>\n\n## Usage\n\nIn this example we have an Entity with\n\n<ul>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing an {{#crossLink \"AmbientLight\"}}{{/crossLink}} and a {{#crossLink \"DirLight\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"PhongMaterial\"}}{{/crossLink}} which applies diffuse and specular {{#crossLink \"Texture\"}}Textures{{/crossLink}}, and\n<li>a {{#crossLink \"TorusGeometry\"}}{{/crossLink}}.</li>\n</ul>\n\nNote that xeogl will ignore the {{#crossLink \"PhongMaterial\"}}PhongMaterial's{{/crossLink}} {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}}\nand {{#crossLink \"PhongMaterial/specular:property\"}}{{/crossLink}} properties, since we assigned {{#crossLink \"Texture\"}}Textures{{/crossLink}} to the {{#crossLink \"PhongMaterial\"}}PhongMaterial's{{/crossLink}} {{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}} and\n{{#crossLink \"PhongMaterial/specularMap:property\"}}{{/crossLink}} properties. The {{#crossLink \"Texture\"}}Textures'{{/crossLink}} pixel\ncolors directly provide the diffuse and specular components for each fragment across the {{#crossLink \"Geometry\"}}{{/crossLink}} surface.\n\n```` javascript\nvar entity = new xeogl.Entity({\n\n   lights: new xeogl.Lights({\n       lights: [\n           new xeogl.AmbientLight({\n               color: [0.7, 0.7, 0.7]\n           }),\n           new xeogl.DirLight({\n               dir: [-1, -1, -1],\n               color: [0.5, 0.7, 0.5],\n               intensity: [1.0, 1.0, 1.0],\n               space: \"view\"\n           })\n       ]\n   }),\n\n   material: new xeogl.PhongMaterial({\n       ambient: [0.3, 0.3, 0.3],\n       diffuse: [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below\n       specular: [1.0, 1.0, 1.0],   // Ignored, since we have assigned a Texture to specularMap, below\n       diffuseMap: new xeogl.Texture({\n           src: \"diffuseMap.jpg\"\n       }),\n       specularMap: new xeogl.Fresnel({\n           src: \"diffuseMap.jpg\"\n       }),\n       shininess: 80, // Default\n       opacity: 1.0 // Default\n   }),\n\n   geometry: new xeogl.TorusGeometry()\n});\n````",
+            "description": "A **Texture** specifies a texture map.\n\n<a href=\"../../examples/#materials_texture_diffuse\"><img src=\"../../assets/images/screenshots/TorusGeometry.png\"></img></a>\n\n## Overview\n\n<ul>\n<li>Textures are grouped within {{#crossLink \"PhongMaterial\"}}PhongMaterials{{/crossLink}}s, which are attached to\n{{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>To create a Texture from an image file, set the Texture's {{#crossLink \"Texture/src:property\"}}{{/crossLink}}\nproperty to the image file path.</li>\n<li>To create a Texture from an HTMLImageElement, set the Texture's {{#crossLink \"Texture/image:property\"}}{{/crossLink}}\nproperty to the HTMLImageElement.</li>\n<li>To render color images of {{#crossLink \"Entity\"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink \"Texture/target:property\"}}{{/crossLink}}\nproperty to a {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>Similarly, to render depth images of {{#crossLink \"Entity\"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink \"Texture/target:property\"}}{{/crossLink}}\nproperty to a {{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink \"Entity\"}}Entities{{/crossLink}}.</li>\n<li>For special effects, we often use rendered Textures in combination with {{#crossLink \"Shader\"}}Shaders{{/crossLink}} and {{#crossLink \"Stage\"}}Stages{{/crossLink}}.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Textures create within xeogl's shaders.</li>\n</ul>\n\n<img src=\"../../../assets/images/Texture.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Diffuse Texture](../../examples/#materials_texture_diffuse)</li>\n<li>[Specular Texture](../../examples/#materials_texture_specular)</li>\n<li>[Opacity Texture](../../examples/#materials_texture_opacity)</li>\n<li>[Emissive Texture](../../examples/#materials_texture_emissive)</li>\n<li>[Reflectivity Texture](../../examples/#materials_texture_reflectivity)</li>\n<li>[Normal map](../../examples/#materials_texture_normalMap)</li>\n<li>[Diffuse Video Texture](../../examples/#materials_texture_video)</li>\n<li>[Diffuse Procedural Texture](../../examples/#materials_texture_procedural)</li>\n<li>[Texture Animation](../../examples/#materials_texture_animation)</li>\n</ul>\n\n## Usage\n\nIn this example we have an Entity with\n\n<ul>\n<li>a {{#crossLink \"Lights\"}}{{/crossLink}} containing an {{#crossLink \"AmbientLight\"}}{{/crossLink}} and a {{#crossLink \"DirLight\"}}{{/crossLink}},</li>\n<li>a {{#crossLink \"PhongMaterial\"}}{{/crossLink}} which applies diffuse and specular {{#crossLink \"Texture\"}}Textures{{/crossLink}}, and\n<li>a {{#crossLink \"TorusGeometry\"}}{{/crossLink}}.</li>\n</ul>\n\nNote that xeogl will ignore the {{#crossLink \"PhongMaterial\"}}PhongMaterial's{{/crossLink}} {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}}\nand {{#crossLink \"PhongMaterial/specular:property\"}}{{/crossLink}} properties, since we assigned {{#crossLink \"Texture\"}}Textures{{/crossLink}} to the {{#crossLink \"PhongMaterial\"}}PhongMaterial's{{/crossLink}} {{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}} and\n{{#crossLink \"PhongMaterial/specularMap:property\"}}{{/crossLink}} properties. The {{#crossLink \"Texture\"}}Textures'{{/crossLink}} pixel\ncolors directly provide the diffuse and specular components for each fragment across the {{#crossLink \"Geometry\"}}{{/crossLink}} surface.\n\n```` javascript\nvar entity = new xeogl.Entity({\n\n   lights: new xeogl.Lights({\n       lights: [\n           new xeogl.AmbientLight({\n               color: [0.7, 0.7, 0.7]\n           }),\n           new xeogl.DirLight({\n               dir: [-1, -1, -1],\n               color: [0.5, 0.7, 0.5],\n               intensity: [1.0, 1.0, 1.0],\n               space: \"view\"\n           })\n       ]\n   }),\n\n   material: new xeogl.PhongMaterial({\n       ambient: [0.3, 0.3, 0.3],\n       diffuse: [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below\n       specular: [1.0, 1.0, 1.0],   // Ignored, since we have assigned a Texture to specularMap, below\n       diffuseMap: new xeogl.Texture({\n           src: \"diffuseMap.jpg\"\n       }),\n       specularMap: new xeogl.Fresnel({\n           src: \"diffuseMap.jpg\"\n       }),\n       shininess: 80, // Default\n       opacity: 1.0 // Default\n   }),\n\n   geometry: new xeogl.TorusGeometry()\n});\n````",
             "submodule": "materials",
             "is_constructor": 1,
             "params": [
@@ -6750,7 +6712,7 @@
             "namespace": "",
             "file": "examples/js/effects/stereoEffect.js",
             "line": 1,
-            "description": "A **StereoEffect** sets up a stereo view for its Scene.\n\n## Usage\n\nStereo view of an Entity using Scene's default Camera and viewport:\n\n````javascript\n// Both the Entity and the StereoEffect use their Scene's default Camera and Viewport\n\nvar entity = new xeogl.Entity({\n    geometry: new xeogl.BoxGeometry()\n});\n\nvar stereo = new xeogl.StereoEffect({\n    eyeSep: 0.2, // Default\n    focalLength: 20, // Default\n    aperture: 45, // Default\n    active: true // Default\n});\n````\n\nStereo view of an Entity with custom Camera and viewport:\n\n````javascript\nvar camera = new xeogl.Camera({\n    view: new xeogl.Lookat({\n        eye: [0, 0, 10],\n        look: [0, 0, 0],\n        up: [0, 1, 0]\n    }),\n    project: new xeogl.Perspective({\n        fovy: 60,\n        near: 0.1,\n        far: 1000\n    })\n});\n\nvar viewport = new xeogl.Viewport();\n\nvar entity = new xeogl.Entity({\n    camera: camera,\n    viewport: viewport,\n    geometry: new xeogl.BoxGeometry()\n});\n\nvar stereo = new xeogl.StereoEffect({\n    camera: camera,\n    viewport: viewport,\n    eyeSep: 0.2, // Default\n    focalLength: 20, // Default\n    aperture: 45, // Default\n    active: true // Default\n});\n````",
+            "description": "A **StereoEffect** sets up a stereo view for its Scene.\n\n<a href=\"../../examples/#effects_sterer\"><img src=\"../../assets/images/screenshots/StereoEffect.png\"></img></a>\n\n## Usage\n\nStereo view of an Entity using Scene's default Camera and viewport:\n\n````javascript\n// Both the Entity and the StereoEffect use their Scene's default Camera and Viewport\n\nvar entity = new xeogl.Entity({\n    geometry: new xeogl.BoxGeometry()\n});\n\nvar stereo = new xeogl.StereoEffect({\n    eyeSep: 0.2, // Default\n    focalLength: 20, // Default\n    aperture: 45, // Default\n    active: true // Default\n});\n````\n\nStereo view of an Entity with custom Camera and viewport:\n\n````javascript\nvar camera = new xeogl.Camera({\n    view: new xeogl.Lookat({\n        eye: [0, 0, 10],\n        look: [0, 0, 0],\n        up: [0, 1, 0]\n    }),\n    project: new xeogl.Perspective({\n        fovy: 60,\n        near: 0.1,\n        far: 1000\n    })\n});\n\nvar viewport = new xeogl.Viewport();\n\nvar entity = new xeogl.Entity({\n    camera: camera,\n    viewport: viewport,\n    geometry: new xeogl.BoxGeometry()\n});\n\nvar stereo = new xeogl.StereoEffect({\n    camera: camera,\n    viewport: viewport,\n    eyeSep: 0.2, // Default\n    focalLength: 20, // Default\n    aperture: 45, // Default\n    active: true // Default\n});\n````",
             "submodule": "effects",
             "is_constructor": 1,
             "params": [
@@ -6832,7 +6794,7 @@
             "namespace": "",
             "file": "examples/js/effects/zSpaceEffect_complete.js",
             "line": 1,
-            "description": "A **ZSpaceEffect** makes its {{#crossLink \"Scene\"}}{{/crossLink}} viewable with a zSpace viewer.\n\n<ul>\n<li>Plug-and-play: just create a ZSpaceEffect within your xeogl {{#crossLink \"Scene\"}}{{/crossLink}} to make it viewable with a ZSpace display.</li>\n<li>Activate or disable the ZSpaceEffect at any time to switch between zSpace mode and normal mono viewing mode.</li>\n<li>Requires WebGL2 and WebVR support, which you'll have if you're running on a zSpace viewer.</li>\n<li>Attaches to a {{#crossLink \"Camera\"}}{{/crossLink}}, defaults to its {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default\n{{#crossLink \"Scene/camera:property\"}}{{/crossLink}} if none is specified.</li>\n<li>Don't attach different view or projection transform components to the {{#crossLink \"Camera\"}}{{/crossLink}} while the ZSpaceEffect is active.</li>\n<li>You can however update the {{#crossLink \"Camera\"}}{{/crossLink}}'s view transformation at any time, to move the\nviewpoint around.</li>\n<li>Use a {{#crossLink \"ZSpaceStylusControl\"}}{{/crossLink}} to drag {{#crossLink \"Entity\"}}Entities{{/crossLink}}\naround with the stylus.</li>\n</ul>\n\n<img src=\"../../../assets/images/ZSpaceEffect.png\"></img>\n\n## Examples\n\nUse these examples as boilerplates to get started:\n\n<ul>\n<li>[zSpace cube](../../examples/#effects_zspace_cube)</li>\n<li>[zSpace with random geometries](../../examples/#effects_zspace_geometries)</li>\n<li>[zSpace with glTF gearbox model](../../examples/#effects_zspace_gearbox)</li>\n<li>[zSpace with glTF gearbox model and entity explorer](../../examples/#effects_zspace_gearbox_explorer)</li>\n<li>[zSpace with glTF reciprocating saw model](../../examples/#effects_zspace_ReciprocatingSaw)</li>\n</ul>\n\n## Usage\n\nIn the following example we're going to set up a ZSpace-viewable scene with xeogl, defining the scene step-by-step to\nemphasize the plug-and-play design of xeogl's API. We'll assume that you've included all the required JavaScript libraries\nin your page - use the examples listed above as a boilerplate to get started.\n\n**1. Create an entity**\n\nFirst we'll create a simple torus-shaped {{#crossLink \"Entity\"}}{{/crossLink}}, which will be within xeogl's default\n{{#crossLink \"Scene\"}}{{/crossLink}}, since we're not defining the {{#crossLink \"Scene\"}}{{/crossLink}} component\nexplicitly. Our {{#crossLink \"Entity\"}}{{/crossLink}} is also implicitly connected to the\n{{#crossLink \"Scene\"}}{{/crossLink}}'s default {{#crossLink \"Camera\"}}{{/crossLink}}, since we didn't explicitly create\na {{#crossLink \"Camera\"}}{{/crossLink}} for it either.\n\n````javascript\nvar entity = new xeogl.Entity({\n    geometry: new xeogl.TorusGeometry(),\n    material: new xeogl.PhongMaterial({\n       diffuseMap: new xeogl.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n       })\n    })\n});\n````\n\n**2. Enable mouse/keyboard camera interaction**\n\nAt this point we've got a textured torus floating in the middle of the canvas (which is also created automatically\nsince we didn't specify one). Now we'll create a\n{{#crossLink \"CameraControl\"}}{{/crossLink}}, which immediately allows us to move our viewpoint around with the mouse and\nkeyboard. This component is also within xeogl's default {{#crossLink \"Scene\"}}{{/crossLink}} and connected to the\n{{#crossLink \"Scene\"}}{{/crossLink}}'s default {{#crossLink \"Camera\"}}{{/crossLink}}.\n\n````javascript\nnew CameraControl();\n````\n\n**3. Enable ZSpace viewing**\n\nNow we can orbit, pan and zoom around the torus with the mouse and keyboard. Let's view it on a ZSpace display by\ndropping a ZSpaceEffect into our default {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n````javascript\nvar zspaceEffect = new ZSpaceEffect();\n````\n\nThe ZSpaceEffect immediately activates, so at this point if we're running on a ZSpace device we'll have a stereo\nview of the torus, which we can view with the stereo glasses.\n\nAt any point we can always disable the ZSpaceEffect effect to switch between normal WebGL mono viewing mode:\n\n````javascript\nzspaceEffect.active = false; // Back to normal mono viewing..\nzspaceEffect.active = true; // ..and then back to ZSpace stereo mode.\n\n````\n\n## Detecting support\n\nThe **ZSpaceEffect** will fire a \"supported\" event once it has determined whether or not the browser\nsupports a zSpace viewer:\n\n````javascript\nzspaceEffect.on(\"supported\", function (supported) {\n\n       if (!supported) {\n\n           // Not a zSpace device\n\n           this.error(\"This computer is not a ZSpace viewer!\"); // Log error on the xeogl.ZSpaceEffect\n\n           // At this point you could just destroy the xeogl.ZSpaceEffect to make it detach from the Camera\n       }\n   });\n````\n\n## Handling stylus input\n\nReading the current World-space position and direction of the stylus:\n\n````javascript\nvar stylusPos = zspaceEffect.stylusPos;\nvar stylusDir = zspaceEffect.stylusDir;\n````\n\nNote that these properties only have meaningful values once the ZSpaceEffect has fired at least one {{#crossLink \"ZSpaceEffect/stylusMoved:event\"}}{{/crossLink}} event.\n\nSubscribing to stylus movement:\n\n````javascript\nzspaceEffect.on(\"stylusMoved\", function() {\n    var stylusPos = zspaceEffect.stylusPos;\n    var stylusDir = zspaceEffect.stylusDir;\n    //...\n});\n````\n\nReading the current state of each stylus button:\n\n````javascript\nvar button0 = zspaceEffect.stylusButton0; // Boolean\nvar button1 = zspaceEffect.stylusButton1;\nvar button2 = zspaceEffect.stylusButton2;\n````\n\nSubscribing to change of state of each stylus button:\n\n````javascript\nzspaceEffect.on(\"stylusButton0\", function(value) { // Boolean value\n    this.log(\"stylusButton0 = \" + value);\n});\n\nzspaceEffect.on(\"stylusButton1\", function(value) {\n    this.log(\"stylusButton1 = \" + value);\n});\n\nzspaceEffect.on(\"stylusButton2\", function(value) {\n    this.log(\"stylusButton2 = \" + value);\n});\n````\n\nPicking an {{#crossLink \"Entity\"}}{{/crossLink}} with the stylus when button 0 is pressed:\n\n````javascript\nzspaceEffect.on(\"stylusButton0\", function() {\n\n   var hit = zspaceEffect.scene.pick({\n       pickSurface: true,\n       origin: zspaceEffect.stylusPos,\n       direction: zspaceEffect.stylusDir\n   });\n\n   if (hit) { // Picked an Entity\n\n       var entity = hit.entity;\n\n       // Other properties on the hit result:\n\n       var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n       var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n       var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n       var localPos = hit.localPos; // Float32Array containing the picked Local-space position within the triangle\n       var worldPos = hit.worldPos; // Float32Array containing the picked World-space position within the triangle\n       var viewPos = hit.viewPos; // Float32Array containing the picked View-space position within the triangle\n       var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n       var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n       var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n\n       //...\n   }\n});\n````",
+            "description": "A **ZSpaceEffect** makes its {{#crossLink \"Scene\"}}{{/crossLink}} viewable with a zSpace viewer.\n\n<a href=\"../../examples/#effects_zspace_gearbox\"><img src=\"../../assets/images/screenshots/ZSpaceEffect.png\"></img></a>\n\n## Overview\n\n<ul>\n<li>Plug-and-play: just create a ZSpaceEffect within your xeogl {{#crossLink \"Scene\"}}{{/crossLink}} to make it viewable with a ZSpace display.</li>\n<li>Activate or disable the ZSpaceEffect at any time to switch between zSpace mode and normal mono viewing mode.</li>\n<li>Requires WebGL2 and WebVR support, which you'll have if you're running on a zSpace viewer.</li>\n<li>Attaches to a {{#crossLink \"Camera\"}}{{/crossLink}}, defaults to its {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default\n{{#crossLink \"Scene/camera:property\"}}{{/crossLink}} if none is specified.</li>\n<li>Don't attach different view or projection transform components to the {{#crossLink \"Camera\"}}{{/crossLink}} while the ZSpaceEffect is active.</li>\n<li>You can however update the {{#crossLink \"Camera\"}}{{/crossLink}}'s view transformation at any time, to move the\nviewpoint around.</li>\n<li>Use a {{#crossLink \"ZSpaceStylusControl\"}}{{/crossLink}} to drag {{#crossLink \"Entity\"}}Entities{{/crossLink}}\naround with the stylus.</li>\n</ul>\n\n<img src=\"../../../assets/images/ZSpaceEffect.png\"></img>\n\n## Examples\n\nUse these examples as boilerplates to get started:\n\n<ul>\n<li>[zSpace cube](../../examples/#effects_zspace_cube)</li>\n<li>[zSpace with random geometries](../../examples/#effects_zspace_geometries)</li>\n<li>[zSpace with glTF gearbox model](../../examples/#effects_zspace_gearbox)</li>\n<li>[zSpace with glTF gearbox model and entity explorer](../../examples/#effects_zspace_gearbox_explorer)</li>\n<li>[zSpace with glTF reciprocating saw model](../../examples/#effects_zspace_ReciprocatingSaw)</li>\n</ul>\n\n## Usage\n\nIn the following example we're going to set up a ZSpace-viewable scene with xeogl, defining the scene step-by-step to\nemphasize the plug-and-play design of xeogl's API. We'll assume that you've included all the required JavaScript libraries\nin your page - use the examples listed above as a boilerplate to get started.\n\n**1. Create an entity**\n\nFirst we'll create a simple torus-shaped {{#crossLink \"Entity\"}}{{/crossLink}}, which will be within xeogl's default\n{{#crossLink \"Scene\"}}{{/crossLink}}, since we're not defining the {{#crossLink \"Scene\"}}{{/crossLink}} component\nexplicitly. Our {{#crossLink \"Entity\"}}{{/crossLink}} is also implicitly connected to the\n{{#crossLink \"Scene\"}}{{/crossLink}}'s default {{#crossLink \"Camera\"}}{{/crossLink}}, since we didn't explicitly create\na {{#crossLink \"Camera\"}}{{/crossLink}} for it either.\n\n````javascript\nvar entity = new xeogl.Entity({\n    geometry: new xeogl.TorusGeometry(),\n    material: new xeogl.PhongMaterial({\n       diffuseMap: new xeogl.Texture({\n           src: \"textures/diffuse/uvGrid2.jpg\"\n       })\n    })\n});\n````\n\n**2. Enable mouse/keyboard camera interaction**\n\nAt this point we've got a textured torus floating in the middle of the canvas (which is also created automatically\nsince we didn't specify one). Now we'll create a\n{{#crossLink \"CameraControl\"}}{{/crossLink}}, which immediately allows us to move our viewpoint around with the mouse and\nkeyboard. This component is also within xeogl's default {{#crossLink \"Scene\"}}{{/crossLink}} and connected to the\n{{#crossLink \"Scene\"}}{{/crossLink}}'s default {{#crossLink \"Camera\"}}{{/crossLink}}.\n\n````javascript\nnew CameraControl();\n````\n\n**3. Enable ZSpace viewing**\n\nNow we can orbit, pan and zoom around the torus with the mouse and keyboard. Let's view it on a ZSpace display by\ndropping a ZSpaceEffect into our default {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n````javascript\nvar zspaceEffect = new ZSpaceEffect();\n````\n\nThe ZSpaceEffect immediately activates, so at this point if we're running on a ZSpace device we'll have a stereo\nview of the torus, which we can view with the stereo glasses.\n\nAt any point we can always disable the ZSpaceEffect effect to switch between normal WebGL mono viewing mode:\n\n````javascript\nzspaceEffect.active = false; // Back to normal mono viewing..\nzspaceEffect.active = true; // ..and then back to ZSpace stereo mode.\n\n````\n\n## Detecting support\n\nThe **ZSpaceEffect** will fire a \"supported\" event once it has determined whether or not the browser\nsupports a zSpace viewer:\n\n````javascript\nzspaceEffect.on(\"supported\", function (supported) {\n\n       if (!supported) {\n\n           // Not a zSpace device\n\n           this.error(\"This computer is not a ZSpace viewer!\"); // Log error on the xeogl.ZSpaceEffect\n\n           // At this point you could just destroy the xeogl.ZSpaceEffect to make it detach from the Camera\n       }\n   });\n````\n\n## Handling stylus input\n\nReading the current World-space position and direction of the stylus:\n\n````javascript\nvar stylusPos = zspaceEffect.stylusPos;\nvar stylusDir = zspaceEffect.stylusDir;\n````\n\nNote that these properties only have meaningful values once the ZSpaceEffect has fired at least one {{#crossLink \"ZSpaceEffect/stylusMoved:event\"}}{{/crossLink}} event.\n\nSubscribing to stylus movement:\n\n````javascript\nzspaceEffect.on(\"stylusMoved\", function() {\n    var stylusPos = zspaceEffect.stylusPos;\n    var stylusDir = zspaceEffect.stylusDir;\n    //...\n});\n````\n\nReading the current state of each stylus button:\n\n````javascript\nvar button0 = zspaceEffect.stylusButton0; // Boolean\nvar button1 = zspaceEffect.stylusButton1;\nvar button2 = zspaceEffect.stylusButton2;\n````\n\nSubscribing to change of state of each stylus button:\n\n````javascript\nzspaceEffect.on(\"stylusButton0\", function(value) { // Boolean value\n    this.log(\"stylusButton0 = \" + value);\n});\n\nzspaceEffect.on(\"stylusButton1\", function(value) {\n    this.log(\"stylusButton1 = \" + value);\n});\n\nzspaceEffect.on(\"stylusButton2\", function(value) {\n    this.log(\"stylusButton2 = \" + value);\n});\n````\n\nPicking an {{#crossLink \"Entity\"}}{{/crossLink}} with the stylus when button 0 is pressed:\n\n````javascript\nzspaceEffect.on(\"stylusButton0\", function() {\n\n   var hit = zspaceEffect.scene.pick({\n       pickSurface: true,\n       origin: zspaceEffect.stylusPos,\n       direction: zspaceEffect.stylusDir\n   });\n\n   if (hit) { // Picked an Entity\n\n       var entity = hit.entity;\n\n       // Other properties on the hit result:\n\n       var primitive = hit.primitive; // Type of primitive that was picked, usually \"triangles\"\n       var primIndex = hit.primIndex; // Position of triangle's first index in the picked Entity's Geometry's indices array\n       var indices = hit.indices; // UInt32Array containing the triangle's vertex indices\n       var localPos = hit.localPos; // Float32Array containing the picked Local-space position within the triangle\n       var worldPos = hit.worldPos; // Float32Array containing the picked World-space position within the triangle\n       var viewPos = hit.viewPos; // Float32Array containing the picked View-space position within the triangle\n       var bary = hit.bary; // Float32Array containing the picked barycentric position within the triangle\n       var normal = hit.normal; // Float32Array containing the interpolated normal vector at the picked position on the triangle\n       var uv = hit.uv; // Float32Array containing the interpolated UV coordinates at the picked position on the triangle\n\n       //...\n   }\n});\n````",
             "submodule": "effects",
             "is_constructor": 1,
             "params": [
@@ -7080,108 +7042,6 @@
                 }
             ],
             "extends": "Component"
-        },
-        "Nintendo3DSGeometry": {
-            "name": "Nintendo3DSGeometry",
-            "shortname": "Nintendo3DSGeometry",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "xeogl",
-            "namespace": "",
-            "file": "examples/js/importing/nintendo3DSGeometry.js",
-            "line": 5,
-            "description": "A **Nintendo3DSGeometry** is a {{#crossLink \"Geometry\"}}{{/crossLink}} that's loaded from a\n<a href=\"https://en.wikipedia.org/wiki/Nintendo_3DS\" target = \"_other\">Nintendo 3DS</a> file.\n\n## Examples\n\n<ul>\n<li>[Importing a Lexus from 3DS](../../examples/#importing_3ds_lexus)</li>\n</ul>\n\n## Usage\n\n````javascript\nvar entity = new xeogl.Entity({\n\n   geometry: new xeogl.Nintendo3DSGeometry({\n       src: \"models/3ds/lexus.3ds\"\n   }),\n\n   material: new xeogl.PhongMaterial({\n       diffuseMap: new xeogl.Texture({\n           src: \"models/3ds/lexus.jpg\"\n       }),\n       specular: [0, 0, 0]\n   }),\n\n   // We need to rotate this particular .3DS model\n   transform: new xeogl.Rotate({\n       xyz: [1,0,0],\n       angle: -90,\n       parent: new xeogl.Rotate({\n           xyz: [0,1,0],\n           angle: 90\n       })\n   })\n});\n\n// When the Nintendo3DSGeometry has loaded,\n// fly the camera to fit the entity in view\n\nvar cameraFlight = new xeogl.CameraFlight();\n\nentity.geometry.on(\"loaded\", function () {\n\n        cameraFlight.flyTo({\n            aabb: entity.worldBoundary.aabb\n        });\n    });\n````",
-            "submodule": "geometry",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Nintendo3DSGeometry in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "Configs",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this Nintendo3DSGeometry.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "src",
-                            "description": "Path to the .3DS file.",
-                            "type": "String",
-                            "optional": true
-                        }
-                    ]
-                }
-            ],
-            "extends": "Geometry"
-        },
-        "OBJGeometry": {
-            "name": "OBJGeometry",
-            "shortname": "OBJGeometry",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "module": "xeogl",
-            "namespace": "",
-            "file": "examples/js/importing/objGeometry.js",
-            "line": 5,
-            "description": "An **ObjGeometry** is a {{#crossLink \"Geometry\"}}{{/crossLink}} that's loaded from a\n<a href=\"https://en.wikipedia.org/wiki/Wavefront_.obj_file\" target = \"_other\">Wavefront .OBJ</a> file.\n\n## Examples\n\n<ul>\n<li>[Importing a Raptor from OBJ](../../examples/#importing_obj_raptor)</li>\n</ul>\n\n## Usage\n\n````javascript\nvar entity = new xeogl.Entity({\n\n   geometry: new xeogl.OBJGeometry({\n       src: \"models/obj/raptor.obj\"\n   }),\n\n   material: new xeogl.PhongMaterial({\n       diffuseMap: new xeogl.Texture({\n           src: \"models/obj/raptor.jpg\"\n       })\n   }),\n\n   transform: new xeogl.Rotate({\n       xyz: [1, 0, 0],\n       angle: 0,\n\n       parent: new xeogl.Translate({\n           xyz: [10, 3, 10]\n       })\n   })\n});\n\n// When the OBJGeometry has loaded,\n// fly the camera to fit the entity in view\n\nvar cameraFlight = new xeogl.CameraFlight();\n\nentity.geometry.on(\"loaded\", function () {\n\n        cameraFlight.flyTo({\n            aabb: entity.worldBoundary.aabb\n        });\n    });\n````",
-            "submodule": "geometry",
-            "is_constructor": 1,
-            "params": [
-                {
-                    "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this OBJGeometry in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
-                    "type": "Scene",
-                    "optional": true
-                },
-                {
-                    "name": "cfg",
-                    "description": "Configs",
-                    "type": "*",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "id",
-                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
-                            "type": "String",
-                            "optional": true
-                        },
-                        {
-                            "name": "meta",
-                            "description": "Optional map of user-defined metadata to attach to this OBJGeometry.",
-                            "type": "String:Object",
-                            "optional": true
-                        },
-                        {
-                            "name": "src",
-                            "description": "Path to the .OBJ file.",
-                            "type": "String",
-                            "optional": true
-                        }
-                    ]
-                }
-            ],
-            "extends": "Geometry"
         },
         "CubicBezierCurve": {
             "name": "CubicBezierCurve",
@@ -7564,7 +7424,7 @@
             "namespace": "",
             "file": "examples/js/geometry/heightmapGeometry.js",
             "line": 1,
-            "description": "A **Heightmap** extends {{#crossLink \"Geometry\"}}{{/crossLink}} to define a height mapped geometry for attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n<a href=\"../../examples/#geometry_HeightmapGeometry\"><img src=\"../../assets/images/screenshots/HeightmapGeometry.png\"></img></a>\n\n## Overview\n\n* A HeightmapGeometry is a grid shape, to which the Y-axis is perpendicular.\n* The height of each vertex on the Y-axis is determined by the image file referenced by the HeightmapGeometry's {{#crossLink \"HeightmapGeometry/src:property\"}}{{/crossLink}} property.\n* Set the {{#crossLink \"HeightmapGeometry/src:property\"}}{{/crossLink}} property to a different image file at any time, to regenerate the HeightmapGeometry's mesh from the image.\n\n\n## Examples\n\n<ul>\n<li>[Textured HeightmapGeometry](../../examples/#geometry_HeightmapGeometry)</li>\n</ul>\n\n## Usage\n\n````javascript\nnew xeogl.Entity({\n    geometry: new xeogl.HeightmapGeometry({\n        primitive: \"triangles\",\n        src: \"textures/height/mountain.png\",\n        xSize: 10,\n        ySize: 5,\n        zSize: 10,\n        xSegments: 70,\n        zSegments: 70,\n        lod: 1.0, // Default\n        autoNormals: true // Default\n    }),\n    material: new xeogl.PhongMaterial({\n        diffuseMap: new xeogl.Texture({\n            src: \"textures/diffuse/uvGrid2.jpg\"\n        })\n    }),\n    modes: new xeogl.Modes({\n        backfaces: true\n    })\n});\n````",
+            "description": "A **Heightmap** extends {{#crossLink \"Geometry\"}}{{/crossLink}} to define a height mapped geometry for attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n<a href=\"../../examples/#geometry_HeightmapGeometry\"><img src=\"../../assets/images/screenshots/HeightmapGeometry.png\"></img></a>\n\n## Overview\n\n* A HeightmapGeometry is a grid shape, to which the Y-axis is perpendicular.\n* The height of each vertex on the Y-axis is determined by the image file referenced by the HeightmapGeometry's {{#crossLink \"HeightmapGeometry/src:property\"}}{{/crossLink}} property.\n* Set the {{#crossLink \"HeightmapGeometry/src:property\"}}{{/crossLink}} property to a different image file at any time, to regenerate the HeightmapGeometry's mesh from the image.\n\n## Examples\n\n<ul>\n<li>[Textured HeightmapGeometry](../../examples/#geometry_HeightmapGeometry)</li>\n</ul>\n\n## Usage\n\n````javascript\nnew xeogl.Entity({\n    geometry: new xeogl.HeightmapGeometry({\n        primitive: \"triangles\",\n        src: \"textures/height/mountain.png\",\n        xSize: 10,\n        ySize: 5,\n        zSize: 10,\n        xSegments: 70,\n        zSegments: 70,\n        lod: 1.0, // Default\n        autoNormals: true // Default\n    }),\n    material: new xeogl.PhongMaterial({\n        diffuseMap: new xeogl.Texture({\n            src: \"textures/diffuse/uvGrid2.jpg\"\n        })\n    }),\n    modes: new xeogl.Modes({\n        backfaces: true\n    })\n});\n````",
             "submodule": "geometry",
             "is_constructor": 1,
             "params": [
@@ -7660,6 +7520,108 @@
             ],
             "extends": "Geometry"
         },
+        "Nintendo3DSGeometry": {
+            "name": "Nintendo3DSGeometry",
+            "shortname": "Nintendo3DSGeometry",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "examples/js/geometry/nintendo3DSGeometry.js",
+            "line": 5,
+            "description": "A **Nintendo3DSGeometry** is a {{#crossLink \"Geometry\"}}{{/crossLink}} that's loaded from a\n<a href=\"https://en.wikipedia.org/wiki/Nintendo_3DS\" target = \"_other\">Nintendo 3DS</a> file.\n\n<a href=\"../../examples/#geometry_Nintendo3DSGeometry_lexus\"><img src=\"../../assets/images/screenshots/Nintendo3DSGeometry.png\"></img></a>\n\n## Overview\n\n* A Nintendo3DSGeometry mesh is determined by the .3DS file referenced by the Nintendo3DSGeometry's {{#crossLink \"Nintendo3DSGeometry/src:property\"}}{{/crossLink}} property.\n* Set the {{#crossLink \"Nintendo3DSGeometry/src:property\"}}{{/crossLink}} property to a different file at any time, to regenerate the Nintendo3DSGeometry's mesh from the new file.\n\n## Examples\n\n<ul>\n<li>[Importing a Lexus from 3DS](../../examples/#importing_3ds_lexus)</li>\n</ul>\n\n## Usage\n\n````javascript\nvar entity = new xeogl.Entity({\n\n   geometry: new xeogl.Nintendo3DSGeometry({\n       src: \"models/3ds/lexus.3ds\"\n   }),\n\n   material: new xeogl.PhongMaterial({\n       diffuseMap: new xeogl.Texture({\n           src: \"models/3ds/lexus.jpg\"\n       }),\n       specular: [0, 0, 0]\n   }),\n\n   // We need to rotate this particular .3DS model\n   transform: new xeogl.Rotate({\n       xyz: [1,0,0],\n       angle: -90,\n       parent: new xeogl.Rotate({\n           xyz: [0,1,0],\n           angle: 90\n       })\n   })\n});\n\n// When the Nintendo3DSGeometry has loaded,\n// fly the camera to fit the entity in view\n\nvar cameraFlight = new xeogl.CameraFlight();\n\nentity.geometry.on(\"loaded\", function () {\n\n        cameraFlight.flyTo({\n            aabb: entity.worldBoundary.aabb\n        });\n    });\n````",
+            "submodule": "geometry",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Nintendo3DSGeometry in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this Nintendo3DSGeometry.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "src",
+                            "description": "Path to the .3DS file.",
+                            "type": "String",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "extends": "Geometry"
+        },
+        "OBJGeometry": {
+            "name": "OBJGeometry",
+            "shortname": "OBJGeometry",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "examples/js/geometry/objGeometry.js",
+            "line": 5,
+            "description": "An **ObjGeometry** is a {{#crossLink \"Geometry\"}}{{/crossLink}} that's loaded from a\n<a href=\"https://en.wikipedia.org/wiki/Wavefront_.obj_file\" target = \"_other\">Wavefront .OBJ</a> file.\n\n<a href=\"../../examples/#geometry_OBJGeometry_raptor\"><img src=\"../../assets/images/screenshots/OBJGeometry.png\"></img></a>\n\n## Overview\n\n* An OBJGeometry mesh is determined by the Wavefront .OBJ file referenced by the OBJGeometry's {{#crossLink \"OBJGeometry/src:property\"}}{{/crossLink}} property.\n* An OBJGeometry only parses the geometry data from the .OBJ file and ignores any associated .MTL file.\n* Set the {{#crossLink \"OBJGeometry/src:property\"}}{{/crossLink}} property to a different file at any time, to regenerate the OBJGeometry's mesh from the new file.\n\n## Examples\n\n<ul>\n<li>[Importing a Raptor from OBJ](../../examples/#importing_obj_raptor)</li>\n</ul>\n\n## Usage\n\n````javascript\nvar entity = new xeogl.Entity({\n\n   geometry: new xeogl.OBJGeometry({\n       src: \"models/obj/raptor.obj\"\n   }),\n\n   material: new xeogl.PhongMaterial({\n       diffuseMap: new xeogl.Texture({\n           src: \"models/obj/raptor.jpg\"\n       })\n   }),\n\n   transform: new xeogl.Rotate({\n       xyz: [1, 0, 0],\n       angle: 0,\n\n       parent: new xeogl.Translate({\n           xyz: [10, 3, 10]\n       })\n   })\n});\n\n// When the OBJGeometry has loaded,\n// fly the camera to fit the entity in view\n\nvar cameraFlight = new xeogl.CameraFlight();\n\nentity.geometry.on(\"loaded\", function () {\n\n        cameraFlight.flyTo({\n            aabb: entity.worldBoundary.aabb\n        });\n    });\n````",
+            "submodule": "geometry",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this OBJGeometry in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this OBJGeometry.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "src",
+                            "description": "Path to the .OBJ file.",
+                            "type": "String",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "extends": "Geometry"
+        },
         "TeapotGeometry": {
             "name": "TeapotGeometry",
             "shortname": "TeapotGeometry",
@@ -7717,7 +7679,7 @@
             "namespace": "",
             "file": "examples/js/geometry/vectorTextGeometry.js",
             "line": 1,
-            "description": "A **VectorTextGeometry** extends {{#crossLink \"Geometry\"}}{{/crossLink}} to define vector text geometry for attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n<a href=\"../../examples/#geometry_VectorTextGeometry\"><img src=\"../../assets/images/screenshots/VectorTextGeometry.png\"></img></a>\n\n## Overview\n\n* A VectorTextGeometry is a mesh of line segments that is generated from the vakue of its {{#crossLink \"VectorTextGeometry/text:property\"}}{{/crossLink}} property.\n* Set the {{#crossLink \"VectorTextGeometry/text:property\"}}{{/crossLink}} property to a new value at any time to regenerate the mesh.\n\n## Example\n\n````javascript\nnew xeogl.Entity({\n    geometry: new xeogl.VectorTextGeometry({\n        text: \"Attack ships on fire off the Shoulder of Orion\",\n        xSize: 2,\n        ySize: 2\n    }),\n    material: new xeogl.PhongMaterial({\n        emissive: [0.5, 1.0, 1.0],\n        lineWidth: 2\n    }),\n    lights: new xeogl.Lights({\n        lights: [] // No lights - rely on emissive color\n    }),\n    transform: new xeogl.Translate({\n        xyz: [0, 40, 0]\n    })\n});\n````",
+            "description": "A **VectorTextGeometry** extends {{#crossLink \"Geometry\"}}{{/crossLink}} to define vector text geometry for attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n<a href=\"../../examples/#geometry_VectorTextGeometry\"><img src=\"../../assets/images/screenshots/VectorTextGeometry.png\"></img></a>\n\n## Overview\n\n* A VectorTextGeometry is a mesh of line segments that is generated from the value of its {{#crossLink \"VectorTextGeometry/text:property\"}}{{/crossLink}} property.\n* Set the {{#crossLink \"VectorTextGeometry/text:property\"}}{{/crossLink}} property to a new value at any time to regenerate the mesh.\n\n## Example\n\n````javascript\nnew xeogl.Entity({\n    geometry: new xeogl.VectorTextGeometry({\n        text: \"Attack ships on fire off the Shoulder of Orion\",\n        xSize: 2,\n        ySize: 2\n    }),\n    material: new xeogl.PhongMaterial({\n        emissive: [0.5, 1.0, 1.0],\n        lineWidth: 2\n    }),\n    lights: new xeogl.Lights({\n        lights: [] // No lights - rely on emissive color\n    }),\n    transform: new xeogl.Translate({\n        xyz: [0, 40, 0]\n    })\n});\n````",
             "submodule": "geometry",
             "is_constructor": 1,
             "params": [
@@ -12500,7 +12462,7 @@
             "description": "Implement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",
             "access": "protected",
             "tagname": "",
-            "class": "LatheGeometry",
+            "class": "PathGeometry",
             "module": "xeogl",
             "submodule": "geometry"
         },
@@ -12512,7 +12474,7 @@
             "name": "points",
             "default": "[]",
             "type": "Float32Array",
-            "class": "LatheGeometry",
+            "class": "PathGeometry",
             "module": "xeogl",
             "submodule": "geometry"
         },
@@ -12528,7 +12490,7 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "LatheGeometry",
+            "class": "PathGeometry",
             "module": "xeogl",
             "submodule": "geometry"
         },
@@ -12540,7 +12502,7 @@
             "name": "lod",
             "default": "1",
             "type": "Number",
-            "class": "LatheGeometry",
+            "class": "PathGeometry",
             "module": "xeogl",
             "submodule": "geometry"
         },
@@ -12557,7 +12519,7 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "LatheGeometry",
+            "class": "PathGeometry",
             "module": "xeogl",
             "submodule": "geometry"
         },
@@ -12569,7 +12531,7 @@
             "name": "phiStart",
             "default": "0",
             "type": "Number",
-            "class": "LatheGeometry",
+            "class": "PathGeometry",
             "module": "xeogl",
             "submodule": "geometry"
         },
@@ -12586,7 +12548,7 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "LatheGeometry",
+            "class": "PathGeometry",
             "module": "xeogl",
             "submodule": "geometry"
         },
@@ -12598,7 +12560,7 @@
             "name": "phiLength",
             "default": "1",
             "type": "Number",
-            "class": "LatheGeometry",
+            "class": "PathGeometry",
             "module": "xeogl",
             "submodule": "geometry"
         },
@@ -12615,7 +12577,7 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "LatheGeometry",
+            "class": "PathGeometry",
             "module": "xeogl",
             "submodule": "geometry"
         },
@@ -12627,7 +12589,7 @@
             "name": "segments",
             "default": "4",
             "type": "Number",
-            "class": "LatheGeometry",
+            "class": "PathGeometry",
             "module": "xeogl",
             "submodule": "geometry"
         },
@@ -12644,7 +12606,7 @@
                     "description": "The property's new value"
                 }
             ],
-            "class": "LatheGeometry",
+            "class": "PathGeometry",
             "module": "xeogl",
             "submodule": "geometry"
         },
@@ -15044,7 +15006,7 @@
         },
         {
             "file": "src/materials/fresnel.js",
-            "line": 92,
+            "line": 95,
             "description": "This Fresnel's edge color.\n\nFires an {{#crossLink \"Fresnel/edgeColor:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "edgeColor",
@@ -15056,7 +15018,7 @@
         },
         {
             "file": "src/materials/fresnel.js",
-            "line": 109,
+            "line": 112,
             "description": "Fired whenever this Fresnel's {{#crossLink \"Fresnel/edgeColor:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "edgeColor",
@@ -15072,7 +15034,7 @@
         },
         {
             "file": "src/materials/fresnel.js",
-            "line": 123,
+            "line": 126,
             "description": "This Fresnel's center color.\n\nFires an {{#crossLink \"Fresnel/centerColor:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "centerColor",
@@ -15084,7 +15046,7 @@
         },
         {
             "file": "src/materials/fresnel.js",
-            "line": 140,
+            "line": 143,
             "description": "Fired whenever this Fresnel's {{#crossLink \"Fresnel/centerColor:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "centerColor",
@@ -15100,7 +15062,7 @@
         },
         {
             "file": "src/materials/fresnel.js",
-            "line": 154,
+            "line": 157,
             "description": "Indicates this Fresnel's edge bias.\n\nFires a {{#crossLink \"Fresnel/edgeBias:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "edgeBias",
@@ -15112,7 +15074,7 @@
         },
         {
             "file": "src/materials/fresnel.js",
-            "line": 171,
+            "line": 174,
             "description": "Fired whenever this Fresnel's {{#crossLink \"Fresnel/edgeBias:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "edgeBias",
@@ -15128,7 +15090,7 @@
         },
         {
             "file": "src/materials/fresnel.js",
-            "line": 185,
+            "line": 188,
             "description": "Indicates this Fresnel's center bias.\n\nFires a {{#crossLink \"Fresnel/centerBias:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "centerBias",
@@ -15140,7 +15102,7 @@
         },
         {
             "file": "src/materials/fresnel.js",
-            "line": 202,
+            "line": 205,
             "description": "Fired whenever this Fresnel's {{#crossLink \"Fresnel/centerBias:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "centerBias",
@@ -15156,7 +15118,7 @@
         },
         {
             "file": "src/materials/fresnel.js",
-            "line": 216,
+            "line": 219,
             "description": "Indicates this Fresnel's power.\n\nFires a {{#crossLink \"Fresnel/power:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "power",
@@ -15168,7 +15130,7 @@
         },
         {
             "file": "src/materials/fresnel.js",
-            "line": 233,
+            "line": 236,
             "description": "Fired whenever this Fresnel's {{#crossLink \"Fresnel/power:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "power",
@@ -15819,7 +15781,7 @@
                     "type": "HTML Image"
                 }
             ],
-            "class": "Reflect",
+            "class": "Texture",
             "module": "xeogl",
             "submodule": "materials"
         },
@@ -15836,7 +15798,7 @@
                     "type": "HTML Image"
                 }
             ],
-            "class": "Reflect",
+            "class": "Texture",
             "module": "xeogl",
             "submodule": "materials"
         },
@@ -15848,7 +15810,7 @@
             "name": "src",
             "default": "null",
             "type": "String",
-            "class": "Reflect",
+            "class": "Texture",
             "module": "xeogl",
             "submodule": "materials"
         },
@@ -15865,13 +15827,13 @@
                 }
             ],
             "type": "String",
-            "class": "Reflect",
+            "class": "Texture",
             "module": "xeogl",
             "submodule": "materials"
         },
         {
             "file": "src/materials/texture.js",
-            "line": 387,
+            "line": 391,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/image:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "image",
@@ -15888,7 +15850,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 394,
+            "line": 398,
             "description": "Fired whenever this Texture has loaded the\nimage file that its {{#crossLink \"Texture/src:property\"}}{{/crossLink}} property currently points to.",
             "itemtype": "event",
             "name": "loaded",
@@ -15905,7 +15867,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 432,
+            "line": 436,
             "description": "Indicates an HTML DOM Image object to source this Texture from.\n\nAlternatively, you could indicate the source via either of properties\n{{#crossLink \"Texture/src:property\"}}{{/crossLink}} or {{#crossLink \"Texture/target:property\"}}{{/crossLink}}.\n\nFires an {{#crossLink \"Texture/image:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Texture/src:property\"}}{{/crossLink}} and\n{{#crossLink \"Texture/target:property\"}}{{/crossLink}} properties to null.",
             "itemtype": "property",
             "name": "image",
@@ -15917,7 +15879,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 460,
+            "line": 464,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/image:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "image",
@@ -15934,7 +15896,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 473,
+            "line": 477,
             "description": "Indicates a path to an image file to source this Texture from.\n\nAlternatively, you could indicate the source via either of properties\n{{#crossLink \"Texture/image:property\"}}{{/crossLink}} or {{#crossLink \"Texture/target:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"Texture/src:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Texture/image:property\"}}{{/crossLink}} and\n{{#crossLink \"Texture/target:property\"}}{{/crossLink}} properties to null.",
             "itemtype": "property",
             "name": "src",
@@ -15946,7 +15908,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 501,
+            "line": 505,
             "description": "Fired whenever this Texture's {{#crossLink \"Texture/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -15963,7 +15925,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 515,
+            "line": 519,
             "description": "Instance or ID of a {{#crossLink \"ColorTarget\"}}ColorTarget{{/crossLink}} or\n{{#crossLink \"DepthTarget\"}}DepthTarget{{/crossLink}} to source this Texture from.\n\nAlternatively, you could indicate the source via either of properties\n{{#crossLink \"Texture/src:property\"}}{{/crossLink}} or {{#crossLink \"Texture/image:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"Texture/target:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Texture/src:property\"}}{{/crossLink}} and\n{{#crossLink \"Texture/image:property\"}}{{/crossLink}} properties to null.",
             "itemtype": "property",
             "name": "target",
@@ -15975,7 +15937,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 557,
+            "line": 561,
             "description": "Fired whenever this Texture's   {{#crossLink \"Texture/target:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "target",
@@ -15992,7 +15954,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 571,
+            "line": 575,
             "description": "Page table for sparse virtual texturing.\n\nFires an {{#crossLink \"Texture/pageTable:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "pageTable",
@@ -16004,7 +15966,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 588,
+            "line": 592,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/pageTable:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "pageTable",
@@ -16021,7 +15983,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 601,
+            "line": 605,
             "description": "2D translation vector that will be added to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/translate:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "translate",
@@ -16033,7 +15995,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 619,
+            "line": 623,
             "description": "Fired whenever this Texture's   {{#crossLink \"Texture/translate:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "translate",
@@ -16050,7 +16012,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 632,
+            "line": 636,
             "description": "2D scaling vector that will be applied to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/scale:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "scale",
@@ -16062,7 +16024,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 650,
+            "line": 654,
             "description": "Fired whenever this Texture's   {{#crossLink \"Texture/scale:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "scale",
@@ -16079,7 +16041,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 663,
+            "line": 667,
             "description": "Rotation, in degrees, that will be applied to this Texture's *S* and *T* coordinates.\n\nFires a {{#crossLink \"Texture/rotate:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "rotate",
@@ -16091,7 +16053,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 687,
+            "line": 691,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/rotate:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "rotate",
@@ -16108,7 +16070,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 700,
+            "line": 704,
             "description": "How this Texture is sampled when a texel covers less than one pixel.\n\nOptions are:\n\n<ul>\n    <li>**\"nearest\"** - Uses the value of the texture element that is nearest\n    (in Manhattan distance) to the center of the pixel being textured.</li>\n\n    <li>**\"linear\"** - Uses the weighted average of the four texture elements that are\n    closest to the center of the pixel being textured.</li>\n\n    <li>**\"nearestMipmapNearest\"** - Chooses the mipmap that most closely matches the\n    size of the pixel being textured and uses the \"nearest\" criterion (the texture\n    element nearest to the center of the pixel) to produce a texture value.</li>\n\n    <li>**\"linearMipmapNearest\"** - Chooses the mipmap that most closely matches the size of\n    the pixel being textured and uses the \"linear\" criterion (a weighted average of the\n    four texture elements that are closest to the center of the pixel) to produce a\n    texture value.</li>\n\n    <li>**\"nearestMipmapLinear\"** - Chooses the two mipmaps that most closely\n    match the size of the pixel being textured and uses the \"nearest\" criterion\n    (the texture element nearest to the center of the pixel) to produce a texture\n    value from each mipmap. The final texture value is a weighted average of those two\n    values.</li>\n\n    <li>**\"linearMipmapLinear\"** - **(default)** - Chooses the two mipmaps that most closely match the size\n    of the pixel being textured and uses the \"linear\" criterion (a weighted average\n    of the four texture elements that are closest to the center of the pixel) to\n    produce a texture value from each mipmap. The final texture value is a weighted\n    average of those two values.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/minFilter:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "minFilter",
@@ -16120,7 +16082,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 764,
+            "line": 768,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/minFilter:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "minFilter",
@@ -16137,7 +16099,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 777,
+            "line": 781,
             "description": "How this Texture is sampled when a texel covers more than one pixel.\n\nOptions are:\n\n<ul>\n    <li>**\"nearest\"** - Uses the value of the texture element that is nearest\n    (in Manhattan distance) to the center of the pixel being textured.</li>\n    <li>**\"linear\"** - **(default)** - Uses the weighted average of the four texture elements that are\n    closest to the center of the pixel being textured.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/magFilter:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "magFilter",
@@ -16149,7 +16111,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 814,
+            "line": 818,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/magFilter:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "magFilter",
@@ -16166,7 +16128,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 827,
+            "line": 831,
             "description": "Wrap parameter for this Texture's *S* coordinate.\n\nOptions are:\n\n<ul>\n    <li>**\"clampToEdge\"** -  causes *S* coordinates to be clamped to the size of the texture.</li>\n    <li>**\"mirroredRepeat\"** - causes the *S* coordinate to be set to the fractional part of the texture coordinate\n    if the integer part of *S* is even; if the integer part of *S* is odd, then the *S* texture coordinate is\n    set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *S*.</li>\n    <li>**\"repeat\"** - **(default)** - causes the integer part of the *S* coordinate to be ignored; xeogl uses only the\n    fractional part, thereby creating a repeating pattern.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/wrapS:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "wrapS",
@@ -16178,7 +16140,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 866,
+            "line": 870,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/wrapS:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "wrapS",
@@ -16195,7 +16157,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 879,
+            "line": 883,
             "description": "Wrap parameter for this Texture's *T* coordinate.\n\nOptions are:\n\n<ul>\n    <li>**\"clampToEdge\"** -  Causes *T* coordinates to be clamped to the size of the texture.</li>\n    <li>**\"mirroredRepeat\"** - Causes the *T* coordinate to be set to the fractional part of the texture coordinate\n    if the integer part of *T* is even; if the integer part of *T* is odd, then the *T* texture coordinate is\n    set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *T*.</li>\n    <li>**\"repeat\"** - **(default)** - Causes the integer part of the *T* coordinate to be ignored; xeogl uses only the\n    fractional part, thereby creating a repeating pattern.</li>\n</ul>\n\nFires a {{#crossLink \"Texture/wrapT:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "wrapT",
@@ -16207,7 +16169,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 918,
+            "line": 922,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/wrapT:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "wrapT",
@@ -16224,7 +16186,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 931,
+            "line": 935,
             "description": "Flips this Texture's source data along its vertical axis when true.\n\nFires a {{#crossLink \"Texture/flipY:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "flipY",
@@ -16236,7 +16198,7 @@
         },
         {
             "file": "src/materials/texture.js",
-            "line": 955,
+            "line": 959,
             "description": "Fired whenever this Texture's  {{#crossLink \"Texture/flipY:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "flipY",
@@ -22497,7 +22459,7 @@
         },
         {
             "file": "examples/js/effects/highlightEntityEffect.js",
-            "line": 103,
+            "line": 104,
             "description": "ID or instance of the {{#crossLink \"Entity\"}}{{/crossLink}} to highlight with this HighlightEntityEffect.\n\nFires a {{#crossLink \"HighlightEntityEffect/entity:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "entity",
@@ -22509,7 +22471,7 @@
         },
         {
             "file": "examples/js/effects/highlightEntityEffect.js",
-            "line": 118,
+            "line": 119,
             "description": "Fired whenever this Highlights's {{#crossLink \"HighlightEntityEffect/entity:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "entity",
@@ -22525,7 +22487,7 @@
         },
         {
             "file": "examples/js/effects/highlightEntityEffect.js",
-            "line": 161,
+            "line": 162,
             "description": "Flag which indicates whether this HighlightEntityEffect is active or not.\n\nFires an {{#crossLink \"HighlightEntityEffect/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
@@ -22537,7 +22499,7 @@
         },
         {
             "file": "examples/js/effects/highlightEntityEffect.js",
-            "line": 184,
+            "line": 185,
             "description": "Fired whenever this HighlightEntityEffect's {{#crossLink \"HighlightEntityEffect/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
@@ -22553,7 +22515,7 @@
         },
         {
             "file": "examples/js/effects/stereoEffect.js",
-            "line": 99,
+            "line": 101,
             "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} attached to this StereoEffect.\n\nThis StereoEffect will attach a {{#crossLink \"Frustum\"}}{{/crossLink}} to its\n{{#crossLink \"Camera\"}}{{/crossLink}} if the {{#crossLink \"Camera\"}}Camera{{/crossLink}} does not have\none already, replacing the projection transform component that was already attached.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this StereoEffect. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.",
             "itemtype": "property",
             "name": "camera",
@@ -22564,7 +22526,7 @@
         },
         {
             "file": "examples/js/effects/stereoEffect.js",
-            "line": 117,
+            "line": 119,
             "description": "Fired whenever this StereoEffect's {{#crossLink \"StereoEffect/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
@@ -22580,7 +22542,7 @@
         },
         {
             "file": "examples/js/effects/stereoEffect.js",
-            "line": 146,
+            "line": 148,
             "description": "The {{#crossLink \"Viewport\"}}{{/crossLink}} attached to this StereoEffect.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this StereoEffect. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/viewport:property\"}}Viewport{{/crossLink}} when set to\na null or undefined value.",
             "itemtype": "property",
             "name": "Viewport",
@@ -22591,7 +22553,7 @@
         },
         {
             "file": "examples/js/effects/stereoEffect.js",
-            "line": 160,
+            "line": 162,
             "description": "Fired whenever this StereoEffect's {{#crossLink \"StereoEffect/Viewport:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "Viewport",
@@ -22607,7 +22569,7 @@
         },
         {
             "file": "examples/js/effects/stereoEffect.js",
-            "line": 182,
+            "line": 184,
             "description": "Eye separation distance.\n\nFires an {{#crossLink \"StereoEffect/eyeSep:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "eyeSep",
@@ -22619,7 +22581,7 @@
         },
         {
             "file": "examples/js/effects/stereoEffect.js",
-            "line": 203,
+            "line": 205,
             "description": "Fired whenever this StereoEffect's {{#crossLink \"StereoEffect/eyeSep:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "eyeSep",
@@ -22635,7 +22597,7 @@
         },
         {
             "file": "examples/js/effects/stereoEffect.js",
-            "line": 216,
+            "line": 218,
             "description": "Focal length.\n\nFires an {{#crossLink \"StereoEffect/focalLength:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "focalLength",
@@ -22647,7 +22609,7 @@
         },
         {
             "file": "examples/js/effects/stereoEffect.js",
-            "line": 237,
+            "line": 239,
             "description": "Fired whenever this StereoEffect's {{#crossLink \"StereoEffect/focalLength:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "focalLength",
@@ -22663,7 +22625,7 @@
         },
         {
             "file": "examples/js/effects/stereoEffect.js",
-            "line": 250,
+            "line": 252,
             "description": "Aperture angle in degrees.\n\nFires an {{#crossLink \"StereoEffect/aperture:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "aperture",
@@ -22675,7 +22637,7 @@
         },
         {
             "file": "examples/js/effects/stereoEffect.js",
-            "line": 271,
+            "line": 273,
             "description": "Fired whenever this StereoEffect's {{#crossLink \"StereoEffect/aperture:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "aperture",
@@ -22691,7 +22653,7 @@
         },
         {
             "file": "examples/js/effects/stereoEffect.js",
-            "line": 284,
+            "line": 286,
             "description": "Flag which indicates whether this StereoEffect is active or not.\n\nFires an {{#crossLink \"StereoEffect/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
@@ -22703,7 +22665,7 @@
         },
         {
             "file": "examples/js/effects/stereoEffect.js",
-            "line": 307,
+            "line": 309,
             "description": "Fired whenever this StereoEffect's {{#crossLink \"StereoEffect/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
@@ -22719,7 +22681,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 259,
+            "line": 263,
             "description": "Notifies whether or not zSpace is supported in this browser.",
             "itemtype": "event",
             "name": "supported",
@@ -22736,7 +22698,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 312,
+            "line": 316,
             "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} attached to this ZSpaceEffect.\n\nThe ZSpaceEffect will attach a {{#crossLink \"Projection\"}}{{/crossLink}} to its\n{{#crossLink \"Camera\"}}{{/crossLink}} if the {{#crossLink \"Camera\"}}Camera{{/crossLink}} does not have\none already, replacing whatever projection transform component was already attached.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this ZSpaceEffect. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.\n\nNo other component should modify the state of the {{#crossLink \"Camera\"}}{{/crossLink}} while\nit's attached to this ZSpaceEffect. There is no prevention or check for that, so if that\nhappens you'll get unexpected results.",
             "itemtype": "property",
             "name": "camera",
@@ -22747,7 +22709,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 334,
+            "line": 338,
             "description": "Fired whenever this ZSpaceEffect's {{#crossLink \"ZSpaceEffect/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
@@ -22763,7 +22725,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 354,
+            "line": 358,
             "description": "The offset of the canvas' corner from the edge of the screen - needed for correct tracking of glasses and stylus.\n\nLeave this at it's default value of ````[0,0]```` if the canvas is to fill the entire screen.\n\nFires a {{#crossLink \"ZSpaceEffect/canvasOffset:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "canvasOffset",
@@ -22775,7 +22737,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 373,
+            "line": 377,
             "description": "Fired whenever this ZSpaceEffect's {{#crossLink \"ZSpaceEffect/canvasOffset:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "canvasOffset",
@@ -22792,7 +22754,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 387,
+            "line": 391,
             "description": "Position of this ZSpaceEffect's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"ZSpaceEffect/nearClip:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "nearClip",
@@ -22804,7 +22766,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 404,
+            "line": 408,
             "description": "Fired whenever this ZSpaceEffect's   {{#crossLink \"ZSpaceEffect/nearClip:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "nearClip",
@@ -22820,7 +22782,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 417,
+            "line": 421,
             "description": "Position of this ZSpaceEffect's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"ZSpaceEffect/farClip:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "farClip",
@@ -22832,7 +22794,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 434,
+            "line": 438,
             "description": "Fired whenever this ZSpaceEffect's  {{#crossLink \"ZSpaceEffect/farClip:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "farClip",
@@ -22848,7 +22810,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 448,
+            "line": 452,
             "description": "The display resolution.\n\nFires a {{#crossLink \"ZSpaceEffect/displayResolution:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "displayResolution",
@@ -22860,7 +22822,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 465,
+            "line": 469,
             "description": "Fired whenever this ZSpaceEffect's {{#crossLink \"ZSpaceEffect/displayResolution:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "displayResolution",
@@ -22877,7 +22839,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 479,
+            "line": 483,
             "description": "The display size.\n\nFires a {{#crossLink \"ZSpaceEffect/displaySize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "displaySize",
@@ -22889,7 +22851,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 496,
+            "line": 500,
             "description": "Fired whenever this ZSpaceEffect's {{#crossLink \"ZSpaceEffect/displaySize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "displaySize",
@@ -22906,7 +22868,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 510,
+            "line": 514,
             "description": "The current World-space position of the stylus.\n\nFires a {{#crossLink \"ZSpaceEffect/stylusMoved:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusPos",
@@ -22918,7 +22880,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 525,
+            "line": 529,
             "description": "The current World-space direction of the stylus.\n\nFires a {{#crossLink \"ZSpaceEffect/stylusMoved:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusOrientation",
@@ -22930,7 +22892,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 540,
+            "line": 544,
             "description": "The current camera matrix for the stylus.\n\nFires a {{#crossLink \"ZSpaceEffect/stylusMoved:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusCameraMatrix",
@@ -22942,7 +22904,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 555,
+            "line": 559,
             "description": "The current world matrix for the stylus.\n\nFires a {{#crossLink \"ZSpaceEffect/stylusMoved:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusCameraMatrix",
@@ -22954,7 +22916,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 570,
+            "line": 574,
             "description": "Whether or not the first button is down on the stylus.\n\nFires a {{#crossLink \"ZSpaceEffect/stylusButton0:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusButton0",
@@ -22967,7 +22929,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 586,
+            "line": 590,
             "description": "Whether or not the second button is down on the stylus.\n\nFires a {{#crossLink \"ZSpaceEffect/stylusButton1:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusButton1",
@@ -22980,7 +22942,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 602,
+            "line": 606,
             "description": "Whether or not the third button is down on the stylus.\n\nFires a {{#crossLink \"ZSpaceEffect/stylusButton2:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusButton2",
@@ -22993,7 +22955,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 618,
+            "line": 622,
             "description": "The current viewer scale factor.\n\nThe ZSpaceEffect automatically calculates this from the distance between\nthe eye and the point of interest.\n\nFires a {{#crossLink \"ZSpaceEffect/stylusButton2:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "viewerScale",
@@ -23006,7 +22968,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 638,
+            "line": 642,
             "description": "Flag which indicates whether this ZSpaceEffect is active or not.\n\nNote that this ZSpaceEffect can still be activated when the browser does not support ZSpace.\n\nFires an {{#crossLink \"ZSpaceEffect/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
@@ -23018,7 +22980,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 664,
+            "line": 668,
             "description": "Fired whenever this ZSpaceEffect's {{#crossLink \"ZSpaceEffect/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
@@ -23034,7 +22996,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 861,
+            "line": 865,
             "description": "Fired whenever this ZSpaceEffect's stylus moves.",
             "itemtype": "event",
             "name": "stylusMoved",
@@ -23044,7 +23006,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 871,
+            "line": 875,
             "description": "Fired whenever this ZSpaceEffect's first button is pressed or released.",
             "itemtype": "event",
             "name": "stylusButton0",
@@ -23060,7 +23022,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 882,
+            "line": 886,
             "description": "Fired whenever this ZSpaceEffect's second button is pressed or released.",
             "itemtype": "event",
             "name": "stylusButton1",
@@ -23076,7 +23038,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect.js",
-            "line": 893,
+            "line": 897,
             "description": "Fired whenever this ZSpaceEffect's third button is pressed or released.",
             "itemtype": "event",
             "name": "stylusButton2",
@@ -23092,7 +23054,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 265,
+            "line": 269,
             "description": "Notifies whether or not zSpace is supported in this browser.",
             "itemtype": "event",
             "name": "supported",
@@ -23109,7 +23071,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 372,
+            "line": 376,
             "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} attached to this ZSpaceEffect.\n\nThe ZSpaceEffect will attach a {{#crossLink \"Projection\"}}{{/crossLink}} to its\n{{#crossLink \"Camera\"}}{{/crossLink}} if the {{#crossLink \"Camera\"}}Camera{{/crossLink}} does not have\none already, replacing whatever projection transform component was already attached.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this ZSpaceEffect. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.\n\nNo other component should modify the state of the {{#crossLink \"Camera\"}}{{/crossLink}} while\nit's attached to this ZSpaceEffect. There is no prevention or check for that, so if that\nhappens you'll get unexpected results.",
             "itemtype": "property",
             "name": "camera",
@@ -23120,7 +23082,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 394,
+            "line": 398,
             "description": "Fired whenever this ZSpaceEffect's {{#crossLink \"ZSpaceEffect/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
@@ -23136,7 +23098,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 414,
+            "line": 418,
             "description": "The offset of the canvas' corner from the edge of the screen - needed for correct tracking of glasses and stylus.\n\nLeave this at it's default value of ````[0,0]```` if the canvas is to fill the entire screen.\n\nFires a {{#crossLink \"ZSpaceEffect/canvasOffset:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "canvasOffset",
@@ -23148,7 +23110,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 433,
+            "line": 437,
             "description": "Fired whenever this ZSpaceEffect's {{#crossLink \"ZSpaceEffect/canvasOffset:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "canvasOffset",
@@ -23165,7 +23127,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 447,
+            "line": 451,
             "description": "Position of this ZSpaceEffect's near plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"ZSpaceEffect/nearClip:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "nearClip",
@@ -23177,7 +23139,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 464,
+            "line": 468,
             "description": "Fired whenever this ZSpaceEffect's   {{#crossLink \"ZSpaceEffect/nearClip:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "nearClip",
@@ -23193,7 +23155,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 477,
+            "line": 481,
             "description": "Position of this ZSpaceEffect's far plane on the positive View-space Z-axis.\n\nFires a {{#crossLink \"ZSpaceEffect/farClip:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "farClip",
@@ -23205,7 +23167,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 494,
+            "line": 498,
             "description": "Fired whenever this ZSpaceEffect's  {{#crossLink \"ZSpaceEffect/farClip:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "farClip",
@@ -23221,7 +23183,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 508,
+            "line": 512,
             "description": "The display resolution.\n\nFires a {{#crossLink \"ZSpaceEffect/displayResolution:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "displayResolution",
@@ -23233,7 +23195,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 525,
+            "line": 529,
             "description": "Fired whenever this ZSpaceEffect's {{#crossLink \"ZSpaceEffect/displayResolution:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "displayResolution",
@@ -23250,7 +23212,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 539,
+            "line": 543,
             "description": "The display size.\n\nFires a {{#crossLink \"ZSpaceEffect/displaySize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "displaySize",
@@ -23262,7 +23224,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 556,
+            "line": 560,
             "description": "Fired whenever this ZSpaceEffect's {{#crossLink \"ZSpaceEffect/displaySize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "displaySize",
@@ -23279,7 +23241,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 570,
+            "line": 574,
             "description": "The current World-space position of the stylus.\n\nFires a {{#crossLink \"ZSpaceEffect/stylusMoved:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusPos",
@@ -23291,7 +23253,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 585,
+            "line": 589,
             "description": "The current World-space direction of the stylus.\n\nFires a {{#crossLink \"ZSpaceEffect/stylusMoved:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusOrientation",
@@ -23303,7 +23265,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 600,
+            "line": 604,
             "description": "The current camera matrix for the stylus.\n\nFires a {{#crossLink \"ZSpaceEffect/stylusMoved:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusCameraMatrix",
@@ -23315,7 +23277,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 615,
+            "line": 619,
             "description": "The current world matrix for the stylus.\n\nFires a {{#crossLink \"ZSpaceEffect/stylusMoved:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusCameraMatrix",
@@ -23327,7 +23289,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 630,
+            "line": 634,
             "description": "Whether or not the first button is down on the stylus.\n\nFires a {{#crossLink \"ZSpaceEffect/stylusButton0:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusButton0",
@@ -23340,7 +23302,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 646,
+            "line": 650,
             "description": "Whether or not the second button is down on the stylus.\n\nFires a {{#crossLink \"ZSpaceEffect/stylusButton1:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusButton1",
@@ -23353,7 +23315,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 662,
+            "line": 666,
             "description": "Whether or not the third button is down on the stylus.\n\nFires a {{#crossLink \"ZSpaceEffect/stylusButton2:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "stylusButton2",
@@ -23366,7 +23328,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 678,
+            "line": 682,
             "description": "The current viewer scale factor.\n\nThe ZSpaceEffect automatically calculates this from the distance between\nthe eye and the point of interest.\n\nFires a {{#crossLink \"ZSpaceEffect/stylusButton2:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "viewerScale",
@@ -23379,7 +23341,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 698,
+            "line": 702,
             "description": "Flag which indicates whether this ZSpaceEffect is active or not.\n\nNote that this ZSpaceEffect can still be activated when the browser does not support ZSpace.\n\nFires an {{#crossLink \"ZSpaceEffect/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
@@ -23391,7 +23353,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 724,
+            "line": 728,
             "description": "Fired whenever this ZSpaceEffect's {{#crossLink \"ZSpaceEffect/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
@@ -23407,7 +23369,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 1134,
+            "line": 1138,
             "description": "Fired whenever this ZSpaceEffect's stylus moves.",
             "itemtype": "event",
             "name": "stylusMoved",
@@ -23417,7 +23379,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 1144,
+            "line": 1148,
             "description": "Fired whenever this ZSpaceEffect's first button is pressed or released.",
             "itemtype": "event",
             "name": "stylusButton0",
@@ -23433,7 +23395,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 1155,
+            "line": 1159,
             "description": "Fired whenever this ZSpaceEffect's second button is pressed or released.",
             "itemtype": "event",
             "name": "stylusButton1",
@@ -23449,7 +23411,7 @@
         },
         {
             "file": "examples/js/effects/zSpaceEffect_complete.js",
-            "line": 1166,
+            "line": 1170,
             "description": "Fired whenever this ZSpaceEffect's third button is pressed or released.",
             "itemtype": "event",
             "name": "stylusButton2",
@@ -24075,60 +24037,6 @@
             "class": "WebVR",
             "module": "xeogl",
             "submodule": "webvr"
-        },
-        {
-            "file": "examples/js/importing/nintendo3DSGeometry.js",
-            "line": 81,
-            "description": "Path to the .OBJ file.\n\nFires a {{#crossLink \"Nintendo3DSGeometry/src:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "src",
-            "type": "String",
-            "class": "Nintendo3DSGeometry",
-            "module": "xeogl",
-            "submodule": "geometry"
-        },
-        {
-            "file": "examples/js/importing/nintendo3DSGeometry.js",
-            "line": 148,
-            "description": "Fired whenever this Nintendo3DSGeometry's  {{#crossLink \"Nintendo3DSGeometry/src:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "src",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "Nintendo3DSGeometry",
-            "module": "xeogl",
-            "submodule": "geometry"
-        },
-        {
-            "file": "examples/js/importing/objGeometry.js",
-            "line": 79,
-            "description": "Path to the .OBJ file.\n\nFires a {{#crossLink \"OBJGeometry/src:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "src",
-            "type": "String",
-            "class": "OBJGeometry",
-            "module": "xeogl",
-            "submodule": "geometry"
-        },
-        {
-            "file": "examples/js/importing/objGeometry.js",
-            "line": 163,
-            "description": "Fired whenever this OBJGeometry's  {{#crossLink \"OBJGeometry/src:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "src",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "OBJGeometry",
-            "module": "xeogl",
-            "submodule": "geometry"
         },
         {
             "file": "examples/js/curves/cubicBezierCurve.js",
@@ -24829,7 +24737,7 @@
         },
         {
             "file": "examples/js/geometry/heightmapGeometry.js",
-            "line": 108,
+            "line": 107,
             "description": "Implement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",
             "access": "protected",
             "tagname": "",
@@ -24839,7 +24747,7 @@
         },
         {
             "file": "examples/js/geometry/heightmapGeometry.js",
-            "line": 280,
+            "line": 279,
             "description": "Fired whenever this HeightmapGeometry has rebuilt itself after an update to the\n{{#crossLink \"Heightmap/src:property\"}}{{/crossLink}} or {{#crossLink \"Heightmap/image:property\"}}{{/crossLink}} properties.",
             "itemtype": "event",
             "name": "loaded",
@@ -24856,7 +24764,7 @@
         },
         {
             "file": "examples/js/geometry/heightmapGeometry.js",
-            "line": 324,
+            "line": 323,
             "description": "Fired whenever this Heightmap's  {{#crossLink \"Heightmap/image:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "image",
@@ -24873,7 +24781,7 @@
         },
         {
             "file": "examples/js/geometry/heightmapGeometry.js",
-            "line": 365,
+            "line": 364,
             "description": "The Heightmap's level-of-detail factor.\n\nFires a {{#crossLink \"Heightmap/lod:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "lod",
@@ -24885,7 +24793,7 @@
         },
         {
             "file": "examples/js/geometry/heightmapGeometry.js",
-            "line": 395,
+            "line": 394,
             "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/lod:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "lod",
@@ -24902,7 +24810,7 @@
         },
         {
             "file": "examples/js/geometry/heightmapGeometry.js",
-            "line": 409,
+            "line": 408,
             "description": "Indicates an HTML DOM Image object to source this Heightmap from.\n\nAlternatively, you could indicate the source via the\n{{#crossLink \"Heightmap/src:property\"}}{{/crossLink}} property.\n\nFires an {{#crossLink \"Heightmap/image:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Heightmap/src:property\"}}{{/crossLink}} to null.",
             "itemtype": "property",
             "name": "image",
@@ -24914,7 +24822,7 @@
         },
         {
             "file": "examples/js/geometry/heightmapGeometry.js",
-            "line": 436,
+            "line": 435,
             "description": "Fired whenever this Heightmap's  {{#crossLink \"Heightmap/image:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "image",
@@ -24931,7 +24839,7 @@
         },
         {
             "file": "examples/js/geometry/heightmapGeometry.js",
-            "line": 449,
+            "line": 448,
             "description": "Indicates a path to an image file to source this Heightmap from.\n\nAlternatively, you could indicate the source via the\n{{#crossLink \"Heightmap/image:property\"}}{{/crossLink}} property.\n\nFires a {{#crossLink \"Heightmap/src:event\"}}{{/crossLink}} event on change.\n\nSets the {{#crossLink \"Heightmap/image:property\"}}{{/crossLink}} to null.",
             "itemtype": "property",
             "name": "src",
@@ -24943,7 +24851,7 @@
         },
         {
             "file": "examples/js/geometry/heightmapGeometry.js",
-            "line": 476,
+            "line": 475,
             "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -24960,7 +24868,7 @@
         },
         {
             "file": "examples/js/geometry/heightmapGeometry.js",
-            "line": 490,
+            "line": 489,
             "description": "The Heightmap's dimension on the X-axis.\n\nFires a {{#crossLink \"Heightmap/xSize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "xSize",
@@ -24972,7 +24880,7 @@
         },
         {
             "file": "examples/js/geometry/heightmapGeometry.js",
-            "line": 520,
+            "line": 519,
             "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/xSize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "xSize",
@@ -24989,7 +24897,7 @@
         },
         {
             "file": "examples/js/geometry/heightmapGeometry.js",
-            "line": 534,
+            "line": 533,
             "description": "The Heightmap's dimension on the Y-axis.\n\nFires a {{#crossLink \"Heightmap/ySize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "ySize",
@@ -25001,7 +24909,7 @@
         },
         {
             "file": "examples/js/geometry/heightmapGeometry.js",
-            "line": 564,
+            "line": 563,
             "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/ySize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "ySize",
@@ -25018,7 +24926,7 @@
         },
         {
             "file": "examples/js/geometry/heightmapGeometry.js",
-            "line": 578,
+            "line": 577,
             "description": "The Heightmap's dimension (height) on the Z-axis.\n\nFires a {{#crossLink \"Heightmap/zSize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "zSize",
@@ -25030,7 +24938,7 @@
         },
         {
             "file": "examples/js/geometry/heightmapGeometry.js",
-            "line": 608,
+            "line": 607,
             "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/zSize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "zSize",
@@ -25047,7 +24955,7 @@
         },
         {
             "file": "examples/js/geometry/heightmapGeometry.js",
-            "line": 622,
+            "line": 621,
             "description": "The Heightmap's number of segments on the X-axis.\n\nFires a {{#crossLink \"Heightmap/xSegments:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "xSegments",
@@ -25059,7 +24967,7 @@
         },
         {
             "file": "examples/js/geometry/heightmapGeometry.js",
-            "line": 652,
+            "line": 651,
             "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/xSegments:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "xSegments",
@@ -25076,7 +24984,7 @@
         },
         {
             "file": "examples/js/geometry/heightmapGeometry.js",
-            "line": 666,
+            "line": 665,
             "description": "The Heightmap's number of segments on the Z-axis.\n\nFires a {{#crossLink \"Heightmap/zSegments:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "zSegments",
@@ -25088,7 +24996,7 @@
         },
         {
             "file": "examples/js/geometry/heightmapGeometry.js",
-            "line": 696,
+            "line": 695,
             "description": "Fired whenever this Heightmap's {{#crossLink \"Heightmap/zSegments:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "zSegments",
@@ -25100,6 +25008,60 @@
                 }
             ],
             "class": "HeightmapGeometry",
+            "module": "xeogl",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/nintendo3DSGeometry.js",
+            "line": 88,
+            "description": "Path to the .OBJ file.\n\nFires a {{#crossLink \"Nintendo3DSGeometry/src:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "src",
+            "type": "String",
+            "class": "Nintendo3DSGeometry",
+            "module": "xeogl",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/nintendo3DSGeometry.js",
+            "line": 155,
+            "description": "Fired whenever this Nintendo3DSGeometry's  {{#crossLink \"Nintendo3DSGeometry/src:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "src",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "Nintendo3DSGeometry",
+            "module": "xeogl",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/objGeometry.js",
+            "line": 87,
+            "description": "Path to the .OBJ file.\n\nFires a {{#crossLink \"OBJGeometry/src:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "src",
+            "type": "String",
+            "class": "OBJGeometry",
+            "module": "xeogl",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/geometry/objGeometry.js",
+            "line": 171,
+            "description": "Fired whenever this OBJGeometry's  {{#crossLink \"OBJGeometry/src:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "src",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "OBJGeometry",
             "module": "xeogl",
             "submodule": "geometry"
         },
@@ -26650,7 +26612,7 @@
         },
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",
-            "line": " examples/js/geometry/heightmapGeometry.js:108"
+            "line": " examples/js/geometry/heightmapGeometry.js:107"
         },
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",

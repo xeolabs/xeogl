@@ -6,6 +6,13 @@
      A **Nintendo3DSGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that's loaded from a
      <a href="https://en.wikipedia.org/wiki/Nintendo_3DS" target = "_other">Nintendo 3DS</a> file.
 
+     <a href="../../examples/#geometry_Nintendo3DSGeometry_lexus"><img src="../../assets/images/screenshots/Nintendo3DSGeometry.png"></img></a>
+
+     ## Overview
+
+     * A Nintendo3DSGeometry mesh is determined by the .3DS file referenced by the Nintendo3DSGeometry's {{#crossLink "Nintendo3DSGeometry/src:property"}}{{/crossLink}} property.
+     * Set the {{#crossLink "Nintendo3DSGeometry/src:property"}}{{/crossLink}} property to a different file at any time, to regenerate the Nintendo3DSGeometry's mesh from the new file.
+
      ## Examples
 
      <ul>

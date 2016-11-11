@@ -9,7 +9,6 @@
  * The height of each vertex on the Y-axis is determined by the image file referenced by the HeightmapGeometry's {{#crossLink "HeightmapGeometry/src:property"}}{{/crossLink}} property.
  * Set the {{#crossLink "HeightmapGeometry/src:property"}}{{/crossLink}} property to a different image file at any time, to regenerate the HeightmapGeometry's mesh from the image.
 
-
  ## Examples
 
  <ul>
