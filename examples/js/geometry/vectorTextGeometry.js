@@ -1,5 +1,12 @@
 /**
- A **VectorTextGeometry** defines vector text geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **VectorTextGeometry** extends {{#crossLink "Geometry"}}{{/crossLink}} to define vector text geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+ <a href="../../examples/#geometry_VectorTextGeometry"><img src="../../assets/images/screenshots/VectorTextGeometry.png"></img></a>
+
+ ## Overview
+
+ * A VectorTextGeometry is a mesh of line segments that is generated from the value of its {{#crossLink "VectorTextGeometry/text:property"}}{{/crossLink}} property.
+ * Set the {{#crossLink "VectorTextGeometry/text:property"}}{{/crossLink}} property to a new value at any time to regenerate the mesh.
 
  ## Example
 

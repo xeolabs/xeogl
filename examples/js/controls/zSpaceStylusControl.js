@@ -307,8 +307,8 @@
 
                             draggingEntity = hit.entity;
 
-                            // Ensure that the entity has a single modelling transform
-                            // ZSPaceStylusControl cannot yet support articulation of hierarchies
+                             //Ensure that the entity has a single modelling transform
+                             //ZSPaceStylusControl cannot yet support articulation of hierarchies
 
                             if (draggingEntity.transform.parent) {
 
@@ -321,17 +321,32 @@
                                 });
                             }
 
+                            // Rotation matrix from entity leaf transform
+
                             mat3.fromMat4(rotationMatrix, draggingEntity.transform.matrix);
                             quat.fromMat3(q, rotationMatrix);
                             quat.invert(q, q);
                             mat4.fromQuat(matrix, q);
 
+
+
+                            // TODO: startScale.setFromMatrixScale ( objectHit.matrixWorld );		// Get scale vector from entity's scale matrix
+
+                            // World-space entity center
+
                             vec4.set(zero, 0.0, 0.0, 0.0, 1.0);
                             vec4.transformMat4(entityPos, zero, draggingEntity.transform.matrix);
+
+                            // World-space stylus endpoint
+
                             vec4.scaleAndAdd(stylusEnd, stylusP, stylusD, stylusLength);
+
+                            // Offset of stylus end from entity center
 
                             vec4.subtract(offset, entityPos, stylusEnd);
                             vec4.transformMat4(startOffset, offset, matrix);
+
+                            // rotation
 
                             mat3.fromMat4(rotationMatrix, stylusMatrix);
                             quat.fromMat3(rotation, rotationMatrix);
@@ -358,6 +373,8 @@
                     } else if (draggingEntity) {
 
                         // Continue dragging entity
+
+                        // TODO derive scale from startscale
 
                         vec4.scaleAndAdd(stylusEnd, stylusP, stylusD, stylusLength);
                         mat3.fromMat4(rotationMatrix, stylusMatrix);

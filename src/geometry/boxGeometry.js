@@ -1,5 +1,7 @@
 /**
- A **BoxGeometry** defines box-shaped geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **BoxGeometry** extends {{#crossLink "Geometry"}}{{/crossLink}} to define a box-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+ <a href="../../examples/#geometry_BoxGeometry"><img src="../../assets/images/screenshots/BoxGeometry.png"></img></a>
 
  ## Examples
 

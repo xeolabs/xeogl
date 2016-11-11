@@ -197,7 +197,16 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **Heightmap** defines height map geometry for attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
+ A **Heightmap** extends {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} to define a height mapped geometry for attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
+
+ &lt;a href=&quot;../../examples/#geometry_HeightmapGeometry&quot;&gt;&lt;img src=&quot;../../assets/images/screenshots/HeightmapGeometry.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
+
+ ## Overview
+
+ * A HeightmapGeometry is a grid shape, to which the Y-axis is perpendicular.
+ * The height of each vertex on the Y-axis is determined by the image file referenced by the HeightmapGeometry&#x27;s {{#crossLink &quot;HeightmapGeometry/src:property&quot;}}{{/crossLink}} property.
+ * Set the {{#crossLink &quot;HeightmapGeometry/src:property&quot;}}{{/crossLink}} property to a different image file at any time, to regenerate the HeightmapGeometry&#x27;s mesh from the image.
+
 
  ## Examples
 

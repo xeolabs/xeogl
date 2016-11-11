@@ -1,5 +1,7 @@
 /**
- A **TorusGeometry** defines torus-shaped geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **TorusGeometry** extends {{#crossLink "Geometry"}}{{/crossLink}} to define a torus-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+ <a href="../../examples/#geometry_TorusGeometry"><img src="../../assets/images/screenshots/TorusGeometry.png"></img></a>
 
  ## Examples
 

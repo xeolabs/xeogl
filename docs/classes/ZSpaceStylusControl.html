@@ -200,7 +200,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/examples_js_controls_zSpaceStylusControl.js.html#l1"><code>examples&#x2F;js&#x2F;controls&#x2F;zSpaceStylusControl.js:1</code></a>
+            Defined in: <a href="../files/examples_js_controls_zSpaceStylusControlV2.js.html#l1"><code>examples&#x2F;js&#x2F;controls&#x2F;zSpaceStylusControlV2.js:1</code></a>
         </div>
 
             Module: <a href="../modules/controls.html">controls</a><br>
@@ -297,7 +297,7 @@ zspaceEffect.on("supported", function (supported) {
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/examples_js_controls_zSpaceStylusControl.js.html#l1"><code>examples&#x2F;js&#x2F;controls&#x2F;zSpaceStylusControl.js:1</code></a>
+                <a href="../files/examples_js_controls_zSpaceStylusControlV2.js.html#l1"><code>examples&#x2F;js&#x2F;controls&#x2F;zSpaceStylusControlV2.js:1</code></a>
                 </p>
         
         
@@ -462,6 +462,10 @@ zspaceEffect.on("supported", function (supported) {
                                 <a href="#property_active">active</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_active">active</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_destroyed">destroyed</a>
 
@@ -502,6 +506,10 @@ zspaceEffect.on("supported", function (supported) {
                                 <a href="#property_zspaceEffect">zspaceEffect</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_zspaceEffect">zspaceEffect</a>
+
+                            </li>
                     </ul>
                 </div>
 
@@ -514,8 +522,16 @@ zspaceEffect.on("supported", function (supported) {
                                 <a href="#event_active">active</a>
 
                             </li>
+                            <li class="index-item event">
+                                <a href="#event_active">active</a>
+
+                            </li>
                             <li class="index-item event inherited">
                                 <a href="#event_destroyed">destroyed</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_zspaceEffect">zspaceEffect</a>
 
                             </li>
                             <li class="index-item event">
@@ -1264,6 +1280,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
+                            <a href="../files/examples_js_controls_zSpaceStylusControlV2.js.html#l143"><code>examples&#x2F;js&#x2F;controls&#x2F;zSpaceStylusControlV2.js:143</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Flag which indicates whether this ZSpaceStylusControl is active or not.</p>
+                    <p>Fires an <a href="../classes/ZSpaceStylusControl.html#event_active" class="crosslink">active</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> true</p>
+                    
+                    
+                    </div>
+                    <div id="property_active" class="property item">
+                        <h3 class="name"><code>active</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
                             <a href="../files/examples_js_controls_zSpaceStylusControl.js.html#l143"><code>examples&#x2F;js&#x2F;controls&#x2F;zSpaceStylusControl.js:143</code></a>
                             </p>
                     
@@ -1534,6 +1577,40 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
+                            <a href="../files/examples_js_controls_zSpaceStylusControlV2.js.html#l101"><code>examples&#x2F;js&#x2F;controls&#x2F;zSpaceStylusControlV2.js:101</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The <a href="../classes/ZSpaceEffect.html" class="crosslink">ZSpaceEffect</a> attached to this ZSpaceStylusControl.</p>
+                    <p>The ZSpaceStylusControl will attach a Projection to its
+                    <a href="../classes/ZSpaceEffect.html" class="crosslink">ZSpaceEffect</a> if the <a href="../classes/ZSpaceEffect.html" class="crosslink">ZSpaceEffect</a> does not have
+                    one already, replacing whatever projection transform component was already attached.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this ZSpaceStylusControl. Defaults to the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene&#39;s</a> default Scene/zspaceEffect:property when set to
+                    a null or undefined value.</p>
+                    <p>No other component should modify the state of the <a href="../classes/ZSpaceEffect.html" class="crosslink">ZSpaceEffect</a> while
+                    it&#39;s attached to this ZSpaceStylusControl. There is no prevention or check for that, so if that
+                    happens you&#39;ll get unexpected results.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_zspaceEffect" class="property item">
+                        <h3 class="name"><code>zspaceEffect</code></h3>
+                        <span class="type"><a href="../classes/ZSpaceEffect.html" class="crosslink">ZSpaceEffect</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
                             <a href="../files/examples_js_controls_zSpaceStylusControl.js.html#l101"><code>examples&#x2F;js&#x2F;controls&#x2F;zSpaceStylusControl.js:101</code></a>
                             </p>
                     
@@ -1605,6 +1682,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="event_active" class="events item">
+                        <h3 class="name"><code>active</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_controls_zSpaceStylusControlV2.js.html#l167"><code>examples&#x2F;js&#x2F;controls&#x2F;zSpaceStylusControlV2.js:167</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this ZSpaceStylusControl&#39;s <a href="../classes/ZSpaceStylusControl.html#property_active" class="crosslink">active</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_destroyed" class="events item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type"></span>
@@ -1642,6 +1761,49 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     <p>
                                     Defined in
                             <a href="../files/examples_js_controls_zSpaceStylusControl.js.html#l123"><code>examples&#x2F;js&#x2F;controls&#x2F;zSpaceStylusControl.js:123</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this ZSpaceStylusControl&#39;s <a href="../classes/ZSpaceStylusControl.html#property_zspaceEffect" class="crosslink">zspaceEffect</a>
+                    property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_zspaceEffect" class="events item">
+                        <h3 class="name"><code>zspaceEffect</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_controls_zSpaceStylusControlV2.js.html#l123"><code>examples&#x2F;js&#x2F;controls&#x2F;zSpaceStylusControlV2.js:123</code></a>
                             </p>
                     
                     

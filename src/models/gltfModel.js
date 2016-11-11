@@ -3,13 +3,20 @@
     "use strict";
 
     /**
-     A **GLTFModel** is a {{#crossLink "Model"}}{{/crossLink}} that loads itself from a
-     <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file.
+     A **GLTFModel** is a {{#crossLink "Model"}}{{/crossLink}} that loads itself from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file.
 
-     <ul><li>A GLTFModel begins loading as soon as you set its {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}
+     <a href="../../examples/#models_GLTFModel_gearbox"><img src="../../../assets/images/gltf/glTF_gearbox_squashed.png"></img></a>
+
+     ## Overview
+
+     <ul>
+     <li>A GLTFModel is a container of {{#crossLink "Component"}}Components{{/crossLink}} that loads itself from glTF.</li>
+     <li>It begins loading as soon as you set its {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}
      property to the location of a valid glTF file.</li>
      <li>You can set {{#crossLink "GLTFModel/src:property"}}{{/crossLink}} to a new file path at any time, which causes
      the GLTFModel to clear itself and load components from the new file.</li>
+     <li>Can be transformed within World-space by attached it to a {{#crossLink "Transform"}}{{/crossLink}}.</li>
+     <li>Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.</li>
      </ul>
 
      <img src="../../../assets/images/GLTFModel.png"></img>

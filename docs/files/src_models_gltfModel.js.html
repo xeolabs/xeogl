@@ -201,13 +201,20 @@
     &quot;use strict&quot;;
 
     /**
-     A **GLTFModel** is a {{#crossLink &quot;Model&quot;}}{{/crossLink}} that loads itself from a
-     &lt;a href=&quot;https://github.com/KhronosGroup/glTF&quot; target = &quot;_other&quot;&gt;glTF&lt;/a&gt; file.
+     A **GLTFModel** is a {{#crossLink &quot;Model&quot;}}{{/crossLink}} that loads itself from a &lt;a href=&quot;https://github.com/KhronosGroup/glTF&quot; target = &quot;_other&quot;&gt;glTF&lt;/a&gt; file.
 
-     &lt;ul&gt;&lt;li&gt;A GLTFModel begins loading as soon as you set its {{#crossLink &quot;GLTFModel/src:property&quot;}}{{/crossLink}}
+     &lt;a href=&quot;../../examples/#models_GLTFModel_gearbox&quot;&gt;&lt;img src=&quot;../../../assets/images/gltf/glTF_gearbox_squashed.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
+
+     ## Overview
+
+     &lt;ul&gt;
+     &lt;li&gt;A GLTFModel is a container of {{#crossLink &quot;Component&quot;}}Components{{/crossLink}} that loads itself from glTF.&lt;/li&gt;
+     &lt;li&gt;It begins loading as soon as you set its {{#crossLink &quot;GLTFModel/src:property&quot;}}{{/crossLink}}
      property to the location of a valid glTF file.&lt;/li&gt;
      &lt;li&gt;You can set {{#crossLink &quot;GLTFModel/src:property&quot;}}{{/crossLink}} to a new file path at any time, which causes
      the GLTFModel to clear itself and load components from the new file.&lt;/li&gt;
+     &lt;li&gt;Can be transformed within World-space by attached it to a {{#crossLink &quot;Transform&quot;}}{{/crossLink}}.&lt;/li&gt;
+     &lt;li&gt;Provides its World-space boundary as a {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}.&lt;/li&gt;
      &lt;/ul&gt;
 
      &lt;img src=&quot;../../../assets/images/GLTFModel.png&quot;&gt;&lt;/img&gt;

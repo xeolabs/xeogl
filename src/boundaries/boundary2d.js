@@ -1,6 +1,10 @@
 /**
  A **Boundary2D** is a Canvas-space 2D boundary.
 
+ <a href="../../examples/#boundaries_flyToBoundary"><img src="../../assets/images/screenshots/Boundary3D.png"></img></a>
+
+ ## Overview
+
  A Boundary2D provides its spatial info in these properties:
 
  <ul>

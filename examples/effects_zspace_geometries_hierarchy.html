@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.js"></script>
+
+    <!-- ZSpaceEffect is insulated from changes to the zSpace WebVR API by
+     the "ZSpace" utility class provided by zSpace, which depends on glmatrix. -->
+
+    <script src="libs/gl-matrix-min.js"></script>
+    <script src="js/effects/zSpace.js"></script>
+    <script src="js/effects/zSpaceEffect_complete.js"></script>
+    <script src="js/controls/zSpaceStylusControl.js"></script>
+
+<body>
+
+<div id="infoLight"
+     style="left: 0; text-align: left; background: black; opacity: 0.7; padding: 8px; color: white; font-size: 14pt;">
+    <span><a href="http://xeogl.org" target="_home">xeogl</a><br>
+        using a <a
+                href="../docs/classes/ZSpaceEffect.html"
+                target="_docs">ZSpaceEffect</a> to view a bunch of <a
+                href="../docs/classes/Entity.html"
+                target="_docs">Entities</a> in zSpace VR</span><br>
+    <span id="log" style="color:red;font-size: 16px"></span>
+</div>
+
+<script>
+
+    //---------------------------------------------------
+    // Create some torus entities
+    //---------------------------------------------------
+
+    var geometry = new xeogl.TorusGeometry({
+        radius: 4.0,
+        tube: 1.8,
+        radialSegments: 60,
+        tubeSegments: 60,
+        arc: Math.PI * 2.0
+    });
+
+    var scene = geometry.scene;
+
+    var diffuseMap = new xeogl.Texture({
+        src: "textures/diffuse/uvGrid2.jpg"
+    });
+
+    var matrix = xeogl.math.mat4();
+    var size = 50;
+    var halfSize = size / 2;
+
+    for (var i = 0; i < 100; i++) {
+
+        new xeogl.Entity({
+            geometry: geometry,
+            material: new xeogl.PhongMaterial({
+                diffuseMap: diffuseMap
+            }),
+            transform: new xeogl.Rotate({
+                xyz: [
+                    Math.random(),
+                    Math.random(),
+                    Math.random()
+                ],
+                angle: Math.random() * 360,
+
+                parent: new xeogl.Translate({
+                    xyz: [Math.random() * size - halfSize, Math.random() * size - halfSize, Math.random() * size - halfSize]
+                })
+            })
+        });
+    }
+
+    scene.camera.view.eye = [0, 0, -100];
+
+    //----------------------------------------------------------------------------
+    // Allow camera control with keyboard and mouse
+    //----------------------------------------------------------------------------
+
+    var cameraControl = new xeogl.CameraControl();
+
+    //---------------------------------------------------
+    // Create a zSpace effect and stylus control
+    //---------------------------------------------------
+
+    var zspaceEffect = new xeogl.ZSpaceEffect({
+        canvasOffset: [310, 0]
+    });
+
+    var zspaceStylusControl = new xeogl.ZSpaceStylusControl();
+
+    zspaceEffect.on("supported", function (supported) {
+        if (!supported) {
+            document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeogl camera controls. ";
+        }
+    });
+
+</script>
+</body>
+</html>

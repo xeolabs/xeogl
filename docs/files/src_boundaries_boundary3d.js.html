@@ -199,6 +199,10 @@
 /**
  A **Boundary3D** provides the 3D extents of its parent component in a given coordinate system.
 
+ &lt;a href=&quot;../../examples/#boundaries_flyToBoundary&quot;&gt;&lt;img src=&quot;../../assets/images/screenshots/Boundary3D.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
+
+ ## Overview
+
  A Boundary3D provides its spatial info in these properties:
 
  &lt;ul&gt;
@@ -221,7 +225,6 @@
  * An {{#crossLink &quot;Entity/viewBoundary:property&quot;}}Entity&#x27;s viewBoundary{{/crossLink}} provides the **View**-space boundary of
  its {{#crossLink &quot;Geometry&quot;}}Geometry&#x27;s{{/crossLink}} {{#crossLink &quot;Geometry/positions:property&quot;}}{{/crossLink}} after
  their transformation by both the {{#crossLink &quot;Entity/transform:property&quot;}}Entity&#x27;s Modelling transform{{/crossLink}} **and** {{#crossLink &quot;Camera/view:property&quot;}}Viewing transform{{/crossLink}}.
- * A {{#crossLink &quot;CollectionBoundary/worldBoundary:property&quot;}}CollectionBoundary&#x27;s worldBoundary{{/crossLink}} provides the **World**-space boundary of all the {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} contained within its {{#crossLink &quot;Collection&quot;}}Collection{{/crossLink}}.
  * A {{#crossLink &quot;Model/worldBoundary:property&quot;}}Model&#x27;s worldBoundary{{/crossLink}} provides the **World**-space boundary of all its {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}
 
  The diagram also shows an {{#crossLink &quot;Entity/canvasBoundary:property&quot;}}Entity&#x27;s canvasBoundary{{/crossLink}}, which is a {{#crossLink &quot;Boundary2D&quot;}}{{/crossLink}} that provides the **Canvas**-space boundary of the {{#crossLink &quot;Geometry&quot;}}Geometry&#x27;s{{/crossLink}} {{#crossLink &quot;Geometry/positions:property&quot;}}{{/crossLink}} after
@@ -238,8 +241,7 @@
  &lt;li&gt;[Entity View-space boundary](../../examples/#boundaries_Entity_viewBoundary)&lt;/li&gt;
  &lt;li&gt;[Entity Canvas-space boundary](../../examples/#boundaries_Entity_canvasBoundary)&lt;/li&gt;
  &lt;li&gt;[Flying camera to Entity World-space boundaries](../../examples/#boundaries_flyToBoundary)&lt;/li&gt;
- &lt;li&gt;[Visualizing a CollectionBoundary](../../examples/#boundaries_CollectionBoundary)&lt;/li&gt;
- &lt;li&gt;[Visualizing a CollectionBoundary hierarchy](../../examples/#boundaries_CollectionBoundary_hierarchy)&lt;/li&gt;
+ &lt;li&gt;[Model World-space boundary](../../examples/#boundaries_Model_worldBoundary)&lt;/li&gt;
  &lt;/ul&gt;
 
  ## Usage

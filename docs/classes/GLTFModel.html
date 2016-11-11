@@ -210,12 +210,17 @@
 
 
 <div class="box intro">
-    <p>A <strong>GLTFModel</strong> is a <a href="../classes/Model.html" class="crosslink">Model</a> that loads itself from a
-<a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file.</p>
-<ul><li>A GLTFModel begins loading as soon as you set its <a href="../classes/GLTFModel.html#property_src" class="crosslink">src</a>
+    <p>A <strong>GLTFModel</strong> is a <a href="../classes/Model.html" class="crosslink">Model</a> that loads itself from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file.</p>
+<p><a href="../../examples/#models_GLTFModel_gearbox"><img src="../../../assets/images/gltf/glTF_gearbox_squashed.png"></img></a></p>
+<h2 id="overview">Overview</h2>
+<ul>
+<li>A GLTFModel is a container of <a href="../classes/Component.html" class="crosslink">Components</a> that loads itself from glTF.</li>
+<li>It begins loading as soon as you set its <a href="../classes/GLTFModel.html#property_src" class="crosslink">src</a>
 property to the location of a valid glTF file.</li>
 <li>You can set <a href="../classes/GLTFModel.html#property_src" class="crosslink">src</a> to a new file path at any time, which causes
 the GLTFModel to clear itself and load components from the new file.</li>
+<li>Can be transformed within World-space by attached it to a <a href="../classes/Transform.html" class="crosslink">Transform</a>.</li>
+<li>Provides its World-space boundary as a <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>.</li>
 </ul>
 
 <p><img src="../../../assets/images/GLTFModel.png"></img></p>
@@ -578,7 +583,7 @@ the GLTFModel to clear itself and load components from the new file.</li>
     </div>
 
     <div class="description">
-        <p>Adds one or more <a href="../classes/Component.html" class="crosslink">Components</a>s to this Model.</p>
+        <p>Adds one or more <a href="../classes/Component.html" class="crosslink">Components</a> to this Model.</p>
 <p>The <a href="../classes/Component.html" class="crosslink">Component(s)</a> may be specified by instance, ID or type.</p>
 <p>See class comment for usage examples.</p>
 <p>The <a href="../classes/Component.html" class="crosslink">Components</a> must be in the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Model.</p>
@@ -1680,7 +1685,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_gltfModel.js.html#l81"><code>src&#x2F;models&#x2F;gltfModel.js:81</code></a>
+                            <a href="../files/src_models_gltfModel.js.html#l88"><code>src&#x2F;models&#x2F;gltfModel.js:88</code></a>
                             </p>
                     
                     
@@ -1966,7 +1971,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_gltfModel.js.html#l107"><code>src&#x2F;models&#x2F;gltfModel.js:107</code></a>
+                            <a href="../files/src_models_gltfModel.js.html#l114"><code>src&#x2F;models&#x2F;gltfModel.js:114</code></a>
                             </p>
                     
                     
@@ -1992,7 +1997,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_gltfModel.js.html#l142"><code>src&#x2F;models&#x2F;gltfModel.js:142</code></a>
+                            <a href="../files/src_models_gltfModel.js.html#l149"><code>src&#x2F;models&#x2F;gltfModel.js:149</code></a>
                             </p>
                     
                     
@@ -2060,7 +2065,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_gltfModel.js.html#l150"><code>src&#x2F;models&#x2F;gltfModel.js:150</code></a>
+                            <a href="../files/src_models_gltfModel.js.html#l157"><code>src&#x2F;models&#x2F;gltfModel.js:157</code></a>
                             </p>
                     
                     

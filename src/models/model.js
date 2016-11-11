@@ -106,7 +106,7 @@
         },
 
         /**
-         * Adds one or more {{#crossLink "Component"}}Components{{/crossLink}}s to this Model.
+         * Adds one or more {{#crossLink "Component"}}Components{{/crossLink}} to this Model.
          *
          * The {{#crossLink "Component"}}Component(s){{/crossLink}} may be specified by instance, ID or type.
          *

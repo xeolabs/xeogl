@@ -1,6 +1,10 @@
 /**
  A **Boundary3D** provides the 3D extents of its parent component in a given coordinate system.
 
+ <a href="../../examples/#boundaries_flyToBoundary"><img src="../../assets/images/screenshots/Boundary3D.png"></img></a>
+
+ ## Overview
+
  A Boundary3D provides its spatial info in these properties:
 
  <ul>
@@ -23,7 +27,6 @@
  * An {{#crossLink "Entity/viewBoundary:property"}}Entity's viewBoundary{{/crossLink}} provides the **View**-space boundary of
  its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
  their transformation by both the {{#crossLink "Entity/transform:property"}}Entity's Modelling transform{{/crossLink}} **and** {{#crossLink "Camera/view:property"}}Viewing transform{{/crossLink}}.
- * A {{#crossLink "CollectionBoundary/worldBoundary:property"}}CollectionBoundary's worldBoundary{{/crossLink}} provides the **World**-space boundary of all the {{#crossLink "Entity"}}Entities{{/crossLink}} contained within its {{#crossLink "Collection"}}Collection{{/crossLink}}.
  * A {{#crossLink "Model/worldBoundary:property"}}Model's worldBoundary{{/crossLink}} provides the **World**-space boundary of all its {{#crossLink "Entity"}}Entities{{/crossLink}}
 
  The diagram also shows an {{#crossLink "Entity/canvasBoundary:property"}}Entity's canvasBoundary{{/crossLink}}, which is a {{#crossLink "Boundary2D"}}{{/crossLink}} that provides the **Canvas**-space boundary of the {{#crossLink "Geometry"}}Geometry's{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
@@ -40,8 +43,7 @@
  <li>[Entity View-space boundary](../../examples/#boundaries_Entity_viewBoundary)</li>
  <li>[Entity Canvas-space boundary](../../examples/#boundaries_Entity_canvasBoundary)</li>
  <li>[Flying camera to Entity World-space boundaries](../../examples/#boundaries_flyToBoundary)</li>
- <li>[Visualizing a CollectionBoundary](../../examples/#boundaries_CollectionBoundary)</li>
- <li>[Visualizing a CollectionBoundary hierarchy](../../examples/#boundaries_CollectionBoundary_hierarchy)</li>
+ <li>[Model World-space boundary](../../examples/#boundaries_Model_worldBoundary)</li>
  </ul>
 
  ## Usage

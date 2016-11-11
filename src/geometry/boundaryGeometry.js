@@ -1,5 +1,5 @@
 /**
- A **BoundaryGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the entity-aligned wireframe bounding box (OBB)
+ A **BoundaryGeometry** is {{#crossLink "Geometry"}}{{/crossLink}} that shows the entity-aligned wireframe bounding box (OBB)
  of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
  ## Examples

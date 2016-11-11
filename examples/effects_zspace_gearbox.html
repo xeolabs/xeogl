@@ -9,9 +9,13 @@
 
     <script src="../build/xeogl.min.js"></script>
 
-    <script src="js/effects/zSpaceEffect.js"></script>
-    <script src="js/controls/zSpaceStylusControl.js"></script>
+    <!-- ZSpaceEffect is insulated from changes to the zSpace WebVR API by
+     the "ZSpace" utility class provided by zSpace, which depends on glmatrix. -->
+
     <script src="libs/gl-matrix-min.js"></script>
+    <!--<script src="js/effects/zSpace.js"></script>-->
+    <script src="js/effects/zSpaceEffect_complete.js"></script>
+    <script src="js/controls/zSpaceStylusControl.js"></script>
 
 <body>
 
@@ -61,22 +65,6 @@
                 // so that they get destroyed automatically
 
                 gearbox.add(entity.material = entity.material.clone());
-
-                // Flatten modelling transform hierarchies
-
-                if (entity.transform && entity.transform.parent) {
-
-                    // If an entity has a transform that has a parent, then the entity's
-                    // transform hierarchy needs collapsing. Bake the hierarchy into
-                    // a matrix on a single xeogl.Transform and set that as the entity's new transform.
-                    // Store the new transform in the GLTFModel so that
-                    // it gets destroyed when the GLTFModel is destroyed or reloaded
-
-                    gearbox.add(entity.transform = new xeogl.Transform({
-                        matrix: entity.transform.leafMatrix
-                    }));
-//                }
-                }
             }
         }
     });

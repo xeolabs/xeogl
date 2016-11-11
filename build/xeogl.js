@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2016-11-08
+ * Built on 2016-11-11
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -21002,7 +21002,9 @@ visibility.destroy();
     });
 })();
 ;/**
- A **BoxGeometry** defines box-shaped geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **BoxGeometry** extends {{#crossLink "Geometry"}}{{/crossLink}} to define a box-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+ <a href="../../examples/#geometry_BoxGeometry"><img src="../../assets/images/screenshots/BoxGeometry.png"></img></a>
 
  ## Examples
 
@@ -21381,7 +21383,7 @@ visibility.destroy();
 
 })();
 ;/**
- A **BoundaryGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the entity-aligned wireframe bounding box (OBB)
+ A **BoundaryGeometry** is {{#crossLink "Geometry"}}{{/crossLink}} that shows the entity-aligned wireframe bounding box (OBB)
  of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
  ## Examples
@@ -21629,7 +21631,9 @@ visibility.destroy();
     });
 })();
 ;/**
- A **TorusGeometry** defines torus-shaped geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **TorusGeometry** extends {{#crossLink "Geometry"}}{{/crossLink}} to define a torus-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+ <a href="../../examples/#geometry_TorusGeometry"><img src="../../assets/images/screenshots/TorusGeometry.png"></img></a>
 
  ## Examples
 
@@ -22068,7 +22072,9 @@ visibility.destroy();
 
 })();
 ;/**
- A **SphereGeometry** defines spherical geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **SphereGeometry** extends {{#crossLink "Geometry"}}{{/crossLink}} to define a sphere-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+ <a href="../../examples/#geometry_SphereGeometry"><img src="../../assets/images/screenshots/SphereGeometry.png"></img></a>
 
  ## Examples
 
@@ -22607,7 +22613,9 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
         return json;
     }
 });;/**
- A **CylinderGeometry** defines cylindrical geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **CylinderGeometry** extends {{#crossLink "Geometry"}}{{/crossLink}} to define a cylindrical mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+ <a href="../../examples/#geometry_CylinderGeometry"><img src="../../assets/images/screenshots/CylinderGeometry.png"></img></a>
 
  ## Examples
 
@@ -23165,7 +23173,9 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
 })();
 ;/**
- A **PlaneGeometry** defines a plane geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **PlaneGeometry** extends {{#crossLink "Geometry"}}{{/crossLink}} to define a plane-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+ <a href="../../examples/#geometry_PlaneGeometry"><img src="../../assets/images/screenshots/PlaneGeometry.png"></img></a>
 
  ## Examples
 
@@ -26536,7 +26546,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
         },
 
         /**
-         * Adds one or more {{#crossLink "Component"}}Components{{/crossLink}}s to this Model.
+         * Adds one or more {{#crossLink "Component"}}Components{{/crossLink}} to this Model.
          *
          * The {{#crossLink "Component"}}Component(s){{/crossLink}} may be specified by instance, ID or type.
          *
@@ -28302,13 +28312,20 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     "use strict";
 
     /**
-     A **GLTFModel** is a {{#crossLink "Model"}}{{/crossLink}} that loads itself from a
-     <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file.
+     A **GLTFModel** is a {{#crossLink "Model"}}{{/crossLink}} that loads itself from a <a href="https://github.com/KhronosGroup/glTF" target = "_other">glTF</a> file.
 
-     <ul><li>A GLTFModel begins loading as soon as you set its {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}
+     <a href="../../examples/#models_GLTFModel_gearbox"><img src="../../../assets/images/gltf/glTF_gearbox_squashed.png"></img></a>
+
+     ## Overview
+
+     <ul>
+     <li>A GLTFModel is a container of {{#crossLink "Component"}}Components{{/crossLink}} that loads itself from glTF.</li>
+     <li>It begins loading as soon as you set its {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}
      property to the location of a valid glTF file.</li>
      <li>You can set {{#crossLink "GLTFModel/src:property"}}{{/crossLink}} to a new file path at any time, which causes
      the GLTFModel to clear itself and load components from the new file.</li>
+     <li>Can be transformed within World-space by attached it to a {{#crossLink "Transform"}}{{/crossLink}}.</li>
+     <li>Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.</li>
      </ul>
 
      <img src="../../../assets/images/GLTFModel.png"></img>
@@ -35048,6 +35065,10 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  */;/**
  A **Boundary2D** is a Canvas-space 2D boundary.
 
+ <a href="../../examples/#boundaries_flyToBoundary"><img src="../../assets/images/screenshots/Boundary3D.png"></img></a>
+
+ ## Overview
+
  A Boundary2D provides its spatial info in these properties:
 
  <ul>
@@ -35248,6 +35269,10 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 ;/**
  A **Boundary3D** provides the 3D extents of its parent component in a given coordinate system.
 
+ <a href="../../examples/#boundaries_flyToBoundary"><img src="../../assets/images/screenshots/Boundary3D.png"></img></a>
+
+ ## Overview
+
  A Boundary3D provides its spatial info in these properties:
 
  <ul>
@@ -35270,7 +35295,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  * An {{#crossLink "Entity/viewBoundary:property"}}Entity's viewBoundary{{/crossLink}} provides the **View**-space boundary of
  its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
  their transformation by both the {{#crossLink "Entity/transform:property"}}Entity's Modelling transform{{/crossLink}} **and** {{#crossLink "Camera/view:property"}}Viewing transform{{/crossLink}}.
- * A {{#crossLink "CollectionBoundary/worldBoundary:property"}}CollectionBoundary's worldBoundary{{/crossLink}} provides the **World**-space boundary of all the {{#crossLink "Entity"}}Entities{{/crossLink}} contained within its {{#crossLink "Collection"}}Collection{{/crossLink}}.
  * A {{#crossLink "Model/worldBoundary:property"}}Model's worldBoundary{{/crossLink}} provides the **World**-space boundary of all its {{#crossLink "Entity"}}Entities{{/crossLink}}
 
  The diagram also shows an {{#crossLink "Entity/canvasBoundary:property"}}Entity's canvasBoundary{{/crossLink}}, which is a {{#crossLink "Boundary2D"}}{{/crossLink}} that provides the **Canvas**-space boundary of the {{#crossLink "Geometry"}}Geometry's{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
@@ -35287,8 +35311,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  <li>[Entity View-space boundary](../../examples/#boundaries_Entity_viewBoundary)</li>
  <li>[Entity Canvas-space boundary](../../examples/#boundaries_Entity_canvasBoundary)</li>
  <li>[Flying camera to Entity World-space boundaries](../../examples/#boundaries_flyToBoundary)</li>
- <li>[Visualizing a CollectionBoundary](../../examples/#boundaries_CollectionBoundary)</li>
- <li>[Visualizing a CollectionBoundary hierarchy](../../examples/#boundaries_CollectionBoundary_hierarchy)</li>
+ <li>[Model World-space boundary](../../examples/#boundaries_Model_worldBoundary)</li>
  </ul>
 
  ## Usage

@@ -33,7 +33,7 @@
  });
  ````
 
- @class LatheGeometry
+
  @module xeogl
  @submodule geometry
  @constructor

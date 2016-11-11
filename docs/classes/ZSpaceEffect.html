@@ -200,7 +200,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/examples_js_effects_zSpaceEffect.js.html#l1"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:1</code></a>
+            Defined in: <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l1"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:1</code></a>
         </div>
 
             Module: <a href="../modules/effects.html">effects</a><br>
@@ -226,17 +226,19 @@ around with the stylus.</li>
 
 <p><img src="../../../assets/images/ZSpaceEffect.png"></img></p>
 <h2 id="examples">Examples</h2>
+<p>Use these examples as boilerplates to get started:</p>
 <ul>
-<li><a href="../../examples/effects_zspace_cube.html">zSpace cube</a></li>
-<li><a href="../../examples/effects_zspace_geometries.html">zSpace with random geometries</a></li>
-<li><a href="../../examples/effects_zspace_gearbox.html">zSpace with glTF gearbox model</a></li>
-<li><a href="../../examples/effects_zspace_gearbox_explorer.html">zSpace with glTF gearbox model and entity explorer</a></li>
-<li><a href="../../examples/effects_zspace_ReciprocatingSaw.html">zSpace with glTF reciprocating saw model</a></li>
+<li><a href="../../examples/#effects_zspace_cube">zSpace cube</a></li>
+<li><a href="../../examples/#effects_zspace_geometries">zSpace with random geometries</a></li>
+<li><a href="../../examples/#effects_zspace_gearbox">zSpace with glTF gearbox model</a></li>
+<li><a href="../../examples/#effects_zspace_gearbox_explorer">zSpace with glTF gearbox model and entity explorer</a></li>
+<li><a href="../../examples/#effects_zspace_ReciprocatingSaw">zSpace with glTF reciprocating saw model</a></li>
 </ul>
 
 <h2 id="usage">Usage</h2>
 <p>In the following example we&#39;re going to set up a ZSpace-viewable scene with xeogl, defining the scene step-by-step to
-emphasize the plug-and-play design of xeogl&#39;s API.</p>
+emphasize the plug-and-play design of xeogl&#39;s API. We&#39;ll assume that you&#39;ve included all the required JavaScript libraries
+in your page - use the examples listed above as a boilerplate to get started.</p>
 <p><strong>1. Create an entity</strong></p>
 <p>First we&#39;ll create a simple torus-shaped <a href="../classes/Entity.html" class="crosslink">Entity</a>, which will be within xeogl&#39;s default
 <a href="../classes/Scene.html" class="crosslink">Scene</a>, since we&#39;re not defining the <a href="../classes/Scene.html" class="crosslink">Scene</a> component
@@ -376,7 +378,7 @@ zspaceEffect.on("stylusButton2", function(value) {
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/examples_js_effects_zSpaceEffect.js.html#l1"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:1</code></a>
+                <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l1"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:1</code></a>
                 </p>
         
         
@@ -476,7 +478,7 @@ zspaceEffect.on("stylusButton2", function(value) {
                                     </li>
                                     <li class="param">
                                             <code class="param-name optional">[displaySize=0.521,0.293]</code>
-                                            <span class="type">Array of Number</span>
+                                            <span class="type">Float32Array</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
@@ -487,7 +489,7 @@ zspaceEffect.on("stylusButton2", function(value) {
                                     </li>
                                     <li class="param">
                                             <code class="param-name optional">[displayResolution=1920,1080]</code>
-                                            <span class="type">Array of Number</span>
+                                            <span class="type">Float32Array</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
@@ -498,7 +500,7 @@ zspaceEffect.on("stylusButton2", function(value) {
                                     </li>
                                     <li class="param">
                                             <code class="param-name optional">[canvasOffset=0,0]</code>
-                                            <span class="type">Array of Number</span>
+                                            <span class="type">Float32Array</span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
@@ -598,7 +600,19 @@ zspaceEffect.on("stylusButton2", function(value) {
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_active">active</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_camera">camera</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_camera">camera</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_canvasOffset">canvasOffset</a>
 
                             </li>
                             <li class="index-item property">
@@ -614,7 +628,19 @@ zspaceEffect.on("stylusButton2", function(value) {
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_displayResolution">displayResolution</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_displaySize">displaySize</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_displaySize">displaySize</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_farClip">farClip</a>
 
                             </li>
                             <li class="index-item property">
@@ -641,6 +667,10 @@ zspaceEffect.on("stylusButton2", function(value) {
                                 <a href="#property_nearClip">nearClip</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_nearClip">nearClip</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_scene">scene</a>
 
@@ -654,7 +684,19 @@ zspaceEffect.on("stylusButton2", function(value) {
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_stylusButton0">stylusButton0</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_stylusButton1">stylusButton1</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_stylusButton1">stylusButton1</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_stylusButton2">stylusButton2</a>
 
                             </li>
                             <li class="index-item property">
@@ -670,7 +712,23 @@ zspaceEffect.on("stylusButton2", function(value) {
 
                             </li>
                             <li class="index-item property">
+                                <a href="#property_stylusCameraMatrix">stylusCameraMatrix</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_stylusCameraMatrix">stylusCameraMatrix</a>
+
+                            </li>
+                            <li class="index-item property">
                                 <a href="#property_stylusOrientation">stylusOrientation</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_stylusOrientation">stylusOrientation</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_stylusPos">stylusPos</a>
 
                             </li>
                             <li class="index-item property">
@@ -683,6 +741,10 @@ zspaceEffect.on("stylusButton2", function(value) {
                             </li>
                             <li class="index-item property inherited">
                                 <a href="#property_type">type</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_viewerScale">viewerScale</a>
 
                             </li>
                             <li class="index-item property">
@@ -702,7 +764,19 @@ zspaceEffect.on("stylusButton2", function(value) {
 
                             </li>
                             <li class="index-item event">
+                                <a href="#event_active">active</a>
+
+                            </li>
+                            <li class="index-item event">
                                 <a href="#event_camera">camera</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_camera">camera</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_canvasOffset">canvasOffset</a>
 
                             </li>
                             <li class="index-item event">
@@ -718,7 +792,19 @@ zspaceEffect.on("stylusButton2", function(value) {
 
                             </li>
                             <li class="index-item event">
+                                <a href="#event_displayResolution">displayResolution</a>
+
+                            </li>
+                            <li class="index-item event">
                                 <a href="#event_displaySize">displaySize</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_displaySize">displaySize</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_farClip">farClip</a>
 
                             </li>
                             <li class="index-item event">
@@ -730,7 +816,19 @@ zspaceEffect.on("stylusButton2", function(value) {
 
                             </li>
                             <li class="index-item event">
+                                <a href="#event_nearClip">nearClip</a>
+
+                            </li>
+                            <li class="index-item event">
                                 <a href="#event_stylusButton0">stylusButton0</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_stylusButton0">stylusButton0</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_stylusButton1">stylusButton1</a>
 
                             </li>
                             <li class="index-item event">
@@ -742,7 +840,23 @@ zspaceEffect.on("stylusButton2", function(value) {
 
                             </li>
                             <li class="index-item event">
+                                <a href="#event_stylusButton2">stylusButton2</a>
+
+                            </li>
+                            <li class="index-item event">
                                 <a href="#event_stylusMoved">stylusMoved</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_stylusMoved">stylusMoved</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_supported">supported</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_supported">supported</a>
 
                             </li>
                     </ul>
@@ -1487,7 +1601,35 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l688"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:688</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l698"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:698</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Flag which indicates whether this ZSpaceEffect is active or not.</p>
+                    <p>Note that this ZSpaceEffect can still be activated when the browser does not support ZSpace.</p>
+                    <p>Fires an <a href="../classes/ZSpaceEffect.html#event_active" class="crosslink">active</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> true</p>
+                    
+                    
+                    </div>
+                    <div id="property_active" class="property item">
+                        <h3 class="name"><code>active</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l638"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:638</code></a>
                             </p>
                     
                     
@@ -1515,7 +1657,41 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l362"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:362</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l312"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:312</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The <a href="../classes/Camera.html" class="crosslink">Camera</a> attached to this ZSpaceEffect.</p>
+                    <p>The ZSpaceEffect will attach a Projection to its
+                    <a href="../classes/Camera.html" class="crosslink">Camera</a> if the <a href="../classes/Camera.html" class="crosslink">Camera</a> does not have
+                    one already, replacing whatever projection transform component was already attached.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this ZSpaceEffect. Defaults to the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene&#39;s</a> default <a href="../classes/Scene.html#property_camera" class="crosslink">camera</a> when set to
+                    a null or undefined value.</p>
+                    <p>No other component should modify the state of the <a href="../classes/Camera.html" class="crosslink">Camera</a> while
+                    it&#39;s attached to this ZSpaceEffect. There is no prevention or check for that, so if that
+                    happens you&#39;ll get unexpected results.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_camera" class="property item">
+                        <h3 class="name"><code>camera</code></h3>
+                        <span class="type"><a href="../classes/Camera.html" class="crosslink">Camera</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l372"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:372</code></a>
                             </p>
                     
                     
@@ -1549,7 +1725,35 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l404"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:404</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l354"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:354</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The offset of the canvas&#39; corner from the edge of the screen - needed for correct tracking of glasses and stylus.</p>
+                    <p>Leave this at it&#39;s default value of <code>[0,0]</code> if the canvas is to fill the entire screen.</p>
+                    <p>Fires a <a href="../classes/ZSpaceEffect.html#event_canvasOffset" class="crosslink">canvasOffset</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> [0, 0]</p>
+                    
+                    
+                    </div>
+                    <div id="property_canvasOffset" class="property item">
+                        <h3 class="name"><code>canvasOffset</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l414"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:414</code></a>
                             </p>
                     
                     
@@ -1602,7 +1806,34 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l498"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:498</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l508"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:508</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The display resolution.</p>
+                    <p>Fires a <a href="../classes/ZSpaceEffect.html#event_displayResolution" class="crosslink">displayResolution</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> [1920, 1080]</p>
+                    
+                    
+                    </div>
+                    <div id="property_displayResolution" class="property item">
+                        <h3 class="name"><code>displayResolution</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l448"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:448</code></a>
                             </p>
                     
                     
@@ -1629,7 +1860,34 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l529"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:529</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l539"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:539</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The display size.</p>
+                    <p>Fires a <a href="../classes/ZSpaceEffect.html#event_displaySize" class="crosslink">displaySize</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> [0.521, 0.293]</p>
+                    
+                    
+                    </div>
+                    <div id="property_displaySize" class="property item">
+                        <h3 class="name"><code>displaySize</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l479"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:479</code></a>
                             </p>
                     
                     
@@ -1656,7 +1914,34 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l467"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:467</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l417"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:417</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Position of this ZSpaceEffect&#39;s far plane on the positive View-space Z-axis.</p>
+                    <p>Fires a <a href="../classes/ZSpaceEffect.html#event_farClip" class="crosslink">farClip</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 10000.0</p>
+                    
+                    
+                    </div>
+                    <div id="property_farClip" class="property item">
+                        <h3 class="name"><code>farClip</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l477"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:477</code></a>
                             </p>
                     
                     
@@ -1785,7 +2070,34 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l437"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:437</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l447"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:447</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Position of this ZSpaceEffect&#39;s near plane on the positive View-space Z-axis.</p>
+                    <p>Fires a <a href="../classes/ZSpaceEffect.html#event_nearClip" class="crosslink">nearClip</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 0.1</p>
+                    
+                    
+                    </div>
+                    <div id="property_nearClip" class="property item">
+                        <h3 class="name"><code>nearClip</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l387"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:387</code></a>
                             </p>
                     
                     
@@ -1868,7 +2180,35 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l620"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:620</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l570"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:570</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Whether or not the first button is down on the stylus.</p>
+                    <p>Fires a <a href="../classes/ZSpaceEffect.html#event_stylusButton0" class="crosslink">stylusButton0</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> false</p>
+                    
+                    
+                    </div>
+                    <div id="property_stylusButton0" class="property item">
+                        <h3 class="name"><code>stylusButton0</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l630"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:630</code></a>
                             </p>
                     
                     
@@ -1896,7 +2236,35 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l636"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:636</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l586"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:586</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Whether or not the second button is down on the stylus.</p>
+                    <p>Fires a <a href="../classes/ZSpaceEffect.html#event_stylusButton1" class="crosslink">stylusButton1</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> false</p>
+                    
+                    
+                    </div>
+                    <div id="property_stylusButton1" class="property item">
+                        <h3 class="name"><code>stylusButton1</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l646"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:646</code></a>
                             </p>
                     
                     
@@ -1924,7 +2292,35 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l652"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:652</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l602"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:602</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Whether or not the third button is down on the stylus.</p>
+                    <p>Fires a <a href="../classes/ZSpaceEffect.html#event_stylusButton2" class="crosslink">stylusButton2</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> false</p>
+                    
+                    
+                    </div>
+                    <div id="property_stylusButton2" class="property item">
+                        <h3 class="name"><code>stylusButton2</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l662"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:662</code></a>
                             </p>
                     
                     
@@ -1952,7 +2348,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l605"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:605</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l555"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:555</code></a>
                             </p>
                     
                     
@@ -1979,7 +2375,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l590"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:590</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l540"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:540</code></a>
                             </p>
                     
                     
@@ -1987,6 +2383,60 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>The current camera matrix for the stylus.</p>
+                    <p>Fires a <a href="../classes/ZSpaceEffect.html#event_stylusMoved" class="crosslink">stylusMoved</a> event on change.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_stylusCameraMatrix" class="property item">
+                        <h3 class="name"><code>stylusCameraMatrix</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l600"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:600</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The current camera matrix for the stylus.</p>
+                    <p>Fires a <a href="../classes/ZSpaceEffect.html#event_stylusMoved" class="crosslink">stylusMoved</a> event on change.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_stylusCameraMatrix" class="property item">
+                        <h3 class="name"><code>stylusCameraMatrix</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l615"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:615</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The current world matrix for the stylus.</p>
                     <p>Fires a <a href="../classes/ZSpaceEffect.html#event_stylusMoved" class="crosslink">stylusMoved</a> event on change.</p>
                     
                         </div>
@@ -2006,7 +2456,34 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l575"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:575</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l585"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:585</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The current World-space direction of the stylus.</p>
+                    <p>Fires a <a href="../classes/ZSpaceEffect.html#event_stylusMoved" class="crosslink">stylusMoved</a> event on change.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_stylusOrientation" class="property item">
+                        <h3 class="name"><code>stylusOrientation</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l525"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:525</code></a>
                             </p>
                     
                     
@@ -2033,7 +2510,34 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l560"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:560</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l570"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:570</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The current World-space position of the stylus.</p>
+                    <p>Fires a <a href="../classes/ZSpaceEffect.html#event_stylusMoved" class="crosslink">stylusMoved</a> event on change.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_stylusPos" class="property item">
+                        <h3 class="name"><code>stylusPos</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l510"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:510</code></a>
                             </p>
                     
                     
@@ -2121,7 +2625,37 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l668"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:668</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l678"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:678</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The current viewer scale factor.</p>
+                    <p>The ZSpaceEffect automatically calculates this from the distance between
+                    the eye and the point of interest.</p>
+                    <p>Fires a <a href="../classes/ZSpaceEffect.html#event_stylusButton2" class="crosslink">stylusButton2</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 1</p>
+                    
+                    
+                    </div>
+                    <div id="property_viewerScale" class="property item">
+                        <h3 class="name"><code>viewerScale</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l618"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:618</code></a>
                             </p>
                     
                     
@@ -2156,7 +2690,49 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l714"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:714</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l724"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:724</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this ZSpaceEffect&#39;s <a href="../classes/ZSpaceEffect.html#property_active" class="crosslink">active</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_active" class="events item">
+                        <h3 class="name"><code>active</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l664"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:664</code></a>
                             </p>
                     
                     
@@ -2198,7 +2774,50 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l384"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:384</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l334"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:334</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this ZSpaceEffect&#39;s <a href="../classes/ZSpaceEffect.html#property_camera" class="crosslink">camera</a>
+                    property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_camera" class="events item">
+                        <h3 class="name"><code>camera</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l394"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:394</code></a>
                             </p>
                     
                     
@@ -2241,7 +2860,49 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l423"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:423</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l433"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:433</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this ZSpaceEffect&#39;s <a href="../classes/ZSpaceEffect.html#property_canvasOffset" class="crosslink">canvasOffset</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_canvasOffset" class="events item">
+                        <h3 class="name"><code>canvasOffset</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l373"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:373</code></a>
                             </p>
                     
                     
@@ -2308,7 +2969,49 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l515"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:515</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l465"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:465</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this ZSpaceEffect&#39;s <a href="../classes/ZSpaceEffect.html#property_displayResolution" class="crosslink">displayResolution</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_displayResolution" class="events item">
+                        <h3 class="name"><code>displayResolution</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l525"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:525</code></a>
                             </p>
                     
                     
@@ -2350,7 +3053,49 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l546"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:546</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l496"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:496</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this ZSpaceEffect&#39;s <a href="../classes/ZSpaceEffect.html#property_displaySize" class="crosslink">displaySize</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_displaySize" class="events item">
+                        <h3 class="name"><code>displaySize</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l556"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:556</code></a>
                             </p>
                     
                     
@@ -2392,7 +3137,49 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l484"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:484</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l494"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:494</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this ZSpaceEffect&#39;s  <a href="../classes/ZSpaceEffect.html#property_farClip" class="crosslink">farClip</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_farClip" class="events item">
+                        <h3 class="name"><code>farClip</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l434"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:434</code></a>
                             </p>
                     
                     
@@ -2434,7 +3221,49 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l454"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:454</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l464"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:464</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this ZSpaceEffect&#39;s   <a href="../classes/ZSpaceEffect.html#property_nearClip" class="crosslink">nearClip</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_nearClip" class="events item">
+                        <h3 class="name"><code>nearClip</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l404"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:404</code></a>
                             </p>
                     
                     
@@ -2476,7 +3305,49 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l1133"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:1133</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l1144"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:1144</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this ZSpaceEffect&#39;s first button is pressed or released.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>True if the button is down.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_stylusButton0" class="events item">
+                        <h3 class="name"><code>stylusButton0</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l871"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:871</code></a>
                             </p>
                     
                     
@@ -2518,7 +3389,49 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l1144"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:1144</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l882"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:882</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this ZSpaceEffect&#39;s second button is pressed or released.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>True if the button is down.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_stylusButton1" class="events item">
+                        <h3 class="name"><code>stylusButton1</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l1155"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:1155</code></a>
                             </p>
                     
                     
@@ -2560,7 +3473,49 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l1155"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:1155</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l1166"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:1166</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this ZSpaceEffect&#39;s third button is pressed or released.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>True if the button is down.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_stylusButton2" class="events item">
+                        <h3 class="name"><code>stylusButton2</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l893"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:893</code></a>
                             </p>
                     
                     
@@ -2602,7 +3557,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l1123"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:1123</code></a>
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l1134"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:1134</code></a>
                             </p>
                     
                     
@@ -2613,6 +3568,115 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         </div>
                     
+                    
+                    
+                    </div>
+                    <div id="event_stylusMoved" class="events item">
+                        <h3 class="name"><code>stylusMoved</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l861"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:861</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this ZSpaceEffect&#39;s stylus moves.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="event_supported" class="events item">
+                        <h3 class="name"><code>supported</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect.js.html#l259"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect.js:259</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Notifies whether or not zSpace is supported in this browser.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Indicates whether or not zSpace is supported.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_supported" class="events item">
+                        <h3 class="name"><code>supported</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_effects_zSpaceEffect_complete.js.html#l265"><code>examples&#x2F;js&#x2F;effects&#x2F;zSpaceEffect_complete.js:265</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Notifies whether or not zSpace is supported in this browser.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Indicates whether or not zSpace is supported.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
                     
                     
                     </div>

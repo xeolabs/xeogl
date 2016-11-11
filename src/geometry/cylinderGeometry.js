@@ -1,5 +1,7 @@
 /**
- A **CylinderGeometry** defines cylindrical geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **CylinderGeometry** extends {{#crossLink "Geometry"}}{{/crossLink}} to define a cylindrical mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+ <a href="../../examples/#geometry_CylinderGeometry"><img src="../../assets/images/screenshots/CylinderGeometry.png"></img></a>
 
  ## Examples
 

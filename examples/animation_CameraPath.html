@@ -7,6 +7,14 @@
 
     <script src="../build/xeogl.min.js"></script>
 
+    <!-- ZSpaceEffect is insulated from changes to the zSpace WebVR API by
+ the "ZSpace" utility class provided by zSpace, which depends on glmatrix. -->
+
+    <script src="libs/gl-matrix-min.js"></script>
+    <script src="js/effects/zSpace.js"></script>
+    <script src="js/effects/zSpaceEffect.js"></script>
+    <script src="js/controls/zSpaceStylusControl.js"></script>
+
     <script src="js/curves/curve.js"></script>
     <script src="js/curves/splineCurve.js"></script>
     <script src="js/animation/cameraPath.js"></script>
@@ -591,11 +599,7 @@
         cameraPathPlayer.play();
     });
 
-    new xeogl.AxisHelper({
-        lookat: scene.camera.view,
-        visible: true,
-        size: [200, 200]
-    });
+
 
 
     /*
@@ -634,6 +638,11 @@
      });
 
      */
+
+//    var zspaceEffect = new xeogl.ZSpaceEffect({
+//        canvasOffset: [310, 0]
+//    });
+
 
 </script>
 </body>

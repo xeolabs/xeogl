@@ -1,5 +1,7 @@
 /**
- A **PlaneGeometry** defines a plane geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **PlaneGeometry** extends {{#crossLink "Geometry"}}{{/crossLink}} to define a plane-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+ <a href="../../examples/#geometry_PlaneGeometry"><img src="../../assets/images/screenshots/PlaneGeometry.png"></img></a>
 
  ## Examples
 

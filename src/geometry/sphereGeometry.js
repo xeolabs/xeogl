@@ -1,5 +1,7 @@
 /**
- A **SphereGeometry** defines spherical geometry for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **SphereGeometry** extends {{#crossLink "Geometry"}}{{/crossLink}} to define a sphere-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
+ <a href="../../examples/#geometry_SphereGeometry"><img src="../../assets/images/screenshots/SphereGeometry.png"></img></a>
 
  ## Examples
 

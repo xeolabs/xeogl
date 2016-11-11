@@ -18,13 +18,16 @@
 
  ## Examples
 
+ Use these examples as boilerplates to get started:
+
  <ul>
- <li>[zSpace cube](../../examples/effects_zspace_cube.html)</li>
- <li>[zSpace with random geometries](../../examples/effects_zspace_geometries.html)</li>
- <li>[zSpace with glTF gearbox model](../../examples/effects_zspace_gearbox.html)</li>
- <li>[zSpace with glTF gearbox model and entity explorer](../../examples/effects_zspace_gearbox_explorer.html)</li>
- <li>[zSpace with glTF reciprocating saw model](../../examples/effects_zspace_ReciprocatingSaw.html)</li>
+ <li>[zSpace cube](../../examples/#effects_zspace_cube)</li>
+ <li>[zSpace with random geometries](../../examples/#effects_zspace_geometries)</li>
+ <li>[zSpace with glTF gearbox model](../../examples/#effects_zspace_gearbox)</li>
+ <li>[zSpace with glTF gearbox model and entity explorer](../../examples/#effects_zspace_gearbox_explorer)</li>
+ <li>[zSpace with glTF reciprocating saw model](../../examples/#effects_zspace_ReciprocatingSaw)</li>
  </ul>
+
 
  ## Usage
 
@@ -192,9 +195,9 @@
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
  @param [cfg.nearClip=0.1] {Number} Position of the near clipping plane on the View-space Z-axis.
  @param [cfg.farClip=10000] {Number} Position of the far clipping plane on the View-space Z-axis.
- @param [cfg.displaySize=0.521,0.293] {Array of Number} The viewer display size.
- @param [cfg.displayResolution=1920,1080] {Array of Number} The viewer display resolution.
- @param [cfg.canvasOffset=0,0] {Array of Number} The offset of the canvas' corner from the edge of the screen - needed for
+ @param [cfg.displaySize=0.521,0.293] {Float32Array} The viewer display size.
+ @param [cfg.displayResolution=1920,1080] {Float32Array} The viewer display resolution.
+ @param [cfg.canvasOffset=0,0] {Float32Array} The offset of the canvas' corner from the edge of the screen - needed for
  correct tracking of glasses and stylus. Leave this at its default value if the canvas is to fill the entire screen.
  @param [cfg.active=true] {Boolean} Whether or not this ZSpaceEffect is initially active.
  @extends Component
@@ -213,138 +216,21 @@
 
             this._super(cfg);
 
-            var self = this;
-
             this._supported = false; // True as soon as zSpace support is detected
+            this._zspace = null;
+            this._viewerScale = 1;
+            this._canvasOffset = math.vec2([0, 0]);
             this._displaySize = math.vec2([0.521, 0.293]);
             this._displayResolution = math.vec2([1920, 1080]);
             this._stylusButton0 = false;
             this._stylusButton1 = false;
             this._stylusButton2 = false;
-            this._stylusPos = math.vec3([0, 0, 0]);
-            this._stylusOrientation = math.identityQuaternion();
-
             this._stylusWorldPos = math.vec3([0, 0, 0]);
             this._stylusWorldDir = math.vec3([0, 0, 0]);
-
-            // WebVR devices
-            this._leftViewDevice = null;
-            this._rightViewDevice = null;
-            this._leftProjectionDevice = null;
-            this._rightProjectionDevice = null;
-            this._stylusDevice = null;
-            this._stylusButtonsDevice = null;
-
-            this._viewerScale = 1;
-
-            this._canvasOffset = math.vec2([0, 0]);
-
-            // Matrices
-            this._leftViewMatrix = math.identityMat4();
-            this._rightViewMatrix = math.identityMat4();
-            this._leftProjectionMatrix = math.identityMat4();
-            this._rightProjectionMatrix = math.identityMat4();
             this._stylusCameraMatrix = math.identityMat4();
             this._stylusWorldMatrix = math.identityMat4();
 
-            // Stereo drawing framebuffer
-            this._frameBufferAllocated = false; // True when allocated
-            this._frameBuffer = null;
-            this._frameBufferTexture = null;
-            this._frameBufferDepthTexture = null;
-
-            if (this.scene.canvas.webgl2 === false) {
-
-                // WebGL 2 support is required
-
-                this.error("WebGL 2 is not supported by this browser");
-                this.fire("supported", this._supported = false, false);
-
-            } else {
-
-                // Find ZSpace display(s)
-
-                if (!navigator.getVRDisplays) {
-
-                    this.error("WebVR is not supported by this browser");
-                    this.fire("supported", this._supported = false, false);
-
-                } else {
-
-                    navigator.getVRDisplays().then(function (displays) {
-
-                        if (displays.length === 0) {
-                            self.error("No WebVR displays found");
-                            self.fire("supported", self._supported = false, false);
-                            return;
-                        }
-
-                        var i;
-                        var display;
-                        var displayName;
-
-                        for (i = 0; i < displays.length; i++) {
-
-                            display = displays[i];
-                            displayName = display.displayName;
-
-                            self.log("Found WebVR display: '" + displayName + "'");
-
-                            switch (display.displayName) {
-                                case "ZSpace Left View":
-                                    self._leftViewDevice = display;
-                                    break;
-
-                                case "ZSpace Right View":
-                                    self._rightViewDevice = display;
-                                    break;
-
-                                case "ZSpace Left Projection":
-                                    self._leftProjectionDevice = display;
-                                    break;
-
-                                case "ZSpace Right Projection":
-                                    self._rightProjectionDevice = display;
-                                    break;
-
-                                case "ZSpace Stylus":
-                                    self._stylusDevice = display;
-                                    break;
-
-                                case "ZSpace Stylus Buttons":
-                                    self._stylusButtonsDevice = display;
-                                    break;
-                            }
-                        }
-
-                        if (!self._leftViewDevice
-                            || !self._rightViewDevice
-                            || !self._leftProjectionDevice
-                            || !self._rightProjectionDevice
-                            || !self._stylusDevice
-                            || !self._stylusButtonsDevice) {
-                            self.log("ZSpace WebVR display(s) not found");
-                            self.fire("supported", self._supported = false, false);
-                            return;
-                        }
-
-                        self.fire("supported", self._supported = true, false); // Battlestation is fully operational.
-                    });
-
-                    var zspaceConnectHandler = function (e) {
-                        self.log("zspace connected");
-                        self._stylusGamepad = e.gamepad;
-                    };
-
-                    var zspaceDisconnectHandler = function (e) {
-                        self.log("zspace disconnected");
-                        self._stylusGamepad = null;
-                    };
-
-                    window.addEventListener("gamepadconnected", zspaceConnectHandler);
-                    window.addEventListener("gamepaddisconnected", zspaceDisconnectHandler);
-                }
-            }
+            this._checkSupported();
 
             // Set properties on this xeogl.ZSpaceEffect (see _props below)
 
@@ -356,6 +242,70 @@
             this.displayResolution = cfg.displayResolution;
             this.active = cfg.active;
         },
+
+        // ZSpace utility does not report whether ZSpace is supported,
+        // so we've hacked our own slightly fragile test here.
+
+        _checkSupported: function () {
+
+            var self = this;
+
+            if (this.scene.canvas.webgl2 === false) {
+
+                // WebGL 2 support is required
+
+                this.error("WebGL 2 is not supported by this browser");
+
+                /**
+                 * Notifies whether or not zSpace is supported in this browser.
+                 * @event supported
+                 * @type Boolean
+                 * @param value Indicates whether or not zSpace is supported.
+                 */
+                this.fire("supported", this._supported = false, false);
+
+                return;
+            }
+
+            if (navigator.getVRDisplays) {
+                navigator.getVRDisplays().then(function (displays) {
+                    if (displays.length > 0) {
+                        var i;
+                        var n = 0;
+                        for (i = 0; i < displays.length; i++) {
+                            if (displays[i].displayName == "ZSpace Left View") {
+                                n++;
+                            }
+                            if (displays[i].displayName == "ZSpace Right View") {
+                                n++;
+                            }
+                            if (displays[i].displayName == "ZSpace Left Projection") {
+                                n++;
+                            }
+                            if (displays[i].displayName == "ZSpace Right Projection") {
+                                n++;
+                            }
+                            if (displays[i].displayName == "ZSpace Stylus") {
+                                n++;
+                            }
+
+                            if (displays[i].displayName == "ZSpace Stylus Buttons") {
+                                n++;
+                            }
+                        }
+
+                        if (n !== 6) {
+                            self.error("ZSpace is not supported by this browser");
+                            self.fire("supported", self._supported = false, false);
+
+                        } else {
+                            self.fire("supported", self._supported = true, false);
+                        }
+                    }
+                });
+            }
+        },
+
 
         _props: {
 
@@ -729,107 +679,16 @@
 
             var self = this;
 
-            // Need to reallocate stereo framebuffer
-            // whenever canvas resizes or context lost/restored
-
-            this._onCanvasResized = this.scene.canvas.on("boundary", function () {
-                self._destroyFrameBuffer(); // To recreate next time we bind it
-            });
+            // Force re-instantiation of zspace utility after WebGLContextRestore
 
             this._onWebGLContextRestored = this.scene.canvas.on("webglContextRestored", function () {
-                self._frameBufferAllocated = false; // Framebuffers were destroyed by context loss, reallocate next time we bind
+                self._zspace = null;
             });
 
             // Intercept each render with a callback; we'll get two invocations
             // per frame, one for the left eye, a second for the right
 
             this._onSceneRendering = this.scene.on("rendering", this._rendering, this);
-
-            // Attach renderer hooks to bind/unbind our stereo
-            // framebuffer as the renderer's output buffer.
-
-            this._renderer.bindOutputFramebuffer = function (pass) {
-                if (!self._supported) { // Support not found yet
-                    return;
-                }
-                self._bindFrameBuffer(pass); // pass will be 0 for left or 1 for right
-            };
-
-            this._renderer.unbindOutputFramebuffer = function (pass) {
-                if (!self._supported) { // Support not found yet
-                    return;
-                }
-                if (pass === 1) { // Unbind after right eye pass
-                    self._unbindFrameBuffer();
-                }
-            };
-        },
-
-        _bindFrameBuffer: function (pass) { // Activates stereo output framebuffer, lazy-allocating it if needed
-            if (!this._frameBufferAllocated) { // Becomes false on "webglContextRestored" event and when canvas resized
-                this._allocateFrameBuffer();
-            }
-            // this.log("Binding stereo framebuffer - pass = " + pass);
-            var gl = this.scene.canvas.gl;
-            if (pass === 0) {
-                gl.setStereoFramebuffer(this._frameBuffer, this._frameBufferTexture);
-            }
-            gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, this._frameBuffer);
-            gl.framebufferTextureLayer(gl.DRAW_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, this._frameBufferTexture, 0, pass);
-            gl.framebufferTextureLayer(gl.DRAW_FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, this._frameBufferDepthTexture, 0, pass);
-        },
-
-        _allocateFrameBuffer: function () { // Allocates stereo output framebuffer
-
-            var gl = this.scene.canvas.gl;
-            var canvas = this.scene.canvas.canvas;
-            var width = canvas.clientWidth;
-            var height = canvas.clientHeight;
-
-            // this.log("Creating stereo framebuffer - size = " + width + ", " + height);
-
-            this._frameBufferTexture = gl.createTexture();
-            gl.bindTexture(gl.TEXTURE_2D_ARRAY, this._frameBufferTexture);
-            gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-            gl.texImage3D(gl.TEXTURE_2D_ARRAY, 0, gl.RGB8, width, height, 2, 0, gl.RGB, gl.UNSIGNED_BYTE, null);
-
-            if (this.frameBuffer == null) {
-                this._frameBuffer = gl.createFramebuffer();
-            }
-
-            gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, this._frameBuffer);
-            gl.framebufferTextureLayer(gl.DRAW_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, this._frameBufferTexture, 0, 0);
-
-            this._frameBufferDepthTexture = gl.createTexture();
-            gl.bindTexture(gl.TEXTURE_2D_ARRAY, this._frameBufferDepthTexture);
-            gl.texImage3D(gl.TEXTURE_2D_ARRAY, 0, gl.DEPTH24_STENCIL8, width, height, 2, 0, gl.DEPTH_STENCIL, gl.UNSIGNED_INT_24_8, null);
-            gl.framebufferTextureLayer(gl.DRAW_FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, this._frameBufferDepthTexture, 0, 0);
-
-            gl.setStereoFramebuffer(this._frameBuffer, this._frameBufferTexture);
-
-            this._frameBufferAllocated = true;
-        },
-
-        _destroyFrameBuffer: function () { // Called on deactivation to destroy stereo framebuffer
-
-            if (!this._frameBufferAllocated) {
-                return;
-            }
-
-            //this.log("Destroying stereo framebuffer");
-
-            var gl = this.scene.canvas.gl;
-
-            gl.deleteTexture(this._frameBufferDepthTexture);
-            gl.deleteFramebuffer(this._frameBuffer);
-
-            this._frameBufferAllocated = false;
-        },
-
-        _unbindFrameBuffer: function () { // Deactivates stereo output framebuffer
-            var gl = this.scene.canvas.gl;
-            gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, null);
         },
 
         _rendering: function (e) { // Scene render callback, called for left and right eye within each render
@@ -845,7 +704,11 @@
             var camera = this._attached.camera;
 
             if (!camera) {
-                return; // Come back on next render, maybe we'll have a camera then
+
+                // Camera not currently attached, come back
+                // on next render, maybe we'll have a camera then
+
+                return;
             }
 
             // Need to have xeogl.Transforms for viewing and projection
@@ -859,114 +722,78 @@
 
             if (!camera.view.parent) {
                 camera.view.postMultiply = true;
-                camera.view.parent = camera.create(xeogl.Transform);
+                camera.view.parent = camera.create({ type: "xeogl.Transform" });
             }
 
             // If we have not yet configured the scene to do two passes per frame,
             // then configure it now and come back on the next render.
-            // Note that we also configure the scene to clear the framebuffer before each pass.
 
             if (this.scene.passes !== 2 || !this.scene.clearEachPass) {
                 this.scene.passes = 2;
-                this.scene.clearEachPass = true;
+                this.scene.clearEachPass = true; // Also configure the scene to clear the framebuffer before each pass.
                 return;
             }
+
+            // Handle render pass
 
             switch (e.pass) {
 
                 case 0: // Left eye
 
-                    this._buildMatrices(); // Build the matrices on first pass
+                    this._pollZSpace();
 
-                    // This forces an update from the compositor (important!)
+                    // This forces an update from the compositor (important hack!)
                     var gl = this.scene.canvas.gl;
                     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-                    camera.view.parent.matrix = this._leftViewMatrix;
-                    camera.project.matrix = this._leftProjectionMatrix;
+                    this._zspace.zspaceLeftView();
+
+                    camera.view.parent.matrix = this._zspace.leftViewMatrix;
+                    camera.project.matrix = this._zspace.leftProjectionMatrix;
 
                     break;
 
                 case 1: // Right eye
 
-                    camera.view.parent.matrix = this._rightViewMatrix;
-                    camera.project.matrix = this._rightProjectionMatrix;
+                    this._zspace.zspaceRightView();
+
+                    camera.view.parent.matrix = this._zspace.rightViewMatrix;
+                    camera.project.matrix = this._zspace.rightProjectionMatrix;
 
                     break;
             }
         },
 
-        _buildMatrices: (function () { // Builds view and projection matrices for left and right views, polls the stylus
+        _pollZSpace: (function () {
 
-            // Cached vars
-
-            var canvas;
-            var canvasPosition = math.vec3();
-            var canvasWidth;
-            var canvasHeight;
-            var displayCenterX;
-            var displayCenterY;
-            var displayScaleFactorX;
-            var displayScaleFactorY;
-            var viewportCenterX;
-            var viewportCenterY;
-
-            var viewportShift = math.vec3([0.0, 0.0, 0.0]); // View offset
-            var offsetTranslateMat = math.identityMat4(); // View offset translation matrix
-
-            var scale = math.vec3(); // View scale
-            var viewScaleMat = math.identityMat4(); // View scale matrix
-
-            var tempVec3a = math.vec3();
-            var tempVec3b = math.vec3();
-            var vecEyeLook = math.vec3();
-
-            var leftProjectionPose;
-            var rightProjectionPose;
-
-            var up;
-            var down;
-            var left;
-            var right;
-
-            // Viewer is looking down at model as if it were on a table
-
-            var invViewMatrix = math.mat4();
+            var invViewMat = mat4.create();
+            var vecEyeLook = vec3.create();
 
             return function () {
 
-                // Automatically derive viewer scale from base view transform
                 var camera = this._attached.camera;
+                var viewMat = camera.view.matrix;
+
+                // Lazy instantiate zSpace utility
+                // Gets blown away on WebGLContextLost
+
+                if (!this._zspace) {
+                    this._zspace = new ZSpace(this.scene.canvas.gl, this.scene.canvas.canvas, window);
+                    this._zspace.zspaceInit();
+                }
+
+                // Assume that all viewer parameters have new values
+                // and that these are cheap to continually set on zSpace
+
+                this._zspace.setCanvasOffset(this._canvasOffset[0], this._canvasOffset[1]);
+                this._zspace.setFarClip(this._farClip);
+
                 var len = math.lenVec3(math.subVec3(camera.view.look, camera.view.eye, vecEyeLook));
                 this._viewerScale = len / 0.41;
 
-                displayScaleFactorX = this._displaySize[0] / this._displayResolution[0];
-                displayScaleFactorY = this._displaySize[1] / this._displayResolution[1];
+                this._zspace.setViewerScale(this._viewerScale);
 
-                canvas = this.scene.canvas.canvas;
-
-                canvasPosition[0] = window.screenX + canvas.offsetLeft - screen.availLeft + this._canvasOffset[0];
-                canvasPosition[1] = window.screenY + canvas.offsetTop + 75 + this._canvasOffset[1];
-
-                canvasWidth = canvas.clientWidth * displayScaleFactorX * this._viewerScale;
-                canvasHeight = canvas.clientHeight * displayScaleFactorY * this._viewerScale;
-                displayCenterX = this._displayResolution[0] * 0.5;
-                displayCenterY = this._displayResolution[1] * 0.5;
-                viewportCenterX = canvasPosition[0] + (canvas.clientWidth * 0.5);
-                viewportCenterY = this._displayResolution[1] - (canvasPosition[1] + (canvas.clientHeight * 0.5));
-
-                // View offset matrix
-
-                viewportShift[0] = (viewportCenterX - displayCenterX) * displayScaleFactorX;
-                viewportShift[1] = (viewportCenterY - displayCenterY) * displayScaleFactorY;
-                math.translationMat4v(viewportShift, offsetTranslateMat);
-
-                // Viewer scale matrix
-
-                scale[0] = this._viewerScale;
-                scale[1] = this._viewerScale;
-                scale[2] = this._viewerScale;
-                math.scalingMat4v(scale, viewScaleMat);
+                this._zspace.zspaceUpdate();
 
                 // Batches this component's outgoing update events for after all ZSpace device updates
                 // processed, so that we have all device state available at the time we fire them
@@ -976,144 +803,55 @@
                 var stylusButton1Updated = false;
                 var stylusButton2Updated = false;
 
-                // Left eye viewing matrix
+                this._stylusCameraMatrix.set(this._zspace.stylusCameraMatrix);
 
-                var leftViewPose = this._leftViewDevice.getPose();
-                if (leftViewPose && leftViewPose.orientation && leftViewPose.position) {
+                mat4.invert(invViewMat, viewMat);
+                mat4.multiply(this._stylusWorldMatrix, invViewMat, this._stylusCameraMatrix);
 
-                    math.transformPoint3(offsetTranslateMat, leftViewPose.position, tempVec3a);
-                    math.transformPoint3(viewScaleMat, tempVec3a, tempVec3b);
-                    math.rotationTranslationMat4(leftViewPose.orientation, tempVec3b, this._leftViewMatrix);
+                if (this._stylusWorldPos[0] !== this._stylusWorldMatrix[12] ||
+                    this._stylusWorldPos[1] !== this._stylusWorldMatrix[13] ||
+                    this._stylusWorldPos[2] !== this._stylusWorldMatrix[14]) {
 
-                } else {
-                    math.lookAtMat4v([-15, 0, -40], [-15, 0, 0], [0, 1, 0], this._leftViewMatrix);
+                    this._stylusWorldPos[0] = this._stylusWorldMatrix[12];
+                    this._stylusWorldPos[1] = this._stylusWorldMatrix[13];
+                    this._stylusWorldPos[2] = this._stylusWorldMatrix[14];
+
+                    stylusMoved = true;
                 }
 
-                // Right eye viewing matrix
+                if (this._stylusWorldDir[0] !== -this._stylusWorldMatrix[8] ||
+                    this._stylusWorldDir[1] !== -this._stylusWorldMatrix[9] ||
+                    this._stylusWorldDir[2] !== -this._stylusWorldMatrix[10]) {
 
-                var rightViewPose = this._rightViewDevice.getPose();
-                if (rightViewPose && rightViewPose.orientation && rightViewPose.position) {
+                    this._stylusWorldDir[0] = -this._stylusWorldMatrix[8];
+                    this._stylusWorldDir[1] = -this._stylusWorldMatrix[9];
+                    this._stylusWorldDir[2] = -this._stylusWorldMatrix[10];
 
-                    math.transformPoint3(offsetTranslateMat, rightViewPose.position, tempVec3a);
-                    math.transformPoint3(viewScaleMat, tempVec3a, tempVec3b);
-                    math.rotationTranslationMat4(rightViewPose.orientation, tempVec3b, this._rightViewMatrix);
+                    vec3.normalize(this._stylusWorldDir, this._stylusWorldDir);
 
-                } else {
-                    math.lookAtMat4v([15, 0, -40], [15, 0, 0], [0, 1, 0], this._rightViewMatrix);
-                }
-
-                offsetTranslateMat[12] = -offsetTranslateMat[12];
-                offsetTranslateMat[13] = -offsetTranslateMat[13];
-
-                // Left eye projection matrix
-
-                leftProjectionPose = this._leftProjectionDevice.getPose();
-                if (leftProjectionPose && leftProjectionPose.orientation && leftProjectionPose.position) {
-                    math.transformPoint3(offsetTranslateMat, leftProjectionPose.position, tempVec3a);
-                    math.transformPoint3(viewScaleMat, tempVec3a, tempVec3b);
-                    up = Math.atan((canvasHeight * 0.5 - tempVec3b[1]) / tempVec3b[2]);
-                    down = Math.atan((canvasHeight * 0.5 + tempVec3b[1]) / tempVec3b[2]);
-                    left = Math.atan((canvasWidth * 0.5 + tempVec3b[0]) / tempVec3b[2]);
-                    right = Math.atan((canvasWidth * 0.5 - tempVec3b[0]) / tempVec3b[2]);
-                    makeProjectionMatrix(up, down, left, right, this._nearClip, this._farClip, this._leftProjectionMatrix);
-
-                } else {
-                    math.frustumMat4(-0.1, 0.1, -0.1, 0.1, 0.1, 1000.0, this._leftProjectionMatrix);
-                }
-
-                // Right eye projection matrix
-
-                rightProjectionPose = this._rightProjectionDevice.getPose();
-                if (rightProjectionPose && rightProjectionPose.orientation && rightProjectionPose.position) {
-                    math.transformPoint3(offsetTranslateMat, rightProjectionPose.position, tempVec3a);
-                    math.transformPoint3(viewScaleMat, tempVec3a, tempVec3b);
-                    up = Math.atan((canvasHeight * 0.5 - tempVec3b[1]) / tempVec3b[2]);
-                    down = Math.atan((canvasHeight * 0.5 + tempVec3b[1]) / tempVec3b[2]);
-                    left = Math.atan((canvasWidth * 0.5 + tempVec3b[0]) / tempVec3b[2]);
-                    right = Math.atan((canvasWidth * 0.5 - tempVec3b[0]) / tempVec3b[2]);
-                    makeProjectionMatrix(up, down, left, right, this._nearClip, this._farClip, this._rightProjectionMatrix);
-
-                } else {
-                    math.frustumMat4(-0.1, 0.1, -0.1, 0.1, 0.1, 1000.0, this._rightProjectionMatrix);
-                }
-
-                // Poll the stylus' pose
-
-                var stylusPose = this._stylusDevice.getPose();
-                if (stylusPose && stylusPose.orientation && stylusPose.position) {
-
-                    var orientation = stylusPose.orientation;
-
-                    math.transformPoint3(offsetTranslateMat, stylusPose.position, tempVec3a);
-                    math.transformPoint3(viewScaleMat, tempVec3a, tempVec3b);
-
-                    math.rotationTranslationMat4(orientation, tempVec3b, this._stylusCameraMatrix);
-
-                    if (this._stylusPos[0] !== tempVec3b[0] && this._stylusPos[1] !== tempVec3b[1] && this._stylusPos[2] !== tempVec3b[2]) {
-                        this._stylusPos[0] = tempVec3b[0];
-                        this._stylusPos[1] = tempVec3b[1];
-                        this._stylusPos[2] = tempVec3b[2];
-                        stylusMoved = true;
-                    }
-
-                    if (this._stylusOrientation[0] !== orientation[0] &&
-                        this._stylusOrientation[1] !== orientation[1] &&
-                        this._stylusOrientation[2] !== orientation[2] &&
-                        this._stylusOrientation[3] !== orientation[3]) {
-
-                        this._stylusOrientation[0] = orientation[0];
-                        this._stylusOrientation[1] = orientation[1];
-                        this._stylusOrientation[2] = orientation[2];
-                        this._stylusOrientation[3] = orientation[3];
-                        stylusMoved = true;
-                    }
-
-                    if (stylusMoved) {
-
-                        var viewMatrix = camera.view.matrix;
-
-                        math.inverseMat4(viewMatrix, invViewMatrix);
-                        math.mulMat4(invViewMatrix, this._stylusCameraMatrix, this._stylusWorldMatrix);
-
-                        this._stylusWorldPos[0] = this._stylusWorldMatrix[12];
-                        this._stylusWorldPos[1] = this._stylusWorldMatrix[13];
-                        this._stylusWorldPos[2] = this._stylusWorldMatrix[14];
-
-                        this._stylusWorldDir[0] = -this._stylusWorldMatrix[8];
-                        this._stylusWorldDir[1] = -this._stylusWorldMatrix[9];
-                        this._stylusWorldDir[2] = -this._stylusWorldMatrix[10];
-
-                       // math.normalizeVec3(this._stylusWorldDir);
-                    }
-
-                } else {
-                    math.identityMat4(this._stylusCameraMatrix);
+                    stylusMoved = true;
                 }
 
                 // Poll the stylus' buttons
 
-                var stylusButtonsPose = this._stylusButtonsDevice.getPose();
-                if (stylusButtonsPose && stylusButtonsPose.position) {
+                var buttons = this._zspace.buttonPressed;
+                var button0 = !!buttons[0];
+                var button1 = !!buttons[1];
+                var button2 = !!buttons[2];
 
-                    var buttons = stylusButtonsPose.position;
-                    var button0 = !!buttons[0];
-                    var button1 = !!buttons[1];
-                    var button2 = !!buttons[2];
+                if (this._stylusButton0 !== button0) {
+                    this._stylusButton0 = button0;
+                    stylusButton0Updated = true;
+                }
 
-                    if (this._stylusButton0 !== button0) {
-                        this._stylusButton0 = button0;
-                        stylusButton0Updated = true;
-                    }
+                if (this._stylusButton1 !== button1) {
+                    this._stylusButton1 = button1;
+                    stylusButton1Updated = true;
+                }
 
-                    if (this._stylusButton1 !== button1) {
-                        this._stylusButton1 = button1;
-                        stylusButton1Updated = true;
-                    }
-
-                    if (this._stylusButton2 !== button2) {
-                        this._stylusButton2 = button2;
-                        stylusButton2Updated = true;
-                    }
+                if (this._stylusButton2 !== button2) {
+                    this._stylusButton2 = button2;
+                    stylusButton2Updated = true;
                 }
 
                 // Fire batched update events
@@ -1169,6 +907,8 @@
             var scene = this.scene;
 
             scene.passes = 1; // Don't need to restore scene.clearEachPass
+            scene.canvas.off(this._onWebGLContextRestored);
+            scene.off(this._onSceneRendering);
 
             if (this._oldView) { // Transforms were replaced on camera when activating - restore old transforms
                 this._attached.camera.view = this._oldView;
@@ -1176,20 +916,12 @@
                 this._oldView = null;
                 this._oldProject = null;
             }
-
-            scene.canvas.off(this._onCanvasResized);
-            scene.canvas.off(this._onWebGLContextRestored);
-            scene.off(this._onSceneRendering);
-
-            this._renderer.bindOutputFramebuffer = null; // Remove hooks to bind/unbind our stereo framebuffer
-            this._renderer.unbindOutputFramebuffer = null;
-
-            this._destroyFrameBuffer();
         },
 
         _getJSON: function () { // Returns JSON configuration of this component
             var json = {
                 active: this._active,
+                canvasOffset: this._canvasOffset.slice(0),
                 displayResolution: this._displayResolution.slice(0),
                 displaySize: this._displaySize.slice(0),
                 nearClip: this._nearClip,
@@ -1206,28 +938,4 @@
         }
     });
 
-    function makeProjectionMatrix(up, down, left, right, nearClip, farClip, out) {
-        var o = Math.tan(up);
-        var u = Math.tan(down);
-        var l = Math.tan(left);
-        var e = Math.tan(right);
-        var M = 2 / (l + e), s = 2 / (o + u);
-        out[0] = M;
-        out[1] = 0;
-        out[2] = 0;
-        out[3] = 0;
-        out[4] = 0;
-        out[5] = s;
-        out[6] = 0;
-        out[7] = 0;
-        out[8] = -((l - e) * M * .5);
-        out[9] = (o - u) * s * .5;
-        out[10] = farClip / (nearClip - farClip);
-        out[11] = -1;
-        out[12] = 0;
-        out[13] = 0;
-        out[14] = farClip * nearClip / (nearClip - farClip);
-        out[15] = 0;
-        return out;
-    }
 })();
