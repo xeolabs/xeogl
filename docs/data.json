@@ -3717,7 +3717,7 @@
             "namespace": "",
             "file": "src/geometry/geometry.js",
             "line": 1,
-            "description": "A **Geometry** defines the geometric shape of attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n<ul>\n<li>Like everything in xeogl, all properties on a Geometry are dynamically editable.</li>\n<li>When no shape is specified, a Geometry will be a 2x2x2 box by default.</li>\n<li>A {{#crossLink \"Scene\"}}{{/crossLink}} provides a 2x2x2 box for {{#crossLink \"Entity\"}}Entities{{/crossLink}}\ndefault to when they are not configured with a Geometry.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Geometries create within xeogl's shaders.</li>\n<li>A Geometry provides its local-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.</li>\n</ul>\n\n<img src=\"../../../assets/images/Geometry.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Simple triangle mesh](../../examples/#geometry_triangles)</li>\n<li>[Triangle mesh with diffuse texture](../../examples/#geometry_triangles_texture)</li>\n<li>[Triangle mesh with vertex colors](../../examples/#geometry_triangles_vertexColors)</li>\n<li>[Wireframe box](../../examples/#geometry_lines)</li>\n<li>[Dynamically modifying a TorusGeometry](../../examples/#geometry_modifying)</li>\n</ul>\n\n## Default shape</a>\n\nIf you create a Geometry with no specified shape, it will default to a box-shaped triangle mesh with dimensions 2x2x2:\n\n```` javascript\nvar entity = new xeogl.Entity({\n   geometry: new xeogl.Geometry() // 2x2x2 box\n});\n````\n\n## Scene's default Geometry\n\nIf you create an {{#crossLink \"Entity\"}}{{/crossLink}} with no Geometry, it will inherit its {{#crossLink \"Scene\"}}Scene's{{/crossLink}}\ndefault {{#crossLink \"Scene/geometry:property\"}}{{/crossLink}}, which is a 2x2x2 triangle mesh box:\n\n```` javascript\nvar entity2 = new xeogl.Entity();\n````\n\n## Sharing among Entities\n\nxeogl components can be shared among multiple {{#crossLink \"Entity\"}}Entities{{/crossLink}}. For components like\nGeometry and {{#crossLink \"Texture\"}}{{/crossLink}}, this can provide significant memory\nand performance savings. To render the example below, xeogl will issue two draw WebGL calls, one for\neach {{#crossLink \"Entity\"}}{{/crossLink}}, but will only need to bind the Geometry's arrays once on WebGL.\n\n```` javascript\nvar boxGeometry = new xeogl.BoxGeometry();\n\nnew xeogl.Entity({\n   geometry: boxGeometry\n});\n\nnew xeogl.Entity({\n   geometry: boxGeometry,\n   transform:  new xeogl.Translate({\n       xyz: [5, 0, 0\n   })\n});\n````\n\n## Creating a custom Geometry\n\nLet's create an {{#crossLink \"Entity\"}}{{/crossLink}} with a custom Geometry that's a quad-shaped triangle mesh:\n\n```` javascript\nvar quadGeometry = new xeogl.Geometry({\n\n       // Supported primitives are 'points', 'lines', 'line-loop', 'line-strip', 'triangles',\n       // 'triangle-strip' and 'triangle-fan'.primitive: \"triangles\",\n       primitive: \"triangles\",\n\n       // Vertex positions\n       positions : [\n           -1.0, -1.0, 1.0,  // 0\n            1.0, -1.0, 1.0,  // 1\n            1.0,  1.0, 1.0,  // 2\n           -1.0,  1.0, 1.0   // 3\n       ],\n\n       // Vertex colors\n       colors: [\n           1.0,  1.0,  1.0,  1.0, // 0\n           1.0,  0.0,  0.0,  1.0, // 1\n           0.0,  1.0,  0.0,  1.0, // 2\n           0.0,  0.0,  1.0,  1.0  // 3\n       ],\n\n       // Vertex normals\n       normals: [\n           0, 0, 1, // 0\n           0, 0, 1, // 1\n           0, 0, 1, // 2\n           0, 0, 1  // 3\n       ],\n\n       // UV coordinates\n       uv: [\n           0, 0, // 0\n           1, 0, // 1\n           1, 1, // 2\n           1, 0  // 3\n       ],\n\n       // Triangle indices\n       indices: [\n           0,  1,  2,\n           0,  2,  3\n       ]\n});\n\nvar quadEntity = new xeogl.Entity({\n   geometry: quadGeometry\n});\n````\n## Editing Geometry\n\nRecall that everything in xeogl is dynamically editable. Let's update the\n{{#crossLink \"Geometry/indices:property\"}}{{/crossLink}} to reverse the direction of the triangles:\n\n````javascript\ncustomGeometry.indices = [\n2, 1, 0,\n3, 2, 0\n];\n````\n\nNow let's make it wireframe by changing its primitive type from ````triangles```` to ````lines````:\n\n````javascript\nquadGeometry.primitive = \"lines\";\n````\n\n## Toggling back-faces on and off\n\nNow we'll attach a {{#crossLink \"Modes\"}}{{/crossLink}} to that last {{#crossLink \"Entity\"}}{{/crossLink}}, so that\nwe can show or hide its {{#crossLink \"Geometry\"}}Geometry's{{/crossLink}} back-faces:\n\n```` javascript\nvar modes = new xeogl.Modes();\n\nquadEntity.modes = modes;\n\n// Hide backfaces\n\nmodes.backfaces = false;\n````\n\n## Setting front-face vertex winding\n\nThe <a href=\"https://www.opengl.org/wiki/Face_Culling\" target=\"other\">vertex winding order</a> of each face determines\nwhether it's a front-face or a back-face.\n\nBy default, xeogl considers faces to be front-faces if they have a counter-clockwise\nwinding order, but we can change that by setting the {{#crossLink \"Modes\"}}{{/crossLink}}\n{{#crossLink \"Modes/frontface:property\"}}{{/crossLink}} property:\n\n```` javascript\n// Set the winding order for front-faces to clockwise\n// Options are \"ccw\" for counter-clockwise or \"cw\" for clockwise\n\nmodes.frontface = \"cw\";\n````\n\n## Getting boundary\n\n````javascript\nvar localBoundary = quadGeometry.localBoundary;\n\nlocalBoundary.on(\"updated\", function() {\n\n       obb = localBoundary.obb;\n       aabb = localBoundary.aabb;\n       center = localBoundary.center;\n\n       //...\n   });\n````",
+            "description": "A **Geometry** defines the geometric shape of attached {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\n<a href=\"../../examples/#geometry_triangles_texture\"><img src=\"../../assets/images/screenshots/BoxGeometry.png\"></img></a>\n\n## Overview\n\n<ul>\n<li>Like everything in xeogl, all properties on a Geometry are dynamically editable.</li>\n<li>When no shape is specified, a Geometry will be a 2x2x2 box by default.</li>\n<li>A {{#crossLink \"Scene\"}}{{/crossLink}} provides a 2x2x2 box for {{#crossLink \"Entity\"}}Entities{{/crossLink}}\ndefault to when they are not configured with a Geometry.</li>\n<li>See <a href=\"Shader.html#inputs\">Shader Inputs</a> for the variables that Geometries create within xeogl's shaders.</li>\n<li>A Geometry provides its local-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.</li>\n</ul>\n\n<img src=\"../../../assets/images/Geometry.png\"></img>\n\n## Examples\n\n<ul>\n<li>[Simple triangle mesh](../../examples/#geometry_triangles)</li>\n<li>[Triangle mesh with diffuse texture](../../examples/#geometry_triangles_texture)</li>\n<li>[Triangle mesh with vertex colors](../../examples/#geometry_triangles_vertexColors)</li>\n<li>[Wireframe box](../../examples/#geometry_lines)</li>\n<li>[Dynamically modifying a TorusGeometry](../../examples/#geometry_modifying)</li>\n</ul>\n\n## Usage\n\n### Default shape</a>\n\nIf you create a Geometry with no specified shape, it will default to a box-shaped triangle mesh with dimensions 2x2x2:\n\n```` javascript\nvar entity = new xeogl.Entity({\n   geometry: new xeogl.Geometry() // 2x2x2 box\n});\n````\n\n### Scene's default Geometry\n\nIf you create an {{#crossLink \"Entity\"}}{{/crossLink}} with no Geometry, it will inherit its {{#crossLink \"Scene\"}}Scene's{{/crossLink}}\ndefault {{#crossLink \"Scene/geometry:property\"}}{{/crossLink}}, which is a 2x2x2 triangle mesh box:\n\n```` javascript\nvar entity2 = new xeogl.Entity();\n````\n\n### Sharing among Entities\n\nxeogl components can be shared among multiple {{#crossLink \"Entity\"}}Entities{{/crossLink}}. For components like\nGeometry and {{#crossLink \"Texture\"}}{{/crossLink}}, this can provide significant memory\nand performance savings. To render the example below, xeogl will issue two draw WebGL calls, one for\neach {{#crossLink \"Entity\"}}{{/crossLink}}, but will only need to bind the Geometry's arrays once on WebGL.\n\n```` javascript\nvar boxGeometry = new xeogl.BoxGeometry();\n\nnew xeogl.Entity({\n   geometry: boxGeometry\n});\n\nnew xeogl.Entity({\n   geometry: boxGeometry,\n   transform:  new xeogl.Translate({\n       xyz: [5, 0, 0\n   })\n});\n````\n\n### Creating a custom Geometry\n\nLet's create an {{#crossLink \"Entity\"}}{{/crossLink}} with a custom Geometry that's a quad-shaped triangle mesh:\n\n```` javascript\nvar quadGeometry = new xeogl.Geometry({\n\n       // Supported primitives are 'points', 'lines', 'line-loop', 'line-strip', 'triangles',\n       // 'triangle-strip' and 'triangle-fan'.primitive: \"triangles\",\n       primitive: \"triangles\",\n\n       // Vertex positions\n       positions : [\n           -1.0, -1.0, 1.0,  // 0\n            1.0, -1.0, 1.0,  // 1\n            1.0,  1.0, 1.0,  // 2\n           -1.0,  1.0, 1.0   // 3\n       ],\n\n       // Vertex colors\n       colors: [\n           1.0,  1.0,  1.0,  1.0, // 0\n           1.0,  0.0,  0.0,  1.0, // 1\n           0.0,  1.0,  0.0,  1.0, // 2\n           0.0,  0.0,  1.0,  1.0  // 3\n       ],\n\n       // Vertex normals\n       normals: [\n           0, 0, 1, // 0\n           0, 0, 1, // 1\n           0, 0, 1, // 2\n           0, 0, 1  // 3\n       ],\n\n       // UV coordinates\n       uv: [\n           0, 0, // 0\n           1, 0, // 1\n           1, 1, // 2\n           1, 0  // 3\n       ],\n\n       // Triangle indices\n       indices: [\n           0,  1,  2,\n           0,  2,  3\n       ]\n});\n\nvar quadEntity = new xeogl.Entity({\n   geometry: quadGeometry\n});\n````\n## Editing Geometry\n\nRecall that everything in xeogl is dynamically editable. Let's update the\n{{#crossLink \"Geometry/indices:property\"}}{{/crossLink}} to reverse the direction of the triangles:\n\n````javascript\ncustomGeometry.indices = [\n2, 1, 0,\n3, 2, 0\n];\n````\n\nNow let's make it wireframe by changing its primitive type from ````triangles```` to ````lines````:\n\n````javascript\nquadGeometry.primitive = \"lines\";\n````\n\n### Toggling back-faces on and off\n\nNow we'll attach a {{#crossLink \"Modes\"}}{{/crossLink}} to that last {{#crossLink \"Entity\"}}{{/crossLink}}, so that\nwe can show or hide its {{#crossLink \"Geometry\"}}Geometry's{{/crossLink}} back-faces:\n\n```` javascript\nvar modes = new xeogl.Modes();\n\nquadEntity.modes = modes;\n\n// Hide backfaces\n\nmodes.backfaces = false;\n````\n\n### Setting front-face vertex winding\n\nThe <a href=\"https://www.opengl.org/wiki/Face_Culling\" target=\"other\">vertex winding order</a> of each face determines\nwhether it's a front-face or a back-face.\n\nBy default, xeogl considers faces to be front-faces if they have a counter-clockwise\nwinding order, but we can change that by setting the {{#crossLink \"Modes\"}}{{/crossLink}}\n{{#crossLink \"Modes/frontface:property\"}}{{/crossLink}} property:\n\n```` javascript\n// Set the winding order for front-faces to clockwise\n// Options are \"ccw\" for counter-clockwise or \"cw\" for clockwise\n\nmodes.frontface = \"cw\";\n````\n\n### Getting boundary\n\n````javascript\nvar localBoundary = quadGeometry.localBoundary;\n\nlocalBoundary.on(\"updated\", function() {\n\n       obb = localBoundary.obb;\n       aabb = localBoundary.aabb;\n       center = localBoundary.center;\n\n       //...\n   });\n````",
             "submodule": "geometry",
             "is_constructor": 1,
             "params": [
@@ -12193,7 +12193,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 340,
+            "line": 346,
             "description": "Protected method, called by sub-classes to queue a call to _update(), to rebuild geometry data arrays.",
             "access": "protected",
             "tagname": "",
@@ -12203,7 +12203,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 619,
+            "line": 625,
             "description": "The Geometry's usage type.\n\nValid types are: 'static', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.\n\nFires a {{#crossLink \"Geometry/usage:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "usage",
@@ -12215,7 +12215,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 650,
+            "line": 656,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/usage:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "usage",
@@ -12232,7 +12232,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 664,
+            "line": 670,
             "description": "The Geometry's primitive type.\n\nValid types are: 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.\n\nFires a {{#crossLink \"Geometry/primitive:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "primitive",
@@ -12244,7 +12244,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 708,
+            "line": 714,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/primitive:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "primitive",
@@ -12261,7 +12261,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 722,
+            "line": 728,
             "description": "The Geometry's positions array.\n\nThis property is a one-dimensional array - use  {{#crossLink \"xeogl.math/flatten:method\"}}{{/crossLink}} to\nconvert two-dimensional arrays for assignment to this property.\n\nFires a {{#crossLink \"Geometry/positions:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "positions",
@@ -12273,7 +12273,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 755,
+            "line": 761,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "positions",
@@ -12289,7 +12289,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 762,
+            "line": 768,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/localBoundary:property\"}}{{/crossLink}} property changes.\n\nNote that this event does not carry the value of the property. In order to avoid needlessly\ncalculating unused values for this property, it will be lazy-calculated next time it's referenced\non this Geometry.",
             "itemtype": "event",
             "name": "positions",
@@ -12305,7 +12305,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 787,
+            "line": 793,
             "description": "The Geometry's normal vectors array.\n\nFires a {{#crossLink \"Geometry/normals:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "normals",
@@ -12317,7 +12317,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 817,
+            "line": 823,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/ normals:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "normals",
@@ -12333,7 +12333,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 837,
+            "line": 843,
             "description": "The Geometry's UV coordinate array.\n\nFires a {{#crossLink \"Geometry/uv:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "uv",
@@ -12345,7 +12345,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 867,
+            "line": 873,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/uv:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "uv",
@@ -12361,7 +12361,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 887,
+            "line": 893,
             "description": "The Geometry's vertex colors array.\n\nFires a {{#crossLink \"Geometry/colors:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "colors",
@@ -12373,7 +12373,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 917,
+            "line": 923,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/colors:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "colors",
@@ -12389,7 +12389,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 937,
+            "line": 943,
             "description": "The Geometry's indices array.\n\nIf ````xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS[\"OES_element_index_uint\"]```` is true, then this can be\na ````Uint32Array````, otherwise it needs to be a ````Uint16Array````.\n\nFires a {{#crossLink \"Geometry/indices:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "indices",
@@ -12401,7 +12401,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 982,
+            "line": 988,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/indices:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "indices",
@@ -12417,7 +12417,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 1002,
+            "line": 1008,
             "description": "Local-space 3D boundary enclosing the {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} of this Geometry.\n\nThe a {{#crossLink \"Boundary3D\"}}{{/crossLink}} is lazy-instantiated the first time that this\nproperty is referenced. If {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} is then called on it,\nthen this property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime it's referenced.\n\nThe {{#crossLink \"Boundary3D\"}}{{/crossLink}} will fire an {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}}\nevent whenever this Geometry's {{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} are updated.",
             "itemtype": "property",
             "name": "localBoundary",
@@ -12429,7 +12429,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 1060,
+            "line": 1066,
             "description": "Set true to make this Geometry automatically generate {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}} from\n{{#crossLink \"Geometry/positions:property\"}}{{/crossLink}} and {{#crossLink \"Geometry/indices:property\"}}{{/crossLink}}.\n\nWhen true, causes this Geometry to auto-generate its {{#crossLink \"Geometry/normals:property\"}}{{/crossLink}} on the\nnext {{#crossLink \"Scene\"}}{{/crossLink}} {{#crossLink \"Scene/tick:event\"}}{{/crossLink}} event.\n\nFires an {{#crossLink \"Geometry/autoNormals:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "autoNormals",
@@ -12441,7 +12441,7 @@
         },
         {
             "file": "src/geometry/geometry.js",
-            "line": 1089,
+            "line": 1095,
             "description": "Fired whenever this Geometry's {{#crossLink \"Geometry/autoNormals:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "autoNormals",
@@ -26032,7 +26032,7 @@
         },
         {
             "message": "Missing item type\nProtected method, called by sub-classes to queue a call to _update(), to rebuild geometry data arrays.",
-            "line": " src/geometry/geometry.js:340"
+            "line": " src/geometry/geometry.js:346"
         },
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",

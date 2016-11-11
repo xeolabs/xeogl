@@ -19771,6 +19771,10 @@ visibility.destroy();
  */;/**
  A **Geometry** defines the geometric shape of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
+ <a href="../../examples/#geometry_triangles_texture"><img src="../../assets/images/screenshots/BoxGeometry.png"></img></a>
+
+ ## Overview
+
  <ul>
  <li>Like everything in xeogl, all properties on a Geometry are dynamically editable.</li>
  <li>When no shape is specified, a Geometry will be a 2x2x2 box by default.</li>
@@ -19792,7 +19796,9 @@ visibility.destroy();
  <li>[Dynamically modifying a TorusGeometry](../../examples/#geometry_modifying)</li>
  </ul>
 
- ## Default shape</a>
+ ## Usage
+
+ ### Default shape</a>
 
  If you create a Geometry with no specified shape, it will default to a box-shaped triangle mesh with dimensions 2x2x2:
 
@@ -19802,7 +19808,7 @@ visibility.destroy();
 });
  ````
 
- ## Scene's default Geometry
+ ### Scene's default Geometry
 
  If you create an {{#crossLink "Entity"}}{{/crossLink}} with no Geometry, it will inherit its {{#crossLink "Scene"}}Scene's{{/crossLink}}
  default {{#crossLink "Scene/geometry:property"}}{{/crossLink}}, which is a 2x2x2 triangle mesh box:
@@ -19811,7 +19817,7 @@ visibility.destroy();
  var entity2 = new xeogl.Entity();
  ````
 
- ## Sharing among Entities
+ ### Sharing among Entities
 
  xeogl components can be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}}. For components like
  Geometry and {{#crossLink "Texture"}}{{/crossLink}}, this can provide significant memory
@@ -19833,7 +19839,7 @@ visibility.destroy();
  });
  ````
 
- ## Creating a custom Geometry
+ ### Creating a custom Geometry
 
  Let's create an {{#crossLink "Entity"}}{{/crossLink}} with a custom Geometry that's a quad-shaped triangle mesh:
 
@@ -19905,7 +19911,7 @@ visibility.destroy();
  quadGeometry.primitive = "lines";
  ````
 
- ## Toggling back-faces on and off
+ ### Toggling back-faces on and off
 
  Now we'll attach a {{#crossLink "Modes"}}{{/crossLink}} to that last {{#crossLink "Entity"}}{{/crossLink}}, so that
  we can show or hide its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} back-faces:
@@ -19920,7 +19926,7 @@ visibility.destroy();
  modes.backfaces = false;
  ````
 
- ## Setting front-face vertex winding
+ ### Setting front-face vertex winding
 
  The <a href="https://www.opengl.org/wiki/Face_Culling" target="other">vertex winding order</a> of each face determines
  whether it's a front-face or a back-face.
@@ -19936,7 +19942,7 @@ visibility.destroy();
  modes.frontface = "cw";
  ````
 
- ## Getting boundary
+ ### Getting boundary
 
  ````javascript
  var localBoundary = quadGeometry.localBoundary;
