@@ -2,6 +2,10 @@
  A **BuildableModel** is a {{#crossLink "Model"}}{{/crossLink}} that provides a fluent API through which you can
  build it incrementally.
 
+ ## Examples
+
+ * [Generating a city with a BuildableModel](../../examples/#models_BuildableModel_city)</li>
+
  ## Usage
 
  A BuildableModel containing ten textured boxes with random sizes and positions:
