@@ -12,6 +12,8 @@
  * Can be configured to either fly or jump to each updated position of the target {{#crossLink "Boundary3D"}}{{/crossLink}}.
  * Can be configured to automatically adjust the distance between the {{#crossLink "Camera"}}{{/crossLink}}'s {{#crossLink "Lookat"}}{{/crossLink}}'s {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} to keep the target {{#crossLink "Boundary3D"}}{{/crossLink}} fitted to the view volume.
 
+ <img src="../../../assets/images/CameraFollowAnimation.png"></img>
+
  ## Examples
 
  * [Following an Entity with a Camera](../../examples/#animation_CameraFollowAnimation)

@@ -7,6 +7,8 @@
  * Attaches to a {{#crossLink "Camera"}}{{/crossLink}}, which by default is the {{#crossLink "Scene"}}Scene's{{/crossLink}} default {{#crossLink "Camera"}}{{/crossLink}} when none is specified.
  * Requires that the {{#crossLink "Camera"}}{{/crossLink}} have a {{#crossLink "Lookat"}}{{/crossLink}} for its {{#crossLink "Camera/view:property"}}view{{/crossLink}} transform.
 
+ <img src="../../../assets/images/CameraPathAnimation.png"></img>
+
  ## Examples
 
  * [Interpolating a Camera along a path](../../examples/#animation_CameraPathAnimation_interpolate)
