@@ -185,13 +185,20 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- A **BuildableModel** is a {{#crossLink &quot;Model&quot;}}{{/crossLink}} that provides a fluent API through which you can
- build it incrementally.
+ A **BuildableModel** is a {{#crossLink &quot;Model&quot;}}{{/crossLink}} that provides a &quot;stateful builder&quot; API through which you can
+ procedurally generate content within xeogl.
+
+ &lt;a href=&quot;../../examples/#models_BuildableModel_city&quot;&gt;&lt;img src=&quot;http://i.giphy.com/l0HlPJO1AN01Lz27e.gif&quot;&gt;&lt;/img&gt;&lt;/a&gt;
 
  ## Overview
 
- * A BuilderModel implements the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern) with a [fluent interface](https://en.wikipedia.org/wiki/Fluent_interface) that  makes it easy to programmatically generate content for xeogl.
- * TODO: more info
+ * A BuilderModel implements the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern).
+ * Create various assets within the BuilderModel, such as {{#crossLink &quot;Geometry&quot;}}Geometries{{/crossLink}}
+ and {{#crossLink &quot;Material&quot;}}Materials{{/crossLink}}, then create {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} that use those assets.
+ * The BuilderModel then owns those assets and {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} and will destroy them when you
+ call its {{#crossLink &quot;BuildableModel/clear:method&quot;}}clear(){{/crossLink}} or {{#crossLink &quot;Component/destroy:method&quot;}}destroy(){{/crossLink}} methods.
+ * A BuildableModel be transformed within World-space by attaching it to a {{#crossLink &quot;Transform&quot;}}{{/crossLink}}.
+ * A BuildableModel provides its World-space boundary as a {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}.
 
  ## Examples
 

@@ -1,11 +1,18 @@
 /**
- A **BuildableModel** is a {{#crossLink "Model"}}{{/crossLink}} that provides a fluent API through which you can
- build it incrementally.
+ A **BuildableModel** is a {{#crossLink "Model"}}{{/crossLink}} that provides a "stateful builder" API through which you can
+ procedurally generate xeogl content.
+
+ <a href="../../examples/#models_BuildableModel_city"><img src="http://i.giphy.com/l0HlPJO1AN01Lz27e.gif"></img></a>
 
  ## Overview
 
- * A BuilderModel implements the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern) with a [fluent interface](https://en.wikipedia.org/wiki/Fluent_interface) that  makes it easy to programmatically generate content for xeogl.
- * TODO: more info
+ * A BuilderModel implements the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern).
+ * Create various assets within a BuilderModel, such as {{#crossLink "Geometry"}}Geometries{{/crossLink}}
+ and {{#crossLink "Material"}}Materials{{/crossLink}}, then create {{#crossLink "Entity"}}Entities{{/crossLink}} that use those assets.
+ * The BuilderModel then owns those components and will destroy them when you
+ call its {{#crossLink "BuildableModel/clear:method"}}clear(){{/crossLink}} or {{#crossLink "Component/destroy:method"}}destroy(){{/crossLink}} methods.
+ * A BuildableModel be transformed within World-space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}}.
+ * A BuildableModel provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
  ## Examples
 

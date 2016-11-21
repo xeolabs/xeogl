@@ -198,12 +198,18 @@
 
 
 <div class="box intro">
-    <p>A <strong>BuildableModel</strong> is a <a href="../classes/Model.html" class="crosslink">Model</a> that provides a fluent API through which you can
-build it incrementally.</p>
+    <p>A <strong>BuildableModel</strong> is a <a href="../classes/Model.html" class="crosslink">Model</a> that provides a "stateful builder" API through which you can
+procedurally generate content within xeogl.</p>
+<p><a href="../../examples/#models_BuildableModel_city"><img src="http://i.giphy.com/l0HlPJO1AN01Lz27e.gif"></img></a></p>
 <h2 id="overview">Overview</h2>
 <ul>
-<li>A BuilderModel implements the <a href="https://en.wikipedia.org/wiki/Builder_pattern">Builder pattern</a> with a <a href="https://en.wikipedia.org/wiki/Fluent_interface">fluent interface</a> that  makes it easy to programmatically generate content for xeogl.</li>
-<li>TODO: more info</li>
+<li>A BuilderModel implements the <a href="https://en.wikipedia.org/wiki/Builder_pattern">Builder pattern</a>.</li>
+<li>Create various assets within the BuilderModel, such as <a href="../classes/Geometry.html" class="crosslink">Geometries</a>
+and <a href="../classes/Material.html" class="crosslink">Materials</a>, then create <a href="../classes/Entity.html" class="crosslink">Entities</a> that use those assets.</li>
+<li>The BuilderModel then owns those assets and <a href="../classes/Entity.html" class="crosslink">Entities</a> and will destroy them when you
+call its <a href="../classes/BuildableModel.html#method_clear" class="crosslink">clear()</a> or <a href="../classes/Component.html#method_destroy" class="crosslink">destroy()</a> methods.</li>
+<li>A BuildableModel be transformed within World-space by attaching it to a <a href="../classes/Transform.html" class="crosslink">Transform</a>.</li>
+<li>A BuildableModel provides its World-space boundary as a <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>.</li>
 </ul>
 <h2 id="examples">Examples</h2>
 <ul>
@@ -655,7 +661,7 @@ for (var i = 0; i &lt; 10; i++) {
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_models_buildableModel.js.html#l192"><code>examples&#x2F;js&#x2F;models&#x2F;buildableModel.js:192</code></a>
+        <a href="../files/examples_js_models_buildableModel.js.html#l199"><code>examples&#x2F;js&#x2F;models&#x2F;buildableModel.js:199</code></a>
         </p>
 
 
@@ -736,7 +742,7 @@ with <a href="../classes/BuildableModel.html#method_entity" class="crosslink">en
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_models_buildableModel.js.html#l91"><code>examples&#x2F;js&#x2F;models&#x2F;buildableModel.js:91</code></a>
+        <a href="../files/examples_js_models_buildableModel.js.html#l98"><code>examples&#x2F;js&#x2F;models&#x2F;buildableModel.js:98</code></a>
         </p>
 
 
@@ -829,7 +835,7 @@ it with <a href="../classes/BuildableModel.html#method_entity" class="crosslink"
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_models_buildableModel.js.html#l207"><code>examples&#x2F;js&#x2F;models&#x2F;buildableModel.js:207</code></a>
+        <a href="../files/examples_js_models_buildableModel.js.html#l214"><code>examples&#x2F;js&#x2F;models&#x2F;buildableModel.js:214</code></a>
         </p>
 
 
@@ -907,7 +913,7 @@ buildableModel.axis(1,2,0); // Y, Z, X
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_models_buildableModel.js.html#l274"><code>examples&#x2F;js&#x2F;models&#x2F;buildableModel.js:274</code></a>
+        <a href="../files/examples_js_models_buildableModel.js.html#l281"><code>examples&#x2F;js&#x2F;models&#x2F;buildableModel.js:281</code></a>
         </p>
 
 
@@ -1116,7 +1122,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_models_buildableModel.js.html#l232"><code>examples&#x2F;js&#x2F;models&#x2F;buildableModel.js:232</code></a>
+        <a href="../files/examples_js_models_buildableModel.js.html#l239"><code>examples&#x2F;js&#x2F;models&#x2F;buildableModel.js:239</code></a>
         </p>
 
 
@@ -1317,7 +1323,7 @@ any subsequent notifications on the event as they are made.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_models_buildableModel.js.html#l132"><code>examples&#x2F;js&#x2F;models&#x2F;buildableModel.js:132</code></a>
+        <a href="../files/examples_js_models_buildableModel.js.html#l139"><code>examples&#x2F;js&#x2F;models&#x2F;buildableModel.js:139</code></a>
         </p>
 
 
@@ -1585,7 +1591,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_models_buildableModel.js.html#l147"><code>examples&#x2F;js&#x2F;models&#x2F;buildableModel.js:147</code></a>
+        <a href="../files/examples_js_models_buildableModel.js.html#l154"><code>examples&#x2F;js&#x2F;models&#x2F;buildableModel.js:154</code></a>
         </p>
 
 
@@ -1889,7 +1895,7 @@ each <a href="../classes/Entity.html" class="crosslink">Entity</a> subsequently 
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_models_buildableModel.js.html#l162"><code>examples&#x2F;js&#x2F;models&#x2F;buildableModel.js:162</code></a>
+        <a href="../files/examples_js_models_buildableModel.js.html#l169"><code>examples&#x2F;js&#x2F;models&#x2F;buildableModel.js:169</code></a>
         </p>
 
 
@@ -1993,7 +1999,7 @@ each <a href="../classes/Entity.html" class="crosslink">Entity</a> subsequently 
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_models_buildableModel.js.html#l283"><code>examples&#x2F;js&#x2F;models&#x2F;buildableModel.js:283</code></a>
+        <a href="../files/examples_js_models_buildableModel.js.html#l290"><code>examples&#x2F;js&#x2F;models&#x2F;buildableModel.js:290</code></a>
         </p>
 
 
@@ -2037,7 +2043,7 @@ each <a href="../classes/Entity.html" class="crosslink">Entity</a> subsequently 
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_models_buildableModel.js.html#l177"><code>examples&#x2F;js&#x2F;models&#x2F;buildableModel.js:177</code></a>
+        <a href="../files/examples_js_models_buildableModel.js.html#l184"><code>examples&#x2F;js&#x2F;models&#x2F;buildableModel.js:184</code></a>
         </p>
 
 
