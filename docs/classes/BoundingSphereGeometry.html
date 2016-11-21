@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>BoundingSphereGeometry - xeogl</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+
+                <h1 style="color:white;"><a  style="color:white; font-weight: normal; font-family: 'Raleway', sans-serif;" href="../../">xeogl</a> / <a href="../../docs" style="color:white;  font-weight: normal; font-family: 'Raleway', sans-serif;">API Docs</a></h1>
+
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 1.0.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/AABBGeometry.html">AABBGeometry</a></li>
+                                <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
+                                <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundingSphereGeometry.html">BoundingSphereGeometry</a></li>
+                                <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
+                                <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
+                                <li><a href="../classes/Camera.html">Camera</a></li>
+                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraController.html">CameraController</a></li>
+                                <li><a href="../classes/CameraFlightAnimation.html">CameraFlightAnimation</a></li>
+                                <li><a href="../classes/CameraFollowAnimation.html">CameraFollowAnimation</a></li>
+                                <li><a href="../classes/CameraPath.html">CameraPath</a></li>
+                                <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
+                                <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
+                                <li><a href="../classes/Component.html">Component</a></li>
+                                <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+                                <li><a href="../classes/Cull.html">Cull</a></li>
+                                <li><a href="../classes/Curve.html">Curve</a></li>
+                                <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
+                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
+                                <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Entity.html">Entity</a></li>
+                                <li><a href="../classes/Fresnel.html">Fresnel</a></li>
+                                <li><a href="../classes/Frustum.html">Frustum</a></li>
+                                <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
+                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
+                                <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
+                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
+                                <li><a href="../classes/KeyboardRotateCamera.html">KeyboardRotateCamera</a></li>
+                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
+                                <li><a href="../classes/Layer.html">Layer</a></li>
+                                <li><a href="../classes/Lights.html">Lights</a></li>
+                                <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/Model.html">Model</a></li>
+                                <li><a href="../classes/Modes.html">Modes</a></li>
+                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
+                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
+                                <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
+                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
+                                <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
+                                <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
+                                <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
+                                <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Path.html">Path</a></li>
+                                <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
+                                <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
+                                <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
+                                <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/Skybox.html">Skybox</a></li>
+                                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
+                                <li><a href="../classes/Spinner.html">Spinner</a></li>
+                                <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/Stage.html">Stage</a></li>
+                                <li><a href="../classes/Stationary.html">Stationary</a></li>
+                                <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
+                                <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
+                                <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
+                                <li><a href="../classes/Viewport.html">Viewport</a></li>
+                                <li><a href="../classes/Visibility.html">Visibility</a></li>
+                                <li><a href="../classes/xeogl.html">xeogl</a></li>
+                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
+                                <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="..//modules/animation.html">animation</a></li>
+                                <li><a href="..//modules/boundaries.html">boundaries</a></li>
+                                <li><a href="..//modules/camera.html">camera</a></li>
+                                <li><a href="..//modules/canvas.html">canvas</a></li>
+                                <li><a href="..//modules/clipping.html">clipping</a></li>
+                                <li><a href="..//modules/configs.html">configs</a></li>
+                                <li><a href="..//modules/controls.html">controls</a></li>
+                                <li><a href="..//modules/culling.html">culling</a></li>
+                                <li><a href="..//modules/curves.html">curves</a></li>
+                                <li><a href="..//modules/effects.html">effects</a></li>
+                                <li><a href="..//modules/entities.html">entities</a></li>
+                                <li><a href="..//modules/geometry.html">geometry</a></li>
+                                <li><a href="..//modules/input.html">input</a></li>
+                                <li><a href="..//modules/interaction.html">interaction</a></li>
+                                <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/materials.html">materials</a></li>
+                                <li><a href="..//modules/math.html">math</a></li>
+                                <li><a href="..//modules/models.html">models</a></li>
+                                <li><a href="..//modules/rendering.html">rendering</a></li>
+                                <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="..//modules/transforms.html">transforms</a></li>
+                                <li><a href="..//modules/xeogl.html">xeogl</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <!--<div id="api-options">-->
+                    <!--Show:-->
+                    <!--<label for="api-show-inherited">-->
+                        <!--<input type="checkbox" id="api-show-inherited" checked>-->
+                        <!--Inherited-->
+                    <!--</label>-->
+            
+                    <!--<label for="api-show-protected">-->
+                        <!--<input type="checkbox" id="api-show-protected">-->
+                        <!--Protected-->
+                    <!--</label>-->
+            
+                    <!--<label for="api-show-private">-->
+                        <!--<input type="checkbox" id="api-show-private">-->
+                        <!--Private-->
+                    <!--</label>-->
+                    <!--<label for="api-show-deprecated">-->
+                        <!--<input type="checkbox" id="api-show-deprecated">-->
+                        <!--Deprecated-->
+                    <!--</label>-->
+            
+                <!--</div>-->
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1>BoundingSphereGeometry</h1>
+<div class="box meta">
+
+        <div class="extends">
+            Extends <a href="../classes/Component.html" class="crosslink">Component</a>
+        </div>
+
+        <div class="foundat">
+            Defined in: <a href="../files/src_geometry_boundingSphereGeometry.js.html#l1"><code>src&#x2F;geometry&#x2F;boundingSphereGeometry.js:1</code></a>
+        </div>
+
+            Module: <a href="../modules/geometry.html">geometry</a><br>
+            Parent Module: <a href="../modules/xeogl.html">xeogl</a>
+
+</div>
+
+
+<div class="box intro">
+    <p>An <strong>BoundingSphereGeometry</strong> is a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> that shows the extents of a World-space bounding sphere.</p>
+<p><a href="../../examples/#boundaries_Entity_worldBoundary_sphere"><img src="http://i.giphy.com/3oz8xRv4g56Y4pZKWk.gif"></img></a></p>
+<h2 id="overview">Overview</h2>
+<ul>
+<li>A sphere is given as a four-element Float32Array containing elements<code>[x,y,z,radius]</code>.</li>
+<li>Set the BoundingSphereGeometry&#39;s <a href="../classes/BoundingSphereGeometry.html#property_sphere" class="crosslink">sphere</a> property to a sphere to fix the BoundingSphereGeometry to those extents, or</li>
+<li>Set the BoundingSphereGeometry&#39;s <a href="../classes/BoundingSphereGeometry.html#property_boundary" class="crosslink">boundary</a> property to a <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>
+to make it dynamically fit itself to changes in the <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>&#39;s <a href="../classes/Boundary3D.html#property_sphere" class="crosslink">sphere</a> extents.</li>
+</ul>
+<h2 id="examples">Examples</h2>
+<ul>
+<li><a href="../../examples/#boundaries_Entity_worldBoundary_sphere">Rendering a BoundingSphereGeometry</a></li>
+</ul>
+<h2 id="usage">Usage</h2>
+<p>In the example below we&#39;ll render a transparent <a href="../classes/Entity.html" class="crosslink">Entity</a> with a BoundingSphereGeometry that shows the spherical extents of the
+World-space <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> of another <a href="../classes/Entity.html" class="crosslink">Entity</a>:</p>
+<pre class="code prettyprint"><code class="lang-javascript">// First Entity with a TorusGeometry
+var torus = new xeogl.Entity({
+    geometry: new xeogl.TorusGeometry()
+});
+
+// Second Entity with an BoundingSphereGeometry that shows a wireframe box
+// for the World-space boundary of the first Entity
+
+var boundaryHelper = new xeogl.Entity({
+
+    geometry: new xeogl.BoundingSphereGeometry({
+        boundary: torus.worldBoundary
+    }),
+
+    material: new xeogl.PhongMaterial({
+        diffuse: [0.5, 1.0, 0.5],
+        emissive: [0.5, 1.0, 0.5],
+        opacity: 0.4
+    }),
+
+    modes: new xeogl.Modes({
+       transparent: true
+    })
+});
+</code></pre>
+<p>Now whenever our torus <a href="../classes/Entity.html" class="crosslink">Entity</a> changes shape or position, our BoundingSphereGeometry will automatically
+update to stay fitted to it.</p>
+<p>As shown below, we can also directly configure the BoundingSphereGeometry with
+the <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>&#39;s <a href="../classes/Boundary3D.html#property_aabb" class="crosslink">AABB</a>. In this second example, we&#39;ll
+show the sphere as wireframe.</p>
+<pre class="code prettyprint"><code class="lang-javascript">var boundaryHelper2 = new xeogl.Entity({
+
+    geometry: new xeogl.BoundingSphereGeometry({
+        boundary: torus.worldBoundary.sphere,
+        primitive: "lines"
+    }),
+
+    material: new xeogl.PhongMaterial({
+        diffuse: [0.5, 1.0, 0.5],
+        emissive: [0.5, 1.0, 0.5],
+        lineWidth:2
+    })
+});
+</code></pre>
+<p>Note that, without the reference to a <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>, our second BoundingSphereGeometry is fixed to the
+given AABB and will not automatically update whenever our torus <a href="../classes/Entity.html" class="crosslink">Entity</a> changes shape or position.</p>
+
+</div>
+
+    <div class="constructor">
+        <h2>Constructor</h2>
+        <div id="method_BoundingSphereGeometry" class="method item">
+            <h3 class="name"><code>BoundingSphereGeometry</code></h3>
+        
+                <div class="args">
+                    <span class="paren">(</span><ul class="args-list inline commas">
+                        <li class="arg">
+                                <code class="optional">[scene]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[cfg]</code>
+                        </li>
+                    </ul><span class="paren">)</span>
+                </div>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+            <div class="meta">
+                        <p>
+                        Defined in
+                <a href="../files/src_geometry_boundingSphereGeometry.js.html#l1"><code>src&#x2F;geometry&#x2F;boundingSphereGeometry.js:1</code></a>
+                </p>
+        
+        
+        
+            </div>
+        
+            <div class="description">
+                
+            </div>
+        
+                <div class="params">
+                    <h4>Parameters:</h4>
+        
+                    <ul class="params-list">
+                        <li class="param">
+                                <code class="param-name optional">[scene]</code>
+                                <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a> - creates this BoundingSphereGeometry in the default
+        <a href="../classes/Scene.html" class="crosslink">Scene</a> when omitted.</p>
+        
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[cfg]</code>
+                                <span class="type"></span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>Configs</p>
+        
+                            </div>
+        
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name optional">[id]</code>
+                                            <span class="type">String</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Optional ID, unique among all components in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>,
+        generated automatically when omitted.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[meta]</code>
+                                            <span class="type">String:Object</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Optional map of user-defined metadata to attach to this BoundingSphereGeometry.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[boundary]</code>
+                                            <span class="type">Number | String | <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>ID or instance of a <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[aabb]</code>
+                                            <span class="type">Float32Array</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>An axis-aligned box (AABB) in a six-element Float32Array
+        containing the min/max extents of the axis-aligned volume, ie. <code>(xmin,ymin,zmin,xmax,ymax,zmax)</code>.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                </ul>
+                        </li>
+                    </ul>
+                </div>
+        
+        
+        
+        </div>
+    </div>
+
+<div id="classdocs" class="tabview">
+    <ul class="api-class-tabs">
+        <li class="api-class-tab index"><a href="#index">Index</a></li>
+
+            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+            <li class="api-class-tab events"><a href="#events">Events</a></li>
+    </ul>
+
+    <div>
+        <div id="index" class="api-class-tabpanel index">
+            <h2 class="off-left">Index</h2>
+
+                <div class="index-section methods">
+                    <h3>Methods</h3>
+
+                    <ul class="index-list methods extends">
+                            <li class="index-item method inherited">
+                                <a href="#method_create">create</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_destroy">destroy</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_error">error</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_fire">fire</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_isType">isType</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_log">log</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_off">off</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_on">on</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_once">once</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_warn">warn</a>
+
+                            </li>
+                    </ul>
+                </div>
+
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties extends">
+                            <li class="index-item property">
+                                <a href="#property_boundary">boundary</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_destroyed">destroyed</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_id">id</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_isDefault">isDefault</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_json">json</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_metadata">metadata</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_scene">scene</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_sphere">sphere</a>
+
+                            </li>
+                            <li class="index-item property inherited inherited">
+                                <a href="#property_string">string</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_superTypes">superTypes</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_type">type</a>
+
+                            </li>
+                    </ul>
+                </div>
+
+
+                <div class="index-section events">
+                    <h3>Events</h3>
+
+                    <ul class="index-list events extends">
+                            <li class="index-item event">
+                                <a href="#event_boundary">boundary</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_destroyed">destroyed</a>
+
+                            </li>
+                    </ul>
+                </div>
+        </div>
+
+            <div id="methods" class="api-class-tabpanel">
+                <h2 class="off-left">Methods</h2>
+
+<div id="method_create" class="method item inherited">
+    <h3 class="name"><code>create</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code class="optional">[cfg]</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[instanceId]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_create">Component</a>:
+        <a href="../files/src_component.js.html#l904"><code>src&#x2F;component.js:904</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+<p>You would typically use this method to conveniently instantiate components that you&#39;d want to
+share (ie. "instance") among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+<p>The method is given a component type, configuration and optional instance ID, like so:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(xeogl.PhongMaterial, {
+     diffuse: [1,0,0],
+     specular: [1,1,0]
+}, "myMaterial");
+</code></pre>
+<p>The first time you call this method for the given <code>type</code> and <code>instanceId</code>, this method will create the
+<a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, passing the given  attributes to the component&#39;s constructor.</p>
+<p>If you call this method again, specifying the same <code>type</code> and <code>instanceId</code>, the method will return the same
+component instance that it returned the first time, and will ignore the configuration:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(xeogl.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
+</code></pre>
+<p>So in this example, our <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> will continue to have the red specular
+and diffuse color that we specified the first time.</p>
+<p>Each time you call this method with the same <code>type</code> and <code>instanceId</code>, the Scene will internally increment a
+reference count for the component instance. You can release the shared component instance with a call to
+Scene/putSharedComponent:method, and once you have released it as many
+times as you got it, the Scene will destroy the component.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name optional">[cfg]</code>
+                        <span class="type"></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Configuration for the component instance - only used if this is the first time you are getting
+the component, ignored when reusing an existing instance.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[instanceId]</code>
+                        <span class="type">String | Number</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Identifies the shared component instance. Note that this is not used as the ID of the
+component - you can specify the component ID in the <code>cfg</code> parameter.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"></span>:
+            </div>
+        </div>
+
+
+</div>
+<div id="method_destroy" class="method item inherited">
+    <h3 class="name"><code>destroy</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_destroy">Component</a>:
+        <a href="../files/src_component.js.html#l1085"><code>src&#x2F;component.js:1085</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Destroys this component.</p>
+<p>Fires a <a href="../classes/Component.html#event_destroyed" class="crosslink">destroyed</a> event on this Component.</p>
+<p>Automatically disassociates this component from other components, causing them to fall back on any
+defaults that this component overrode on them.</p>
+<p>TODO: describe effect with respect to #create</p>
+
+    </div>
+
+
+
+
+</div>
+<div id="method_error" class="method item inherited">
+    <h3 class="name"><code>error</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>message</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_error">Component</a>:
+        <a href="../files/src_component.js.html#l587"><code>src&#x2F;component.js:587</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Logs an error for this component to the JavaScript console.</p>
+<p>The console message will have this format: <em><code>[ERROR] [&lt;component type&gt; =&lt;component id&gt;: &lt;message&gt;</code></em></p>
+<p>Also fires the message as an <a href="../classes/Scene.html#event_error" class="crosslink">error</a> event on the
+parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">message</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>The message to log</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_fire" class="method item inherited">
+    <h3 class="name"><code>fire</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>event</code>
+                </li>
+                <li class="arg">
+                        <code>value</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[forget=false]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_fire">Component</a>:
+        <a href="../files/src_component.js.html#l404"><code>src&#x2F;component.js:404</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Fires an event on this component.</p>
+<p>Notifies existing subscribers to the event, optionally retains the event to give to
+any subsequent notifications on the event as they are made.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">event</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>The event type name</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">value</code>
+                        <span class="type">Object</span>
+
+
+                    <div class="param-description">
+                        <p>The event parameters</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[forget=false]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>When true, does not retain for subsequent subscribers</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_isType" class="method item inherited">
+    <h3 class="name"><code>isType</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>type</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_isType">Component</a>:
+        <a href="../files/src_component.js.html#l355"><code>src&#x2F;component.js:355</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Tests if this component is of the given type, or is a subclass of the given type.</p>
+<p>The type may be given as either a string or a component constructor.</p>
+<p>This method works by walking up the inheritance type chain, which this component provides in
+property <a href="../classes/Component.html#property_superTypes" class="crosslink">superTypes</a>, returning true as soon as one of the type strings in
+the chain matches the given type, of false if none match.</p>
+<h4 id="examples-">Examples:</h4>
+<pre class="code prettyprint"><code class="lang-javascript">var myRotate = new xeogl.Rotate({ ... });
+
+myRotate.isType(xeogl.Component); // Returns true for all xeogl components
+myRotate.isType("xeogl.Component"); // Returns true for all xeogl components
+myRotate.isType(xeogl.Rotate); // Returns true
+myRotate.isType(xeogl.Transform); // Returns true
+myRotate.isType("xeogl.Transform"); // Returns true
+myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (even indirectly) extend xeogl.Entity
+</code></pre>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">type</code>
+                        <span class="type">String | Function</span>
+
+
+                    <div class="param-description">
+                        <p>Component type to compare with, eg &quot;xeogl.PhongMaterial&quot;, or a xeogl component constructor.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Boolean</span>:
+                    <p>True if this component is of given type or is subclass of the given type.</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_log" class="method item inherited">
+    <h3 class="name"><code>log</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>message</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_log">Component</a>:
+        <a href="../files/src_component.js.html#l542"><code>src&#x2F;component.js:542</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Logs a console debugging message for this component.</p>
+<p>The console message will have this format: <em><code>[LOG] [&lt;component type&gt; &lt;component id&gt;: &lt;message&gt;</code></em></p>
+<p>Also fires the message as a <a href="../classes/Scene.html#event_log" class="crosslink">log</a> event on the
+parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">message</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>The message to log</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_off" class="method item inherited">
+    <h3 class="name"><code>off</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>handle</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_off">Component</a>:
+        <a href="../files/src_component.js.html#l496"><code>src&#x2F;component.js:496</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Cancels an event subscription that was previously made with <a href="../classes/Component.html#method_on" class="crosslink">on</a> or
+<a href="../classes/Component.html#method_once" class="crosslink">once</a>.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">handle</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>Publication handle</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_on" class="method item inherited">
+    <h3 class="name"><code>on</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>event</code>
+                </li>
+                <li class="arg">
+                        <code>callback</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[scope=this]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">String</span>
+        </span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_on">Component</a>:
+        <a href="../files/src_component.js.html#l453"><code>src&#x2F;component.js:453</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Subscribes to an event on this component.</p>
+<p>The callback is be called with this component as scope.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">event</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>The event</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">callback</code>
+                        <span class="type">Function</span>
+
+
+                    <div class="param-description">
+                        <p>Called fired on the event</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[scope=this]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Scope for the callback</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">String</span>:
+                    <p>Handle to the subscription, which may be used to unsubscribe with {@link #off}.</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_once" class="method item inherited">
+    <h3 class="name"><code>once</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>event</code>
+                </li>
+                <li class="arg">
+                        <code>callback</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[scope=this]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_once">Component</a>:
+        <a href="../files/src_component.js.html#l521"><code>src&#x2F;component.js:521</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Subscribes to the next occurrence of the given event, then un-subscribes as soon as the event is handled.</p>
+<p>This is equivalent to calling <a href="../classes/Component.html#method_on" class="crosslink">on</a>, and then calling
+<a href="../classes/Component.html#method_off" class="crosslink">off</a> inside the callback function.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">event</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>Data event to listen to</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">callback</code>
+                        <span class="type">Function(data)</span>
+
+
+                    <div class="param-description">
+                        <p>Called when fresh data is available at the event</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[scope=this]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Scope for the callback</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_warn" class="method item inherited">
+    <h3 class="name"><code>warn</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>message</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_warn">Component</a>:
+        <a href="../files/src_component.js.html#l567"><code>src&#x2F;component.js:567</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Logs a warning for this component to the JavaScript console.</p>
+<p>The console message will have this format: <em><code>[WARN] [&lt;component type&gt; =&lt;component id&gt;: &lt;message&gt;</code></em></p>
+<p>Also fires the message as a <a href="../classes/Scene.html#event_warn" class="crosslink">warn</a> event on the
+parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">message</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>The message to log</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+            </div>
+
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+
+                    <div id="property_boundary" class="property item">
+                        <h3 class="name"><code>boundary</code></h3>
+                        <span class="type"><a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_geometry_boundingSphereGeometry.js.html#l113"><code>src&#x2F;geometry&#x2F;boundingSphereGeometry.js:113</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>A <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> whose <a href="../classes/Boundary3D.html#property_aabb" class="crosslink">OBB</a> we&#39;ll
+                    dynamically fit this OBBGeometry to.</p>
+                    <p>This property effectively replaces the BoundingSphereGeometry/aabb:property property.</p>
+                    <p>Fires a <a href="../classes/BoundingSphereGeometry.html#event_boundary" class="crosslink">boundary</a> event on change.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_destroyed" class="property item inherited">
+                        <h3 class="name"><code>destroyed</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_destroyed">Component</a>:
+                            <a href="../files/src_component.js.html#l279"><code>src&#x2F;component.js:279</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>True as soon as this Component has been destroyed</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_id" class="property item inherited">
+                        <h3 class="name"><code>id</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_id">Component</a>:
+                            <a href="../files/src_component.js.html#l270"><code>src&#x2F;component.js:270</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Unique ID for this Component within its parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_isDefault" class="property item inherited">
+                        <h3 class="name"><code>isDefault</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_isDefault">Component</a>:
+                            <a href="../files/src_component.js.html#l262"><code>src&#x2F;component.js:262</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Indicates whether this is one of the <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s built-in Components.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_json" class="property item inherited">
+                        <h3 class="name"><code>json</code></h3>
+                        <span class="type">JSON</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_json">Component</a>:
+                            <a href="../files/src_component.js.html#l1024"><code>src&#x2F;component.js:1024</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>JSON object containing the state of this Component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_metadata" class="property item inherited">
+                        <h3 class="name"><code>metadata</code></h3>
+                        <span class="type">Object</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_metadata">Component</a>:
+                            <a href="../files/src_component.js.html#l254"><code>src&#x2F;component.js:254</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Arbitrary, user-defined metadata on this component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_scene" class="property item inherited">
+                        <h3 class="name"><code>scene</code></h3>
+                        <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_scene">Component</a>:
+                            <a href="../files/src_component.js.html#l207"><code>src&#x2F;component.js:207</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The parent <a href="../classes/Scene.html" class="crosslink">Scene</a> that contains this Component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_sphere" class="property item">
+                        <h3 class="name"><code>sphere</code></h3>
+                        <span class="type">Float32Array</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_geometry_boundingSphereGeometry.js.html#l166"><code>src&#x2F;geometry&#x2F;boundingSphereGeometry.js:166</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Sets this BoundingSphereGeometry to an axis-aligned box (SPHERE), given as a six-element Float32Array
+                    containing the min/max extents of the
+                    axis-aligned volume, ie. <code>[xmin,ymin,zmin,xmax,ymax,zmax]</code>.</p>
+                    <p>This property overrides the <a href="../classes/BoundingSphereGeometry.html#property_boundary" class="crosslink">boundary</a> property, causing it to become null.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_string" class="property item inherited">
+                        <h3 class="name"><code>string</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                <p>Inherited from
+                                <a href="../classes/Component.html#property_string">
+                                    Component
+                                </a>
+                                but overwritten in
+                            <a href="../files/src_component.js.html#l1052"><code>src&#x2F;component.js:1052</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>String containing the serialized JSON state of this Component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_superTypes" class="property item inherited">
+                        <h3 class="name"><code>superTypes</code></h3>
+                        <span class="type">Array of String</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_superTypes">Component</a>:
+                            <a href="../files/src_component.js.html#l336"><code>src&#x2F;component.js:336</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>An array of strings that indicates the chain of super-types within this component&#39;s inheritance hierarchy.</p>
+                    <p>For example, if this component is a <a href="../classes/Rotate.html" class="crosslink">Rotate</a>, which
+                    extends <a href="../classes/Transform.html" class="crosslink">Transform</a>, which in turn extends <a href="../classes/Component.html" class="crosslink">Component</a>,
+                    then this property will have the value:</p>
+                    <pre class="code prettyprint"><code class="lang-json">["xeogl.Component", "xeogl.Transform"]
+                    </code></pre>
+                    <p>Note that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_type" class="property item inherited">
+                        <h3 class="name"><code>type</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_type">Component</a>:
+                            <a href="../files/src_component.js.html#l322"><code>src&#x2F;component.js:322</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>JavaScript class name for this Component.</p>
+                    <p>This is used when <a href="Scene.html#savingAndLoading">loading Scenes from JSON</a>, and is included in the JSON
+                    representation of this Component, so that this class may be instantiated when loading it from the JSON representation.</p>
+                    <p>For example: &quot;xeogl.AmbientLight&quot;, &quot;xeogl.ColorTarget&quot;, &quot;xeogl.Lights&quot; etc.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+            </div>
+
+
+            <div id="events" class="api-class-tabpanel">
+                <h2 class="off-left">Events</h2>
+
+                    <div id="event_boundary" class="events item">
+                        <h3 class="name"><code>boundary</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_geometry_boundingSphereGeometry.js.html#l131"><code>src&#x2F;geometry&#x2F;boundingSphereGeometry.js:131</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this BoundingSphereGeometry&#39;s <a href="../classes/BoundingSphereGeometry.html#property_boundary" class="crosslink">boundary</a>
+                    property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_destroyed" class="events item inherited">
+                        <h3 class="name"><code>destroyed</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#event_destroyed">Component</a>:
+                            <a href="../files/src_component.js.html#l1155"><code>src&#x2F;component.js:1155</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired when this Component is destroyed.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+            </div>
+    </div>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>examples/js/controls/zSpaceStylusControlV2.js - xeogl</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+
+                <h1 style="color:white;"><a  style="color:white; font-weight: normal; font-family: 'Raleway', sans-serif;" href="../../">xeogl</a> / <a href="../../docs" style="color:white;  font-weight: normal; font-family: 'Raleway', sans-serif;">API Docs</a></h1>
+
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 1.0.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/AABBGeometry.html">AABBGeometry</a></li>
+                                <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
+                                <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundingSphereGeometry.html">BoundingSphereGeometry</a></li>
+                                <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
+                                <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
+                                <li><a href="../classes/Camera.html">Camera</a></li>
+                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraController.html">CameraController</a></li>
+                                <li><a href="../classes/CameraFlightAnimation.html">CameraFlightAnimation</a></li>
+                                <li><a href="../classes/CameraFollowAnimation.html">CameraFollowAnimation</a></li>
+                                <li><a href="../classes/CameraPath.html">CameraPath</a></li>
+                                <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
+                                <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
+                                <li><a href="../classes/Component.html">Component</a></li>
+                                <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+                                <li><a href="../classes/Cull.html">Cull</a></li>
+                                <li><a href="../classes/Curve.html">Curve</a></li>
+                                <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
+                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
+                                <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Entity.html">Entity</a></li>
+                                <li><a href="../classes/Fresnel.html">Fresnel</a></li>
+                                <li><a href="../classes/Frustum.html">Frustum</a></li>
+                                <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
+                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
+                                <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
+                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
+                                <li><a href="../classes/KeyboardRotateCamera.html">KeyboardRotateCamera</a></li>
+                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
+                                <li><a href="../classes/Layer.html">Layer</a></li>
+                                <li><a href="../classes/Lights.html">Lights</a></li>
+                                <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/Model.html">Model</a></li>
+                                <li><a href="../classes/Modes.html">Modes</a></li>
+                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
+                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
+                                <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
+                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
+                                <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
+                                <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
+                                <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
+                                <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Path.html">Path</a></li>
+                                <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
+                                <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
+                                <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
+                                <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/Skybox.html">Skybox</a></li>
+                                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
+                                <li><a href="../classes/Spinner.html">Spinner</a></li>
+                                <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/Stage.html">Stage</a></li>
+                                <li><a href="../classes/Stationary.html">Stationary</a></li>
+                                <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
+                                <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
+                                <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
+                                <li><a href="../classes/Viewport.html">Viewport</a></li>
+                                <li><a href="../classes/Visibility.html">Visibility</a></li>
+                                <li><a href="../classes/xeogl.html">xeogl</a></li>
+                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
+                                <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="..//modules/animation.html">animation</a></li>
+                                <li><a href="..//modules/boundaries.html">boundaries</a></li>
+                                <li><a href="..//modules/camera.html">camera</a></li>
+                                <li><a href="..//modules/canvas.html">canvas</a></li>
+                                <li><a href="..//modules/clipping.html">clipping</a></li>
+                                <li><a href="..//modules/configs.html">configs</a></li>
+                                <li><a href="..//modules/controls.html">controls</a></li>
+                                <li><a href="..//modules/culling.html">culling</a></li>
+                                <li><a href="..//modules/curves.html">curves</a></li>
+                                <li><a href="..//modules/effects.html">effects</a></li>
+                                <li><a href="..//modules/entities.html">entities</a></li>
+                                <li><a href="..//modules/geometry.html">geometry</a></li>
+                                <li><a href="..//modules/input.html">input</a></li>
+                                <li><a href="..//modules/interaction.html">interaction</a></li>
+                                <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/materials.html">materials</a></li>
+                                <li><a href="..//modules/math.html">math</a></li>
+                                <li><a href="..//modules/models.html">models</a></li>
+                                <li><a href="..//modules/rendering.html">rendering</a></li>
+                                <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="..//modules/transforms.html">transforms</a></li>
+                                <li><a href="..//modules/xeogl.html">xeogl</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <!--<div id="api-options">-->
+                    <!--Show:-->
+                    <!--<label for="api-show-inherited">-->
+                        <!--<input type="checkbox" id="api-show-inherited" checked>-->
+                        <!--Inherited-->
+                    <!--</label>-->
+            
+                    <!--<label for="api-show-protected">-->
+                        <!--<input type="checkbox" id="api-show-protected">-->
+                        <!--Protected-->
+                    <!--</label>-->
+            
+                    <!--<label for="api-show-private">-->
+                        <!--<input type="checkbox" id="api-show-private">-->
+                        <!--Private-->
+                    <!--</label>-->
+                    <!--<label for="api-show-deprecated">-->
+                        <!--<input type="checkbox" id="api-show-deprecated">-->
+                        <!--Deprecated-->
+                    <!--</label>-->
+            
+                <!--</div>-->
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: examples/js/controls/zSpaceStylusControlV2.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ A **ZSpaceStylusControl** component works in conjunction with a {{#crossLink &quot;ZSpaceEffect&quot;}}{{/crossLink}} to drag
+ {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} around with a zSpace stylus input device.
+
+ &lt;img src=&quot;../../../assets/images/ZSpaceStylusControl.png&quot;&gt;&lt;/img&gt;
+
+ ## Examples
+
+ &lt;ul&gt;
+ &lt;li&gt;[zSpace cube](../../examples/effects_zspace_cube.html)&lt;/li&gt;
+ &lt;li&gt;[zSpace with random geometries](../../examples/effects_zspace_geometries.html)&lt;/li&gt;
+ &lt;li&gt;[zSpace with glTF gearbox model](../../examples/effects_zspace_gearbox.html)&lt;/li&gt;
+ &lt;li&gt;[zSpace with glTF gearbox model and entity explorer](../../examples/effects_zspace_gearbox_explorer.html)&lt;/li&gt;
+ &lt;li&gt;[zSpace with glTF reciprocating saw model](../../examples/effects_zspace_ReciprocatingSaw.html)&lt;/li&gt;
+ &lt;/ul&gt;
+
+ ## Usage
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ // Create a textured cube entity
+ var entity = new xeogl.Entity({
+     geometry: new xeogl.BoxGeometry({
+         xSize: .6,
+         ySize: .6,
+         zSize: .6
+     }),
+     material: new xeogl.PhongMaterial({
+         diffuseMap: new xeogl.Texture({
+             src: &quot;textures/diffuse/UVCheckerMap11-1024.png&quot;
+         })
+     }),
+     modes: new xeogl.Modes({
+         backfaces: true
+     }),
+     transform: new xeogl.Rotate({
+         xyz: [0, 1, 0],
+         angle: 0
+     })
+ });
+
+ // Set initial camera position
+ var scene = entity.scene;
+ scene.camera.view.eye = [0, 2, -10];
+ scene.camera.view.look = [0, 0, 0];
+
+ // Allow camera control with keyboard and mouse
+ var cameraControl = new xeogl.CameraControl();
+
+ // Create a ZSpaceEffect
+ var zspaceEffect = new xeogl.ZSpaceEffect({
+     canvasOffset: [330, 0]
+ });
+
+ // Create a ZSpaceStylusControl
+ var zspaceStylusControl = new xeogl.ZSpaceStylusControl();
+
+ // Handle missing zSpace support
+ zspaceEffect.on(&quot;supported&quot;, function (supported) {
+     if (!supported) {
+         document.getElementById(&quot;log&quot;).innerText = &quot;This computer is not a zSpace viewer - defaulting to standard xeogl camera controls. &quot;;
+     }
+ });
+ &#x60;&#x60;&#x60;&#x60;
+
+ @class ZSpaceStylusControl
+ @module xeogl
+ @submodule controls
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this ZSpaceStylusControl in the default
+ {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ZSpaceStylusControl.
+ @param [cfg.zspaceEffect] {String|ZSpaceEffect} ID or instance of a {{#crossLink &quot;ZSpaceEffect&quot;}}ZSpaceEffect{{/crossLink}} for this ZSpaceStylusControl.
+ Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this ZSpaceStylusControl. Defaults to the first instance found in
+ the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}.
+ @param [cfg.active=true] {Boolean} Whether or not this ZSpaceStylusControl is initially active.
+ @extends Component
+ */
+(function () {
+
+    &quot;use strict&quot;;
+
+    var math = xeogl.math;
+
+    xeogl.ZSpaceStylusControl = xeogl.Component.extend({
+
+        type: &quot;xeogl.ZSpaceStylusControl&quot;,
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this.zspaceEffect = cfg.zspaceEffect;
+            this.active = cfg.active;
+        },
+
+        _props: {
+
+            /**
+             * The {{#crossLink &quot;ZSpaceEffect&quot;}}{{/crossLink}} attached to this ZSpaceStylusControl.
+             *
+             * The ZSpaceStylusControl will attach a {{#crossLink &quot;Projection&quot;}}{{/crossLink}} to its
+             * {{#crossLink &quot;ZSpaceEffect&quot;}}{{/crossLink}} if the {{#crossLink &quot;ZSpaceEffect&quot;}}ZSpaceEffect{{/crossLink}} does not have
+             * one already, replacing whatever projection transform component was already attached.
+             *
+             * Must be within the same {{#crossLink &quot;Scene&quot;}}{{/crossLink}} as this ZSpaceStylusControl. Defaults to the parent
+             * {{#crossLink &quot;Scene&quot;}}Scene&#x27;s{{/crossLink}} default {{#crossLink &quot;Scene/zspaceEffect:property&quot;}}zspaceEffect{{/crossLink}} when set to
+             * a null or undefined value.
+             *
+             * No other component should modify the state of the {{#crossLink &quot;ZSpaceEffect&quot;}}{{/crossLink}} while
+             * it&#x27;s attached to this ZSpaceStylusControl. There is no prevention or check for that, so if that
+             * happens you&#x27;ll get unexpected results.
+             *
+             * @property zspaceEffect
+             * @type ZSpaceEffect
+             */
+            zspaceEffect: {
+
+                set: function (value) {
+
+                    /**
+                     * Fired whenever this ZSpaceStylusControl&#x27;s {{#crossLink &quot;ZSpaceStylusControl/zspaceEffect:property&quot;}}{{/crossLink}}
+                     * property changes.
+                     *
+                     * @event zspaceEffect
+                     * @param value The property&#x27;s new value
+                     */
+                    var zspaceEffect = this._attach({
+                        name: &quot;zspaceEffect&quot;,
+                        type: &quot;xeogl.ZSpaceEffect&quot;,
+                        component: value,
+                        sceneSingleton: true // Default to first xeogl.ZSpaceEffect found in the Scene
+                    });
+                },
+
+                get: function () {
+                    return this._attached.zspaceEffect;
+                }
+            },
+
+            /**
+             * Flag which indicates whether this ZSpaceStylusControl is active or not.
+             *
+             * Fires an {{#crossLink &quot;ZSpaceStylusControl/active:event&quot;}}{{/crossLink}} event on change.
+             *
+             * @property active
+             * @type Boolean
+             * @default true
+             */
+            active: {
+
+                set: function (value) {
+
+                    value = value !== false;
+
+                    if (this._active === value) {
+                        return;
+                    }
+
+                    this._active = value;
+                    this._active ? this._activate() : this._deactivate();
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this ZSpaceStylusControl&#x27;s {{#crossLink &quot;ZSpaceStylusControl/active:property&quot;}}{{/crossLink}} property changes.
+                     * @event active
+                     * @param value The property&#x27;s new value
+                     */
+                    this.fire(&#x27;active&#x27;, this._active);
+                },
+
+                get: function () {
+                    return this._active;
+                }
+            }
+        },
+
+        _activate: function () { // Activates this ZSpaceStylusControl
+
+            var self = this;
+
+            this._stylusHelper = new (function () {
+                var ray = new xeogl.Entity(self.scene, {
+                    geometry: {
+                        type: &quot;xeogl.Geometry&quot;,
+                        primitive: &quot;lines&quot;,
+                        positions: [0, 0, 0, 0, 0, 0],
+                        indices: [0, 1]
+                    },
+                    material: {
+                        type: &quot;xeogl.PhongMaterial&quot;,
+                        emissive: [1, 0.3, 0.3],
+                        diffuse: [0, 0, 0],
+                        ambient: [0, 0, 0],
+                        lineWidth: 3
+                    },
+                    modes: {
+                        pickable: false, // Can&#x27;t pick the tylus helper
+                        collidable: false // Don&#x27;t include stylus helper in boundary calculations
+                    }
+                });
+
+                this.setPosition = (function () {
+                    var positions = new Float32Array(6);
+                    return function (pos, dir) {
+                        positions[0] = pos[0]; // Origin
+                        positions[1] = pos[1];
+                        positions[2] = pos[2];
+                        positions[3] = pos[0] + dir[0]; // Direction
+                        positions[4] = pos[1] + dir[1];
+                        positions[5] = pos[2] + dir[2];
+
+                        ray.geometry.positions = positions;
+                    };
+                })();
+
+                this.setHighlighted = function (highlighted) {
+                    ray.material.emissive = highlighted ? [0.3, 1.0, 0.3] : [1.0, 0.3, 0.3];
+                    ray.material.lineWidth = highlighted ? 5 : 3;
+                };
+
+                this.destroy = function () {
+                    ray.destroy();
+                };
+            })();
+
+            var stylusHelper = this._stylusHelper;
+            var zspaceEffect = this._attached.zspaceEffect;
+
+            this._onStylusMoved = zspaceEffect.on(&quot;stylusMoved&quot;, (function () {
+
+                var stylusLength = 0.5;
+                var draggingEntity;
+                var stylusHelperDir = math.vec3();
+                var startOffset = vec4.create();
+                var startRotation = quat.create();
+                var button0Pressed = false;
+                var lastEntityHighlighted = null;
+                var hit;
+                var stylusPos = vec3.create();
+                var stylusDir = vec3.create();
+                var stylusP = vec4.create();
+                var stylusD = vec4.create();
+                var rotationMatrix = mat3.create();
+                var q = quat.create();
+                var matrix = mat4.create();
+                var stylusEnd = vec4.create();
+                var entityPos = vec4.create();
+                var zero = vec4.create();
+                var offset = vec4.create();
+                var rotation = quat.create();
+                var entityRotation = quat.create();
+                var newRotation = quat.create();
+                var newOffset = vec4.create();
+
+                return function () {
+
+                    var stylusMatrix = zspaceEffect.stylusWorldMatrix;
+
+                    vec3.set(stylusPos, stylusMatrix[12], stylusMatrix[13], stylusMatrix[14]);
+                    vec3.set(stylusDir, -stylusMatrix[8], -stylusMatrix[9], -stylusMatrix[10]);
+
+                    vec4.set(stylusP, stylusPos[0], stylusPos[1], stylusPos[2], 1.0);
+                    vec4.set(stylusD, stylusDir[0], stylusDir[1], stylusDir[2], 1.0);
+
+                    // Update stylus helper
+
+                    math.mulVec3Scalar(stylusDir, 310, stylusHelperDir);
+                    stylusHelper.setPosition(stylusPos, stylusHelperDir);
+
+                    if (!draggingEntity) {
+
+                        // Not dragging an entity
+                        // Highlight whatever entity is currently hit by the stylus
+
+                        hit = self.scene.pick({
+                            pickSurface: false, // &lt;--- Don&#x27;t need 3D pick unless we want the ray-entity intersection point
+                            origin: stylusPos,
+                            direction: stylusDir
+                        });
+
+                        if (lastEntityHighlighted) {
+                            if (!hit || (hit.entity.id !== lastEntityHighlighted.id)) {
+                                lastEntityHighlighted.material.emissive = [0, 0, 0];
+                            }
+                        }
+
+                        if (hit) {
+                            stylusHelper.setHighlighted(true);
+                            hit.entity.material.emissive = [0.25, 0.25, 0];
+                            lastEntityHighlighted = hit.entity;
+
+                        } else {
+                            stylusHelper.setHighlighted(false);
+                            lastEntityHighlighted = null;
+                        }
+                    }
+
+                    if (zspaceEffect.stylusButton0 !== button0Pressed) {
+
+                        if (zspaceEffect.stylusButton0 &amp;&amp; hit) {
+
+                            // Button 0 down and stylus hitting an entity
+                            // Grab entity and begin dragging it
+
+                            draggingEntity = hit.entity;
+
+                            // Ensure that the entity has a single modelling transform
+                            // ZSPaceStylusControl cannot yet support articulation of hierarchies
+
+                            if (draggingEntity.transform.parent) {
+
+                                self.warn(&quot;Flattening transform of &quot; + draggingEntity.type + &quot; &quot; + draggingEntity.id);
+
+                                var transform = draggingEntity.transform;
+                                draggingEntity.transform = draggingEntity.create({
+                                    type: &quot;xeogl.Transform&quot;,
+                                    matrix: transform.leafMatrix
+                                });
+                            }
+
+                            mat3.fromMat4(rotationMatrix, draggingEntity.transform.matrix);
+                            quat.fromMat3(q, rotationMatrix);
+                            quat.invert(q, q);
+                            mat4.fromQuat(matrix, q);
+
+                            vec4.set(zero, 0.0, 0.0, 0.0, 1.0);
+                            vec4.transformMat4(entityPos, zero, draggingEntity.transform.matrix);
+                            vec4.scaleAndAdd(stylusEnd, stylusP, stylusD, stylusLength);
+
+                            vec4.subtract(offset, entityPos, stylusEnd);
+                            vec4.transformMat4(startOffset, offset, matrix);
+
+                            mat3.fromMat4(rotationMatrix, stylusMatrix);
+                            quat.fromMat3(rotation, rotationMatrix);
+                            quat.invert(rotation, rotation);
+                            mat3.fromMat4(rotationMatrix, draggingEntity.transform.matrix);
+                            quat.fromMat3(entityRotation, rotationMatrix);
+
+                            quat.multiply(startRotation, rotation, entityRotation);
+
+                            draggingEntity.material.emissive = [0.25, 0.25, 0.0];
+
+                        } else {
+
+                            // Button 0 released - release entity
+
+                            if (draggingEntity) {
+                                draggingEntity.material.emissive = [0.0, 0.0, 0.0];
+                                draggingEntity = null;
+                            }
+                        }
+
+                        button0Pressed = zspaceEffect.stylusButton0;
+
+                    } else if (draggingEntity) {
+
+                        // Continue dragging entity
+
+                        vec4.scaleAndAdd(stylusEnd, stylusP, stylusD, stylusLength);
+                        mat3.fromMat4(rotationMatrix, stylusMatrix);
+
+                        quat.fromMat3(rotation, rotationMatrix);
+                        quat.multiply(newRotation, rotation, startRotation);
+
+                        mat4.fromQuat(matrix, newRotation);
+                        vec4.transformMat4(offset, startOffset, matrix);
+
+                        vec4.add(newOffset, offset, stylusEnd);
+
+                        matrix[12] = newOffset[0];
+                        matrix[13] = newOffset[1];
+                        matrix[14] = newOffset[2];
+
+                        draggingEntity.transform.matrix = matrix;
+                    }
+                };
+            })());
+        },
+
+        _deactivate: function () {
+            this._stylusHelper.destroy();
+            this._attached.zspaceEffect.off(this._onStylusMoved);
+        },
+
+        _getJSON: function () {
+            var json = {
+                active: this._active
+            };
+            if (this._attached.zspaceEffect) {
+                json.camera = this._attached.zspaceEffect.id;
+            }
+            return json;
+        },
+
+        _destroy: function () {
+            this.active = false; // Indirectly calls _deactivate()
+        }
+    });
+})();
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

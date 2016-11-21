@@ -1,0 +1,3092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>CameraFlightAnimation - xeogl</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+
+                <h1 style="color:white;"><a  style="color:white; font-weight: normal; font-family: 'Raleway', sans-serif;" href="../../">xeogl</a> / <a href="../../docs" style="color:white;  font-weight: normal; font-family: 'Raleway', sans-serif;">API Docs</a></h1>
+
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 1.0.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/AABBGeometry.html">AABBGeometry</a></li>
+                                <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
+                                <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundingSphereGeometry.html">BoundingSphereGeometry</a></li>
+                                <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
+                                <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
+                                <li><a href="../classes/Camera.html">Camera</a></li>
+                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraController.html">CameraController</a></li>
+                                <li><a href="../classes/CameraFlightAnimation.html">CameraFlightAnimation</a></li>
+                                <li><a href="../classes/CameraFollowAnimation.html">CameraFollowAnimation</a></li>
+                                <li><a href="../classes/CameraPath.html">CameraPath</a></li>
+                                <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
+                                <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
+                                <li><a href="../classes/Component.html">Component</a></li>
+                                <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+                                <li><a href="../classes/Cull.html">Cull</a></li>
+                                <li><a href="../classes/Curve.html">Curve</a></li>
+                                <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
+                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
+                                <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Entity.html">Entity</a></li>
+                                <li><a href="../classes/Fresnel.html">Fresnel</a></li>
+                                <li><a href="../classes/Frustum.html">Frustum</a></li>
+                                <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
+                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
+                                <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
+                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
+                                <li><a href="../classes/KeyboardRotateCamera.html">KeyboardRotateCamera</a></li>
+                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
+                                <li><a href="../classes/Layer.html">Layer</a></li>
+                                <li><a href="../classes/Lights.html">Lights</a></li>
+                                <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/Model.html">Model</a></li>
+                                <li><a href="../classes/Modes.html">Modes</a></li>
+                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
+                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
+                                <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
+                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
+                                <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
+                                <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
+                                <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
+                                <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Path.html">Path</a></li>
+                                <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
+                                <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
+                                <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
+                                <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/Skybox.html">Skybox</a></li>
+                                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
+                                <li><a href="../classes/Spinner.html">Spinner</a></li>
+                                <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/Stage.html">Stage</a></li>
+                                <li><a href="../classes/Stationary.html">Stationary</a></li>
+                                <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
+                                <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
+                                <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
+                                <li><a href="../classes/Viewport.html">Viewport</a></li>
+                                <li><a href="../classes/Visibility.html">Visibility</a></li>
+                                <li><a href="../classes/xeogl.html">xeogl</a></li>
+                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
+                                <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="..//modules/animation.html">animation</a></li>
+                                <li><a href="..//modules/boundaries.html">boundaries</a></li>
+                                <li><a href="..//modules/camera.html">camera</a></li>
+                                <li><a href="..//modules/canvas.html">canvas</a></li>
+                                <li><a href="..//modules/clipping.html">clipping</a></li>
+                                <li><a href="..//modules/configs.html">configs</a></li>
+                                <li><a href="..//modules/controls.html">controls</a></li>
+                                <li><a href="..//modules/culling.html">culling</a></li>
+                                <li><a href="..//modules/curves.html">curves</a></li>
+                                <li><a href="..//modules/effects.html">effects</a></li>
+                                <li><a href="..//modules/entities.html">entities</a></li>
+                                <li><a href="..//modules/geometry.html">geometry</a></li>
+                                <li><a href="..//modules/input.html">input</a></li>
+                                <li><a href="..//modules/interaction.html">interaction</a></li>
+                                <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/materials.html">materials</a></li>
+                                <li><a href="..//modules/math.html">math</a></li>
+                                <li><a href="..//modules/models.html">models</a></li>
+                                <li><a href="..//modules/rendering.html">rendering</a></li>
+                                <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="..//modules/transforms.html">transforms</a></li>
+                                <li><a href="..//modules/xeogl.html">xeogl</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <!--<div id="api-options">-->
+                    <!--Show:-->
+                    <!--<label for="api-show-inherited">-->
+                        <!--<input type="checkbox" id="api-show-inherited" checked>-->
+                        <!--Inherited-->
+                    <!--</label>-->
+            
+                    <!--<label for="api-show-protected">-->
+                        <!--<input type="checkbox" id="api-show-protected">-->
+                        <!--Protected-->
+                    <!--</label>-->
+            
+                    <!--<label for="api-show-private">-->
+                        <!--<input type="checkbox" id="api-show-private">-->
+                        <!--Private-->
+                    <!--</label>-->
+                    <!--<label for="api-show-deprecated">-->
+                        <!--<input type="checkbox" id="api-show-deprecated">-->
+                        <!--Deprecated-->
+                    <!--</label>-->
+            
+                <!--</div>-->
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1>CameraFlightAnimation</h1>
+<div class="box meta">
+
+        <div class="extends">
+            Extends <a href="../classes/Component.html" class="crosslink">Component</a>
+        </div>
+
+        <div class="foundat">
+            Defined in: <a href="../files/src_animation_cameraFlightAnimation.js.html#l1"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:1</code></a>
+        </div>
+
+            Module: <a href="../modules/animation.html">animation</a><br>
+            Parent Module: <a href="../modules/xeogl.html">xeogl</a>
+
+</div>
+
+
+<div class="box intro">
+    <p>A <strong>CameraFlightAnimation</strong> jumps or flies a <a href="../classes/Camera.html" class="crosslink">Camera</a> to look at a given target.</p>
+<p><a href="../../examples/#animation_CameraFlightAnimation_Entity"><img src="http://i.giphy.com/3o7TKP0jN800EQ99EQ.gif"></img></a></p>
+<h2 id="overview">Overview</h2>
+<ul>
+<li>Requires that the <a href="../classes/Camera.html" class="crosslink">Camera</a> have a <a href="../classes/Lookat.html" class="crosslink">Lookat</a> for its <a href="../classes/Camera.html#property_view" class="crosslink">view</a> transform.</li>
+<li>Can be attached to a different <a href="../classes/Camera.html" class="crosslink">Camera</a> at any time.</li>
+<li>Can be made to either fly or jump to its target.</li>
+<li>While busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>
+</ul>
+<p>A CameraFlightAnimation&#39;s target can be:</p>
+<ul>
+<li>specific <code>eye</code>, <code>look</code> and <code>up</code> positions,</li>
+<li>a World-space <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>,</li>
+<li>an instance or ID of any <a href="../classes/Component.html" class="crosslink">Component</a> subtype that provides a World-space <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> in a "worldBoundary" property, or</li>
+<li>an axis-aligned World-space bounding box (AABB).</li>
+</ul>
+<p>When a CameraFlightAnimation&#39;s target is a <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> or AABB, you can configure its <a href="../classes/CameraFlightAnimation.html#property_fit" class="crosslink">fit</a>
+and <a href="../classes/CameraFlightAnimation.html#property_fitFOV" class="crosslink">fitFOV</a> properties to make it stop at the point where the target
+occupies a certain amount of the field-of-view.</p>
+<h2 id="examples">Examples</h2>
+<ul>
+<li><a href="../../examples/#animation_CameraFlightAnimation_Entity">Flying to random Entities</a></li>
+<li><a href="../../examples/#animation_CameraFlightAnimation_Boundary3D">Flying to Boundary3D</a></li>
+<li><a href="../../examples/#animation_CameraFlightAnimation_AABB">Flying to AABB</a></li>
+</ul>
+<h2 id="flying-to-an-entity">Flying to an Entity</h2>
+<p>Flying to an <a href="../classes/Entity.html" class="crosslink">Entity</a> (which provides a World-space
+<a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> via its <a href="../classes/Entity.html#property_worldBoundary" class="crosslink">worldBoundary</a> property):</p>
+<pre class="code prettyprint"><code class="lang-Javascript">var camera = new xeogl.Camera();
+
+// Create a CameraFlightAnimation that takes one second to fly
+// the default Scene&#39;s default Camera to each specified target
+var cameraFlight = new xeogl.CameraFlightAnimation({
+   fit: true, // Default
+   fitFOV: 45, // Default, degrees
+   duration: 1 // Default, seconds
+}, function() {
+          // Arrived
+      });
+
+// Create a Entity, which gets all the default components
+var entity = new Entity();
+
+// Fly to the Entity&#39;s worldBoundary
+cameraFlight.flyTo(entity);
+</code></pre>
+<h2 id="flying-to-a-position">Flying to a position</h2>
+<p>Flying the CameraFlightAnimation from the previous example to specified eye, look and up positions:</p>
+<pre class="code prettyprint"><code class="lang-Javascript">cameraFlight.flyTo({
+   eye: [-5,-5,-5],
+   look: [0,0,0]
+   up: [0,1,0],
+   duration: 1 // Default, seconds
+}, function() {
+         // Arrived
+     });
+</code></pre>
+<h2 id="flying-to-a-boundary3d">Flying to a Boundary3D</h2>
+<p>Flying the CameraFlightAnimation from the previous two examples explicitly to the World-space
+<a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> of the <a href="../classes/Entity.html" class="crosslink">Entity</a> property):</p>
+<pre class="code prettyprint"><code class="lang-Javascript">cameraFlight.flyTo(entity.worldBoundary);
+</code></pre>
+<h2 id="flying-to-an-aabb">Flying to an AABB</h2>
+<p>Flying the CameraFlightAnimation from the previous two examples explicitly to the <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D&#39;s</a>
+axis-aligned bounding box:</p>
+<pre class="code prettyprint"><code class="lang-Javascript">var worldBoundary = entity.worldBoundary;
+
+var aabb = worldBoundary.aabb;
+
+cameraFlight.flyTo(aabb);
+</code></pre>
+
+</div>
+
+    <div class="constructor">
+        <h2>Constructor</h2>
+        <div id="method_CameraFlightAnimation" class="method item">
+            <h3 class="name"><code>CameraFlightAnimation</code></h3>
+        
+                <div class="args">
+                    <span class="paren">(</span><ul class="args-list inline commas">
+                        <li class="arg">
+                                <code class="optional">[scene]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[cfg.id]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[cfg.meta]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[cfg.camera]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[cfg.fit=true]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[cfg.fitFOV=45]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[cfg.trail]</code>
+                        </li>
+                        <li class="arg">
+                                <code class="optional">[cfg.duration=1]</code>
+                        </li>
+                    </ul><span class="paren">)</span>
+                </div>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+            <div class="meta">
+                        <p>
+                        Defined in
+                <a href="../files/src_animation_cameraFlightAnimation.js.html#l1"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:1</code></a>
+                </p>
+        
+        
+        
+            </div>
+        
+            <div class="description">
+                
+            </div>
+        
+                <div class="params">
+                    <h4>Parameters:</h4>
+        
+                    <ul class="params-list">
+                        <li class="param">
+                                <code class="param-name optional">[scene]</code>
+                                <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>Parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+        
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[cfg.id]</code>
+                                <span class="type">String</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>Optional ID, unique among all components in the parent <a href="../classes/Scene.html" class="crosslink">Scene</a>, generated automatically when omitted.</p>
+        
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[cfg.meta]</code>
+                                <span class="type">String:Object</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>Optional map of user-defined metadata to attach to this CameraFlightAnimation.</p>
+        
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[cfg.camera]</code>
+                                <span class="type">Number | String | <a href="../classes/Camera.html" class="crosslink">Camera</a></span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>ID or instance of a <a href="../classes/Camera.html" class="crosslink">Camera</a> to control.
+        Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this CameraFlightAnimation. Defaults to the
+        parent <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s default instance, <a href="../classes/Scene.html#property_camera" class="crosslink">camera</a>.</p>
+        
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[cfg.fit=true]</code>
+                                <span class="type">Boolean</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>When true, will ensure that when this CameraFlightAnimation has flown or jumped to a boundary
+        it will adjust the distance between the <a href="../classes/CameraFlightAnimation.html#property_camera" class="crosslink">camera</a>&#39;s <a href="../classes/Lookat.html#property_eye" class="crosslink">eye</a>
+        and <a href="../classes/Lookat.html#property_look" class="crosslink">look</a> position so as to ensure that the target boundary is filling the view volume.</p>
+        
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[cfg.fitFOV=45]</code>
+                                <span class="type">Number</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>How much field-of-view, in degrees, that a target boundary should
+        fill the canvas when fitting the <a href="../classes/Camera.html" class="crosslink">Camera</a> to the target boundary.</p>
+        
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[cfg.trail]</code>
+                                <span class="type">Boolean</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>When true, will cause this CameraFlightAnimation to point the <a href="../classes/Camera.html" class="crosslink">Camera</a> in the direction that it is travelling.</p>
+        
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name optional">[cfg.duration=1]</code>
+                                <span class="type">Number</span>
+                                <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+        
+                            <div class="param-description">
+                                <p>Flight duration, in seconds, when calling <a href="../classes/CameraFlightAnimation.html#method_flyTo" class="crosslink">flyTo</a>.</p>
+        
+                            </div>
+        
+                        </li>
+                    </ul>
+                </div>
+        
+        
+        
+        </div>
+    </div>
+
+<div id="classdocs" class="tabview">
+    <ul class="api-class-tabs">
+        <li class="api-class-tab index"><a href="#index">Index</a></li>
+
+            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
+            <li class="api-class-tab events"><a href="#events">Events</a></li>
+    </ul>
+
+    <div>
+        <div id="index" class="api-class-tabpanel index">
+            <h2 class="off-left">Index</h2>
+
+                <div class="index-section methods">
+                    <h3>Methods</h3>
+
+                    <ul class="index-list methods extends">
+                            <li class="index-item method">
+                                <a href="#method_cancel">cancel</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_create">create</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_createUUID">createUUID</a>
+
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_destroy">destroy</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_error">error</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_fire">fire</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_flyTo">flyTo</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_flyTo">flyTo</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_isType">isType</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_log">log</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_off">off</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_on">on</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_once">once</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_stop">stop</a>
+
+                            </li>
+                            <li class="index-item method inherited">
+                                <a href="#method_warn">warn</a>
+
+                            </li>
+                    </ul>
+                </div>
+
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties extends">
+                            <li class="index-item property">
+                                <a href="#property_billboard">billboard</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_camera">camera</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_clips">clips</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_colorBuf">colorBuf</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_colorTarget">colorTarget</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_cull">cull</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_depthBuf">depthBuf</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_depthTarget">depthTarget</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_destroyed">destroyed</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_duration">duration</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_fit">fit</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_fitFOV">fitFOV</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_geometry">geometry</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_id">id</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_isDefault">isDefault</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_json">json</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_layer">layer</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_lights">lights</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_material">material</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_metadata">metadata</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_modelTransform">modelTransform</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_modes">modes</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_projTransform">projTransform</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_reflection">reflection</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_scene">scene</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_shader">shader</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_shaderParams">shaderParams</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_stage">stage</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_stationary">stationary</a>
+
+                            </li>
+                            <li class="index-item property inherited inherited">
+                                <a href="#property_string">string</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_superTypes">superTypes</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_trail">trail</a>
+
+                            </li>
+                            <li class="index-item property inherited">
+                                <a href="#property_type">type</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_viewport">viewport</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_viewTransform">viewTransform</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_visibility">visibility</a>
+
+                            </li>
+                    </ul>
+                </div>
+
+
+                <div class="index-section events">
+                    <h3>Events</h3>
+
+                    <ul class="index-list events extends">
+                            <li class="index-item event">
+                                <a href="#event_camera">camera</a>
+
+                            </li>
+                            <li class="index-item event inherited">
+                                <a href="#event_destroyed">destroyed</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_duration">duration</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_fit">fit</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_fitFOV">fitFOV</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_trail">trail</a>
+
+                            </li>
+                    </ul>
+                </div>
+        </div>
+
+            <div id="methods" class="api-class-tabpanel">
+                <h2 class="off-left">Methods</h2>
+
+<div id="method_cancel" class="method item">
+    <h3 class="name"><code>cancel</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_animation_cameraFlightAnimation.js.html#l716"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:716</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Cancels an earlier flyTo without calling the arrival callback.</p>
+
+    </div>
+
+
+
+
+</div>
+<div id="method_create" class="method item inherited">
+    <h3 class="name"><code>create</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code class="optional">[cfg]</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[instanceId]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_create">Component</a>:
+        <a href="../files/src_component.js.html#l904"><code>src&#x2F;component.js:904</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Convenience method for creating a Component within this Component&#39;s <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+<p>You would typically use this method to conveniently instantiate components that you&#39;d want to
+share (ie. "instance") among your <a href="../classes/Entity.html" class="crosslink">Entities</a>.</p>
+<p>The method is given a component type, configuration and optional instance ID, like so:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var material = myComponent.create(xeogl.PhongMaterial, {
+     diffuse: [1,0,0],
+     specular: [1,1,0]
+}, "myMaterial");
+</code></pre>
+<p>The first time you call this method for the given <code>type</code> and <code>instanceId</code>, this method will create the
+<a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a>, passing the given  attributes to the component&#39;s constructor.</p>
+<p>If you call this method again, specifying the same <code>type</code> and <code>instanceId</code>, the method will return the same
+component instance that it returned the first time, and will ignore the configuration:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var material2 = component.create(xeogl.PhongMaterial, { specular: [1,1,0] }, "myMaterial");
+</code></pre>
+<p>So in this example, our <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> will continue to have the red specular
+and diffuse color that we specified the first time.</p>
+<p>Each time you call this method with the same <code>type</code> and <code>instanceId</code>, the Scene will internally increment a
+reference count for the component instance. You can release the shared component instance with a call to
+Scene/putSharedComponent:method, and once you have released it as many
+times as you got it, the Scene will destroy the component.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name optional">[cfg]</code>
+                        <span class="type"></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Configuration for the component instance - only used if this is the first time you are getting
+the component, ignored when reusing an existing instance.</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[instanceId]</code>
+                        <span class="type">String | Number</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Identifies the shared component instance. Note that this is not used as the ID of the
+component - you can specify the component ID in the <code>cfg</code> parameter.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type"></span>:
+            </div>
+        </div>
+
+
+</div>
+<div id="method_createUUID" class="method item">
+    <h3 class="name"><code>createUUID</code></h3>
+
+        <span class="paren">()</span>
+
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+
+
+
+
+        <span class="flag static">static</span>
+
+
+
+
+    <div class="meta">
+                    <p>Provided by the <a href="../modules/xeogl.html">xeogl</a> module.</p>
+                <p>
+                Defined in
+        <a href="../files/src__utils_inheritance.js.html#l116"><code>src&#x2F;_utils&#x2F;inheritance.js:116</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Returns a new UUID.</p>
+
+    </div>
+
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                    <p>string The new UUID</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_destroy" class="method item inherited">
+    <h3 class="name"><code>destroy</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_destroy">Component</a>:
+        <a href="../files/src_component.js.html#l1085"><code>src&#x2F;component.js:1085</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Destroys this component.</p>
+<p>Fires a <a href="../classes/Component.html#event_destroyed" class="crosslink">destroyed</a> event on this Component.</p>
+<p>Automatically disassociates this component from other components, causing them to fall back on any
+defaults that this component overrode on them.</p>
+<p>TODO: describe effect with respect to #create</p>
+
+    </div>
+
+
+
+
+</div>
+<div id="method_error" class="method item inherited">
+    <h3 class="name"><code>error</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>message</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_error">Component</a>:
+        <a href="../files/src_component.js.html#l587"><code>src&#x2F;component.js:587</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Logs an error for this component to the JavaScript console.</p>
+<p>The console message will have this format: <em><code>[ERROR] [&lt;component type&gt; =&lt;component id&gt;: &lt;message&gt;</code></em></p>
+<p>Also fires the message as an <a href="../classes/Scene.html#event_error" class="crosslink">error</a> event on the
+parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">message</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>The message to log</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_fire" class="method item inherited">
+    <h3 class="name"><code>fire</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>event</code>
+                </li>
+                <li class="arg">
+                        <code>value</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[forget=false]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_fire">Component</a>:
+        <a href="../files/src_component.js.html#l404"><code>src&#x2F;component.js:404</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Fires an event on this component.</p>
+<p>Notifies existing subscribers to the event, optionally retains the event to give to
+any subsequent notifications on the event as they are made.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">event</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>The event type name</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">value</code>
+                        <span class="type">Object</span>
+
+
+                    <div class="param-description">
+                        <p>The event parameters</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[forget=false]</code>
+                        <span class="type">Boolean</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>When true, does not retain for subsequent subscribers</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_flyTo" class="method item">
+    <h3 class="name"><code>flyTo</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code class="optional">[params=scene]</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[callback]</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[scope]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_animation_cameraFlightAnimation.js.html#l205"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:205</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Begins flying this CameraFlightAnimation&#39;s <a href="../classes/Camera.html" class="crosslink">Camera</a> to the given target.</p>
+<ul>
+<li>When the target is a boundary, the <a href="../classes/Camera.html" class="crosslink">Camera</a> will fly towards the target
+and stop when the target fills most of the canvas.</li>
+<li>When the target is an explicit <a href="../classes/Camera.html" class="crosslink">Camera</a> position, given as <code>eye</code>, <code>look</code> and <code>up</code>
+vectors, then this CameraFlightAnimation will interpolate the <a href="../classes/Camera.html" class="crosslink">Camera</a> to that target and stop there.</li>
+</ul>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name optional">[params=scene]</code>
+                        <span class="type"> | <a href="../classes/Component.html" class="crosslink">Component</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Either a parameters object or a <a href="../classes/Component.html" class="crosslink">Component</a> subtype that has a WorldBoundary.</p>
+
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name optional">[arc=0]   Factor in range [0..1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>indicating how much the
+Camera/eye:property position will
+swing away from its Camera/eye:property position as it flies to the target.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[component]</code>
+                                    <span class="type">Number | String | <a href="../classes/Component.html" class="crosslink">Component</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>ID or instance of a component to fly to. Defaults to the entire <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[aabb]</code>
+                                    <span class="type"></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>World-space axis-aligned bounding box (AABB) target to fly to.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[eye]</code>
+                                    <span class="type">Float32Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Position to fly the eye position to.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[look]</code>
+                                    <span class="type">Float32Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Position to fly the look position to.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[up]</code>
+                                    <span class="type">Float32Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Position to fly the up vector to.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[fit=true]</code>
+                                    <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Whether to fit the target to the view volume. Overrides <a href="../classes/CameraFlightAnimation.html#property_fit" class="crosslink">fit</a>.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[fitFOV]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>How much of field-of-view, in degrees, that a target <a href="../classes/Entity.html" class="crosslink">Entity</a> or its AABB should
+fill the canvas on arrival. Overrides <a href="../classes/CameraFlightAnimation.html#property_fitFOV" class="crosslink">fitFOV</a>.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[duration]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Flight duration in seconds.  Overrides <a href="../classes/CameraFlightAnimation.html#property_duration" class="crosslink">duration</a>.</p>
+
+                                </div>
+
+                            </li>
+                        </ul>
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[callback]</code>
+                        <span class="type">Function</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Callback fired on arrival</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[scope]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Optional scope for callback</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_flyTo" class="method item">
+    <h3 class="name"><code>flyTo</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>params</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_animation_cameraFlightAnimation.js.html#l426"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:426</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Jumps this CameraFlightAnimation&#39;s <a href="../classes/Camera.html" class="crosslink">Camera</a> to the given target.</p>
+<pre class="code prettyprint"><code>* When the target is a boundary, this CameraFlightAnimation will position the <a href="../classes/Camera.html" class="crosslink">Camera</a>
+at where the target fills most of the canvas.
+* When the target is an explicit <a href="../classes/Camera.html" class="crosslink">Camera</a> position, given as <code>&#x60;</code><code>eye</code><code>&#x60;</code>, <code>&#x60;</code><code>look</code><code>&#x60;</code> and <code>&#x60;</code><code>up</code><code>&#x60;</code>
+ vectors, then this CameraFlightAnimation will jump the <a href="../classes/Camera.html" class="crosslink">Camera</a> to that target.
+</code></pre>
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">params</code>
+                        <span class="type"> | <a href="../classes/Component.html" class="crosslink">Component</a></span>
+
+
+                    <div class="param-description">
+                        <p>Either a parameters object or a <a href="../classes/Component.html" class="crosslink">Component</a> subtype that has a WorldBoundary.</p>
+
+                    </div>
+
+                        <ul class="params-list">
+                            <li class="param">
+                                    <code class="param-name optional">[arc=0]   Factor in range [0..1]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>indicating how much the
+Camera/eye:property position will
+swing away from its Camera/eye:property position as it flies to the target.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[component]</code>
+                                    <span class="type">Number | String | <a href="../classes/Component.html" class="crosslink">Component</a></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>ID or instance of a component to fly to.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[aabb]</code>
+                                    <span class="type"></span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>World-space axis-aligned bounding box (AABB) target to fly to.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[eye]</code>
+                                    <span class="type">Float32Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Position to fly the eye position to.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[look]</code>
+                                    <span class="type">Float32Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Position to fly the look position to.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[up]</code>
+                                    <span class="type">Float32Array</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Position to fly the up vector to.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[fitFOV]</code>
+                                    <span class="type">Number</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>How much of field-of-view, in degrees, that a target <a href="../classes/Entity.html" class="crosslink">Entity</a> or its AABB should
+fill the canvas on arrival. Overrides <a href="../classes/CameraFlightAnimation.html#property_fitFOV" class="crosslink">fitFOV</a>.</p>
+
+                                </div>
+
+                            </li>
+                            <li class="param">
+                                    <code class="param-name optional">[fit]</code>
+                                    <span class="type">Boolean</span>
+                                    <span class="flag optional" title="This parameter is optional.">optional</span>
+
+                                <div class="param-description">
+                                    <p>Whether to fit the target to the view volume. Overrides <a href="../classes/CameraFlightAnimation.html#property_fit" class="crosslink">fit</a>.</p>
+
+                                </div>
+
+                            </li>
+                        </ul>
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_isType" class="method item inherited">
+    <h3 class="name"><code>isType</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>type</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_isType">Component</a>:
+        <a href="../files/src_component.js.html#l355"><code>src&#x2F;component.js:355</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Tests if this component is of the given type, or is a subclass of the given type.</p>
+<p>The type may be given as either a string or a component constructor.</p>
+<p>This method works by walking up the inheritance type chain, which this component provides in
+property <a href="../classes/Component.html#property_superTypes" class="crosslink">superTypes</a>, returning true as soon as one of the type strings in
+the chain matches the given type, of false if none match.</p>
+<h4 id="examples-">Examples:</h4>
+<pre class="code prettyprint"><code class="lang-javascript">var myRotate = new xeogl.Rotate({ ... });
+
+myRotate.isType(xeogl.Component); // Returns true for all xeogl components
+myRotate.isType("xeogl.Component"); // Returns true for all xeogl components
+myRotate.isType(xeogl.Rotate); // Returns true
+myRotate.isType(xeogl.Transform); // Returns true
+myRotate.isType("xeogl.Transform"); // Returns true
+myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (even indirectly) extend xeogl.Entity
+</code></pre>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">type</code>
+                        <span class="type">String | Function</span>
+
+
+                    <div class="param-description">
+                        <p>Component type to compare with, eg &quot;xeogl.PhongMaterial&quot;, or a xeogl component constructor.</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">Boolean</span>:
+                    <p>True if this component is of given type or is subclass of the given type.</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_log" class="method item inherited">
+    <h3 class="name"><code>log</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>message</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_log">Component</a>:
+        <a href="../files/src_component.js.html#l542"><code>src&#x2F;component.js:542</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Logs a console debugging message for this component.</p>
+<p>The console message will have this format: <em><code>[LOG] [&lt;component type&gt; &lt;component id&gt;: &lt;message&gt;</code></em></p>
+<p>Also fires the message as a <a href="../classes/Scene.html#event_log" class="crosslink">log</a> event on the
+parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">message</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>The message to log</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_off" class="method item inherited">
+    <h3 class="name"><code>off</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>handle</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_off">Component</a>:
+        <a href="../files/src_component.js.html#l496"><code>src&#x2F;component.js:496</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Cancels an event subscription that was previously made with <a href="../classes/Component.html#method_on" class="crosslink">on</a> or
+<a href="../classes/Component.html#method_once" class="crosslink">once</a>.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">handle</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>Publication handle</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_on" class="method item inherited">
+    <h3 class="name"><code>on</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>event</code>
+                </li>
+                <li class="arg">
+                        <code>callback</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[scope=this]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+        <span class="returns-inline">
+            <span class="type">String</span>
+        </span>
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_on">Component</a>:
+        <a href="../files/src_component.js.html#l453"><code>src&#x2F;component.js:453</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Subscribes to an event on this component.</p>
+<p>The callback is be called with this component as scope.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">event</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>The event</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">callback</code>
+                        <span class="type">Function</span>
+
+
+                    <div class="param-description">
+                        <p>Called fired on the event</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[scope=this]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Scope for the callback</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                        <span class="type">String</span>:
+                    <p>Handle to the subscription, which may be used to unsubscribe with {@link #off}.</p>
+
+            </div>
+        </div>
+
+
+</div>
+<div id="method_once" class="method item inherited">
+    <h3 class="name"><code>once</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>event</code>
+                </li>
+                <li class="arg">
+                        <code>callback</code>
+                </li>
+                <li class="arg">
+                        <code class="optional">[scope=this]</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_once">Component</a>:
+        <a href="../files/src_component.js.html#l521"><code>src&#x2F;component.js:521</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Subscribes to the next occurrence of the given event, then un-subscribes as soon as the event is handled.</p>
+<p>This is equivalent to calling <a href="../classes/Component.html#method_on" class="crosslink">on</a>, and then calling
+<a href="../classes/Component.html#method_off" class="crosslink">off</a> inside the callback function.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">event</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>Data event to listen to</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name">callback</code>
+                        <span class="type">Function(data)</span>
+
+
+                    <div class="param-description">
+                        <p>Called when fresh data is available at the event</p>
+
+                    </div>
+
+                </li>
+                <li class="param">
+                        <code class="param-name optional">[scope=this]</code>
+                        <span class="type">Object</span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+
+
+                    <div class="param-description">
+                        <p>Scope for the callback</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+<div id="method_stop" class="method item">
+    <h3 class="name"><code>stop</code></h3>
+
+        <span class="paren">()</span>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/src_animation_cameraFlightAnimation.js.html#l683"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:683</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Stops an earlier flyTo, fires arrival callback.</p>
+
+    </div>
+
+
+
+
+</div>
+<div id="method_warn" class="method item inherited">
+    <h3 class="name"><code>warn</code></h3>
+
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>message</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+
+
+
+
+
+
+
+
+
+    <div class="meta">
+                <p>Inherited from
+                <a href="../classes/Component.html#method_warn">Component</a>:
+        <a href="../files/src_component.js.html#l567"><code>src&#x2F;component.js:567</code></a>
+        </p>
+
+
+
+    </div>
+
+    <div class="description">
+        <p>Logs a warning for this component to the JavaScript console.</p>
+<p>The console message will have this format: <em><code>[WARN] [&lt;component type&gt; =&lt;component id&gt;: &lt;message&gt;</code></em></p>
+<p>Also fires the message as a <a href="../classes/Scene.html#event_warn" class="crosslink">warn</a> event on the
+parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+
+    </div>
+
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">message</code>
+                        <span class="type">String</span>
+
+
+                    <div class="param-description">
+                        <p>The message to log</p>
+
+                    </div>
+
+                </li>
+            </ul>
+        </div>
+
+
+
+</div>
+            </div>
+
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+
+                    <div id="property_billboard" class="property item">
+                        <h3 class="name"><code>billboard</code></h3>
+                        <span class="type">renderer.Billboard</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.js.html#l195"><code>src&#x2F;_renderer&#x2F;renderer.js:195</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Billboard render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_camera" class="property item">
+                        <h3 class="name"><code>camera</code></h3>
+                        <span class="type"><a href="../classes/Camera.html" class="crosslink">Camera</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l742"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:742</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The <a href="../classes/Camera.html" class="crosslink">Camera</a> being controlled by this CameraFlightAnimation.</p>
+                    <p>Must be within the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this CameraFlightAnimation. Defaults to the parent
+                    <a href="../classes/Scene.html" class="crosslink">Scene&#39;s</a> default <a href="../classes/Scene.html#property_camera" class="crosslink">camera</a> when set to
+                    a null or undefined value.</p>
+                    <p>Fires a <a href="../classes/CameraFlightAnimation.html#event_camera" class="crosslink">camera</a> event on change.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_clips" class="property item">
+                        <h3 class="name"><code>clips</code></h3>
+                        <span class="type">renderer.Clips</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.js.html#l223"><code>src&#x2F;_renderer&#x2F;renderer.js:223</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Cross-section planes render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_colorBuf" class="property item">
+                        <h3 class="name"><code>colorBuf</code></h3>
+                        <span class="type">renderer.ColorBuf</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.js.html#l146"><code>src&#x2F;_renderer&#x2F;renderer.js:146</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Color buffer render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_colorTarget" class="property item">
+                        <h3 class="name"><code>colorTarget</code></h3>
+                        <span class="type">renderer.RenderTarget</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.js.html#l209"><code>src&#x2F;_renderer&#x2F;renderer.js:209</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Color target render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_cull" class="property item">
+                        <h3 class="name"><code>cull</code></h3>
+                        <span class="type">renderer.Cull</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.js.html#l111"><code>src&#x2F;_renderer&#x2F;renderer.js:111</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Culling render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_depthBuf" class="property item">
+                        <h3 class="name"><code>depthBuf</code></h3>
+                        <span class="type">renderer.DepthBuf</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.js.html#l139"><code>src&#x2F;_renderer&#x2F;renderer.js:139</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Depth buffer render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_depthTarget" class="property item">
+                        <h3 class="name"><code>depthTarget</code></h3>
+                        <span class="type">renderer.RenderTarget</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.js.html#l216"><code>src&#x2F;_renderer&#x2F;renderer.js:216</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Depth target render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_destroyed" class="property item inherited">
+                        <h3 class="name"><code>destroyed</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_destroyed">Component</a>:
+                            <a href="../files/src_component.js.html#l279"><code>src&#x2F;component.js:279</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>True as soon as this Component has been destroyed</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_duration" class="property item">
+                        <h3 class="name"><code>duration</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l780"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:780</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Flight duration, in seconds, when calling <a href="../classes/CameraFlightAnimation.html#method_flyTo" class="crosslink">flyTo</a>.</p>
+                    <p>Stops any flight currently in progress.</p>
+                    <p>Fires a <a href="../classes/CameraFlightAnimation.html#event_duration" class="crosslink">duration</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 0.5</p>
+                    
+                    
+                    </div>
+                    <div id="property_fit" class="property item">
+                        <h3 class="name"><code>fit</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l813"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:813</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>When true, will ensure that this CameraFlightAnimation is flying to a boundary it will always adjust the distance between the
+                    <a href="../classes/CameraFlightAnimation.html#property_camera" class="crosslink">camera</a>&#39;s <a href="../classes/Lookat.html#property_eye" class="crosslink">eye</a>
+                    and <a href="../classes/Lookat.html#property_look" class="crosslink">look</a>
+                    so as to ensure that the target boundary is always filling the view volume.</p>
+                    <p>When false, the eye will remain at its current distance from the look position.</p>
+                    <p>Fires a <a href="../classes/CameraFlightAnimation.html#event_fit" class="crosslink">fit</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> true</p>
+                    
+                    
+                    </div>
+                    <div id="property_fitFOV" class="property item">
+                        <h3 class="name"><code>fitFOV</code></h3>
+                        <span class="type">Number</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l848"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:848</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>How much of field-of-view, in degrees, that a target <a href="../classes/Entity.html" class="crosslink">Entity</a> or its AABB should
+                    fill the canvas when calling <a href="../classes/CameraFlightAnimation.html#method_flyTo" class="crosslink">flyTo</a> or CameraFlightAnimation/jumpTo:method.</p>
+                    <p>Fires a <a href="../classes/CameraFlightAnimation.html#event_fitFOV" class="crosslink">fitFOV</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> 45</p>
+                    
+                    
+                    </div>
+                    <div id="property_geometry" class="property item">
+                        <h3 class="name"><code>geometry</code></h3>
+                        <span class="type">renderer.Geometry</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.js.html#l244"><code>src&#x2F;_renderer&#x2F;renderer.js:244</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Geometry render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_id" class="property item inherited">
+                        <h3 class="name"><code>id</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_id">Component</a>:
+                            <a href="../files/src_component.js.html#l270"><code>src&#x2F;component.js:270</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Unique ID for this Component within its parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_isDefault" class="property item inherited">
+                        <h3 class="name"><code>isDefault</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_isDefault">Component</a>:
+                            <a href="../files/src_component.js.html#l262"><code>src&#x2F;component.js:262</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Indicates whether this is one of the <a href="../classes/Scene.html" class="crosslink">Scene</a>&#39;s built-in Components.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_json" class="property item inherited">
+                        <h3 class="name"><code>json</code></h3>
+                        <span class="type">JSON</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_json">Component</a>:
+                            <a href="../files/src_component.js.html#l1024"><code>src&#x2F;component.js:1024</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>JSON object containing the state of this Component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_layer" class="property item">
+                        <h3 class="name"><code>layer</code></h3>
+                        <span class="type">renderer.Layer</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.js.html#l125"><code>src&#x2F;_renderer&#x2F;renderer.js:125</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Render state for an effects layer.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_lights" class="property item">
+                        <h3 class="name"><code>lights</code></h3>
+                        <span class="type">renderer.Lights</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.js.html#l153"><code>src&#x2F;_renderer&#x2F;renderer.js:153</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Lights render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_material" class="property item">
+                        <h3 class="name"><code>material</code></h3>
+                        <span class="type">renderer.Material</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.js.html#l160"><code>src&#x2F;_renderer&#x2F;renderer.js:160</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Material render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_metadata" class="property item inherited">
+                        <h3 class="name"><code>metadata</code></h3>
+                        <span class="type">Object</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_metadata">Component</a>:
+                            <a href="../files/src_component.js.html#l254"><code>src&#x2F;component.js:254</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Arbitrary, user-defined metadata on this component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_modelTransform" class="property item">
+                        <h3 class="name"><code>modelTransform</code></h3>
+                        <span class="type">renderer.Transform</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.js.html#l174"><code>src&#x2F;_renderer&#x2F;renderer.js:174</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Modelling transform render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_modes" class="property item">
+                        <h3 class="name"><code>modes</code></h3>
+                        <span class="type">renderer.Modes</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.js.html#l118"><code>src&#x2F;_renderer&#x2F;renderer.js:118</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Modes render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_projTransform" class="property item">
+                        <h3 class="name"><code>projTransform</code></h3>
+                        <span class="type">renderer.Transform</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.js.html#l188"><code>src&#x2F;_renderer&#x2F;renderer.js:188</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Projection transform render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_reflection" class="property item">
+                        <h3 class="name"><code>reflection</code></h3>
+                        <span class="type">renderer.Reflect</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.js.html#l167"><code>src&#x2F;_renderer&#x2F;renderer.js:167</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Environmental reflection render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_scene" class="property item inherited">
+                        <h3 class="name"><code>scene</code></h3>
+                        <span class="type"><a href="../classes/Scene.html" class="crosslink">Scene</a></span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_scene">Component</a>:
+                            <a href="../files/src_component.js.html#l207"><code>src&#x2F;component.js:207</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The parent <a href="../classes/Scene.html" class="crosslink">Scene</a> that contains this Component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_shader" class="property item">
+                        <h3 class="name"><code>shader</code></h3>
+                        <span class="type">renderer.Shader</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.js.html#l230"><code>src&#x2F;_renderer&#x2F;renderer.js:230</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Custom shader render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_shaderParams" class="property item">
+                        <h3 class="name"><code>shaderParams</code></h3>
+                        <span class="type">renderer.Shader</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.js.html#l237"><code>src&#x2F;_renderer&#x2F;renderer.js:237</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Render state providing custom shader params.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_stage" class="property item">
+                        <h3 class="name"><code>stage</code></h3>
+                        <span class="type">renderer.Layer</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.js.html#l132"><code>src&#x2F;_renderer&#x2F;renderer.js:132</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Render state for an effects pipeline stage.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_stationary" class="property item">
+                        <h3 class="name"><code>stationary</code></h3>
+                        <span class="type">renderer.Stationary</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.js.html#l202"><code>src&#x2F;_renderer&#x2F;renderer.js:202</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Stationary render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_string" class="property item inherited">
+                        <h3 class="name"><code>string</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                <p>Inherited from
+                                <a href="../classes/Component.html#property_string">
+                                    Component
+                                </a>
+                                but overwritten in
+                            <a href="../files/src_component.js.html#l1052"><code>src&#x2F;component.js:1052</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>String containing the serialized JSON state of this Component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_superTypes" class="property item inherited">
+                        <h3 class="name"><code>superTypes</code></h3>
+                        <span class="type">Array of String</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#property_superTypes">Component</a>:
+                            <a href="../files/src_component.js.html#l336"><code>src&#x2F;component.js:336</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>An array of strings that indicates the chain of super-types within this component&#39;s inheritance hierarchy.</p>
+                    <p>For example, if this component is a <a href="../classes/Rotate.html" class="crosslink">Rotate</a>, which
+                    extends <a href="../classes/Transform.html" class="crosslink">Transform</a>, which in turn extends <a href="../classes/Component.html" class="crosslink">Component</a>,
+                    then this property will have the value:</p>
+                    <pre class="code prettyprint"><code class="lang-json">["xeogl.Component", "xeogl.Transform"]
+                    </code></pre>
+                    <p>Note that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_trail" class="property item">
+                        <h3 class="name"><code>trail</code></h3>
+                        <span class="type">Boolean</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l878"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:878</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>When true, will cause this CameraFlightAnimation to point the <a href="../classes/CameraFlightAnimation.html#property_camera" class="crosslink">camera</a>
+                    in the direction that it is travelling.</p>
+                    <p>Fires a <a href="../classes/CameraFlightAnimation.html#event_trail" class="crosslink">trail</a> event on change.</p>
+                    
+                        </div>
+                    
+                            <p><strong>Default:</strong> false</p>
+                    
+                    
+                    </div>
+                    <div id="property_type" class="property item">
+                        <h3 class="name"><code>type</code></h3>
+                        <span class="type">String</span>
+                    
+                    
+                    
+                            <span class="flag final">final</span>
+                    
+                    
+                        <div class="meta">
+                                <p>Inherited from
+                                <a href="../classes/Component.html#property_type">
+                                    Component
+                                </a>
+                                but overwritten in
+                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l118"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:118</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>JavaScript class name for this Component.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_viewport" class="property item">
+                        <h3 class="name"><code>viewport</code></h3>
+                        <span class="type">renderer.Viewport</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.js.html#l251"><code>src&#x2F;_renderer&#x2F;renderer.js:251</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Viewport render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_viewTransform" class="property item">
+                        <h3 class="name"><code>viewTransform</code></h3>
+                        <span class="type">renderer.Transform</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.js.html#l181"><code>src&#x2F;_renderer&#x2F;renderer.js:181</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>View transform render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_visibility" class="property item">
+                        <h3 class="name"><code>visibility</code></h3>
+                        <span class="type">renderer.Visibility</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src__renderer_renderer.js.html#l104"><code>src&#x2F;_renderer&#x2F;renderer.js:104</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Visibility render state.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+            </div>
+
+
+            <div id="events" class="api-class-tabpanel">
+                <h2 class="off-left">Events</h2>
+
+                    <div id="event_camera" class="events item">
+                        <h3 class="name"><code>camera</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l758"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:758</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this CameraFlightAnimation&#39;s <a href="../classes/CameraFlightAnimation.html#property_camera" class="crosslink">camera</a>
+                    property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_destroyed" class="events item inherited">
+                        <h3 class="name"><code>destroyed</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="../classes/Component.html#event_destroyed">Component</a>:
+                            <a href="../files/src_component.js.html#l1155"><code>src&#x2F;component.js:1155</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired when this Component is destroyed.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="event_duration" class="events item">
+                        <h3 class="name"><code>duration</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l797"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:797</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this CameraFlightAnimation&#39;s <a href="../classes/CameraFlightAnimation.html#property_duration" class="crosslink">duration</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_fit" class="events item">
+                        <h3 class="name"><code>fit</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l833"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:833</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this CameraFlightAnimation&#39;s
+                    <a href="../classes/CameraFlightAnimation.html#property_fit" class="crosslink">fit</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_fitFOV" class="events item">
+                        <h3 class="name"><code>fitFOV</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l864"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:864</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this CameraFlightAnimation&#39;s <a href="../classes/CameraFlightAnimation.html#property_fitFOV" class="crosslink">fitFOV</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Number</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+                    <div id="event_trail" class="events item">
+                        <h3 class="name"><code>trail</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/src_animation_cameraFlightAnimation.js.html#l894"><code>src&#x2F;animation&#x2F;cameraFlightAnimation.js:894</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this CameraFlightAnimation&#39;s <a href="../classes/CameraFlightAnimation.html#property_trail" class="crosslink">trail</a>
+                    property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
+            </div>
+    </div>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

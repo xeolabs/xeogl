@@ -1,26 +1,25 @@
 YUI.add("yuidoc-meta", function(Y) {
    Y.YUIDoc = { meta: {
     "classes": [
+        "AABBGeometry",
         "AmbientLight",
         "Billboard",
         "Boundary2D",
         "Boundary3D",
-        "BoundaryGeometry",
+        "BoundingSphereGeometry",
         "BoxGeometry",
         "BuildableModel",
         "Camera",
         "CameraControl",
         "CameraController",
-        "CameraFlight",
-        "CameraFollow",
+        "CameraFlightAnimation",
+        "CameraFollowAnimation",
         "CameraPath",
-        "CameraPathPlayer",
+        "CameraPathAnimation",
         "Canvas",
-        "Cardboard",
         "Clip",
         "Clips",
         "ColorBuf",
-        "ColorTarget",
         "Component",
         "Configs",
         "CubicBezierCurve",
@@ -28,7 +27,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "Curve",
         "CylinderGeometry",
         "DepthBuf",
-        "DepthTarget",
         "DirLight",
         "Entity",
         "Fresnel",
@@ -36,7 +34,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "GLTFModel",
         "Geometry",
         "HeightmapGeometry",
-        "HighlightEntityEffect",
         "Input",
         "KeyboardAxisCamera",
         "KeyboardPanCamera",
@@ -48,12 +45,12 @@ YUI.add("yuidoc-meta", function(Y) {
         "Material",
         "Model",
         "Modes",
-        "MorphTargets",
         "MousePanCamera",
         "MousePickEntity",
         "MouseRotateCamera",
         "MouseZoomCamera",
         "Nintendo3DSGeometry",
+        "OBBGeometry",
         "OBJGeometry",
         "Ortho",
         "Path",
@@ -67,8 +64,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "Rotate",
         "Scale",
         "Scene",
-        "Shader",
-        "ShaderParams",
         "Skybox",
         "SphereGeometry",
         "Spinner",
@@ -84,7 +79,6 @@ YUI.add("yuidoc-meta", function(Y) {
         "VectorTextGeometry",
         "Viewport",
         "Visibility",
-        "WebVR",
         "ZSpaceEffect",
         "ZSpaceStylusControl",
         "xeogl",
@@ -109,13 +103,9 @@ YUI.add("yuidoc-meta", function(Y) {
         "materials",
         "math",
         "models",
-        "paths",
         "rendering",
-        "shaders",
         "skyboxes",
         "transforms",
-        "webvr",
-        "xeo",
         "xeogl"
     ],
     "allModules": [
@@ -210,19 +200,9 @@ YUI.add("yuidoc-meta", function(Y) {
             "description": "Models are units of xeogl content."
         },
         {
-            "displayName": "paths",
-            "name": "paths",
-            "description": "A **Path** is a complex curved path constructed from various {{#crossLink \"Curve\"}}{{/crossLink}} subtypes.\n\n<ul>\n<li>A Path can be constructed from these {{#crossLink \"Curve\"}}{{/crossLink}} subtypes: {{#crossLink \"SplineCurve\"}}{{/crossLink}},\n{{#crossLink \"CubicBezierCurve\"}}{{/crossLink}} and {{#crossLink \"QuadraticBezierCurve\"}}{{/crossLink}}.</li>\n<li>You can sample a {{#crossLink \"Path/point:property\"}}{{/crossLink}} and a {{#crossLink \"Curve/tangent:property\"}}{{/crossLink}}\nvector on a Path for any given value of {{#crossLink \"Path/t:property\"}}{{/crossLink}} in the range [0..1].</li>\n<li>When you set {{#crossLink \"Path/t:property\"}}{{/crossLink}} on a Path, its\n{{#crossLink \"Path/point:property\"}}{{/crossLink}} and {{#crossLink \"Curve/tangent:property\"}}{{/crossLink}} properties\nwill update accordingly.</li>\n</ul>\n\n## Examples\n\n<ul>\n<li>[CubicBezierCurve example](../../examples/#curves_CubicBezierCurve)</li>\n<li>[Tweening position along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve)</li>\n<li>[Tweening color along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve_color)</li>\n<li>[SplineCurve example](../../examples/#curves_SplineCurve)</li>\n<li>[Path example](../../examples/#curves_Path)</li>\n</ul>\n\n## Usage\n\n#### Animation along a SplineCurve\n\nCreate a Path containing a {{#crossLink \"CubicBezierCurve\"}}{{/crossLink}}, a {{#crossLink \"QuadraticBezierCurve\"}}{{/crossLink}}\nand a {{#crossLink \"SplineCurve\"}}{{/crossLink}}, subscribe to updates on its {{#crossLink \"Path/point:property\"}}{{/crossLink}} and\n{{#crossLink \"Curve/tangent:property\"}}{{/crossLink}} properties, then vary its {{#crossLink \"Path/t:property\"}}{{/crossLink}}\nproperty over time:\n\n````javascript\nvar path = new xeogl.Path({\n    curves: [\n        new xeogl.CubicBezierCurve({\n            v0: [-10, 0, 0],\n            v1: [-5, 15, 0],\n            v2: [20, 15, 0],\n            v3: [10, 0, 0]\n        }),\n        new xeogl.QuadraticBezierCurve({\n            v0: [10, 0, 0],\n            v1: [20, 15, 0],\n            v2: [10, 0, 0]\n        }),\n        new xeogl.SplineCurve({\n            points: [\n                [10, 0, 0],\n                [-5, 15, 0],\n                [20, 15, 0],\n                [10, 0, 0]\n            ]\n        })\n    ]\n});\n\npath.on(\"point\", function(point) {\n    this.log(\"path.point=\" + JSON.stringify(point));\n});\n\npath.on(\"tangent\", function(tangent) {\n    this.log(\"path.tangent=\" + JSON.stringify(tangent));\n});\n\npath.on(\"t\", function(t) {\n    this.log(\"path.t=\" + t);\n});\n\npath.scene.on(\"tick\", function(e) {\n    path.t = (e.time - e.startTime) * 0.01;\n});\n````\n\n#### Randomly sampling points\n\nUse Path's {{#crossLink \"Path/getPoint:method\"}}{{/crossLink}} and\n{{#crossLink \"path/getTangent:method\"}}{{/crossLink}} methods to sample the point and vector\nat a given **t**:\n\n````javascript\npath.scene.on(\"tick\", function(e) {\n\n    var t = (e.time - e.startTime) * 0.01;\n\n    var point = path.getPoint(t);\n    var tangent = path.getTangent(t);\n\n    this.log(\"t=\" + t + \", point=\" + JSON.stringify(point) + \", tangent=\" + JSON.stringify(tangent));\n});\n````\n\n#### Sampling multiple points\n\nUse Path's {{#crossLink \"path/getPoints:method\"}}{{/crossLink}} method to sample a list of equidistant points\nalong it. In the snippet below, we'll build a {{#crossLink \"Geometry\"}}{{/crossLink}} that renders a line along the\npath.  Note that we need to flatten the points array for consumption by the {{#crossLink \"Geometry\"}}{{/crossLink}}.\n\n````javascript\nvar geometry = new xeogl.Geometry({\n    positions: xeogl.math.flatten(path.getPoints(50))\n});\n````"
-        },
-        {
             "displayName": "rendering",
             "name": "rendering",
             "description": "Components that influence the way entities are rendered with WebGL."
-        },
-        {
-            "displayName": "shaders",
-            "name": "shaders",
-            "description": "Components for defining custom GLSL shaders."
         },
         {
             "displayName": "skyboxes",
@@ -233,15 +213,6 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "transforms",
             "name": "transforms",
             "description": "Modelling transform components."
-        },
-        {
-            "displayName": "webvr",
-            "name": "webvr",
-            "description": "Components for Web-based Virtual Reality."
-        },
-        {
-            "displayName": "xeo",
-            "name": "xeo"
         },
         {
             "displayName": "xeogl",

@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2016-11-11
+ * Built on 2016-11-21
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -2361,9 +2361,15 @@ var Canvas2Image = (function () {
          * @method translationMat4c
          * @static
          */
-        translationMat4c: function (x, y, z, dest) {
-            return math.translationMat4v([x, y, z], dest);
-        },
+        translationMat4c: (function () {
+            var tempVec3 = new Float32Array(3);
+            return function (x, y, z, dest) {
+                tempVec3[0] = x;
+                tempVec3[1] = y;
+                tempVec3[2] = z;
+                return math.translationMat4v(tempVec3, dest);
+            };
+        })(),
 
         /**
          * Returns 4x4 translation matrix.
@@ -10392,13 +10398,11 @@ var Canvas2Image = (function () {
 
  ## Contents
 
- <Ul>
- <li><a href="#ids">Component IDs</a></li>
- <li><a href="#componentProps">Properties</a></li>
- <li><a href="#metadata">Metadata</a></li>
- <li><a href="#logging">Logging</a></li>
- <li><a href="#destruction">Destruction</a></li>
- </ul>
+ * <a href="#ids">Component IDs</a>
+ * <a href="#componentProps">Properties</a>
+ * <a href="#metadata">Metadata</a>
+ * <a href="#logging">Logging</a>
+ * <a href="#destruction">Destruction</a>
 
  ## <a name="ids">Component IDs</a>
 
@@ -10412,21 +10416,21 @@ var Canvas2Image = (function () {
  // The Scene is a Component too
  var scene = new xeogl.Scene({
     id: "myScene"
-});
+ });
 
  var material = new xeogl.PhongMaterial(scene, {
     id: "myMaterial"
-});
+ });
 
  var geometry = new xeogl.Geometry(scene, {
     id: "myGeometry"
-});
+ });
 
  // Let xeogl automatically generate the ID for our Entity
  var entity = new xeogl.Entity(scene, {
     material: material,
     geometry: geometry
-});
+ });
  ````
 
  We can then find those components like this:
@@ -10468,14 +10472,14 @@ var Canvas2Image = (function () {
  // Bind a change callback to the Entity's Material
  entity1.on("material", function(material) {
     console.log("Entity's Material has changed to: " + material.id);
-});
+ });
 
  // Now replace that Material with another
  entity1.material = new xeogl.PhongMaterial({
     id: "myOtherMaterial",
     diffuse: [ 0.3, 0.3, 0.6 ]
     //..
-});
+ });
  ````
 
  ## <a name="metadata">Metadata</a>
@@ -10493,7 +10497,7 @@ var Canvas2Image = (function () {
         author: "@xeolabs",
         date: "February 13 2015"
     }
-});
+ });
 
  // Material with descriptive metadata
  var material = new xeogl.PhongMaterial(scene, {
@@ -10504,7 +10508,7 @@ var Canvas2Image = (function () {
         version: "0.1",
         foo: "bar"
     }
-});
+ });
  ````
 
  As with all properties, you can subscribe and change the metadata like this:
@@ -10513,14 +10517,14 @@ var Canvas2Image = (function () {
  // Subscribe to changes to the Material's metadata
  material.on("meta", function(value) {
     console.log("Metadata changed: " + JSON.stringify(value));
-});
+ });
 
  // Change the Material's metadata, firing our change handler
  material.meta = {
     description: "Bright red color with no textures",
     version: "0.2",
     foo: "baz"
-};
+ };
  ````
 
  ## <a name="logging">Logging</a>
@@ -10548,7 +10552,7 @@ var Canvas2Image = (function () {
  ````javascript
  material.on("destroyed", function() {
     this.log("Component was destroyed: " + this.id);
-});
+ });
  ````
 
  Or get notification of destruction of any Component within its {{#crossLink "Scene"}}{{/crossLink}}, indiscriminately:
@@ -10556,7 +10560,7 @@ var Canvas2Image = (function () {
  ````javascript
  scene.on("componentDestroyed", function(component) {
     this.log("Component was destroyed: " + component.id);
-});
+ });
  ````
 
  Then destroy a component like this:
@@ -11563,7 +11567,7 @@ var Canvas2Image = (function () {
 ;/**
  A **Scene** models a 3D scene as a fully-editable and serializable <a href="http://gameprogrammingpatterns.com/component.html" target="_other">component-entity</a> graph.
 
- ## <a name="sceneStructure">Scene Structure</a>
+ ## Scene Structure
 
  A Scene contains a soup of instances of various {{#crossLink "Component"}}Component{{/crossLink}} subtypes, such as
  {{#crossLink "Entity"}}Entity{{/crossLink}}, {{#crossLink "Camera"}}Camera{{/crossLink}}, {{#crossLink "Material"}}Material{{/crossLink}},
@@ -11675,7 +11679,7 @@ var Canvas2Image = (function () {
  var material2 = new xeogl.PhongMaterial({
     diffuse: { r: 0.6, g: 0.6, b: 0.7 },
     specular: { 1.0, 1.0, 1.0 }
-});
+ });
 
  var geometry2 = new xeogl.Geometry({
      primitive: "triangles",
@@ -11683,7 +11687,7 @@ var Canvas2Image = (function () {
      normals: [...],
      uvs: [...],
      indices: [...]
-});
+ });
 
  var camera = new xeogl.Camera();
 
@@ -11691,7 +11695,7 @@ var Canvas2Image = (function () {
      material: material2,
      geometry: geometry2,
      camera: camera2
-});
+ });
  ````
 
  You can then obtain the default Scene from the {{#crossLink "xeogl"}}xeogl{{/crossLink}} entity's
@@ -11737,13 +11741,12 @@ var Canvas2Image = (function () {
  // Create another scene from that JSON, in a fresh canvas:
  var myOtherScene = new xeogl.Scene({
       json: json
-  });
+ });
 
  ***Note:*** this will save your {{#crossLink "Geometry"}}Geometry{{/crossLink}}s' array properties
  ({{#crossLink "Geometry/positions:property"}}positions{{/crossLink}}, {{#crossLink "Geometry/normals:property"}}normals{{/crossLink}},
  {{#crossLink "Geometry/indices:property"}}indices{{/crossLink}} etc) as JSON arrays, which may stress your browser
  if those arrays are huge.
-
 
  @class Scene
  @module xeogl
@@ -12452,6 +12455,7 @@ var Canvas2Image = (function () {
              * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} by default.
              * @property colorTarget
+             * @private
              * @final
              * @type ColorTarget
              */
@@ -12500,6 +12504,7 @@ var Canvas2Image = (function () {
              * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} by default.
              * @property depthTarget
+             * @private
              * @final
              * @type DepthTarget
              */
@@ -12713,6 +12718,7 @@ var Canvas2Image = (function () {
              * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "MorphTargets"}}MorphTargets{{/crossLink}} by default.
              * @property morphTargets
+             * @private
              * @final
              * @type MorphTargets
              */
@@ -12760,6 +12766,7 @@ var Canvas2Image = (function () {
              * {{#crossLink "Shader"}}Shader{{/crossLink}} by default.
              * @property shader
              * @final
+             * @private
              * @type Shader
              */
             shader: {
@@ -12783,6 +12790,7 @@ var Canvas2Image = (function () {
              *
              * @property shaderParams
              * @final
+             * @private
              * @type ShaderParams
              */
             shaderParams: {
@@ -13610,7 +13618,7 @@ var Canvas2Image = (function () {
 
      TODO
 
-     @class MorphTargets
+
      @module xeogl
      @submodule animation
      @constructor
@@ -13713,34 +13721,61 @@ var Canvas2Image = (function () {
 
 
 ;/**
- A **CameraFlight** flies a {{#crossLink "Camera"}}{{/crossLink}} to a given target.
+ A **CameraFlightAnimation** jumps or flies a {{#crossLink "Camera"}}{{/crossLink}} to look at a given target.
 
- <ul>
- <li>A CameraFlight animates the {{#crossLink "Lookat"}}{{/crossLink}} attached to its {{#crossLink "Camera"}}{{/crossLink}}.</li>
- <li>A CameraFlight can be attached to a different {{#crossLink "Camera"}}{{/crossLink}} at any time.</li>
- <li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>
- </ul>
+ <a href="../../examples/#animation_CameraFlightAnimation_Entity"><img src="http://i.giphy.com/3o7TKP0jN800EQ99EQ.gif"></img></a>
 
- A target can be:
+ ## Overview
 
- <ul>
- <li>specific ````eye````, ````look```` and ````up```` positions,</li>
- <li>a World-space {{#crossLink "Boundary3D"}}{{/crossLink}},</li>
- <li>an instance or ID of any {{#crossLink "Component"}}{{/crossLink}} subtype that provides a World-space {{#crossLink "Boundary3D"}}{{/crossLink}} in a "worldBoundary" property, or</li>
- <li>an axis-aligned World-space bounding box.</li>
- </ul>
+ * Requires that the {{#crossLink "Camera"}}{{/crossLink}} have a {{#crossLink "Lookat"}}{{/crossLink}} for its {{#crossLink "Camera/view:property"}}view{{/crossLink}} transform.
+ * Can be attached to a different {{#crossLink "Camera"}}{{/crossLink}} at any time.
+ * Can be made to either fly or jump to its target.
+ * While busy flying to a target, it can be stopped, or redirected to fly to a different target.
+
+ A CameraFlightAnimation's target can be:
+
+ * specific ````eye````, ````look```` and ````up```` positions,
+ * a World-space {{#crossLink "Boundary3D"}}{{/crossLink}},
+ * an instance or ID of any {{#crossLink "Component"}}{{/crossLink}} subtype that provides a World-space {{#crossLink "Boundary3D"}}{{/crossLink}} in a "worldBoundary" property, or
+ * an axis-aligned World-space bounding box (AABB).
+
+ When a CameraFlightAnimation's target is a {{#crossLink "Boundary3D"}}{{/crossLink}} or AABB, you can configure its {{#crossLink "CameraFlightAnimation/fit:property"}}{{/crossLink}}
+ and {{#crossLink "CameraFlightAnimation/fitFOV:property"}}{{/crossLink}} properties to make it stop at the point where the target
+ occupies a certain amount of the field-of-view.
 
  ## Examples
 
- <ul>
- <li>[Flying to Entity](../../examples/#animation_CameraFlight_Entity)</li>
- <li>[Flying to Boundary3D](../../examples/#animation_CameraFlight_Boundary3D)</li>
- <li>[Flying to AABB](../../examples/#animation_CameraFlight_AABB)</li>
- </ul>
+ * [Flying to random Entities](../../examples/#animation_CameraFlightAnimation_Entity)
+ * [Flying to Boundary3D](../../examples/#animation_CameraFlightAnimation_Boundary3D)
+ * [Flying to AABB](../../examples/#animation_CameraFlightAnimation_AABB)
 
+ ## Flying to an Entity
+
+ Flying to an {{#crossLink "Entity"}}{{/crossLink}} (which provides a World-space
+ {{#crossLink "Boundary3D"}}{{/crossLink}} via its {{#crossLink "Entity/worldBoundary:property"}}{{/crossLink}} property):
+
+ ````Javascript
+ var camera = new xeogl.Camera();
+
+ // Create a CameraFlightAnimation that takes one second to fly
+ // the default Scene's default Camera to each specified target
+ var cameraFlight = new xeogl.CameraFlightAnimation({
+    fit: true, // Default
+    fitFOV: 45, // Default, degrees
+    duration: 1 // Default, seconds
+ }, function() {
+           // Arrived
+       });
+
+ // Create a Entity, which gets all the default components
+ var entity = new Entity();
+
+ // Fly to the Entity's worldBoundary
+ cameraFlight.flyTo(entity);
+ ````
  ## Flying to a position
 
- Flying the CameraFlight from the previous example to specified eye, look and up positions:
+ Flying the CameraFlightAnimation from the previous example to specified eye, look and up positions:
 
  ````Javascript
  cameraFlight.flyTo({
@@ -13749,47 +13784,22 @@ var Canvas2Image = (function () {
     up: [0,1,0],
     duration: 1 // Default, seconds
  }, function() {
-    // Arrived
- });
- ````
- ## Flying to an Entity
-
- Flying to an {{#crossLink "Entity"}}{{/crossLink}} (which provides a World-space
- {{#crossLink "Boundary3D"}}{{/crossLink}} via its {{#crossLink "Entity/worldBoundary:property"}}{{/crossLink}} property:
-
- ````Javascript
- var camera = new xeogl.Camera();
-
- // Create a CameraFlight that takes exactly twenty seconds to fly
- // the Camera to each specified target
- var cameraFlight = new xeogl.CameraFlight({
-    camera: camera,
-    fit: true, // Default
-    fitFOV: 45, // Default, degrees
-    duration: 1 // Default, seconds
- });
-
- // Create a Entity, which gets all the default components
- var entity = new Entity();
-
- // Fly to the Entity's worldBoundary
- cameraFlight.flyTo(entity);
+          // Arrived
+      });
  ````
 
  ## Flying to a Boundary3D
 
- Flying the CameraFlight from the previous two examples explicitly to the World-space
+ Flying the CameraFlightAnimation from the previous two examples explicitly to the World-space
  {{#crossLink "Boundary3D"}}{{/crossLink}} of the {{#crossLink "Entity"}}{{/crossLink}} property):
 
  ````Javascript
- var worldBoundary = entity.worldBoundary;
-
- cameraFlight.flyTo(worldBoundary);
+ cameraFlight.flyTo(entity.worldBoundary);
  ````
 
  ## Flying to an AABB
 
- Flying the CameraFlight from the previous two examples explicitly to the {{#crossLink "Boundary3D"}}Boundary3D's{{/crossLink}}
+ Flying the CameraFlightAnimation from the previous two examples explicitly to the {{#crossLink "Boundary3D"}}Boundary3D's{{/crossLink}}
  axis-aligned bounding box:
 
  ````Javascript
@@ -13800,24 +13810,23 @@ var Canvas2Image = (function () {
  cameraFlight.flyTo(aabb);
  ````
 
- @class CameraFlight
- @author xeolabs / http://xeolabs.org
+ @class CameraFlightAnimation
  @module xeogl
  @submodule animation
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CameraFlight.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CameraFlightAnimation.
  @param [cfg.camera] {Number|String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
- Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this CameraFlight. Defaults to the
+ Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this CameraFlightAnimation. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
- @param [cfg.fit=false] {Boolean} When true, will ensure that when this CameraFlight has flown or jumped to a boundary
- it will adjust the distance between the {{#crossLink "CameraFlight/camera:property"}}camera{{/crossLink}}'s {{#crossLink "Lookat/eye:property"}}eye{{/crossLink}}
+ @param [cfg.fit=true] {Boolean} When true, will ensure that when this CameraFlightAnimation has flown or jumped to a boundary
+ it will adjust the distance between the {{#crossLink "CameraFlightAnimation/camera:property"}}camera{{/crossLink}}'s {{#crossLink "Lookat/eye:property"}}eye{{/crossLink}}
  and {{#crossLink "Lookat/look:property"}}{{/crossLink}} position so as to ensure that the target boundary is filling the view volume.
  @param [cfg.fitFOV=45] {Number} How much field-of-view, in degrees, that a target boundary should
  fill the canvas when fitting the {{#crossLink "Camera"}}Camera{{/crossLink}} to the target boundary.
- @param [cfg.trail] {Boolean} When true, will cause this CameraFlight to point the {{#crossLink "Camera"}}{{/crossLink}} in the direction that it is travelling.
- @param [cfg.duration=1] {Number} Flight duration, in seconds, when calling {{#crossLink "CameraFlight/flyTo:method"}}{{/crossLink}}.
+ @param [cfg.trail] {Boolean} When true, will cause this CameraFlightAnimation to point the {{#crossLink "Camera"}}{{/crossLink}} in the direction that it is travelling.
+ @param [cfg.duration=1] {Number} Flight duration, in seconds, when calling {{#crossLink "CameraFlightAnimation/flyTo:method"}}{{/crossLink}}.
  @extends Component
  */
 (function () {
@@ -13826,7 +13835,7 @@ var Canvas2Image = (function () {
 
     var math = xeogl.math;
 
-    xeogl.CameraFlight = xeogl.Component.extend({
+    xeogl.CameraFlightAnimation = xeogl.Component.extend({
 
         /**
          JavaScript class name for this Component.
@@ -13835,7 +13844,7 @@ var Canvas2Image = (function () {
          @type String
          @final
          */
-        type: "xeogl.CameraFlight",
+        type: "xeogl.CameraFlightAnimation",
 
         _init: function (cfg) {
 
@@ -13866,11 +13875,35 @@ var Canvas2Image = (function () {
             this.trail = cfg.trail;
             this.camera = cfg.camera;
 
-            // Shows a wireframe box at the given boundary
-            this._boundaryHelper = this.create({
+            // Shows a wireframe box for target AABBs
+            this._aabbHelper = this.create({
                 type: "xeogl.Entity",
                 geometry: this.create({
-                    type: "xeogl.BoundaryGeometry",
+                    type: "xeogl.AABBGeometry",
+                    material: this.create({
+                        type: "xeogl.PhongMaterial",
+                        diffuse: [0, 0, 0],
+                        ambient: [0, 0, 0],
+                        specular: [0, 0, 0],
+                        emissive: [1.0, 1.0, 0.0],
+                        lineWidth: 3
+                    })
+                }),
+                visibility: this.create({
+                    type: "xeogl.Visibility",
+                    visible: false
+                }),
+                modes: this.create({
+                    type: "xeogl.Modes",
+                    collidable: false // Effectively has no boundary
+                })
+            });
+
+            // Shows a wireframe box for target AABBs
+            this._obbHelper = this.create({
+                type: "xeogl.Entity",
+                geometry: this.create({
+                    type: "xeogl.OBBGeometry",
                     material: this.create({
                         type: "xeogl.PhongMaterial",
                         diffuse: [0, 0, 0],
@@ -13892,13 +13925,13 @@ var Canvas2Image = (function () {
         },
 
         /**
-         * Begins flying this CameraFlight's {{#crossLink "Camera"}}{{/crossLink}} to the given target.
+         * Begins flying this CameraFlightAnimation's {{#crossLink "Camera"}}{{/crossLink}} to the given target.
          *
-         * <ul>
-         *     <li>When the target is a boundary, the {{#crossLink "Camera"}}{{/crossLink}} will fly towards the target
-         *     and stop when the target fills most of the canvas.</li>
-         *     <li>When the target is an explicit {{#crossLink "Camera"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````
-         *      vectors, then this CameraFlight will interpolate the {{#crossLink "Camera"}}{{/crossLink}} to that target and stop there.</li>
+         *
+         *  * When the target is a boundary, the {{#crossLink "Camera"}}{{/crossLink}} will fly towards the target
+         *    and stop when the target fills most of the canvas.
+         *  * When the target is an explicit {{#crossLink "Camera"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````
+         *    vectors, then this CameraFlightAnimation will interpolate the {{#crossLink "Camera"}}{{/crossLink}} to that target and stop there.
          * @method flyTo
          * @param [params=scene]  {*|Component} Either a parameters object or a {{#crossLink "Component"}}{{/crossLink}} subtype that has a {{#crossLink "WorldBoundary"}}{{/crossLink}}.
          * @param[params.arc=0]  {Number} Factor in range [0..1] indicating how much the
@@ -13909,10 +13942,10 @@ var Canvas2Image = (function () {
          * @param [params.eye] {Float32Array} Position to fly the eye position to.
          * @param [params.look] {Float32Array} Position to fly the look position to.
          * @param [params.up] {Float32Array} Position to fly the up vector to.
+         * @param [params.fit=true] {Boolean} Whether to fit the target to the view volume. Overrides {{#crossLink "CameraFlightAnimation/fit:property"}}{{/crossLink}}.
          * @param [params.fitFOV] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
-         * fill the canvas on arrival. Overrides {{#crossLink "CameraFlight/fitFOV:property"}}{{/crossLink}}.
-         * @param [params.fit] {Boolean} Whether to fit the target to the view volume. Overrides {{#crossLink "CameraFlight/fit:property"}}{{/crossLink}}.
-         * @param [params.duration] {Number} Flight duration in seconds.  Overrides {{#crossLink "CameraFlight/duration:property"}}{{/crossLink}}.
+         * fill the canvas on arrival. Overrides {{#crossLink "CameraFlightAnimation/fitFOV:property"}}{{/crossLink}}.
+         * @param [params.duration] {Number} Flight duration in seconds.  Overrides {{#crossLink "CameraFlightAnimation/duration:property"}}{{/crossLink}}.
          * @param [callback] {Function} Callback fired on arrival
          * @param [scope] {Object} Optional scope for callback
          */
@@ -13961,6 +13994,7 @@ var Canvas2Image = (function () {
                 this._up1[2] = view.up[2];
 
                 var aabb;
+                var sphere;
                 var eye;
                 var look;
                 var up;
@@ -13978,11 +14012,17 @@ var Canvas2Image = (function () {
 
                     // Argument is a Boundary3D
 
-                } else if (params.length === 6) {
+                } else if (params.length === 6) { // [xmin,ymin,zmin, xmax,ymax,zmax]
 
                     // Argument is an AABB
 
                     aabb = params;
+
+                //} else if (params.length === 4) { // [x,y,z,radius]
+                //
+                //    // Argument is an OBB
+                //
+                //    sphere = params;
 
                 } else if (params.eye || params.look || params.up) {
 
@@ -14046,8 +14086,8 @@ var Canvas2Image = (function () {
 
                     // Show boundary
 
-                    this._boundaryHelper.geometry.aabb = aabb;
-                    this._boundaryHelper.visibility.visible = true;
+                    this._aabbHelper.geometry.aabb = aabb;
+                    this._aabbHelper.visibility.visible = true;
 
                     var aabbCenter = math.getAABB3Center(aabb);
 
@@ -14061,7 +14101,7 @@ var Canvas2Image = (function () {
 
                     var vec = math.normalizeVec3(math.subVec3(this._eye1, this._look1, tempVec3));
                     var diag = (params.look && false) ? math.getAABB3DiagPoint(aabb, params.look) : math.getAABB3Diag(aabb);
-                    var sca = Math.abs((diag) / Math.tan((params.fitFOV || this._fitFOV) / 2));
+                    var sca = Math.abs((diag) / Math.tan((params.fitFOV || this._fitFOV) * xeogl.math.DEGTORAD));
 
                     this._eye2[0] = this._look2[0] + (vec[0] * sca);
                     this._eye2[1] = this._look2[1] + (vec[1] * sca);
@@ -14106,13 +14146,13 @@ var Canvas2Image = (function () {
         })(),
 
         /**
-         * Jumps this CameraFlight's {{#crossLink "Camera"}}{{/crossLink}} to the given target.
+         * Jumps this CameraFlightAnimation's {{#crossLink "Camera"}}{{/crossLink}} to the given target.
          *
-         * <ul>
-         *     <li>When the target is a boundary, this CameraFlight will position the {{#crossLink "Camera"}}{{/crossLink}}
-         *     at where the target fills most of the canvas.</li>
-         *     <li>When the target is an explicit {{#crossLink "Camera"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````
-         *      vectors, then this CameraFlight will jump the {{#crossLink "Camera"}}{{/crossLink}} to that target.</li>
+         *
+         *     * When the target is a boundary, this CameraFlightAnimation will position the {{#crossLink "Camera"}}{{/crossLink}}
+         *     at where the target fills most of the canvas.
+         *     * When the target is an explicit {{#crossLink "Camera"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````
+         *      vectors, then this CameraFlightAnimation will jump the {{#crossLink "Camera"}}{{/crossLink}} to that target.
          * @method flyTo
          * @param params  {*|Component} Either a parameters object or a {{#crossLink "Component"}}{{/crossLink}} subtype that has a {{#crossLink "WorldBoundary"}}{{/crossLink}}.
          * @param[params.arc=0]  {Number} Factor in range [0..1] indicating how much the
@@ -14124,8 +14164,8 @@ var Canvas2Image = (function () {
          * @param [params.look] {Float32Array} Position to fly the look position to.
          * @param [params.up] {Float32Array} Position to fly the up vector to.
          * @param [params.fitFOV] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
-         * fill the canvas on arrival. Overrides {{#crossLink "CameraFlight/fitFOV:property"}}{{/crossLink}}.
-         * @param [params.fit] {Boolean} Whether to fit the target to the view volume. Overrides {{#crossLink "CameraFlight/fit:property"}}{{/crossLink}}.
+         * fill the canvas on arrival. Overrides {{#crossLink "CameraFlightAnimation/fitFOV:property"}}{{/crossLink}}.
+         * @param [params.fit] {Boolean} Whether to fit the target to the view volume. Overrides {{#crossLink "CameraFlightAnimation/fit:property"}}{{/crossLink}}.
          */
         jumpTo: (function () {
 
@@ -14170,11 +14210,17 @@ var Canvas2Image = (function () {
 
                     // Argument is a Boundary3D
 
-                } else if (params.length === 6) {
+                } else if (params.length === 6) { // [xmin,ymin,zmin, xmax,ymax,zmax]
 
                     // Argument is an AABB
 
                     aabb = params;
+
+                } else if (params.length === 4) { // [x,y,z,radius]
+
+                    // Argument is an OBB
+
+                    sphere = params;
 
                 } else if (params.eye || params.look || params.up) {
 
@@ -14252,8 +14298,9 @@ var Canvas2Image = (function () {
 
                     var dist;
 
-                    if (params.fit || this._fit) {
-                        dist = Math.abs((diag) / Math.tan((params.fitFOV || this._fitFOV) / 2));
+                    var fit = (params.fit !== undefined) ? params.fit : this._fit;
+                    if (fit) {
+                        dist = Math.abs((diag) / Math.tan((params.fitFOV || this._fitFOV) * xeogl.math.DEGTORAD));
 
                     } else {
                         dist = math.lenVec3(math.subVec3(view.eye, view.look, tempVec3e));
@@ -14365,7 +14412,7 @@ var Canvas2Image = (function () {
                 return;
             }
 
-            this._boundaryHelper.visibility.visible = false;
+            this._aabbHelper.visibility.visible = false;
 
             this._flying = false;
 
@@ -14398,7 +14445,7 @@ var Canvas2Image = (function () {
                 return;
             }
 
-            this._boundaryHelper.visibility.visible = false;
+            this._aabbHelper.visibility.visible = false;
 
             this._flying = false;
 
@@ -14415,13 +14462,13 @@ var Canvas2Image = (function () {
         _props: {
 
             /**
-             * The {{#crossLink "Camera"}}{{/crossLink}} being controlled by this CameraFlight.
+             * The {{#crossLink "Camera"}}{{/crossLink}} being controlled by this CameraFlightAnimation.
              *
-             * Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this CameraFlight. Defaults to the parent
+             * Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this CameraFlightAnimation. Defaults to the parent
              * {{#crossLink "Scene"}}Scene's{{/crossLink}} default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
              * a null or undefined value.
              *
-             * Fires a {{#crossLink "CameraFlight/camera:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CameraFlightAnimation/camera:event"}}{{/crossLink}} event on change.
              *
              * @property camera
              * @type Camera
@@ -14431,7 +14478,7 @@ var Canvas2Image = (function () {
                 set: function (value) {
 
                     /**
-                     * Fired whenever this CameraFlight's {{#crossLink "CameraFlight/camera:property"}}{{/crossLink}}
+                     * Fired whenever this CameraFlightAnimation's {{#crossLink "CameraFlightAnimation/camera:property"}}{{/crossLink}}
                      * property changes.
                      *
                      * @event camera
@@ -14453,11 +14500,11 @@ var Canvas2Image = (function () {
             },
 
             /**
-             * Flight duration, in seconds, when calling {{#crossLink "CameraFlight/flyTo:method"}}{{/crossLink}}.
+             * Flight duration, in seconds, when calling {{#crossLink "CameraFlightAnimation/flyTo:method"}}{{/crossLink}}.
              *
              * Stops any flight currently in progress.
              *
-             * Fires a {{#crossLink "CameraFlight/duration:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CameraFlightAnimation/duration:event"}}{{/crossLink}} event on change.
              *
              * @property duration
              * @default 0.5
@@ -14470,7 +14517,7 @@ var Canvas2Image = (function () {
                     value = value || 0.5;
 
                     /**
-                     Fired whenever this CameraFlight's {{#crossLink "CameraFlight/duration:property"}}{{/crossLink}} property changes.
+                     Fired whenever this CameraFlightAnimation's {{#crossLink "CameraFlightAnimation/duration:property"}}{{/crossLink}} property changes.
 
                      @event duration
                      @param value {Number} The property's new value
@@ -14486,28 +14533,28 @@ var Canvas2Image = (function () {
             },
 
             /**
-             * When true, will ensure that this CameraFlight is flying to a boundary it will always adjust the distance between the
-             * {{#crossLink "CameraFlight/camera:property"}}camera{{/crossLink}}'s {{#crossLink "Lookat/eye:property"}}eye{{/crossLink}}
+             * When true, will ensure that this CameraFlightAnimation is flying to a boundary it will always adjust the distance between the
+             * {{#crossLink "CameraFlightAnimation/camera:property"}}camera{{/crossLink}}'s {{#crossLink "Lookat/eye:property"}}eye{{/crossLink}}
              * and {{#crossLink "Lookat/look:property"}}{{/crossLink}}
              * so as to ensure that the target boundary is always filling the view volume.
              *
              * When false, the eye will remain at its current distance from the look position.
              *
-             * Fires a {{#crossLink "CameraFlight/fit:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CameraFlightAnimation/fit:event"}}{{/crossLink}} event on change.
              *
              * @property fit
              * @type Boolean
-             * @default false
+             * @default true
              */
             fit: {
 
                 set: function (value) {
 
-                    this._fit = !!value;
+                    this._fit = value !== false;
 
                     /**
-                     * Fired whenever this CameraFlight's
-                     * {{#crossLink "CameraFlight/fit:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this CameraFlightAnimation's
+                     * {{#crossLink "CameraFlightAnimation/fit:property"}}{{/crossLink}} property changes.
                      * @event fit
                      * @param value The property's new value
                      */
@@ -14522,9 +14569,9 @@ var Canvas2Image = (function () {
 
             /**
              * How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
-             * fill the canvas when calling {{#crossLink "CameraFlight/flyTo:method"}}{{/crossLink}} or {{#crossLink "CameraFlight/jumpTo:method"}}{{/crossLink}}.
+             * fill the canvas when calling {{#crossLink "CameraFlightAnimation/flyTo:method"}}{{/crossLink}} or {{#crossLink "CameraFlightAnimation/jumpTo:method"}}{{/crossLink}}.
              *
-             * Fires a {{#crossLink "CameraFlight/fitFOV:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CameraFlightAnimation/fitFOV:event"}}{{/crossLink}} event on change.
              *
              * @property fitFOV
              * @default 45
@@ -14537,7 +14584,7 @@ var Canvas2Image = (function () {
                     value = value || 45;
 
                     /**
-                     Fired whenever this CameraFlight's {{#crossLink "CameraFlight/fitFOV:property"}}{{/crossLink}} property changes.
+                     Fired whenever this CameraFlightAnimation's {{#crossLink "CameraFlightAnimation/fitFOV:property"}}{{/crossLink}} property changes.
 
                      @event fitFOV
                      @param value {Number} The property's new value
@@ -14551,10 +14598,10 @@ var Canvas2Image = (function () {
             },
 
             /**
-             * When true, will cause this CameraFlight to point the {{#crossLink "CameraFlight/camera:property"}}{{/crossLink}}
+             * When true, will cause this CameraFlightAnimation to point the {{#crossLink "CameraFlightAnimation/camera:property"}}{{/crossLink}}
              * in the direction that it is travelling.
              *
-             * Fires a {{#crossLink "CameraFlight/trail:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CameraFlightAnimation/trail:event"}}{{/crossLink}} event on change.
              *
              * @property trail
              * @type Boolean
@@ -14567,7 +14614,7 @@ var Canvas2Image = (function () {
                     this._trail = !!value;
 
                     /**
-                     * Fired whenever this CameraFlight's {{#crossLink "CameraFlight/trail:property"}}{{/crossLink}}
+                     * Fired whenever this CameraFlightAnimation's {{#crossLink "CameraFlightAnimation/trail:property"}}{{/crossLink}}
                      * property changes.
                      *
                      * @event trail
@@ -14607,25 +14654,26 @@ var Canvas2Image = (function () {
 ;/**
  A **Camera** defines viewing and projection transforms for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li> A Camera is composed of a viewing and projection {{#crossLink "Transform"}}{{/crossLink}}.</li>
- <li>The viewing transform is usually a {{#crossLink "Lookat"}}Lookat{{/crossLink}}. Having the viewing transform as a
+ ## Overview
+
+ *  A Camera is composed of a viewing and projection {{#crossLink "Transform"}}{{/crossLink}}.
+ * The viewing transform is usually a {{#crossLink "Lookat"}}Lookat{{/crossLink}}. Having the viewing transform as a
  separate component from the Camera allows us to switch the Camera between multiple, existing viewpoints by simply re-attaching it to
- different viewing transform components (ie. {{#crossLink "Lookat"}}Lookats{{/crossLink}}).</li>
- <li> By default, each Camera has its parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}} transform,
+ different viewing transform components (ie. {{#crossLink "Lookat"}}Lookats{{/crossLink}}).
+ *  By default, each Camera has its parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}} transform,
  (which is a {{#crossLink "Lookat"}}Lookat{{/crossLink}}) and default
  {{#crossLink "Scene/project:property"}}{{/crossLink}} transform (which is a {{#crossLink "Perspective"}}Perspective{{/crossLink}}).
- You would override those with your own transform components as necessary.</li>
-
- </ul>
+ You would override those with your own transform components as necessary.
 
  <img src="../../../assets/images/Camera.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Perspective Camera](../../examples/#camera_perspective)</li>
- </ul>
+ * [Perspective Camera](../../examples/#transforms_project_perspective)
+ * [Orthographic Camera](../../examples/#transforms_project_ortho)
+ * [Flying a Camera to ](../../examples/#animation_CameraFlightAnimation_AABB)
+ * [Automatically following an Entity with a Camera](../../examples/#animation_CameraFollowAnimation)
+ * [Animating a Camera along a path](../../examples/#animation_CameraPathAnimation_interpolate)
 
  ## Usage
 
@@ -14640,18 +14688,21 @@ var Canvas2Image = (function () {
              look: [0, 0, 0],
              up: [0, 1, 0]
          }),
-         project: new xeogl.Lookat({
+         project: new xeogl.Perspective({
              fovy: 60,
              near: 0.1,
              far: 1000
          })
      }),
-     geometry: new xeogl.BoxGeometry()
+     geometry: new xeogl.TorusGeometry()
  });
 
  entity.scene.on("tick", function () {
-     camera.view.rotateEyeY(0.5);
-     camera.view.rotateEyeX(0.3);
+
+     var lookat = entity.camera.view;
+
+     lookat.rotateEyeY(0.5);
+     lookat.rotateEyeX(0.3);
  });
  ````
  @class Camera
@@ -14792,32 +14843,32 @@ var Canvas2Image = (function () {
 ;/**
  A **Canvas** manages a {{#crossLink "Scene"}}Scene{{/crossLink}}'s HTML canvas and its WebGL context.
 
- <ul>
- <li>Each {{#crossLink "Scene"}}Scene{{/crossLink}} provides a Canvas as a read-only property on itself.</li>
- <li>When a {{#crossLink "Scene"}}Scene{{/crossLink}} is configured with the ID of
+ ## Overview
+
+ * Each {{#crossLink "Scene"}}Scene{{/crossLink}} provides a Canvas as a read-only property on itself.
+ * When a {{#crossLink "Scene"}}Scene{{/crossLink}} is configured with the ID of
  an existing <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a>, then
- the Canvas will bind to that, otherwise the Canvas will automatically create its own.</li>
- <li>A Canvas will fire a {{#crossLink "Canvas/size:event"}}{{/crossLink}} event whenever
- the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a> resizes.</li>
- <li>A Canvas is responsible for obtaining a WebGL context from
- the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a>.</li>
- <li>A Canvas also fires a {{#crossLink "Canvas/webglContextLost:event"}}{{/crossLink}} event when the WebGL context is
- lost, and a {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} when it is restored again.</li>
- <li>The various components within the parent {{#crossLink "Scene"}}Scene{{/crossLink}} will transparently recover on
- the {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} event.</li>
- </ul>
+ the Canvas will bind to that, otherwise the Canvas will automatically create its own.
+ * A Canvas will fire a {{#crossLink "Canvas/boundary:event"}}{{/crossLink}} event whenever
+ the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a> resizes.
+ * A Canvas is responsible for obtaining a WebGL context from
+ the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a>.
+ * A Canvas also fires a {{#crossLink "Canvas/webglContextLost:event"}}{{/crossLink}} event when the WebGL context is
+ lost, and a {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} when it is restored again.
+ * The various components within the parent {{#crossLink "Scene"}}Scene{{/crossLink}} will transparently recover on
+ the {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} event.
 
  <img src="../../../assets/images/Canvas.png"></img>
 
- <br><br>
  Note that a Canvas also has a {{#crossLink "Spinner"}}{{/crossLink}}, which shows a
  busy spinner when a {{#crossLink "Model"}}{{/crossLink}} is loading, or when directed by application logic.
 
  ## Examples
 
- <ul>
- <li>[Multiple canvases](../../examples/#scene_multipleScenes)</li>
- </ul>
+ * [Multiple canvases/scenes in a page](../../examples/#scene_multipleScenes)
+ * [Taking canvas snapshots](../../examples/#canvas_snapshot)
+ * [Transparent canvas with background image](../../examples/#canvas_transparent)
+ * [Canvas with multiple viewports](../../examples/#canvas_multipleViewports)
 
  ## Usage
 
@@ -14976,6 +15027,7 @@ var Canvas2Image = (function () {
              */
             this.contextAttr = cfg.contextAttr || {};
             this.contextAttr.alpha = this.transparent;
+            this.contextAttr.preserveDrawingBuffer = true;
 
             if (!cfg.canvas) {
 
@@ -15545,24 +15597,22 @@ var Canvas2Image = (function () {
 ;/**
  A Spinner displays a spinner animation at the center of its {{#crossLink "Canvas"}}{{/crossLink}} while things are loading or otherwise busy.
 
- <ul>
- <li>Spinners are normally shown by {{#crossLink "Model"}}Models{{/crossLink}} while they are loading, however they may also
- be shown by any application code that wants to indicate business.</li>
- <li>By default, they are also shown by components that load assets, such as {{#crossLink "Texture"}}{{/crossLink}}. You
- can disable that by flipping the Spinner's {{#crossLink "Spinner/textures:property"}}{{/crossLink}} property.</li>
- <li>A Spinner component has a {{#crossLink "Spinner/processes:property"}}{{/crossLink}} count that indicates how many
+ ## Overview
+
+ * Spinners are normally shown by {{#crossLink "Model"}}Models{{/crossLink}} while they are loading, however they may also
+ be shown by any application code that wants to indicate business.
+ * By default, they are also shown by components that load assets, such as {{#crossLink "Texture"}}{{/crossLink}}. You
+ can disable that by flipping the Spinner's {{#crossLink "Spinner/textures:property"}}{{/crossLink}} property.
+ * A Spinner component has a {{#crossLink "Spinner/processes:property"}}{{/crossLink}} count that indicates how many
  active processes it currently represents. As a process starts, a process would increment {{#crossLink "Spinner/processes:property"}}{{/crossLink}}, then as it
- completes (or fails), would decrement it again.</li>
- <li>A Spinner is only visible while {{#crossLink "Spinner/processes:property"}}{{/crossLink}} is greater than zero.</li>
- </ul>
+ completes (or fails), would decrement it again.
+ * A Spinner is only visible while {{#crossLink "Spinner/processes:property"}}{{/crossLink}} is greater than zero.
 
  <img src="../../../assets/images/Spinner.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Loading glTF model with spinner](../../examples/#importing_gltf_gearbox)</li>
- </ul>
+ * [Loading glTF model with spinner](../../examples/#importing_gltf_gearbox)
 
  ## Usage
 
@@ -15898,43 +15948,41 @@ var Canvas2Image = (function () {
  *
  * @module xeogl
  * @submodule clipping
- */;
-
-/**
+ */;/**
  A **Clip** is an arbitrarily-aligned World-space clipping plane used to create
  cross-section views of associated {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>These are grouped within {{#crossLink "Clips"}}Clips{{/crossLink}} components, which are attached to
+ ## Overview
+
+ * These are grouped within {{#crossLink "Clips"}}Clips{{/crossLink}} components, which are attached to
  {{#crossLink "Entity"}}Entities{{/crossLink}}. See the {{#crossLink "Clips"}}Clips{{/crossLink}} documentation
- for more info.</li>
- <li>A Clip is specified in World-space, as being perpendicular to a vector {{#crossLink "Clip/dir:property"}}{{/crossLink}}
- that emanates from the origin, offset at a distance {{#crossLink "Clip/dist:property"}}{{/crossLink}} along that vector. </li>
- <li>You can move a Clip back and forth along its vector by varying {{#crossLink "Clip/dist:property"}}{{/crossLink}}.</li>
- <li>Likewise, you can rotate a Clip about the origin by rotating the {{#crossLink "Clip/dir:property"}}{{/crossLink}} vector.</li>
- <li>A Clip is has a {{#crossLink "Clip/mode:property"}}{{/crossLink}},  which indicates whether it is disabled
+ for more info.
+ * A Clip is specified in World-space, as being perpendicular to a vector {{#crossLink "Clip/dir:property"}}{{/crossLink}}
+ that emanates from the origin, offset at a distance {{#crossLink "Clip/dist:property"}}{{/crossLink}} along that vector.
+ * You can move a Clip back and forth along its vector by varying {{#crossLink "Clip/dist:property"}}{{/crossLink}}.
+ * Likewise, you can rotate a Clip about the origin by rotating the {{#crossLink "Clip/dir:property"}}{{/crossLink}} vector.
+ * A Clip is has a {{#crossLink "Clip/mode:property"}}{{/crossLink}},  which indicates whether it is disabled
  ("disabled"), discarding fragments that fall on the origin-side of the plane ("inside"), or clipping fragments that
- fall on the other side of the plane from the origin ("outside").</li>
- <li>You can update the {{#crossLink "Clip/mode:property"}}{{/crossLink}} of a Clip to activate or deactivate it, or to
- switch which side it discards fragments from.</li>
- <li>Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}}
+ fall on the other side of the plane from the origin ("outside").
+ * You can update the {{#crossLink "Clip/mode:property"}}{{/crossLink}} of a Clip to activate or deactivate it, or to
+ switch which side it discards fragments from.
+ * Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}}
  via the {{#crossLink "Modes/clipping:property"}}{{/crossLink}} flag on {{#crossLink "Modes"}}Modes{{/crossLink}} components
- attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Clips create within xeogl's shaders.</li>
- </ul>
+ attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
 
  <img src="../../../assets/images/Clip.png"></img>
 
  ## Usage
 
- <ul>
- <li>In this example we have an {{#crossLink "Entity"}}{{/crossLink}} that's clipped by a {{#crossLink "Clips"}}{{/crossLink}}
- that contains two {{#crossLink "Clip"}}{{/crossLink}} planes.</li>
- <li>The first {{#crossLink "Clip"}}{{/crossLink}} plane is on the
- positive diagonal, while the second is on the negative diagonal.</li>
- <li>The {{#crossLink "Entity"}}Entity's{{/crossLink}}
- {{#crossLink "Geometry"}}{{/crossLink}} is a box, and the planes will clip off two of the box's corners.</li>
- </ul>
+
+ * In this example we have an {{#crossLink "Entity"}}{{/crossLink}} that's clipped by a {{#crossLink "Clips"}}{{/crossLink}}
+ that contains two {{#crossLink "Clip"}}{{/crossLink}} planes.
+ * The first {{#crossLink "Clip"}}{{/crossLink}} plane is on the
+ positive diagonal, while the second is on the negative diagonal.
+ * The {{#crossLink "Entity"}}Entity's{{/crossLink}}
+ {{#crossLink "Geometry"}}{{/crossLink}} is a box, and the planes will clip off two of the box's corners.
+
 
  ````javascript
  // Create a set of Clip planes
@@ -15962,7 +16010,6 @@ var Canvas2Image = (function () {
      geometry: new xeogl.BoxGeometry(),
      clips: clips
  });
-
  ````
 
  ### Toggling clipping on and off
@@ -16023,11 +16070,11 @@ var Canvas2Image = (function () {
 
              Possible states are:
 
-             <ul>
-             <li>"disabled" - inactive</li>
-             <li>"inside" - clipping fragments that fall within the half-space on the origin-side of the Clip plane</li>
-             <li>"outside" - clipping fragments that fall on the other side of the Clip plane from the origin</li>
-             </ul>
+
+             * "disabled" - inactive
+             * "inside" - clipping fragments that fall within the half-space on the origin-side of the Clip plane
+             * "outside" - clipping fragments that fall on the other side of the Clip plane from the origin
+
 
              Fires a {{#crossLink "Clip/mode:event"}}{{/crossLink}} event on change.
 
@@ -16141,22 +16188,21 @@ var Canvas2Image = (function () {
 
  ## Overview
 
- <ul>
- <li>Each {{#crossLink "Clip"}}Clip{{/crossLink}} is specified in World-space, as being perpendicular to a vector
+
+ * Each {{#crossLink "Clip"}}Clip{{/crossLink}} is specified in World-space, as being perpendicular to a vector
  {{#crossLink "Clip/dir:property"}}{{/crossLink}} that emanates from the origin, offset at a
- distance {{#crossLink "Clip/dist:property"}}{{/crossLink}} along that vector. </li>
- <li>You can move each {{#crossLink "Clip"}}Clip{{/crossLink}} back and forth along its vector by varying
- its {{#crossLink "Clip/dist:property"}}{{/crossLink}}.</li>
- <li>Likewise, you can rotate each {{#crossLink "Clip"}}Clip{{/crossLink}} about the origin by rotating
- its {{#crossLink "Clip/dir:property"}}{{/crossLink}} vector.</li>
- <li>Each {{#crossLink "Clip"}}Clip{{/crossLink}} is has a {{#crossLink "Clip/mode:property"}}{{/crossLink}}, which indicates whether it is disabled ("disabled"), discarding fragments that fall on the origin-side of the plane ("inside"), or clipping fragments that fall on the other side of the plane from the origin ("outside").</li>
- <li>You can update each {{#crossLink "Clip"}}Clip{{/crossLink}}'s {{#crossLink "Clip/mode:property"}}{{/crossLink}} to
- activate or deactivate it, or to switch which side it discards fragments from.</li>
- <li>Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}}
+ distance {{#crossLink "Clip/dist:property"}}{{/crossLink}} along that vector.
+ * You can move each {{#crossLink "Clip"}}Clip{{/crossLink}} back and forth along its vector by varying
+ its {{#crossLink "Clip/dist:property"}}{{/crossLink}}.
+ * Likewise, you can rotate each {{#crossLink "Clip"}}Clip{{/crossLink}} about the origin by rotating
+ its {{#crossLink "Clip/dir:property"}}{{/crossLink}} vector.
+ * Each {{#crossLink "Clip"}}Clip{{/crossLink}} is has a {{#crossLink "Clip/mode:property"}}{{/crossLink}}, which indicates whether it is disabled ("disabled"), discarding fragments that fall on the origin-side of the plane ("inside"), or clipping fragments that fall on the other side of the plane from the origin ("outside").
+ * You can update each {{#crossLink "Clip"}}Clip{{/crossLink}}'s {{#crossLink "Clip/mode:property"}}{{/crossLink}} to
+ activate or deactivate it, or to switch which side it discards fragments from.
+ * Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}}
  via the {{#crossLink "Modes/clipping:property"}}{{/crossLink}} flag on {{#crossLink "Modes"}}Modes{{/crossLink}} components
- attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Clips create within xeogl's shaders.</li>
- </ul>
+ attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
  <img src="../../../assets/images/Clips.png"></img>
 
  ## Usage
@@ -16392,13 +16438,15 @@ var Canvas2Image = (function () {
  */;/**
  A **Configs** holds configuration properties for the parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
 
- <ul>
- <li>Each {{#crossLink "Scene"}}Scene{{/crossLink}} provides a Configs on itself as a read-only property.</li>
- <li>Config property values are set on a Configs using its {{#crossLink "Configs/set:method"}}{{/crossLink}} method,
- and changes to properties may be subscribed to using {{#crossLink "Component/on:method"}}{{/crossLink}}.</li>
- <li>You can define your own properties in a Configs, but take care not to clobber the native properties used by
- xeogl (see table below).</li>
- </ul>
+ ## Overview
+
+
+ * Each {{#crossLink "Scene"}}Scene{{/crossLink}} provides a Configs on itself as a read-only property.
+ * Config property values are set on a Configs using its {{#crossLink "Configs/set:method"}}{{/crossLink}} method,
+ and changes to properties may be subscribed to using {{#crossLink "Component/on:method"}}{{/crossLink}}.
+ * You can define your own properties in a Configs, but take care not to clobber the native properties used by
+ xeogl (see table below).
+
 
  <img src="../../../assets/images/Configs.png"></img>
 
@@ -16500,41 +16548,35 @@ var Canvas2Image = (function () {
 
  A CameraControl contains the following control sub-components, each of which handle an aspect of interaction:
 
- <ul>
- <li>{{#crossLink "KeyboardPanCamera"}}{{/crossLink}} pans the camera with the W,S,A,D,X and Z keys</li>
- <li>{{#crossLink "MousePanCamera"}}{{/crossLink}} pans horizontally and vertically by dragging the mouse with left and right buttons down</li>
- <li>{{#crossLink "KeyboardRotateCamera"}}{{/crossLink}} rotates the camera with the arrow keys</li>
- <li>{{#crossLink "MouseRotateCamera"}}{{/crossLink}} rotates the camera by dragging with the left mouse button down</li>
- <li>{{#crossLink "KeyboardZoomCamera"}}{{/crossLink}} zooms the *eye* position closer and further from the *look* position with the + and - keys</li>
- <li>{{#crossLink "MouseZoomCamera"}}{{/crossLink}} zooms the *eye* closer and further from *look* using the mousewheel</li>
- <li>{{#crossLink "KeyboardAxisCamera"}}{{/crossLink}} between preset left, right, anterior, posterior, superior and inferior views using keys 1-6</li>
- <li>{{#crossLink "MousePickEntity"}}{{/crossLink}} TODO</li>
- <li>{{#crossLink "CameraFlight"}}{{/crossLink}} TODO</li>
- </ul>
+ * {{#crossLink "KeyboardPanCamera"}}{{/crossLink}} pans the camera with the W,S,A,D,X and Z keys
+ * {{#crossLink "MousePanCamera"}}{{/crossLink}} pans horizontally and vertically by dragging the mouse with left and right buttons down
+ * {{#crossLink "KeyboardRotateCamera"}}{{/crossLink}} rotates the camera with the arrow keys
+ * {{#crossLink "MouseRotateCamera"}}{{/crossLink}} rotates the camera by dragging with the left mouse button down
+ * {{#crossLink "KeyboardZoomCamera"}}{{/crossLink}} zooms the *eye* position closer and further from the *look* position with the + and - keys
+ * {{#crossLink "MouseZoomCamera"}}{{/crossLink}} zooms the *eye* closer and further from *look* using the mousewheel
+ * {{#crossLink "KeyboardAxisCamera"}}{{/crossLink}} between preset left, right, anterior, posterior, superior and inferior views using keys 1-6
+ * {{#crossLink "MousePickEntity"}}{{/crossLink}} TODO
+ * {{#crossLink "cameraFlightAnimation"}}{{/crossLink}} TODO
 
  A CameraControl provides these control sub-components as read-only properties, which allows them to be individually configured (or deactivated) as required.
 
- <ul>
- <li>Activating or deactivating a CameraControl will activate or deactivate all its control sub-components.</li>
- <li>Attaching a different {{#crossLink "Camera"}}{{/crossLink}} to the CameraControl will also attach that
- {{#crossLink "Camera"}}{{/crossLink}} to all the control sub-components.</li>
- <li>The control sub-components are not supposed to be re-attached to a different {{#crossLink "Camera"}}{{/crossLink}} than the owner CameraControl.</li>
- <li>A CameraControl manages the life-cycles of its control sub-components, destroying them when the CameraControl is destroyed.</li>
- </ul>
+ * Activating or deactivating a CameraControl will activate or deactivate all its control sub-components.
+ * Attaching a different {{#crossLink "Camera"}}{{/crossLink}} to the CameraControl will also attach that
+ {{#crossLink "Camera"}}{{/crossLink}} to all the control sub-components.
+ * The control sub-components are not supposed to be re-attached to a different {{#crossLink "Camera"}}{{/crossLink}} than the owner CameraControl.
+ * A CameraControl manages the life-cycles of its control sub-components, destroying them when the CameraControl is destroyed.
 
  <img src="../../../assets/images/CameraControl.png"></img>
 
  ## Examples
 
- <ul>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- <li>[KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)</li>
- <li>[KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)</li>
- <li>[KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)</li>
- <li>[KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)</li>
- <li>[KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)</li>
- <li>[KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)</li>
- </ul>
+ * [CameraControl example](../../examples/#interaction_CameraControl)
+ * [KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)
+ * [KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)
+ * [KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)
+ * [KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)
+ * [KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)
+ * [KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)
 
  ## Usage
 
@@ -16622,7 +16664,7 @@ var Canvas2Image = (function () {
             this._boundaryHelper = this.create({
                 type: "xeogl.Entity",
                 geometry: this.create({
-                    type: "xeogl.BoundaryGeometry"
+                    type: "xeogl.AABBGeometry"
                 }),
                 material: this.create({
                     type: "xeogl.PhongMaterial",
@@ -16740,13 +16782,13 @@ var Canvas2Image = (function () {
                 });
 
             /**
-             * The {{#crossLink "CameraFlight"}}{{/crossLink}} within this CameraControl.
+             * The {{#crossLink "cameraFlightAnimation"}}{{/crossLink}} within this CameraControl.
              *
              * @property cameraFlight
              * @final
-             * @type CameraFlight
+             * @type cameraFlightAnimation
              */
-            this.cameraFlight = this.create(xeogl.CameraFlight, {
+            this.cameraFlight = this.create(xeogl.CameraFlightAnimation, {
                 camera: cfg.camera,
                 duration: 0.5
             });
@@ -17081,27 +17123,21 @@ var Canvas2Image = (function () {
  A **KeyboardAxisCamera** switches a {{#crossLink "Camera"}}{{/crossLink}} between preset left, right, anterior,
  posterior, superior and inferior views using the keyboard.
 
- <ul>
- <li>A KeyboardAxisCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
- </ul>
+ * A KeyboardAxisCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
 
  By default the views are selected by the following keys:
 
- <ul>
- <li>'1' - left side, viewing center from along -X axis</li>
- <li>'2' - right side, viewing center from along +X axis</li>
- <li>'3' - anterior, viewing center from along -Z axis</li>
- <li>'4' - posterior, viewing center from along +Z axis</li>
- <li>'5' - superior, viewing center from along -Y axis</li>
- <li>'6' - inferior, viewing center from along +Y axis</li>
- </ul>
+ * '1' - left side, viewing center from along -X axis
+ * '2' - right side, viewing center from along +X axis
+ * '3' - anterior, viewing center from along -Z axis
+ * '4' - posterior, viewing center from along +Z axis
+ * '5' - superior, viewing center from along -Y axis
+ * '6' - inferior, viewing center from along +Y axis
 
  ## Examples
 
- <ul>
- <li>[KeyboardAxisCamera example](../../examples/#interaction_KeyboardAxisCamera)</li>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- </ul>
+ * [KeyboardAxisCamera example](../../examples/#interaction_KeyboardAxisCamera)
+ * [CameraControl example](../../examples/#interaction_CameraControl)
 
  ## Usage
 
@@ -17166,7 +17202,7 @@ var Canvas2Image = (function () {
 
             // Animations
 
-            this._cameraFly = new xeogl.CameraFlight(this.scene, {
+            this._cameraFly = new xeogl.CameraFlightAnimation(this.scene, {
                 duration: 1.0
             });
 
@@ -17400,26 +17436,22 @@ var Canvas2Image = (function () {
 ;/**
  A **KeyboardRotateCamera** orbits a {{#crossLink "Camera"}}{{/crossLink}} about its point-of-interest using the keyboard's arrow keys.
 
- <ul>
- <li>A KeyboardRotateCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to its target {{#crossLink "Camera"}}{{/crossLink}}.
- <li>The point-of-interest is the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
- <li>Orbiting involves rotating the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/eye:property"}}{{/crossLink}}
- about {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
- <li>Y-axis rotation is about the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.</li>
- <li>Z-axis rotation is about the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} -&gt; {{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
- <li>X-axis rotation is about the vector perpendicular to the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}}
- and {{#crossLink "Lookat/up:property"}}{{/crossLink}} vectors.</li>
- <li>In 'first person' mode, the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}
+ * A KeyboardRotateCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to its target {{#crossLink "Camera"}}{{/crossLink}}.
+ * The point-of-interest is the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}.
+ * Orbiting involves rotating the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/eye:property"}}{{/crossLink}}
+ about {{#crossLink "Lookat/look:property"}}{{/crossLink}}.
+ * Y-axis rotation is about the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.
+ * Z-axis rotation is about the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} -&gt; {{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.
+ * X-axis rotation is about the vector perpendicular to the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}}
+ and {{#crossLink "Lookat/up:property"}}{{/crossLink}} vectors.
+ * In 'first person' mode, the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}
  position will orbit the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} position, otherwise the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}
- will orbit the {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
- </ul>
+ will orbit the {{#crossLink "Lookat/look:property"}}{{/crossLink}}.
 
  ## Examples
 
- <ul>
- <li>[KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)</li>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- </ul>
+ * [KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)
+ * [CameraControl example](../../examples/#interaction_CameraControl)
 
  ## Usage
 
@@ -17569,7 +17601,7 @@ var Canvas2Image = (function () {
              * target {{#crossLink "Camera"}}{{/crossLink}}. In 'first person' mode, the
              * {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}
              * position orbits the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} position, otherwise
-             * the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} orbits {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
+             * the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} orbits {{#crossLink "Lookat/look:property"}}{{/crossLink}}.
              *
              * Fires a {{#crossLink "KeyboardRotateCamera/firstPerson:event"}}{{/crossLink}} event on change.
              *
@@ -17723,25 +17755,21 @@ var Canvas2Image = (function () {
 ;/**
  A **KeyboardPanCamera** pans a {{#crossLink "Camera"}}{{/crossLink}} using the W,S,A,D,X and Z keys.
 
- <ul>
- <li>A KeyboardPanCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
- <li>Panning up and down involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
+ * A KeyboardPanCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
+ * Panning up and down involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth
- along the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.</li>
- <li>Panning forwards and backwards involves translating
+ along the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.
+ * Panning forwards and backwards involves translating
  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth along the
- {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
- <li>Panning left and right involves translating the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and
+ {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.
+ * Panning left and right involves translating the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and
  {{#crossLink "Lookat/look:property"}}{{/crossLink}} along the the vector perpendicular to the {{#crossLink "Lookat/up:property"}}{{/crossLink}}
- and {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vectors.</li>
- </ul>
+ and {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vectors.
 
  ## Examples
 
- <ul>
- <li>[KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)</li>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- </ul>
+ * [KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)
+ * [CameraControl example](../../examples/#interaction_CameraControl)
 
  ## Usage
 
@@ -18003,19 +18031,15 @@ var Canvas2Image = (function () {
 ;/**
  A **KeyboardZoomCamera** zooms a {{#crossLink "Camera"}}{{/crossLink}} using the + and - keys.
 
- <ul>
- <li>A KeyboardZoomCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
- <li>Zooming involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
+ * A KeyboardZoomCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
+ * Zooming involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth
- along the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
- </ul>
+ along the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.
 
  ## Examples
 
- <ul>
- <li>[KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)</li>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- </ul>
+ * [KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)
+ * [CameraControl example](../../examples/#interaction_CameraControl)
 
  ## Usage
 
@@ -18256,26 +18280,22 @@ var Canvas2Image = (function () {
 ;/**
  A **MouseRotateCamera** orbits a {{#crossLink "Camera"}}{{/crossLink}} about its point-of-interest using the mouse.
 
- <ul>
- <li>A MouseRotateCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
- <li>The point-of-interest is the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
- <li>Orbiting involves rotating the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/eye:property"}}{{/crossLink}}
- about {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
- <li>Y-axis rotation is about the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.</li>
- <li>Z-axis rotation is about the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} -&gt; {{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
- <li>X-axis rotation is about the vector perpendicular to the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}}
- and {{#crossLink "Lookat/up:property"}}{{/crossLink}} vectors.</li>
- <li>In 'first person' mode, the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}
+ * A MouseRotateCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
+ * The point-of-interest is the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}.
+ * Orbiting involves rotating the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/eye:property"}}{{/crossLink}}
+ about {{#crossLink "Lookat/look:property"}}{{/crossLink}}.
+ * Y-axis rotation is about the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.
+ * Z-axis rotation is about the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} -&gt; {{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.
+ * X-axis rotation is about the vector perpendicular to the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}}
+ and {{#crossLink "Lookat/up:property"}}{{/crossLink}} vectors.
+ * In 'first person' mode, the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}
  position will orbit the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} position, otherwise the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}
- will orbit the {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
- </ul>
+ will orbit the {{#crossLink "Lookat/look:property"}}{{/crossLink}}.
 
  ## Examples
 
- <ul>
- <li>[MouseRotateCamera example](../../examples/#interaction_MouseRotateCamera)</li>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- </ul>
+ * [MouseRotateCamera example](../../examples/#interaction_MouseRotateCamera)
+ * [CameraControl example](../../examples/#interaction_CameraControl)
 
  ## Usage
 
@@ -18429,7 +18449,7 @@ var Canvas2Image = (function () {
              * target {{#crossLink "Camera"}}{{/crossLink}}. In 'first person' mode, the
              * {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}
              * position orbits the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} position, otherwise
-             * the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} orbits {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
+             * the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} orbits {{#crossLink "Lookat/look:property"}}{{/crossLink}}.
              *
              * Fires a {{#crossLink "MouseRotateCamera/firstPerson:event"}}{{/crossLink}} event on change.
              *
@@ -18650,26 +18670,22 @@ var Canvas2Image = (function () {
 ;/**
  A **MousePanCamera** pans a {{#crossLink "Camera"}}{{/crossLink}} with the mouse.
 
- <ul>
- <li>A MousePanCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
- <li>Panning is done by dragging the mouse with both the left and right buttons down.</li>
- <li>Panning up and down involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
+ * A MousePanCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
+ * Panning is done by dragging the mouse with both the left and right buttons down.
+ * Panning up and down involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth
- along the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.</li>
- <li>Panning forwards and backwards involves translating
+ along the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.
+ * Panning forwards and backwards involves translating
  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth along the
- {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
- <li>Panning left and right involves translating the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and
+ {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.
+ * Panning left and right involves translating the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and
  {{#crossLink "Lookat/look:property"}}{{/crossLink}} along the the vector perpendicular to the {{#crossLink "Lookat/up:property"}}{{/crossLink}}
- and {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vectors.</li>
- </ul>
+ and {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vectors.
 
  ## Examples
 
- <ul>
- <li>[MousePanCamera example](../../examples/#interaction_MousePanCamera)</li>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- </ul>
+ * [MousePanCamera example](../../examples/#interaction_MousePanCamera)
+ * [CameraControl example](../../examples/#interaction_CameraControl)
 
  ## Usage
 
@@ -18940,10 +18956,8 @@ var Canvas2Image = (function () {
 
  ## Examples
 
- <ul>
- <li>[MousePickEntity example](../../examples/#interaction_MousePickEntity)</li>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- </ul>
+ * [MousePickEntity example](../../examples/#interaction_MousePickEntity)
+ * [CameraControl example](../../examples/#interaction_CameraControl)
 
  ## Usage
 
@@ -19197,19 +19211,15 @@ var Canvas2Image = (function () {
 })();;/**
  A **MouseZoomCamera** zooms a {{#crossLink "Camera"}}{{/crossLink}} using the mouse wheel.
 
- <ul>
- <li>A MouseZoomCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
- <li>Zooming involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
+ * A MouseZoomCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
+ * Zooming involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth
- along the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
- </ul>
+ along the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.
 
  ## Examples
 
- <ul>
- <li>[MouseZoomCamera example](../../examples/#interaction_MouseZoomCamera)</li>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- </ul>
+ * [MouseZoomCamera example](../../examples/#interaction_MouseZoomCamera)
+ * [CameraControl example](../../examples/#interaction_CameraControl)
 
  ## Usage
 
@@ -19500,15 +19510,15 @@ var Canvas2Image = (function () {
  * @module xeogl
  * @submodule culling
  */;/**
- A **Cull** toggles the culling of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **Cull** component toggles the culling of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>An {{#crossLink "Entity"}}{{/crossLink}} is visible when its Cull's {{#crossLink "Cull/culled:property"}}{{/crossLink}} property is true and {{#crossLink "Visibility"}}Visibility's{{/crossLink}} {{#crossLink "Visibility/visible:property"}}{{/crossLink}} property is false.</li>
- <li>Cull components are intended for **visibility culling systems** to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>{{#crossLink "Visibility"}}{{/crossLink}} components are intended for users to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}} via UIs.</li>
- <li>A Cull may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
- their culling status as a group.</li>
- </ul>
+ ## Overview
+
+ * An {{#crossLink "Entity"}}{{/crossLink}} is visible when its Cull's {{#crossLink "Cull/culled:property"}}{{/crossLink}} property is true and {{#crossLink "Visibility"}}Visibility's{{/crossLink}} {{#crossLink "Visibility/visible:property"}}{{/crossLink}} property is false.
+ * Cull components are intended for **visibility culling systems** to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * {{#crossLink "Visibility"}}{{/crossLink}} components are intended for users to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}} via UIs.
+ * A Cull may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
+ their culling status as a group.
 
  <img src="../../../assets/images/Cull.png"></img>
 
@@ -19521,22 +19531,22 @@ var Canvas2Image = (function () {
  // Create a Cull component
  var cull = new xeogl.Cull({
     culled: false
-});
+ });
 
  // Create two Entities whose culling will be controlled by our Cull
 
  var entity1 = new xeogl.Entity({
     cull: cull
-});
+ });
 
  var entity2 = new xeogl.Entity({
     cull: cull
-});
+ });
 
  // Subscribe to change on the Cull's "culled" property
  var handle = cull.on("culled", function(value) {
     //...
-});
+ });
 
  // Hide our Entities by flipping the Cull's "culled" property,
  // which will also call our handler
@@ -19637,14 +19647,12 @@ var Canvas2Image = (function () {
 ;/**
  A **Visibility** toggles the visibility of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>An {{#crossLink "Entity"}}{{/crossLink}} is visible when its Visibility's {{#crossLink "Visibility/visible:property"}}{{/crossLink}}
- property is true and {{#crossLink "Cull"}}Cull's{{/crossLink}} {{#crossLink "Cull/culled:property"}}{{/crossLink}} property is false.</li>
- <li>Visibility components are intended for users to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}} via UIs.</li>
- <li>{{#crossLink "Cull"}}{{/crossLink}} components are intended for **visibility culling systems** to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>A Visibility may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
- their visibility as a group.</li>
- </ul>
+ * An {{#crossLink "Entity"}}{{/crossLink}} is visible when its Visibility's {{#crossLink "Visibility/visible:property"}}{{/crossLink}}
+ property is true and {{#crossLink "Cull"}}Cull's{{/crossLink}} {{#crossLink "Cull/culled:property"}}{{/crossLink}} property is false.
+ * Visibility components are intended for users to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}} via UIs.
+ * {{#crossLink "Cull"}}{{/crossLink}} components are intended for **visibility culling systems** to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * A Visibility may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
+ their visibility as a group.
 
  <img src="../../../assets/images/Visibility.png"></img>
 
@@ -19654,35 +19662,35 @@ var Canvas2Image = (function () {
  two {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ````javascript
-var visibility = new xeogl.Visibility({
+ var visibility = new xeogl.Visibility({
     visible: true
-});
+ });
 
-// Create two Entities whose visibility will be controlled by our Visibility
+ // Create two Entities whose visibility will be controlled by our Visibility
 
-var entity1 = new xeogl.Entity({
+ var entity1 = new xeogl.Entity({
     visibility: visibility
-});
+ });
 
-var entity2 = new xeogl.Entity({
+ var entity2 = new xeogl.Entity({
     visibility: visibility
-});
+ });
 
-// Subscribe to change on the Visibility's "visible" property
-var handle = visibility.on("visible", function(value) {
+ // Subscribe to change on the Visibility's "visible" property
+ var handle = visibility.on("visible", function(value) {
     //...
-});
+ });
 
-// Hide our Entities by flipping the Visibility's "visible" property,
-// which will also call our handler
-visibility.visible = false;
+ // Hide our Entities by flipping the Visibility's "visible" property,
+ // which will also call our handler
+ visibility.visible = false;
 
-// Unsubscribe from the Visibility again
-visibility.off(handle);
+ // Unsubscribe from the Visibility again
+ visibility.off(handle);
 
-// When we destroy our Visibility, the Entities will fall back
-// on the Scene's default Visibility instance
-visibility.destroy();
+ // When we destroy our Visibility, the Entities will fall back
+ // on the Scene's default Visibility instance
+ visibility.destroy();
  ````
  @class Visibility
  @module xeogl
@@ -19769,32 +19777,28 @@ visibility.destroy();
  * @module xeogl
  * @submodule geometry
  */;/**
- A **Geometry** defines the geometric shape of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **Geometry** defines a mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  <a href="../../examples/#geometry_triangles_texture"><img src="../../assets/images/screenshots/BoxGeometry.png"></img></a>
 
  ## Overview
 
- <ul>
- <li>Like everything in xeogl, all properties on a Geometry are dynamically editable.</li>
- <li>When no shape is specified, a Geometry will be a 2x2x2 box by default.</li>
- <li>A {{#crossLink "Scene"}}{{/crossLink}} provides a 2x2x2 box for {{#crossLink "Entity"}}Entities{{/crossLink}}
- default to when they are not configured with a Geometry.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Geometries create within xeogl's shaders.</li>
- <li>A Geometry provides its local-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.</li>
- </ul>
+ * Like everything in xeogl, all properties on a Geometry are dynamically editable.
+ * Set a Geometry's {{#crossLink "Geometry/autoNormals:property"}}{{/crossLink}} ````true```` to make the Geometry automatically generate it's vertex normal vectors from its {{#crossLink "Geometry/positions:property"}}{{/crossLink}} and {{#crossLink "Geometry/indices:property"}}{{/crossLink}}.
+ * When no shape is specified, a Geometry will be a 2x2x2 box by default.
+ * A {{#crossLink "Scene"}}{{/crossLink}} provides a 2x2x2 box for {{#crossLink "Entity"}}Entities{{/crossLink}}
+ by default when they are not configured with a Geometry.
+ * A Geometry provides its local-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
  <img src="../../../assets/images/Geometry.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Simple triangle mesh](../../examples/#geometry_triangles)</li>
- <li>[Triangle mesh with diffuse texture](../../examples/#geometry_triangles_texture)</li>
- <li>[Triangle mesh with vertex colors](../../examples/#geometry_triangles_vertexColors)</li>
- <li>[Wireframe box](../../examples/#geometry_lines)</li>
- <li>[Dynamically modifying a TorusGeometry](../../examples/#geometry_modifying)</li>
- </ul>
+ * [Simple triangle mesh](../../examples/#geometry_triangles)
+ * [Triangle mesh with diffuse texture](../../examples/#geometry_triangles_texture)
+ * [Triangle mesh with vertex colors](../../examples/#geometry_triangles_vertexColors)
+ * [Wireframe box](../../examples/#geometry_lines)
+ * [Dynamically modifying a TorusGeometry](../../examples/#geometry_modifying)
 
  ## Usage
 
@@ -19805,7 +19809,7 @@ visibility.destroy();
  ```` javascript
  var entity = new xeogl.Entity({
     geometry: new xeogl.Geometry() // 2x2x2 box
-});
+ });
  ````
 
  ### Scene's default Geometry
@@ -19899,10 +19903,7 @@ visibility.destroy();
  {{#crossLink "Geometry/indices:property"}}{{/crossLink}} to reverse the direction of the triangles:
 
  ````javascript
- customGeometry.indices = [
- 2, 1, 0,
- 3, 2, 0
- ];
+ customGeometry.indices = [ 2, 1, 0, 3, 2, 0 ];
  ````
 
  Now let's make it wireframe by changing its primitive type from ````triangles```` to ````lines````:
@@ -19914,7 +19915,7 @@ visibility.destroy();
  ### Toggling back-faces on and off
 
  Now we'll attach a {{#crossLink "Modes"}}{{/crossLink}} to that last {{#crossLink "Entity"}}{{/crossLink}}, so that
- we can show or hide its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} back-faces:
+ we can show or hide its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} backfaces:
 
  ```` javascript
  var modes = new xeogl.Modes();
@@ -19942,7 +19943,9 @@ visibility.destroy();
  modes.frontface = "cw";
  ````
 
- ### Getting boundary
+ ### Getting the Local-space boundary
+
+ We can get a Geometry's Local-space {{#crossLink "Boundary3D"}}{{/crossLink}} like so:
 
  ````javascript
  var localBoundary = quadGeometry.localBoundary;
@@ -19952,6 +19955,7 @@ visibility.destroy();
         obb = localBoundary.obb;
         aabb = localBoundary.aabb;
         center = localBoundary.center;
+        sphere = localBoundary;
 
         //...
     });
@@ -19969,12 +19973,12 @@ visibility.destroy();
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Geometry.
  @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
  @param [cfg.positions] {Array of Number} Positions array.
- @param [cfg.normals] {Array of Number} Normals array.
+ @param [cfg.normals] {Array of Number} Vertex normal vectors array.
  @param [cfg.uv] {Array of Number} UVs array.
  @param [cfg.colors] {Array of Number} Vertex colors.
  @param [cfg.tangents] {Array of Number} Vertex tangents.
  @param [cfg.indices] {Array of Number} Indices array.
- @param [cfg.autoNormals] {Boolean} Set true to automatically generate normal vectors from positions and indices.
+ @param [cfg.autoNormals] {Boolean} Set true to automatically generate normal vectors from the positions and indices, if those are supplied.
  @extends Component
  */
 (function () {
@@ -20561,7 +20565,7 @@ visibility.destroy();
             },
 
             /**
-             * The Geometry's normal vectors array.
+             * The Geometry's vertex normal vectors array.
              *
              * Fires a {{#crossLink "Geometry/normals:event"}}{{/crossLink}} event on change.
              *
@@ -21008,15 +21012,19 @@ visibility.destroy();
     });
 })();
 ;/**
- A **BoxGeometry** extends {{#crossLink "Geometry"}}{{/crossLink}} to define a box-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **BoxGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a box-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  <a href="../../examples/#geometry_BoxGeometry"><img src="../../assets/images/screenshots/BoxGeometry.png"></img></a>
 
+ ## Overview
+
+ * Dynamically modify a BoxGeometry's dimensions at any time by updating its {{#crossLink "BoxGeometry/center:property"}}{{/crossLink}}, {{#crossLink "BoxGeometry/xSize:property"}}{{/crossLink}}, {{#crossLink "BoxGeometry/ySize:property"}}{{/crossLink}} and {{#crossLink "BoxGeometry/zSize:property"}}{{/crossLink}} properties.
+ * Dynamically switch its primitive type between ````"points"````, ````"lines"```` and ````"triangles"```` at any time by
+ updating its {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} property.
+
  ## Examples
 
- <ul>
- <li>[Textured BoxGeometry](../../examples/#geometry_BoxGeometry)</li>
- </ul>
+ * [Textured BoxGeometry](../../examples/#geometry_BoxGeometry)
 
  ## Usage
 
@@ -21027,7 +21035,8 @@ visibility.destroy();
  new xeogl.Entity({
 
      geometry: new xeogl.BoxGeometry({
-        xSize: 1,
+        center: [0,0,0],
+        xSize: 1,  // Half-size on each axis; BoxGeometry is actually two units big on each side.
         ySize: 1,
         zSize: 1
      }),
@@ -21050,10 +21059,11 @@ visibility.destroy();
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this BoxGeometry.
- @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
- @param [cfg.xSize=1.0] {Number}
- @param [cfg.ySize=1.0] {Number}
- @param [cfg.zSize=1.0] {Number}
+ @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values for a BoxGeometry are 'points', 'lines' and 'triangles'.
+ @param [cfg.center] {Float32Array} 3D point indicating the center position.
+ @param [cfg.xSize=1.0] {Number} Half-size on the X-axis.
+ @param [cfg.ySize=1.0] {Number} Half-size on the Y-axis.
+ @param [cfg.zSize=1.0] {Number} Half-size on the Z-axis.
  @extends Geometry
  */
 (function () {
@@ -21068,6 +21078,7 @@ visibility.destroy();
 
             this._super(cfg);
 
+            this.center = cfg.center;
             this.xSize = cfg.xSize;
             this.ySize = cfg.ySize;
             this.zSize = cfg.zSize;
@@ -21081,12 +21092,12 @@ visibility.destroy();
          */
         _update: function () {
 
-            var xmin = -this._xSize;
-            var ymin = -this._ySize;
-            var zmin = -this._zSize;
-            var xmax = this._xSize;
-            var ymax = this._ySize;
-            var zmax = this._zSize;
+            var xmin = -this._xSize + this._center[0];
+            var ymin = -this._ySize + this._center[1];
+            var zmin = -this._zSize + this._center[2];
+            var xmax = this._xSize + this._center[0];
+            var ymax = this._ySize + this._center[1];
+            var zmax = this._zSize + this._center[2];
 
             // The vertices - eight for our cube, each
             // one spanning three array elements for X,Y and Z
@@ -21252,7 +21263,37 @@ visibility.destroy();
         _props: {
 
             /**
-             * The BoxGeometry's size on the X-axis.
+             * 3D point indicating the center position of this BoxGeometry.
+             *
+             * Fires an {{#crossLink "BoxGeometry/center:event"}}{{/crossLink}} event on change.
+             *
+             * @property center
+             * @default [0,0,0]
+             * @type {Float32Array}
+             */
+            center: {
+
+                set: function (value) {
+
+                    (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
+
+                    this._scheduleUpdate();
+
+                    /**
+                     Fired whenever this BoxGeometry's {{#crossLink "BoxGeometry/center:property"}}{{/crossLink}} property changes.
+                     @event center
+                     @param value {Float32Array} The property's new value
+                     */
+                    this.fire("center", this._center);
+                },
+
+                get: function () {
+                    return this._center;
+                }
+            },
+
+            /**
+             * The BoxGeometry's half-size on the X-axis.
              *
              * Fires a {{#crossLink "BoxGeometry/xsize:event"}}{{/crossLink}} event on change.
              *
@@ -21294,7 +21335,7 @@ visibility.destroy();
             },
 
             /**
-             * The BoxGeometry's size on the Y-axis.
+             * The BoxGeometry's half-size on the Y-axis.
              *
              * Fires a {{#crossLink "BoxGeometry/ySize:event"}}{{/crossLink}} event on change.
              *
@@ -21336,7 +21377,7 @@ visibility.destroy();
             },
 
             /**
-             * The BoxGeometry's size on the Z-axis.
+             * The BoxGeometry's half-size on the Z-axis.
              *
              * Fires a {{#crossLink "BoxGeometry/zSize:event"}}{{/crossLink}} event on change.
              *
@@ -21380,6 +21421,7 @@ visibility.destroy();
 
         _getJSON: function () {
             return {
+                center: this._center.slice(),
                 xSize: this._xSize,
                 ySize: this._ySize,
                 zSize: this._zSize
@@ -21389,263 +21431,23 @@ visibility.destroy();
 
 })();
 ;/**
- A **BoundaryGeometry** is {{#crossLink "Geometry"}}{{/crossLink}} that shows the entity-aligned wireframe bounding box (OBB)
- of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
-
- ## Examples
-
- <ul>
- <li>[Rendering a BoundaryGeometry](../../examples/#geometry_BoundaryGeometry)</li>
- </ul>
-
- ## Usage
-
- An {{#crossLink "Entity"}}{{/crossLink}} with a BoundaryGeometry that shows the extents of the
- World-space {{#crossLink "Boundary3D"}}{{/crossLink}} of another {{#crossLink "Entity"}}{{/crossLink}}:
-
- ````javascript
-
- // First Entity with a BoxGeometry
- var box = new xeogl.Entity({
-     geometry: new xeogl.BoxGeometry({
-        xSize: 1,
-        ySize: 1,
-        zSize: 1
-     })
- });
-
- // World-space boundary of the first entity
- var worldBoundary = box.worldBoundary;
-
- // Second Entity with a BoundaryGeometry that shows a wireframe box
- // for the World-space boundary of the first Entity
-
- new xeogl.Entity({
-
-     geometry: new xeogl.BoundaryGeometry({
-         boundary: worldBoundary
-     }),
-
-     material: new xeogl.PhongMaterial({
-         diffuse: [0.5, 1.0, 0.5],
-         emissive: [0.5, 1.0, 0.5],
-         lineWidth:2
-     })
- });
- ````
-
- @class BoundaryGeometry
- @module xeogl
- @submodule geometry
- @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this BoundaryGeometry in the default
- {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
- @param [cfg] {*} Configs
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
- generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this BoundaryGeometry.
- @param [cfg.boundary] {Boundary3D} ID or instance of a {{#crossLink "Boundary3D"}}{{/crossLink}}
- @extends Component
- */
-(function () {
-
-    "use strict";
-
-    xeogl.BoundaryGeometry = xeogl.Geometry.extend({
-
-        type: "xeogl.BoundaryGeometry",
-
-        _init: function (cfg) {
-
-            this._super(cfg);
-
-            this.primitive = cfg.primitive || "lines";
-
-            this.indices = [
-                0, 1, 1, 2, 2, 3, 3, 0, 4,
-                5, 5, 6, 6, 7, 7, 4, 0, 4,
-                1, 5, 2, 6, 3, 7
-            ];
-
-            if (cfg.boundary) {
-                this.boundary = cfg.boundary;
-
-            } else if (cfg.obb) {
-                this.obb = cfg.obb;
-
-            } else if (cfg.aabb) {
-                this.aabb = cfg.aabb;
-
-            } else if (cfg.positions) {
-                this.positions = cfg.positions;
-
-            } else {
-                this.positions = [
-                    1.0, 1.0, 1.0,
-                    1.0, -1.0, 1.0,
-                    -1.0, -1.0, 1.0,
-                    -1.0, 1.0, 1.0,
-                    1.0, 1.0, -1.0,
-                    1.0, -1.0, -1.0,
-                    -1.0, -1.0, -1.0,
-                    -1.0, 1.0, -1.0
-                ];
-            }
-        },
-
-        _props: {
-
-            /**
-             * The {{#crossLink "Boundary3D"}}{{/crossLink}} we are showing.
-             *
-             * Fires a {{#crossLink "BoundaryGeometry/boundary:event"}}{{/crossLink}} event on change.
-             *
-             * @property Boundary3D
-             * @type Boundary3D
-             */
-            boundary: {
-
-                set: function (value) {
-
-                    var geometryDirty = false;
-                    var self = this;
-
-                    this._attach({
-                        name: "boundary",
-                        type: "xeogl.Boundary3D",
-                        component: value,
-                        sceneDefault: false,
-                        on: {
-                            updated: function () {
-                                if (geometryDirty) {
-                                    return;
-                                }
-                                geometryDirty = true;
-                                xeogl.scheduleTask(function () {
-                                    self._setPositionsFromOBB(self._attached.boundary.obb);
-                                    geometryDirty = false;
-                                });
-                            }
-                        },
-                        onAttached: function () {
-                            self._setPositionsFromOBB(self._attached.boundary.obb);
-                        }
-                    });
-                },
-
-                get: function () {
-                    return this._attached.boundary;
-                }
-            },
-
-            /**
-             * The {{#crossLink "Boundary3D"}}{{/crossLink}} we are showing.
-             *
-             * Fires a {{#crossLink "BoundaryGeometry/boundary:event"}}{{/crossLink}} event on change.
-             *
-             * @property Boundary3D
-             * @type Boundary3D
-             */
-            obb: {
-
-                set: function (value) {
-
-                    if (!value) {
-                        return;
-                    }
-
-                    if (this._attached.boundary) {
-                        this.boundary = null;
-                    }
-
-                    this._setPositionsFromOBB(value);
-                }
-            },
-
-            /**
-             * Assign to an Axis-aligned bounding-box
-             *
-             * @property aabb
-             * @type Boundary3D
-             */
-            aabb: {
-
-                set: function (value) {
-
-                    if (!value) {
-                        return;
-                    }
-
-                    if (this._attached.boundary) {
-                        this.boundary = null;
-                    }
-
-                    this._setPositionsFromAABB(value);
-                }
-            }
-        },
-
-        _setPositionsFromOBB: function (obb) {
-            this.positions = [
-                obb[0], obb[1], obb[2],
-                obb[4], obb[5], obb[6],
-                obb[8], obb[9], obb[10],
-                obb[12], obb[13], obb[14],
-                obb[16], obb[17], obb[18],
-                obb[20], obb[21], obb[22],
-                obb[24], obb[25], obb[26],
-                obb[28], obb[29], obb[30]
-            ];
-        },
-
-        _setPositionsFromAABB: function (aabb) {
-            this.positions = [
-                aabb[3], aabb[4], aabb[5],
-                aabb[3], aabb[1], aabb[5],
-                aabb[0], aabb[1], aabb[5],
-                aabb[0], aabb[4], aabb[5],
-                aabb[3], aabb[4], aabb[2],
-                aabb[3], aabb[1], aabb[2],
-                aabb[0], aabb[1], aabb[2],
-                aabb[0], aabb[4], aabb[2]
-            ];
-        },
-
-        _getJSON: function () {
-
-            var json = {};
-
-            if (this._attached.boundary) {
-                json.boundary = this._attached.boundary.id;
-
-            } else if (json.positions) {
-                json.positions = this.positions;
-            }
-
-            return json;
-        },
-
-        _destroy: function () {
-
-            if (this._attached.boundary) {
-                this._attached.boundary.off(this._onBoundaryUpdated);
-                this._attached.boundary.off(this._onBoundaryDestroyed);
-            }
-
-            this._super();
-        }
-    });
-})();
-;/**
- A **TorusGeometry** extends {{#crossLink "Geometry"}}{{/crossLink}} to define a torus-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **TorusGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a torus-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  <a href="../../examples/#geometry_TorusGeometry"><img src="../../assets/images/screenshots/TorusGeometry.png"></img></a>
 
+ ## Overview
+
+ * Dynamically modify a TorusGeometry's shape at any time by updating its {{#crossLink "TorusGeometry/center:property"}}{{/crossLink}}, {{#crossLink "TorusGeometry/radius:property"}}{{/crossLink}}, {{#crossLink "TorusGeometry/tube:property"}}{{/crossLink}},
+ {{#crossLink "TorusGeometry/radialSegments:property"}}{{/crossLink}}, {{#crossLink "TorusGeometry/tubeSegments:property"}}{{/crossLink}},  and
+ {{#crossLink "TorusGeometry/arc:property"}}{{/crossLink}} properties.
+ * Dynamically switch its primitive type between ````"points"````, ````"lines"```` and ````"triangles"```` at any time by
+ updating its {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} property.
+ 
  ## Examples
 
- <ul>
- <li>[Textured TorusGeometry](../../examples/#geometry_TorusGeometry)</li>
- </ul>
+
+ * [Textured TorusGeometry](../../examples/#geometry_TorusGeometry)
+
 
  ## Usage
 
@@ -21656,6 +21458,7 @@ visibility.destroy();
  new xeogl.Entity({
 
      geometry: new xeogl.TorusGeometry({
+         center: [0,0,0],
          radius: 1.0,
          tube: 0.3,
          radialSegments: 32,
@@ -21681,7 +21484,8 @@ visibility.destroy();
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this TorusGeometry.
- @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
+ @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values for a TorusGeometry are 'points', 'lines' and 'triangles'.
+ @param [cfg.center] {Float32Array} 3D point indicating the center position of the TorusGeometry.
  @param [cfg.radius=1] {Number} The overall radius of the TorusGeometry.
  @param [cfg.tube=0.3] {Number} The tube radius of the TorusGeometry.
  @param [cfg.radialSegments=32] {Number} The number of radial segments that make up the TorusGeometry.
@@ -21703,6 +21507,7 @@ visibility.destroy();
             this._super(cfg);
 
             this.lod = cfg.lod;
+            this.center = cfg.center;
             this.radius = cfg.radius;
             this.tube = cfg.tube;
             this.radialSegments = cfg.radialSegments;
@@ -21717,6 +21522,10 @@ visibility.destroy();
          * @protected
          */
         _update: function () {
+
+            var xCenter = this._center[0];
+            var yCenter = this._center[1];
+            var zCenter = this._center[2];
 
             var radius = this._radius;
             var tube = this._tube;
@@ -21763,9 +21572,9 @@ visibility.destroy();
                     y = (radius + tube * Math.cos(v) ) * Math.sin(u);
                     z = tube * Math.sin(v);
 
-                    positions.push(x);
-                    positions.push(y);
-                    positions.push(z);
+                    positions.push(x + xCenter);
+                    positions.push(y + yCenter);
+                    positions.push(z + zCenter);
 
                     uvs.push(1 - (i / tubeSegments));
                     uvs.push(1 - (j / radialSegments));
@@ -21848,6 +21657,36 @@ visibility.destroy();
 
                 get: function () {
                     return this._lod;
+                }
+            },
+
+            /**
+             * 3D point indicating the center position of this TorusGeometry.
+             *
+             * Fires an {{#crossLink "TorusGeometry/center:event"}}{{/crossLink}} event on change.
+             *
+             * @property center
+             * @default [0,0,0]
+             * @type {Float32Array}
+             */
+            center: {
+
+                set: function (value) {
+
+                    (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
+
+                    this._scheduleUpdate();
+
+                    /**
+                     Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/center:property"}}{{/crossLink}} property changes.
+                     @event center
+                     @param value {Float32Array} The property's new value
+                     */
+                    this.fire("center", this._center);
+                },
+
+                get: function () {
+                    return this._center;
                 }
             },
 
@@ -22067,6 +21906,7 @@ visibility.destroy();
         _getJSON: function () {
             return {
                 // Don't save lod
+                center: this._center.slice(),
                 radius: this._radius,
                 tube: this._tube,
                 radialSegments: this._radialSegments,
@@ -22078,15 +21918,22 @@ visibility.destroy();
 
 })();
 ;/**
- A **SphereGeometry** extends {{#crossLink "Geometry"}}{{/crossLink}} to define a sphere-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **SphereGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a sphere-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  <a href="../../examples/#geometry_SphereGeometry"><img src="../../assets/images/screenshots/SphereGeometry.png"></img></a>
 
+ ## Overview
+ 
+ * Dynamically modify a SphereGeometry's shape at any time by updating its {{#crossLink "SphereGeometry/center:property"}}{{/crossLink}}, {{#crossLink "SphereGeometry/radius:property"}}{{/crossLink}}, {{#crossLink "SphereGeometry/heightSegments:property"}}{{/crossLink}} and
+ {{#crossLink "SphereGeometry/widthSegments:property"}}{{/crossLink}} properties.
+ * Dynamically switch its primitive type between ````"points"````, ````"lines"```` and ````"triangles"```` at any time by
+ updating its {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} property.
+ 
  ## Examples
 
- <ul>
- <li>[Textured SphereGeometry](../../examples/#geometry_SphereGeometry)</li>
- </ul>
+
+ * [Textured SphereGeometry](../../examples/#geometry_SphereGeometry)
+
 
  ## Usage
 
@@ -22097,6 +21944,7 @@ visibility.destroy();
  new xeogl.Entity({
 
      geometry: new xeogl.SphereGeometry({
+         center: [0,0,0],
          radius: 1.5,
          heightSegments: 60,
          widthSegments: 60
@@ -22120,10 +21968,11 @@ visibility.destroy();
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this SphereGeometry.
- @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
+ @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values for a SphereGeometry are 'points', 'lines' and 'triangles'.
+ @param [cfg.center] {Float32Array} 3D point indicating the center position of the SphereGeometry.
  @param [cfg.radius=1] {Number}
- @param [cfg.heightSegments=24] {Number}
- @param [cfg.widthSegments=18] {Number}
+ @param [cfg.heightSegments=24] {Number} The SphereGeometry's number of latitudinal bands.
+ @param [cfg.widthSegments=18] {Number} The SphereGeometry's number of longitudinal bands.
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
  */
@@ -22140,6 +21989,7 @@ visibility.destroy();
             this._super(cfg);
 
             this.lod = cfg.lod;
+            this.center = cfg.center;
             this.radius = cfg.radius;
             this.heightSegments = cfg.heightSegments;
             this.widthSegments = cfg.widthSegments;
@@ -22185,6 +22035,10 @@ visibility.destroy();
             var y;
             var z;
 
+            var xCenter = this._center[0];
+            var yCenter = this._center[1];
+            var zCenter = this._center[2];
+
             var u;
             var v;
 
@@ -22216,9 +22070,9 @@ visibility.destroy();
                     uvs.push(u);
                     uvs.push(v);
 
-                    positions.push(radius * x);
-                    positions.push(radius * y);
-                    positions.push(radius * z);
+                    positions.push(xCenter + radius * x);
+                    positions.push(yCenter + radius * y);
+                    positions.push(zCenter + radius * z);
                 }
             }
 
@@ -22288,6 +22142,36 @@ visibility.destroy();
             },
 
             /**
+             * 3D point indicating the center position of this SphereGeometry.
+             *
+             * Fires an {{#crossLink "SphereGeometry/center:event"}}{{/crossLink}} event on change.
+             *
+             * @property center
+             * @default [0,0,0]
+             * @type {Float32Array}
+             */
+            center: {
+
+                set: function (value) {
+
+                    (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
+
+                    this._scheduleUpdate();
+
+                    /**
+                     Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/center:property"}}{{/crossLink}} property changes.
+                     @event center
+                     @param value {Float32Array} The property's new value
+                     */
+                    this.fire("center", this._center);
+                },
+
+                get: function () {
+                    return this._center;
+                }
+            },
+            
+            /**
              * The SphereGeometry's radius.
              *
              * Fires a {{#crossLink "SphereGeometry/radius:event"}}{{/crossLink}} event on change.
@@ -22331,7 +22215,7 @@ visibility.destroy();
 
 
             /**
-             * The SphereGeometry's number of latitude bands.
+             * The SphereGeometry's number of latitudinal bands.
              *
              * Fires a {{#crossLink "SphereGeometry/heightSegments:event"}}{{/crossLink}} event on change.
              *
@@ -22373,7 +22257,7 @@ visibility.destroy();
             },
 
             /**
-             * The SphereGeometry's number of longitude bands.
+             * The SphereGeometry's number of longitudinal bands.
              *
              * Fires a {{#crossLink "SphereGeometry/widthSegments:event"}}{{/crossLink}} event on change.
              *
@@ -22418,6 +22302,7 @@ visibility.destroy();
         _getJSON: function () {
             return {
                 // Don't save lod
+                center: this._center.slice(),
                 radius: this._radius,
                 heightSegments: this._heightSegments,
                 widthSegments: this._widthSegments
@@ -22425,6 +22310,698 @@ visibility.destroy();
         }
     });
 
+})();
+;/**
+ An **BoundingSphereGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the extents of a World-space bounding sphere.
+
+ <a href="../../examples/#boundaries_Entity_worldBoundary_sphere"><img src="http://i.giphy.com/3oz8xRv4g56Y4pZKWk.gif"></img></a>
+
+ ## Overview
+
+ * A sphere is given as a four-element Float32Array containing elements````[x,y,z,radius]````.
+ * Set the BoundingSphereGeometry's {{#crossLink "BoundingSphereGeometry/sphere:property"}}{{/crossLink}} property to a sphere to fix the BoundingSphereGeometry to those extents, or
+ * Set the BoundingSphereGeometry's {{#crossLink "BoundingSphereGeometry/boundary:property"}}{{/crossLink}} property to a {{#crossLink "Boundary3D"}}{{/crossLink}}
+ to make it dynamically fit itself to changes in the {{#crossLink "Boundary3D"}}{{/crossLink}}'s {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} extents.
+
+ ## Examples
+
+ * [Rendering a BoundingSphereGeometry](../../examples/#boundaries_Entity_worldBoundary_sphere)
+
+ ## Usage
+
+ In the example below we'll render a transparent {{#crossLink "Entity"}}{{/crossLink}} with a BoundingSphereGeometry that shows the spherical extents of the
+ World-space {{#crossLink "Boundary3D"}}{{/crossLink}} of another {{#crossLink "Entity"}}{{/crossLink}}:
+
+ ````javascript
+ // First Entity with a TorusGeometry
+ var torus = new xeogl.Entity({
+     geometry: new xeogl.TorusGeometry()
+ });
+
+ // Second Entity with an BoundingSphereGeometry that shows a wireframe box
+ // for the World-space boundary of the first Entity
+
+ var boundaryHelper = new xeogl.Entity({
+
+     geometry: new xeogl.BoundingSphereGeometry({
+         boundary: torus.worldBoundary
+     }),
+
+     material: new xeogl.PhongMaterial({
+         diffuse: [0.5, 1.0, 0.5],
+         emissive: [0.5, 1.0, 0.5],
+         opacity: 0.4
+     }),
+
+     modes: new xeogl.Modes({
+        transparent: true
+     })
+ });
+ ````
+
+ Now whenever our torus {{#crossLink "Entity"}}{{/crossLink}} changes shape or position, our BoundingSphereGeometry will automatically
+ update to stay fitted to it.
+
+ As shown below, we can also directly configure the BoundingSphereGeometry with
+ the {{#crossLink "Boundary3D"}}{{/crossLink}}'s {{#crossLink "Boundary3D/aabb:property"}}AABB{{/crossLink}}. In this second example, we'll
+ show the sphere as wireframe.
+
+ ````javascript
+ var boundaryHelper2 = new xeogl.Entity({
+
+     geometry: new xeogl.BoundingSphereGeometry({
+         boundary: torus.worldBoundary.sphere,
+         primitive: "lines"
+     }),
+
+     material: new xeogl.PhongMaterial({
+         diffuse: [0.5, 1.0, 0.5],
+         emissive: [0.5, 1.0, 0.5],
+         lineWidth:2
+     })
+ });
+ ````
+ Note that, without the reference to a {{#crossLink "Boundary3D"}}{{/crossLink}}, our second BoundingSphereGeometry is fixed to the
+ given AABB and will not automatically update whenever our torus {{#crossLink "Entity"}}{{/crossLink}} changes shape or position.
+
+ @class BoundingSphereGeometry
+ @module xeogl
+ @submodule geometry
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this BoundingSphereGeometry in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this BoundingSphereGeometry.
+ @param [cfg.boundary] {Number|String|Boundary3D} ID or instance of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
+ @param [cfg.aabb] {Float32Array} An axis-aligned box (AABB) in a six-element Float32Array
+ containing the min/max extents of the axis-aligned volume, ie. ````(xmin,ymin,zmin,xmax,ymax,zmax)````.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    xeogl.BoundingSphereGeometry = xeogl.SphereGeometry.extend({
+
+        type: "xeogl.BoundingSphereGeometry",
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+           // this.primitive = cfg.primitive || "lines";
+
+            if (cfg.boundary) {
+                this.boundary = cfg.boundary;
+
+            } else if (cfg.sphere) {
+                this.sphere = cfg.sphere;
+            }
+        },
+
+        _props: {
+
+            /**
+             A {{#crossLink "Boundary3D"}}{{/crossLink}} whose {{#crossLink "Boundary3D/aabb:property"}}OBB{{/crossLink}} we'll
+             dynamically fit this OBBGeometry to.
+
+             This property effectively replaces the {{#crossLink "BoundingSphereGeometry/aabb:property"}}{{/crossLink}} property.
+
+             Fires a {{#crossLink "BoundingSphereGeometry/boundary:event"}}{{/crossLink}} event on change.
+
+             @property boundary
+             @type Boundary3D
+             */
+            boundary: {
+
+                set: function (value) {
+
+                    var geometryDirty = false;
+                    var self = this;
+
+                    /**
+                     * Fired whenever this BoundingSphereGeometry's {{#crossLink "BoundingSphereGeometry/boundary:property"}}{{/crossLink}}
+                     * property changes.
+                     *
+                     * @event boundary
+                     * @param value The property's new value
+                     */
+                    this._attach({
+                        name: "boundary",
+                        type: "xeogl.Boundary3D",
+                        component: value,
+                        sceneDefault: false,
+                        on: {
+                            updated: function () {
+                                if (geometryDirty) {
+                                    return;
+                                }
+                                geometryDirty = true;
+                                xeogl.scheduleTask(function () {
+                                    self._setFromSphere(self._attached.boundary.sphere);
+                                    geometryDirty = false;
+                                });
+                            }
+                        },
+                        onAttached: function () {
+                            self._setFromSphere(self._attached.boundary.sphere);
+                        }
+                    });
+                },
+
+                get: function () {
+                    return this._attached.boundary;
+                }
+            },
+
+            /**
+             Sets this BoundingSphereGeometry to an axis-aligned box (SPHERE), given as a six-element Float32Array
+             containing the min/max extents of the
+             axis-aligned volume, ie. ````[xmin,ymin,zmin,xmax,ymax,zmax]````.
+
+             This property overrides the {{#crossLink "BoundingSphereGeometry/boundary:property"}}{{/crossLink}} property, causing it to become null.
+
+             @property sphere
+             @type Float32Array
+             */
+            sphere: {
+
+                set: function (value) {
+
+                    if (!value) {
+                        return;
+                    }
+
+                    if (this._attached.boundary) {
+                        this.boundary = null;
+                    }
+
+                    this._setFromSphere(value);
+                }
+            }
+        },
+
+        _setFromSphere: (function () {
+
+            var vec3 = xeogl.math.vec3();
+
+            return function (sphere) {
+
+                vec3[0] = sphere[0];
+                vec3[1] = sphere[1];
+                vec3[2] = sphere[2];
+
+                this.center = vec3;
+                this.radius = sphere[4];
+            };
+        })()
+
+        //_getJSON: function () {
+        //
+        //    var json = {};
+        //
+        //    if (this._attached.boundary) {
+        //        json.boundary = this._attached.boundary.id;
+        //
+        //    } else if (this.positions) {
+        //        this.positions = this.positions;
+        //    }
+        //
+        //    return json;
+        //},
+
+    });
+})();
+;/**
+ An **OBBGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the extents of a World-space entity-oriented bounding box (OBB).
+
+ <a href="../../examples/#geometry_OBBGeometry"><img src="http://i.giphy.com/3o6ZsSVy0NKXZ1vDSo.gif"></img></a>
+
+ ## Overview
+
+ * A World-space OBB a bounding box that's oriented to its contents, given as a 32-element array containing the homogeneous coordinates for the eight corner vertices, ie. each having elements [x,y,z,w].
+ * Set an OBBGeometry's {{#crossLink "OBBGeometry/obb:property"}}{{/crossLink}} property to an OBB to fix it to those extents, or
+ * Set an OBBGeometry's {{#crossLink "OBBGeometry/boundary:property"}}{{/crossLink}} property to a {{#crossLink "Boundary3D"}}{{/crossLink}}
+ to make it dynamically fit itself to changes in the {{#crossLink "Boundary3D"}}{{/crossLink}}'s {{#crossLink "Boundary3D/obb:property"}}{{/crossLink}} extents.
+
+ ## Examples
+
+ * [Rendering an OBBGeometry](../../examples/#geometry_OBBGeometry)
+
+ ## Usage
+
+ An {{#crossLink "Entity"}}{{/crossLink}} with a OBBGeometry that shows the extents of the
+ World-space {{#crossLink "Boundary3D"}}{{/crossLink}} of another {{#crossLink "Entity"}}{{/crossLink}}:
+
+ ````javascript
+ // First Entity with a TorusGeometry
+ var torus = new xeogl.Entity({
+     geometry: new xeogl.TorusGeometry()
+ });
+
+ // Second Entity with an OBBGeometry that shows a wireframe box
+ // for the World-space boundary of the first Entity
+
+ var boundaryHelper = new xeogl.Entity({
+
+     geometry: new xeogl.OBBGeometry({
+         boundary: torus.worldBoundary
+     }),
+
+     material: new xeogl.PhongMaterial({
+         diffuse: [0.5, 1.0, 0.5],
+         emissive: [0.5, 1.0, 0.5],
+         lineWidth:2
+     })
+ });
+ ````
+
+ Now whenever our torus {{#crossLink "Entity"}}{{/crossLink}} changes shape or position, our OBBGeometry will automatically
+ update to stay fitted to it.
+
+ We could also directly configure the OBBGeometry with
+ the {{#crossLink "Boundary3D"}}{{/crossLink}}'s {{#crossLink "Boundary3D/obb:property"}}OBB{{/crossLink}}:
+
+ ````javascript
+ var boundaryHelper2 = new xeogl.Entity({
+
+     geometry: new xeogl.OBBGeometry({
+         boundary: torus.worldBoundary.obb
+     }),
+
+     material: new xeogl.PhongMaterial({
+         diffuse: [0.5, 1.0, 0.5],
+         emissive: [0.5, 1.0, 0.5],
+         lineWidth:2
+     })
+ });
+ ````
+ Note that, without the reference to a {{#crossLink "Boundary3D"}}{{/crossLink}}, our second OBBGeometry is fixed to the
+ given OBB and will not automatically update whenever our torus {{#crossLink "Entity"}}{{/crossLink}} changes shape or position.
+
+ @class OBBGeometry
+ @module xeogl
+ @submodule geometry
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this OBBGeometry in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this OBBGeometry.
+ @param [cfg.boundary] {Number|String|Boundary3D} ID or instance of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
+ @param [cfg.obb] {Float32Array} An entity-oriented box (OBB) in a 32-element Float32Array
+ containing homogeneous coordinates for the eight corner vertices, ie. each having elements (x,y,z,w).
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    xeogl.OBBGeometry = xeogl.Geometry.extend({
+
+        type: "xeogl.OBBGeometry",
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this.primitive = cfg.primitive || "lines";
+
+            this.indices = [
+                0, 1, 1, 2, 2, 3, 3, 0, 4,
+                5, 5, 6, 6, 7, 7, 4, 0, 4,
+                1, 5, 2, 6, 3, 7
+            ];
+
+            if (cfg.boundary) {
+                this.boundary = cfg.boundary;
+
+            } else if (cfg.obb) {
+                this.obb = cfg.obb;
+
+            } else if (cfg.positions) {
+                this.positions = cfg.positions;
+
+            } else {
+                this.positions = [
+                    1.0, 1.0, 1.0,
+                    1.0, -1.0, 1.0,
+                    -1.0, -1.0, 1.0,
+                    -1.0, 1.0, 1.0,
+                    1.0, 1.0, -1.0,
+                    1.0, -1.0, -1.0,
+                    -1.0, -1.0, -1.0,
+                    -1.0, 1.0, -1.0
+                ];
+            }
+        },
+
+        _props: {
+
+            /**
+             A {{#crossLink "Boundary3D"}}{{/crossLink}} whose {{#crossLink "Boundary3D/obb:property"}}OBB{{/crossLink}} we'll
+             dynamically fit this OBBGeometry to.
+
+             This property effectively replaces the {{#crossLink "OBBGeometry/obb:property"}}{{/crossLink}} property.
+
+             Fires a {{#crossLink "OBBGeometry/boundary:event"}}{{/crossLink}} event on change.
+
+             @property boundary
+             @type Boundary3D
+             */
+            boundary: {
+
+                set: function (value) {
+
+                    var geometryDirty = false;
+                    var self = this;
+
+                    /**
+                     * Fired whenever this OBBGeometry's {{#crossLink "OBBGeometry/boundary:property"}}{{/crossLink}}
+                     * property changes.
+                     *
+                     * @event boundary
+                     * @param value The property's new value
+                     */
+                    this._attach({
+                        name: "boundary",
+                        type: "xeogl.Boundary3D",
+                        component: value,
+                        sceneDefault: false,
+                        on: {
+                            updated: function () {
+                                if (geometryDirty) {
+                                    return;
+                                }
+                                geometryDirty = true;
+                                xeogl.scheduleTask(function () {
+                                    self._setPositionsFromOBB(self._attached.boundary.obb);
+                                    geometryDirty = false;
+                                });
+                            }
+                        },
+                        onAttached: function () {
+                            self._setPositionsFromOBB(self._attached.boundary.obb);
+                        }
+                    });
+                },
+
+                get: function () {
+                    return this._attached.boundary;
+                }
+            },
+
+            /**
+             Sets this OBBGeometry to an entity-oriented bounding box (OBB), given as a 32-element Float32Array
+             containing homogeneous coordinates for the eight corner vertices, ie. each having elements [x,y,z,w].
+
+             This property effectively replaces the {{#crossLink "OBBGeometry/boundary:property"}}{{/crossLink}} property, causing it to become null.
+
+             @property obb
+             @type Float32Array
+             */
+            obb: {
+
+                set: function (value) {
+
+                    if (!value) {
+                        return;
+                    }
+
+                    if (this._attached.boundary) {
+                        this.boundary = null;
+                    }
+
+                    this._setPositionsFromOBB(value);
+                }
+            }
+        },
+
+        _setPositionsFromOBB: function (obb) {
+            this.positions = [
+                obb[0], obb[1], obb[2],
+                obb[4], obb[5], obb[6],
+                obb[8], obb[9], obb[10],
+                obb[12], obb[13], obb[14],
+                obb[16], obb[17], obb[18],
+                obb[20], obb[21], obb[22],
+                obb[24], obb[25], obb[26],
+                obb[28], obb[29], obb[30]
+            ];
+        },
+
+        _getJSON: function () {
+
+            var json = {};
+
+            if (this._attached.boundary) {
+                json.boundary = this._attached.boundary.id;
+
+            } else if (this.positions) {
+                json.positions = this.positions;
+            }
+
+            return json;
+        }
+    });
+})();
+;/**
+ An **AABBGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that shows the extents of a World-space axis-aligned bounding box (AABB).
+
+ <a href="../../examples/#geometry_AABBGeometry"><img src="http://i.giphy.com/3o6ZsSVy0NKXZ1vDSo.gif"></img></a>
+
+ ## Overview
+
+ * A World-space AABB is an axis-aligned box given as a six-element array containing the min/max extents of an axis-aligned volume, ie. ````[xmin,ymin,zmin,xmax,ymax,zmax]````.
+ * Set a AABBGeometry's {{#crossLink "AABBGeometry/aabb:property"}}{{/crossLink}} property to an AABB to fix the AABBGeometry to those extents, or
+ * set a AABBGeometry's {{#crossLink "AABBGeometry/boundary:property"}}{{/crossLink}} property to a {{#crossLink "Boundary3D"}}{{/crossLink}}
+ to make it dynamically fit itself to changes in the {{#crossLink "Boundary3D"}}{{/crossLink}}'s {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} extents.
+
+ ## Examples
+
+ * [Rendering an AABBGeometry](../../examples/#geometry_AABBGeometry)
+
+ ## Usage
+
+ An {{#crossLink "Entity"}}{{/crossLink}} with a AABBGeometry that shows the extents of the
+ World-space {{#crossLink "Boundary3D"}}{{/crossLink}} of another {{#crossLink "Entity"}}{{/crossLink}}:
+
+ ````javascript
+ // First Entity with a TorusGeometry
+ var torus = new xeogl.Entity({
+     geometry: new xeogl.TorusGeometry()
+ });
+
+ // Second Entity with an AABBGeometry that shows a wireframe box
+ // for the World-space boundary of the first Entity
+
+ var boundaryHelper = new xeogl.Entity({
+
+     geometry: new xeogl.AABBGeometry({
+         boundary: torus.worldBoundary
+     }),
+
+     material: new xeogl.PhongMaterial({
+         diffuse: [0.5, 1.0, 0.5],
+         emissive: [0.5, 1.0, 0.5],
+         lineWidth:2
+     })
+ });
+ ````
+
+ Now whenever our torus {{#crossLink "Entity"}}{{/crossLink}} changes shape or position, our AABBGeometry will automatically
+ update to stay fitted to it.
+
+ We could also directly configure the AABBGeometry with
+ the {{#crossLink "Boundary3D"}}{{/crossLink}}'s {{#crossLink "Boundary3D/aabb:property"}}AABB{{/crossLink}}:
+
+ ````javascript
+ var boundaryHelper2 = new xeogl.Entity({
+
+     geometry: new xeogl.AABBGeometry({
+         boundary: torus.worldBoundary.aabb
+     }),
+
+     material: new xeogl.PhongMaterial({
+         diffuse: [0.5, 1.0, 0.5],
+         emissive: [0.5, 1.0, 0.5],
+         lineWidth:2
+     })
+ });
+ ````
+ Note that, without the reference to a {{#crossLink "Boundary3D"}}{{/crossLink}}, our second AABBGeometry is fixed to the
+ given AABB and will not automatically update whenever our torus {{#crossLink "Entity"}}{{/crossLink}} changes shape or position.
+
+ @class AABBGeometry
+ @module xeogl
+ @submodule geometry
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this AABBGeometry in the default
+ {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this AABBGeometry.
+ @param [cfg.boundary] {Number|String|Boundary3D} ID or instance of a {{#crossLink "Boundary3D"}}{{/crossLink}}.
+ @param [cfg.aabb] {Float32Array} An axis-aligned box (AABB) in a six-element Float32Array
+ containing the min/max extents of the axis-aligned volume, ie. ````(xmin,ymin,zmin,xmax,ymax,zmax)````.
+ @extends Component
+ */
+(function () {
+
+    "use strict";
+
+    xeogl.AABBGeometry = xeogl.Geometry.extend({
+
+        type: "xeogl.AABBGeometry",
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this.primitive = cfg.primitive || "lines";
+
+            this.indices = [
+                0, 1, 1, 2, 2, 3, 3, 0, 4,
+                5, 5, 6, 6, 7, 7, 4, 0, 4,
+                1, 5, 2, 6, 3, 7
+            ];
+
+            if (cfg.boundary) {
+                this.boundary = cfg.boundary;
+
+            } else if (cfg.aabb) {
+                this.aabb = cfg.aabb;
+
+            } else if (cfg.positions) {
+                this.positions = cfg.positions;
+
+            } else {
+                this.positions = [
+                    1.0, 1.0, 1.0,
+                    1.0, -1.0, 1.0,
+                    -1.0, -1.0, 1.0,
+                    -1.0, 1.0, 1.0,
+                    1.0, 1.0, -1.0,
+                    1.0, -1.0, -1.0,
+                    -1.0, -1.0, -1.0,
+                    -1.0, 1.0, -1.0
+                ];
+            }
+        },
+
+        _props: {
+
+            /**
+             A {{#crossLink "Boundary3D"}}{{/crossLink}} whose {{#crossLink "Boundary3D/aabb:property"}}OBB{{/crossLink}} we'll
+             dynamically fit this OBBGeometry to.
+
+             This property effectively replaces the {{#crossLink "AABBGeometry/aabb:property"}}{{/crossLink}} property.
+
+             Fires a {{#crossLink "AABBGeometry/boundary:event"}}{{/crossLink}} event on change.
+
+             @property boundary
+             @type Boundary3D
+             */
+            boundary: {
+
+                set: function (value) {
+
+                    var geometryDirty = false;
+                    var self = this;
+
+                    /**
+                     * Fired whenever this AABBGeometry's {{#crossLink "AABBGeometry/boundary:property"}}{{/crossLink}}
+                     * property changes.
+                     *
+                     * @event boundary
+                     * @param value The property's new value
+                     */
+                    this._attach({
+                        name: "boundary",
+                        type: "xeogl.Boundary3D",
+                        component: value,
+                        sceneDefault: false,
+                        on: {
+                            updated: function () {
+                                if (geometryDirty) {
+                                    return;
+                                }
+                                geometryDirty = true;
+                                xeogl.scheduleTask(function () {
+                                    self._setPositionsFromAABB(self._attached.boundary.aabb);
+                                    geometryDirty = false;
+                                });
+                            }
+                        },
+                        onAttached: function () {
+                            self._setPositionsFromAABB(self._attached.boundary.aabb);
+                        }
+                    });
+                },
+
+                get: function () {
+                    return this._attached.boundary;
+                }
+            },
+
+            /**
+             Sets this AABBGeometry to an axis-aligned box (AABB), given as a six-element Float32Array
+             containing the min/max extents of the
+             axis-aligned volume, ie. ````[xmin,ymin,zmin,xmax,ymax,zmax]````.
+
+             This property overrides the {{#crossLink "AABBGeometry/boundary:property"}}{{/crossLink}} property, causing it to become null.
+
+             @property aabb
+             @type Float32Array
+             */
+            aabb: {
+
+                set: function (value) {
+
+                    if (!value) {
+                        return;
+                    }
+
+                    if (this._attached.boundary) {
+                        this.boundary = null;
+                    }
+
+                    this._setPositionsFromAABB(value);
+                }
+            }
+        },
+
+        _setPositionsFromAABB: function (aabb) {
+            this.positions = [
+                aabb[3], aabb[4], aabb[5],
+                aabb[3], aabb[1], aabb[5],
+                aabb[0], aabb[1], aabb[5],
+                aabb[0], aabb[4], aabb[5],
+                aabb[3], aabb[4], aabb[2],
+                aabb[3], aabb[1], aabb[2],
+                aabb[0], aabb[1], aabb[2],
+                aabb[0], aabb[4], aabb[2]
+            ];
+        },
+
+        _getJSON: function () {
+
+            var json = {};
+
+            if (this._attached.boundary) {
+                json.boundary = this._attached.boundary.id;
+
+            } else if (this.positions) {
+                this.positions = this.positions;
+            }
+
+            return json;
+        }
+    });
 })();
 ;/**
 
@@ -22619,15 +23196,21 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
         return json;
     }
 });;/**
- A **CylinderGeometry** extends {{#crossLink "Geometry"}}{{/crossLink}} to define a cylindrical mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **CylinderGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a cylinder-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  <a href="../../examples/#geometry_CylinderGeometry"><img src="../../assets/images/screenshots/CylinderGeometry.png"></img></a>
 
+ ## Overview
+
+ * Dynamically modify a CylinderGeometry's shape at any time by updating its {{#crossLink "CylinderGeometry/center:property"}}{{/crossLink}}, {{#crossLink "CylinderGeometry/radiusTop:property"}}{{/crossLink}}, {{#crossLink "CylinderGeometry/radiusBottom:property"}}{{/crossLink}}, {{#crossLink "CylinderGeometry/height:property"}}{{/crossLink}},
+ {{#crossLink "CylinderGeometry/radialSegments:property"}}{{/crossLink}}, {{#crossLink "CylinderGeometry/heightSegments:property"}}{{/crossLink}} and
+ {{#crossLink "CylinderGeometry/openEnded:property"}}{{/crossLink}} properties.
+ * Dynamically switch its primitive type between ````"points"````, ````"lines"```` and ````"triangles"```` at any time by
+ updating its {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} property.
+
  ## Examples
 
- <ul>
- <li>[Textured CylinderGeometry](../../examples/#geometry_CylinderGeometry)</li>
- </ul>
+ * [Textured CylinderGeometry](../../examples/#geometry_CylinderGeometry)
 
  ## Usage
 
@@ -22638,6 +23221,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  new xeogl.Entity({
 
      geometry: new xeogl.CylinderGeometry({
+         center: [0,0,0],
          radiusTop: 2.0,
          radiusBottom: 2.0,
          height: 5.0,
@@ -22664,7 +23248,8 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CylinderGeometry.
- @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
+ @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values for a CylinderGeometry are 'points', 'lines' and 'triangles'.
+ @param [cfg.center] {Float32Array} 3D point indicating the center position of the CylinderGeometry.
  @param [cfg.radiusTop=1] {Number} Radius of top.
  @param [cfg.radiusBottom=1] {Number} Radius of bottom.
  @param [cfg.height=1] {Number} Height.
@@ -22685,8 +23270,9 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
         _init: function (cfg) {
 
             this._super(cfg);
-
+            this.center = cfg.center;
             this.lod = cfg.lod;
+            this.center = cfg.center;
             this.radiusTop = cfg.radiusTop;
             this.radiusBottom = cfg.radiusBottom;
             this.height = cfg.height;
@@ -22702,6 +23288,10 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
          * @protected
          */
         _update: function () {
+
+            var centerX = this._center[0];
+            var centerY = this._center[1];
+            var centerZ = this._center[2];
 
             var radiusTop = this._radiusTop;
             var radiusBottom = this._radiusBottom;
@@ -22762,19 +23352,23 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                     normals.push(currentRadius * x);
                     normals.push(normalY); //todo
                     normals.push(currentRadius * z);
-                    uvs.push( (i * radialLength));
-                    uvs.push(1-  h * 1 / heightSegments);
-                    positions.push(currentRadius * x);
-                    positions.push(currentHeight);
-                    positions.push(currentRadius * z);
+
+                    uvs.push((i * radialLength));
+                    uvs.push(1 - h * 1 / heightSegments);
+
+                    positions.push((currentRadius * x) + centerX);
+                    positions.push((currentHeight) + centerY);
+                    positions.push((currentRadius * z) + centerZ);
                 }
             }
 
             // create faces
             for (h = 0; h < heightSegments; h++) {
                 for (i = 0; i <= radialSegments; i++) {
+
                     first = h * (radialSegments + 1) + i;
                     second = first + radialSegments;
+
                     indices.push(first);
                     indices.push(second);
                     indices.push(second + 1);
@@ -22793,11 +23387,13 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                 normals.push(0.0);
                 normals.push(1.0);
                 normals.push(0.0);
+
                 uvs.push(0.5);
                 uvs.push(0.5);
-                positions.push(0);
-                positions.push(heightHalf);
-                positions.push(0);
+
+                positions.push(0 + centerX);
+                positions.push(heightHalf + centerY);
+                positions.push(0 + centerZ);
 
                 // top triangle fan
                 for (i = 0; i <= radialSegments; i++) {
@@ -22809,16 +23405,19 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                     normals.push(radiusTop * x);
                     normals.push(1.0);
                     normals.push(radiusTop * z);
+
                     uvs.push(tu);
                     uvs.push(tv);
-                    positions.push(radiusTop * x);
-                    positions.push(heightHalf);
-                    positions.push(radiusTop * z);
+
+                    positions.push((radiusTop * x) + centerX);
+                    positions.push((heightHalf) + centerY);
+                    positions.push((radiusTop * z) + centerZ);
                 }
 
                 for (i = 0; i < radialSegments; i++) {
                     center = startIndex;
                     first = startIndex + 1 + i;
+
                     indices.push(first);
                     indices.push(first + 1);
                     indices.push(center);
@@ -22827,38 +23426,47 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
             // create bottom cap
             if (!openEnded && radiusBottom > 0) {
+
                 startIndex = (positions.length / 3);
 
                 // top center
                 normals.push(0.0);
                 normals.push(-1.0);
                 normals.push(0.0);
+
                 uvs.push(0.5);
                 uvs.push(0.5);
-                positions.push(0);
-                positions.push(0 - heightHalf);
-                positions.push(0);
+
+                positions.push(0 + centerX);
+                positions.push(0 - heightHalf + centerY);
+                positions.push(0 + centerZ);
 
                 // top triangle fan
                 for (i = 0; i <= radialSegments; i++) {
+
                     x = Math.sin(i * radialAngle);
                     z = Math.cos(i * radialAngle);
+
                     tu = (0.5 * Math.sin(i * radialAngle)) + 0.5;
                     tv = (0.5 * Math.cos(i * radialAngle)) + 0.5;
 
                     normals.push(radiusBottom * x);
                     normals.push(-1.0);
                     normals.push(radiusBottom * z);
+
                     uvs.push(tu);
                     uvs.push(tv);
-                    positions.push(radiusBottom * x);
-                    positions.push(0 - heightHalf);
-                    positions.push(radiusBottom * z);
+
+                    positions.push((radiusBottom * x) + centerX);
+                    positions.push((0 - heightHalf) + centerY);
+                    positions.push((radiusBottom * z) + centerZ);
                 }
 
                 for (i = 0; i < radialSegments; i++) {
+
                     center = startIndex;
                     first = startIndex + 1 + i;
+
                     indices.push(center);
                     indices.push(first + 1);
                     indices.push(first);
@@ -22912,6 +23520,36 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                 get: function () {
                     return this._lod;
+                }
+            },
+
+            /**
+             * 3D point indicating the center position of this CylinderGeometry.
+             *
+             * Fires an {{#crossLink "CylinderGeometry/center:event"}}{{/crossLink}} event on change.
+             *
+             * @property center
+             * @default [0,0,0]
+             * @type {Float32Array}
+             */
+            center: {
+
+                set: function (value) {
+
+                    (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
+
+                    this._scheduleUpdate();
+
+                    /**
+                     Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/center:property"}}{{/crossLink}} property changes.
+                     @event center
+                     @param value {Float32Array} The property's new value
+                     */
+                    this.fire("center", this._center);
+                },
+
+                get: function () {
+                    return this._center;
                 }
             },
 
@@ -23167,6 +23805,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
         _getJSON: function () {
             return {
                 // Don't save lod
+                center: this._center.slice(),
                 radiusTop: this._radiusTop,
                 radiusBottom: this._radiusBottom,
                 height: this._height,
@@ -23179,15 +23818,21 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
 })();
 ;/**
- A **PlaneGeometry** extends {{#crossLink "Geometry"}}{{/crossLink}} to define a plane-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **PlaneGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a plane-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  <a href="../../examples/#geometry_PlaneGeometry"><img src="../../assets/images/screenshots/PlaneGeometry.png"></img></a>
 
+ ## Overview
+
+ * A PlaneGeometry lies in the X-Z plane.
+ * Dynamically modify it's shape at any time by updating its {{#crossLink "PlaneGeometry/center:property"}}{{/crossLink}}, {{#crossLink "PlaneGeometry/xSize:property"}}{{/crossLink}}, {{#crossLink "PlaneGeometry/zSize:property"}}{{/crossLink}}, {{#crossLink "PlaneGeometry/xSegments:property"}}{{/crossLink}} and
+ {{#crossLink "PlaneGeometry/zSegments:property"}}{{/crossLink}} properties.
+ * Dynamically switch its primitive type between ````"points"````, ````"lines"```` and ````"triangles"```` at any time by
+ updating its {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} property.
+ 
  ## Examples
 
- <ul>
- <li>[Textured PlaneGeometry](../../examples/#geometry_PlaneGeometry)</li>
- </ul>
+ * [Textured PlaneGeometry](../../examples/#geometry_PlaneGeometry)
 
  ## Usage
 
@@ -23199,6 +23844,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
      geometry: new xeogl.PlaneGeometry({
          primitive: "triangles",
+         center: [0,0,0],
          xSize: 2,
          zSize: 2,
          xSegments: 10,
@@ -23224,7 +23870,8 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this PlaneGeometry.
- @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
+ @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values for a PlaneGeometry are 'points', 'lines' and 'triangles'.
+ @param [cfg.center] {Float32Array} 3D point indicating the center position of the PlaneGeometry.
  @param [cfg.xSize=1] {Number} Dimension on the X-axis.
  @param [cfg.zSize=1] {Number} Dimension on the Z-axis.
  @param [cfg.xSegments=1] {Number} Number of segments on the X-axis.
@@ -23245,6 +23892,8 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
             this._super(cfg);
 
+            this.center = cfg.center;
+            
             this.xSize = cfg.xSize;
             this.zSize = cfg.zSize;
 
@@ -23264,7 +23913,9 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
          */
         _update: function () {
 
-            // Geometry needs rebuild
+            var centerX = this._center[0];
+            var centerY = this._center[1];
+            var centerZ = this._center[2];
 
             var width = this._xSize;
             var height = this._zSize;
@@ -23315,8 +23966,9 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                     x = ix * segmentWidth - halfWidth;
 
-                    positions[offset] = x;
-                    positions[offset + 2] = -z;
+                    positions[offset] = x + centerX;
+                    positions[offset + 1] = centerY;
+                    positions[offset + 2] = -z + centerZ;
 
                     normals[offset + 2] = -1;
 
@@ -23401,6 +24053,36 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
                 get: function () {
                     return this._lod;
+                }
+            },
+
+            /**
+             * 3D point indicating the center position of this PlaneGeometry.
+             *
+             * Fires an {{#crossLink "PlaneGeometry/center:event"}}{{/crossLink}} event on change.
+             *
+             * @property center
+             * @default [0,0,0]
+             * @type {Float32Array}
+             */
+            center: {
+
+                set: function (value) {
+
+                    (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
+
+                    this._scheduleUpdate();
+
+                    /**
+                     Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/center:property"}}{{/crossLink}} property changes.
+                     @event center
+                     @param value {Float32Array} The property's new value
+                     */
+                    this.fire("center", this._center);
+                },
+
+                get: function () {
+                    return this._center;
                 }
             },
 
@@ -23575,6 +24257,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
         _getJSON: function () {
             return {
+                center: this._center.slice(),
                 xSize: this._xSize,
                 zSize: this._zSize,
                 xSegments: this._xSegments,
@@ -23618,7 +24301,6 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
      })
  });
  ````
-
 
  @module xeogl
  @submodule geometry
@@ -23967,9 +24649,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  */;/**
  Publishes keyboard and mouse events that occur on the parent {{#crossLink "Scene"}}{{/crossLink}}'s {{#crossLink "Canvas"}}{{/crossLink}}.
 
- <ul>
- <li>Each {{#crossLink "Scene"}}{{/crossLink}} provides an Input on itself as a read-only property.</li>
- </ul>
+ * Each {{#crossLink "Scene"}}{{/crossLink}} provides an Input on itself as a read-only property.
 
  <img src="../../../assets/images/Input.png"></img>
 
@@ -25414,16 +26094,16 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  */;/**
  A **Lights** defines a group of light sources that illuminate attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
+ ## Overview
+
  A Lights may contain a virtually unlimited number of three types of light source:
 
- <ul>
- <li>{{#crossLink "AmbientLight"}}AmbientLight{{/crossLink}}s, which are fixed-intensity and fixed-color, and
- affect all the {{#crossLink "Entity"}}Entities{{/crossLink}} equally,</li>
- <li>{{#crossLink "PointLight"}}PointLight{{/crossLink}}s, which emit light that
- originates from a single point and spreads outward in all directions, and </li>
- <li>{{#crossLink "DirLight"}}DirLight{{/crossLink}}s, which illuminate all the
- {{#crossLink "Entity"}}Entities{{/crossLink}} equally from a given direction</li>
- </ul>
+ * {{#crossLink "AmbientLight"}}AmbientLight{{/crossLink}}s, which are fixed-intensity and fixed-color, and
+ affect all the {{#crossLink "Entity"}}Entities{{/crossLink}} equally,
+ * {{#crossLink "PointLight"}}PointLight{{/crossLink}}s, which emit light that
+ originates from a single point and spreads outward in all directions, and
+ * {{#crossLink "DirLight"}}DirLight{{/crossLink}}s, which illuminate all the
+ {{#crossLink "Entity"}}Entities{{/crossLink}} equally from a given direction
 
  <img src="../../../assets/images/Lights.png"></img>
 
@@ -25709,45 +26389,44 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
     });
 })();
 ;/**
-
  An **AmbientLight** defines an ambient light source of fixed intensity and color that affects all attached {{#crossLink "Entity"}}Entities{{/crossLink}}
  equally.
 
- <ul>
- <li>AmbientLights are grouped, along with other light source types, within
- {{#crossLink "Lights"}}Lights{{/crossLink}} components, which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>When the {{#crossLink "Entity"}}Entities{{/crossLink}} have {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}},
+ <a href="../../examples/#lights_ambient"><img src="http://i.giphy.com/l0HlGTxXQWMRVOPwk.gif"></img></a>
+
+ ## Overview
+
+ * AmbientLights are grouped, along with other light source types, within
+ {{#crossLink "Lights"}}Lights{{/crossLink}} components, which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * When the {{#crossLink "Entity"}}Entities{{/crossLink}} have {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}},
  AmbientLight {{#crossLink "AmbientLight/color:property"}}color{{/crossLink}} is multiplied by
- {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}}.</li>
- </ul>
+ {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}} at each rendered fragment of the {{#crossLink "Geometry"}}{{/crossLink}} surface.
 
  <img src="../../../assets/images/AmbientLight.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Ambient light source](../../examples/#lights_ambient)</li>
- </ul>
+ * [Ambient light source](../../examples/#lights_ambient)
 
  ## Usage
 
  ```` javascript
  var entity = new xeogl.Entity({
 
-        lights: new xeogl.Lights({
-            lights: [
-                new xeogl.AmbientLight({
-                    color: [0.7, 0.7, 0.7]
-                })
-            ]
-        }),
- ,
-        material: new xeogl.PhongMaterial({
-            diffuse: [0.5, 0.5, 0.0]
-        }),
+     lights: new xeogl.Lights({
+         lights: [
+             new xeogl.AmbientLight({
+                 color: [0.7, 0.7, 0.7]
+             })
+         ]
+     }),
 
-        geometry: new xeogl.BoxGeometry()
-  });
+     material: new xeogl.PhongMaterial({
+        diffuse: [0.5, 0.5, 0.0]
+     }),
+
+     geometry: new xeogl.BoxGeometry()
+ });
  ````
 
  @class AmbientLight
@@ -25859,24 +26538,22 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
  A **DirLight** is a directional light source that illuminates all attached {{#crossLink "Entity"}}Entities{{/crossLink}} equally
  from a given direction.
 
- <ul>
- <li>DirLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
- which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>DirLights have a direction, but no position.</li>
- <li>DirLights may be defined in either **World** or **View** coordinate space. When in World-space, their direction
+ ## Overview
+
+ * DirLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
+ which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * DirLights have a direction, but no position.
+ * DirLights may be defined in either **World** or **View** coordinate space. When in World-space, their direction
  is relative to the World coordinate system, and will appear to move as the {{#crossLink "Camera"}}{{/crossLink}} moves.
  When in View-space, their direction is relative to the View coordinate system, and will behave as if fixed to the viewer's
- head as the {{#crossLink "Camera"}}{{/crossLink}} moves.</li>
- </ul>
+ head as the {{#crossLink "Camera"}}{{/crossLink}} moves.
 
  <img src="../../../assets/images/DirLight.png"></img>
 
  ## Examples
 
- <ul>
- <li>[View-space directional light](../../examples/#lights_directional_view)</li>
- <li>[World-space directional light](../../examples/#lights_directional_world)</li>
- </ul>
+ * [View-space directional light](../../examples/#lights_directional_view)
+ * [World-space directional light](../../examples/#lights_directional_world)
 
  ## Usage
 
@@ -26049,10 +26726,10 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
              Supported values are:
 
-             <ul>
-             <li>"view" - View space, aligned within the view volume as if fixed to the viewer's head</li>
-             <li>"world" - World space, fixed within the world, moving within the view volume with respect to camera</li>
-             </ul>
+
+             * "view" - View space, aligned within the view volume as if fixed to the viewer's head
+             * "world" - World space, fixed within the world, moving within the view volume with respect to camera
+
 
              Fires a {{#crossLink "DirLight/space:event"}}{{/crossLink}} event on change.
 
@@ -26095,30 +26772,28 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
 })();
 ;/**
+ A **PointLight** defines a positional light source that originates from a single point and spreads outward in all directions, to illuminate attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- A **PointLight** defines a positional light source that originates from a single point and spreads outward in all directions, to illuminate
- attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ <a href="../../examples/#lights_point_world"><img src="http://i.giphy.com/3o6ZsZoFGIOJ2nlmN2.gif"></img></a>
 
- <ul>
- <li>PointLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
- which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>PointLights have a position, but no direction.</li>
- <li>PointLights may be defined in either **World** or **View** coordinate space. When in World-space, their positions
+ ## Overview
+
+ * PointLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
+ which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * PointLights have a position, but no direction.
+ * PointLights may be defined in either **World** or **View** coordinate space. When in World-space, their positions
  are relative to the World coordinate system, and will appear to move as the {{#crossLink "Camera"}}{{/crossLink}} moves.
  When in View-space, their positions are relative to the View coordinate system, and will behave as if fixed to the viewer's
- head as the {{#crossLink "Camera"}}{{/crossLink}} moves.</li>
- <li>PointLights have {{#crossLink "PointLight/constantAttenuation:property"}}{{/crossLink}}, {{#crossLink "PointLight/linearAttenuation:property"}}{{/crossLink}} and
- {{#crossLink "PointLight/quadraticAttenuation:property"}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.</li>
- </ul>
+ head as the {{#crossLink "Camera"}}{{/crossLink}} moves.
+ * PointLights have {{#crossLink "PointLight/constantAttenuation:property"}}{{/crossLink}}, {{#crossLink "PointLight/linearAttenuation:property"}}{{/crossLink}} and
+ {{#crossLink "PointLight/quadraticAttenuation:property"}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.
 
  <img src="../../../assets/images/PointLight.png"></img>
 
  ## Examples
 
- <ul>
- <li>[View-space point light](../../examples/#lights_point_view)</li>
- <li>[World-space point light](../../examples/#lights_point_world)</li>
- </ul>
+ * [View-space point light](../../examples/#lights_point_view)
+ * [World-space point light](../../examples/#lights_point_world)
 
  ## Usage
 
@@ -26390,10 +27065,10 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
              Supported values are:
 
-             <ul>
-             <li>"view" - View space, aligned within the view volume as if fixed to the viewer's head</li>
-             <li>"world" - World space, fixed within the world, moving within the view volume with respect to camera</li>
-             </ul>
+
+             * "view" - View space, aligned within the view volume as if fixed to the viewer's head
+             * "world" - World space, fixed within the world, moving within the view volume with respect to camera
+
 
              Fires a {{#crossLink "PointLight/space:event"}}{{/crossLink}} event on change.
 
@@ -26451,13 +27126,13 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
     /**
      A **Model** is a unit of content within a xeogl {{#crossLink "Scene"}}{{/crossLink}}.
 
-     <ul>
-     <li>A Model is a container of {{#crossLink "Component"}}Components{{/crossLink}}.</li>
-     <li>Can be transformed within World-space by attached it to a {{#crossLink "Transform"}}{{/crossLink}}.</li>
-     <li>Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.</li>
-     <li>Subclassed by {{#crossLink "GLTFModel"}}{{/crossLink}}, which loads glTF files.</li>
-     <li>Subclassed by {{#crossLink "BuildableModel"}}{{/crossLink}}, which provides a fluent API for building itself.</li>
-     </ul>
+     ## Overview
+
+     * A Model is a container of {{#crossLink "Component"}}Components{{/crossLink}}.
+     * Can be transformed within World-space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}}.
+     * Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
+     * Subclassed by {{#crossLink "GLTFModel"}}{{/crossLink}}, which loads glTF files.
+     * Subclassed by {{#crossLink "BuildableModel"}}{{/crossLink}}, which provides a fluent API for building itself.
 
      <img src="../../../assets/images/Model.png"></img>
 
@@ -28324,38 +28999,32 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
      ## Overview
 
-     <ul>
-     <li>A GLTFModel is a container of {{#crossLink "Component"}}Components{{/crossLink}} that loads itself from glTF.</li>
-     <li>It begins loading as soon as you set its {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}
-     property to the location of a valid glTF file.</li>
-     <li>You can set {{#crossLink "GLTFModel/src:property"}}{{/crossLink}} to a new file path at any time, which causes
-     the GLTFModel to clear itself and load components from the new file.</li>
-     <li>Can be transformed within World-space by attached it to a {{#crossLink "Transform"}}{{/crossLink}}.</li>
-     <li>Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.</li>
-     </ul>
+     * A GLTFModel is a container of {{#crossLink "Component"}}Components{{/crossLink}} that loads itself from glTF.
+     * It begins loading as soon as you set its {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}
+     property to the location of a valid glTF file.
+     * You can set {{#crossLink "GLTFModel/src:property"}}{{/crossLink}} to a new file path at any time, which causes
+     the GLTFModel to clear itself and load components from the new file.
+     * Can be transformed within World-space by attached it to a {{#crossLink "Transform"}}{{/crossLink}}.
+     * Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
      <img src="../../../assets/images/GLTFModel.png"></img>
 
      ## Tutorials
 
-     <ul>
-     <li>[Importing glTF](https://github.com/xeolabs/xeogl/wiki/Models-glTF)</li>
-     </ul>
+     * [Importing glTF](https://github.com/xeolabs/xeogl/wiki/Models-glTF)
 
      ## Examples
 
-     <ul>
-     <li>[Gearbox](../../examples/#models_GLTFModel_gearbox)</li>
-     <li>[Buggy](../../examples/#models_GLTFModel_buggy)</li>
-     <li>[Reciprocating Saw](../../examples/#models_GLTFModel_ReciprocatingSaw)</li>
-     <li>[Textured Duck](../../examples/#models_GLTFModel_duck)</li>
-     <li>[GLTFModel with entity explorer UI](../../examples/#demos_ui_explorer)</li>
-     <li>[Fly camera to GLTFModel entities](../../examples/#boundaries_flyToBoundary)</li>
-     <li>[Ensuring individual materials on GLTFModel entities](../../examples/#models__uniqueMaterials)</li>
-     <li>[Baking transform hierarchies](../../examples/#models_bakeTransforms)</li>
-     <li>[Attaching transforms to GLTFModel, via constructor](../../examples/#models_configureTransform)</li>
-     <li>[Attaching transforms to GLTFModel, via property](../../examples/#models_attachTransform)</li>
-     </ul>
+     * [Gearbox](../../examples/#models_GLTFModel_gearbox)
+     * [Buggy](../../examples/#models_GLTFModel_buggy)
+     * [Reciprocating Saw](../../examples/#models_GLTFModel_ReciprocatingSaw)
+     * [Textured Duck](../../examples/#models_GLTFModel_duck)
+     * [GLTFModel with entity explorer UI](../../examples/#demos_ui_explorer)
+     * [Fly camera to GLTFModel entities](../../examples/#boundaries_flyToBoundary)
+     * [Ensuring individual materials on GLTFModel entities](../../examples/#models__uniqueMaterials)
+     * [Baking transform hierarchies](../../examples/#models_bakeTransforms)
+     * [Attaching transforms to GLTFModel, via constructor](../../examples/#models_configureTransform)
+     * [Attaching transforms to GLTFModel, via property](../../examples/#models_attachTransform)
 
      @class GLTFModel
      @module xeogl
@@ -28509,10 +29178,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  Material is the base class for:
 
- <ul>
- <li>{{#crossLink "PhongMaterial"}}{{/crossLink}} - Blinn-Phong shading material.</li>
- <li>(more Material subtypes coming)</li>
- </ul>
+ * {{#crossLink "PhongMaterial"}}{{/crossLink}} - Blinn-Phong shading material.
+ * (more Material subtypes coming)
 
  @class Material
  @module xeogl
@@ -28540,27 +29207,26 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  attached {{#crossLink "Entity"}}Entities{{/crossLink}} using
  the <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> lighting model.
 
- <ul>
- <li>PhongMaterial properties, along with {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}},
+ ## Overview
+
+ * PhongMaterial properties, along with {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}},
  {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} and {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}},
- specify attributes that are to be **applied uniformly** across the surface of attached {{#crossLink "Geometry"}}Geometries{{/crossLink}}.</li>
- <li>Most of those attributes can be textured, **effectively replacing the values set for those properties**, by
+ specify attributes that are to be **applied uniformly** across the surface of attached {{#crossLink "Geometry"}}Geometries{{/crossLink}}.
+ * Most of those attributes can be textured, **effectively replacing the values set for those properties**, by
  assigning {{#crossLink "Texture"}}Textures{{/crossLink}} to the PhongMaterial's
  {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}}, {{#crossLink "PhongMaterial/specularMap:property"}}{{/crossLink}},
  {{#crossLink "PhongMaterial/emissiveMap:property"}}{{/crossLink}}, {{#crossLink "PhongMaterial/opacityMap:property"}}{{/crossLink}}
- and  {{#crossLink "PhongMaterial/reflectivityMap:property"}}{{/crossLink}} properties.</li>
- <li>For example, the value of {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} will be ignored if your
+ and  {{#crossLink "PhongMaterial/reflectivityMap:property"}}{{/crossLink}} properties.
+ * For example, the value of {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} will be ignored if your
  PhongMaterial also has a {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} set to a {{#crossLink "Texture"}}Texture{{/crossLink}}.
  The {{#crossLink "Texture"}}Texture's{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the
  {{#crossLink "Geometry"}}{{/crossLink}} surface, ie. they are not multiplied by
- the {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} for each pixel, as is done in many shading systems.</li>
- <li>When the {{#crossLink "Entity"}}{{/crossLink}}'s {{#crossLink "Geometry"}}{{/crossLink}} has a
+ the {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} for each pixel, as is done in many shading systems.
+ * When the {{#crossLink "Entity"}}{{/crossLink}}'s {{#crossLink "Geometry"}}{{/crossLink}} has a
  {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} set to "lines" or "points" then only the {{#crossLink "PhongMaterial"}}{{/crossLink}}'s
  {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}}, {{#crossLink "PhongMaterial/emissiveMap:property"}}{{/crossLink}},
  {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} and {{#crossLink "PhongMaterial/opacityMap:property"}}{{/crossLink}}
- will actually be applied, since those primitive types cannot be shaded.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that PhongMaterials create within xeogl's shaders.</li>
- </ul>
+ will actually be applied, since those primitive types cannot be shaded.
 
  <img src="../../../assets/images/PhongMaterial.png"></img>
 
@@ -28568,11 +29234,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  In this example we have an Entity with
 
- <ul>
- <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "DirLight"}}{{/crossLink}},</li>
- <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies a {{#crossLink "Texture"}}{{/crossLink}} as a diffuse map and a specular {{#crossLink "Fresnel"}}{{/crossLink}}, and
- <li>a {{#crossLink "TorusGeometry"}}{{/crossLink}}.</li>
- </ul>
+ * a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "DirLight"}}{{/crossLink}},
+ * a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies a {{#crossLink "Texture"}}{{/crossLink}} as a diffuse map and a specular {{#crossLink "Fresnel"}}{{/crossLink}}, and
+ * a {{#crossLink "TorusGeometry"}}{{/crossLink}}.
 
  Note that xeogl will ignore the PhongMaterial's {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}
  property, since we assigned the {{#crossLink "Texture"}}{{/crossLink}} to the PhongMaterial's
@@ -29627,46 +30291,37 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  ## Overview
 
- <ul>
- <li>Textures are grouped within {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}}s, which are attached to
- {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>To create a Texture from an image file, set the Texture's {{#crossLink "Texture/src:property"}}{{/crossLink}}
- property to the image file path.</li>
- <li>To create a Texture from an HTMLImageElement, set the Texture's {{#crossLink "Texture/image:property"}}{{/crossLink}}
- property to the HTMLImageElement.</li>
- <li>To render color images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
- property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>Similarly, to render depth images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
- property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>For special effects, we often use rendered Textures in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Textures create within xeogl's shaders.</li>
- </ul>
+ * Textures are grouped within {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}}s, which are attached to
+ {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ To create a Texture from an image file, set the Texture's {{#crossLink "Texture/src:property"}}{{/crossLink}}
+ property to the image file path.
+ To create a Texture from an HTMLImageElement, set the Texture's {{#crossLink "Texture/image:property"}}{{/crossLink}}
+ property to the HTMLImageElement.
+ To render color images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
+ property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ Similarly, to render depth images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
+ property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ For special effects, we often use rendered Textures in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Stage"}}Stages{{/crossLink}}.
 
  <img src="../../../assets/images/Texture.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Diffuse Texture](../../examples/#materials_texture_diffuse)</li>
- <li>[Specular Texture](../../examples/#materials_texture_specular)</li>
- <li>[Opacity Texture](../../examples/#materials_texture_opacity)</li>
- <li>[Emissive Texture](../../examples/#materials_texture_emissive)</li>
- <li>[Reflectivity Texture](../../examples/#materials_texture_reflectivity)</li>
- <li>[Normal map](../../examples/#materials_texture_normalMap)</li>
- <li>[Diffuse Video Texture](../../examples/#materials_texture_video)</li>
- <li>[Diffuse Procedural Texture](../../examples/#materials_texture_procedural)</li>
- <li>[Texture Animation](../../examples/#materials_texture_animation)</li>
- </ul>
+ * [Diffuse Texture](../../examples/#materials_texture_diffuse)
+ * [Specular Texture](../../examples/#materials_texture_specular)
+ * [Opacity Texture](../../examples/#materials_texture_opacity)
+ * [Emissive Texture](../../examples/#materials_texture_emissive)
+ * [Normal map](../../examples/#materials_texture_normalMap)
+ * [Diffuse Video Texture](../../examples/#materials_texture_video)
+ * [Texture Animation](../../examples/#materials_texture_animation)
 
  ## Usage
 
  In this example we have an Entity with
 
- <ul>
- <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "DirLight"}}{{/crossLink}},</li>
- <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies diffuse and specular {{#crossLink "Texture"}}Textures{{/crossLink}}, and
- <li>a {{#crossLink "TorusGeometry"}}{{/crossLink}}.</li>
- </ul>
+ * a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "DirLight"}}{{/crossLink}},
+ * a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies diffuse and specular {{#crossLink "Texture"}}Textures{{/crossLink}}, and
+ * a {{#crossLink "TorusGeometry"}}{{/crossLink}}.
 
  Note that xeogl will ignore the {{#crossLink "PhongMaterial"}}PhongMaterial's{{/crossLink}} {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}
  and {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} properties, since we assigned {{#crossLink "Texture"}}Textures{{/crossLink}} to the {{#crossLink "PhongMaterial"}}PhongMaterial's{{/crossLink}} {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} and
@@ -30328,34 +30983,34 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
              *
              * Options are:
              *
-             * <ul>
-             *     <li>**"nearest"** - Uses the value of the texture element that is nearest
-             *     (in Manhattan distance) to the center of the pixel being textured.</li>
              *
-             *     <li>**"linear"** - Uses the weighted average of the four texture elements that are
-             *     closest to the center of the pixel being textured.</li>
+             *     * **"nearest"** - Uses the value of the texture element that is nearest
+             *     (in Manhattan distance) to the center of the pixel being textured.
              *
-             *     <li>**"nearestMipmapNearest"** - Chooses the mipmap that most closely matches the
+             *     * **"linear"** - Uses the weighted average of the four texture elements that are
+             *     closest to the center of the pixel being textured.
+             *
+             *     * **"nearestMipmapNearest"** - Chooses the mipmap that most closely matches the
              *     size of the pixel being textured and uses the "nearest" criterion (the texture
-             *     element nearest to the center of the pixel) to produce a texture value.</li>
+             *     element nearest to the center of the pixel) to produce a texture value.
              *
-             *     <li>**"linearMipmapNearest"** - Chooses the mipmap that most closely matches the size of
+             *     * **"linearMipmapNearest"** - Chooses the mipmap that most closely matches the size of
              *     the pixel being textured and uses the "linear" criterion (a weighted average of the
              *     four texture elements that are closest to the center of the pixel) to produce a
-             *     texture value.</li>
+             *     texture value.
              *
-             *     <li>**"nearestMipmapLinear"** - Chooses the two mipmaps that most closely
+             *     * **"nearestMipmapLinear"** - Chooses the two mipmaps that most closely
              *     match the size of the pixel being textured and uses the "nearest" criterion
              *     (the texture element nearest to the center of the pixel) to produce a texture
              *     value from each mipmap. The final texture value is a weighted average of those two
-             *     values.</li>
+             *     values.
              *
-             *     <li>**"linearMipmapLinear"** - **(default)** - Chooses the two mipmaps that most closely match the size
+             *     * **"linearMipmapLinear"** - **(default)** - Chooses the two mipmaps that most closely match the size
              *     of the pixel being textured and uses the "linear" criterion (a weighted average
              *     of the four texture elements that are closest to the center of the pixel) to
              *     produce a texture value from each mipmap. The final texture value is a weighted
-             *     average of those two values.</li>
-             * </ul>
+             *     average of those two values.
+             *
              *
              * Fires a {{#crossLink "Texture/minFilter:event"}}{{/crossLink}} event on change.
              *
@@ -30405,12 +31060,12 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
              *
              * Options are:
              *
-             * <ul>
-             *     <li>**"nearest"** - Uses the value of the texture element that is nearest
-             *     (in Manhattan distance) to the center of the pixel being textured.</li>
-             *     <li>**"linear"** - **(default)** - Uses the weighted average of the four texture elements that are
-             *     closest to the center of the pixel being textured.</li>
-             * </ul>
+             *
+             *     * **"nearest"** - Uses the value of the texture element that is nearest
+             *     (in Manhattan distance) to the center of the pixel being textured.
+             *     * **"linear"** - **(default)** - Uses the weighted average of the four texture elements that are
+             *     closest to the center of the pixel being textured.
+             *
              *
              * Fires a {{#crossLink "Texture/magFilter:event"}}{{/crossLink}} event on change.
              *
@@ -30455,14 +31110,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
              *
              * Options are:
              *
-             * <ul>
-             *     <li>**"clampToEdge"** -  causes *S* coordinates to be clamped to the size of the texture.</li>
-             *     <li>**"mirroredRepeat"** - causes the *S* coordinate to be set to the fractional part of the texture coordinate
+             *
+             *     * **"clampToEdge"** -  causes *S* coordinates to be clamped to the size of the texture.
+             *     * **"mirroredRepeat"** - causes the *S* coordinate to be set to the fractional part of the texture coordinate
              *     if the integer part of *S* is even; if the integer part of *S* is odd, then the *S* texture coordinate is
-             *     set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *S*.</li>
-             *     <li>**"repeat"** - **(default)** - causes the integer part of the *S* coordinate to be ignored; xeogl uses only the
-             *     fractional part, thereby creating a repeating pattern.</li>
-             * </ul>
+             *     set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *S*.
+             *     * **"repeat"** - **(default)** - causes the integer part of the *S* coordinate to be ignored; xeogl uses only the
+             *     fractional part, thereby creating a repeating pattern.
+             *
              *
              * Fires a {{#crossLink "Texture/wrapS:event"}}{{/crossLink}} event on change.
              *
@@ -30507,14 +31162,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
              *
              * Options are:
              *
-             * <ul>
-             *     <li>**"clampToEdge"** -  Causes *T* coordinates to be clamped to the size of the texture.</li>
-             *     <li>**"mirroredRepeat"** - Causes the *T* coordinate to be set to the fractional part of the texture coordinate
+             *
+             *     * **"clampToEdge"** -  Causes *T* coordinates to be clamped to the size of the texture.
+             *     * **"mirroredRepeat"** - Causes the *T* coordinate to be set to the fractional part of the texture coordinate
              *     if the integer part of *T* is even; if the integer part of *T* is odd, then the *T* texture coordinate is
-             *     set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *T*.</li>
-             *     <li>**"repeat"** - **(default)** - Causes the integer part of the *T* coordinate to be ignored; xeogl uses only the
-             *     fractional part, thereby creating a repeating pattern.</li>
-             * </ul>
+             *     set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *T*.
+             *     * **"repeat"** - **(default)** - Causes the integer part of the *T* coordinate to be ignored; xeogl uses only the
+             *     fractional part, thereby creating a repeating pattern.
+             *
              *
              * Fires a {{#crossLink "Texture/wrapT:event"}}{{/crossLink}} event on change.
              *
@@ -30666,19 +31321,15 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  ## Overview
 
- <ul>
- <li>Fresnels are grouped within {{#crossLink "PhongMaterial"}}{{/crossLink}}s, which are attached to
- {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- </ul>
+ * Fresnels are grouped within {{#crossLink "PhongMaterial"}}{{/crossLink}}s, which are attached to
+ {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Examples
 
- <ul>
- <li>[Diffuse Fresnel](../../examples/#materials_fresnel_diffuse)</li>
- <li>[Specular Fresnel](../../examples/#materials_fresnel_specular)</li>
- <li>[Opacity Fresnel](../../examples/#materials_fresnel_opacity)</li>
- <li>[Emissive Fresnel](../../examples/#materials_fresnel_emissive)</li>
- </ul>
+ * [Diffuse Fresnel](../../examples/#materials_fresnel_diffuse)
+ * [Specular Fresnel](../../examples/#materials_fresnel_specular)
+ * [Opacity Fresnel](../../examples/#materials_fresnel_opacity)
+ * [Emissive Fresnel](../../examples/#materials_fresnel_emissive)
 
  <img src="../../../assets/images/Fresnel.png"></img>
 
@@ -30930,33 +31581,30 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  ## Overview
 
- <ul>
- <li>Reflects are grouped within {{#crossLink "Material"}}Material{{/crossLink}}s, which are attached to
- {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>To create a Reflect from an image file, set the Reflect's {{#crossLink "Reflect/src:property"}}{{/crossLink}}
- property to the image file path.</li>
- <li>To create a Reflect from an HTML DOM Image object, set the Reflect's {{#crossLink "Reflect/image:property"}}{{/crossLink}}
- property to the entity.</li>
- <li>To render color images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink "Reflect/target:property"}}{{/crossLink}}
- property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>Similarly, to render depth images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink "Reflect/target:property"}}{{/crossLink}}
- property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>For special effects, we often use rendered Reflects in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Reflects create within xeogl's shaders.</li>
- </ul>
+ * Reflects are grouped within {{#crossLink "Material"}}Material{{/crossLink}}s, which are attached to
+ {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * To create a Reflect from an image file, set the Reflect's {{#crossLink "Reflect/src:property"}}{{/crossLink}}
+ property to the image file path.
+ * To create a Reflect from an HTML DOM Image object, set the Reflect's {{#crossLink "Reflect/image:property"}}{{/crossLink}}
+ property to the entity.
+ * To render color images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink "Reflect/target:property"}}{{/crossLink}}
+ property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * Similarly, to render depth images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink "Reflect/target:property"}}{{/crossLink}}
+ property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * For special effects, we often use rendered Reflects in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Stage"}}Stages{{/crossLink}}.
 
  <img src="../../../assets/images/Reflect.png"></img>
 
  ## Usage
 
  The example below has:
- <ul>
- <li>three Reflects,</li>
- <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies the {{#crossLink "Reflect"}}{{/crossLink}}s as diffuse, normal and specular maps,</li>
- <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "PointLight"}}{{/crossLink}},</li>
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} that has the default box shape, and
- <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
- </ul>
+
+ * three Reflects,
+ * a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies the {{#crossLink "Reflect"}}{{/crossLink}}s as diffuse, normal and specular maps,
+ * a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "PointLight"}}{{/crossLink}},
+ * a {{#crossLink "Geometry"}}{{/crossLink}} that has the default box shape, and
+ * an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.
+
 
  ```` javascript
  var scene = new xeogl.Scene();
@@ -30971,7 +31619,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  var reflect3 = new xeogl.Reflect(scene, {
     src: "specularMap.jpg"
-});
+ });
 
  var material = new xeogl.PhongMaterial(scene, {
     ambient: [0.3, 0.3, 0.3],
@@ -30979,23 +31627,23 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     diffuseMap: reflect1,
     normalMap: reflect2,
     specularMap: reflect3
-});
+ });
 
  var light1 = new xeogl.PointLight(scene, {
     pos: [0, 100, 100],
     color: [0.5, 0.7, 0.5]
-});
+ });
 
  var light2 = new xeogl.AmbientLight(scene, {
     color: [0.5, 0.7, 0.5]
-});
+ });
 
  var lights = new xeogl.Lights(scene, {
     lights: [
         light1,
         light2
     ]
-});
+ });
 
  // Geometry without parameters will default to a 2x2x2 box.
  var geometry = new xeogl.Geometry(scene);
@@ -31004,7 +31652,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     lights: lights,
     material: material,
     geometry: geometry
-});
+ });
  ````
 
  @module xeogl
@@ -31244,34 +31892,32 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  ## Overview
 
- See the {{#crossLink "Scene"}}Scene{{/crossLink}} class documentation for more information on Entities.</li>
+ See the {{#crossLink "Scene"}}Scene{{/crossLink}} class documentation for more information on Entities.
 
  <img src="../../../assets/images/Entity.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Minimal Entity example](../../examples/#entities_minimal)</li>
- </ul>
+ * [Minimal Entity example](../../examples/#entities_minimal)
 
  ## Boundaries
 
  #### Local-space
 
  A Entity provides its Local-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses
- the {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}}.</li>
+ the {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}}.
 
  ```` javascript
  var scene = new xeogl.Scene();
 
  var geometry = new xeogl.Geometry(myScene, {
       //...
-  });
+ });
 
  var entity = new xeogl.Entity(myScene, {
        geometry: myGeometry,
        transform: translate
-  });
+ });
 
  // Get the Local-space Boundary3D
  var localBoundary = entity.localBoundary;
@@ -31287,22 +31933,20 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  // get the Local-space center of the Entity:
  var center = localBoundary.center;
-
  ````
 
  #### World-space
 
  A Entity provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses
  the {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
- transformation by the Entity's {{#crossLink "Entity/transform:property"}}Modelling transform{{/crossLink}}.</li>
-
+ transformation by the Entity's {{#crossLink "Entity/transform:property"}}Modelling transform{{/crossLink}}.
 
  ```` javascript
  var scene = new xeogl.Scene();
 
  var geometry = new xeogl.Geometry(myScene, {
       //...
-  });
+ });
 
  var translate = new xeogl.Translate(scene, {
     xyz: [-5, 0, 0] // Translate along -X axis
@@ -31311,7 +31955,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  var entity = new xeogl.Entity(myScene, {
        geometry: myGeometry,
        transform: translate
-  });
+ });
 
  // Get the World-space Boundary3D
  var worldBoundary = entity.worldBoundary;
@@ -31327,7 +31971,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  // get the World-space center of the Entity:
  var center = worldBoundary.center;
-
  ````
 
  #### View-space
@@ -31335,7 +31978,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  A Entity also provides its View-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses
  the {{#crossLink "Geometry/positions:property"}}Geometry positions{{/crossLink}} after
  their transformation by the {{#crossLink "Camera/view:property"}}View{{/crossLink}} and
- {{#crossLink "Entity/transform:property"}}Modelling{{/crossLink}} transforms.</li>
+ {{#crossLink "Entity/transform:property"}}Modelling{{/crossLink}} transforms.
 
  ```` javascript
  // Get the View-space Boundary3D
@@ -31352,7 +31995,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  // get the View-space center of the Entity:
  var center = viewBoundary.center;
-
  ````
 
  #### View-space
@@ -31360,7 +32002,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  A Entity also provides its Canvas-space boundary as a {{#crossLink "Boundary2D"}}{{/crossLink}} that encloses
  the {{#crossLink "Geometry/positions:property"}}Geometry positions{{/crossLink}} after
  their transformation by the {{#crossLink "Entity/transform:property"}}Modelling{{/crossLink}},
- {{#crossLink "Camera/view:property"}}View{{/crossLink}} and {{#crossLink "Camera/project:property"}}Projection{{/crossLink}} transforms.</li>
+ {{#crossLink "Camera/view:property"}}View{{/crossLink}} and {{#crossLink "Camera/project:property"}}Projection{{/crossLink}} transforms.
 
  ```` javascript
  // Get the Canvas-space Boundary2D
@@ -31372,7 +32014,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  // get the Canvas-space center of the Entity:
  var center = canvasBoundary.center;
-
  ````
 
  @class Entity
@@ -31387,10 +32028,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
  @param [cfg.clips] {String|Clips} ID or instance of a {{#crossLink "Clips"}}Clips{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/clips:property"}}clips{{/crossLink}}.
- @param [cfg.colorTarget] {String|ColorTarget} ID or instance of a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/colorTarget:property"}}colorTarget{{/crossLink}}.
- @param [cfg.depthTarget] {String|DepthTarget} ID or instance of a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/depthTarget:property"}}depthTarget{{/crossLink}}.
  @param [cfg.depthBuf] {String|DepthBuf} ID or instance of a {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, depth {{#crossLink "Scene/depthBuf:property"}}depthBuf{{/crossLink}}.
  @param [cfg.visibility] {String|Visibility} ID or instance of a {{#crossLink "Visibility"}}Visibility{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
@@ -31411,10 +32048,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  default instance, {{#crossLink "Scene/morphTargets:property"}}morphTargets{{/crossLink}}.
  @param [cfg.reflect] {String|Reflect} ID or instance of a {{#crossLink "CubeMap"}}CubeMap{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/reflect:property"}}reflection{{/crossLink}}.
- @param [cfg.shader] {String|Shader} ID or instance of a {{#crossLink "Shader"}}Shader{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
- {{#crossLink "Scene/shader:property"}}shader{{/crossLink}}.
- @param [cfg.shaderParams] {String|ShaderParams} ID or instance of a {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
- {{#crossLink "Scene/shaderParams:property"}}shaderParams{{/crossLink}}.
  @param [cfg.stage] {String|Stage} ID or instance of of a {{#crossLink "Stage"}}Stage{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}.
  @param [cfg.transform] {String|Transform} ID or instance of a modelling transform to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
@@ -31581,6 +32214,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
              * Fires an {{#crossLink "Entity/colorTarget:event"}}{{/crossLink}} event on change.
              *
              * @property colorTarget
+             * @private
              * @type ColorTarget
              */
             colorTarget: {
@@ -31650,6 +32284,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
              * Fires an {{#crossLink "Entity/depthTarget:event"}}{{/crossLink}} event on change.
              *
              * @property depthTarget
+             * @private
              * @type DepthTarget
              */
             depthTarget: {
@@ -31984,6 +32619,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
              * Fires an {{#crossLink "Entity/morphTargets:event"}}{{/crossLink}} event on change.
              *
              * @property morphTargets
+             * @private
              * @type MorphTargets
              */
             morphTargets: {
@@ -32053,6 +32689,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
              * Fires an {{#crossLink "Entity/shader:event"}}{{/crossLink}} event on change.
              *
              * @property shader
+             * @private
              * @type Shader
              */
             shader: {
@@ -32087,6 +32724,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
              * Fires an {{#crossLink "Entity/shaderParams:event"}}{{/crossLink}} event on change.
              *
              * @property shaderParams
+             * @private
              * @type ShaderParams
              */
             shaderParams: {
@@ -32806,14 +33444,13 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  * @module xeogl
  * @submodule rendering
  */;/**
-
  A **ColorBuf** configures the WebGL color buffer for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>A ColorBuf configures **the way** that pixels are written to the WebGL color buffer.</li>
- <li>ColorBuf is not to be confused with {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, which stores rendered pixel
- colors for consumption by {{#crossLink "Texture"}}Textures{{/crossLink}}, used when performing *render-to-texture*.</li>
- </ul>
+ ## Overview
+
+ * A ColorBuf configures the way that pixels are written to the WebGL color buffer.
+ * ColorBuf is not to be confused with {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, which stores rendered pixel
+ colors for consumption by {{#crossLink "Texture"}}Textures{{/crossLink}}, used when performing *render-to-texture*.
 
  <img src="../../../assets/images/ColorBuf.png"></img>
 
@@ -32949,11 +33586,11 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 ;/**
  A **DepthBuf** configures the WebGL depth buffer for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>A DepthBuf configures **the way** that pixel depths are written to the WebGL depth buffer</li>
- <li>DepthBuf is not to be confused with {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}}, which stores rendered pixel
- depths for consumption by {{#crossLink "Texture"}}Textures{{/crossLink}}, used when performing *render-to-texture*.</li>
- </ul>
+ ## Overview
+
+ * A DepthBuf configures the way that pixel depths are written to the WebGL depth buffer
+ * DepthBuf is not to be confused with {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}}, which stores rendered pixel
+ depths for consumption by {{#crossLink "Texture"}}Textures{{/crossLink}}, used when performing *render-to-texture*.
 
  <img src="../../../assets/images/DepthBuf.png"></img>
 
@@ -33045,14 +33682,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
              *
              * Accepted values are:
              *
-             * <ul>
-             *     <li>"less"</li>
-             *     <li>"equal"</li>
-             *     <li>"lequal"</li>
-             *     <li>"greater"</li>
-             *     <li>"notequal"</li>
-             *     <li>"gequal"</li>
-             * </ul>
+             *
+             *     * "less"
+             *     * "equal"
+             *     * "lequal"
+             *     * "greater"
+             *     * "notequal"
+             *     * "gequal"
+             *
              *
              * Fires a {{#crossLink "DepthBuf/depthFunc:event"}}{{/crossLink}} event on change.
              *
@@ -33165,31 +33802,29 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 ;/**
  A **Layer** sets the rendering order of {{#crossLink "Entity"}}Entities{{/crossLink}} within their {{#crossLink "Stage"}}Stages{{/crossLink}}.
 
- <ul>
- <li>When xeogl renders a {{#crossLink "Scene"}}Scene{{/crossLink}}, each {{#crossLink "Stage"}}Stage{{/crossLink}} within that will render its bin
- of {{#crossLink "Entity"}}Entities{{/crossLink}} in turn, from the lowest priority {{#crossLink "Stage"}}Stage{{/crossLink}} to the highest.</li>
- <li>{{#crossLink "Stage"}}Stages{{/crossLink}} are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>
- <li>You can control the render order of the individual {{#crossLink "Entity"}}Entities{{/crossLink}} ***within*** a {{#crossLink "Stage"}}Stage{{/crossLink}}
- by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.</li>
- <li>{{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
- {{#crossLink "Entity"}}Entities{{/crossLink}} within {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
- <li>{{#crossLink "Entity"}}Entities{{/crossLink}} not explicitly attached to a Layer are implicitly
+ ## Overview
+
+ * When xeogl renders a {{#crossLink "Scene"}}Scene{{/crossLink}}, each {{#crossLink "Stage"}}Stage{{/crossLink}} within that will render its bin
+ of {{#crossLink "Entity"}}Entities{{/crossLink}} in turn, from the lowest priority {{#crossLink "Stage"}}Stage{{/crossLink}} to the highest.
+ * {{#crossLink "Stage"}}Stages{{/crossLink}} are typically used for ordering the render-to-texture steps in posteffects pipelines.
+ * You can control the render order of the individual {{#crossLink "Entity"}}Entities{{/crossLink}} ***within*** a {{#crossLink "Stage"}}Stage{{/crossLink}}
+ by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.
+ * {{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
+ {{#crossLink "Entity"}}Entities{{/crossLink}} within {{#crossLink "Stage"}}Stages{{/crossLink}}.
+ * {{#crossLink "Entity"}}Entities{{/crossLink}} not explicitly attached to a Layer are implicitly
  attached to the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
  {{#crossLink "Scene/layer:property"}}layer{{/crossLink}}. which has
- a {{#crossLink "Layer/priority:property"}}{{/crossLink}} value of zero.</li>
- <li>You can use Layers without defining any {{#crossLink "Stage"}}Stages{{/crossLink}} if you simply let your
+ a {{#crossLink "Layer/priority:property"}}{{/crossLink}} value of zero.
+ * You can use Layers without defining any {{#crossLink "Stage"}}Stages{{/crossLink}} if you simply let your
  {{#crossLink "Entity"}}Entities{{/crossLink}} fall back on the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
- {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.</li>
- </ul>
+ {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.
 
  <img src="../../../assets/images/Layer.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Z-sorted transparent entities](../../examples/#materials_techniques_transparencySort)</li>
- <li>[Clouds as billboarded and z-sorted alpha maps](../../examples/#billboards_spherical_clouds)</li>
- </ul>
+ * [Z-sorted transparent entities](../../examples/#materials_techniques_transparencySort)
+ * [Clouds as billboarded and z-sorted alpha maps](../../examples/#billboards_spherical_clouds)
 
  ## Usage
 
@@ -33212,7 +33847,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  // We could instead just implicitly default to the Scene's default Stage
  var stage = new xeogl.Stage({
     priority: 0
-});
+ });
 
  // Geometry we'll share among our Entities
  var geometry = new xeogl.BoxGeometry();
@@ -33230,7 +33865,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         diffuse: [0.2, 0.2, 1.0],
         opacity: 1.0
     })
-});
+ });
 
  // Middle box
  // Red and transparent, in Layer with render order 2, renders next
@@ -33247,7 +33882,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     scale: new xeogl.Scale({
         xyz: [6, 6, 6]
     })
-});
+ });
 
  // Outermost box
  // Green and transparent, in Layer with render order 3, renders last
@@ -33265,7 +33900,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     scale: new xeogl.Scale({
         xyz: [9, 9, 9]
     })
-});
+ });
  ````
 
  @class Layer
@@ -33365,23 +34000,20 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  A **ColorTarget** is a  <a href="http://en.wikipedia.org/wiki/Render_Target" target="other">render target</a>  that
  captures the colors pixels rendered for associated {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>ColorTargets are typically used when *rendering-to-texture*.</li>
- <li>A ColorTarget provides the pixel colors as a dynamic color image that may be consumed by {{#crossLink "Texture"}}Textures{{/crossLink}}.</li>
- <li>ColorTarget is not to be confused with {{#crossLink "ColorBuf"}}ColorBuf{{/crossLink}}, which configures ***how*** the pixel colors are written with respect to the WebGL color buffer.</li>
- <li>Use {{#crossLink "Stage"}}Stages{{/crossLink}} when you need to ensure that a ColorTarget is rendered before
- the {{#crossLink "Texture"}}Textures{{/crossLink}} that consume it.</li>
- <li>For special effects, we often use ColorTargets and {{#crossLink "Texture"}}Textures{{/crossLink}} in combination
- with {{#crossLink "DepthTarget"}}DepthTargets{{/crossLink}} and {{#crossLink "Shader"}}Shaders{{/crossLink}}.</li>
- </ul>
+ * ColorTargets are typically used when *rendering-to-texture*.
+ * A ColorTarget provides the pixel colors as a dynamic color image that may be consumed by {{#crossLink "Texture"}}Textures{{/crossLink}}.
+ * ColorTarget is not to be confused with {{#crossLink "ColorBuf"}}ColorBuf{{/crossLink}}, which configures ***how*** the pixel colors are written with respect to the WebGL color buffer.
+ * Use {{#crossLink "Stage"}}Stages{{/crossLink}} when you need to ensure that a ColorTarget is rendered before
+ the {{#crossLink "Texture"}}Textures{{/crossLink}} that consume it.
+ * For special effects, we often use ColorTargets and {{#crossLink "Texture"}}Textures{{/crossLink}} in combination
+ with {{#crossLink "DepthTarget"}}DepthTargets{{/crossLink}} and {{#crossLink "Shader"}}Shaders{{/crossLink}}.
 
  <img src="../../../assets/images/ColorTarget.png"></img>
 
  ## Usage
 
  This example contains an {{#crossLink "Entity"}}{{/crossLink}} that renders its pixel colors to a ColorTarget, which is then
- piped into a {{#crossLink "Texture"}}{{/crossLink}} that's applied to a second {{#crossLink "Entity"}}{{/crossLink}}.</li>
- </ul>
+ piped into a {{#crossLink "Texture"}}{{/crossLink}} that's applied to a second {{#crossLink "Entity"}}{{/crossLink}}.
 
  ````javascript
  var colorTarget = new xeogl.ColorTarget();
@@ -33407,7 +34039,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 });
  ````
 
- @class ColorTarget
+
  @module xeogl
  @submodule rendering
  @constructor
@@ -33567,7 +34199,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
             this.scene.canvas.off(this._webglContextRestored);
 
-            this._state.renderBuf.destroy();
+            if (this._state.renderBuf) {
+                this._state.renderBuf.destroy();
+            }
 
             this._state.destroy();
         }
@@ -33578,23 +34212,20 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  A **DepthTarget** is a  <a href="http://en.wikipedia.org/wiki/Render_Target" target="other">render target</a>  that
  captures the depths of the pixels rendered for the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>DepthTargets are typically used when *rendering-to-texture*.</li>
- <li>A DepthTarget provides the pixel depths as a dynamic color-encoded image that may be fed into {{#crossLink "Texture"}}Textures{{/crossLink}}.</li>
- <li>DepthTarget is not to be confused with {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}}, which configures ***how*** the pixel depths are written with respect to the WebGL depth buffer.</li>
- <li>Use {{#crossLink "Stage"}}Stages{{/crossLink}} when you need to ensure that a DepthTarget is rendered before
- the {{#crossLink "Texture"}}Textures{{/crossLink}} that consume it.</li>
- <li>For special effects, we often use DepthTargets and {{#crossLink "Texture"}}Textures{{/crossLink}} in combination
- with {{#crossLink "DepthTarget"}}DepthTargets{{/crossLink}} and {{#crossLink "Shader"}}Shaders{{/crossLink}}.</li>
- </ul>
+ * DepthTargets are typically used when *rendering-to-texture*.
+ * A DepthTarget provides the pixel depths as a dynamic color-encoded image that may be fed into {{#crossLink "Texture"}}Textures{{/crossLink}}.
+ * DepthTarget is not to be confused with {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}}, which configures ***how*** the pixel depths are written with respect to the WebGL depth buffer.
+ * Use {{#crossLink "Stage"}}Stages{{/crossLink}} when you need to ensure that a DepthTarget is rendered before
+ the {{#crossLink "Texture"}}Textures{{/crossLink}} that consume it.
+ * For special effects, we often use DepthTargets and {{#crossLink "Texture"}}Textures{{/crossLink}} in combination
+ with {{#crossLink "DepthTarget"}}DepthTargets{{/crossLink}} and {{#crossLink "Shader"}}Shaders{{/crossLink}}.
 
  <img src="../../../assets/images/DepthTarget.png"></img>
 
  ## Usage
 
  This example contains an {{#crossLink "Entity"}}{{/crossLink}} that renders its (RBGA-encoded) pixel depths to a DepthTarget, which is then
- piped into a {{#crossLink "Texture"}}{{/crossLink}} that's applied to a second {{#crossLink "Entity"}}{{/crossLink}}.</li>
- </ul>
+ piped into a {{#crossLink "Texture"}}{{/crossLink}} that's applied to a second {{#crossLink "Entity"}}{{/crossLink}}.
 
  ````javascript
  var depthTarget = new xeogl.DepthTarget();
@@ -33606,9 +34237,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     depthTarget: depthTarget
  });
 
-
- // Second Entity is textured with the
- // image of the first Entity
+ // Second Entity is textured with the image of the first Entity
 
  var entity2 = new xeogl.Entity({
      geometry: new xeogl.BoxGeometry()
@@ -33617,9 +34246,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             target: depthTarget
          })
      })
-});
+ });
  ````
- @class DepthTarget
+
  @module xeogl
  @submodule rendering
  @constructor
@@ -33735,7 +34364,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
             this.scene.canvas.off(this._webglContextRestored);
 
-            this._state.renderBuf.destroy();
+            if (this._state.renderBuf) {
+                this._state.renderBuf.destroy();
+            }
 
             this._state.destroy();
         }
@@ -33743,16 +34374,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
-
  A **Modes** toggles various xeogl modes and capabilities for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>Though the rendering modes are defined by various different components attached to the {{#crossLink "Entity"}}Entities{{/crossLink}},
- Modes components provide a single point through which you can toggle them on or off.</li>
- <li>A Modes may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
- rendering modes for them as a group.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Modes create within xeogl's shaders.</li>
- </ul>
+ ## Overview
+
+ * Though the rendering modes are defined by various different components attached to the {{#crossLink "Entity"}}Entities{{/crossLink}},
+ Modes components provide a single point through which you can toggle them on or off.
+ * A Modes may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
+ rendering modes for them as a group.
 
  <img src="../../../assets/images/Modes.png"></img>
 
@@ -34112,16 +34741,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 ;/**
  A **Viewport** defines a viewport within the canvas in which attached {{#crossLink "Entity"}}Entities{{/crossLink}} will render.
 
- <ul>
- <li>Make a Viewport automatically size to its {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}{{/crossLink}}
- by setting its {{#crossLink "Viewport/autoBoundary:property"}}{{/crossLink}} property ````true```` (default is ````false````).</li>
- </ul>
+ ## Overview
+
+ * Make a Viewport automatically size to its {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}{{/crossLink}}
+ by setting its {{#crossLink "Viewport/autoBoundary:property"}}{{/crossLink}} property ````true```` (default is ````false````).
 
  ## Examples
 
- <ul>
- <li>[Multiple viewports](../../examples/#canvas_multipleViewports)</li>
- </ul>
+ * [Multiple viewports](../../examples/#canvas_multipleViewports)
 
  ## Usage
 
@@ -34316,28 +34943,25 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  A **Stage** is a bin of {{#crossLink "Entity"}}Entities{{/crossLink}} that is rendered in a specified priority with respect to
  other Stages in the same {{#crossLink "Scene"}}{{/crossLink}}.
 
- <ul>
- <li>When the parent {{#crossLink "Scene"}}Scene{{/crossLink}} renders, each Stage renders its bin
- of {{#crossLink "Entity"}}Entities{{/crossLink}} in turn, from the lowest priority Stage to the highest.</li>
- <li>Stages are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>
- <li>You can control the render order of the individual {{#crossLink "Entity"}}Entities{{/crossLink}} ***within*** a Stage
- by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.</li>
- <li>{{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
- {{#crossLink "Entity"}}Entities{{/crossLink}} within Stages.</li>
- <li>{{#crossLink "Entity"}}Entities{{/crossLink}} not explicitly attached to a Stage are implicitly
+ ## Overview
+
+ * When the parent {{#crossLink "Scene"}}Scene{{/crossLink}} renders, each Stage renders its bin
+ of {{#crossLink "Entity"}}Entities{{/crossLink}} in turn, from the lowest priority Stage to the highest.
+ * Stages are typically used for ordering the render-to-texture steps in posteffects pipelines.
+ * You can control the render order of the individual {{#crossLink "Entity"}}Entities{{/crossLink}} ***within*** a Stage
+ by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.
+ * {{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
+ {{#crossLink "Entity"}}Entities{{/crossLink}} within Stages.
+ * {{#crossLink "Entity"}}Entities{{/crossLink}} not explicitly attached to a Stage are implicitly
  attached to the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
  {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has
- a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.</li>
-
- </ul>
+ a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.
 
  <img src="../../../assets/images/Stage.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Procedural texture using RTT](../../examples/#materials_texture_procedural)</li>
- </ul>
+ * [Procedural texture using RTT](../../examples/#materials_texture_procedural)
 
  ## Usage
 
@@ -34357,8 +34981,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     }),
     geometry: new xeogl.BoxGeometry(),
     colorTarget: new xeogl.ColorTarget()
-});
-
+ });
 
  // Second stage: an Entity with a Texture that sources from the ColorTarget
  var entity2 = new xeogl.Entity({
@@ -34371,7 +34994,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         })
     }),
     geometry: new xeogl.BoxGeometry()
-});
+ });
  ````
 
  @class Stage
@@ -34513,23 +35136,18 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- * Components for defining custom GLSL shaders.
- *
- * @module xeogl
- * @submodule shaders
- */;/**
  A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>Normally you would rely on xeogl to automatically generate shaders for you, however the Shader component allows you to author them manually.</li>
- <li>You can use xeogl's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other
- components on the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>Use Shaders in combination with {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} components when you need to share
+
+ * Normally you would rely on xeogl to automatically generate shaders for you, however the Shader component allows you to author them manually.
+ * You can use xeogl's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other
+ components on the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * Use Shaders in combination with {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} components when you need to share
  the same Shaders among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} while setting the Shaders' uniforms
- differently for each {{#crossLink "Entity"}}Entity{{/crossLink}}.</li>
- <li>Use {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}}
- and {{#crossLink "Texture"}}Texture{{/crossLink}} components to connect the output of one Shader as input into another Shader.</li>
- </ul>
+ differently for each {{#crossLink "Entity"}}Entity{{/crossLink}}.
+ * Use {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}}
+ and {{#crossLink "Texture"}}Texture{{/crossLink}} components to connect the output of one Shader as input into another Shader.
+
 
  <img src="../../../assets/images/Shader.png"></img>
 
@@ -34681,9 +35299,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  |---|---|---|
 
 
- @class Shader
+
  @module xeogl
- @submodule shaders
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Shader in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
@@ -34858,10 +35475,10 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 ;/**
  A **ShaderParams** sets uniform values for {{#crossLink "Shader"}}Shaders{{/crossLink}} on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>Use ShaderParams components when you need to share the same {{#crossLink "Shader"}}Shaders{{/crossLink}} among multiple {{#crossLink "Entity"}}Entities{{/crossLink}},
- while setting the {{#crossLink "Shader"}}Shaders{{/crossLink}}' uniforms differently for each {{#crossLink "Entity"}}Entity{{/crossLink}}.</li>
- </ul>
+
+ * Use ShaderParams components when you need to share the same {{#crossLink "Shader"}}Shaders{{/crossLink}} among multiple {{#crossLink "Entity"}}Entities{{/crossLink}},
+ while setting the {{#crossLink "Shader"}}Shaders{{/crossLink}}' uniforms differently for each {{#crossLink "Entity"}}Entity{{/crossLink}}.
+
 
  <img src="../../../assets/images/ShaderParams.png"></img>
 
@@ -34979,9 +35596,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     });
 });
  ````
- @class ShaderParams
+
  @module xeogl
- @submodule shaders
+
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this ShaderParams in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
@@ -35078,31 +35695,26 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  */;/**
  A **Boundary2D** is a Canvas-space 2D boundary.
 
- <a href="../../examples/#boundaries_flyToBoundary"><img src="../../assets/images/screenshots/Boundary3D.png"></img></a>
+ <a href="../../examples/#boundaries_flyToBoundary"><img src="http://i.giphy.com/3oriO8fJ8f70AfXdUA.gif"></img></a>
 
  ## Overview
 
  A Boundary2D provides its spatial info in these properties:
 
- <ul>
- <li>{{#crossLink "Boundary2D/aabb:property"}}{{/crossLink}} - axis-aligned bounding box (AABB)</li>
- <li>{{#crossLink "Boundary2D/center:property"}}{{/crossLink}} - center coordinate </li>
- </ul>
+ * {{#crossLink "Boundary2D/aabb:property"}}{{/crossLink}} - an axis-aligned box (AABB) as a four-element Float32Array
+ containing the min/max extents of the axis-aligned volume, ie. ````[xmin,ymin,xmax,ymax]````, and
+ * {{#crossLink "Boundary2D/center:property"}}{{/crossLink}} - the center point as a two-element Float32Array containing elements ````[x,y]````.
 
  The following components have Boundary2Ds:
 
- <ul>
- <li>An {{#crossLink "Entity"}}{{/crossLink}} provides its Canvas-space boundary via
- its {{#crossLink "Entity/canvasBoundary:property"}}{{/crossLink}} property</li>
- </ul>
+ * An {{#crossLink "Entity"}}{{/crossLink}} provides its Canvas-space boundary via
+ its {{#crossLink "Entity/canvasBoundary:property"}}{{/crossLink}} property
 
  <img src="../../../assets/images/Boundary2D.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Visualizing an Entity's Canvas-space boundary](../../examples/#boundaries_Entity_canvasBoundary)</li>
- </ul>
+ * [Visualizing an Entity's Canvas-space boundary](../../examples/#boundaries_Entity_canvasBoundary_aabb)
 
  ## Usage
 
@@ -35280,22 +35892,20 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     });
 })();
 ;/**
- A **Boundary3D** provides the 3D extents of its parent component in a given coordinate system.
+ A **Boundary3D** provides the 3D extents of its parent component in either the Local, World or View coordinate systems.
 
- <a href="../../examples/#boundaries_flyToBoundary"><img src="../../assets/images/screenshots/Boundary3D.png"></img></a>
+ <a href="../../examples/#animation_CameraFollowAnimation"><img src="http://i.giphy.com/l0HlHcuzAjhMQ8YSY.gif"></img></a>
 
  ## Overview
 
  A Boundary3D provides its spatial info in these properties:
 
- <ul>
- <li>{{#crossLink "Boundary3D/obb:property"}}{{/crossLink}} - an oriented box (OBB) in a 32-element Float32Array
- containing homogeneous coordinates for the eight corner vertices, ie. each having elements [x,y,z,w].</li>
- <li>{{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} - an axis-aligned box (AABB) in a six-element Float32Array
- containing the min/max extents of the axis-aligned volume, ie. ````[xmin,ymin,zmin,xmax,ymax,zmax]````,</li>
- <li>{{#crossLink "Boundary3D/center:property"}}{{/crossLink}} - the center point as a Float32Array containing elements ````[x,y,z]```` and</li>
- <li>{{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} - a bounding sphere, given as a Float32Array containingg elements````[x,y,z,radius]````.</li>
- </ul>
+ * {{#crossLink "Boundary3D/obb:property"}}{{/crossLink}} - an oriented box (OBB) as a 32-element Float32Array
+ containing homogeneous coordinates for the eight corner vertices, ie. each having elements [x,y,z,w].
+ * {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} - an axis-aligned box (AABB) in a six-element Float32Array
+ containing the min/max extents of the axis-aligned volume, ie. ````[xmin,ymin,zmin,xmax,ymax,zmax]````,
+ * {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} - the center point as a three-element Float32Array containing elements ````[x,y,z]```` and
+ * {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} - a bounding sphere as a four-element Float32Array containing elements````[x,y,z,radius]````.
 
  As shown in the diagram below, the following xeogl components have Boundary3Ds:
 
@@ -35314,18 +35924,18 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  their transformation by the {{#crossLink "Entity/transform:property"}}Entity's Modelling transform{{/crossLink}}, {{#crossLink "Camera/view:property"}}Viewing transform{{/crossLink}}
  and {{#crossLink "Camera/project:property"}}Projection transform{{/crossLink}}.
 
- <br><br>
+ <br>
  <img src="../../../assets/images/Boundary3D.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Entity World-space boundary](../../examples/#boundaries_Entity_worldBoundary)</li>
- <li>[Entity View-space boundary](../../examples/#boundaries_Entity_viewBoundary)</li>
- <li>[Entity Canvas-space boundary](../../examples/#boundaries_Entity_canvasBoundary)</li>
- <li>[Flying camera to Entity World-space boundaries](../../examples/#boundaries_flyToBoundary)</li>
- <li>[Model World-space boundary](../../examples/#boundaries_Model_worldBoundary)</li>
- </ul>
+ * [Entity World-space boundary](../../examples/#boundaries_Entity_worldBoundary_aabb)
+ * [Entity View-space boundary](../../examples/#boundaries_Entity_viewBoundary_aabb)
+ * [Entity Canvas-space boundary](../../examples/#boundaries_Entity_canvasBoundary_aabb)
+ * [Flying camera to Entity World-space boundaries](../../examples/#boundaries_flyToBoundary)
+ * [Model World-space boundary](../../examples/#boundaries_Model_worldBoundary_aabb)
+ * [Following an Entity with a Camera](../../examples/#animation_CameraFollowAnimation)
+ * [Following an Entity with a Camera, keeping Entity fitted to view volume](../../examples/#animation_CameraFollowAnimation_fitToView)
 
  ## Usage
 
@@ -35651,31 +36261,27 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  */;/**
  A **Transform** is a modelling, viewing or projection transformation.
 
- <ul>
- <li>Sub-classes of Transform include: {{#crossLink "Translate"}}{{/crossLink}},
+ ## Overview
+
+ * Sub-classes of Transform include: {{#crossLink "Translate"}}{{/crossLink}},
  {{#crossLink "Scale"}}{{/crossLink}}, {{#crossLink "Rotate"}}{{/crossLink}}, {{#crossLink "Quaternion"}}{{/crossLink}},
  {{#crossLink "Lookat"}}{{/crossLink}}, {{#crossLink "Perspective"}}{{/crossLink}}, {{#crossLink "Frustum"}}{{/crossLink}}
- and {{#crossLink "Ortho"}}{{/crossLink}}.</li>
- <li>Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.</li>
+ and {{#crossLink "Ortho"}}{{/crossLink}}.
+ * Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.
 
- <li>When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
+ * When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
  within a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, it will be transformed by each {{#crossLink "Transform"}}{{/crossLink}}
- on the path up to the root, in that order.</li>
- <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeogl's shaders.</li>
- </ul>
+ on the path up to the root, in that order.
 
  <img src="../../../assets/images/Transform.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Modelling transform hierarchy](../../examples/#transforms_model_hierarchy)</li>
- <li>[Attaching transforms to Models, via constructor](../../examples/#importing_gltf_techniques_configTransform)</li>
- <li>[Attaching transforms to Models, via property](../../examples/#importing_gltf_techniques_attachTransform)</li>
- </ul>
+ * [Modelling transform hierarchy](../../examples/#transforms_model_hierarchy)
+ * [Attaching transforms to Models, via constructor](../../examples/#importing_gltf_techniques_configTransform)
+ * [Attaching transforms to Models, via property](../../examples/#importing_gltf_techniques_attachTransform)
 
  ## Usage
-
 
  In this example we'll create the table shown below, which consists of five {{#crossLink "Entity"}}Entities{{/crossLink}}
  that share a {{#crossLink "BoxGeometry"}}{{/crossLink}} and each connect to a different leaf within a hierarchy of
@@ -36108,24 +36714,21 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- A **Rotate** rotates associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}} about an axis vector.
+ A **Rotate** is a {{#crossLink "Transform"}}{{/crossLink}} that rotates associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}} about an axis vector.
 
- <ul>
- <li>Rotate is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}</li>
- <li>Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.</li>
- <li>When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
+ ## Overview
+
+ * Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.
+ * When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
  within a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, it will be transformed by each {{#crossLink "Transform"}}{{/crossLink}}
- on the path up to the root, in that order.</li>
- <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeogl's shaders.</li>
- </ul>
+ on the path up to the root, in that order.
+
 
  <img src="../../../assets/images/Rotate.png"></img>
 
  ## Examples
 
- <ul>
- <li>Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)</li>
- </ul>
+ * Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)
 
  ## Usage
 
@@ -36301,22 +36904,18 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- A **Quaternion** applies a rotation transformation to associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
+ A **Quaternion** is a {{#crossLink "Transform"}}{{/crossLink}} that rotates associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
 
- <ul>
- <li>Quaternion is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
- <li>Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.</li>
- <li>When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a
+ ## Overview
+
+ * Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.
+ * When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a
  leaf {{#crossLink "Transform"}}{{/crossLink}} within a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, it will be
- transformed by each {{#crossLink "Transform"}}{{/crossLink}} on the path up to the root, in that order.</li>
- <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeogl's shaders.</li>
- </ul>
+ transformed by each {{#crossLink "Transform"}}{{/crossLink}} on the path up to the root, in that order.
 
  <img src="../../../assets/images/Quaternion.png"></img>
 
- <ul>
- <li>Viewing transform hierarchy](../../examples/#transforms_view_hierarchy)</li>
- </ul>
+ * Viewing transform hierarchy](../../examples/#transforms_view_hierarchy)
 
  ## Usage
 
@@ -36327,34 +36926,34 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  ````javascript
  var quaternion = new xeogl.Quaternion({
     xyzw: [0, 0, 0, 1], // Unit quaternion
-});
+ });
 
  var translate1 = new xeogl.Translate({
    parent: quaternion,
    xyz: [-5, 0, 0] // Translate along -X axis
-});
+ });
 
  var translate2 = new xeogl.Translate({
    parent: quaternion,
    xyz: [5, 0, 0] // Translate along +X axis
-});
+ });
 
  var scale = new xeogl.Scale({
    parent: translate2,
    xyz: [1, 2, 1] // Scale x2 on Y axis
-});
+ });
 
  var geometry = new xeogl.BoxGeometry();
 
  var entity1 = new xeogl.Entity(scene, {
    transform: translate1,
    geometry: geometry
-});
+ });
 
  var entity2 = new xeogl.Entity({
    transform: scale,
    geometry: geometry
-});
+ });
  ````
 
  Since everything in xeogl is dynamically editable, we can restructure the transform hierarchy at any time.
@@ -36365,7 +36964,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  var scale2 = new xeogl.Scale({
    parent: translate1,
    xyz: [1, 1, 2] // Scale x2 on Z axis
-});
+ });
 
  Entity2.transform = scale2;
  ````
@@ -36374,8 +36973,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  ````javascript
  // Rotate 0.2 degrees about Y-axis on each frame
- scene.on("tick",
- function(e) {
+ scene.on("tick", function(e) {
         quaternion.rotate([0, 1, 0, 0.2]);
     });
  ````
@@ -36482,25 +37080,21 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         }
     });
 })();;/**
- A **Scale** applies a scaling transformation to associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
+ A **Scale** is a {{#crossLink "Transform"}}{{/crossLink}} that scales associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
 
- <ul>
- <li>Scale is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}</li>
- <li>Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.</li>
- <li>When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
+ ## Overview
+
+ * Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.
+ * When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
  within a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, it will be transformed by each {{#crossLink "Transform"}}{{/crossLink}}
- on the path up to the root, in that order.</li>
- <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeogl's shaders.</li>
- </ul>
+ on the path up to the root, in that order.
 
  <img src="../../../assets/images/Scale.png"></img>
 
  ## Examples
 
- <ul>
- <li>Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)</li>
- <li>Projection transform hierarchy](../../examples/#transforms_project_hierarchy)</li>
- </ul>
+ * Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)
+ * Projection transform hierarchy](../../examples/#transforms_project_hierarchy)
 
  ## Usage
 
@@ -36563,6 +37157,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     rotate.angle += 0.2;
  });
  ````
+
  @class Scale
  @module xeogl
  @submodule transforms
@@ -36640,24 +37235,20 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- A **Translate** translates associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
+ A **Translate** is a {{#crossLink "Transform"}}{{/crossLink}} that translates associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
 
- <ul>
- <li>Translate is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
- <li>Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.</li>
- <li>When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
+ ## Overview
+
+ * Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.
+ * When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
  within a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, it will be transformed by each {{#crossLink "Transform"}}{{/crossLink}}
- on the path up to the root, in that order.</li>
- <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeogl's shaders.</li>
- </ul>
+ on the path up to the root, in that order.
 
  <img src="../../../assets/images/Translate.png"></img>
 
  ## Examples
 
- <ul>
- <li>Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)</li>
- </ul>
+ * Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)
 
  ## Usage
 
@@ -36799,70 +37390,69 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- A **Billboard** causes associated {{#crossLink "Entity"}}Entities{{/crossLink}} to be always oriented towards the Camera.
+ A **Billboard** is a modelling {{#crossLink "Transform"}}{{/crossLink}} that causes associated {{#crossLink "Entity"}}Entities{{/crossLink}} to be always oriented towards the Camera.
 
- <ul>
- <li>**Spherical** billboards are free to rotate their {{#crossLink "Entity"}}Entities{{/crossLink}} in any direction and always face the {{#crossLink "Camera"}}{{/crossLink}} perfectly.</li>
- <li>**Cylindrical** billboards rotate their {{#crossLink "Entity"}}Entities{{/crossLink}} towards the {{#crossLink "Camera"}}{{/crossLink}}, but only around the Y-axis.</li>
- <li>A Billboard will cause {{#crossLink "Scale"}}{{/crossLink}} transformations to have no effect on its {{#crossLink "Entity"}}Entities{{/crossLink}}</li>
- </ul>
+ <a href="../../examples/#billboards_spherical"><img src="http://i.giphy.com/l3vR13LcnTuQGMInu.gif"></img></a>
+
+ ## Overview
+
+ * **Spherical** billboards are free to rotate their {{#crossLink "Entity"}}Entities{{/crossLink}} in any direction and always face the {{#crossLink "Camera"}}{{/crossLink}} perfectly.
+ * **Cylindrical** billboards rotate their {{#crossLink "Entity"}}Entities{{/crossLink}} towards the {{#crossLink "Camera"}}{{/crossLink}}, but only about the Y-axis.
+ * A Billboard will cause {{#crossLink "Scale"}}{{/crossLink}} transformations to have no effect on its {{#crossLink "Entity"}}Entities{{/crossLink}}
 
  <img src="../../../assets/images/Billboard.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Spherical billboards](../../examples/#billboards_spherical)</li>
- <li>[Cylindrical billboards](../../examples/#billboards_cylindrical)</li>
- <li>[Clouds using billboards](../../examples/#billboards_spherical_clouds)</li>
- <li>[Billboards with video textures](../../examples/#billboards_spherical_video)</li>
- </ul>
+ * [Spherical billboards](../../examples/#billboards_spherical)
+ * [Cylindrical billboards](../../examples/#billboards_cylindrical)
+ * [Clouds using billboards](../../examples/#billboards_spherical_clouds)
+ * [Spherical billboards with video textures](../../examples/#billboards_spherical_video)
 
  ## Usage
 
- Let's create 1000 {{#crossLink "Entity"}}Entities{{/crossLink}} that always face towards the viewpoint as we orbit the {{#crossLink "Camera"}}{{/crossLink}} about the X and Y axis:
+ Let's create 1000 randomly-positioned {{#crossLink "Entity"}}Entities{{/crossLink}} that always face towards the
+ viewpoint as we orbit the {{#crossLink "Camera"}}{{/crossLink}} about the X and Y axis:
 
  ```` javascript
- // Create 1000 Entities in default Scene with shared Geometry,
- // PhongMaterial and Billboard
+ // Create 1000 Entities in default Scene with shared Geometry, PhongMaterial and Billboard
 
  var geometry = new xeogl.Geometry({
-        primitive: "triangles",
-        positions: [3, 3, 0, -3, 3, 0, -3, -3, 0, 3, -3, 0],
-        normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],
-        uv: [1, 1, 0, 1, 0, 0, 1, 0],
-        indices: [2, 1, 0, 3, 2, 0] // Ensure these will be front-faces
-    });
+     primitive: "triangles",
+     positions: [3, 3, 0, -3, 3, 0, -3, -3, 0, 3, -3, 0],
+     normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],
+     uv: [1, 1, 0, 1, 0, 0, 1, 0],
+     indices: [2, 1, 0, 3, 2, 0] // Ensure these will be front-faces
+ });
 
  var material = new xeogl.PhongMaterial({
-        emissiveMap: new xeogl.Texture({
-            src: "textures/diffuse/teapot.jpg"
-        })
-    });
+     emissiveMap: new xeogl.Texture({
+         src: "textures/diffuse/teapot.jpg"
+     })
+ });
 
  var billboard = new xeogl.Billboard({
-        spherical: true
-    });
+     spherical: true
+ });
 
  for (var i = 0; i < 1000; i++) {
-        new xeogl.Entity({
-            geometry: geometry,
-            material: material,
-            billboard: billboard,
-            transform: new xeogl.Translate({
-                xyz: [Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50]
-            })
-        });
-  }
+     new xeogl.Entity({
+         geometry: geometry,
+         material: material,
+         billboard: billboard,
+         transform: new xeogl.Translate({
+             xyz: [Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50]
+         })
+     });
+ }
 
- // Move eye back to see everything, then orbit Camera
+ // Move eye back to see everything, then orbit the Camera
 
  var scene = xeogl.scene;
 
  scene.camera.view.zoom(120);
 
- scene.on("tick",
-     function () {
+ scene.on("tick", function () {
 
           var view = scene.camera.view;
 
@@ -37000,13 +37590,13 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  A **Stationary** disables the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}} translations for
  associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
 
+ ## Overview
+
  <img src="../../../assets/images/Stationary.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Custom Skybox using a Stationary component](../../examples/#skyboxes_customSkybox)</li>
- </ul>
+ * [Custom Skybox using a Stationary component](../../examples/#skyboxes_customSkybox)
 
  ## Usage
 
@@ -37119,30 +37709,26 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- A **Frustum** defines a perspective projection as a frustum-shaped view volume.
+ A **Frustum** is a {{#crossLink "Transform"}}{{/crossLink}} that defines a perspective projection as a frustum-shaped view volume.
 
- <ul>
- <li>Frustum is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
- <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>A Frustum lets us explicitly set the positions of the left, right, top, bottom, near and far planes, which is useful
- for asymmetrical view volumes, such as those used for stereo viewing.</li>
- <li>An Frustum's {{#crossLink "Frustum/near:property"}}{{/crossLink}} and {{#crossLink "Frustum/far:property"}}{{/crossLink}} properties
- specify the distances to the WebGL clipping planes.</li>
- <li>Use {{#crossLink "Ortho"}}{{/crossLink}} if you just want to specify the X,Y frustum extents with a single scale factor,
- ie. without individually specifying the distance to each frustum plane.</li>
- <li>Use {{#crossLink "Perspective"}}{{/crossLink}} if you need perspective projection.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Ortho components create within xeogl's shaders.</li>
- </ul>
+ ## Overview
+
+ * {{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
+ {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * A Frustum lets us explicitly set the positions of the left, right, top, bottom, near and far planes, which is useful
+ for asymmetrical view volumes, such as those used for stereo viewing.
+ * An Frustum's {{#crossLink "Frustum/near:property"}}{{/crossLink}} and {{#crossLink "Frustum/far:property"}}{{/crossLink}} properties
+ specify the distances to the WebGL clipping planes.
+ * Use {{#crossLink "Ortho"}}{{/crossLink}} if you just want to specify the X,Y frustum extents with a single scale factor,
+ ie. without individually specifying the distance to each frustum plane.
+ * Use {{#crossLink "Perspective"}}{{/crossLink}} if you need perspective projection.
 
  <img src="../../../assets/images/Frustum.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Camera with frustum projection](../../examples/#transforms_project_frustum)</li>
- <li>[Stereo viewing with frustum projection](../../examples/#effects_stereo)</li>
- </ul>
+ * [Camera with frustum projection](../../examples/#transforms_project_frustum)
+ * [Stereo viewing with frustum projection](../../examples/#effects_stereo)
 
  ## Usage
 
@@ -37434,24 +38020,20 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
     });
 })();
 ;/**
- A **Lookat** defines a viewing transform as an {{#crossLink "Lookat/eye:property"}}eye{{/crossLink}} position, a
+ A **Lookat** is a {{#crossLink "Transform"}}{{/crossLink}} that defines a viewing transform as an {{#crossLink "Lookat/eye:property"}}eye{{/crossLink}} position, a
  {{#crossLink "Lookat/look:property"}}look{{/crossLink}} position and an {{#crossLink "Lookat/up:property"}}up{{/crossLink}}
  vector.
 
- <ul>
- <li>Lookat is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
- <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with projection transforms such as
- {{#crossLink "Perspective"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Lookat components create within xeogl's shaders.</li>
- </ul>
+ ## Overview
+
+ * {{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with projection transforms such as
+ {{#crossLink "Perspective"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  <img src="../../../assets/images/Lookat.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Camera with Lookat and Perspective](../../examples/#transforms_project_perspective)</li>
- </ul>
+ * [Camera with Lookat and Perspective](../../examples/#transforms_project_perspective)
 
  ## Usage
 
@@ -37490,7 +38072,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  @param [cfg.eye=[0,0,10]] {Array of Number} Eye position.
  @param [cfg.look=[0,0,0]] {Array of Number} The position of the point-of-interest we're looking at.
  @param [cfg.up=[0,1,0]] {Array of Number} The "up" vector.
- @param [cfg.gimbalLockY=false] {Boolean} Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.
+ @param [cfg.gimbalLockY=false] {Boolean} Effectively whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.
  @extends Transform
  @author xeolabs / http://xeolabs.com/
  */
@@ -37498,12 +38080,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
     "use strict";
 
-    var tempVec3 = xeogl.math.vec3();
-    var tempVec3b = xeogl.math.vec3();
-    var tempVec3c = xeogl.math.vec3();
-    var tempVec3d = xeogl.math.vec3();
-    var tempVec3e = xeogl.math.vec3();
-    var tempVec3f = xeogl.math.vec3();
+    var math = xeogl.math;
+
+    var tempVec3 = math.vec3();
+    var tempVec3b = math.vec3();
+    var tempVec3c = math.vec3();
+    var tempVec3d = math.vec3();
+    var tempVec3e = math.vec3();
+    var tempVec3f = math.vec3();
 
     xeogl.Lookat = xeogl.Transform.extend({
 
@@ -37513,9 +38097,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
             this._super(cfg);
 
-            this._eye = xeogl.math.vec3([0, 0, 10.0]);
-            this._look = xeogl.math.vec3([0, 0, 0]);
-            this._up = xeogl.math.vec3([0, 1, 0]);
+            this._eye = math.vec3([0, 0, 10.0]);
+            this._look = math.vec3([0, 0, 0]);
+            this._up = math.vec3([0, 1, 0]);
 
             this.eye = cfg.eye;
             this.look = cfg.look;
@@ -37523,9 +38107,18 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             this.gimbalLockY = cfg.gimbalLockY;
         },
 
-        _update: function () {
-            this.matrix = xeogl.math.lookAtMat4v(this._eye, this._look, this._up, this._matrix);
-        },
+        _update: (function () {
+
+            var lookatMat = math.mat4();
+
+            return function () {
+
+                math.lookAtMat4v(this._eye, this._look, this._up, lookatMat);
+
+                this.matrix = lookatMat;
+            };
+        })(),
+
 
         /**
          * Rotate 'eye' about 'look', around the 'up' vector
@@ -37535,18 +38128,18 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         rotateEyeY: function (angle) {
 
             // Get 'look' -> 'eye' vector
-            var eye2 = xeogl.math.subVec3(this._eye, this._look, tempVec3);
+            var eye2 = math.subVec3(this._eye, this._look, tempVec3);
 
-            var mat = xeogl.math.rotationMat4v(angle * 0.0174532925, this._gimbalLockY ? xeogl.math.vec3([0, 1, 0]) : this._up);
-            eye2 = xeogl.math.transformPoint3(mat, eye2, tempVec3b);
+            var mat = math.rotationMat4v(angle * 0.0174532925, this._gimbalLockY ? math.vec3([0, 1, 0]) : this._up);
+            eye2 = math.transformPoint3(mat, eye2, tempVec3b);
 
             // Set eye position as 'look' plus 'eye' vector
-            this.eye = xeogl.math.addVec3(eye2, this._look, tempVec3c);
+            this.eye = math.addVec3(eye2, this._look, tempVec3c);
 
             if (this._gimbalLockY) {
 
                 // Rotate 'up' vector about orthogonal vector
-                this.up = xeogl.math.transformPoint3(mat, this._up, tempVec3d);
+                this.up = math.transformPoint3(mat, this._up, tempVec3d);
             }
         },
 
@@ -37558,20 +38151,20 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         rotateEyeX: function (angle) {
 
             // Get 'look' -> 'eye' vector
-            var eye2 = xeogl.math.subVec3(this._eye, this._look, tempVec3);
+            var eye2 = math.subVec3(this._eye, this._look, tempVec3);
 
             // Get orthogonal vector from 'eye' and 'up'
-            var left = xeogl.math.cross3Vec3(xeogl.math.normalizeVec3(eye2, tempVec3b), xeogl.math.normalizeVec3(this._up, tempVec3c));
+            var left = math.cross3Vec3(math.normalizeVec3(eye2, tempVec3b), math.normalizeVec3(this._up, tempVec3c));
 
             // Rotate 'eye' vector about orthogonal vector
-            var mat = xeogl.math.rotationMat4v(angle * 0.0174532925, left);
-            eye2 = xeogl.math.transformPoint3(mat, eye2, tempVec3d);
+            var mat = math.rotationMat4v(angle * 0.0174532925, left);
+            eye2 = math.transformPoint3(mat, eye2, tempVec3d);
 
             // Set eye position as 'look' plus 'eye' vector
-            this.eye = xeogl.math.addVec3(eye2, this._look, tempVec3e);
+            this.eye = math.addVec3(eye2, this._look, tempVec3e);
 
             // Rotate 'up' vector about orthogonal vector
-            this.up = xeogl.math.transformPoint3(mat, this._up, tempVec3f);
+            this.up = math.transformPoint3(mat, this._up, tempVec3f);
         },
 
         /**
@@ -37584,14 +38177,14 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         rotateLookY: function (angle) {
 
             // Get 'look' -> 'eye' vector
-            var look2 = xeogl.math.subVec3(this._look, this._eye, tempVec3);
+            var look2 = math.subVec3(this._look, this._eye, tempVec3);
 
             // Rotate 'look' vector about 'up' vector
-            var mat = xeogl.math.rotationMat4v(angle * 0.0174532925, this._up);
-            look2 = xeogl.math.transformPoint3(mat, look2, tempVec3b);
+            var mat = math.rotationMat4v(angle * 0.0174532925, this._up);
+            look2 = math.transformPoint3(mat, look2, tempVec3b);
 
             // Set look position as 'look' plus 'eye' vector
-            this.look = xeogl.math.addVec3(look2, this._eye, tempVec3c);
+            this.look = math.addVec3(look2, this._eye, tempVec3c);
         },
 
         /**
@@ -37602,20 +38195,20 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         rotateLookX: function (angle) {
 
             // Get 'look' -> 'eye' vector
-            var look2 = xeogl.math.subVec3(this._look, this._eye, tempVec3);
+            var look2 = math.subVec3(this._look, this._eye, tempVec3);
 
             // Get orthogonal vector from 'eye' and 'up'
-            var left = xeogl.math.cross3Vec3(xeogl.math.normalizeVec3(look2, tempVec3b), xeogl.math.normalizeVec3(this._up, tempVec3c));
+            var left = math.cross3Vec3(math.normalizeVec3(look2, tempVec3b), math.normalizeVec3(this._up, tempVec3c));
 
             // Rotate 'look' vector about orthogonal vector
-            var mat = xeogl.math.rotationMat4v(angle * 0.0174532925, left);
-            look2 = xeogl.math.transformPoint3(mat, look2, tempVec3d);
+            var mat = math.rotationMat4v(angle * 0.0174532925, left);
+            look2 = math.transformPoint3(mat, look2, tempVec3d);
 
             // Set eye position as 'look' plus 'eye' vector
-            this.look = xeogl.math.addVec3(look2, this._eye, tempVec3e);
+            this.look = math.addVec3(look2, this._eye, tempVec3e);
 
             // Rotate 'up' vector about orthogonal vector
-            this.up = xeogl.math.transformPoint3(mat, this._up, tempVecf);
+            this.up = math.transformPoint3(mat, this._up, tempVecf);
         },
 
         /**
@@ -37625,7 +38218,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
         pan: function (pan) {
 
             // Get 'look' -> 'eye' vector
-            var eye2 = xeogl.math.subVec3(this._eye, this._look, tempVec3);
+            var eye2 = math.subVec3(this._eye, this._look, tempVec3);
 
             // Building this pan vector
             var vec = [0, 0, 0];
@@ -37635,9 +38228,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                 // Pan along orthogonal vector to 'look' and 'up'
 
-                var left = xeogl.math.cross3Vec3(xeogl.math.normalizeVec3(eye2, []), xeogl.math.normalizeVec3(this._up, tempVec3b));
+                var left = math.cross3Vec3(math.normalizeVec3(eye2, []), math.normalizeVec3(this._up, tempVec3b));
 
-                v = xeogl.math.mulVec3Scalar(left, pan[0]);
+                v = math.mulVec3Scalar(left, pan[0]);
 
                 vec[0] += v[0];
                 vec[1] += v[1];
@@ -37648,7 +38241,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                 // Pan along 'up' vector
 
-                v = xeogl.math.mulVec3Scalar(xeogl.math.normalizeVec3(this._up, tempVec3c), pan[1]);
+                v = math.mulVec3Scalar(math.normalizeVec3(this._up, tempVec3c), pan[1]);
 
                 vec[0] += v[0];
                 vec[1] += v[1];
@@ -37659,15 +38252,15 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
                 // Pan along 'eye'- -> 'look' vector
 
-                v = xeogl.math.mulVec3Scalar(xeogl.math.normalizeVec3(eye2, tempVec3d), pan[2]);
+                v = math.mulVec3Scalar(math.normalizeVec3(eye2, tempVec3d), pan[2]);
 
                 vec[0] += v[0];
                 vec[1] += v[1];
                 vec[2] += v[2];
             }
 
-            this.eye = xeogl.math.addVec3(this._eye, vec, tempVec3e);
-            this.look = xeogl.math.addVec3(this._look, vec, tempVec3f);
+            this.eye = math.addVec3(this._eye, vec, tempVec3e);
+            this.look = math.addVec3(this._look, vec, tempVec3f);
         },
 
         /**
@@ -37676,19 +38269,19 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
          */
         zoom: function (delta) {
 
-            var vec = xeogl.math.subVec3(this._eye, this._look, tempVec3); // Get vector from eye to look
-            var lenLook = Math.abs(xeogl.math.lenVec3(vec, tempVec3b));    // Get len of that vector
+            var vec = math.subVec3(this._eye, this._look, tempVec3); // Get vector from eye to look
+            var lenLook = Math.abs(math.lenVec3(vec, tempVec3b));    // Get len of that vector
             var newLenLook = Math.abs(lenLook + delta);         // Get new len after zoom
 
-            var dir = xeogl.math.normalizeVec3(vec, tempVec3c);  // Get normalised vector
+            var dir = math.normalizeVec3(vec, tempVec3c);  // Get normalised vector
 
-            this.eye = xeogl.math.addVec3(this._look, xeogl.math.mulVec3Scalar(dir, newLenLook), tempVec3d);
+            this.eye = math.addVec3(this._look, math.mulVec3Scalar(dir, newLenLook), tempVec3d);
         },
 
         _props: {
 
             /**
-             * Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.
+             * Effectively whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.
              *
              * Fires a {{#crossLink "Lookat/gimbalLockY:event"}}{{/crossLink}} event on change.
              *
@@ -37812,9 +38405,10 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
         _getJSON: function () {
             var json = {
-                eye: this._eye,
-                look: this._look,
-                up: this._up
+                eye: this._eye.slice(),
+                look: this._look.slice(),
+                up: this._up.slice(),
+                gimbalLockY: this._gimbalLockY
             };
             if (this._parent) {
                 json.parent = this._parent.id;
@@ -37825,30 +38419,26 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- An **Ortho** component defines an orthographic projection transform.
+ An **Ortho** is a {{#crossLink "Transform"}}{{/crossLink}} that defines an orthographic projection transform.
 
- <ul>
- <li>Ortho is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
- <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>An Ortho works like Blender's orthographic projection, where the positions of the left, right, top and bottom planes are
+ ## Overview
+
+ * {{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
+ {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * An Ortho works like Blender's orthographic projection, where the positions of the left, right, top and bottom planes are
  implicitly specified with a single {{#crossLink "Ortho/scale:property"}}{{/crossLink}} property, which causes the frustum to be symmetrical on X and Y axis, large enough to
- contain the number of units given by {{#crossLink "Ortho/scale:property"}}{{/crossLink}}.</li>
- <li>An Ortho's {{#crossLink "Ortho/near:property"}}{{/crossLink}} and {{#crossLink "Ortho/far:property"}}{{/crossLink}} properties
- specify the distances to the WebGL clipping planes.</li>
- <li>Use {{#crossLink "Frustum"}}{{/crossLink}} if you need to individually specify the position of each of the frustum
- planes, eg. for an asymmetrical view volume, such as those used for stereo viewing.</li>
- <li>Use {{#crossLink "Perspective"}}{{/crossLink}} if you need perspective projection.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Ortho components create within xeogl's shaders.</li>
- </ul>
+ contain the number of units given by {{#crossLink "Ortho/scale:property"}}{{/crossLink}}.
+ * An Ortho's {{#crossLink "Ortho/near:property"}}{{/crossLink}} and {{#crossLink "Ortho/far:property"}}{{/crossLink}} properties
+ specify the distances to the WebGL clipping planes.
+ * Use {{#crossLink "Frustum"}}{{/crossLink}} if you need to individually specify the position of each of the frustum
+ planes, eg. for an asymmetrical view volume, such as those used for stereo viewing.
+ * Use {{#crossLink "Perspective"}}{{/crossLink}} if you need perspective projection.
 
  <img src="../../../assets/images/Ortho.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Camera with orthographic projection](../../examples/#transforms_project_ortho)</li>
- </ul>
+ * [Camera with orthographic projection](../../examples/#transforms_project_ortho)
 
  ## Usage
 
@@ -38056,23 +38646,19 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
- A **Perspective** component defines a perspective projection transform.
+ A **Perspective** is a {{#crossLink "Transform"}}{{/crossLink}} that defines a perspective projection transform.
 
- <ul>
- <li>Perspective is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
- <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>Alternatively, use {{#crossLink "Ortho"}}{{/crossLink}} if you need a orthographic projection.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Perspective components create within xeogl's shaders.</li>
- </ul>
+ ## Overview
+
+ * {{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
+ {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * Alternatively, use {{#crossLink "Ortho"}}{{/crossLink}} if you need a orthographic projection.
 
  <img src="../../../assets/images/Perspective.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Camera with perspective projection](../../examples/#transforms_project_perspective)</li>
- </ul>
+ * [Camera with perspective projection](../../examples/#transforms_project_perspective)
 
  ## Usage
 
