@@ -199,14 +199,14 @@
 
 <div class="box intro">
     <p>A <strong>BuildableModel</strong> is a <a href="../classes/Model.html" class="crosslink">Model</a> that provides a "stateful builder" API through which you can
-procedurally generate content within xeogl.</p>
+procedurally generate xeogl content.</p>
 <p><a href="../../examples/#models_BuildableModel_city"><img src="http://i.giphy.com/l0HlPJO1AN01Lz27e.gif"></img></a></p>
 <h2 id="overview">Overview</h2>
 <ul>
 <li>A BuilderModel implements the <a href="https://en.wikipedia.org/wiki/Builder_pattern">Builder pattern</a>.</li>
-<li>Create various assets within the BuilderModel, such as <a href="../classes/Geometry.html" class="crosslink">Geometries</a>
+<li>Create various assets within a BuilderModel, such as <a href="../classes/Geometry.html" class="crosslink">Geometries</a>
 and <a href="../classes/Material.html" class="crosslink">Materials</a>, then create <a href="../classes/Entity.html" class="crosslink">Entities</a> that use those assets.</li>
-<li>The BuilderModel then owns those assets and <a href="../classes/Entity.html" class="crosslink">Entities</a> and will destroy them when you
+<li>The BuilderModel then owns those components and will destroy them when you
 call its <a href="../classes/BuildableModel.html#method_clear" class="crosslink">clear()</a> or <a href="../classes/Component.html#method_destroy" class="crosslink">destroy()</a> methods.</li>
 <li>A BuildableModel be transformed within World-space by attaching it to a <a href="../classes/Transform.html" class="crosslink">Transform</a>.</li>
 <li>A BuildableModel provides its World-space boundary as a <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>.</li>
@@ -753,8 +753,8 @@ with <a href="../classes/BuildableModel.html#method_entity" class="crosslink">en
         <p>Adds an asset to this BuildableModel.</p>
 <p>The asset is given as a configuration object, to be lazy-instantiated as soon as an entity is built from
 it with <a href="../classes/BuildableModel.html#method_entity" class="crosslink">entity()</a>.</p>
-<h3 id="usage">Usage</h3>
-<p>Adding a <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> asset with ID "uvGrid":</p>
+<h4 id="usage">Usage</h4>
+<p>Adding a <a href="../classes/PhongMaterial.html" class="crosslink">PhongMaterial</a> asset with ID "gridMaterial":</p>
 <pre class="code prettyprint"><code class="lang-javascript">buildableModel.asset("gridMaterial", {
     type: "xeogl.PhongMaterial",
     ambient: [0.9, 0.3, 0.9],
@@ -845,7 +845,7 @@ it with <a href="../classes/BuildableModel.html#method_entity" class="crosslink"
     <div class="description">
         <p>Sets the order of 3D rotations for each <a href="../classes/Entity.html" class="crosslink">Entity</a> subsequently created
 with <a href="../classes/BuildableModel.html#method_entity" class="crosslink">entity()</a>.</p>
-<h3 id="usage">Usage</h3>
+<h4 id="usage">Usage</h4>
 <p>The X, Y and Z axis are identified as <code>0, 1, 2</code> respectively.</p>
 <pre class="code prettyprint"><code class="lang-Javascript">buildableModel.axis(0,1,2); // X, Y, Z
 buildableModel.axis(2,0,1); // Z, X, Y
@@ -1331,7 +1331,7 @@ any subsequent notifications on the event as they are made.</p>
     </div>
 
     <div class="description">
-        <p>Sets the <a href="../classes/Geometry.html" class="crosslink">Geometry</a> asset that will be added to
+        <p>Selects the <a href="../classes/Geometry.html" class="crosslink">Geometry</a> asset that will be added to
 each <a href="../classes/Entity.html" class="crosslink">Entity</a> subsequently created with
 <a href="../classes/BuildableModel.html#method_entity" class="crosslink">entity()</a>.</p>
 <p>The given ID must belong to a <a href="../classes/Geometry.html" class="crosslink">Geometry</a> asset that was added previously with
@@ -1599,7 +1599,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     </div>
 
     <div class="description">
-        <p>Sets the <a href="../classes/Material.html" class="crosslink">Material</a> asset that will be added to
+        <p>Selects the <a href="../classes/Material.html" class="crosslink">Material</a> asset that will be added to
 each <a href="../classes/Entity.html" class="crosslink">Entity</a> subsequently created with
 <a href="../classes/BuildableModel.html#method_entity" class="crosslink">entity()</a>.</p>
 <p>The given ID must belong to a <a href="../classes/Material.html" class="crosslink">Material</a> asset that was added previously with
