@@ -21,9 +21,10 @@
 <script>
 
     // We're going to construct this BuildableModel
+
     var buildableModel = new xeogl.BuildableModel();
 
-    // Construct the BuildableModel
+    // Create assets
 
     buildableModel.asset("box", {
         type: "xeogl.BoxGeometry",
@@ -32,32 +33,17 @@
         zSize: 1
     });
 
-    buildableModel.asset("highRiseGlass", {
-        type: "xeogl.PhongMaterial",
-        diffuseMap: {
-            src: "textures/city/highRiseGlass.jpg"
-        },
-        specularMap: {
-            src: "textures/city/highRiseGlassSpecular.jpg"
-        }
-    });
-
-    buildableModel.asset("highRiseWindows", {
-        type: "xeogl.PhongMaterial",
-        diffuseMap: {
-            src: "textures/city/highRiseWindows.jpg"
-        }
-    });
-
-    buildableModel.asset("pixelCityWindows", {
-        type: "xeogl.PhongMaterial",
-        diffuse: [0.6, 0.6, 0.8]
-    });
-
     buildableModel.asset("lightConcrete", {
         type: "xeogl.PhongMaterial",
         diffuse: [0.8, 0.8, 0.8]
     });
+
+    buildableModel.asset("darkConcrete", {
+        type: "xeogl.PhongMaterial",
+        diffuse: [0.4, 0.4, 0.4]
+    });
+
+    // Select the BoxGeometry asset
 
     buildableModel.geometry("box");
 
