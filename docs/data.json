@@ -22241,7 +22241,7 @@
         {
             "file": "examples/js/animation/cameraPathAnimation.js",
             "line": 284,
-            "description": "Fired whenever this CameraPathsAnimation's {{#crossLink \"CameraPathAnimation/camera:property\"}}{{/crossLink}} property changes.",
+            "description": "Fired whenever this CameraPathAnimation's {{#crossLink \"CameraPathAnimation/camera:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "camera",
             "params": [
@@ -22257,7 +22257,7 @@
         {
             "file": "examples/js/animation/cameraPathAnimation.js",
             "line": 298,
-            "description": "Begins playing this CameraPathsAnimation from the current time.",
+            "description": "Begins playing this CameraPathAnimation from the current time.",
             "itemtype": "method",
             "name": "play",
             "class": "CameraPathAnimation",
@@ -22267,7 +22267,7 @@
         {
             "file": "examples/js/animation/cameraPathAnimation.js",
             "line": 311,
-            "description": "Begins playing this CameraPathsAnimation from the current time to the given time.",
+            "description": "Begins playing this CameraPathAnimation from the current time to the given time.",
             "itemtype": "method",
             "name": "playToT",
             "params": [
@@ -22284,7 +22284,7 @@
         {
             "file": "examples/js/animation/cameraPathAnimation.js",
             "line": 332,
-            "description": "Begins playing this CameraPathsAnimation from the current time to the time at the given frame.",
+            "description": "Begins playing this CameraPathAnimation from the current time to the time at the given frame.",
             "itemtype": "method",
             "name": "playToFrame",
             "params": [
@@ -22301,7 +22301,7 @@
         {
             "file": "examples/js/animation/cameraPathAnimation.js",
             "line": 358,
-            "description": "Flies this CameraPathsAnimation's {{#crossLink \"Camera\"}}{{/crossLink}} to the time at the given frame.",
+            "description": "Flies this CameraPathAnimation's {{#crossLink \"Camera\"}}{{/crossLink}} to the time at the given frame.",
             "itemtype": "method",
             "name": "flyToFrame",
             "params": [
@@ -22324,7 +22324,7 @@
         {
             "file": "examples/js/animation/cameraPathAnimation.js",
             "line": 384,
-            "description": "Scrubs (sets) this CameraPathsAnimation to the the given time.",
+            "description": "Scrubs (sets) this CameraPathAnimation to the the given time.",
             "itemtype": "method",
             "name": "scrubToT",
             "params": [
@@ -22341,7 +22341,7 @@
         {
             "file": "examples/js/animation/cameraPathAnimation.js",
             "line": 411,
-            "description": "Scrubs this CameraPathsAnimation to the given frame.",
+            "description": "Scrubs this CameraPathAnimation to the given frame.",
             "itemtype": "method",
             "name": "scrubToFrame",
             "params": [
@@ -22358,7 +22358,7 @@
         {
             "file": "examples/js/animation/cameraPathAnimation.js",
             "line": 445,
-            "description": "Stops playing this CameraPathsAnimation.",
+            "description": "Stops playing this CameraPathAnimation.",
             "itemtype": "method",
             "name": "stop",
             "class": "CameraPathAnimation",

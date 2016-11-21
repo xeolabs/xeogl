@@ -282,7 +282,7 @@
                 set: function (value) {
 
                     /**
-                     * Fired whenever this CameraPathsAnimation's {{#crossLink "CameraPathAnimation/camera:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this CameraPathAnimation's {{#crossLink "CameraPathAnimation/camera:property"}}{{/crossLink}} property changes.
                      * @event camera
                      * @param value The property's new value
                      */
@@ -296,7 +296,7 @@
         },
 
         /**
-         * Begins playing this CameraPathsAnimation from the current time.
+         * Begins playing this CameraPathAnimation from the current time.
          * @method play
          */
         play: function () {
@@ -309,7 +309,7 @@
         },
 
         /**
-         * Begins playing this CameraPathsAnimation from the current time to the given time.
+         * Begins playing this CameraPathAnimation from the current time to the given time.
          *
          * @method playToT
          * @param {Number} t Time instant.
@@ -330,7 +330,7 @@
         },
 
         /**
-         * Begins playing this CameraPathsAnimation from the current time to the time at the given frame.
+         * Begins playing this CameraPathAnimation from the current time to the time at the given frame.
          *
          * @method playToFrame
          * @param {Number} frameIdx Index of the frame to play to.
@@ -356,7 +356,7 @@
         },
 
         /**
-         * Flies this CameraPathsAnimation's {{#crossLink "Camera"}}{{/crossLink}} to the time at the given frame.
+         * Flies this CameraPathAnimation's {{#crossLink "Camera"}}{{/crossLink}} to the time at the given frame.
          *
          * @method flyToFrame
          * @param {Number} frameIdx Index of the frame to play to.
@@ -382,7 +382,7 @@
         },
 
         /**
-         * Scrubs (sets) this CameraPathsAnimation to the the given time.
+         * Scrubs (sets) this CameraPathAnimation to the the given time.
          *
          * @method scrubToT
          * @param {Number} t Time instant.
@@ -409,7 +409,7 @@
         },
 
         /**
-         * Scrubs this CameraPathsAnimation to the given frame.
+         * Scrubs this CameraPathAnimation to the given frame.
          *
          * @method scrubToFrame
          * @param {Number} frameIdx Index of the frame to scrub to.
@@ -443,7 +443,7 @@
         },
 
         /**
-         * Stops playing this CameraPathsAnimation.
+         * Stops playing this CameraPathAnimation.
          *
          * @method stop
          */
