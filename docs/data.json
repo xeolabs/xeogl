@@ -6256,7 +6256,7 @@
             "namespace": "",
             "file": "examples/js/animation/cameraFollowAnimation.js",
             "line": 1,
-            "description": "A **CameraFollowAnimation** makes a {{#crossLink \"Camera\"}}{{/crossLink}} dynamically follow a\nWorld-space {{#crossLink \"Boundary3D\"}}{{/crossLink}} in order to keep it entirely in view.\n\n<a href=\"../../examples/#animation_CameraFollowAnimation\"><img src=\"http://i.giphy.com/l0HlHcuzAjhMQ8YSY.gif\"></img></a>\n\n## Overview\n\n* Attaches to a {{#crossLink \"Camera\"}}{{/crossLink}}, which by default is the {{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Camera\"}}{{/crossLink}} when none is specified.\n* Requires that the {{#crossLink \"Camera\"}}{{/crossLink}} have a {{#crossLink \"Lookat\"}}{{/crossLink}} for its {{#crossLink \"Camera/view:property\"}}view{{/crossLink}} transform.\n* Also attaches to a {{#crossLink \"Boundary3D\"}}{{/crossLink}}, which by default will be the {{#crossLink \"Scene\"}}Scene's{{/crossLink}} World-space boundary, {{#crossLink \"Scene/worldBoundary:property\"}}{{/crossLink}}.\n* Can be configured to either fly or jump to each updated position of the target {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n* Can be configured to automatically adjust the distance between the {{#crossLink \"Camera\"}}{{/crossLink}}'s {{#crossLink \"Lookat\"}}{{/crossLink}}'s {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}} and {{#crossLink \"Lookat/look:property\"}}{{/crossLink}} to keep the target {{#crossLink \"Boundary3D\"}}{{/crossLink}} fitted to the view volume.\n\n## Examples\n\n* [Following an Entity with a Camera](../../examples/#animation_CameraFollowAnimation)\n* [Following an Entity with a Camera, keeping Entity fitted to view volume](../../examples/#animation_CameraFollowAnimation_fitToView)\n\n## Usage\n\nIn the example below, we'll use a CameraFollowAnimation to automatically follow an {{#crossLink \"Entity\"}}{{/crossLink}}'s World-space\n{{#crossLink \"Boundary3D\"}}{{/crossLink}} with the default {{#crossLink \"Camera\"}}{{/crossLink}}. Our CameraFollowAnimation's\n{{#crossLink \"CameraFollowAnimation/fit:property\"}}{{/crossLink}} property is set ````true````, which causes it to automatically\nkeep the {{#crossLink \"Boundary3D\"}}{{/crossLink}} fitted to the view volume. Although we can orbit the\n{{#crossLink \"Entity\"}}{{/crossLink}} using the {{#crossLink \"CameraControl\"}}{{/crossLink}}, we you can't control the\ndistance of the {{#crossLink \"Camera\"}}{{/crossLink}} from the {{#crossLink \"Entity\"}}{{/crossLink}} because our CameraFollowAnimation\nautomatically controls that distance in order to do the automatic fitting.\n\n````javascript\n// Create a red torus Entity with a Translate modelling transform\n// that allows it to move around in World-space\nvar entity = new xeogl.Entity({\n    geometry: new xeogl.TorusGeometry(),\n    material: new xeogl.PhongMaterial({\n         diffuse: [1, 0.3, 0.3]\n    }),\n    transform: new xeogl.Translate({\n        xyz: [0,0,0]\n    })\n});\n\n// Create a CameraFollowAnimation that makes the (Scene's default) Camera's Lookat follow the Entity's World-space\n// Boundary3D, while keeping the Boundary3D fitted to the view volume. The CameraFollowAnimation\n// will jump to each updated Boundary3D extents, and since an update will occur on every frame,\n// the effect will be as if we're smoothly flying after the Boundary3D. If the updates occur sporadically,\n// then we would probably instead configure it to fly to each update, to keep the animation smooth.\nvar cameraFollowAnimation = new xeogl.CameraFollowAnimation({\n    worldBoundary: entity.worldBoundary,\n    fit: true,   // Fit target to view volume\n    fitFOV: 35,  // Target will occupy 35 degrees of the field-of-view\n    fly: false // Jump to each updated boundary extents\n});\n\n// Create a SplineCurve along which we'll animate our Entity\nvar curve = new xeogl.SplineCurve({\n    points: [\n        [-10, 0, 0],\n        [-5, 15, 0],\n        [20, 15, 0],\n        [10, 0, 0]\n    ]\n});\n\n// Bind the Entity Translate to a point on the SplineCurve\ncurve.on(\"point\", function(point) {\n    entity.transform.xyz = point;\n});\n\n// Animate the point along the SplineCurve using the Scene clock\ncurve.scene.on(\"tick\", function(e) {\n    curve.t = (e.time - e.startTime) * 0.01;\n});\n\n// Allow user control of the Camera with mouse and keyboard\n// (zooming will be overridden by the auto-fitting configured on our CameraFollowAnimation)\nnew xeogl.CameraControl();\n````",
+            "description": "A **CameraFollowAnimation** makes a {{#crossLink \"Camera\"}}{{/crossLink}} dynamically follow a\nWorld-space {{#crossLink \"Boundary3D\"}}{{/crossLink}} in order to keep it entirely in view.\n\n<a href=\"../../examples/#animation_CameraFollowAnimation\"><img src=\"http://i.giphy.com/l0HlHcuzAjhMQ8YSY.gif\"></img></a>\n\n## Overview\n\n* Attaches to a {{#crossLink \"Camera\"}}{{/crossLink}}, which by default is the {{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Camera\"}}{{/crossLink}} when none is specified.\n* Requires that the {{#crossLink \"Camera\"}}{{/crossLink}} have a {{#crossLink \"Lookat\"}}{{/crossLink}} for its {{#crossLink \"Camera/view:property\"}}view{{/crossLink}} transform.\n* Also attaches to a {{#crossLink \"Boundary3D\"}}{{/crossLink}}, which by default will be the {{#crossLink \"Scene\"}}Scene's{{/crossLink}} World-space boundary, {{#crossLink \"Scene/worldBoundary:property\"}}{{/crossLink}}.\n* Can be configured to either fly or jump to each updated position of the target {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n* Can be configured to automatically adjust the distance between the {{#crossLink \"Camera\"}}{{/crossLink}}'s {{#crossLink \"Lookat\"}}{{/crossLink}}'s {{#crossLink \"Lookat/eye:property\"}}{{/crossLink}} and {{#crossLink \"Lookat/look:property\"}}{{/crossLink}} to keep the target {{#crossLink \"Boundary3D\"}}{{/crossLink}} fitted to the view volume.\n\n<img src=\"../../../assets/images/CameraFollowAnimation.png\"></img>\n\n## Examples\n\n* [Following an Entity with a Camera](../../examples/#animation_CameraFollowAnimation)\n* [Following an Entity with a Camera, keeping Entity fitted to view volume](../../examples/#animation_CameraFollowAnimation_fitToView)\n\n## Usage\n\nIn the example below, we'll use a CameraFollowAnimation to automatically follow an {{#crossLink \"Entity\"}}{{/crossLink}}'s World-space\n{{#crossLink \"Boundary3D\"}}{{/crossLink}} with the default {{#crossLink \"Camera\"}}{{/crossLink}}. Our CameraFollowAnimation's\n{{#crossLink \"CameraFollowAnimation/fit:property\"}}{{/crossLink}} property is set ````true````, which causes it to automatically\nkeep the {{#crossLink \"Boundary3D\"}}{{/crossLink}} fitted to the view volume. Although we can orbit the\n{{#crossLink \"Entity\"}}{{/crossLink}} using the {{#crossLink \"CameraControl\"}}{{/crossLink}}, we you can't control the\ndistance of the {{#crossLink \"Camera\"}}{{/crossLink}} from the {{#crossLink \"Entity\"}}{{/crossLink}} because our CameraFollowAnimation\nautomatically controls that distance in order to do the automatic fitting.\n\n````javascript\n// Create a red torus Entity with a Translate modelling transform\n// that allows it to move around in World-space\nvar entity = new xeogl.Entity({\n    geometry: new xeogl.TorusGeometry(),\n    material: new xeogl.PhongMaterial({\n         diffuse: [1, 0.3, 0.3]\n    }),\n    transform: new xeogl.Translate({\n        xyz: [0,0,0]\n    })\n});\n\n// Create a CameraFollowAnimation that makes the (Scene's default) Camera's Lookat follow the Entity's World-space\n// Boundary3D, while keeping the Boundary3D fitted to the view volume. The CameraFollowAnimation\n// will jump to each updated Boundary3D extents, and since an update will occur on every frame,\n// the effect will be as if we're smoothly flying after the Boundary3D. If the updates occur sporadically,\n// then we would probably instead configure it to fly to each update, to keep the animation smooth.\nvar cameraFollowAnimation = new xeogl.CameraFollowAnimation({\n    worldBoundary: entity.worldBoundary,\n    fit: true,   // Fit target to view volume\n    fitFOV: 35,  // Target will occupy 35 degrees of the field-of-view\n    fly: false // Jump to each updated boundary extents\n});\n\n// Create a SplineCurve along which we'll animate our Entity\nvar curve = new xeogl.SplineCurve({\n    points: [\n        [-10, 0, 0],\n        [-5, 15, 0],\n        [20, 15, 0],\n        [10, 0, 0]\n    ]\n});\n\n// Bind the Entity Translate to a point on the SplineCurve\ncurve.on(\"point\", function(point) {\n    entity.transform.xyz = point;\n});\n\n// Animate the point along the SplineCurve using the Scene clock\ncurve.scene.on(\"tick\", function(e) {\n    curve.t = (e.time - e.startTime) * 0.01;\n});\n\n// Allow user control of the Camera with mouse and keyboard\n// (zooming will be overridden by the auto-fitting configured on our CameraFollowAnimation)\nnew xeogl.CameraControl();\n````",
             "submodule": "animation",
             "is_constructor": 1,
             "params": [
@@ -6400,7 +6400,7 @@
             "namespace": "",
             "file": "examples/js/animation/cameraPathAnimation.js",
             "line": 1,
-            "description": "A **CameraPathAnimation** animates a {{#crossLink \"Camera\"}}{{/crossLink}} along a {{#crossLink \"CameraPath\"}}{{/crossLink}}.\n\n## Overview\n\n* Animates a {{#crossLink \"Camera\"}}{{/crossLink}} along a {{#crossLink \"CameraPath\"}}{{/crossLink}}\n* Attaches to a {{#crossLink \"Camera\"}}{{/crossLink}}, which by default is the {{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Camera\"}}{{/crossLink}} when none is specified.\n* Requires that the {{#crossLink \"Camera\"}}{{/crossLink}} have a {{#crossLink \"Lookat\"}}{{/crossLink}} for its {{#crossLink \"Camera/view:property\"}}view{{/crossLink}} transform.\n\n## Examples\n\n* [Interpolating a Camera along a path](../../examples/#animation_CameraPathAnimation_interpolate)\n* [Flying directly to each frame on a path](../../examples/#animation_CameraPathAnimation_flyToFrame)\n* [Jumping directly to each frame on a path](../../examples/#animation_CameraPathAnimation_scrubToFrame)\n* [A menu of Camera waypoints to fly to](../../examples/#animation_CameraPathAnimation_frameMenu)\n\n## Usage\n\n### 1. Interpolating a Camera along a path\n\nIn this example we'll use the CameraPathAnimation's\n{{#crossLink \"CameraPathAnimation/play\"}}{{/crossLink}} method to smoothly <b>interpolate</b>\nthe default {{#crossLink \"Camera\"}}{{/crossLink}} along a {{#crossLink \"CameraPath\"}}{{/crossLink}}:\n\n<a href=\"../../examples/#animation_CameraPathAnimation_interpolate\"><img src=\"http://i.giphy.com/l0MYDGMYzdFf6TqRW.gif\"></img></a>\n\n````Javascript\n// Load a model from glTF\n\nvar gearbox = new xeogl.GLTFModel({\n    src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n\n// Define a CameraPath\n\nvar cameraPath = new xeogl.CameraPath({\n    frames: [\n        {t: 0, eye: [184.21, 10.54, -7.03], look: [159.2, 17.02, 3.21], up: [-0.15, 0.97, 0.13]},\n        {t: 1, eye: [184.91, 10.10, -11.26], look: [171.03, 13.69, -5.57], up: [-0.15, 0.97, 0.12]},\n        {t: 2, eye: [181.37, 12.35, -16.93], look: [171.03, 13.69, -5.57], up: [-0.17, 0.93, 0.28]},\n        {t: 2, eye: [174.01, 13.55, -20.70], look: [171.03, 13.69, -5.57], up: [-0.01, 0.90, 0.40]},\n        {t: 4, eye: [166.48, 14.36, -20.30], look: [171.03, 13.69, -5.57], up: [0.19, 0.88, 0.40]},\n        {t: 5, eye: [160.32, 14.69, -16.63], look: [171.03, 13.69, -5.57], up: [0.36, 0.87, 0.29]},\n        {t: 6, eye: [156.67, 17.97, -4.77], look: [162.53, 17.42, 1.28], up: [0.36, 0.87, 0.29]},\n        {t: 7, eye: [151.14, 16.68, -10.04], look: [158.94, 15.95, -1.99], up: [0.36, 0.87, 0.29]},\n        {t: 8, eye: [146.26, 17.56, -4.77], look: [152.13, 17.05, 1.28], up: [0.36, 0.87, 0.28]},\n        {t: 9, eye: [137.26, 18.36, -9.65], look: [149.76, 17.27, 3.24], up: [0.36, 0.87, 0.28]},\n        {t: 10, eye: [139.04, 18.29, -11.17], look: [149.76, 17.27, 3.24], up: [0.32, 0.87, 0.33]},\n        {t: 11, eye: [140.66, 18.13, -12.26], look: [149.76, 17.27, 3.24], up: [0.28, 0.87, 0.35]},\n        {t: 12, eye: [147.18, 17.66, -14.56], look: [149.76, 17.27, 3.24], up: [0.12, 0.89, 0.41]},\n        {t: 13, eye: [158.05, 16.33, -12.69], look: [149.76, 17.27, 3.24], up: [-0.11, 0.91, 0.34]},\n        {t: 14, eye: [150.11, 13.26, -6.69], look: [147.95, 13.50, -2.52], up: [-0.11, 0.91, 0.34]},\n        {t: 15, eye: [149.27, 13.00, -3.34], look: [148.72, 13.05, -2.29], up: [-0.11, 0.91, 0.35]},\n        {t: 16, eye: [152.62, 11.65, -4.87], look: [148.47, 12.08, 3.08], up: [-0.11, 0.91, 0.35]},\n        {t: 17, eye: [153.35, 12.24, -1.84], look: [148.69, 12.72, 7.01], up: [-0.11, 0.91, 0.35]},\n        {t: 18, eye: [156.49, 12.11, 0.74], look: [148.69, 12.72, 7.012], up: [-0.23, 0.92, 0.26]},\n        {t: 19, eye: [158.52, 11.98, 5.21], look: [148.69, 12.72, 7.01], up: [-0.32, 0.92, 0.12]},\n        {t: 20, eye: [158.60, 11.50, 7.91], look: [148.69, 12.72, 7.01], up: [-0.30, 0.94, 0.035]},\n        {t: 21, eye: [157.60, 11.76, 11.51], look: [148.69, 12.72, 7.01], up: [-0.31, 0.93, -0.089]},\n        {t: 22, eye: [152.67, 18.35, 14.29], look: [148.69, 12.72, 7.01], up: [-0.46, 0.51, -0.70]},\n        {t: 23, eye: [148.79, 21.67, 11.52], look: [148.69, 12.72, 7.01], up: [-0.15, 0.036, -0.97]},\n        {t: 24, eye: [147.11, 22.40, 9.07], look: [148.69, 12.72, 7.01], up: [0.38, -0.16, -0.89]},\n        {t: 25, eye: [144.80, 21.92, 6.23], look: [148.69, 12.72, 7.01], up: [0.98, -0.02, 0.03]},\n        {t: 26, eye: [144.11, 20.18, 2.13], look: [148.69, 12.72, 7.01], up: [0.71, 0.29, 0.62]},\n        {t: 27, eye: [145.87, 17.37, -1.40], look: [148.69, 12.72, 7.01], up: [0.31, 0.60, 0.71]},\n        {t: 28, eye: [144.37, 19.17, -7.33], look: [146.13, 16.27, -2.08], up: [0.31, 0.60, 0.71]},\n        {t: 29, eye: [142.54, 21.91, -17.26], look: [146.89, 14.81, -4.28], up: [0.31, 0.60, 0.71]}\n    ]\n});\n\n// Once the model has loaded, animate the\n// (default Scene's default Camera) along the CameraPath\n\nvar cameraPathAnimation = new xeogl.CameraPathAnimation({\n    cameraPath: cameraPath\n});\n\ngearbox.on(\"loaded\", function () {\n    cameraPathAnimation.play();\n});\n````\n\n<br>\n### 2. Flying directly to each frame on a path\n\nIn this example, we'll use the CameraPathAnimation's {{#crossLink \"CameraPathAnimation/flyToFrame\"}}{{/crossLink}} method\nto <b>fly</b> the {{#crossLink \"Camera\"}}{{/crossLink}} directly to each frame on the {{#crossLink \"CameraPath\"}}{{/crossLink}}:\n\n<a href=\"../../examples/#animation_CameraPathAnimation_flyToFrame\"><img src=\"http://i.giphy.com/l3vQYNjsnAQwPBeYU.giff\"></img></a>\n\n````javascript\nvar i = 0;\nvar dir = 1;\n\ngearbox.on(\"loaded\", function () {\n    function nextFrame() {\n        cameraPathAnimation.flyToFrame(i += dir, function() { setTimeout(nextFrame, 1000); });\n\n        if (i <= 0 || i >= 29) {\n            dir = -dir;\n        }\n    }\n    nextFrame();\n});\n````\n<br>\n### 3. Jumping directly to each frame on a path\n\nIn this example, we'll use the CameraPathAnimation's {{#crossLink \"CameraPathAnimation/scrubToFrame\"}}{{/crossLink}} method\nto <b>jump</b> the {{#crossLink \"Camera\"}}{{/crossLink}} directly to each frame on the {{#crossLink \"CameraPath\"}}{{/crossLink}}:\n\n<a href=\"../../examples/#animation_CameraPathAnimation_scrubToFrame\"><img src=\"http://i.giphy.com/l0Hlyqk7kewTjSBZ6.gif\"></img></a>\n\n````javascript\nvar i = 0;\nvar dir = 1;\n\ngearbox.on(\"loaded\", function () {\n    function nextFrame() {\n        cameraPathAnimation.scrubToFrame(i += dir);\n\n        if (i <= 0 || i >= 29) {\n            dir = -dir;\n        }\n        setTimeout(nextFrame, 1000);\n    }\n    nextFrame();\n});\n````",
+            "description": "A **CameraPathAnimation** animates a {{#crossLink \"Camera\"}}{{/crossLink}} along a {{#crossLink \"CameraPath\"}}{{/crossLink}}.\n\n## Overview\n\n* Animates a {{#crossLink \"Camera\"}}{{/crossLink}} along a {{#crossLink \"CameraPath\"}}{{/crossLink}}\n* Attaches to a {{#crossLink \"Camera\"}}{{/crossLink}}, which by default is the {{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Camera\"}}{{/crossLink}} when none is specified.\n* Requires that the {{#crossLink \"Camera\"}}{{/crossLink}} have a {{#crossLink \"Lookat\"}}{{/crossLink}} for its {{#crossLink \"Camera/view:property\"}}view{{/crossLink}} transform.\n\n<img src=\"../../../assets/images/CameraPathAnimation.png\"></img>\n\n## Examples\n\n* [Interpolating a Camera along a path](../../examples/#animation_CameraPathAnimation_interpolate)\n* [Flying directly to each frame on a path](../../examples/#animation_CameraPathAnimation_flyToFrame)\n* [Jumping directly to each frame on a path](../../examples/#animation_CameraPathAnimation_scrubToFrame)\n* [A menu of Camera waypoints to fly to](../../examples/#animation_CameraPathAnimation_frameMenu)\n\n## Usage\n\n### 1. Interpolating a Camera along a path\n\nIn this example we'll use the CameraPathAnimation's\n{{#crossLink \"CameraPathAnimation/play\"}}{{/crossLink}} method to smoothly <b>interpolate</b>\nthe default {{#crossLink \"Camera\"}}{{/crossLink}} along a {{#crossLink \"CameraPath\"}}{{/crossLink}}:\n\n<a href=\"../../examples/#animation_CameraPathAnimation_interpolate\"><img src=\"http://i.giphy.com/l0MYDGMYzdFf6TqRW.gif\"></img></a>\n\n````Javascript\n// Load a model from glTF\n\nvar gearbox = new xeogl.GLTFModel({\n    src: \"models/gltf/gearbox/gearbox_assy.gltf\"\n});\n\n// Define a CameraPath\n\nvar cameraPath = new xeogl.CameraPath({\n    frames: [\n        {t: 0, eye: [184.21, 10.54, -7.03], look: [159.2, 17.02, 3.21], up: [-0.15, 0.97, 0.13]},\n        {t: 1, eye: [184.91, 10.10, -11.26], look: [171.03, 13.69, -5.57], up: [-0.15, 0.97, 0.12]},\n        {t: 2, eye: [181.37, 12.35, -16.93], look: [171.03, 13.69, -5.57], up: [-0.17, 0.93, 0.28]},\n        {t: 2, eye: [174.01, 13.55, -20.70], look: [171.03, 13.69, -5.57], up: [-0.01, 0.90, 0.40]},\n        {t: 4, eye: [166.48, 14.36, -20.30], look: [171.03, 13.69, -5.57], up: [0.19, 0.88, 0.40]},\n        {t: 5, eye: [160.32, 14.69, -16.63], look: [171.03, 13.69, -5.57], up: [0.36, 0.87, 0.29]},\n        {t: 6, eye: [156.67, 17.97, -4.77], look: [162.53, 17.42, 1.28], up: [0.36, 0.87, 0.29]},\n        {t: 7, eye: [151.14, 16.68, -10.04], look: [158.94, 15.95, -1.99], up: [0.36, 0.87, 0.29]},\n        {t: 8, eye: [146.26, 17.56, -4.77], look: [152.13, 17.05, 1.28], up: [0.36, 0.87, 0.28]},\n        {t: 9, eye: [137.26, 18.36, -9.65], look: [149.76, 17.27, 3.24], up: [0.36, 0.87, 0.28]},\n        {t: 10, eye: [139.04, 18.29, -11.17], look: [149.76, 17.27, 3.24], up: [0.32, 0.87, 0.33]},\n        {t: 11, eye: [140.66, 18.13, -12.26], look: [149.76, 17.27, 3.24], up: [0.28, 0.87, 0.35]},\n        {t: 12, eye: [147.18, 17.66, -14.56], look: [149.76, 17.27, 3.24], up: [0.12, 0.89, 0.41]},\n        {t: 13, eye: [158.05, 16.33, -12.69], look: [149.76, 17.27, 3.24], up: [-0.11, 0.91, 0.34]},\n        {t: 14, eye: [150.11, 13.26, -6.69], look: [147.95, 13.50, -2.52], up: [-0.11, 0.91, 0.34]},\n        {t: 15, eye: [149.27, 13.00, -3.34], look: [148.72, 13.05, -2.29], up: [-0.11, 0.91, 0.35]},\n        {t: 16, eye: [152.62, 11.65, -4.87], look: [148.47, 12.08, 3.08], up: [-0.11, 0.91, 0.35]},\n        {t: 17, eye: [153.35, 12.24, -1.84], look: [148.69, 12.72, 7.01], up: [-0.11, 0.91, 0.35]},\n        {t: 18, eye: [156.49, 12.11, 0.74], look: [148.69, 12.72, 7.012], up: [-0.23, 0.92, 0.26]},\n        {t: 19, eye: [158.52, 11.98, 5.21], look: [148.69, 12.72, 7.01], up: [-0.32, 0.92, 0.12]},\n        {t: 20, eye: [158.60, 11.50, 7.91], look: [148.69, 12.72, 7.01], up: [-0.30, 0.94, 0.035]},\n        {t: 21, eye: [157.60, 11.76, 11.51], look: [148.69, 12.72, 7.01], up: [-0.31, 0.93, -0.089]},\n        {t: 22, eye: [152.67, 18.35, 14.29], look: [148.69, 12.72, 7.01], up: [-0.46, 0.51, -0.70]},\n        {t: 23, eye: [148.79, 21.67, 11.52], look: [148.69, 12.72, 7.01], up: [-0.15, 0.036, -0.97]},\n        {t: 24, eye: [147.11, 22.40, 9.07], look: [148.69, 12.72, 7.01], up: [0.38, -0.16, -0.89]},\n        {t: 25, eye: [144.80, 21.92, 6.23], look: [148.69, 12.72, 7.01], up: [0.98, -0.02, 0.03]},\n        {t: 26, eye: [144.11, 20.18, 2.13], look: [148.69, 12.72, 7.01], up: [0.71, 0.29, 0.62]},\n        {t: 27, eye: [145.87, 17.37, -1.40], look: [148.69, 12.72, 7.01], up: [0.31, 0.60, 0.71]},\n        {t: 28, eye: [144.37, 19.17, -7.33], look: [146.13, 16.27, -2.08], up: [0.31, 0.60, 0.71]},\n        {t: 29, eye: [142.54, 21.91, -17.26], look: [146.89, 14.81, -4.28], up: [0.31, 0.60, 0.71]}\n    ]\n});\n\n// Once the model has loaded, animate the\n// (default Scene's default Camera) along the CameraPath\n\nvar cameraPathAnimation = new xeogl.CameraPathAnimation({\n    cameraPath: cameraPath\n});\n\ngearbox.on(\"loaded\", function () {\n    cameraPathAnimation.play();\n});\n````\n\n<br>\n### 2. Flying directly to each frame on a path\n\nIn this example, we'll use the CameraPathAnimation's {{#crossLink \"CameraPathAnimation/flyToFrame\"}}{{/crossLink}} method\nto <b>fly</b> the {{#crossLink \"Camera\"}}{{/crossLink}} directly to each frame on the {{#crossLink \"CameraPath\"}}{{/crossLink}}:\n\n<a href=\"../../examples/#animation_CameraPathAnimation_flyToFrame\"><img src=\"http://i.giphy.com/l3vQYNjsnAQwPBeYU.giff\"></img></a>\n\n````javascript\nvar i = 0;\nvar dir = 1;\n\ngearbox.on(\"loaded\", function () {\n    function nextFrame() {\n        cameraPathAnimation.flyToFrame(i += dir, function() { setTimeout(nextFrame, 1000); });\n\n        if (i <= 0 || i >= 29) {\n            dir = -dir;\n        }\n    }\n    nextFrame();\n});\n````\n<br>\n### 3. Jumping directly to each frame on a path\n\nIn this example, we'll use the CameraPathAnimation's {{#crossLink \"CameraPathAnimation/scrubToFrame\"}}{{/crossLink}} method\nto <b>jump</b> the {{#crossLink \"Camera\"}}{{/crossLink}} directly to each frame on the {{#crossLink \"CameraPath\"}}{{/crossLink}}:\n\n<a href=\"../../examples/#animation_CameraPathAnimation_scrubToFrame\"><img src=\"http://i.giphy.com/l0Hlyqk7kewTjSBZ6.gif\"></img></a>\n\n````javascript\nvar i = 0;\nvar dir = 1;\n\ngearbox.on(\"loaded\", function () {\n    function nextFrame() {\n        cameraPathAnimation.scrubToFrame(i += dir);\n\n        if (i <= 0 || i >= 29) {\n            dir = -dir;\n        }\n        setTimeout(nextFrame, 1000);\n    }\n    nextFrame();\n});\n````",
             "submodule": "animation",
             "is_constructor": 1,
             "params": [
@@ -21887,7 +21887,7 @@
         },
         {
             "file": "examples/js/animation/cameraFollowAnimation.js",
-            "line": 147,
+            "line": 149,
             "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} being controlled by this CameraFollowAnimation.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this CameraFollowAnimation. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.\n\nFires a {{#crossLink \"CameraFollowAnimation/camera:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "camera",
@@ -21898,7 +21898,7 @@
         },
         {
             "file": "examples/js/animation/cameraFollowAnimation.js",
-            "line": 167,
+            "line": 169,
             "description": "Fired whenever this CameraFollowAnimation's\n{{#crossLink \"CameraFollowAnimation/camera:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "camera",
@@ -21914,7 +21914,7 @@
         },
         {
             "file": "examples/js/animation/cameraFollowAnimation.js",
-            "line": 182,
+            "line": 184,
             "description": "The World-space {{#crossLink \"Boundary3D\"}}{{/crossLink}} followed by this CameraFollowAnimation.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this CameraFollowAnimation. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} {{#crossLink \"Scene/worldBoundary:property\"}}{{/crossLink}}\nwhen set to a null or undefined value.\n\nFires a {{#crossLink \"CameraFollowAnimation/worldBoundary:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "worldBoundary",
@@ -21925,7 +21925,7 @@
         },
         {
             "file": "examples/js/animation/cameraFollowAnimation.js",
-            "line": 198,
+            "line": 200,
             "description": "Fired whenever this CameraFollowAnimation's {{#crossLink \"CameraFollowAnimation/worldBoundary:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "worldBoundary",
@@ -21941,7 +21941,7 @@
         },
         {
             "file": "examples/js/animation/cameraFollowAnimation.js",
-            "line": 225,
+            "line": 227,
             "description": "Indicates whether this CameraFollowAnimation will either fly or jump to each updated position of the\ntarget {{#crossLink \"CameraFollowAnimation/worldBoundary:property\"}}{{/crossLink}}.\n\nLeave this false if the worldBoundary updates continuously, otherwise leave it true\nif you want the camera to fly smoothly to each updated worldBoundary extents\nfor a less disorientating experience.\n\nFires a {{#crossLink \"CameraFollowAnimation/fly:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "fly",
@@ -21953,7 +21953,7 @@
         },
         {
             "file": "examples/js/animation/cameraFollowAnimation.js",
-            "line": 245,
+            "line": 247,
             "description": "Fired whenever this CameraFollowAnimation's\n{{#crossLink \"CameraFollowAnimation/fly:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "fly",
@@ -21969,7 +21969,7 @@
         },
         {
             "file": "examples/js/animation/cameraFollowAnimation.js",
-            "line": 260,
+            "line": 262,
             "description": "When true, will ensure that this CameraFollowAnimation always adjusts the distance between the {{#crossLink \"CameraFollowAnimation/camera:property\"}}\ncamera{{/crossLink}}'s {{#crossLink \"Lookat/eye:property\"}}eye{{/crossLink}} and {{#crossLink \"Lookat/look:property\"}}{{/crossLink}}\npositions so as to ensure that the {{#crossLink \"CameraFollowAnimation/worldBoundary:property\"}}{{/crossLink}}\nis always filling the view volume.\n\nWhen false, the eye will remain at its current distance from the look position.\n\nFires a {{#crossLink \"CameraFollowAnimation/fit:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "fit",
@@ -21981,7 +21981,7 @@
         },
         {
             "file": "examples/js/animation/cameraFollowAnimation.js",
-            "line": 282,
+            "line": 284,
             "description": "Fired whenever this CameraFollowAnimation's\n{{#crossLink \"CameraFollowAnimation/fit:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "fit",
@@ -21997,7 +21997,7 @@
         },
         {
             "file": "examples/js/animation/cameraFollowAnimation.js",
-            "line": 296,
+            "line": 298,
             "description": "When {{#crossLink \"CameraFollowAnimation/fit:property\"}}{{/crossLink}} is set, to fit the target\n{{#crossLink \"CameraFollowAnimation/worldBoundary:property\"}}{{/crossLink}} in view, this property indicates how much\nof the total field-of-view, in degrees, that\nthe {{#crossLink \"CameraFollowAnimation/worldBoundary:property\"}}{{/crossLink}} should fill.\n\nFires a {{#crossLink \"cameraFlightAnimation/fitFOV:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "fitFOV",
@@ -22009,7 +22009,7 @@
         },
         {
             "file": "examples/js/animation/cameraFollowAnimation.js",
-            "line": 316,
+            "line": 318,
             "description": "Fired whenever this CameraFollowAnimation's\n{{#crossLink \"CameraFollowAnimation/fitFOV:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "fitFOV",
@@ -22025,7 +22025,7 @@
         },
         {
             "file": "examples/js/animation/cameraFollowAnimation.js",
-            "line": 331,
+            "line": 333,
             "description": "When true, will cause this CameraFollowAnimation to point the {{#crossLink \"CameraFollowAnimation/camera:property\"}}{{/crossLink}}\nin the direction that it is travelling.\n\nFires a {{#crossLink \"CameraFollowAnimation/trail:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "trail",
@@ -22037,7 +22037,7 @@
         },
         {
             "file": "examples/js/animation/cameraFollowAnimation.js",
-            "line": 347,
+            "line": 349,
             "description": "Fired whenever this CameraFollowAnimation's {{#crossLink \"CameraFollowAnimation/trail:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "trail",
@@ -22206,7 +22206,7 @@
         },
         {
             "file": "examples/js/animation/cameraPathAnimation.js",
-            "line": 153,
+            "line": 155,
             "description": "JavaScript class name for this Component.",
             "itemtype": "property",
             "name": "type",
@@ -22218,7 +22218,7 @@
         },
         {
             "file": "examples/js/animation/cameraPathAnimation.js",
-            "line": 245,
+            "line": 247,
             "description": "The {{#crossLink \"CameraPath\"}}{{/crossLink}} for this CameraPathAnimation.\n\nFires a {{#crossLink \"CameraPathAnimation/cameraPath:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "cameraPath",
@@ -22229,7 +22229,7 @@
         },
         {
             "file": "examples/js/animation/cameraPathAnimation.js",
-            "line": 269,
+            "line": 271,
             "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} for this CameraPathAnimation.\n\nWhen set to a null or undefined value, will default to the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s\ndefault {{#crossLink \"Scene/camera:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"CameraPathAnimation/camera:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "camera",
@@ -22240,7 +22240,7 @@
         },
         {
             "file": "examples/js/animation/cameraPathAnimation.js",
-            "line": 284,
+            "line": 286,
             "description": "Fired whenever this CameraPathAnimation's {{#crossLink \"CameraPathAnimation/camera:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "camera",
@@ -22256,7 +22256,7 @@
         },
         {
             "file": "examples/js/animation/cameraPathAnimation.js",
-            "line": 298,
+            "line": 300,
             "description": "Begins playing this CameraPathAnimation from the current time.",
             "itemtype": "method",
             "name": "play",
@@ -22266,7 +22266,7 @@
         },
         {
             "file": "examples/js/animation/cameraPathAnimation.js",
-            "line": 311,
+            "line": 313,
             "description": "Begins playing this CameraPathAnimation from the current time to the given time.",
             "itemtype": "method",
             "name": "playToT",
@@ -22283,7 +22283,7 @@
         },
         {
             "file": "examples/js/animation/cameraPathAnimation.js",
-            "line": 332,
+            "line": 334,
             "description": "Begins playing this CameraPathAnimation from the current time to the time at the given frame.",
             "itemtype": "method",
             "name": "playToFrame",
@@ -22300,7 +22300,7 @@
         },
         {
             "file": "examples/js/animation/cameraPathAnimation.js",
-            "line": 358,
+            "line": 360,
             "description": "Flies this CameraPathAnimation's {{#crossLink \"Camera\"}}{{/crossLink}} to the time at the given frame.",
             "itemtype": "method",
             "name": "flyToFrame",
@@ -22323,7 +22323,7 @@
         },
         {
             "file": "examples/js/animation/cameraPathAnimation.js",
-            "line": 384,
+            "line": 386,
             "description": "Scrubs (sets) this CameraPathAnimation to the the given time.",
             "itemtype": "method",
             "name": "scrubToT",
@@ -22340,7 +22340,7 @@
         },
         {
             "file": "examples/js/animation/cameraPathAnimation.js",
-            "line": 411,
+            "line": 413,
             "description": "Scrubs this CameraPathAnimation to the given frame.",
             "itemtype": "method",
             "name": "scrubToFrame",
@@ -22357,7 +22357,7 @@
         },
         {
             "file": "examples/js/animation/cameraPathAnimation.js",
-            "line": 445,
+            "line": 447,
             "description": "Stops playing this CameraPathAnimation.",
             "itemtype": "method",
             "name": "stop",
