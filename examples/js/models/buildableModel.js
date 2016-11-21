@@ -11,7 +11,7 @@
  and {{#crossLink "Material"}}Materials{{/crossLink}}, then create {{#crossLink "Entity"}}Entities{{/crossLink}} that use those assets.
  * The BuilderModel then owns those components and will destroy them when you
  call its {{#crossLink "BuildableModel/clear:method"}}clear(){{/crossLink}} or {{#crossLink "Component/destroy:method"}}destroy(){{/crossLink}} methods.
- * A BuildableModel can be transformed within World-space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}}.
+ * A BuildableModel can be transformed within World space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}}.
  * A BuildableModel provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
  ## Examples
