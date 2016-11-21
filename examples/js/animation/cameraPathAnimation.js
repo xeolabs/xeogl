@@ -12,7 +12,7 @@
  * [Interpolating a Camera along a path](../../examples/#animation_CameraPathAnimation_interpolate)
  * [Flying directly to each frame on a path](../../examples/#animation_CameraPathAnimation_flyToFrame)
  * [Jumping directly to each frame on a path](../../examples/#animation_CameraPathAnimation_scrubToFrame)
- * [A menu of Camera frames to fly to](../../examples/#animation_CameraPathAnimation_frameMenu)
+ * [A menu of Camera waypoints to fly to](../../examples/#animation_CameraPathAnimation_frameMenu)
 
  ## Usage
 
@@ -22,7 +22,7 @@
  {{#crossLink "CameraPathAnimation/play"}}{{/crossLink}} method to smoothly <b>interpolate</b>
  the default {{#crossLink "Camera"}}{{/crossLink}} along a {{#crossLink "CameraPath"}}{{/crossLink}}:
 
- <a href="../../examples/#animation_CameraPathAnimation"><img src="http://i.giphy.com/l0MYDGMYzdFf6TqRW.gif"></img></a>
+ <a href="../../examples/#animation_CameraPathAnimation_interpolate"><img src="http://i.giphy.com/l0MYDGMYzdFf6TqRW.gif"></img></a>
 
  ````Javascript
  // Load a model from glTF
