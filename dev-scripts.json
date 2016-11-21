@@ -59,7 +59,7 @@
 
     "src/animation/_module.js",
     "src/animation/morphTargets.js",
-    "src/animation/cameraFlight.js",
+    "src/animation/cameraFlightAnimation.js",
 
     "src/camera/camera.js",
 
@@ -92,9 +92,11 @@
     "src/geometry/_module.js",
     "src/geometry/geometry.js",
     "src/geometry/boxGeometry.js",
-    "src/geometry/boundaryGeometry.js",
     "src/geometry/torusGeometry.js",
     "src/geometry/sphereGeometry.js",
+    "src/geometry/boundingSphereGeometry.js",
+    "src/geometry/obbGeometry.js",
+    "src/geometry/aabbGeometry.js",
     "src/geometry/pathGeometry.js",
     "src/geometry/cylinderGeometry.js",
     "src/geometry/planeGeometry.js",

@@ -9,38 +9,32 @@
 
      ## Overview
 
-     <ul>
-     <li>A GLTFModel is a container of {{#crossLink "Component"}}Components{{/crossLink}} that loads itself from glTF.</li>
-     <li>It begins loading as soon as you set its {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}
-     property to the location of a valid glTF file.</li>
-     <li>You can set {{#crossLink "GLTFModel/src:property"}}{{/crossLink}} to a new file path at any time, which causes
-     the GLTFModel to clear itself and load components from the new file.</li>
-     <li>Can be transformed within World-space by attached it to a {{#crossLink "Transform"}}{{/crossLink}}.</li>
-     <li>Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.</li>
-     </ul>
+     * A GLTFModel is a container of {{#crossLink "Component"}}Components{{/crossLink}} that loads itself from glTF.
+     * It begins loading as soon as you set its {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}
+     property to the location of a valid glTF file.
+     * You can set {{#crossLink "GLTFModel/src:property"}}{{/crossLink}} to a new file path at any time, which causes
+     the GLTFModel to clear itself and load components from the new file.
+     * Can be transformed within World-space by attached it to a {{#crossLink "Transform"}}{{/crossLink}}.
+     * Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
      <img src="../../../assets/images/GLTFModel.png"></img>
 
      ## Tutorials
 
-     <ul>
-     <li>[Importing glTF](https://github.com/xeolabs/xeogl/wiki/Models-glTF)</li>
-     </ul>
+     * [Importing glTF](https://github.com/xeolabs/xeogl/wiki/Models-glTF)
 
      ## Examples
 
-     <ul>
-     <li>[Gearbox](../../examples/#models_GLTFModel_gearbox)</li>
-     <li>[Buggy](../../examples/#models_GLTFModel_buggy)</li>
-     <li>[Reciprocating Saw](../../examples/#models_GLTFModel_ReciprocatingSaw)</li>
-     <li>[Textured Duck](../../examples/#models_GLTFModel_duck)</li>
-     <li>[GLTFModel with entity explorer UI](../../examples/#demos_ui_explorer)</li>
-     <li>[Fly camera to GLTFModel entities](../../examples/#boundaries_flyToBoundary)</li>
-     <li>[Ensuring individual materials on GLTFModel entities](../../examples/#models__uniqueMaterials)</li>
-     <li>[Baking transform hierarchies](../../examples/#models_bakeTransforms)</li>
-     <li>[Attaching transforms to GLTFModel, via constructor](../../examples/#models_configureTransform)</li>
-     <li>[Attaching transforms to GLTFModel, via property](../../examples/#models_attachTransform)</li>
-     </ul>
+     * [Gearbox](../../examples/#models_GLTFModel_gearbox)
+     * [Buggy](../../examples/#models_GLTFModel_buggy)
+     * [Reciprocating Saw](../../examples/#models_GLTFModel_ReciprocatingSaw)
+     * [Textured Duck](../../examples/#models_GLTFModel_duck)
+     * [GLTFModel with entity explorer UI](../../examples/#demos_ui_explorer)
+     * [Fly camera to GLTFModel entities](../../examples/#boundaries_flyToBoundary)
+     * [Ensuring individual materials on GLTFModel entities](../../examples/#models__uniqueMaterials)
+     * [Baking transform hierarchies](../../examples/#models_bakeTransforms)
+     * [Attaching transforms to GLTFModel, via constructor](../../examples/#models_configureTransform)
+     * [Attaching transforms to GLTFModel, via property](../../examples/#models_attachTransform)
 
      @class GLTFModel
      @module xeogl

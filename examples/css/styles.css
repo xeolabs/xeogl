@@ -175,6 +175,10 @@ p {
     font: 14px Helvetica, arial, freesans, sans-serif;
 }
 
+#infoLight p {
+    color: #ffffff;
+}
+
 span {
     line-height: 190%;
     font: 14px Helvetica, arial, freesans, sans-serif;

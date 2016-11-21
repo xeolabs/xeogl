@@ -1,14 +1,12 @@
 /**
-
  A **Modes** toggles various xeogl modes and capabilities for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>Though the rendering modes are defined by various different components attached to the {{#crossLink "Entity"}}Entities{{/crossLink}},
- Modes components provide a single point through which you can toggle them on or off.</li>
- <li>A Modes may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
- rendering modes for them as a group.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Modes create within xeogl's shaders.</li>
- </ul>
+ ## Overview
+
+ * Though the rendering modes are defined by various different components attached to the {{#crossLink "Entity"}}Entities{{/crossLink}},
+ Modes components provide a single point through which you can toggle them on or off.
+ * A Modes may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
+ rendering modes for them as a group.
 
  <img src="../../../assets/images/Modes.png"></img>
 

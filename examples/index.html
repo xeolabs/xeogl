@@ -7,9 +7,6 @@
     <!--Examples viewer adapted from the one over at THREE.js -->
     <!-- threejs.com -->
 
-    <link href="../assets/css/prettify.css" rel="stylesheet"/>
-    <script src="../assets/js/prettify.js"></script>
-
     <style>
 
         body {
@@ -45,15 +42,18 @@
 
         #panel {
             position: absolute;
-            width: 310px;
+            width: 330px;
             height: 100%;
-            overflow: scroll;
+            overflow-Y: scroll;
+            overflow-x: hidden;
             background: #fafafa;
+
         }
 
         #panel #list {
             padding: 0px 20px;
             line-height: 18px;
+            overflow-x: hidden;
         }
 
         #panel #list .link {
@@ -109,12 +109,12 @@
 
         #viewer {
             position: absolute;
-            left: 310px;
-            width: -webkit-calc(100% - 310px); /* Safari */
-            width: calc(100% - 310px);
+            left: 330px;
+            width: -webkit-calc(100% - 330px); /* Safari */
+            width: calc(100% - 330px);
             height: 100%;
             border: 0px;
-            background-color: #ffffff;
+            background-color: #8d8d8d;
         }
 
         #sourceButton {
@@ -133,46 +133,10 @@
         }
 
         .contents {
-            padding-top: 0px;
-            padding-bottom: 0px;
+            padding-top: 0;
+            padding-bottom: 0;
         }
 
-        #source {
-            position: fixed;
-            top: 10px;
-            left: 320px;
-            padding: 10px;
-            margin: 0;
-            height: -webkit-calc(100% - 120px); /* Safari */
-            height: calc(100% - 120px);
-            width: -webkit-calc(100% - 350px); /* Safari */
-            width: calc(100% - 350px);
-
-            z-index: 900;
-            overflow-y: scroll;
-
-            background: white;
-            border-radius: 2px;
-            border: 1px solid #aaa;
-        }
-
-        #closeButton {
-            position: fixed;
-            right: 30px;
-            top: 20px;
-            padding: 8px;
-            color: #fff;
-            background-color: #02550b;
-            opacity: 0.7;
-        }
-
-        #closeButton:hover {
-            cursor: pointer;
-            opacity: 1;
-        }
-
-        #source-field {
-        }
     </style>
 </head>
 <body>
@@ -196,15 +160,9 @@
 <div id="panel">
     <div id="list">
         <h1><a href="../index.html">xeogl</a> / Examples</h1>
-
-        <p style="color: red;">v0.0.1 - alpha status!</p>
     </div>
 </div>
 
-<div id="source">
-  <pre id="source-field" style="border: 0" class="prettyprint lang-javascript">
-  </pre>
-</div>
 <iframe id="viewer"></iframe>
 
 <script>
@@ -212,11 +170,20 @@
     var files = {
 
         "Animation": [
-            "#camera animation",
-            "animation_CameraFlight_Entity",
-            "animation_CameraFlight_Boundary3D",
-            "animation_CameraFlight_AABB",
-            "animation_CameraPath"
+            "#flying cameras to targets",
+            "animation_CameraFlightAnimation_Entity",
+            "animation_CameraFlightAnimation_Boundary3D",
+            "animation_CameraFlightAnimation_AABB",
+
+            "#following targets with cameras",
+            "animation_CameraFollowAnimation",
+            "animation_CameraFollowAnimation_fitToView",
+
+            "#animating cameras along paths",
+            "animation_CameraPathAnimation_interpolate",
+            "animation_CameraPathAnimation_flyToFrame",
+            "animation_CameraPathAnimation_scrubToFrame",
+            "animation_CameraPathAnimation_frameMenu"
         ],
 
         "Billboards": [
@@ -229,12 +196,15 @@
         "Boundaries": [
 
             "#entities",
-            "boundaries_Entity_worldBoundary",
-            "boundaries_Entity_viewBoundary",
-            "boundaries_Entity_canvasBoundary",
+            "boundaries_Entity_worldBoundary_aabb",
+            "boundaries_Entity_worldBoundary_obb",
+            "boundaries_Entity_worldBoundary_sphere",
+            "boundaries_Entity_viewBoundary_aabb",
+            "boundaries_Entity_localBoundary_aabb",
+            "boundaries_Entity_canvasBoundary_aabb",
 
             "#models",
-            "boundaries_Model_worldBoundary",
+            "boundaries_Model_worldBoundary_aabb",
 
             "#animations",
             "boundaries_flyToBoundary"
@@ -252,7 +222,7 @@
             "transforms_project_transformHierarchy",
 
             "#animation",
-            "animation_CameraPath"
+            "animation_CameraPathAnimation"
         ],
 
         "Canvas": [
@@ -311,9 +281,6 @@
 
         "Effects": [
 
-            "#Emphasis",
-            "effects_HighlightEntityEffect",
-
             "#Stereo",
             "effects_StereoEffect",
             "effects_stereo_custom",
@@ -324,7 +291,8 @@
             "effects_zspace_gearbox",
             "effects_zspace_gearbox_explorer",
             "effects_zspace_buggy",
-            "effects_zspace_ReciprocatingSaw"
+            "effects_zspace_ReciprocatingSaw",
+            "effects_zspace_drawing"
         ],
 
         "Entities": [
@@ -352,7 +320,7 @@
 
             "#primitives",
             "geometry_BoxGeometry",
-            "geometry_BoundaryGeometry",
+            "geometry_AABBGeometry",
             "geometry_CylinderGeometry",
             "geometry_PlaneGeometry",
             "geometry_HeightmapGeometry",
@@ -365,7 +333,6 @@
 
             "#importing from Nintendo .3DS",
             "geometry_Nintendo3DSGeometry_lexus",
-            "geometry_Nintendo3DSGeometry_osiris",
 
             "#text",
             "geometry_VectorTextGeometry",
@@ -453,7 +420,7 @@
             "models_bakeTransforms",
 
             "#generating",
-            "models_BuildableModel",
+            "models_BuildableModel_city",
 
             "#loading from glTF",
             "models_GLTFModel_gearbox",
@@ -511,24 +478,12 @@
     var container = document.createElement('div');
     list.appendChild(container);
 
-    var closeButton = document.createElement('div');
-    closeButton.id = 'closeButton';
-    closeButton.textContent = 'Close';
-    closeButton.addEventListener('click', function (event) {
-        document.getElementById('source').style.display = 'none'
-    }, false);
-
-    var sourceWindow = document.getElementById('source');
-    sourceWindow.appendChild(closeButton);
-    sourceWindow.style.display = 'none';
-
     var sourceButton = document.createElement('div');
     sourceButton.id = 'sourceButton';
-    sourceButton.textContent = 'Source code';
+    sourceButton.textContent = 'View source';
 
     sourceButton.addEventListener('click', function (event) {
-        updateSource();
-        document.getElementById('source').style.display = '';
+        window.open( 'https://github.com/xeolabs/xeogl/blob/master/examples/' + selected + '.html' );
     }, false);
 
     sourceButton.style.display = 'none';
@@ -607,42 +562,6 @@
             return " " + $1.toLowerCase();
         });
     }
-    var updateSource = function (change) {
-        var array = location.href.split('/');
-
-        array.pop();
-        var htmlfile = array.join('/') + '/' + selected + '.html';
-        var srcReg = /<script[^<]*<\/script>/mg;
-
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', htmlfile, true);
-        xhr.onreadystatechange = function () {
-            if (this.readyState !== 4) return;
-            if (this.status !== 200) return;
-
-            var source = this.responseText;
-            var lines = source.split('\n');
-            var start = 0, end = lines.length;
-            for (var i = 0; i < lines.length; i++) {
-                if (lines[i].trim().substring(0, 7) === ('<script')) {
-                    start = i;
-                }
-                if (lines[i].trim() == '<\/script>') {
-                    end = i;
-                }
-            }
-
-            source = lines.splice(start + 1, end - 1).join('\n');
-
-            var srcField = document.getElementById('source-field');
-            srcField.innerHTML = source;
-
-            prettyPrint();
-        };
-        xhr.send();
-
-        //window.open('view-source:' + htmlfile);
-    };
 
     var load = function (file) {
 
@@ -662,7 +581,6 @@
             scrollIntoView(divs[file]);
         }
         clickedFile = null;
-        updateSource();
     };
 
     if (window.location.hash !== '') {
@@ -679,8 +597,7 @@
     });
 
     function scrollIntoView(div) {
-        var top = documentOffsetTop(div) - (window.innerHeight / 6 );
-        document.getElementById("panel").scrollTop = top;
+        document.getElementById("panel").scrollTop = documentOffsetTop(div) - (window.innerHeight / 6 );;
     }
 
     function documentOffsetTop(div) {

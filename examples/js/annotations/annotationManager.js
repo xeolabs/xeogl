@@ -25,7 +25,7 @@
             this.annotations = {};
             this._listDirty = true;
             this._cameraFlight = this.create({
-                type:"xeogl.CameraFlight",
+                type:"xeogl.CameraFlightAnimation",
                 duration: 1.0
             });
             this.visible = cfg.visible;

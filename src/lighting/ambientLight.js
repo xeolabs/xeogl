@@ -1,43 +1,42 @@
 /**
-
  An **AmbientLight** defines an ambient light source of fixed intensity and color that affects all attached {{#crossLink "Entity"}}Entities{{/crossLink}}
  equally.
 
- <ul>
- <li>AmbientLights are grouped, along with other light source types, within
- {{#crossLink "Lights"}}Lights{{/crossLink}} components, which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>When the {{#crossLink "Entity"}}Entities{{/crossLink}} have {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}},
+ <a href="../../examples/#lights_ambient"><img src="http://i.giphy.com/l0HlGTxXQWMRVOPwk.gif"></img></a>
+
+ ## Overview
+
+ * AmbientLights are grouped, along with other light source types, within
+ {{#crossLink "Lights"}}Lights{{/crossLink}} components, which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * When the {{#crossLink "Entity"}}Entities{{/crossLink}} have {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}},
  AmbientLight {{#crossLink "AmbientLight/color:property"}}color{{/crossLink}} is multiplied by
- {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}}.</li>
- </ul>
+ {{#crossLink "PhongMaterial"}}PhongMaterial{{/crossLink}} {{#crossLink "PhongMaterial/ambient:property"}}{{/crossLink}} at each rendered fragment of the {{#crossLink "Geometry"}}{{/crossLink}} surface.
 
  <img src="../../../assets/images/AmbientLight.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Ambient light source](../../examples/#lights_ambient)</li>
- </ul>
+ * [Ambient light source](../../examples/#lights_ambient)
 
  ## Usage
 
  ```` javascript
  var entity = new xeogl.Entity({
 
-        lights: new xeogl.Lights({
-            lights: [
-                new xeogl.AmbientLight({
-                    color: [0.7, 0.7, 0.7]
-                })
-            ]
-        }),
- ,
-        material: new xeogl.PhongMaterial({
-            diffuse: [0.5, 0.5, 0.0]
-        }),
+     lights: new xeogl.Lights({
+         lights: [
+             new xeogl.AmbientLight({
+                 color: [0.7, 0.7, 0.7]
+             })
+         ]
+     }),
 
-        geometry: new xeogl.BoxGeometry()
-  });
+     material: new xeogl.PhongMaterial({
+        diffuse: [0.5, 0.5, 0.0]
+     }),
+
+     geometry: new xeogl.BoxGeometry()
+ });
  ````
 
  @class AmbientLight

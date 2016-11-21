@@ -1,16 +1,16 @@
 /**
  A **Lights** defines a group of light sources that illuminate attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
+ ## Overview
+
  A Lights may contain a virtually unlimited number of three types of light source:
 
- <ul>
- <li>{{#crossLink "AmbientLight"}}AmbientLight{{/crossLink}}s, which are fixed-intensity and fixed-color, and
- affect all the {{#crossLink "Entity"}}Entities{{/crossLink}} equally,</li>
- <li>{{#crossLink "PointLight"}}PointLight{{/crossLink}}s, which emit light that
- originates from a single point and spreads outward in all directions, and </li>
- <li>{{#crossLink "DirLight"}}DirLight{{/crossLink}}s, which illuminate all the
- {{#crossLink "Entity"}}Entities{{/crossLink}} equally from a given direction</li>
- </ul>
+ * {{#crossLink "AmbientLight"}}AmbientLight{{/crossLink}}s, which are fixed-intensity and fixed-color, and
+ affect all the {{#crossLink "Entity"}}Entities{{/crossLink}} equally,
+ * {{#crossLink "PointLight"}}PointLight{{/crossLink}}s, which emit light that
+ originates from a single point and spreads outward in all directions, and
+ * {{#crossLink "DirLight"}}DirLight{{/crossLink}}s, which illuminate all the
+ {{#crossLink "Entity"}}Entities{{/crossLink}} equally from a given direction
 
  <img src="../../../assets/images/Lights.png"></img>
 

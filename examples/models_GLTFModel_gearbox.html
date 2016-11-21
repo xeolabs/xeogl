@@ -7,14 +7,13 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="../build/xeogl.min.js"></script>
-    <script src="js/animation/cameraFollow.js"></script>
+    <script src="../build/xeogl.js"></script>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>importing glTF using a <a
-        href="../docs/classes/GLTFModel.html" target="_docs">GLTFModel</a> component
+    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>importing glTF using a <a
+        href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> component
 </div>
 
 <script>
@@ -41,6 +40,9 @@
                 view.rotateEyeY(0.1);
                 view.rotateEyeX(0.02);
             });
+
+    gearbox.scene.canvas.backgroundColor = [1,1,0,0];
+    gearbox.scene.canvas.transparent = true;
 
 </script>
 </body>

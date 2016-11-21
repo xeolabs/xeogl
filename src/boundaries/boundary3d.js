@@ -1,20 +1,18 @@
 /**
- A **Boundary3D** provides the 3D extents of its parent component in a given coordinate system.
+ A **Boundary3D** provides the 3D extents of its parent component in either the Local, World or View coordinate systems.
 
- <a href="../../examples/#boundaries_flyToBoundary"><img src="../../assets/images/screenshots/Boundary3D.png"></img></a>
+ <a href="../../examples/#animation_CameraFollowAnimation"><img src="http://i.giphy.com/l0HlHcuzAjhMQ8YSY.gif"></img></a>
 
  ## Overview
 
  A Boundary3D provides its spatial info in these properties:
 
- <ul>
- <li>{{#crossLink "Boundary3D/obb:property"}}{{/crossLink}} - an oriented box (OBB) in a 32-element Float32Array
- containing homogeneous coordinates for the eight corner vertices, ie. each having elements [x,y,z,w].</li>
- <li>{{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} - an axis-aligned box (AABB) in a six-element Float32Array
- containing the min/max extents of the axis-aligned volume, ie. ````[xmin,ymin,zmin,xmax,ymax,zmax]````,</li>
- <li>{{#crossLink "Boundary3D/center:property"}}{{/crossLink}} - the center point as a Float32Array containing elements ````[x,y,z]```` and</li>
- <li>{{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} - a bounding sphere, given as a Float32Array containingg elements````[x,y,z,radius]````.</li>
- </ul>
+ * {{#crossLink "Boundary3D/obb:property"}}{{/crossLink}} - an oriented box (OBB) as a 32-element Float32Array
+ containing homogeneous coordinates for the eight corner vertices, ie. each having elements [x,y,z,w].
+ * {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}} - an axis-aligned box (AABB) in a six-element Float32Array
+ containing the min/max extents of the axis-aligned volume, ie. ````[xmin,ymin,zmin,xmax,ymax,zmax]````,
+ * {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} - the center point as a three-element Float32Array containing elements ````[x,y,z]```` and
+ * {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} - a bounding sphere as a four-element Float32Array containing elements````[x,y,z,radius]````.
 
  As shown in the diagram below, the following xeogl components have Boundary3Ds:
 
@@ -33,18 +31,18 @@
  their transformation by the {{#crossLink "Entity/transform:property"}}Entity's Modelling transform{{/crossLink}}, {{#crossLink "Camera/view:property"}}Viewing transform{{/crossLink}}
  and {{#crossLink "Camera/project:property"}}Projection transform{{/crossLink}}.
 
- <br><br>
+ <br>
  <img src="../../../assets/images/Boundary3D.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Entity World-space boundary](../../examples/#boundaries_Entity_worldBoundary)</li>
- <li>[Entity View-space boundary](../../examples/#boundaries_Entity_viewBoundary)</li>
- <li>[Entity Canvas-space boundary](../../examples/#boundaries_Entity_canvasBoundary)</li>
- <li>[Flying camera to Entity World-space boundaries](../../examples/#boundaries_flyToBoundary)</li>
- <li>[Model World-space boundary](../../examples/#boundaries_Model_worldBoundary)</li>
- </ul>
+ * [Entity World-space boundary](../../examples/#boundaries_Entity_worldBoundary_aabb)
+ * [Entity View-space boundary](../../examples/#boundaries_Entity_viewBoundary_aabb)
+ * [Entity Canvas-space boundary](../../examples/#boundaries_Entity_canvasBoundary_aabb)
+ * [Flying camera to Entity World-space boundaries](../../examples/#boundaries_flyToBoundary)
+ * [Model World-space boundary](../../examples/#boundaries_Model_worldBoundary_aabb)
+ * [Following an Entity with a Camera](../../examples/#animation_CameraFollowAnimation)
+ * [Following an Entity with a Camera, keeping Entity fitted to view volume](../../examples/#animation_CameraFollowAnimation_fitToView)
 
  ## Usage
 

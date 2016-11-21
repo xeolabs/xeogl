@@ -1,32 +1,32 @@
 /**
  A **Canvas** manages a {{#crossLink "Scene"}}Scene{{/crossLink}}'s HTML canvas and its WebGL context.
 
- <ul>
- <li>Each {{#crossLink "Scene"}}Scene{{/crossLink}} provides a Canvas as a read-only property on itself.</li>
- <li>When a {{#crossLink "Scene"}}Scene{{/crossLink}} is configured with the ID of
+ ## Overview
+
+ * Each {{#crossLink "Scene"}}Scene{{/crossLink}} provides a Canvas as a read-only property on itself.
+ * When a {{#crossLink "Scene"}}Scene{{/crossLink}} is configured with the ID of
  an existing <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a>, then
- the Canvas will bind to that, otherwise the Canvas will automatically create its own.</li>
- <li>A Canvas will fire a {{#crossLink "Canvas/size:event"}}{{/crossLink}} event whenever
- the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a> resizes.</li>
- <li>A Canvas is responsible for obtaining a WebGL context from
- the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a>.</li>
- <li>A Canvas also fires a {{#crossLink "Canvas/webglContextLost:event"}}{{/crossLink}} event when the WebGL context is
- lost, and a {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} when it is restored again.</li>
- <li>The various components within the parent {{#crossLink "Scene"}}Scene{{/crossLink}} will transparently recover on
- the {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} event.</li>
- </ul>
+ the Canvas will bind to that, otherwise the Canvas will automatically create its own.
+ * A Canvas will fire a {{#crossLink "Canvas/boundary:event"}}{{/crossLink}} event whenever
+ the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a> resizes.
+ * A Canvas is responsible for obtaining a WebGL context from
+ the <a href="http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element">HTMLCanvasElement</a>.
+ * A Canvas also fires a {{#crossLink "Canvas/webglContextLost:event"}}{{/crossLink}} event when the WebGL context is
+ lost, and a {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} when it is restored again.
+ * The various components within the parent {{#crossLink "Scene"}}Scene{{/crossLink}} will transparently recover on
+ the {{#crossLink "Canvas/webglContextRestored:event"}}{{/crossLink}} event.
 
  <img src="../../../assets/images/Canvas.png"></img>
 
- <br><br>
  Note that a Canvas also has a {{#crossLink "Spinner"}}{{/crossLink}}, which shows a
  busy spinner when a {{#crossLink "Model"}}{{/crossLink}} is loading, or when directed by application logic.
 
  ## Examples
 
- <ul>
- <li>[Multiple canvases](../../examples/#scene_multipleScenes)</li>
- </ul>
+ * [Multiple canvases/scenes in a page](../../examples/#scene_multipleScenes)
+ * [Taking canvas snapshots](../../examples/#canvas_snapshot)
+ * [Transparent canvas with background image](../../examples/#canvas_transparent)
+ * [Canvas with multiple viewports](../../examples/#canvas_multipleViewports)
 
  ## Usage
 
@@ -185,6 +185,7 @@
              */
             this.contextAttr = cfg.contextAttr || {};
             this.contextAttr.alpha = this.transparent;
+            this.contextAttr.preserveDrawingBuffer = true;
 
             if (!cfg.canvas) {
 

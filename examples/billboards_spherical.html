@@ -11,9 +11,9 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeogl.org">xeogl</a>
+    <a href="http://xeogl.org" target="_parent" >xeogl</a>
     <br><br>
-   1000 spherical <a href="../docs/classes/Billboard.html" target="_docs">Billboards</a>
+   1000 spherical <a href="../docs/classes/Billboard.html" target="_parent">Billboards</a>
 </div>
 
 <script>
@@ -56,11 +56,9 @@
     var scene = xeogl.scene;
 
     // Move the camera back a bit
-
     scene.camera.view.zoom(120);
 
     // Orbit the eye position about the look position.
-
     scene.on("tick",
             function () {
 

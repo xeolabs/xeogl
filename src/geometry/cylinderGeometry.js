@@ -1,13 +1,19 @@
 /**
- A **CylinderGeometry** extends {{#crossLink "Geometry"}}{{/crossLink}} to define a cylindrical mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **CylinderGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a cylinder-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  <a href="../../examples/#geometry_CylinderGeometry"><img src="../../assets/images/screenshots/CylinderGeometry.png"></img></a>
 
+ ## Overview
+
+ * Dynamically modify a CylinderGeometry's shape at any time by updating its {{#crossLink "CylinderGeometry/center:property"}}{{/crossLink}}, {{#crossLink "CylinderGeometry/radiusTop:property"}}{{/crossLink}}, {{#crossLink "CylinderGeometry/radiusBottom:property"}}{{/crossLink}}, {{#crossLink "CylinderGeometry/height:property"}}{{/crossLink}},
+ {{#crossLink "CylinderGeometry/radialSegments:property"}}{{/crossLink}}, {{#crossLink "CylinderGeometry/heightSegments:property"}}{{/crossLink}} and
+ {{#crossLink "CylinderGeometry/openEnded:property"}}{{/crossLink}} properties.
+ * Dynamically switch its primitive type between ````"points"````, ````"lines"```` and ````"triangles"```` at any time by
+ updating its {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} property.
+
  ## Examples
 
- <ul>
- <li>[Textured CylinderGeometry](../../examples/#geometry_CylinderGeometry)</li>
- </ul>
+ * [Textured CylinderGeometry](../../examples/#geometry_CylinderGeometry)
 
  ## Usage
 
@@ -18,6 +24,7 @@
  new xeogl.Entity({
 
      geometry: new xeogl.CylinderGeometry({
+         center: [0,0,0],
          radiusTop: 2.0,
          radiusBottom: 2.0,
          height: 5.0,
@@ -44,7 +51,8 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CylinderGeometry.
- @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
+ @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values for a CylinderGeometry are 'points', 'lines' and 'triangles'.
+ @param [cfg.center] {Float32Array} 3D point indicating the center position of the CylinderGeometry.
  @param [cfg.radiusTop=1] {Number} Radius of top.
  @param [cfg.radiusBottom=1] {Number} Radius of bottom.
  @param [cfg.height=1] {Number} Height.
@@ -65,8 +73,9 @@
         _init: function (cfg) {
 
             this._super(cfg);
-
+            this.center = cfg.center;
             this.lod = cfg.lod;
+            this.center = cfg.center;
             this.radiusTop = cfg.radiusTop;
             this.radiusBottom = cfg.radiusBottom;
             this.height = cfg.height;
@@ -82,6 +91,10 @@
          * @protected
          */
         _update: function () {
+
+            var centerX = this._center[0];
+            var centerY = this._center[1];
+            var centerZ = this._center[2];
 
             var radiusTop = this._radiusTop;
             var radiusBottom = this._radiusBottom;
@@ -142,19 +155,23 @@
                     normals.push(currentRadius * x);
                     normals.push(normalY); //todo
                     normals.push(currentRadius * z);
-                    uvs.push( (i * radialLength));
-                    uvs.push(1-  h * 1 / heightSegments);
-                    positions.push(currentRadius * x);
-                    positions.push(currentHeight);
-                    positions.push(currentRadius * z);
+
+                    uvs.push((i * radialLength));
+                    uvs.push(1 - h * 1 / heightSegments);
+
+                    positions.push((currentRadius * x) + centerX);
+                    positions.push((currentHeight) + centerY);
+                    positions.push((currentRadius * z) + centerZ);
                 }
             }
 
             // create faces
             for (h = 0; h < heightSegments; h++) {
                 for (i = 0; i <= radialSegments; i++) {
+
                     first = h * (radialSegments + 1) + i;
                     second = first + radialSegments;
+
                     indices.push(first);
                     indices.push(second);
                     indices.push(second + 1);
@@ -173,11 +190,13 @@
                 normals.push(0.0);
                 normals.push(1.0);
                 normals.push(0.0);
+
                 uvs.push(0.5);
                 uvs.push(0.5);
-                positions.push(0);
-                positions.push(heightHalf);
-                positions.push(0);
+
+                positions.push(0 + centerX);
+                positions.push(heightHalf + centerY);
+                positions.push(0 + centerZ);
 
                 // top triangle fan
                 for (i = 0; i <= radialSegments; i++) {
@@ -189,16 +208,19 @@
                     normals.push(radiusTop * x);
                     normals.push(1.0);
                     normals.push(radiusTop * z);
+
                     uvs.push(tu);
                     uvs.push(tv);
-                    positions.push(radiusTop * x);
-                    positions.push(heightHalf);
-                    positions.push(radiusTop * z);
+
+                    positions.push((radiusTop * x) + centerX);
+                    positions.push((heightHalf) + centerY);
+                    positions.push((radiusTop * z) + centerZ);
                 }
 
                 for (i = 0; i < radialSegments; i++) {
                     center = startIndex;
                     first = startIndex + 1 + i;
+
                     indices.push(first);
                     indices.push(first + 1);
                     indices.push(center);
@@ -207,38 +229,47 @@
 
             // create bottom cap
             if (!openEnded && radiusBottom > 0) {
+
                 startIndex = (positions.length / 3);
 
                 // top center
                 normals.push(0.0);
                 normals.push(-1.0);
                 normals.push(0.0);
+
                 uvs.push(0.5);
                 uvs.push(0.5);
-                positions.push(0);
-                positions.push(0 - heightHalf);
-                positions.push(0);
+
+                positions.push(0 + centerX);
+                positions.push(0 - heightHalf + centerY);
+                positions.push(0 + centerZ);
 
                 // top triangle fan
                 for (i = 0; i <= radialSegments; i++) {
+
                     x = Math.sin(i * radialAngle);
                     z = Math.cos(i * radialAngle);
+
                     tu = (0.5 * Math.sin(i * radialAngle)) + 0.5;
                     tv = (0.5 * Math.cos(i * radialAngle)) + 0.5;
 
                     normals.push(radiusBottom * x);
                     normals.push(-1.0);
                     normals.push(radiusBottom * z);
+
                     uvs.push(tu);
                     uvs.push(tv);
-                    positions.push(radiusBottom * x);
-                    positions.push(0 - heightHalf);
-                    positions.push(radiusBottom * z);
+
+                    positions.push((radiusBottom * x) + centerX);
+                    positions.push((0 - heightHalf) + centerY);
+                    positions.push((radiusBottom * z) + centerZ);
                 }
 
                 for (i = 0; i < radialSegments; i++) {
+
                     center = startIndex;
                     first = startIndex + 1 + i;
+
                     indices.push(center);
                     indices.push(first + 1);
                     indices.push(first);
@@ -292,6 +323,36 @@
 
                 get: function () {
                     return this._lod;
+                }
+            },
+
+            /**
+             * 3D point indicating the center position of this CylinderGeometry.
+             *
+             * Fires an {{#crossLink "CylinderGeometry/center:event"}}{{/crossLink}} event on change.
+             *
+             * @property center
+             * @default [0,0,0]
+             * @type {Float32Array}
+             */
+            center: {
+
+                set: function (value) {
+
+                    (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
+
+                    this._scheduleUpdate();
+
+                    /**
+                     Fired whenever this CylinderGeometry's {{#crossLink "CylinderGeometry/center:property"}}{{/crossLink}} property changes.
+                     @event center
+                     @param value {Float32Array} The property's new value
+                     */
+                    this.fire("center", this._center);
+                },
+
+                get: function () {
+                    return this._center;
                 }
             },
 
@@ -547,6 +608,7 @@
         _getJSON: function () {
             return {
                 // Don't save lod
+                center: this._center.slice(),
                 radiusTop: this._radiusTop,
                 radiusBottom: this._radiusBottom,
                 height: this._height,

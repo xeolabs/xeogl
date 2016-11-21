@@ -57,7 +57,6 @@ module.exports = function (grunt) {
                         'examples/js/animation',
                         'examples/js/controls',
                         'examples/js/effects',
-                        'examples/js/webvr',
                         'examples/js/curves',
                         'examples/js/skyboxes',
                         'examples/js/geometry',

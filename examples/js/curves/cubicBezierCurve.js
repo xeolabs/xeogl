@@ -1,6 +1,8 @@
 /**
  A **CubicBezierCurve** is a {{#crossLink "Curve"}}{{/crossLink}} along which a 3D position can be animated.
 
+ ## Overview
+
  <ul>
  <li>As shown in the diagram below, a CubicBezierCurve is defined by four control points.</li>
  <li>You can sample a {{#crossLink "CubicBezierCurve/point:property"}}{{/crossLink}} and a {{#crossLink "CubicBezierCurve/tangent:property"}}{{/crossLink}}

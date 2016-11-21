@@ -1,6 +1,8 @@
 /**
  A **SplineCurve** is a {{#crossLink "Curve"}}{{/crossLink}} along which a 3D position can be animated.
 
+ ## Overview
+
  <ul>
  <li>As shown in the diagram below, a SplineCurve is defined by three or more control points.</li>
  <li>You can sample a {{#crossLink "SplineCurve/point:property"}}{{/crossLink}} and a {{#crossLink "Curve/tangent:property"}}{{/crossLink}}

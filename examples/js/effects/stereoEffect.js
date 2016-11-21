@@ -1,20 +1,30 @@
 /**
- A **StereoEffect** sets up a stereo view for its Scene.
+ A **StereoEffect** sets up a stereo view for its {{#crossLink "Scene"}}Scene{{/crossLink}}.
 
- <a href="../../examples/#effects_sterer"><img src="../../assets/images/screenshots/StereoEffect.png"></img></a>
+ <a href="../../examples/#effects_StereoEffect"><img src="../../assets/images/screenshots/StereoEffect.png"></img></a>
+
+ ## Overview
+
+ * Use a StereoEffect as a base class for split-view VR effects.
+
+ <img src="../../../assets/images/StereoEffect.png"></img>
+
+ ## Examples
+
+ * [Stereo view using a StereoEffect](../../examples/#effects_StereoEffect)
 
  ## Usage
 
- Stereo view of an Entity using Scene's default Camera and viewport:
+ Stereo view of an {{#crossLink "Entity"}}{{/crossLink}} using the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Camera"}}{{/crossLink}} and {{#crossLink "Viewport"}}{{/crossLink}}:
 
  ````javascript
  // Both the Entity and the StereoEffect use their Scene's default Camera and Viewport
 
  var entity = new xeogl.Entity({
-     geometry: new xeogl.BoxGeometry()
+     geometry: new xeogl.TorusGeometry()
  });
 
- var stereo = new xeogl.StereoEffect({
+ var stereoEffect = new xeogl.StereoEffect({
      eyeSep: 0.2, // Default
      focalLength: 20, // Default
      aperture: 45, // Default
@@ -22,7 +32,7 @@
  });
  ````
 
- Stereo view of an Entity with custom Camera and viewport:
+ Stereo view of an {{#crossLink "Entity"}}{{/crossLink}} using a custom {{#crossLink "Camera"}}{{/crossLink}} and {{#crossLink "Viewport"}}{{/crossLink}}:
 
  ````javascript
  var camera = new xeogl.Camera({
@@ -43,10 +53,10 @@
  var entity = new xeogl.Entity({
      camera: camera,
      viewport: viewport,
-     geometry: new xeogl.BoxGeometry()
+     geometry: new xeogl.TorusGeometry()
  });
 
- var stereo = new xeogl.StereoEffect({
+ var stereoEffect = new xeogl.StereoEffect({
      camera: camera,
      viewport: viewport,
      eyeSep: 0.2, // Default
@@ -72,7 +82,7 @@
  @param [cfg.viewport] {String|Viewport} ID or instance of a {{#crossLink "Viewport"}}Viewport{{/crossLink}} for this StereoEffect.
  Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this StereoEffect. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/viewport:property"}}viewport{{/crossLink}}.
- @param [cfg.eyeSep=0.2] Number Eye separation distance.
+ @param [cfg.eyeSep=0.2] Number Interpupillary distance (the distance between the center of the pupils of the two eyes).
  @param [cfg.focalLength=20] Focal length.
  @param [cfg.aperture=45] Aperture angle in degrees.
  @param [cfg.active=true] {Boolean} Whether or not this StereoEffect is active.
@@ -182,7 +192,7 @@
             },
 
             /**
-             * Eye separation distance.
+             * Interpupillary distance (the distance between the center of the pupils of the two eyes).
              *
              * Fires an {{#crossLink "StereoEffect/eyeSep:event"}}{{/crossLink}} event on change.
              *

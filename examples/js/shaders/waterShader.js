@@ -1,7 +1,6 @@
 /**
  A ripply water {{#crossLink "Shader"}}Shader{{/crossLink}}.
 
- @class Shader.Water
  @module xeogl
  @extends Shader
  */

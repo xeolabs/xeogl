@@ -21,11 +21,11 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeogl.org" target="_home">xeogl</a>
+    <a href="http://xeogl.org" target="_parent" >xeogl</a>
     <br><br>
     <ul>
-        <li>In this demo we're using a custom <a href="../docs/classes/HighlightEntityEffect.html" target="_docs">HighlightEntityEffect</a>
-            component to highlight individual <a href="../docs/classes/Entity.html" target="_docs">Entities</a>.</li>
+        <li>In this demo we're using a custom <a href="../docs/classes/HighlightEntityEffect.html" target="_parent">HighlightEntityEffect</a>
+            component to highlight individual <a href="../docs/classes/Entity.html" target="_parent">Entities</a>.</li>
         <li> This component works by by rendering a transparent glowing copy of the target Entity,<br>after
             all other Entities have rendered, with depth testing disabled so that it's<br>
             entirely visible even when other Entities obscure it.</li>
@@ -71,7 +71,7 @@
     // Camera flight animation, flies the
     // default camera to each entity
 
-    var cameraFlight = new xeogl.CameraFlight();
+    var cameraFlight = new xeogl.CameraFlightAnimation();
 
     // Wait until the glTF model is loaded
 

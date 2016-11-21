@@ -659,7 +659,7 @@
             (function () {
 
                 var flight = self.create({
-                    type: "xeogl.CameraFlight",
+                    type: "xeogl.CameraFlightAnimation",
                     camera: camera,
                     duration: 1.0 // One second to fly to each new target
                 });

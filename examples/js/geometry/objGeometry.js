@@ -4,15 +4,16 @@
 
     /**
      An **ObjGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that's loaded from a
-     <a href="https://en.wikipedia.org/wiki/Wavefront_.obj_file" target = "_other">Wavefront .OBJ</a> file.
+     <a href="https://en.wikipedia.org/wiki/Wavefront_.obj_file">Wavefront .OBJ</a> file.
 
      <a href="../../examples/#geometry_OBJGeometry_raptor"><img src="../../assets/images/screenshots/OBJGeometry.png"></img></a>
 
      ## Overview
 
-     * An OBJGeometry mesh is determined by the Wavefront .OBJ file referenced by the OBJGeometry's {{#crossLink "OBJGeometry/src:property"}}{{/crossLink}} property.
+     * An OBJGeometry mesh is defined by the Wavefront .OBJ file referenced by the OBJGeometry's {{#crossLink "OBJGeometry/src:property"}}{{/crossLink}} property.
      * An OBJGeometry only parses the geometry data from the .OBJ file and ignores any associated .MTL file.
      * Set the {{#crossLink "OBJGeometry/src:property"}}{{/crossLink}} property to a different file at any time, to regenerate the OBJGeometry's mesh from the new file.
+     * Internally uses the <a href="http://k3d.ivank.net/">k3d.js</a> library for parsing .OBJ files.
 
      ## Examples
 
@@ -48,7 +49,7 @@
      // When the OBJGeometry has loaded,
      // fly the camera to fit the entity in view
 
-     var cameraFlight = new xeogl.CameraFlight();
+     var cameraFlight = new xeogl.CameraFlightAnimation();
 
      entity.geometry.on("loaded", function () {
 

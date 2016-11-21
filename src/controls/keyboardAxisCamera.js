@@ -2,27 +2,21 @@
  A **KeyboardAxisCamera** switches a {{#crossLink "Camera"}}{{/crossLink}} between preset left, right, anterior,
  posterior, superior and inferior views using the keyboard.
 
- <ul>
- <li>A KeyboardAxisCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
- </ul>
+ * A KeyboardAxisCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
 
  By default the views are selected by the following keys:
 
- <ul>
- <li>'1' - left side, viewing center from along -X axis</li>
- <li>'2' - right side, viewing center from along +X axis</li>
- <li>'3' - anterior, viewing center from along -Z axis</li>
- <li>'4' - posterior, viewing center from along +Z axis</li>
- <li>'5' - superior, viewing center from along -Y axis</li>
- <li>'6' - inferior, viewing center from along +Y axis</li>
- </ul>
+ * '1' - left side, viewing center from along -X axis
+ * '2' - right side, viewing center from along +X axis
+ * '3' - anterior, viewing center from along -Z axis
+ * '4' - posterior, viewing center from along +Z axis
+ * '5' - superior, viewing center from along -Y axis
+ * '6' - inferior, viewing center from along +Y axis
 
  ## Examples
 
- <ul>
- <li>[KeyboardAxisCamera example](../../examples/#interaction_KeyboardAxisCamera)</li>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- </ul>
+ * [KeyboardAxisCamera example](../../examples/#interaction_KeyboardAxisCamera)
+ * [CameraControl example](../../examples/#interaction_CameraControl)
 
  ## Usage
 
@@ -87,7 +81,7 @@
 
             // Animations
 
-            this._cameraFly = new xeogl.CameraFlight(this.scene, {
+            this._cameraFly = new xeogl.CameraFlightAnimation(this.scene, {
                 duration: 1.0
             });
 

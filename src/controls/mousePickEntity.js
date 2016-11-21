@@ -3,10 +3,8 @@
 
  ## Examples
 
- <ul>
- <li>[MousePickEntity example](../../examples/#interaction_MousePickEntity)</li>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- </ul>
+ * [MousePickEntity example](../../examples/#interaction_MousePickEntity)
+ * [CameraControl example](../../examples/#interaction_CameraControl)
 
  ## Usage
 

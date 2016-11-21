@@ -1,24 +1,22 @@
 /**
  A Spinner displays a spinner animation at the center of its {{#crossLink "Canvas"}}{{/crossLink}} while things are loading or otherwise busy.
 
- <ul>
- <li>Spinners are normally shown by {{#crossLink "Model"}}Models{{/crossLink}} while they are loading, however they may also
- be shown by any application code that wants to indicate business.</li>
- <li>By default, they are also shown by components that load assets, such as {{#crossLink "Texture"}}{{/crossLink}}. You
- can disable that by flipping the Spinner's {{#crossLink "Spinner/textures:property"}}{{/crossLink}} property.</li>
- <li>A Spinner component has a {{#crossLink "Spinner/processes:property"}}{{/crossLink}} count that indicates how many
+ ## Overview
+
+ * Spinners are normally shown by {{#crossLink "Model"}}Models{{/crossLink}} while they are loading, however they may also
+ be shown by any application code that wants to indicate business.
+ * By default, they are also shown by components that load assets, such as {{#crossLink "Texture"}}{{/crossLink}}. You
+ can disable that by flipping the Spinner's {{#crossLink "Spinner/textures:property"}}{{/crossLink}} property.
+ * A Spinner component has a {{#crossLink "Spinner/processes:property"}}{{/crossLink}} count that indicates how many
  active processes it currently represents. As a process starts, a process would increment {{#crossLink "Spinner/processes:property"}}{{/crossLink}}, then as it
- completes (or fails), would decrement it again.</li>
- <li>A Spinner is only visible while {{#crossLink "Spinner/processes:property"}}{{/crossLink}} is greater than zero.</li>
- </ul>
+ completes (or fails), would decrement it again.
+ * A Spinner is only visible while {{#crossLink "Spinner/processes:property"}}{{/crossLink}} is greater than zero.
 
  <img src="../../../assets/images/Spinner.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Loading glTF model with spinner](../../examples/#importing_gltf_gearbox)</li>
- </ul>
+ * [Loading glTF model with spinner](../../examples/#importing_gltf_gearbox)
 
  ## Usage
 

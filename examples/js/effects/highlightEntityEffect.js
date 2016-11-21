@@ -37,8 +37,8 @@
  entityHighlight.active = true;  // Active by default
  ````
 
- @class HighlightEntityEffect
- @module xeo
+
+ @module xeogl
  @submodule effects
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this HighlightEntityEffect in the default

@@ -5,22 +5,21 @@
 
  ## Overview
 
- <ul>
- <li>Each {{#crossLink "Clip"}}Clip{{/crossLink}} is specified in World-space, as being perpendicular to a vector
+
+ * Each {{#crossLink "Clip"}}Clip{{/crossLink}} is specified in World-space, as being perpendicular to a vector
  {{#crossLink "Clip/dir:property"}}{{/crossLink}} that emanates from the origin, offset at a
- distance {{#crossLink "Clip/dist:property"}}{{/crossLink}} along that vector. </li>
- <li>You can move each {{#crossLink "Clip"}}Clip{{/crossLink}} back and forth along its vector by varying
- its {{#crossLink "Clip/dist:property"}}{{/crossLink}}.</li>
- <li>Likewise, you can rotate each {{#crossLink "Clip"}}Clip{{/crossLink}} about the origin by rotating
- its {{#crossLink "Clip/dir:property"}}{{/crossLink}} vector.</li>
- <li>Each {{#crossLink "Clip"}}Clip{{/crossLink}} is has a {{#crossLink "Clip/mode:property"}}{{/crossLink}}, which indicates whether it is disabled ("disabled"), discarding fragments that fall on the origin-side of the plane ("inside"), or clipping fragments that fall on the other side of the plane from the origin ("outside").</li>
- <li>You can update each {{#crossLink "Clip"}}Clip{{/crossLink}}'s {{#crossLink "Clip/mode:property"}}{{/crossLink}} to
- activate or deactivate it, or to switch which side it discards fragments from.</li>
- <li>Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}}
+ distance {{#crossLink "Clip/dist:property"}}{{/crossLink}} along that vector.
+ * You can move each {{#crossLink "Clip"}}Clip{{/crossLink}} back and forth along its vector by varying
+ its {{#crossLink "Clip/dist:property"}}{{/crossLink}}.
+ * Likewise, you can rotate each {{#crossLink "Clip"}}Clip{{/crossLink}} about the origin by rotating
+ its {{#crossLink "Clip/dir:property"}}{{/crossLink}} vector.
+ * Each {{#crossLink "Clip"}}Clip{{/crossLink}} is has a {{#crossLink "Clip/mode:property"}}{{/crossLink}}, which indicates whether it is disabled ("disabled"), discarding fragments that fall on the origin-side of the plane ("inside"), or clipping fragments that fall on the other side of the plane from the origin ("outside").
+ * You can update each {{#crossLink "Clip"}}Clip{{/crossLink}}'s {{#crossLink "Clip/mode:property"}}{{/crossLink}} to
+ activate or deactivate it, or to switch which side it discards fragments from.
+ * Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}}
  via the {{#crossLink "Modes/clipping:property"}}{{/crossLink}} flag on {{#crossLink "Modes"}}Modes{{/crossLink}} components
- attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Clips create within xeogl's shaders.</li>
- </ul>
+ attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
  <img src="../../../assets/images/Clips.png"></img>
 
  ## Usage

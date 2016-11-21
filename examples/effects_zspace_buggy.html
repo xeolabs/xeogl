@@ -21,12 +21,12 @@
 
 <div id="infoLight"
      style="left: 0; text-align: left; background: black; opacity: 0.7; padding: 8px; color: white; font-size: 14pt;">
-    <span><a href="http://xeogl.org" target="_home">xeogl</a><br>
+    <span><a href="http://xeogl.org" target="_parent" >xeogl</a><br>
         using <a
                 href="../docs/classes/GLTFModel.html"
-                target="_docs">GLTFModel</a> and <a
+                target="_parent">GLTFModel</a> and <a
                 href="../docs/classes/ZSpaceEffect.html"
-                target="_docs">ZSpaceEffect</a> components to view a glTF model in zSpace VR</span><br>
+                target="_parent">ZSpaceEffect</a> components to view a glTF model in zSpace VR</span><br>
     <span id="log" style="color:red;font-size: 16px"></span>
 </div>
 
@@ -108,7 +108,7 @@
     //---------------------------------------------------
 
     var zspaceEffect = new xeogl.ZSpaceEffect({
-        canvasOffset: [310, 0]
+        canvasOffset: [330, 0]
     });
 
     var zspaceStylusControl = new xeogl.ZSpaceStylusControl();

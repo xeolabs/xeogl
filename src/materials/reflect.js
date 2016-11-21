@@ -3,33 +3,30 @@
 
  ## Overview
 
- <ul>
- <li>Reflects are grouped within {{#crossLink "Material"}}Material{{/crossLink}}s, which are attached to
- {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>To create a Reflect from an image file, set the Reflect's {{#crossLink "Reflect/src:property"}}{{/crossLink}}
- property to the image file path.</li>
- <li>To create a Reflect from an HTML DOM Image object, set the Reflect's {{#crossLink "Reflect/image:property"}}{{/crossLink}}
- property to the entity.</li>
- <li>To render color images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink "Reflect/target:property"}}{{/crossLink}}
- property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>Similarly, to render depth images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink "Reflect/target:property"}}{{/crossLink}}
- property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>For special effects, we often use rendered Reflects in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Reflects create within xeogl's shaders.</li>
- </ul>
+ * Reflects are grouped within {{#crossLink "Material"}}Material{{/crossLink}}s, which are attached to
+ {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * To create a Reflect from an image file, set the Reflect's {{#crossLink "Reflect/src:property"}}{{/crossLink}}
+ property to the image file path.
+ * To create a Reflect from an HTML DOM Image object, set the Reflect's {{#crossLink "Reflect/image:property"}}{{/crossLink}}
+ property to the entity.
+ * To render color images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink "Reflect/target:property"}}{{/crossLink}}
+ property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * Similarly, to render depth images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Reflect, set the Reflect's {{#crossLink "Reflect/target:property"}}{{/crossLink}}
+ property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * For special effects, we often use rendered Reflects in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Stage"}}Stages{{/crossLink}}.
 
  <img src="../../../assets/images/Reflect.png"></img>
 
  ## Usage
 
  The example below has:
- <ul>
- <li>three Reflects,</li>
- <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies the {{#crossLink "Reflect"}}{{/crossLink}}s as diffuse, normal and specular maps,</li>
- <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "PointLight"}}{{/crossLink}},</li>
- <li>a {{#crossLink "Geometry"}}{{/crossLink}} that has the default box shape, and
- <li>an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.</li>
- </ul>
+
+ * three Reflects,
+ * a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies the {{#crossLink "Reflect"}}{{/crossLink}}s as diffuse, normal and specular maps,
+ * a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "PointLight"}}{{/crossLink}},
+ * a {{#crossLink "Geometry"}}{{/crossLink}} that has the default box shape, and
+ * an {{#crossLink "Entity"}}{{/crossLink}} attached to all of the above.
+
 
  ```` javascript
  var scene = new xeogl.Scene();
@@ -44,7 +41,7 @@
 
  var reflect3 = new xeogl.Reflect(scene, {
     src: "specularMap.jpg"
-});
+ });
 
  var material = new xeogl.PhongMaterial(scene, {
     ambient: [0.3, 0.3, 0.3],
@@ -52,23 +49,23 @@
     diffuseMap: reflect1,
     normalMap: reflect2,
     specularMap: reflect3
-});
+ });
 
  var light1 = new xeogl.PointLight(scene, {
     pos: [0, 100, 100],
     color: [0.5, 0.7, 0.5]
-});
+ });
 
  var light2 = new xeogl.AmbientLight(scene, {
     color: [0.5, 0.7, 0.5]
-});
+ });
 
  var lights = new xeogl.Lights(scene, {
     lights: [
         light1,
         light2
     ]
-});
+ });
 
  // Geometry without parameters will default to a 2x2x2 box.
  var geometry = new xeogl.Geometry(scene);
@@ -77,7 +74,7 @@
     lights: lights,
     material: material,
     geometry: geometry
-});
+ });
  ````
 
  @module xeogl

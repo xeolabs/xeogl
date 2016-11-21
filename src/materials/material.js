@@ -3,10 +3,8 @@
 
  Material is the base class for:
 
- <ul>
- <li>{{#crossLink "PhongMaterial"}}{{/crossLink}} - Blinn-Phong shading material.</li>
- <li>(more Material subtypes coming)</li>
- </ul>
+ * {{#crossLink "PhongMaterial"}}{{/crossLink}} - Blinn-Phong shading material.
+ * (more Material subtypes coming)
 
  @class Material
  @module xeogl

@@ -124,9 +124,9 @@
                                         <li class="active"><a href="#banner">Home</a></li>
                                         <li><a href="#concept">Concept</a></li>
                                         <li><a href="#features">Features</a></li>
-                                        <li><a href="../examples" target="_examples">Examples</a></li>
-                                        <li><a href="../docs" target="_docs">Docs</a></li>
-                                        <li><a href="https://github.com/xeolabs/xeogl" target="_github">GitHub</a></li>
+                                        <li><a href="../examples" target="_parent">Examples</a></li>
+                                        <li><a href="../docs" target="_parent">Docs</a></li>
+                                        <li><a href="https://github.com/xeolabs/xeogl" target="_parent">GitHub</a></li>
                                         <li>
                                             <a href="https://github.com/xeolabs/xeogl/archive/master.zip">Download</a>
                                         </li>
@@ -162,7 +162,7 @@
                 <div class="col-md-8 object-non-visible" data-animation-effect="fadeIn">
                     <h1>An open source engine for Web-based 3D visualization</h1>
 
-                    <p class="lead">Created by <a target="_blank"
+                    <p class="lead">Created by <a target="_parent"
                                                   href="http://twitter.com/xeographics">@xeographics</a></p>
 
                     <script>!function (d, s, id) {
@@ -257,9 +257,9 @@
                         <p>Using the JavaScript API, create your 3D scene as an entity-component graph, as shown
                             in the diagram below. Note how a scene is
                             basically a bunch of <a href="./docs/classes/Component.html"
-                                                    target="_docs">components</a> that are
+                                                    target="_parent">components</a> that are
                             tied
-                            together by <a href="./docs/classes/Entity.html" target="_docs">entities</a>.</p>
+                            together by <a href="./docs/classes/Entity.html" target="_parent">entities</a>.</p>
 
                         <pre class="prettyprint lang-javascript">// In this example we'll add components to the default scene,
 // which will automatically create a WebGL canvas for us
@@ -284,7 +284,7 @@ var entity = new xeogl.Entity({
                         <a href="http://xeogl.org/examples/#materials_fresnel_specular"><img
                                 src="assets/images/torus.png"></a>
 
-                        <a href="http://xeogl.org/examples/#importing_gltf_gearbox"><img
+                        <a href="http://xeogl.org/examples/#models_GLTFModel_gearbox"><img
                                 src="assets/images/conceptScene.png"></a>
 
                         <br>
@@ -294,16 +294,16 @@ var entity = new xeogl.Entity({
                             create things wherever we need to override those defaults. In the previous example we even
                             relied on
                             xeogl to provide a default <a
-                                    href="./docs/classes/Scene.html" target="_docs">scene</a> and canvas for us. For our
+                                    href="./docs/classes/Scene.html" target="_parent">scene</a> and canvas for us. For our
                             entity,
                             we provided our own <a
-                                    href="./docs/classes/PhongMaterial.html" target="_docs">material</a> and <a
-                                    href="./docs/classes/Geometry.html" target="_docs">geometry</a> components, leaving
+                                    href="./docs/classes/PhongMaterial.html" target="_parent">material</a> and <a
+                                    href="./docs/classes/Geometry.html" target="_parent">geometry</a> components, leaving
                             the entity
                             to
                             fall back on the scene's default flyweight instances for all the other components it needs
-                            (<a href="./docs/classes/Camera.html" target="_docs">camera</a>, <a
-                                    href="./docs/classes/Lights.html" target="_docs">lights</a> etc).</p>
+                            (<a href="./docs/classes/Camera.html" target="_parent">camera</a>, <a
+                                    href="./docs/classes/Lights.html" target="_parent">lights</a> etc).</p>
                         <br>
                         <h4>Editing scenes</h4>
 
@@ -311,8 +311,8 @@ var entity = new xeogl.Entity({
                             Create and
                             destroy components, link or unlink
                             them to each other, update their properties, and so on. Let's add <a
-                                    href="./docs/classes/Rotate.html" target="_docs">rotation</a> and <a
-                                    href="./docs/classes/Scale.html" target="_docs">scale</a> transforms to our
+                                    href="./docs/classes/Rotate.html" target="_parent">rotation</a> and <a
+                                    href="./docs/classes/Scale.html" target="_parent">scale</a> transforms to our
                             torus:</p>
 
                         <pre class="prettyprint lang-javascript">// Rotate and scale our torus entity
@@ -370,7 +370,7 @@ cameraFlight.flyTo(model);
 // Use a BIM-style camera control to navigate
 // the model with the mouse and keyboard
 var cameraControl = new xeogl.BIMCameraControl();</pre>
-                        <a href="http://xeogl.org/examples/#importing_gltf_gearbox"><img
+                        <a href="http://xeogl.org/examples/#models_GLTFModel_gearbox"><img
                                 src="assets/images/glTF_gearbox_medium.png"></a>
 
                         <br>
@@ -383,8 +383,8 @@ var cameraControl = new xeogl.BIMCameraControl();</pre>
     focalDist: 20,
     aperture: 45,
 });</pre>
-                        <a href="http://xeogl.org/examples/#effects_stereo"><img
-                                src="assets/images/effects_stereo.png"></a>
+                        <a href="http://xeogl.org/examples/#effects_StereoEffect"><img
+                                src="assets/images/screenshots/StereoEffect.png"></a>
 
                         <br>
                         <p>How about WebVR with quad-buffered stereo, 3D tracking eyewear and stylus interaction? Let's
@@ -422,11 +422,11 @@ var zspaceStylusControl = new xeogl.ZSpaceStylusControl();</pre>
 
                         <ul>
                             <li><a
-                                    href="http://xeogl.org/docs" target="_docs">API reference</a></li>
+                                    href="http://xeogl.org/docs" target="_parent">API reference</a></li>
                             <li><a
                                     href="https://github.com/xeolabs/xeogl/wiki" target="_wiki">Wiki</a></li>
                             <li><a
-                                    href="http://xeogl.org/examples/#materials_fresnel_specular" target="_examples">Examples</a>
+                                    href="http://xeogl.org/examples/#materials_fresnel_specular" target="_parent">Examples</a>
                             </li>
                         </ul>
 
@@ -481,7 +481,7 @@ var zspaceStylusControl = new xeogl.ZSpaceStylusControl();</pre>
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <p class="text-center">Copyright © 2016 xeogl by <a target="_blank" href="http://xeolabs.com">xeoLabs</a>.
+                    <p class="text-center">Copyright © 2016 xeogl by <a target="_parent" href="http://xeolabs.com">xeoLabs</a>.
                     </p>
                 </div>
             </div>

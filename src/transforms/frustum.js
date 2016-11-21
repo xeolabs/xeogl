@@ -1,28 +1,24 @@
 /**
- A **Frustum** defines a perspective projection as a frustum-shaped view volume.
+ A **Frustum** is a {{#crossLink "Transform"}}{{/crossLink}} that defines a perspective projection as a frustum-shaped view volume.
 
- <ul>
- <li>Frustum is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
- <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>A Frustum lets us explicitly set the positions of the left, right, top, bottom, near and far planes, which is useful
- for asymmetrical view volumes, such as those used for stereo viewing.</li>
- <li>An Frustum's {{#crossLink "Frustum/near:property"}}{{/crossLink}} and {{#crossLink "Frustum/far:property"}}{{/crossLink}} properties
- specify the distances to the WebGL clipping planes.</li>
- <li>Use {{#crossLink "Ortho"}}{{/crossLink}} if you just want to specify the X,Y frustum extents with a single scale factor,
- ie. without individually specifying the distance to each frustum plane.</li>
- <li>Use {{#crossLink "Perspective"}}{{/crossLink}} if you need perspective projection.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Ortho components create within xeogl's shaders.</li>
- </ul>
+ ## Overview
+
+ * {{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
+ {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * A Frustum lets us explicitly set the positions of the left, right, top, bottom, near and far planes, which is useful
+ for asymmetrical view volumes, such as those used for stereo viewing.
+ * An Frustum's {{#crossLink "Frustum/near:property"}}{{/crossLink}} and {{#crossLink "Frustum/far:property"}}{{/crossLink}} properties
+ specify the distances to the WebGL clipping planes.
+ * Use {{#crossLink "Ortho"}}{{/crossLink}} if you just want to specify the X,Y frustum extents with a single scale factor,
+ ie. without individually specifying the distance to each frustum plane.
+ * Use {{#crossLink "Perspective"}}{{/crossLink}} if you need perspective projection.
 
  <img src="../../../assets/images/Frustum.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Camera with frustum projection](../../examples/#transforms_project_frustum)</li>
- <li>[Stereo viewing with frustum projection](../../examples/#effects_stereo)</li>
- </ul>
+ * [Camera with frustum projection](../../examples/#transforms_project_frustum)
+ * [Stereo viewing with frustum projection](../../examples/#effects_stereo)
 
  ## Usage
 

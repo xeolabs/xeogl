@@ -1,11 +1,11 @@
 /**
  A **DepthBuf** configures the WebGL depth buffer for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>A DepthBuf configures **the way** that pixel depths are written to the WebGL depth buffer</li>
- <li>DepthBuf is not to be confused with {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}}, which stores rendered pixel
- depths for consumption by {{#crossLink "Texture"}}Textures{{/crossLink}}, used when performing *render-to-texture*.</li>
- </ul>
+ ## Overview
+
+ * A DepthBuf configures the way that pixel depths are written to the WebGL depth buffer
+ * DepthBuf is not to be confused with {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}}, which stores rendered pixel
+ depths for consumption by {{#crossLink "Texture"}}Textures{{/crossLink}}, used when performing *render-to-texture*.
 
  <img src="../../../assets/images/DepthBuf.png"></img>
 
@@ -97,14 +97,14 @@
              *
              * Accepted values are:
              *
-             * <ul>
-             *     <li>"less"</li>
-             *     <li>"equal"</li>
-             *     <li>"lequal"</li>
-             *     <li>"greater"</li>
-             *     <li>"notequal"</li>
-             *     <li>"gequal"</li>
-             * </ul>
+             *
+             *     * "less"
+             *     * "equal"
+             *     * "lequal"
+             *     * "greater"
+             *     * "notequal"
+             *     * "gequal"
+             *
              *
              * Fires a {{#crossLink "DepthBuf/depthFunc:event"}}{{/crossLink}} event on change.
              *

@@ -1,31 +1,29 @@
 /**
  A **Layer** sets the rendering order of {{#crossLink "Entity"}}Entities{{/crossLink}} within their {{#crossLink "Stage"}}Stages{{/crossLink}}.
 
- <ul>
- <li>When xeogl renders a {{#crossLink "Scene"}}Scene{{/crossLink}}, each {{#crossLink "Stage"}}Stage{{/crossLink}} within that will render its bin
- of {{#crossLink "Entity"}}Entities{{/crossLink}} in turn, from the lowest priority {{#crossLink "Stage"}}Stage{{/crossLink}} to the highest.</li>
- <li>{{#crossLink "Stage"}}Stages{{/crossLink}} are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>
- <li>You can control the render order of the individual {{#crossLink "Entity"}}Entities{{/crossLink}} ***within*** a {{#crossLink "Stage"}}Stage{{/crossLink}}
- by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.</li>
- <li>{{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
- {{#crossLink "Entity"}}Entities{{/crossLink}} within {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
- <li>{{#crossLink "Entity"}}Entities{{/crossLink}} not explicitly attached to a Layer are implicitly
+ ## Overview
+
+ * When xeogl renders a {{#crossLink "Scene"}}Scene{{/crossLink}}, each {{#crossLink "Stage"}}Stage{{/crossLink}} within that will render its bin
+ of {{#crossLink "Entity"}}Entities{{/crossLink}} in turn, from the lowest priority {{#crossLink "Stage"}}Stage{{/crossLink}} to the highest.
+ * {{#crossLink "Stage"}}Stages{{/crossLink}} are typically used for ordering the render-to-texture steps in posteffects pipelines.
+ * You can control the render order of the individual {{#crossLink "Entity"}}Entities{{/crossLink}} ***within*** a {{#crossLink "Stage"}}Stage{{/crossLink}}
+ by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.
+ * {{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
+ {{#crossLink "Entity"}}Entities{{/crossLink}} within {{#crossLink "Stage"}}Stages{{/crossLink}}.
+ * {{#crossLink "Entity"}}Entities{{/crossLink}} not explicitly attached to a Layer are implicitly
  attached to the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
  {{#crossLink "Scene/layer:property"}}layer{{/crossLink}}. which has
- a {{#crossLink "Layer/priority:property"}}{{/crossLink}} value of zero.</li>
- <li>You can use Layers without defining any {{#crossLink "Stage"}}Stages{{/crossLink}} if you simply let your
+ a {{#crossLink "Layer/priority:property"}}{{/crossLink}} value of zero.
+ * You can use Layers without defining any {{#crossLink "Stage"}}Stages{{/crossLink}} if you simply let your
  {{#crossLink "Entity"}}Entities{{/crossLink}} fall back on the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
- {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.</li>
- </ul>
+ {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.
 
  <img src="../../../assets/images/Layer.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Z-sorted transparent entities](../../examples/#materials_techniques_transparencySort)</li>
- <li>[Clouds as billboarded and z-sorted alpha maps](../../examples/#billboards_spherical_clouds)</li>
- </ul>
+ * [Z-sorted transparent entities](../../examples/#materials_techniques_transparencySort)
+ * [Clouds as billboarded and z-sorted alpha maps](../../examples/#billboards_spherical_clouds)
 
  ## Usage
 
@@ -48,7 +46,7 @@
  // We could instead just implicitly default to the Scene's default Stage
  var stage = new xeogl.Stage({
     priority: 0
-});
+ });
 
  // Geometry we'll share among our Entities
  var geometry = new xeogl.BoxGeometry();
@@ -66,7 +64,7 @@
         diffuse: [0.2, 0.2, 1.0],
         opacity: 1.0
     })
-});
+ });
 
  // Middle box
  // Red and transparent, in Layer with render order 2, renders next
@@ -83,7 +81,7 @@
     scale: new xeogl.Scale({
         xyz: [6, 6, 6]
     })
-});
+ });
 
  // Outermost box
  // Green and transparent, in Layer with render order 3, renders last
@@ -101,7 +99,7 @@
     scale: new xeogl.Scale({
         xyz: [9, 9, 9]
     })
-});
+ });
  ````
 
  @class Layer

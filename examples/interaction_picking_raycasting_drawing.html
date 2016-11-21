@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.min.js"></script>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>picking <a
+        href="../docs/classes/Entity.html" target="_parent">Entities</a> using an arbitrarily-positioned World-space ray
+</div>
+
+<script>
+
+    //---- GLTFModel  ----------------------------------------------------------
+
+    // Load glTF
+    var gearbox = new xeogl.GLTFModel({
+        src: "models/gltf/gearbox/gearbox_assy.gltf"
+    });
+
+    // Set initial camera position
+    var view = gearbox.scene.camera.view;
+    view.eye = [184.21, 10.54, -7.03];
+    view.look = [159.20, 17.02, 3.21];
+    view.up = [-0.15, 0.97, 0.13];
+
+    // Zoom camera out a bit
+
+    var scene = xeogl.scene;
+
+    // Set initial camera position
+    // Allow user camera control
+    new xeogl.CameraControl();
+
+    //--------------------------------------------
+    // Create helper to show the ray
+    //--------------------------------------------
+
+    var rayHelper = new (function () {
+
+        var entity = new xeogl.Entity({
+            geometry: new xeogl.Geometry({
+                primitive: "lines",
+                positions: [0, 0, 0, 0, 0, 0],
+                indices: [0, 1]
+            }),
+            material: new xeogl.PhongMaterial({
+                emissive: [1, 0.3, 0.3],
+                diffuse: [0, 0, 0],
+                ambient: [0, 0, 0],
+                lineWidth: 2
+            }),
+            modes: new xeogl.Modes({pickable: false})
+        });
+
+        var positions = new Float32Array(6);
+
+        this.setRay = function (pos, dir) {
+            positions[0] = pos[0]; // Origin
+            positions[1] = pos[1];
+            positions[2] = pos[2];
+            positions[3] = pos[0] + dir[0]; // Direction
+            positions[4] = pos[1] + dir[1];
+            positions[5] = pos[2] + dir[2];
+            entity.geometry.positions = positions;
+        };
+
+        this.setHighlighted = function (highlighted) {
+            entity.material.emissive = highlighted ? [1.0, 0.5, 0.5] : [0.5, 0.3, 0.3];
+            entity.material.lineWidth = highlighted ? 4 : 2;
+        };
+    })();
+
+    //--------------------------------------------
+    // Create helper to show ray-Entity hits
+    //--------------------------------------------
+
+    var hitHelper = new (function () {
+
+        var entity = new xeogl.Entity({
+            geometry: new xeogl.SphereGeometry({radius: 0.2}),
+            material: new xeogl.PhongMaterial({emissive: [1, 0, 0], diffuse: [0, 0, 0]}),
+            transform: new xeogl.Translate(),
+            modes: new xeogl.Modes({pickable: false}),
+            visibility: new xeogl.Visibility({visible: false})
+        });
+
+        this.show = function (hit) {
+            entity.transform.xyz = hit.worldPos;
+            entity.visibility.visible = true;
+        };
+
+        this.hide = function () {
+            entity.visibility.visible = false;
+        };
+    })();
+
+
+    //--------------------------------------------
+    // Create helper to show our drawing
+    //--------------------------------------------
+
+    var drawingHelper = new (function () {
+
+        var points = [];
+        var indices = [];
+
+        var entity = new xeogl.Entity({
+            geometry: new xeogl.Geometry({
+                primitive: "points",
+                positions: [0, 0, 0]
+            }),
+            material: new xeogl.PhongMaterial({
+                emissive: [0.4, 1, 0.4],
+                diffuse: [0, 0, 0],
+                pointSize: 5
+            }),
+            modes: new xeogl.Modes({
+                pickable: false,
+                collidable: false
+            })
+        });
+
+        this.addPoint = function (pos) {
+
+            points.push(pos[0]);
+            points.push(pos[1]);
+            points.push(pos[2]);
+
+            indices.push(indices.length);
+
+            entity.geometry.positions = points;
+            entity.geometry.indices = indices;
+        };
+    })();
+
+    //--------------------------------------------------------------------
+
+    var rayOrigin = new Float32Array([169.20, 17.02, -20.0]);
+    var rayDirection = new Float32Array([0, 10, 60]);
+
+    var xinc = -0.04;
+    var i = 0;
+
+    gearbox.on("loaded", function () {
+
+        gearbox.scene.on("tick", function () {
+
+            // Orbit the camera
+            view.rotateEyeY(xinc < 0 ? 0.2 : -0.2);
+            view.rotateEyeX(xinc < 0 ? 0.1 : -0.1);
+
+            rayOrigin[0] += xinc;
+            rayOrigin[1] = 12 - Math.sin(rayOrigin[0] * 2.0) * 5;
+
+            i++;
+
+            if (i < 0 || i > 500) {
+                xinc = -xinc;
+                i = 0;
+            }
+
+            rayHelper.setRay(rayOrigin, rayDirection);
+
+            var hit = scene.pick({
+                pickSurface: true,  // <<------ This causes picking to find the intersection point on the entity
+                origin: rayOrigin,
+                direction: rayDirection
+            });
+
+            if (hit && hit.worldPos) {
+
+                hitHelper.show(hit);
+                rayHelper.setHighlighted(true);
+
+                drawingHelper.addPoint(hit.worldPos);
+
+            } else {
+
+                hitHelper.hide();
+                rayHelper.setHighlighted(false);
+            }
+        });
+    });
+
+</script>
+</body>
+</html>

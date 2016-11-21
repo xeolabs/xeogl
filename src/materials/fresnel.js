@@ -5,19 +5,15 @@
 
  ## Overview
 
- <ul>
- <li>Fresnels are grouped within {{#crossLink "PhongMaterial"}}{{/crossLink}}s, which are attached to
- {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- </ul>
+ * Fresnels are grouped within {{#crossLink "PhongMaterial"}}{{/crossLink}}s, which are attached to
+ {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  ## Examples
 
- <ul>
- <li>[Diffuse Fresnel](../../examples/#materials_fresnel_diffuse)</li>
- <li>[Specular Fresnel](../../examples/#materials_fresnel_specular)</li>
- <li>[Opacity Fresnel](../../examples/#materials_fresnel_opacity)</li>
- <li>[Emissive Fresnel](../../examples/#materials_fresnel_emissive)</li>
- </ul>
+ * [Diffuse Fresnel](../../examples/#materials_fresnel_diffuse)
+ * [Specular Fresnel](../../examples/#materials_fresnel_specular)
+ * [Opacity Fresnel](../../examples/#materials_fresnel_opacity)
+ * [Emissive Fresnel](../../examples/#materials_fresnel_emissive)
 
  <img src="../../../assets/images/Fresnel.png"></img>
 

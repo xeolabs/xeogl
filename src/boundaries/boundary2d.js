@@ -1,31 +1,26 @@
 /**
  A **Boundary2D** is a Canvas-space 2D boundary.
 
- <a href="../../examples/#boundaries_flyToBoundary"><img src="../../assets/images/screenshots/Boundary3D.png"></img></a>
+ <a href="../../examples/#boundaries_flyToBoundary"><img src="http://i.giphy.com/3oriO8fJ8f70AfXdUA.gif"></img></a>
 
  ## Overview
 
  A Boundary2D provides its spatial info in these properties:
 
- <ul>
- <li>{{#crossLink "Boundary2D/aabb:property"}}{{/crossLink}} - axis-aligned bounding box (AABB)</li>
- <li>{{#crossLink "Boundary2D/center:property"}}{{/crossLink}} - center coordinate </li>
- </ul>
+ * {{#crossLink "Boundary2D/aabb:property"}}{{/crossLink}} - an axis-aligned box (AABB) as a four-element Float32Array
+ containing the min/max extents of the axis-aligned volume, ie. ````[xmin,ymin,xmax,ymax]````, and
+ * {{#crossLink "Boundary2D/center:property"}}{{/crossLink}} - the center point as a two-element Float32Array containing elements ````[x,y]````.
 
  The following components have Boundary2Ds:
 
- <ul>
- <li>An {{#crossLink "Entity"}}{{/crossLink}} provides its Canvas-space boundary via
- its {{#crossLink "Entity/canvasBoundary:property"}}{{/crossLink}} property</li>
- </ul>
+ * An {{#crossLink "Entity"}}{{/crossLink}} provides its Canvas-space boundary via
+ its {{#crossLink "Entity/canvasBoundary:property"}}{{/crossLink}} property
 
  <img src="../../../assets/images/Boundary2D.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Visualizing an Entity's Canvas-space boundary](../../examples/#boundaries_Entity_canvasBoundary)</li>
- </ul>
+ * [Visualizing an Entity's Canvas-space boundary](../../examples/#boundaries_Entity_canvasBoundary_aabb)
 
  ## Usage
 

@@ -5,8 +5,10 @@
 
  ## Overview
 
- * A VectorTextGeometry is a mesh of line segments that is generated from the value of its {{#crossLink "VectorTextGeometry/text:property"}}{{/crossLink}} property.
- * Set the {{#crossLink "VectorTextGeometry/text:property"}}{{/crossLink}} property to a new value at any time to regenerate the mesh.
+ * A VectorTextGeometry is a mesh of line segments in the X-Y plane  that is generated from the value of
+ its {{#crossLink "VectorTextGeometry/text:property"}}{{/crossLink}} property.
+ * Set its {{#crossLink "VectorTextGeometry/origin:property"}}{{/crossLink}}, {{#crossLink "VectorTextGeometry/xSize:property"}}{{/crossLink}},
+  {{#crossLink "VectorTextGeometry/ySize:property"}}{{/crossLink}} or {{#crossLink "VectorTextGeometry/text:property"}}{{/crossLink}} properties to new values at any time to dynamically regenerate it.
 
  ## Example
 
@@ -14,6 +16,7 @@
  new xeogl.Entity({
      geometry: new xeogl.VectorTextGeometry({
          text: "Attack ships on fire off the Shoulder of Orion",
+         origin: [0,0,0],
          xSize: 2,
          ySize: 2
      }),
@@ -40,6 +43,9 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this VectorTextGeometry.
+ @param [cfg.origin] {Float32Array} 3D point indicating the top left corner of the VectorTextGeometry.
+ @param [cfg.xSize] {Float32Array} The VectorTextGeometry's width on the X-axis.
+ @param [cfg.ySize] {Float32Array} The VectorTextGeometry's height on the Y-axis.
  @param [cfg.text=""] {String} The text.
  @extends Geometry
  */
@@ -58,7 +64,7 @@
             this._super(cfg);
 
             this.text = cfg.text;
-
+            this.origin = cfg.origin;
             this.xSize = cfg.xSize;
             this.ySize = cfg.ySize;
         },
@@ -74,6 +80,10 @@
             if (!letters) {
                 letters = buildStrokeData();
             }
+
+            var xOrigin = this._origin[0];
+            var yOrigin = this._origin[1];
+            var zOrigin = this._origin[2];
 
             var positions = [];
             var indices = [];
@@ -126,9 +136,9 @@
                             continue;
                         }
 
-                        positions.push(x + (a[0] * this._xSize) * mag);
-                        positions.push(y + (a[1] * this._ySize) * mag);
-                        positions.push(0);
+                        positions.push((x + (a[0] * this._xSize) * mag) + xOrigin);
+                        positions.push((y + (a[1] * this._ySize) * mag) + yOrigin);
+                        positions.push(0 + zOrigin);
 
                         if (p1 == -1) {
                             p1 = countVerts;
@@ -203,7 +213,37 @@
             },
 
             /**
-             * The VectorText's size on the X-axis.
+             * 3D point indicating the top left corner this VectorTextGeometry.
+             *
+             * Fires an {{#crossLink "VectorTextGeometry/origin:event"}}{{/crossLink}} event on change.
+             *
+             * @property origin
+             * @default [0,0,0]
+             * @type {Float32Array}
+             */
+            origin: {
+
+                set: function (value) {
+
+                    (this._origin = this._origin || new xeogl.math.vec3()).set(value || [0, 0, 0]);
+
+                    this._scheduleUpdate();
+
+                    /**
+                     Fired whenever this VectorTextGeometry's {{#crossLink "VectorTextGeometry/origin:property"}}{{/crossLink}} property changes.
+                     @event origin
+                     @param value {Float32Array} The property's new value
+                     */
+                    this.fire("origin", this._origin);
+                },
+
+                get: function () {
+                    return this._origin;
+                }
+            },
+
+            /**
+             * The VectorText's width on the X-axis.
              *
              * Fires a {{#crossLink "VectorText/xSize:event"}}{{/crossLink}} event on change.
              *
@@ -245,7 +285,7 @@
             },
 
             /**
-             * The VectorText's size on the Y-axis.
+             * The VectorText's height on the Y-axis.
              *
              * Fires a {{#crossLink "VectorText/ySize:event"}}{{/crossLink}} event on change.
              *
@@ -288,6 +328,9 @@
 
             _getJSON: function () {
                 return {
+                    center: this._center.slice(),
+                    xSize: this._xSize,
+                    ySize: this._ySize,
                     text: this._text
                 };
             }

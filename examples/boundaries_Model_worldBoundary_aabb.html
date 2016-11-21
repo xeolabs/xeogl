@@ -11,10 +11,10 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeogl.org">xeogl</a>
+    <a href="http://xeogl.org" target="_parent">xeogl</a>
     <br><br>
-    a <a href="../docs/classes/Model.html" target="_docs">Model</a> containing
-    1000 animated <a href="../docs/classes/Entity.html" target="_docs">Entities</a>
+    a <a href="../docs/classes/Model.html" target="_parent">Model</a> containing
+    1000 animated <a href="../docs/classes/Entity.html" target="_parent">Entities</a>
     <br>
     <br>
     controls:
@@ -34,7 +34,7 @@
     // Entity which shows the boundary of the Model
     // as a wireframe box
      new xeogl.Entity({
-        geometry: new xeogl.BoundaryGeometry({
+        geometry: new xeogl.AABBGeometry({
             boundary: model.worldBoundary
         }),
         material: new xeogl.PhongMaterial({
@@ -65,7 +65,7 @@
 
         (function () {
 
-            // Create a randomly-positioned sphere Entity
+            // Create a randomly-positioned box
 
             var entity = new xeogl.Entity({
                 geometry: boxGeometry,
@@ -82,9 +82,6 @@
                     })
                 })
             });
-
-            // Animate the position of the Entity back and forth
-            // along a random trajectory vector
 
             var count = 0;
 

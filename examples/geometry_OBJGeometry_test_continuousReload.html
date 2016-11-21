@@ -15,8 +15,8 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>loading .OBJ geometry using an <a
-        href="../docs/classes/OBJGeometry.html" target="_docs">OBJGeometry</a>
+    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>loading .OBJ geometry using an <a
+        href="../docs/classes/OBJGeometry.html" target="_parent">OBJGeometry</a>
 </div>
 
 <script>
@@ -28,7 +28,7 @@
         })
     });
 
-    var flyCamera = new xeogl.CameraFlight();
+    var flyCamera = new xeogl.CameraFlightAnimation();
 
     entity.geometry.on("loaded",
             function () {

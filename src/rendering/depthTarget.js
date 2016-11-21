@@ -2,23 +2,20 @@
  A **DepthTarget** is a  <a href="http://en.wikipedia.org/wiki/Render_Target" target="other">render target</a>  that
  captures the depths of the pixels rendered for the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>DepthTargets are typically used when *rendering-to-texture*.</li>
- <li>A DepthTarget provides the pixel depths as a dynamic color-encoded image that may be fed into {{#crossLink "Texture"}}Textures{{/crossLink}}.</li>
- <li>DepthTarget is not to be confused with {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}}, which configures ***how*** the pixel depths are written with respect to the WebGL depth buffer.</li>
- <li>Use {{#crossLink "Stage"}}Stages{{/crossLink}} when you need to ensure that a DepthTarget is rendered before
- the {{#crossLink "Texture"}}Textures{{/crossLink}} that consume it.</li>
- <li>For special effects, we often use DepthTargets and {{#crossLink "Texture"}}Textures{{/crossLink}} in combination
- with {{#crossLink "DepthTarget"}}DepthTargets{{/crossLink}} and {{#crossLink "Shader"}}Shaders{{/crossLink}}.</li>
- </ul>
+ * DepthTargets are typically used when *rendering-to-texture*.
+ * A DepthTarget provides the pixel depths as a dynamic color-encoded image that may be fed into {{#crossLink "Texture"}}Textures{{/crossLink}}.
+ * DepthTarget is not to be confused with {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}}, which configures ***how*** the pixel depths are written with respect to the WebGL depth buffer.
+ * Use {{#crossLink "Stage"}}Stages{{/crossLink}} when you need to ensure that a DepthTarget is rendered before
+ the {{#crossLink "Texture"}}Textures{{/crossLink}} that consume it.
+ * For special effects, we often use DepthTargets and {{#crossLink "Texture"}}Textures{{/crossLink}} in combination
+ with {{#crossLink "DepthTarget"}}DepthTargets{{/crossLink}} and {{#crossLink "Shader"}}Shaders{{/crossLink}}.
 
  <img src="../../../assets/images/DepthTarget.png"></img>
 
  ## Usage
 
  This example contains an {{#crossLink "Entity"}}{{/crossLink}} that renders its (RBGA-encoded) pixel depths to a DepthTarget, which is then
- piped into a {{#crossLink "Texture"}}{{/crossLink}} that's applied to a second {{#crossLink "Entity"}}{{/crossLink}}.</li>
- </ul>
+ piped into a {{#crossLink "Texture"}}{{/crossLink}} that's applied to a second {{#crossLink "Entity"}}{{/crossLink}}.
 
  ````javascript
  var depthTarget = new xeogl.DepthTarget();
@@ -30,9 +27,7 @@
     depthTarget: depthTarget
  });
 
-
- // Second Entity is textured with the
- // image of the first Entity
+ // Second Entity is textured with the image of the first Entity
 
  var entity2 = new xeogl.Entity({
      geometry: new xeogl.BoxGeometry()
@@ -41,9 +36,9 @@
             target: depthTarget
          })
      })
-});
+ });
  ````
- @class DepthTarget
+
  @module xeogl
  @submodule rendering
  @constructor
@@ -159,7 +154,9 @@
 
             this.scene.canvas.off(this._webglContextRestored);
 
-            this._state.renderBuf.destroy();
+            if (this._state.renderBuf) {
+                this._state.renderBuf.destroy();
+            }
 
             this._state.destroy();
         }

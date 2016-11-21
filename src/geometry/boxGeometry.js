@@ -1,13 +1,17 @@
 /**
- A **BoxGeometry** extends {{#crossLink "Geometry"}}{{/crossLink}} to define a box-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **BoxGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a box-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  <a href="../../examples/#geometry_BoxGeometry"><img src="../../assets/images/screenshots/BoxGeometry.png"></img></a>
 
+ ## Overview
+
+ * Dynamically modify a BoxGeometry's dimensions at any time by updating its {{#crossLink "BoxGeometry/center:property"}}{{/crossLink}}, {{#crossLink "BoxGeometry/xSize:property"}}{{/crossLink}}, {{#crossLink "BoxGeometry/ySize:property"}}{{/crossLink}} and {{#crossLink "BoxGeometry/zSize:property"}}{{/crossLink}} properties.
+ * Dynamically switch its primitive type between ````"points"````, ````"lines"```` and ````"triangles"```` at any time by
+ updating its {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} property.
+
  ## Examples
 
- <ul>
- <li>[Textured BoxGeometry](../../examples/#geometry_BoxGeometry)</li>
- </ul>
+ * [Textured BoxGeometry](../../examples/#geometry_BoxGeometry)
 
  ## Usage
 
@@ -18,7 +22,8 @@
  new xeogl.Entity({
 
      geometry: new xeogl.BoxGeometry({
-        xSize: 1,
+        center: [0,0,0],
+        xSize: 1,  // Half-size on each axis; BoxGeometry is actually two units big on each side.
         ySize: 1,
         zSize: 1
      }),
@@ -41,10 +46,11 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this BoxGeometry.
- @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
- @param [cfg.xSize=1.0] {Number}
- @param [cfg.ySize=1.0] {Number}
- @param [cfg.zSize=1.0] {Number}
+ @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values for a BoxGeometry are 'points', 'lines' and 'triangles'.
+ @param [cfg.center] {Float32Array} 3D point indicating the center position.
+ @param [cfg.xSize=1.0] {Number} Half-size on the X-axis.
+ @param [cfg.ySize=1.0] {Number} Half-size on the Y-axis.
+ @param [cfg.zSize=1.0] {Number} Half-size on the Z-axis.
  @extends Geometry
  */
 (function () {
@@ -59,6 +65,7 @@
 
             this._super(cfg);
 
+            this.center = cfg.center;
             this.xSize = cfg.xSize;
             this.ySize = cfg.ySize;
             this.zSize = cfg.zSize;
@@ -72,12 +79,12 @@
          */
         _update: function () {
 
-            var xmin = -this._xSize;
-            var ymin = -this._ySize;
-            var zmin = -this._zSize;
-            var xmax = this._xSize;
-            var ymax = this._ySize;
-            var zmax = this._zSize;
+            var xmin = -this._xSize + this._center[0];
+            var ymin = -this._ySize + this._center[1];
+            var zmin = -this._zSize + this._center[2];
+            var xmax = this._xSize + this._center[0];
+            var ymax = this._ySize + this._center[1];
+            var zmax = this._zSize + this._center[2];
 
             // The vertices - eight for our cube, each
             // one spanning three array elements for X,Y and Z
@@ -243,7 +250,37 @@
         _props: {
 
             /**
-             * The BoxGeometry's size on the X-axis.
+             * 3D point indicating the center position of this BoxGeometry.
+             *
+             * Fires an {{#crossLink "BoxGeometry/center:event"}}{{/crossLink}} event on change.
+             *
+             * @property center
+             * @default [0,0,0]
+             * @type {Float32Array}
+             */
+            center: {
+
+                set: function (value) {
+
+                    (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
+
+                    this._scheduleUpdate();
+
+                    /**
+                     Fired whenever this BoxGeometry's {{#crossLink "BoxGeometry/center:property"}}{{/crossLink}} property changes.
+                     @event center
+                     @param value {Float32Array} The property's new value
+                     */
+                    this.fire("center", this._center);
+                },
+
+                get: function () {
+                    return this._center;
+                }
+            },
+
+            /**
+             * The BoxGeometry's half-size on the X-axis.
              *
              * Fires a {{#crossLink "BoxGeometry/xsize:event"}}{{/crossLink}} event on change.
              *
@@ -285,7 +322,7 @@
             },
 
             /**
-             * The BoxGeometry's size on the Y-axis.
+             * The BoxGeometry's half-size on the Y-axis.
              *
              * Fires a {{#crossLink "BoxGeometry/ySize:event"}}{{/crossLink}} event on change.
              *
@@ -327,7 +364,7 @@
             },
 
             /**
-             * The BoxGeometry's size on the Z-axis.
+             * The BoxGeometry's half-size on the Z-axis.
              *
              * Fires a {{#crossLink "BoxGeometry/zSize:event"}}{{/crossLink}} event on change.
              *
@@ -371,6 +408,7 @@
 
         _getJSON: function () {
             return {
+                center: this._center.slice(),
                 xSize: this._xSize,
                 ySize: this._ySize,
                 zSize: this._zSize

@@ -48,7 +48,7 @@
 
  // Create a ZSpaceEffect
  var zspaceEffect = new xeogl.ZSpaceEffect({
-     canvasOffset: [310, 0]
+     canvasOffset: [330, 0]
  });
 
  // Create a ZSpaceStylusControl
@@ -198,7 +198,8 @@
                         lineWidth: 3
                     },
                     modes: {
-                        pickable: false
+                        pickable: false, // Can't pick the tylus helper
+                        collidable: false // Don't include stylus helper in boundary calculations
                     }
                 });
 

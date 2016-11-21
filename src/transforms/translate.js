@@ -1,22 +1,18 @@
 /**
- A **Translate** translates associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
+ A **Translate** is a {{#crossLink "Transform"}}{{/crossLink}} that translates associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
 
- <ul>
- <li>Translate is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
- <li>Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.</li>
- <li>When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
+ ## Overview
+
+ * Instances of {{#crossLink "Transform"}}{{/crossLink}} and its sub-classes may be connected into hierarchies.
+ * When an {{#crossLink "Entity"}}{{/crossLink}} or {{#crossLink "Model"}}{{/crossLink}} is connected to a leaf {{#crossLink "Transform"}}{{/crossLink}}
  within a {{#crossLink "Transform"}}{{/crossLink}} hierarchy, it will be transformed by each {{#crossLink "Transform"}}{{/crossLink}}
- on the path up to the root, in that order.</li>
- <li>See <a href="./Shader.html#inputs">Shader Inputs</a> for the variables that Transform create within xeogl's shaders.</li>
- </ul>
+ on the path up to the root, in that order.
 
  <img src="../../../assets/images/Translate.png"></img>
 
  ## Examples
 
- <ul>
- <li>Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)</li>
- </ul>
+ * Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)
 
  ## Usage
 

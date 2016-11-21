@@ -1,21 +1,17 @@
 /**
- A **Perspective** component defines a perspective projection transform.
+ A **Perspective** is a {{#crossLink "Transform"}}{{/crossLink}} that defines a perspective projection transform.
 
- <ul>
- <li>Perspective is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
- <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>Alternatively, use {{#crossLink "Ortho"}}{{/crossLink}} if you need a orthographic projection.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Perspective components create within xeogl's shaders.</li>
- </ul>
+ ## Overview
+
+ * {{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
+ {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * Alternatively, use {{#crossLink "Ortho"}}{{/crossLink}} if you need a orthographic projection.
 
  <img src="../../../assets/images/Perspective.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Camera with perspective projection](../../examples/#transforms_project_perspective)</li>
- </ul>
+ * [Camera with perspective projection](../../examples/#transforms_project_perspective)
 
  ## Usage
 

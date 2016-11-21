@@ -1,13 +1,21 @@
 /**
- A **TorusGeometry** extends {{#crossLink "Geometry"}}{{/crossLink}} to define a torus-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **TorusGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a torus-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  <a href="../../examples/#geometry_TorusGeometry"><img src="../../assets/images/screenshots/TorusGeometry.png"></img></a>
 
+ ## Overview
+
+ * Dynamically modify a TorusGeometry's shape at any time by updating its {{#crossLink "TorusGeometry/center:property"}}{{/crossLink}}, {{#crossLink "TorusGeometry/radius:property"}}{{/crossLink}}, {{#crossLink "TorusGeometry/tube:property"}}{{/crossLink}},
+ {{#crossLink "TorusGeometry/radialSegments:property"}}{{/crossLink}}, {{#crossLink "TorusGeometry/tubeSegments:property"}}{{/crossLink}},  and
+ {{#crossLink "TorusGeometry/arc:property"}}{{/crossLink}} properties.
+ * Dynamically switch its primitive type between ````"points"````, ````"lines"```` and ````"triangles"```` at any time by
+ updating its {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} property.
+ 
  ## Examples
 
- <ul>
- <li>[Textured TorusGeometry](../../examples/#geometry_TorusGeometry)</li>
- </ul>
+
+ * [Textured TorusGeometry](../../examples/#geometry_TorusGeometry)
+
 
  ## Usage
 
@@ -18,6 +26,7 @@
  new xeogl.Entity({
 
      geometry: new xeogl.TorusGeometry({
+         center: [0,0,0],
          radius: 1.0,
          tube: 0.3,
          radialSegments: 32,
@@ -43,7 +52,8 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this TorusGeometry.
- @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
+ @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values for a TorusGeometry are 'points', 'lines' and 'triangles'.
+ @param [cfg.center] {Float32Array} 3D point indicating the center position of the TorusGeometry.
  @param [cfg.radius=1] {Number} The overall radius of the TorusGeometry.
  @param [cfg.tube=0.3] {Number} The tube radius of the TorusGeometry.
  @param [cfg.radialSegments=32] {Number} The number of radial segments that make up the TorusGeometry.
@@ -65,6 +75,7 @@
             this._super(cfg);
 
             this.lod = cfg.lod;
+            this.center = cfg.center;
             this.radius = cfg.radius;
             this.tube = cfg.tube;
             this.radialSegments = cfg.radialSegments;
@@ -79,6 +90,10 @@
          * @protected
          */
         _update: function () {
+
+            var xCenter = this._center[0];
+            var yCenter = this._center[1];
+            var zCenter = this._center[2];
 
             var radius = this._radius;
             var tube = this._tube;
@@ -125,9 +140,9 @@
                     y = (radius + tube * Math.cos(v) ) * Math.sin(u);
                     z = tube * Math.sin(v);
 
-                    positions.push(x);
-                    positions.push(y);
-                    positions.push(z);
+                    positions.push(x + xCenter);
+                    positions.push(y + yCenter);
+                    positions.push(z + zCenter);
 
                     uvs.push(1 - (i / tubeSegments));
                     uvs.push(1 - (j / radialSegments));
@@ -210,6 +225,36 @@
 
                 get: function () {
                     return this._lod;
+                }
+            },
+
+            /**
+             * 3D point indicating the center position of this TorusGeometry.
+             *
+             * Fires an {{#crossLink "TorusGeometry/center:event"}}{{/crossLink}} event on change.
+             *
+             * @property center
+             * @default [0,0,0]
+             * @type {Float32Array}
+             */
+            center: {
+
+                set: function (value) {
+
+                    (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
+
+                    this._scheduleUpdate();
+
+                    /**
+                     Fired whenever this TorusGeometry's {{#crossLink "TorusGeometry/center:property"}}{{/crossLink}} property changes.
+                     @event center
+                     @param value {Float32Array} The property's new value
+                     */
+                    this.fire("center", this._center);
+                },
+
+                get: function () {
+                    return this._center;
                 }
             },
 
@@ -429,6 +474,7 @@
         _getJSON: function () {
             return {
                 // Don't save lod
+                center: this._center.slice(),
                 radius: this._radius,
                 tube: this._tube,
                 radialSegments: this._radialSegments,

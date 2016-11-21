@@ -11,15 +11,15 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeogl.org">xeogl</a> - <a href="../docs/classes/AmbientLight.html"
-                                                      target="_docs">AmbientLight</a>
+    <a href="http://xeogl.org" target="_parent">xeogl</a> - <a href="../docs/classes/AmbientLight.html"
+                                                      target="_parent">AmbientLight</a>
 </div>
 
 <script>
 
     var material = new xeogl.PhongMaterial({
         ambient: [0.0, 0.7, 0.7],
-        diffuse: [1, 1, 0]
+        diffuse: [1, 1, 1]
     });
 
     var ambientLight = new xeogl.AmbientLight({
@@ -45,8 +45,6 @@
         geometry: new xeogl.BoxGeometry(),
         material: material
     });
-
-    entity.scene.canvas.backgroundColor = [1,0,0,0]
 
     entity.scene.on("tick",
             function () {

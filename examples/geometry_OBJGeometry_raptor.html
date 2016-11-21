@@ -15,8 +15,8 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>loading .OBJ geometry using an <a
-        href="../docs/classes/OBJGeometry.html" target="_docs">OBJGeometry</a>
+    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>loading .OBJ geometry using an <a
+        href="../docs/classes/OBJGeometry.html" target="_parent">OBJGeometry</a>
 </div>
 
 <script>
@@ -62,18 +62,22 @@
         })
     });
 
+    // Allow user camera control
     new xeogl.CameraControl();
 
-    var cameraFlight = new xeogl.CameraFlight();
+    // Fit to view as soon as the OBJ is loaded
 
     entity.geometry.on("loaded", function () {
+
+        var cameraFlight = new xeogl.CameraFlightAnimation();
 
         cameraFlight.jumpTo({
             worldBoundary: entity.worldBoundary,
             fit: true,
-            fitFOV: 55
+            fitFOV: 45
         });
 
+        // Start orbiting thecamera
         entity.scene.on("tick", function () {
             entity.scene.camera.view.rotateEyeY(-0.4);
         });

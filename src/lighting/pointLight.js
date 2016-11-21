@@ -1,28 +1,26 @@
 /**
+ A **PointLight** defines a positional light source that originates from a single point and spreads outward in all directions, to illuminate attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- A **PointLight** defines a positional light source that originates from a single point and spreads outward in all directions, to illuminate
- attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ <a href="../../examples/#lights_point_world"><img src="http://i.giphy.com/3o6ZsZoFGIOJ2nlmN2.gif"></img></a>
 
- <ul>
- <li>PointLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
- which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>PointLights have a position, but no direction.</li>
- <li>PointLights may be defined in either **World** or **View** coordinate space. When in World-space, their positions
+ ## Overview
+
+ * PointLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
+ which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * PointLights have a position, but no direction.
+ * PointLights may be defined in either **World** or **View** coordinate space. When in World-space, their positions
  are relative to the World coordinate system, and will appear to move as the {{#crossLink "Camera"}}{{/crossLink}} moves.
  When in View-space, their positions are relative to the View coordinate system, and will behave as if fixed to the viewer's
- head as the {{#crossLink "Camera"}}{{/crossLink}} moves.</li>
- <li>PointLights have {{#crossLink "PointLight/constantAttenuation:property"}}{{/crossLink}}, {{#crossLink "PointLight/linearAttenuation:property"}}{{/crossLink}} and
- {{#crossLink "PointLight/quadraticAttenuation:property"}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.</li>
- </ul>
+ head as the {{#crossLink "Camera"}}{{/crossLink}} moves.
+ * PointLights have {{#crossLink "PointLight/constantAttenuation:property"}}{{/crossLink}}, {{#crossLink "PointLight/linearAttenuation:property"}}{{/crossLink}} and
+ {{#crossLink "PointLight/quadraticAttenuation:property"}}{{/crossLink}} factors, which indicate how their intensity attenuates over distance.
 
  <img src="../../../assets/images/PointLight.png"></img>
 
  ## Examples
 
- <ul>
- <li>[View-space point light](../../examples/#lights_point_view)</li>
- <li>[World-space point light](../../examples/#lights_point_world)</li>
- </ul>
+ * [View-space point light](../../examples/#lights_point_view)
+ * [World-space point light](../../examples/#lights_point_world)
 
  ## Usage
 
@@ -294,10 +292,10 @@
 
              Supported values are:
 
-             <ul>
-             <li>"view" - View space, aligned within the view volume as if fixed to the viewer's head</li>
-             <li>"world" - World space, fixed within the world, moving within the view volume with respect to camera</li>
-             </ul>
+
+             * "view" - View space, aligned within the view volume as if fixed to the viewer's head
+             * "world" - World space, fixed within the world, moving within the view volume with respect to camera
+
 
              Fires a {{#crossLink "PointLight/space:event"}}{{/crossLink}} event on change.
 

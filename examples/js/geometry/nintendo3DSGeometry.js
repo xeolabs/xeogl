@@ -4,14 +4,15 @@
 
     /**
      A **Nintendo3DSGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that's loaded from a
-     <a href="https://en.wikipedia.org/wiki/Nintendo_3DS" target = "_other">Nintendo 3DS</a> file.
+     <a href="https://en.wikipedia.org/wiki/Nintendo_3DS">Nintendo 3DS</a> file.
 
      <a href="../../examples/#geometry_Nintendo3DSGeometry_lexus"><img src="../../assets/images/screenshots/Nintendo3DSGeometry.png"></img></a>
 
      ## Overview
 
-     * A Nintendo3DSGeometry mesh is determined by the .3DS file referenced by the Nintendo3DSGeometry's {{#crossLink "Nintendo3DSGeometry/src:property"}}{{/crossLink}} property.
+     * A Nintendo3DSGeometry mesh is defined by the .3DS file referenced by the Nintendo3DSGeometry's {{#crossLink "Nintendo3DSGeometry/src:property"}}{{/crossLink}} property.
      * Set the {{#crossLink "Nintendo3DSGeometry/src:property"}}{{/crossLink}} property to a different file at any time, to regenerate the Nintendo3DSGeometry's mesh from the new file.
+     * Internally uses the <a href="http://k3d.ivank.net/">k3d.js</a> library for parsing .3DS files.
 
      ## Examples
 
@@ -49,7 +50,7 @@
      // When the Nintendo3DSGeometry has loaded,
      // fly the camera to fit the entity in view
 
-     var cameraFlight = new xeogl.CameraFlight();
+     var cameraFlight = new xeogl.CameraFlightAnimation();
 
      entity.geometry.on("loaded", function () {
 
@@ -70,6 +71,7 @@
      generated automatically when omitted.
      @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Nintendo3DSGeometry.
      @param [cfg.src] {String} Path to the .3DS file.
+     @param [cfg.autoNormals] {Boolean} Set true to automatically generate normal vectors from positions and indices.
      @extends Geometry
      */
     xeogl.Nintendo3DSGeometry = xeogl.Geometry.extend({
@@ -135,7 +137,7 @@
                                 self.positions = mesh.vertices;
                                 self.uv = mesh.uvt;
                                 self.normals = null;
-                                self.autoNormals = false;
+                               // self.autoNormals = true;
                                 self.indices = mesh.indices;
                                 self.tangents = null;
 

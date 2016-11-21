@@ -1,13 +1,15 @@
 /**
  A **Configs** holds configuration properties for the parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
 
- <ul>
- <li>Each {{#crossLink "Scene"}}Scene{{/crossLink}} provides a Configs on itself as a read-only property.</li>
- <li>Config property values are set on a Configs using its {{#crossLink "Configs/set:method"}}{{/crossLink}} method,
- and changes to properties may be subscribed to using {{#crossLink "Component/on:method"}}{{/crossLink}}.</li>
- <li>You can define your own properties in a Configs, but take care not to clobber the native properties used by
- xeogl (see table below).</li>
- </ul>
+ ## Overview
+
+
+ * Each {{#crossLink "Scene"}}Scene{{/crossLink}} provides a Configs on itself as a read-only property.
+ * Config property values are set on a Configs using its {{#crossLink "Configs/set:method"}}{{/crossLink}} method,
+ and changes to properties may be subscribed to using {{#crossLink "Component/on:method"}}{{/crossLink}}.
+ * You can define your own properties in a Configs, but take care not to clobber the native properties used by
+ xeogl (see table below).
+
 
  <img src="../../../assets/images/Configs.png"></img>
 

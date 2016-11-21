@@ -2,24 +2,22 @@
  A **DirLight** is a directional light source that illuminates all attached {{#crossLink "Entity"}}Entities{{/crossLink}} equally
  from a given direction.
 
- <ul>
- <li>DirLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
- which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>DirLights have a direction, but no position.</li>
- <li>DirLights may be defined in either **World** or **View** coordinate space. When in World-space, their direction
+ ## Overview
+
+ * DirLights are grouped, along with other light source types, within {{#crossLink "Lights"}}Lights{{/crossLink}} components,
+ which are attached to {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * DirLights have a direction, but no position.
+ * DirLights may be defined in either **World** or **View** coordinate space. When in World-space, their direction
  is relative to the World coordinate system, and will appear to move as the {{#crossLink "Camera"}}{{/crossLink}} moves.
  When in View-space, their direction is relative to the View coordinate system, and will behave as if fixed to the viewer's
- head as the {{#crossLink "Camera"}}{{/crossLink}} moves.</li>
- </ul>
+ head as the {{#crossLink "Camera"}}{{/crossLink}} moves.
 
  <img src="../../../assets/images/DirLight.png"></img>
 
  ## Examples
 
- <ul>
- <li>[View-space directional light](../../examples/#lights_directional_view)</li>
- <li>[World-space directional light](../../examples/#lights_directional_world)</li>
- </ul>
+ * [View-space directional light](../../examples/#lights_directional_view)
+ * [World-space directional light](../../examples/#lights_directional_world)
 
  ## Usage
 
@@ -192,10 +190,10 @@
 
              Supported values are:
 
-             <ul>
-             <li>"view" - View space, aligned within the view volume as if fixed to the viewer's head</li>
-             <li>"world" - World space, fixed within the world, moving within the view volume with respect to camera</li>
-             </ul>
+
+             * "view" - View space, aligned within the view volume as if fixed to the viewer's head
+             * "world" - World space, fixed within the world, moving within the view volume with respect to camera
+
 
              Fires a {{#crossLink "DirLight/space:event"}}{{/crossLink}} event on change.
 

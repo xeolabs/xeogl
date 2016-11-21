@@ -15,8 +15,8 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>loading .3DS geometry using an <a
-        href="../docs/classes/Nintendo3DSGeometry.html" target="_docs">Nintendo3DSGeometry</a>
+    <a href="http://xeogl.org" target="_parent">xeogl</a><br><br>loading .3DS geometry using an <a
+        href="../docs/classes/Nintendo3DSGeometry.html" target="_parent">Nintendo3DSGeometry</a>
 </div>
 
 <script>
@@ -36,23 +36,32 @@
 
         // We need to rotate this particular .3DS model
         transform: new xeogl.Rotate({
-            xyz: [1,0,0],
+            xyz: [1, 0, 0],
             angle: -90,
             parent: new xeogl.Rotate({
-                xyz: [0,1,0],
+                xyz: [0, 1, 0],
                 angle: 90
             })
         })
     });
 
+    // Allow user camera control
     var cameraControl = new xeogl.CameraControl();
 
-    var cameraFlight = new xeogl.CameraFlight();
+    // Fit to view as soon as the .3DS is loaded
+    entity.geometry.on("loaded", function () {
 
-    entity.geometry.on("loaded",
-            function () {
-                cameraFlight.flyTo(entity);
-            });
+        var cameraFlight = new xeogl.CameraFlightAnimation();
+        cameraFlight.jumpTo(entity);
+
+        // Start orbiting the camera
+        entity.scene.camera.view.rotateEyeX(20);
+        entity.scene.camera.view.rotateEyeY(130);
+
+        entity.scene.on("tick", function () {
+            entity.scene.camera.view.rotateEyeY(-0.2);
+        });
+    });
 
 </script>
 </body>

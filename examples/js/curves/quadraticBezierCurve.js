@@ -1,6 +1,8 @@
 /**
  A **QuadraticBezierCurve** is a {{#crossLink "Curve"}}{{/crossLink}} along which a 3D position can be animated.
 
+ ## Overview
+
  <ul>
     <li>As shown in the diagram below, a QuadraticBezierCurve is defined by three control points.</li>
  <li>You can sample a {{#crossLink "QuadraticBezierCurve/point:property"}}{{/crossLink}} and a {{#crossLink "Curve/tangent:property"}}{{/crossLink}}

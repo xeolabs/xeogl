@@ -1,25 +1,26 @@
 /**
  A **Camera** defines viewing and projection transforms for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li> A Camera is composed of a viewing and projection {{#crossLink "Transform"}}{{/crossLink}}.</li>
- <li>The viewing transform is usually a {{#crossLink "Lookat"}}Lookat{{/crossLink}}. Having the viewing transform as a
+ ## Overview
+
+ *  A Camera is composed of a viewing and projection {{#crossLink "Transform"}}{{/crossLink}}.
+ * The viewing transform is usually a {{#crossLink "Lookat"}}Lookat{{/crossLink}}. Having the viewing transform as a
  separate component from the Camera allows us to switch the Camera between multiple, existing viewpoints by simply re-attaching it to
- different viewing transform components (ie. {{#crossLink "Lookat"}}Lookats{{/crossLink}}).</li>
- <li> By default, each Camera has its parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}} transform,
+ different viewing transform components (ie. {{#crossLink "Lookat"}}Lookats{{/crossLink}}).
+ *  By default, each Camera has its parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default {{#crossLink "Scene/view:property"}}{{/crossLink}} transform,
  (which is a {{#crossLink "Lookat"}}Lookat{{/crossLink}}) and default
  {{#crossLink "Scene/project:property"}}{{/crossLink}} transform (which is a {{#crossLink "Perspective"}}Perspective{{/crossLink}}).
- You would override those with your own transform components as necessary.</li>
-
- </ul>
+ You would override those with your own transform components as necessary.
 
  <img src="../../../assets/images/Camera.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Perspective Camera](../../examples/#camera_perspective)</li>
- </ul>
+ * [Perspective Camera](../../examples/#transforms_project_perspective)
+ * [Orthographic Camera](../../examples/#transforms_project_ortho)
+ * [Flying a Camera to ](../../examples/#animation_CameraFlightAnimation_AABB)
+ * [Automatically following an Entity with a Camera](../../examples/#animation_CameraFollowAnimation)
+ * [Animating a Camera along a path](../../examples/#animation_CameraPathAnimation_interpolate)
 
  ## Usage
 
@@ -34,18 +35,21 @@
              look: [0, 0, 0],
              up: [0, 1, 0]
          }),
-         project: new xeogl.Lookat({
+         project: new xeogl.Perspective({
              fovy: 60,
              near: 0.1,
              far: 1000
          })
      }),
-     geometry: new xeogl.BoxGeometry()
+     geometry: new xeogl.TorusGeometry()
  });
 
  entity.scene.on("tick", function () {
-     camera.view.rotateEyeY(0.5);
-     camera.view.rotateEyeX(0.3);
+
+     var lookat = entity.camera.view;
+
+     lookat.rotateEyeY(0.5);
+     lookat.rotateEyeX(0.3);
  });
  ````
  @class Camera

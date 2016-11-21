@@ -1,22 +1,18 @@
 /**
- A **Lookat** defines a viewing transform as an {{#crossLink "Lookat/eye:property"}}eye{{/crossLink}} position, a
+ A **Lookat** is a {{#crossLink "Transform"}}{{/crossLink}} that defines a viewing transform as an {{#crossLink "Lookat/eye:property"}}eye{{/crossLink}} position, a
  {{#crossLink "Lookat/look:property"}}look{{/crossLink}} position and an {{#crossLink "Lookat/up:property"}}up{{/crossLink}}
  vector.
 
- <ul>
- <li>Lookat is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
- <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with projection transforms such as
- {{#crossLink "Perspective"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Lookat components create within xeogl's shaders.</li>
- </ul>
+ ## Overview
+
+ * {{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with projection transforms such as
+ {{#crossLink "Perspective"}}Perspective{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  <img src="../../../assets/images/Lookat.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Camera with Lookat and Perspective](../../examples/#transforms_project_perspective)</li>
- </ul>
+ * [Camera with Lookat and Perspective](../../examples/#transforms_project_perspective)
 
  ## Usage
 
@@ -55,7 +51,7 @@
  @param [cfg.eye=[0,0,10]] {Array of Number} Eye position.
  @param [cfg.look=[0,0,0]] {Array of Number} The position of the point-of-interest we're looking at.
  @param [cfg.up=[0,1,0]] {Array of Number} The "up" vector.
- @param [cfg.gimbalLockY=false] {Boolean} Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.
+ @param [cfg.gimbalLockY=false] {Boolean} Effectively whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.
  @extends Transform
  @author xeolabs / http://xeolabs.com/
  */
@@ -63,12 +59,14 @@
 
     "use strict";
 
-    var tempVec3 = xeogl.math.vec3();
-    var tempVec3b = xeogl.math.vec3();
-    var tempVec3c = xeogl.math.vec3();
-    var tempVec3d = xeogl.math.vec3();
-    var tempVec3e = xeogl.math.vec3();
-    var tempVec3f = xeogl.math.vec3();
+    var math = xeogl.math;
+
+    var tempVec3 = math.vec3();
+    var tempVec3b = math.vec3();
+    var tempVec3c = math.vec3();
+    var tempVec3d = math.vec3();
+    var tempVec3e = math.vec3();
+    var tempVec3f = math.vec3();
 
     xeogl.Lookat = xeogl.Transform.extend({
 
@@ -78,9 +76,9 @@
 
             this._super(cfg);
 
-            this._eye = xeogl.math.vec3([0, 0, 10.0]);
-            this._look = xeogl.math.vec3([0, 0, 0]);
-            this._up = xeogl.math.vec3([0, 1, 0]);
+            this._eye = math.vec3([0, 0, 10.0]);
+            this._look = math.vec3([0, 0, 0]);
+            this._up = math.vec3([0, 1, 0]);
 
             this.eye = cfg.eye;
             this.look = cfg.look;
@@ -88,9 +86,18 @@
             this.gimbalLockY = cfg.gimbalLockY;
         },
 
-        _update: function () {
-            this.matrix = xeogl.math.lookAtMat4v(this._eye, this._look, this._up, this._matrix);
-        },
+        _update: (function () {
+
+            var lookatMat = math.mat4();
+
+            return function () {
+
+                math.lookAtMat4v(this._eye, this._look, this._up, lookatMat);
+
+                this.matrix = lookatMat;
+            };
+        })(),
+
 
         /**
          * Rotate 'eye' about 'look', around the 'up' vector
@@ -100,18 +107,18 @@
         rotateEyeY: function (angle) {
 
             // Get 'look' -> 'eye' vector
-            var eye2 = xeogl.math.subVec3(this._eye, this._look, tempVec3);
+            var eye2 = math.subVec3(this._eye, this._look, tempVec3);
 
-            var mat = xeogl.math.rotationMat4v(angle * 0.0174532925, this._gimbalLockY ? xeogl.math.vec3([0, 1, 0]) : this._up);
-            eye2 = xeogl.math.transformPoint3(mat, eye2, tempVec3b);
+            var mat = math.rotationMat4v(angle * 0.0174532925, this._gimbalLockY ? math.vec3([0, 1, 0]) : this._up);
+            eye2 = math.transformPoint3(mat, eye2, tempVec3b);
 
             // Set eye position as 'look' plus 'eye' vector
-            this.eye = xeogl.math.addVec3(eye2, this._look, tempVec3c);
+            this.eye = math.addVec3(eye2, this._look, tempVec3c);
 
             if (this._gimbalLockY) {
 
                 // Rotate 'up' vector about orthogonal vector
-                this.up = xeogl.math.transformPoint3(mat, this._up, tempVec3d);
+                this.up = math.transformPoint3(mat, this._up, tempVec3d);
             }
         },
 
@@ -123,20 +130,20 @@
         rotateEyeX: function (angle) {
 
             // Get 'look' -> 'eye' vector
-            var eye2 = xeogl.math.subVec3(this._eye, this._look, tempVec3);
+            var eye2 = math.subVec3(this._eye, this._look, tempVec3);
 
             // Get orthogonal vector from 'eye' and 'up'
-            var left = xeogl.math.cross3Vec3(xeogl.math.normalizeVec3(eye2, tempVec3b), xeogl.math.normalizeVec3(this._up, tempVec3c));
+            var left = math.cross3Vec3(math.normalizeVec3(eye2, tempVec3b), math.normalizeVec3(this._up, tempVec3c));
 
             // Rotate 'eye' vector about orthogonal vector
-            var mat = xeogl.math.rotationMat4v(angle * 0.0174532925, left);
-            eye2 = xeogl.math.transformPoint3(mat, eye2, tempVec3d);
+            var mat = math.rotationMat4v(angle * 0.0174532925, left);
+            eye2 = math.transformPoint3(mat, eye2, tempVec3d);
 
             // Set eye position as 'look' plus 'eye' vector
-            this.eye = xeogl.math.addVec3(eye2, this._look, tempVec3e);
+            this.eye = math.addVec3(eye2, this._look, tempVec3e);
 
             // Rotate 'up' vector about orthogonal vector
-            this.up = xeogl.math.transformPoint3(mat, this._up, tempVec3f);
+            this.up = math.transformPoint3(mat, this._up, tempVec3f);
         },
 
         /**
@@ -149,14 +156,14 @@
         rotateLookY: function (angle) {
 
             // Get 'look' -> 'eye' vector
-            var look2 = xeogl.math.subVec3(this._look, this._eye, tempVec3);
+            var look2 = math.subVec3(this._look, this._eye, tempVec3);
 
             // Rotate 'look' vector about 'up' vector
-            var mat = xeogl.math.rotationMat4v(angle * 0.0174532925, this._up);
-            look2 = xeogl.math.transformPoint3(mat, look2, tempVec3b);
+            var mat = math.rotationMat4v(angle * 0.0174532925, this._up);
+            look2 = math.transformPoint3(mat, look2, tempVec3b);
 
             // Set look position as 'look' plus 'eye' vector
-            this.look = xeogl.math.addVec3(look2, this._eye, tempVec3c);
+            this.look = math.addVec3(look2, this._eye, tempVec3c);
         },
 
         /**
@@ -167,20 +174,20 @@
         rotateLookX: function (angle) {
 
             // Get 'look' -> 'eye' vector
-            var look2 = xeogl.math.subVec3(this._look, this._eye, tempVec3);
+            var look2 = math.subVec3(this._look, this._eye, tempVec3);
 
             // Get orthogonal vector from 'eye' and 'up'
-            var left = xeogl.math.cross3Vec3(xeogl.math.normalizeVec3(look2, tempVec3b), xeogl.math.normalizeVec3(this._up, tempVec3c));
+            var left = math.cross3Vec3(math.normalizeVec3(look2, tempVec3b), math.normalizeVec3(this._up, tempVec3c));
 
             // Rotate 'look' vector about orthogonal vector
-            var mat = xeogl.math.rotationMat4v(angle * 0.0174532925, left);
-            look2 = xeogl.math.transformPoint3(mat, look2, tempVec3d);
+            var mat = math.rotationMat4v(angle * 0.0174532925, left);
+            look2 = math.transformPoint3(mat, look2, tempVec3d);
 
             // Set eye position as 'look' plus 'eye' vector
-            this.look = xeogl.math.addVec3(look2, this._eye, tempVec3e);
+            this.look = math.addVec3(look2, this._eye, tempVec3e);
 
             // Rotate 'up' vector about orthogonal vector
-            this.up = xeogl.math.transformPoint3(mat, this._up, tempVecf);
+            this.up = math.transformPoint3(mat, this._up, tempVecf);
         },
 
         /**
@@ -190,7 +197,7 @@
         pan: function (pan) {
 
             // Get 'look' -> 'eye' vector
-            var eye2 = xeogl.math.subVec3(this._eye, this._look, tempVec3);
+            var eye2 = math.subVec3(this._eye, this._look, tempVec3);
 
             // Building this pan vector
             var vec = [0, 0, 0];
@@ -200,9 +207,9 @@
 
                 // Pan along orthogonal vector to 'look' and 'up'
 
-                var left = xeogl.math.cross3Vec3(xeogl.math.normalizeVec3(eye2, []), xeogl.math.normalizeVec3(this._up, tempVec3b));
+                var left = math.cross3Vec3(math.normalizeVec3(eye2, []), math.normalizeVec3(this._up, tempVec3b));
 
-                v = xeogl.math.mulVec3Scalar(left, pan[0]);
+                v = math.mulVec3Scalar(left, pan[0]);
 
                 vec[0] += v[0];
                 vec[1] += v[1];
@@ -213,7 +220,7 @@
 
                 // Pan along 'up' vector
 
-                v = xeogl.math.mulVec3Scalar(xeogl.math.normalizeVec3(this._up, tempVec3c), pan[1]);
+                v = math.mulVec3Scalar(math.normalizeVec3(this._up, tempVec3c), pan[1]);
 
                 vec[0] += v[0];
                 vec[1] += v[1];
@@ -224,15 +231,15 @@
 
                 // Pan along 'eye'- -> 'look' vector
 
-                v = xeogl.math.mulVec3Scalar(xeogl.math.normalizeVec3(eye2, tempVec3d), pan[2]);
+                v = math.mulVec3Scalar(math.normalizeVec3(eye2, tempVec3d), pan[2]);
 
                 vec[0] += v[0];
                 vec[1] += v[1];
                 vec[2] += v[2];
             }
 
-            this.eye = xeogl.math.addVec3(this._eye, vec, tempVec3e);
-            this.look = xeogl.math.addVec3(this._look, vec, tempVec3f);
+            this.eye = math.addVec3(this._eye, vec, tempVec3e);
+            this.look = math.addVec3(this._look, vec, tempVec3f);
         },
 
         /**
@@ -241,19 +248,19 @@
          */
         zoom: function (delta) {
 
-            var vec = xeogl.math.subVec3(this._eye, this._look, tempVec3); // Get vector from eye to look
-            var lenLook = Math.abs(xeogl.math.lenVec3(vec, tempVec3b));    // Get len of that vector
+            var vec = math.subVec3(this._eye, this._look, tempVec3); // Get vector from eye to look
+            var lenLook = Math.abs(math.lenVec3(vec, tempVec3b));    // Get len of that vector
             var newLenLook = Math.abs(lenLook + delta);         // Get new len after zoom
 
-            var dir = xeogl.math.normalizeVec3(vec, tempVec3c);  // Get normalised vector
+            var dir = math.normalizeVec3(vec, tempVec3c);  // Get normalised vector
 
-            this.eye = xeogl.math.addVec3(this._look, xeogl.math.mulVec3Scalar(dir, newLenLook), tempVec3d);
+            this.eye = math.addVec3(this._look, math.mulVec3Scalar(dir, newLenLook), tempVec3d);
         },
 
         _props: {
 
             /**
-             * Whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.
+             * Effectively whether Y-axis rotation is about the World-space Y-axis or the View-space Y-axis.
              *
              * Fires a {{#crossLink "Lookat/gimbalLockY:event"}}{{/crossLink}} event on change.
              *
@@ -377,9 +384,10 @@
 
         _getJSON: function () {
             var json = {
-                eye: this._eye,
-                look: this._look,
-                up: this._up
+                eye: this._eye.slice(),
+                look: this._look.slice(),
+                up: this._up.slice(),
+                gimbalLockY: this._gimbalLockY
             };
             if (this._parent) {
                 json.parent = this._parent.id;

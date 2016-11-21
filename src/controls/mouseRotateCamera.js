@@ -1,26 +1,22 @@
 /**
  A **MouseRotateCamera** orbits a {{#crossLink "Camera"}}{{/crossLink}} about its point-of-interest using the mouse.
 
- <ul>
- <li>A MouseRotateCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
- <li>The point-of-interest is the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
- <li>Orbiting involves rotating the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/eye:property"}}{{/crossLink}}
- about {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
- <li>Y-axis rotation is about the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.</li>
- <li>Z-axis rotation is about the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} -&gt; {{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
- <li>X-axis rotation is about the vector perpendicular to the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}}
- and {{#crossLink "Lookat/up:property"}}{{/crossLink}} vectors.</li>
- <li>In 'first person' mode, the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}
+ * A MouseRotateCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
+ * The point-of-interest is the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}.
+ * Orbiting involves rotating the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/eye:property"}}{{/crossLink}}
+ about {{#crossLink "Lookat/look:property"}}{{/crossLink}}.
+ * Y-axis rotation is about the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.
+ * Z-axis rotation is about the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} -&gt; {{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.
+ * X-axis rotation is about the vector perpendicular to the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}}
+ and {{#crossLink "Lookat/up:property"}}{{/crossLink}} vectors.
+ * In 'first person' mode, the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}
  position will orbit the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} position, otherwise the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}
- will orbit the {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
- </ul>
+ will orbit the {{#crossLink "Lookat/look:property"}}{{/crossLink}}.
 
  ## Examples
 
- <ul>
- <li>[MouseRotateCamera example](../../examples/#interaction_MouseRotateCamera)</li>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- </ul>
+ * [MouseRotateCamera example](../../examples/#interaction_MouseRotateCamera)
+ * [CameraControl example](../../examples/#interaction_CameraControl)
 
  ## Usage
 
@@ -174,7 +170,7 @@
              * target {{#crossLink "Camera"}}{{/crossLink}}. In 'first person' mode, the
              * {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/look:property"}}{{/crossLink}}
              * position orbits the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} position, otherwise
-             * the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} orbits {{#crossLink "Lookat/look:property"}}{{/crossLink}}.</li>
+             * the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} orbits {{#crossLink "Lookat/look:property"}}{{/crossLink}}.
              *
              * Fires a {{#crossLink "MouseRotateCamera/firstPerson:event"}}{{/crossLink}} event on change.
              *

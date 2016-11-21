@@ -33,7 +33,6 @@
  });
  ````
 
-
  @module xeogl
  @submodule geometry
  @constructor

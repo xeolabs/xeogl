@@ -1,13 +1,13 @@
 /**
- A **Cull** toggles the culling of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **Cull** component toggles the culling of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>An {{#crossLink "Entity"}}{{/crossLink}} is visible when its Cull's {{#crossLink "Cull/culled:property"}}{{/crossLink}} property is true and {{#crossLink "Visibility"}}Visibility's{{/crossLink}} {{#crossLink "Visibility/visible:property"}}{{/crossLink}} property is false.</li>
- <li>Cull components are intended for **visibility culling systems** to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>{{#crossLink "Visibility"}}{{/crossLink}} components are intended for users to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}} via UIs.</li>
- <li>A Cull may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
- their culling status as a group.</li>
- </ul>
+ ## Overview
+
+ * An {{#crossLink "Entity"}}{{/crossLink}} is visible when its Cull's {{#crossLink "Cull/culled:property"}}{{/crossLink}} property is true and {{#crossLink "Visibility"}}Visibility's{{/crossLink}} {{#crossLink "Visibility/visible:property"}}{{/crossLink}} property is false.
+ * Cull components are intended for **visibility culling systems** to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * {{#crossLink "Visibility"}}{{/crossLink}} components are intended for users to control the visibility of {{#crossLink "Entity"}}Entities{{/crossLink}} via UIs.
+ * A Cull may be shared among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} to toggle
+ their culling status as a group.
 
  <img src="../../../assets/images/Cull.png"></img>
 
@@ -20,22 +20,22 @@
  // Create a Cull component
  var cull = new xeogl.Cull({
     culled: false
-});
+ });
 
  // Create two Entities whose culling will be controlled by our Cull
 
  var entity1 = new xeogl.Entity({
     cull: cull
-});
+ });
 
  var entity2 = new xeogl.Entity({
     cull: cull
-});
+ });
 
  // Subscribe to change on the Cull's "culled" property
  var handle = cull.on("culled", function(value) {
     //...
-});
+ });
 
  // Hide our Entities by flipping the Cull's "culled" property,
  // which will also call our handler

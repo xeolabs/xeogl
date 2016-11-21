@@ -2,6 +2,11 @@
  A **BuildableModel** is a {{#crossLink "Model"}}{{/crossLink}} that provides a fluent API through which you can
  build it incrementally.
 
+ ## Overview
+
+ * A BuilderModel implements the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern) with a [fluent interface](https://en.wikipedia.org/wiki/Fluent_interface) that  makes it easy to programmatically generate content for xeogl.
+ * TODO: more info
+
  ## Examples
 
  * [Generating a city with a BuildableModel](../../examples/#models_BuildableModel_city)</li>

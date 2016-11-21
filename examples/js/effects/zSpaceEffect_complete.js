@@ -1,7 +1,7 @@
 /**
  A **ZSpaceEffect** makes its {{#crossLink "Scene"}}{{/crossLink}} viewable with a zSpace viewer.
 
- <a href="../../examples/#effects_zspace_gearbox"><img src="../../assets/images/screenshots/ZSpaceEffect.png"></img></a>
+ <a href="../../examples/#effects_ZSpaceEffect"><img src="http://i.giphy.com/mRdkHVQ1NdUWc.gif"></img></a>
 
  ## Overview
 
@@ -885,6 +885,31 @@
                 return;
             }
 
+            var setView = (function () {
+
+                var basisMat = xeogl.math.identityMat4();
+                xeogl.math.rotationMat4c(0.3, 1, 0, 0, basisMat);
+                var newMat = xeogl.math.mat4();
+
+                return function (mat) {
+                    xeogl.math.mulMat4(mat, basisMat, newMat);
+                    camera.view.parent.matrix = newMat;
+                };
+            })();
+
+            var setProjection = (function () {
+
+                var basisMat = xeogl.math.identityMat4();
+                xeogl.math.translationMat4c(0, -.5, 0, basisMat);
+                var newMat = xeogl.math.mat4();
+
+                return function (mat) {
+                    //xeogl.math.mulMat4(basisMat, mat, newMat);
+                    camera.project.matrix = mat;
+                };
+            })();
+
+
             switch (e.pass) {
 
                 case 0: // Left eye
@@ -1098,7 +1123,7 @@
                         this._stylusWorldDir[1] = -this._stylusWorldMatrix[9];
                         this._stylusWorldDir[2] = -this._stylusWorldMatrix[10];
 
-                       // math.normalizeVec3(this._stylusWorldDir);
+                        // math.normalizeVec3(this._stylusWorldDir);
                     }
 
                 } else {

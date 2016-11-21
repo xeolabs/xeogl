@@ -5,13 +5,13 @@
     /**
      A **Model** is a unit of content within a xeogl {{#crossLink "Scene"}}{{/crossLink}}.
 
-     <ul>
-     <li>A Model is a container of {{#crossLink "Component"}}Components{{/crossLink}}.</li>
-     <li>Can be transformed within World-space by attached it to a {{#crossLink "Transform"}}{{/crossLink}}.</li>
-     <li>Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.</li>
-     <li>Subclassed by {{#crossLink "GLTFModel"}}{{/crossLink}}, which loads glTF files.</li>
-     <li>Subclassed by {{#crossLink "BuildableModel"}}{{/crossLink}}, which provides a fluent API for building itself.</li>
-     </ul>
+     ## Overview
+
+     * A Model is a container of {{#crossLink "Component"}}Components{{/crossLink}}.
+     * Can be transformed within World-space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}}.
+     * Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
+     * Subclassed by {{#crossLink "GLTFModel"}}{{/crossLink}}, which loads glTF files.
+     * Subclassed by {{#crossLink "BuildableModel"}}{{/crossLink}}, which provides a fluent API for building itself.
 
      <img src="../../../assets/images/Model.png"></img>
 

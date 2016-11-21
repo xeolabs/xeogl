@@ -1,13 +1,20 @@
 /**
- A **SphereGeometry** extends {{#crossLink "Geometry"}}{{/crossLink}} to define a sphere-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **SphereGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a sphere-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  <a href="../../examples/#geometry_SphereGeometry"><img src="../../assets/images/screenshots/SphereGeometry.png"></img></a>
 
+ ## Overview
+ 
+ * Dynamically modify a SphereGeometry's shape at any time by updating its {{#crossLink "SphereGeometry/center:property"}}{{/crossLink}}, {{#crossLink "SphereGeometry/radius:property"}}{{/crossLink}}, {{#crossLink "SphereGeometry/heightSegments:property"}}{{/crossLink}} and
+ {{#crossLink "SphereGeometry/widthSegments:property"}}{{/crossLink}} properties.
+ * Dynamically switch its primitive type between ````"points"````, ````"lines"```` and ````"triangles"```` at any time by
+ updating its {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} property.
+ 
  ## Examples
 
- <ul>
- <li>[Textured SphereGeometry](../../examples/#geometry_SphereGeometry)</li>
- </ul>
+
+ * [Textured SphereGeometry](../../examples/#geometry_SphereGeometry)
+
 
  ## Usage
 
@@ -18,6 +25,7 @@
  new xeogl.Entity({
 
      geometry: new xeogl.SphereGeometry({
+         center: [0,0,0],
          radius: 1.5,
          heightSegments: 60,
          widthSegments: 60
@@ -41,10 +49,11 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this SphereGeometry.
- @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
+ @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values for a SphereGeometry are 'points', 'lines' and 'triangles'.
+ @param [cfg.center] {Float32Array} 3D point indicating the center position of the SphereGeometry.
  @param [cfg.radius=1] {Number}
- @param [cfg.heightSegments=24] {Number}
- @param [cfg.widthSegments=18] {Number}
+ @param [cfg.heightSegments=24] {Number} The SphereGeometry's number of latitudinal bands.
+ @param [cfg.widthSegments=18] {Number} The SphereGeometry's number of longitudinal bands.
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
  */
@@ -61,6 +70,7 @@
             this._super(cfg);
 
             this.lod = cfg.lod;
+            this.center = cfg.center;
             this.radius = cfg.radius;
             this.heightSegments = cfg.heightSegments;
             this.widthSegments = cfg.widthSegments;
@@ -106,6 +116,10 @@
             var y;
             var z;
 
+            var xCenter = this._center[0];
+            var yCenter = this._center[1];
+            var zCenter = this._center[2];
+
             var u;
             var v;
 
@@ -137,9 +151,9 @@
                     uvs.push(u);
                     uvs.push(v);
 
-                    positions.push(radius * x);
-                    positions.push(radius * y);
-                    positions.push(radius * z);
+                    positions.push(xCenter + radius * x);
+                    positions.push(yCenter + radius * y);
+                    positions.push(zCenter + radius * z);
                 }
             }
 
@@ -209,6 +223,36 @@
             },
 
             /**
+             * 3D point indicating the center position of this SphereGeometry.
+             *
+             * Fires an {{#crossLink "SphereGeometry/center:event"}}{{/crossLink}} event on change.
+             *
+             * @property center
+             * @default [0,0,0]
+             * @type {Float32Array}
+             */
+            center: {
+
+                set: function (value) {
+
+                    (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
+
+                    this._scheduleUpdate();
+
+                    /**
+                     Fired whenever this SphereGeometry's {{#crossLink "SphereGeometry/center:property"}}{{/crossLink}} property changes.
+                     @event center
+                     @param value {Float32Array} The property's new value
+                     */
+                    this.fire("center", this._center);
+                },
+
+                get: function () {
+                    return this._center;
+                }
+            },
+            
+            /**
              * The SphereGeometry's radius.
              *
              * Fires a {{#crossLink "SphereGeometry/radius:event"}}{{/crossLink}} event on change.
@@ -252,7 +296,7 @@
 
 
             /**
-             * The SphereGeometry's number of latitude bands.
+             * The SphereGeometry's number of latitudinal bands.
              *
              * Fires a {{#crossLink "SphereGeometry/heightSegments:event"}}{{/crossLink}} event on change.
              *
@@ -294,7 +338,7 @@
             },
 
             /**
-             * The SphereGeometry's number of longitude bands.
+             * The SphereGeometry's number of longitudinal bands.
              *
              * Fires a {{#crossLink "SphereGeometry/widthSegments:event"}}{{/crossLink}} event on change.
              *
@@ -339,6 +383,7 @@
         _getJSON: function () {
             return {
                 // Don't save lod
+                center: this._center.slice(),
                 radius: this._radius,
                 heightSegments: this._heightSegments,
                 widthSegments: this._widthSegments

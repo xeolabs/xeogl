@@ -4,13 +4,11 @@
 
  ## Contents
 
- <Ul>
- <li><a href="#ids">Component IDs</a></li>
- <li><a href="#componentProps">Properties</a></li>
- <li><a href="#metadata">Metadata</a></li>
- <li><a href="#logging">Logging</a></li>
- <li><a href="#destruction">Destruction</a></li>
- </ul>
+ * <a href="#ids">Component IDs</a>
+ * <a href="#componentProps">Properties</a>
+ * <a href="#metadata">Metadata</a>
+ * <a href="#logging">Logging</a>
+ * <a href="#destruction">Destruction</a>
 
  ## <a name="ids">Component IDs</a>
 
@@ -24,21 +22,21 @@
  // The Scene is a Component too
  var scene = new xeogl.Scene({
     id: "myScene"
-});
+ });
 
  var material = new xeogl.PhongMaterial(scene, {
     id: "myMaterial"
-});
+ });
 
  var geometry = new xeogl.Geometry(scene, {
     id: "myGeometry"
-});
+ });
 
  // Let xeogl automatically generate the ID for our Entity
  var entity = new xeogl.Entity(scene, {
     material: material,
     geometry: geometry
-});
+ });
  ````
 
  We can then find those components like this:
@@ -80,14 +78,14 @@
  // Bind a change callback to the Entity's Material
  entity1.on("material", function(material) {
     console.log("Entity's Material has changed to: " + material.id);
-});
+ });
 
  // Now replace that Material with another
  entity1.material = new xeogl.PhongMaterial({
     id: "myOtherMaterial",
     diffuse: [ 0.3, 0.3, 0.6 ]
     //..
-});
+ });
  ````
 
  ## <a name="metadata">Metadata</a>
@@ -105,7 +103,7 @@
         author: "@xeolabs",
         date: "February 13 2015"
     }
-});
+ });
 
  // Material with descriptive metadata
  var material = new xeogl.PhongMaterial(scene, {
@@ -116,7 +114,7 @@
         version: "0.1",
         foo: "bar"
     }
-});
+ });
  ````
 
  As with all properties, you can subscribe and change the metadata like this:
@@ -125,14 +123,14 @@
  // Subscribe to changes to the Material's metadata
  material.on("meta", function(value) {
     console.log("Metadata changed: " + JSON.stringify(value));
-});
+ });
 
  // Change the Material's metadata, firing our change handler
  material.meta = {
     description: "Bright red color with no textures",
     version: "0.2",
     foo: "baz"
-};
+ };
  ````
 
  ## <a name="logging">Logging</a>
@@ -160,7 +158,7 @@
  ````javascript
  material.on("destroyed", function() {
     this.log("Component was destroyed: " + this.id);
-});
+ });
  ````
 
  Or get notification of destruction of any Component within its {{#crossLink "Scene"}}{{/crossLink}}, indiscriminately:
@@ -168,7 +166,7 @@
  ````javascript
  scene.on("componentDestroyed", function(component) {
     this.log("Component was destroyed: " + component.id);
-});
+ });
  ````
 
  Then destroy a component like this:

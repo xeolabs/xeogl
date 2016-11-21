@@ -1,29 +1,26 @@
 /**
- A **Geometry** defines the geometric shape of attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **Geometry** defines a mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  <a href="../../examples/#geometry_triangles_texture"><img src="../../assets/images/screenshots/BoxGeometry.png"></img></a>
 
  ## Overview
 
- <ul>
- <li>Like everything in xeogl, all properties on a Geometry are dynamically editable.</li>
- <li>When no shape is specified, a Geometry will be a 2x2x2 box by default.</li>
- <li>A {{#crossLink "Scene"}}{{/crossLink}} provides a 2x2x2 box for {{#crossLink "Entity"}}Entities{{/crossLink}}
- default to when they are not configured with a Geometry.</li>
-  <li>A Geometry provides its local-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.</li>
- </ul>
+ * Like everything in xeogl, all properties on a Geometry are dynamically editable.
+ * Set a Geometry's {{#crossLink "Geometry/autoNormals:property"}}{{/crossLink}} ````true```` to make the Geometry automatically generate it's vertex normal vectors from its {{#crossLink "Geometry/positions:property"}}{{/crossLink}} and {{#crossLink "Geometry/indices:property"}}{{/crossLink}}.
+ * When no shape is specified, a Geometry will be a 2x2x2 box by default.
+ * A {{#crossLink "Scene"}}{{/crossLink}} provides a 2x2x2 box for {{#crossLink "Entity"}}Entities{{/crossLink}}
+ by default when they are not configured with a Geometry.
+ * A Geometry provides its local-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
  <img src="../../../assets/images/Geometry.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Simple triangle mesh](../../examples/#geometry_triangles)</li>
- <li>[Triangle mesh with diffuse texture](../../examples/#geometry_triangles_texture)</li>
- <li>[Triangle mesh with vertex colors](../../examples/#geometry_triangles_vertexColors)</li>
- <li>[Wireframe box](../../examples/#geometry_lines)</li>
- <li>[Dynamically modifying a TorusGeometry](../../examples/#geometry_modifying)</li>
- </ul>
+ * [Simple triangle mesh](../../examples/#geometry_triangles)
+ * [Triangle mesh with diffuse texture](../../examples/#geometry_triangles_texture)
+ * [Triangle mesh with vertex colors](../../examples/#geometry_triangles_vertexColors)
+ * [Wireframe box](../../examples/#geometry_lines)
+ * [Dynamically modifying a TorusGeometry](../../examples/#geometry_modifying)
 
  ## Usage
 
@@ -34,7 +31,7 @@
  ```` javascript
  var entity = new xeogl.Entity({
     geometry: new xeogl.Geometry() // 2x2x2 box
-});
+ });
  ````
 
  ### Scene's default Geometry
@@ -128,10 +125,7 @@
  {{#crossLink "Geometry/indices:property"}}{{/crossLink}} to reverse the direction of the triangles:
 
  ````javascript
- customGeometry.indices = [
- 2, 1, 0,
- 3, 2, 0
- ];
+ customGeometry.indices = [ 2, 1, 0, 3, 2, 0 ];
  ````
 
  Now let's make it wireframe by changing its primitive type from ````triangles```` to ````lines````:
@@ -143,7 +137,7 @@
  ### Toggling back-faces on and off
 
  Now we'll attach a {{#crossLink "Modes"}}{{/crossLink}} to that last {{#crossLink "Entity"}}{{/crossLink}}, so that
- we can show or hide its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} back-faces:
+ we can show or hide its {{#crossLink "Geometry"}}Geometry's{{/crossLink}} backfaces:
 
  ```` javascript
  var modes = new xeogl.Modes();
@@ -171,7 +165,9 @@
  modes.frontface = "cw";
  ````
 
- ### Getting boundary
+ ### Getting the Local-space boundary
+
+ We can get a Geometry's Local-space {{#crossLink "Boundary3D"}}{{/crossLink}} like so:
 
  ````javascript
  var localBoundary = quadGeometry.localBoundary;
@@ -181,6 +177,7 @@
         obb = localBoundary.obb;
         aabb = localBoundary.aabb;
         center = localBoundary.center;
+        sphere = localBoundary;
 
         //...
     });
@@ -198,12 +195,12 @@
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this Geometry.
  @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
  @param [cfg.positions] {Array of Number} Positions array.
- @param [cfg.normals] {Array of Number} Normals array.
+ @param [cfg.normals] {Array of Number} Vertex normal vectors array.
  @param [cfg.uv] {Array of Number} UVs array.
  @param [cfg.colors] {Array of Number} Vertex colors.
  @param [cfg.tangents] {Array of Number} Vertex tangents.
  @param [cfg.indices] {Array of Number} Indices array.
- @param [cfg.autoNormals] {Boolean} Set true to automatically generate normal vectors from positions and indices.
+ @param [cfg.autoNormals] {Boolean} Set true to automatically generate normal vectors from the positions and indices, if those are supplied.
  @extends Component
  */
 (function () {
@@ -790,7 +787,7 @@
             },
 
             /**
-             * The Geometry's normal vectors array.
+             * The Geometry's vertex normal vectors array.
              *
              * Fires a {{#crossLink "Geometry/normals:event"}}{{/crossLink}} event on change.
              *

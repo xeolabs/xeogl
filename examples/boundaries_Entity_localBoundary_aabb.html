@@ -11,7 +11,7 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>
+    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>
 </div>
 
 <script>
@@ -39,7 +39,7 @@
 
     var boundaryObject = new xeogl.Entity({
 
-        geometry: new xeogl.BoundaryGeometry({
+        geometry: new xeogl.AABBGeometry({
             boundary: entity.localBoundary
         }),
 

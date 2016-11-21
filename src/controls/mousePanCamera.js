@@ -1,26 +1,22 @@
 /**
  A **MousePanCamera** pans a {{#crossLink "Camera"}}{{/crossLink}} with the mouse.
 
- <ul>
- <li>A MousePanCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
- <li>Panning is done by dragging the mouse with both the left and right buttons down.</li>
- <li>Panning up and down involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
+ * A MousePanCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
+ * Panning is done by dragging the mouse with both the left and right buttons down.
+ * Panning up and down involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth
- along the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.</li>
- <li>Panning forwards and backwards involves translating
+ along the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.
+ * Panning forwards and backwards involves translating
  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth along the
- {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
- <li>Panning left and right involves translating the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and
+ {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.
+ * Panning left and right involves translating the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and
  {{#crossLink "Lookat/look:property"}}{{/crossLink}} along the the vector perpendicular to the {{#crossLink "Lookat/up:property"}}{{/crossLink}}
- and {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vectors.</li>
- </ul>
+ and {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vectors.
 
  ## Examples
 
- <ul>
- <li>[MousePanCamera example](../../examples/#interaction_MousePanCamera)</li>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- </ul>
+ * [MousePanCamera example](../../examples/#interaction_MousePanCamera)
+ * [CameraControl example](../../examples/#interaction_CameraControl)
 
  ## Usage
 

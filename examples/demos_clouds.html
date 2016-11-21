@@ -11,9 +11,9 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeogl.org">xeogl</a>
+    <a href="http://xeogl.org" target="_parent">xeogl</a>
     <br><br>
-    1000 spherical <a href="../docs/classes/Billboard.html" target="_docs">Billboards</a>
+    1000 spherical <a href="../docs/classes/Billboard.html" target="_parent">Billboards</a>
 </div>
 
 <script>
@@ -61,7 +61,7 @@
 //    });
 //
 //    new xeogl.Entity({
-//        geometry: new xeogl.BoundaryGeometry({
+//        geometry: new xeogl.AABBGeometry({
 //            boundary: cloudsBoundary.worldBoundary
 //        }),
 //        material: new xeogl.PhongMaterial({
@@ -130,7 +130,7 @@
     cameraControl.mouseZoom.sensitivity = 5;
 
 //    setInterval(function() {
-//        (new xeogl.CameraFlight()).flyTo(cloudsBoundary);
+//        (new xeogl.CameraFlightAnimation()).flyTo(cloudsBoundary);
 //    },3000);
 
 </script>

@@ -2,13 +2,13 @@
  A **Stationary** disables the effect of {{#crossLink "Lookat"}}view transform{{/crossLink}} translations for
  associated {{#crossLink "Entity"}}Entities{{/crossLink}} or {{#crossLink "Model"}}Models{{/crossLink}}.
 
+ ## Overview
+
  <img src="../../../assets/images/Stationary.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Custom Skybox using a Stationary component](../../examples/#skyboxes_customSkybox)</li>
- </ul>
+ * [Custom Skybox using a Stationary component](../../examples/#skyboxes_customSkybox)
 
  ## Usage
 

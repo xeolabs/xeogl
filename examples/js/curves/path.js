@@ -1,25 +1,24 @@
 /**
  A **Path** is a complex curved path constructed from various {{#crossLink "Curve"}}{{/crossLink}} subtypes.
 
- <ul>
- <li>A Path can be constructed from these {{#crossLink "Curve"}}{{/crossLink}} subtypes: {{#crossLink "SplineCurve"}}{{/crossLink}},
- {{#crossLink "CubicBezierCurve"}}{{/crossLink}} and {{#crossLink "QuadraticBezierCurve"}}{{/crossLink}}.</li>
- <li>You can sample a {{#crossLink "Path/point:property"}}{{/crossLink}} and a {{#crossLink "Curve/tangent:property"}}{{/crossLink}}
- vector on a Path for any given value of {{#crossLink "Path/t:property"}}{{/crossLink}} in the range [0..1].</li>
- <li>When you set {{#crossLink "Path/t:property"}}{{/crossLink}} on a Path, its
+ ## Overview
+
+ 
+ * A Path can be constructed from these {{#crossLink "Curve"}}{{/crossLink}} subtypes: {{#crossLink "SplineCurve"}}{{/crossLink}},
+ {{#crossLink "CubicBezierCurve"}}{{/crossLink}} and {{#crossLink "QuadraticBezierCurve"}}{{/crossLink}}.
+ * You can sample a {{#crossLink "Path/point:property"}}{{/crossLink}} and a {{#crossLink "Curve/tangent:property"}}{{/crossLink}}
+ vector on a Path for any given value of {{#crossLink "Path/t:property"}}{{/crossLink}} in the range [0..1].
+ * When you set {{#crossLink "Path/t:property"}}{{/crossLink}} on a Path, its
  {{#crossLink "Path/point:property"}}{{/crossLink}} and {{#crossLink "Curve/tangent:property"}}{{/crossLink}} properties
- will update accordingly.</li>
- </ul>
+ will update accordingly.
 
  ## Examples
 
- <ul>
- <li>[CubicBezierCurve example](../../examples/#curves_CubicBezierCurve)</li>
- <li>[Tweening position along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve)</li>
- <li>[Tweening color along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve_color)</li>
- <li>[SplineCurve example](../../examples/#curves_SplineCurve)</li>
- <li>[Path example](../../examples/#curves_Path)</li>
- </ul>
+ * [CubicBezierCurve example](../../examples/#curves_CubicBezierCurve)
+ * [Tweening position along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve)
+ * [Tweening color along a QuadraticBezierCurve](../../examples/#curves_QuadraticBezierCurve_color)
+ * [SplineCurve example](../../examples/#curves_SplineCurve)
+ * [Path example](../../examples/#curves_Path)
 
  ## Usage
 
@@ -104,7 +103,7 @@
  
  @class Path
  @module xeogl
- @submodule paths
+ @submodule curves
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
  @param [cfg] {*} Fly configuration

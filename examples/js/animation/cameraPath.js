@@ -1,67 +1,19 @@
 /**
- A **CameraPath** flies a {{#crossLink "Camera"}}{{/crossLink}} along a spline curve.
+ A **CameraPath** defines spline curve along which a {{#crossLink "Camera"}}{{/crossLink}} can be animated.
 
- ## Usage
-
- In the example below we create an {{#crossLink "Entity"}}{{/crossLink}} and a {{#crossLink "Camera"}}{{/crossLink}},
- then we create a {{#crossLink "CameraPath"}}{{/crossLink}} that binds the {{#crossLink "Camera"}}{{/crossLink}} to a
- {{#crossLink "SplineCurve"}}{{/crossLink}}. Finally, we periodically update the position 't' on
- the {{#crossLink "SplineCurve"}}{{/crossLink}} within the {{#crossLink "Scene"}}{{/crossLink}}'s animation loop, which
- causes the {{#crossLink "Camera"}}{{/crossLink}} to move with that position along the {{#crossLink "SplineCurve"}}{{/crossLink}}.
-
- ````Javascript
- var camera = new xeogl.Camera({
-     view: new xeogl.Lookat({
-         eye: [0, 0, 10],
-         look: [0, 0, 0],
-         up: [0, 1, 0]
-     }),
-     project: new xeogl.Perspective({
-         fovy: 60,
-         near: 0.1,
-         far: 1000
-     })
- });
-
- var entity = new xeogl.Entity({
-     camera: camera,
-     geometry: new xeogl.BoxGeometry()
- });
-
- var spline = new xeogl.SplineCurve({
-     points: [
-         [0, 0, 100],
-         [10, 5, 60],
-         [7, 2, 20],
-         [2, -1, 10]
-     ]
- });
-
- new xeogl.CameraPath({
-    camera: camera,
-    SplineCurve: spline
- });
-
- // Periodically update the position 't' on the SplineCurve, which causes the CameraPath
- // to interpolate the Camera to that position
-
- xeogl.scene.on("tick", function(e) {
-     var t = (e.time - e.startTime) * 0.01;
-     spline.t = t;
- });
- ````
+ * See {{#crossLink "CameraPathAnimation"}}{{/crossLink}} for usage.
 
  @class CameraPath
  @module xeogl
  @submodule animation
  @constructor
- @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
+ @param [scene] {Scene} Parent {{#crossLink "Scene"}}{{/crossLink}}.
  @param [cfg] {*} Configuration
- @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}{{/crossLink}}, generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CameraPath.
- @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
- Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this CameraPath. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
+ @param [cfg.camera] {String|Camera} ID or instance of a {{#crossLink "Camera"}}{{/crossLink}} to control.
+ Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this CameraPath. Defaults to the
+ parent {{#crossLink "Scene"}}{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
  @param [cfg.eyeCurve] {String|SplineCurve} ID or instance of a {{#crossLink "SplineCurve"}}{{/crossLink}} to animate the {{#crossLink "Camera/eye:property"}}Camera's eye{{/crossLink}} property along.
  @param [cfg.lookCurve] {String|SplineCurve} ID or instance of a {{#crossLink "SplineCurve"}}{{/crossLink}} to animate the {{#crossLink "Camera/look:property"}}Camera's look{{/crossLink}} property along.
  @extends Component
@@ -83,9 +35,7 @@
 
         _init: function (cfg) {
 
-            this.camera = cfg.camera;
-
-            this.frames = [];
+            this._frames = [];
 
             this._eyeCurve = this.create(xeogl.SplineCurve);
             this._lookCurve = this.create(xeogl.SplineCurve);
@@ -94,106 +44,95 @@
             if (cfg.frames) {
                 this.addFrames(cfg.frames);
             }
-
-            this.t = cfg.t;
         },
 
         _props: {
 
-
             /**
-             * The Camera for this CameraPath.
-             *
-             * When set to a null or undefined value, will default to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s
-             * default {{#crossLink "Scene/camera:property"}}{{/crossLink}}.
-             *
-             * Fires a {{#crossLink "CameraPath/camera:event"}}{{/crossLink}} event on change.
-             *
-             * @property camera
-             * @type Camera
+             The frames set on the constructor and added with {{#crossLink "CameraPath/addFrame:method"}}{{/crossLink}}.
+
+             @property frames
+             @type {[]}
+             @final
              */
-            camera: {
-
-                set: function (value) {
-
-                    /**
-                     * Fired whenever this CameraPaths's {{#crossLink "CameraPath/camera:property"}}{{/crossLink}} property changes.
-                     * @event camera
-                     * @param value The property's new value
-                     */
-                    this._attach({
-                        name: "camera",
-                        type: "xeogl.Camera",
-                        component: value,
-                        sceneDefault: true
-                    });
-                },
+            frames: {
 
                 get: function () {
-                    return this._attached.camera;
+                    return this._frames;
                 }
             },
 
             /**
-             The current progress along this CameraPath. This value will will be clamped to range [0..1].
+             The {{#crossLink "SplineCurve"}}{{/crossLink}} which defines the path along which a
+             {{#crossLink "Camera/property:eye"}}Camera's eye position{{/crossLink}} travels.
 
-             @property t
-             @default 0
-             @type Number
+             This property is read-only and is internally created and destroyed by this CameraPath.
+
+             @property eyeCurve
+             @type {SplineCurve}
+             @final
              */
-            t: {
-
-                set: function (value) {
-
-                    var camera = this._attached.camera;
-                    if (!camera) {
-                        return;
-                    }
-
-                    value = value || 0;
-
-                    this._t = value < 0.0 ? 0.0 : (value > 1.0 ? 1.0 : value);
-
-                    if (this._eyeCurve.points.length < 2) {
-
-                    }
-
-                    this._eyeCurve.t = this._t;
-                    this._lookCurve.t = this._t;
-                    this._upCurve.t = this._t;
-
-                    var lookat = camera.view;
-
-                    lookat.eye = this._eyeCurve.point;
-                    lookat.look = this._lookCurve.point;
-                    lookat.up = this._upCurve.point;
-                },
+            eyeCurve: {
 
                 get: function () {
-                    return this._t;
+                    return this._eyeCurve;
+                }
+            },
+
+            /**
+             The {{#crossLink "SplineCurve"}}{{/crossLink}} which defines the path along which a
+             {{#crossLink "Camera/property:eye"}}Camera's look position{{/crossLink}} travels.
+
+             This property is read-only and is internally created and destroyed by this CameraPath.
+
+             @property lookCurve
+             @type {SplineCurve}
+             @final
+             */
+            lookCurve: {
+
+                get: function () {
+                    return this._lookCurve;
+                }
+            },
+
+            /**
+             The {{#crossLink "SplineCurve"}}{{/crossLink}} which defines the path along which a
+             {{#crossLink "Camera/property:up"}}Camera's up vector{{/crossLink}} travels.
+
+             This property is read-only and is internally created and destroyed by this CameraPath.
+
+             @property upCurve
+             @type {SplineCurve}
+             @final
+             */
+            upCurve: {
+
+                get: function () {
+                    return this._upCurve;
                 }
             }
         },
 
         /**
-         *
+         Adds a frame to this CameraPath, given as the current position of a {{#crossLink "Camera"}}{{/crossLink}}.
+
+         The {{#crossLink "Camera/property:view"}}Camera's view transform{{/crossLink}} must be a {{#crossLink "Lookat"}}{{/crossLink}}.
+
+         @param {Number} t Time instant for the new frame.
+         @param {Camera} camera The {{#crossLink "Camera"}}{{/crossLink}}.
          */
-        recordFrame: function (t) {
+        saveFrame: function (t, camera) {
 
-            var camera = this._attached.camera;
-            if (!camera) {
-                this.error("CameraPath has no Camera - can't append frame.");
-                return;
-            }
+            var view = camera.view;
 
-            var view = this.camera.view;
             if (!view) {
-                this.error("Camera has no view transform component - can't append frame.");
+                this.error("Camera has no view transform component - can't save frame.");
                 return;
             }
 
             if (!view.isType("xeogl.Lookat")) {
-                this.error("Camera's view transform is not a Lookat - can't append frame.");
+                this.error("Camera's view transform is not a Lookat - can't save frame.");
                 return;
             }
 
@@ -203,8 +142,31 @@
         },
 
         /**
-         *
-         * @param frames
+         Adds a frame to this CameraPath, specified as values for eye, look and up vectors at a given time instant.
+
+         @param {Number} t Time instant for the new frame;
+         @param {Float32Array} eye A three-element vector specifying the eye position for the new frame.
+         @param {Float32Array} look A three-element vector specifying the look position for the new frame.
+         @param {Float32Array} up A three-element vector specifying the up vector for the new frame.
+         */
+        addFrame: function (t, eye, look, up) {
+            var frame = {
+                t: t,
+                eye: eye.slice(0),
+                look: look.slice(0),
+                up: up.slice(0)
+            };
+            this._frames.push(frame);
+            this._eyeCurve.points.push(frame.eye);
+            this._lookCurve.points.push(frame.look);
+            this._upCurve.points.push(frame.up);
+        },
+
+        /**
+         Adds multiple frames to this CameraPath, each frame specified as a set of values for eye, look and up
+         vectors at a given time instant.
+
+         @param {Array} frames An array of frames.
          */
         addFrames: function (frames) {
             var frame;
@@ -215,66 +177,59 @@
         },
 
         /**
-         *
-         * @param t
-         * @param eye
-         * @param look
-         * @param up
+         Sets the position of a {{#crossLink "Camera"}}{{/crossLink}} to a position interpolated within this CameraPath
+         at the given time instant.
+
+         @param {Number} t Time instant.
+         @param {Camera} camera The {{#crossLink "Camera"}}{{/crossLink}} to update.
          */
-        addFrame: function (t, eye, look, up) {
-            var frame = {
-                t: t,
-                eye: eye.slice(0),
-                look: look.slice(0),
-                up: up.slice(0)
+        loadFrame: (function () {
+
+            var vec = xeogl.math.vec3();
+
+            return function (t, camera) {
+
+                var view = camera.view;
+
+                if (!view) {
+                    this.error("Camera has no view transform component - can't save frame.");
+                    return;
+                }
+
+                if (!view.isType("xeogl.Lookat")) {
+                    this.error("Camera's view transform is not a Lookat - can't save frame.");
+                    return;
+                }
+
+                t = t < 0.0 ? 0.0 : (t > 1.0 ? 1.0 : t);
+
+                view.eye = this._eyeCurve.getPoint(t, vec);
+                view.look = this._lookCurve.getPoint(t, vec);
+                view.up = this._upCurve.getPoint(t, vec);
             };
-            this.frames.push(frame);
-            this._eyeCurve.points.push(eye.slice(0));
-            this._lookCurve.points.push(look.slice(0));
-            this._upCurve.points.push(up.slice(0));
-        },
+        })(),
 
         /**
-         *
+         Removes all frames from this CameraPath.
          */
         clearFrames: function () {
-            this.frames = [];
+            this._frames = [];
             this._eyeCurve.points = [];
             this._lookCurve.points = [];
             this._upCurve.points = [];
         },
 
-        /**
-         *
-         * @param frame
-         */
-        getFrameT: function (frame) {
-            return this._tFrames[frame];
-        },
-
-        getTFrame: function (t) {
-
-        },
-
         _getJSON: function () {
 
             var json = {
-                frames: [],
-                t: this._t
-            };
+                frames: []            };
 
-            if (this._attached.camera) {
-                json.camera = this._attached.camera.id;
-            }
-
-            var tFrames = this._tFrames;
             var eyePoints = this._eyeCurve.points;
             var lookPoints = this._lookCurve.points;
             var upPoints = this._upCurve.points;
 
             for (var i = 0, len = eyePoints.length; i < len; i++) {
                 json.frames.push({
-                    t: tFrames[i],
                     eye: eyePoints[i],
                     look: lookPoints[i],
                     up: upPoints[i]
@@ -284,5 +239,4 @@
             return json;
         }
     });
-
 })();

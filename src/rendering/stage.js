@@ -2,28 +2,25 @@
  A **Stage** is a bin of {{#crossLink "Entity"}}Entities{{/crossLink}} that is rendered in a specified priority with respect to
  other Stages in the same {{#crossLink "Scene"}}{{/crossLink}}.
 
- <ul>
- <li>When the parent {{#crossLink "Scene"}}Scene{{/crossLink}} renders, each Stage renders its bin
- of {{#crossLink "Entity"}}Entities{{/crossLink}} in turn, from the lowest priority Stage to the highest.</li>
- <li>Stages are typically used for ordering the render-to-texture steps in posteffects pipelines.</li>
- <li>You can control the render order of the individual {{#crossLink "Entity"}}Entities{{/crossLink}} ***within*** a Stage
- by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.</li>
- <li>{{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
- {{#crossLink "Entity"}}Entities{{/crossLink}} within Stages.</li>
- <li>{{#crossLink "Entity"}}Entities{{/crossLink}} not explicitly attached to a Stage are implicitly
+ ## Overview
+
+ * When the parent {{#crossLink "Scene"}}Scene{{/crossLink}} renders, each Stage renders its bin
+ of {{#crossLink "Entity"}}Entities{{/crossLink}} in turn, from the lowest priority Stage to the highest.
+ * Stages are typically used for ordering the render-to-texture steps in posteffects pipelines.
+ * You can control the render order of the individual {{#crossLink "Entity"}}Entities{{/crossLink}} ***within*** a Stage
+ by associating them with {{#crossLink "Layer"}}Layers{{/crossLink}}.
+ * {{#crossLink "Layer"}}Layers{{/crossLink}} are typically used to <a href="https://www.opengl.org/wiki/Transparency_Sorting" target="_other">transparency-sort</a> the
+ {{#crossLink "Entity"}}Entities{{/crossLink}} within Stages.
+ * {{#crossLink "Entity"}}Entities{{/crossLink}} not explicitly attached to a Stage are implicitly
  attached to the {{#crossLink "Scene"}}Scene{{/crossLink}}'s default
  {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}. which has
- a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.</li>
-
- </ul>
+ a {{#crossLink "Stage/priority:property"}}{{/crossLink}} value of zero.
 
  <img src="../../../assets/images/Stage.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Procedural texture using RTT](../../examples/#materials_texture_procedural)</li>
- </ul>
+ * [Procedural texture using RTT](../../examples/#materials_texture_procedural)
 
  ## Usage
 
@@ -43,8 +40,7 @@
     }),
     geometry: new xeogl.BoxGeometry(),
     colorTarget: new xeogl.ColorTarget()
-});
-
+ });
 
  // Second stage: an Entity with a Texture that sources from the ColorTarget
  var entity2 = new xeogl.Entity({
@@ -57,7 +53,7 @@
         })
     }),
     geometry: new xeogl.BoxGeometry()
-});
+ });
  ````
 
  @class Stage

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.min.js"></script>
+
+    <!-- ZSpaceEffect is insulated from changes to the zSpace WebVR API by
+     the "ZSpace" utility class provided by zSpace, which depends on glmatrix. -->
+
+    <script src="libs/gl-matrix-min.js"></script>
+    <!--<script src="js/effects/zSpace.js"></script>-->
+    <script src="js/effects/zSpaceEffect_complete.js"></script>
+    <script src="js/controls/zSpaceStylusControl.js"></script>
+
+<body>
+
+<div id="infoLight"
+     style="left: 0; text-align: left; background: black; opacity: 0.7; padding: 8px; color: white; font-size: 14pt;">
+    <span><a href="http://xeogl.org" target="_parent" >xeogl</a><br>
+        using <a
+                href="../docs/classes/GLTFModel.html"
+                target="_parent">GLTFModel</a> and <a
+                href="../docs/classes/ZSpaceEffect.html"
+                target="_parent">ZSpaceEffect</a> components to view a glTF model in zSpace VR</span><br>
+    <span id="log" style="color:red;font-size: 16px"></span>
+</div>
+
+<script>
+
+    //----------------------------------------------------------------------------
+    // Load a glTF gearbox model into the default Scene
+    //----------------------------------------------------------------------------
+
+    var gearbox = new xeogl.GLTFModel({
+        src: "models/gltf/gearbox/gearbox_assy.gltf"
+    });
+
+    gearbox.on("loaded", function () {
+
+        //---------------------------------------------------------------------------------------
+        // When the GLTFModel has loaded, iterate over all the Entities in the GLTFModel:
+        //
+        // 1. Ensure that each Entity has its own Material and Modes components, so that
+        // we can set it transparent individually. Add the Material and Modes to the GLTFModel
+        // so that they get destroyed whenever the GLTFModel is destroyed or reloaded.
+        //
+        // 2. Flatten each Entity's transform hierarchy down to one Transform.
+        //---------------------------------------------------------------------------------------
+
+        var entities = gearbox.types["xeogl.Entity"];
+        var entity;
+
+        for (var entityId in entities) {
+            if (entities.hasOwnProperty(entityId)) {
+
+                entity = entities[entityId];
+
+                // Ensure the Entity has its own unique Material
+                // Add the Material and Modes to the GLTFModel
+                // so that they get destroyed automatically
+
+                gearbox.add(entity.material = entity.material.clone());
+            }
+        }
+    });
+
+    //--------------------------------------------
+    // Create helper to show the ray
+    //--------------------------------------------
+
+    var rayHelper = new (function () {
+
+        var entity = new xeogl.Entity({
+            geometry: new xeogl.Geometry({
+                primitive: "lines",
+                positions: [0, 0, 0, 0, 0, 0],
+                indices: [0, 1]
+            }),
+            material: new xeogl.PhongMaterial({
+                emissive: [1, 0.3, 0.3],
+                diffuse: [0, 0, 0],
+                ambient: [0, 0, 0],
+                lineWidth: 2
+            }),
+            modes: new xeogl.Modes({pickable: false})
+        });
+
+        var positions = new Float32Array(6);
+        var normalizedDir = xeogl.math.vec3();
+        var offset = xeogl.math.vec3();
+
+        this.setRay = function (pos, dir) {
+
+            xeogl.math.normalizeVec3(dir, normalizedDir);
+            xeogl.math.mulVec3Scalar(normalizedDir, 310, offset);
+
+            positions[0] = pos[0]; // Origin
+            positions[1] = pos[1];
+            positions[2] = pos[2];
+            positions[3] = pos[0] + offset[0]; // Direction
+            positions[4] = pos[1] + offset[1];
+            positions[5] = pos[2] + offset[2];
+            entity.geometry.positions = positions;
+        };
+
+        this.setHighlighted = function (highlighted) {
+            entity.material.emissive = highlighted ? [1.0, 0.5, 0.5] : [0.5, 0.3, 0.3];
+            entity.material.lineWidth = highlighted ? 4 : 2;
+        };
+    })();
+
+    //--------------------------------------------
+    // Create helper to show our drawing
+    //--------------------------------------------
+
+    var drawingHelper = new (function () {
+
+        var points = [];
+        var indices = [];
+
+        var entity = new xeogl.Entity({
+            geometry: new xeogl.Geometry({
+                primitive: "points",
+                positions: [0, 0, 0]
+            }),
+            material: new xeogl.PhongMaterial({
+                emissive: [0.4, 1, 0.4],
+                diffuse: [0, 0, 0],
+                pointSize: 8
+            }),
+            modes: new xeogl.Modes({
+                pickable: false,
+                collidable: false
+            })
+        });
+
+        this.addPoint = function (pos) {
+
+            points.push(pos[0]);
+            points.push(pos[1]);
+            points.push(pos[2]);
+
+            indices.push(indices.length);
+
+            entity.geometry.positions = points;
+            entity.geometry.indices = indices;
+        };
+    })();
+
+    //----------------------------------------------------------------------------
+    // Set initial camera position
+    //----------------------------------------------------------------------------
+
+    var view = gearbox.scene.camera.view;
+
+    view.gimbalLockY = false;
+
+    view.eye = [184.21, 10.54, -7.03];
+    view.look = [159.20, 17.02, 3.21];
+    view.up = [-0.15, 0.97, 0.13];
+
+    var scene = gearbox.scene;
+
+    //----------------------------------------------------------------------------
+    // Allow camera control with keyboard and mouse
+    //----------------------------------------------------------------------------
+
+    var cameraControl = new xeogl.CameraControl();
+
+    //---------------------------------------------------
+    // Create a zSpace effect and stylus control
+    //---------------------------------------------------
+
+    var zspaceEffect = new xeogl.ZSpaceEffect({
+        canvasOffset: [330, 0]
+    });
+
+    zspaceEffect.on("supported", function (supported) {
+        if (!supported) {
+            document.getElementById("log").innerText = "This computer is not a zSpace viewer - defaulting to standard xeogl camera controls. ";
+        }
+    });
+
+    zspaceEffect.on("stylusMoved", function () {
+
+        var stylusPos = zspaceEffect.stylusPos;
+        var stylusDir = zspaceEffect.stylusDir;
+
+        rayHelper.setRay(stylusPos, stylusDir);
+
+        if (zspaceEffect.stylusButton0) {
+
+            var hit = scene.pick({
+                pickSurface: true,  // <<------ This causes picking to find the intersection point on the entity
+                origin: stylusPos,
+                direction: stylusDir
+            });
+
+            if (hit && hit.worldPos) {
+                rayHelper.setHighlighted(true);
+                drawingHelper.addPoint(hit.worldPos);
+
+            } else {
+                rayHelper.setHighlighted(false);
+            }
+        }
+    });
+
+</script>
+</body>
+</html>

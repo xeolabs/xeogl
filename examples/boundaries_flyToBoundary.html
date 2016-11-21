@@ -13,18 +13,18 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>
+    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>
     Demonstrates some engine features for visualizing parts assemblies:<br><br>
     <ul>
         <li>tracking World and Canvas boundaries of <a
-                href="../docs/classes/Entity.html" target="_docs">Entities</a>,
+                href="../docs/classes/Entity.html" target="_parent">Entities</a>,
         </li>
         <li><a
-                href="../docs/classes/CameraFlight.html" target="_docs">CameraFlight</a> animation, and
+                href="../docs/classes/cameraFlightAnimation.html" target="_parent">cameraFlightAnimation</a> animation, and
         </li>
         <li>loading of <a
-                href="../docs/classes/GLTFModel.html" target="_docs">Models</a> from <a
-                href="https://github.com/KhronosGroup/glTF" target="_docs">glTF</a> files.
+                href="../docs/classes/GLTFModel.html" target="_parent">Models</a> from <a
+                href="https://github.com/KhronosGroup/glTF" target="_parent">glTF</a> files.
         </li>
     </ul>
 </div>
@@ -66,7 +66,7 @@
     // of each entity we fly to
 
     var orientedBoundary = new xeogl.Entity({
-        geometry: new xeogl.BoundaryGeometry(),
+        geometry: new xeogl.AABBGeometry(),
         material: new xeogl.PhongMaterial({
             diffuse: [0, 0, 0],
             ambient: [0, 0, 0],
@@ -89,7 +89,7 @@
     // oriented bounding box (OBB) of each entity we fly to
 
     var axisBoundary = new xeogl.Entity({
-        geometry: new xeogl.BoundaryGeometry(),
+        geometry: new xeogl.OBBGeometry(),
         material: new xeogl.PhongMaterial({
             diffuse: [0, 0, 0],
             ambient: [0, 0, 0],
@@ -140,7 +140,7 @@
     // Camera flight animation, flies the
     // default camera to each entity
 
-    var cameraFlight = new xeogl.CameraFlight({
+    var cameraFlight = new xeogl.CameraFlightAnimation({
         fit: true,
         fitFOV: 55, // Make sure the camera stops far enough back from the entity
         duration: 2.0 // One second flight time to each entity

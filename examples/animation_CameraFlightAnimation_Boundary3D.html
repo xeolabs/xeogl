@@ -11,11 +11,12 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeogl.org">xeogl</a>
+    <a href="http://xeogl.org" target="_parent" >xeogl</a>
     <br><br>
-    using a <a href="../docs/classes/CameraFlight.html" target="_docs">CameraFlight</a> to fly a <a
-        href="../docs/classes/Camera.html" target="_docs">Camera</a> to AABBs of randomly selected <a
-        href="../docs/classes/Entity.html" target="_docs">Entities</a>
+    using a <a href="../docs/classes/CameraFlightAnimation.html" target="_parent">CameraFlightAnimation</a> to fly a <a
+        href="../docs/classes/Camera.html" target="_parent">Camera</a> to <a
+        href="../docs/classes/Boundary3D.html" target="_parent">Boundary3Ds</a> of randomly selected <a
+        href="../docs/classes/Entity.html" target="_parent">Entities</a>
 </div>
 
 <script>
@@ -26,7 +27,6 @@
     var entity;
 
     var torus = new xeogl.TorusGeometry();
-
 
     for (var i = 0; i < 20; i++) {
 
@@ -72,10 +72,17 @@
         entities.push(entity);
     }
 
+    // Create a cameraFlightAnimation animation
+
+    var flight = new xeogl.CameraFlightAnimation({
+        duration: 1.5,
+        fitFOV: 45
+    });
+
     // Target boundary indicator
 
     var boundaryIndicator = new xeogl.Entity({
-        geometry: new xeogl.BoundaryGeometry({
+        geometry: new xeogl.AABBGeometry({
             boundary: entities[0].worldBoundary
         }),
         material: new xeogl.PhongMaterial({
@@ -83,13 +90,6 @@
             emissive: [1.0, 1.0, 0.0],
             lineWidth: 4
         })
-    });
-
-    // Create a CameraFlight animation
-
-    var flight = new xeogl.CameraFlight({
-        duration: 1.5,
-        fitFOV: 45
     });
 
     // Create a couple of camera controls so that
@@ -118,13 +118,12 @@
         entity.material.diffuse = [1, 1, 0];
 
         var worldBoundary = entity.worldBoundary;
-        var aabb = worldBoundary.aabb;
 
-        flight.flyTo(aabb);
+        flight.flyTo(worldBoundary);
 
-        // Set target boundary to the entity's AABB
+        // Set target boundary to the entity's OBB
 
-        boundaryIndicator.geometry.aabb = aabb;
+        boundaryIndicator.geometry.obb = worldBoundary.obb;
 
     }, 2000);
 

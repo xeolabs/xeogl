@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.min.js"></script>
+
+    <script src="js/curves/curve.js"></script>
+    <script src="js/curves/splineCurve.js"></script>
+    <script src="js/animation/cameraPath.js"></script>
+    <script src="js/animation/cameraPathAnimation.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+
+<div id="infoLight">
+    <a href="http://xeogl.org" target="_parent">xeogl</a>
+    <br><br>
+
+    <ul>
+        <li><p>Animating a <a href="../docs/classes/Camera.html" target="_parent">Camera</a> with a <a
+                href="../docs/classes/CameraPath.html" target="_parent">CameraPath</a> and a <a
+                href="../docs/classes/CameraPathAnimation.html" target="_parent">CameraPathAnimation</a></li>
+        <li>Jumping the Camera to each frame on the CameraPath using the CameraPathAnimation's <a
+                href="../docs/classes/CameraPathAnimation.html#method_flyToFrame" target="_parent">scrubToFrame</a>
+            method
+        </li>
+
+    </ul>
+</div>
+
+<script>
+
+    // Load a model from glTF
+
+    var gearbox = new xeogl.GLTFModel({
+        src: "models/gltf/gearbox/gearbox_assy.gltf"
+    });
+
+    // Define a CameraPath
+
+    var cameraPath = new xeogl.CameraPath({
+        frames: [
+            {t: 0, eye: [184.21, 10.54, -7.03], look: [159.2, 17.02, 3.21], up: [-0.15, 0.97, 0.13]},
+            {t: 1, eye: [184.91, 10.10, -11.26], look: [171.03, 13.69, -5.57], up: [-0.15, 0.97, 0.12]},
+            {t: 2, eye: [181.37, 12.35, -16.93], look: [171.03, 13.69, -5.57], up: [-0.17, 0.93, 0.28]},
+            {t: 2, eye: [174.01, 13.55, -20.70], look: [171.03, 13.69, -5.57], up: [-0.01, 0.90, 0.40]},
+            {t: 4, eye: [166.48, 14.36, -20.30], look: [171.03, 13.69, -5.57], up: [0.19, 0.88, 0.40]},
+            {t: 5, eye: [160.32, 14.69, -16.63], look: [171.03, 13.69, -5.57], up: [0.36, 0.87, 0.29]},
+            {t: 6, eye: [156.67, 17.97, -4.77], look: [162.53, 17.42, 1.28], up: [0.36, 0.87, 0.29]},
+            {t: 7, eye: [151.14, 16.68, -10.04], look: [158.94, 15.95, -1.99], up: [0.36, 0.87, 0.29]},
+            {t: 8, eye: [146.26, 17.56, -4.77], look: [152.13, 17.05, 1.28], up: [0.36, 0.87, 0.28]},
+            {t: 9, eye: [137.26, 18.36, -9.65], look: [149.76, 17.27, 3.24], up: [0.36, 0.87, 0.28]},
+            {t: 10, eye: [139.04, 18.29, -11.17], look: [149.76, 17.27, 3.24], up: [0.32, 0.87, 0.33]},
+            {t: 11, eye: [140.66, 18.13, -12.26], look: [149.76, 17.27, 3.24], up: [0.28, 0.87, 0.35]},
+            {t: 12, eye: [147.18, 17.66, -14.56], look: [149.76, 17.27, 3.24], up: [0.12, 0.89, 0.41]},
+            {t: 13, eye: [158.05, 16.33, -12.69], look: [149.76, 17.27, 3.24], up: [-0.11, 0.91, 0.34]},
+            {t: 14, eye: [150.11, 13.26, -6.69], look: [147.95, 13.50, -2.52], up: [-0.11, 0.91, 0.34]},
+            {t: 15, eye: [149.27, 13.00, -3.34], look: [148.72, 13.05, -2.29], up: [-0.11, 0.91, 0.35]},
+            {t: 16, eye: [152.62, 11.65, -4.87], look: [148.47, 12.08, 3.08], up: [-0.11, 0.91, 0.35]},
+            {t: 17, eye: [153.35, 12.24, -1.84], look: [148.69, 12.72, 7.01], up: [-0.11, 0.91, 0.35]},
+            {t: 18, eye: [156.49, 12.11, 0.74], look: [148.69, 12.72, 7.012], up: [-0.23, 0.92, 0.26]},
+            {t: 19, eye: [158.52, 11.98, 5.21], look: [148.69, 12.72, 7.01], up: [-0.32, 0.92, 0.12]},
+            {t: 20, eye: [158.60, 11.50, 7.91], look: [148.69, 12.72, 7.01], up: [-0.30, 0.94, 0.035]},
+            {t: 21, eye: [157.60, 11.76, 11.51], look: [148.69, 12.72, 7.01], up: [-0.31, 0.93, -0.089]},
+            {t: 22, eye: [152.67, 18.35, 14.29], look: [148.69, 12.72, 7.01], up: [-0.46, 0.51, -0.70]},
+            {t: 23, eye: [148.79, 21.67, 11.52], look: [148.69, 12.72, 7.01], up: [-0.15, 0.036, -0.97]},
+            {t: 24, eye: [147.11, 22.40, 9.07], look: [148.69, 12.72, 7.01], up: [0.38, -0.16, -0.89]},
+            {t: 25, eye: [144.80, 21.92, 6.23], look: [148.69, 12.72, 7.01], up: [0.98, -0.02, 0.03]},
+            {t: 26, eye: [144.11, 20.18, 2.13], look: [148.69, 12.72, 7.01], up: [0.71, 0.29, 0.62]},
+            {t: 27, eye: [145.87, 17.37, -1.40], look: [148.69, 12.72, 7.01], up: [0.31, 0.60, 0.71]},
+            {t: 28, eye: [144.37, 19.17, -7.33], look: [146.13, 16.27, -2.08], up: [0.31, 0.60, 0.71]},
+            {t: 29, eye: [142.54, 21.91, -17.26], look: [146.89, 14.81, -4.28], up: [0.31, 0.60, 0.71]}
+        ]
+    });
+
+    // Animate the default Scene's default Camera along the CameraPath
+
+    var cameraPathAnimation = new xeogl.CameraPathAnimation({
+        cameraPath: cameraPath
+    });
+
+    gearbox.on("loaded", function () { // We'll wait for the model to load first
+
+        var i = 0;
+        var dir = 1;
+
+        function nextFrame() {
+
+            cameraPathAnimation.scrubToFrame(i += dir);
+
+            if (i <= 0 || i >= 29) {
+                dir = -dir;
+            }
+
+            setTimeout(nextFrame, 1000);
+        }
+
+        nextFrame();
+
+    });
+
+
+</script>
+</body>
+</html>

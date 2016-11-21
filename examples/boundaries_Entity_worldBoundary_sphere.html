@@ -5,17 +5,17 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.min.js"></script>
+    <script src="../build/xeogl.js"></script>
     <link href="css/styles.css" rel="stylesheet"/>
 
-    <script src="js/animation/cameraFollow.js"></script>
+    <script src="js/animation/cameraFollowAnimation.js"></script>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>
-    Visualizing an <a href="../docs/classes/Entity.html" target="_docs">Entity's</a> World-space oriented <a
-        href="../docs/classes/Boundary3D.html" target="_docs">boundary</a> (OBB) as we animate the Entity's transforms
+    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>
+    Visualizing an <a href="../docs/classes/Entity.html" target="_parent">Entity's</a> World-space spherical <a
+        href="../docs/classes/Boundary3D.html" target="_parent">Boundary3D</a> as we animate the Entity's transforms
 
     <pre id="infoTxt" style="text-align: left; color:#77FF77; border:0;"></pre>
 </div>
@@ -138,7 +138,7 @@
 
 
     // ------------------------------------------------------------------
-    // Show the torus' World-space oriented bounding box (OBB)
+    // Show the torus' World-space spherical boundary
     // ------------------------------------------------------------------
 
     // Create a boundary entity that renders a snugly-fitted
@@ -150,49 +150,30 @@
 
     new xeogl.Entity({
 
-        geometry: new xeogl.BoundaryGeometry({
-            boundary: torus.worldBoundary
+        geometry: new xeogl.BoundingSphereGeometry({
+            boundary: torus.worldBoundary,
+            heightSegments: 6,
+            widthSegments: 6
         }),
 
         material: new xeogl.PhongMaterial({
-            diffuse: [0.0, 0.0, 0.0],
-            specular: [0.0, 0.0, 0.0],
+            diffuse: [0.6, 1.0, 0.6],
+            specular: [1.0, 1.0, 1.0],
             ambient: [0.0, 0.0, 0.0],
-            emissive: [0.6, 1.0, 0.6],
-            lineWidth: 2
+            lineWidth: 1,
+            opacity: 0.4
+        }),
+
+        modes: new xeogl.Modes({
+            transparent: true
         })
     });
-
-    // ------------------------------------------------------------------
-    // Log the extents of the torus' View-space axis-aligned bounding box
-    // each time it changes
-    // ------------------------------------------------------------------
-
-    var viewBoundary = torus.viewBoundary;
-
-    // FIXME: When this is uncommented, we get an event loop; if the boundary
-    // lazy-computes 'aabb' when we get it within the 'updated' handler, then
-    // that will cause the boundary to fire an additional 'uodated' event,
-    // which causes us to get 'aabb' again. Since computation of the actual
-    // AABB is deferred to the task queue, this cycle continues because the
-    // AABB will not exist yet and hence break the loop.
-
-    //
-//    viewBoundary.on("updated",
-//            function () {
-//                log("entity.viewBoundary.aabb", viewBoundary.aabb);
-//            });
-
-    function log(event, params) {
-        var str = event + " = " + JSON.stringify(params, "\n", 4);
-        document.getElementById("infoTxt").innerText = str;
-    }
 
     // Allow user camera control
 
     new xeogl.CameraControl();
 
-    new xeogl.CameraFollow({
+    new xeogl.CameraFollowAnimation({
         worldBoundary: torus.worldBoundary,
         fly: false,
         fit: false,

@@ -4,27 +4,26 @@
  attached {{#crossLink "Entity"}}Entities{{/crossLink}} using
  the <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> lighting model.
 
- <ul>
- <li>PhongMaterial properties, along with {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}},
+ ## Overview
+
+ * PhongMaterial properties, along with {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}},
  {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} and {{#crossLink "PhongMaterial/reflectivity:property"}}{{/crossLink}},
- specify attributes that are to be **applied uniformly** across the surface of attached {{#crossLink "Geometry"}}Geometries{{/crossLink}}.</li>
- <li>Most of those attributes can be textured, **effectively replacing the values set for those properties**, by
+ specify attributes that are to be **applied uniformly** across the surface of attached {{#crossLink "Geometry"}}Geometries{{/crossLink}}.
+ * Most of those attributes can be textured, **effectively replacing the values set for those properties**, by
  assigning {{#crossLink "Texture"}}Textures{{/crossLink}} to the PhongMaterial's
  {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}}, {{#crossLink "PhongMaterial/specularMap:property"}}{{/crossLink}},
  {{#crossLink "PhongMaterial/emissiveMap:property"}}{{/crossLink}}, {{#crossLink "PhongMaterial/opacityMap:property"}}{{/crossLink}}
- and  {{#crossLink "PhongMaterial/reflectivityMap:property"}}{{/crossLink}} properties.</li>
- <li>For example, the value of {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} will be ignored if your
+ and  {{#crossLink "PhongMaterial/reflectivityMap:property"}}{{/crossLink}} properties.
+ * For example, the value of {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} will be ignored if your
  PhongMaterial also has a {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} set to a {{#crossLink "Texture"}}Texture{{/crossLink}}.
  The {{#crossLink "Texture"}}Texture's{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the
  {{#crossLink "Geometry"}}{{/crossLink}} surface, ie. they are not multiplied by
- the {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} for each pixel, as is done in many shading systems.</li>
- <li>When the {{#crossLink "Entity"}}{{/crossLink}}'s {{#crossLink "Geometry"}}{{/crossLink}} has a
+ the {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}} for each pixel, as is done in many shading systems.
+ * When the {{#crossLink "Entity"}}{{/crossLink}}'s {{#crossLink "Geometry"}}{{/crossLink}} has a
  {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} set to "lines" or "points" then only the {{#crossLink "PhongMaterial"}}{{/crossLink}}'s
  {{#crossLink "PhongMaterial/emissive:property"}}{{/crossLink}}, {{#crossLink "PhongMaterial/emissiveMap:property"}}{{/crossLink}},
  {{#crossLink "PhongMaterial/opacity:property"}}{{/crossLink}} and {{#crossLink "PhongMaterial/opacityMap:property"}}{{/crossLink}}
- will actually be applied, since those primitive types cannot be shaded.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that PhongMaterials create within xeogl's shaders.</li>
- </ul>
+ will actually be applied, since those primitive types cannot be shaded.
 
  <img src="../../../assets/images/PhongMaterial.png"></img>
 
@@ -32,11 +31,9 @@
 
  In this example we have an Entity with
 
- <ul>
- <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "DirLight"}}{{/crossLink}},</li>
- <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies a {{#crossLink "Texture"}}{{/crossLink}} as a diffuse map and a specular {{#crossLink "Fresnel"}}{{/crossLink}}, and
- <li>a {{#crossLink "TorusGeometry"}}{{/crossLink}}.</li>
- </ul>
+ * a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "DirLight"}}{{/crossLink}},
+ * a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies a {{#crossLink "Texture"}}{{/crossLink}} as a diffuse map and a specular {{#crossLink "Fresnel"}}{{/crossLink}}, and
+ * a {{#crossLink "TorusGeometry"}}{{/crossLink}}.
 
  Note that xeogl will ignore the PhongMaterial's {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}
  property, since we assigned the {{#crossLink "Texture"}}{{/crossLink}} to the PhongMaterial's

@@ -17,11 +17,11 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeogl.org" target="_home">xeogl</a>
+    <a href="http://xeogl.org" target="_parent" >xeogl</a>
     <br><br>
     <ul>
-        <li>a simple explorer UI to browse the <a href="../docs/classes/Entity.html" target="_docs">Entities</a>
-            in a <a href="../docs/classes/Model.html" target="_docs">Model</a></li>
+        <li>a simple explorer UI to browse the <a href="../docs/classes/Entity.html" target="_parent">Entities</a>
+            in a <a href="../docs/classes/Model.html" target="_parent">Model</a></li>
         <li>click a node in the explorer below to fly to its Entity</li>
     </ul>
 
@@ -73,7 +73,7 @@
 
         var orientedBoundary = new xeogl.Entity({
             id: "myOBB",
-            geometry: new xeogl.BoundaryGeometry(),
+            geometry: new xeogl.OBBGeometry(),
             material: new xeogl.PhongMaterial({
                 diffuse: [0, 0, 0],
                 ambient: [0, 0, 0],
@@ -99,7 +99,7 @@
         // Camera flight animation, flies the default camera 
         // to each Entity as we select it in the explorer
 
-        var cameraFlight = new xeogl.CameraFlight();
+        var cameraFlight = new xeogl.CameraFlightAnimation();
 
         gearbox.on("loaded",
                 function () {

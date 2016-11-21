@@ -7,13 +7,16 @@
 
  * A HeightmapGeometry is a grid shape, to which the Y-axis is perpendicular.
  * The height of each vertex on the Y-axis is determined by the image file referenced by the HeightmapGeometry's {{#crossLink "HeightmapGeometry/src:property"}}{{/crossLink}} property.
- * Set the {{#crossLink "HeightmapGeometry/src:property"}}{{/crossLink}} property to a different image file at any time, to regenerate the HeightmapGeometry's mesh from the image.
+ * Set the {{#crossLink "HeightmapGeometry/src:property"}}{{/crossLink}} property to a different image file at any time, to regenerate the HeightmapGeometry's mesh from the new image.
+ * Also dynamically modify it's shape at any time by updating its {{#crossLink "HeightmapGeometry/center:property"}}{{/crossLink}}, {{#crossLink "HeightmapGeometry/xSize:property"}}{{/crossLink}}, {{#crossLink "HeightmapGeometry/ySize:property"}}{{/crossLink}}, {{#crossLink "HeightmapGeometry/zSize:property"}}{{/crossLink}}, {{#crossLink "HeightmapGeometry/xSegments:property"}}{{/crossLink}},  {{#crossLink "HeightmapGeometry/zSegments:property"}}{{/crossLink}} and
+ {{#crossLink "Geometry/autoNormals:property"}}{{/crossLink}} properties.
+ * Dynamically switch its primitive type between ````"points"````, ````"lines"```` and ````"triangles"```` at any time by
+ updating its {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} property.
+ * Leave its {{#crossLink "Geometry/autoNormals:property"}}{{/crossLink}} property ````true```` to make it automatically generate its vertex normal vectors.
 
  ## Examples
 
- <ul>
- <li>[Textured HeightmapGeometry](../../examples/#geometry_HeightmapGeometry)</li>
- </ul>
+ * [Textured HeightmapGeometry](../../examples/#geometry_HeightmapGeometry)
 
  ## Usage
 
@@ -22,6 +25,7 @@
      geometry: new xeogl.HeightmapGeometry({
          primitive: "triangles",
          src: "textures/height/mountain.png",
+         center: [0,0,0],
          xSize: 10,
          ySize: 5,
          zSize: 10,
@@ -36,7 +40,7 @@
          })
      }),
      modes: new xeogl.Modes({
-         backfaces: true
+         backfaces: true // So that we can see the faces from underneath
      })
  });
  ````
@@ -54,11 +58,13 @@
  @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
  @param [cfg.src=undefined] {String} Path to an image file to source this Heightmap from.
  @param [cfg.image=undefined] {HTMLImageElement} An HTML DOM Image object to source this Heightmap from.
+ @param [cfg.center] {Float32Array} 3D point indicating the center position of the BoxGeometry.
  @param [cfg.xSize=1] {Number} Dimension on the X-axis.
  @param [cfg.ySize=0.25] {Number} Dimension on the Y-axis.
  @param [cfg.zSize=1] {Number} Dimension (height) on the Z-axis.
  @param [cfg.xSegments=1] {Number} Number of segments on the X-axis (width).
  @param [cfg.zSegments=1] {Number} Number of segments on the Z-axis (depth).
+ @param [cfg.autoNormals=true] {Boolean} Automatically generate vertex normal vectors when true.
  @param [cfg.lod=1] {Number} Level-of-detail, in range [0..1].
  @extends Geometry
  */
@@ -91,6 +97,8 @@
             } else if (cfg.image) {
                 this.image = cfg.image;
             }
+
+            this.center = cfg.center;
 
             this.xSize = cfg.xSize;
             this.ySize = cfg.ySize;
@@ -161,6 +169,10 @@
                     return;
                 }
 
+                var xCenter = this._center[0];
+                var yCenter = this._center[1];
+                var zCenter = this._center[2];
+
                 var imageWidth = this._image.width;
                 var imageHeight = this._image.height;
 
@@ -228,9 +240,9 @@
                             y = 0;
                         }
 
-                        positions[offset] = x;
-                        positions[offset + 1] = y;
-                        positions[offset + 2] = -z;
+                        positions[offset] = x + xCenter;
+                        positions[offset + 1] = y + yCenter;
+                        positions[offset + 2] = -z + zCenter;
 
                         normals[offset + 1] = -1;
 
@@ -267,7 +279,6 @@
                         offset += 6;
                     }
                 }
-
 
                 this.positions = positions;
                 this.normals = positions;
@@ -483,6 +494,36 @@
 
                 get: function () {
                     return this._src;
+                }
+            },
+
+            /**
+             * 3D point indicating the center position of this HeightmapGeometry.
+             *
+             * Fires an {{#crossLink "HeightmapGeometry/center:event"}}{{/crossLink}} event on change.
+             *
+             * @property center
+             * @default [0,0,0]
+             * @type {Float32Array}
+             */
+            center: {
+
+                set: function (value) {
+
+                    (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
+
+                    this._scheduleUpdate();
+
+                    /**
+                     Fired whenever this HeightmapGeometry's {{#crossLink "HeightmapGeometry/center:property"}}{{/crossLink}} property changes.
+                     @event center
+                     @param value {Float32Array} The property's new value
+                     */
+                    this.fire("center", this._center);
+                },
+
+                get: function () {
+                    return this._center;
                 }
             },
 
@@ -710,6 +751,8 @@
         _getJSON: function () {
 
             var json = {
+
+                center: this._center.slice(),
 
                 xSize: this._xSize,
                 ySize: this._ySize,

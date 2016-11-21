@@ -12,11 +12,11 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeogl.org">xeogl</a>
+    <a href="http://xeogl.org" target="_parent">xeogl</a>
     <br><br>
     <ul>
         <li>
-            <!--using the <a href="js/debug/debug.js" target="_docs">debug</a> helper utility to visualize the result of-->
+            <!--using the <a href="js/debug/debug.js" target="_parent">debug</a> helper utility to visualize the result of-->
             <!--the <a href="../docs/classes/xeogl.math.math.html#method_transformPoint4">xeogl.math.rayTriangleIntersect</a> function-->
         </li>
     </ul>
@@ -63,7 +63,7 @@
     });
 
     var boundary = new xeogl.Entity({
-        geometry: new xeogl.BoundaryGeometry(),
+        geometry: new xeogl.AABBGeometry(),
         material: new xeogl.PhongMaterial({
             emissive: [0.9, 0.6, 0.6],
             diffuse: [0, 0, 0],

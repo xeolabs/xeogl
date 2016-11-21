@@ -13,7 +13,7 @@
 
      TODO
 
-     @class MorphTargets
+
      @module xeogl
      @submodule animation
      @constructor

@@ -2,23 +2,20 @@
  A **ColorTarget** is a  <a href="http://en.wikipedia.org/wiki/Render_Target" target="other">render target</a>  that
  captures the colors pixels rendered for associated {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>ColorTargets are typically used when *rendering-to-texture*.</li>
- <li>A ColorTarget provides the pixel colors as a dynamic color image that may be consumed by {{#crossLink "Texture"}}Textures{{/crossLink}}.</li>
- <li>ColorTarget is not to be confused with {{#crossLink "ColorBuf"}}ColorBuf{{/crossLink}}, which configures ***how*** the pixel colors are written with respect to the WebGL color buffer.</li>
- <li>Use {{#crossLink "Stage"}}Stages{{/crossLink}} when you need to ensure that a ColorTarget is rendered before
- the {{#crossLink "Texture"}}Textures{{/crossLink}} that consume it.</li>
- <li>For special effects, we often use ColorTargets and {{#crossLink "Texture"}}Textures{{/crossLink}} in combination
- with {{#crossLink "DepthTarget"}}DepthTargets{{/crossLink}} and {{#crossLink "Shader"}}Shaders{{/crossLink}}.</li>
- </ul>
+ * ColorTargets are typically used when *rendering-to-texture*.
+ * A ColorTarget provides the pixel colors as a dynamic color image that may be consumed by {{#crossLink "Texture"}}Textures{{/crossLink}}.
+ * ColorTarget is not to be confused with {{#crossLink "ColorBuf"}}ColorBuf{{/crossLink}}, which configures ***how*** the pixel colors are written with respect to the WebGL color buffer.
+ * Use {{#crossLink "Stage"}}Stages{{/crossLink}} when you need to ensure that a ColorTarget is rendered before
+ the {{#crossLink "Texture"}}Textures{{/crossLink}} that consume it.
+ * For special effects, we often use ColorTargets and {{#crossLink "Texture"}}Textures{{/crossLink}} in combination
+ with {{#crossLink "DepthTarget"}}DepthTargets{{/crossLink}} and {{#crossLink "Shader"}}Shaders{{/crossLink}}.
 
  <img src="../../../assets/images/ColorTarget.png"></img>
 
  ## Usage
 
  This example contains an {{#crossLink "Entity"}}{{/crossLink}} that renders its pixel colors to a ColorTarget, which is then
- piped into a {{#crossLink "Texture"}}{{/crossLink}} that's applied to a second {{#crossLink "Entity"}}{{/crossLink}}.</li>
- </ul>
+ piped into a {{#crossLink "Texture"}}{{/crossLink}} that's applied to a second {{#crossLink "Entity"}}{{/crossLink}}.
 
  ````javascript
  var colorTarget = new xeogl.ColorTarget();
@@ -44,7 +41,7 @@
 });
  ````
 
- @class ColorTarget
+
  @module xeogl
  @submodule rendering
  @constructor
@@ -204,7 +201,9 @@
 
             this.scene.canvas.off(this._webglContextRestored);
 
-            this._state.renderBuf.destroy();
+            if (this._state.renderBuf) {
+                this._state.renderBuf.destroy();
+            }
 
             this._state.destroy();
         }

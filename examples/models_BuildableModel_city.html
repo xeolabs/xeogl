@@ -9,13 +9,13 @@
 
     <script src="../build/xeogl.min.js"></script>
     <script src="js/models/buildableModel.js"></script>
-    <script src="js/animation/cameraFollow.js"></script>
+    <script src="js/animation/cameraFollowAnimation.js"></script>
 
 <body>
 
 <div id="infoLight">
-    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>building a 3D scene using a <a
-        href="../docs/classes/BuildableModel.html" target="_docs">BuildableModel</a> component
+    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>generating a city with a <a
+        href="../docs/classes/BuildableModel.html" target="_parent">BuildableModel</a>
 </div>
 
 <script>
@@ -51,9 +51,7 @@
 
     buildableModel.asset("pixelCityWindows", {
         type: "xeogl.PhongMaterial",
-        diffuseMap: {
-            src: "textures/city/pixelCityWindows.jpg"
-        }
+        diffuse: [0.6, 0.6, 0.8]
     });
 
     buildableModel.asset("lightConcrete", {
@@ -155,7 +153,7 @@
         }
     }
 
-    new xeogl.CameraFollow({
+    new xeogl.CameraFollowAnimation({
         worldBoundary: buildableModel.worldBoundary,
         fit: true,
         fitFOV: 55

@@ -11,11 +11,11 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeogl.org">xeogl</a>
+    <a href="http://xeogl.org" target="_parent">xeogl</a>
     <br><br>
-    modelling transform hierarchy composed of <a href="../docs/classes/Rotate.html" target="_docs">Rotate</a>,
-    <a href="../docs/classes/Translate.html" target="_docs">Translate</a> and <a
-        href="../docs/classes/Scale.html" target="_docs">Scale</a> transforms
+    modelling transform hierarchy composed of <a href="../docs/classes/Rotate.html" target="_parent">Rotate</a>,
+    <a href="../docs/classes/Translate.html" target="_parent">Translate</a> and <a
+        href="../docs/classes/Scale.html" target="_parent">Scale</a> transforms
 </div>
 
 <script>
@@ -111,7 +111,7 @@
     });
 
     new xeogl.Entity({
-        geometry: new xeogl.BoundaryGeometry({
+        geometry: new xeogl.AABBGeometry({
             boundary: yellowLeg.worldBoundary
         }),
         material: new xeogl.PhongMaterial({

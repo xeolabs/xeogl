@@ -3,34 +3,32 @@
 
  ## Overview
 
- See the {{#crossLink "Scene"}}Scene{{/crossLink}} class documentation for more information on Entities.</li>
+ See the {{#crossLink "Scene"}}Scene{{/crossLink}} class documentation for more information on Entities.
 
  <img src="../../../assets/images/Entity.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Minimal Entity example](../../examples/#entities_minimal)</li>
- </ul>
+ * [Minimal Entity example](../../examples/#entities_minimal)
 
  ## Boundaries
 
  #### Local-space
 
  A Entity provides its Local-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses
- the {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}}.</li>
+ the {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}}.
 
  ```` javascript
  var scene = new xeogl.Scene();
 
  var geometry = new xeogl.Geometry(myScene, {
       //...
-  });
+ });
 
  var entity = new xeogl.Entity(myScene, {
        geometry: myGeometry,
        transform: translate
-  });
+ });
 
  // Get the Local-space Boundary3D
  var localBoundary = entity.localBoundary;
@@ -46,22 +44,20 @@
 
  // get the Local-space center of the Entity:
  var center = localBoundary.center;
-
  ````
 
  #### World-space
 
  A Entity provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses
  the {{#crossLink "Geometry"}}{{/crossLink}} {{#crossLink "Geometry/positions:property"}}{{/crossLink}} after
- transformation by the Entity's {{#crossLink "Entity/transform:property"}}Modelling transform{{/crossLink}}.</li>
-
+ transformation by the Entity's {{#crossLink "Entity/transform:property"}}Modelling transform{{/crossLink}}.
 
  ```` javascript
  var scene = new xeogl.Scene();
 
  var geometry = new xeogl.Geometry(myScene, {
       //...
-  });
+ });
 
  var translate = new xeogl.Translate(scene, {
     xyz: [-5, 0, 0] // Translate along -X axis
@@ -70,7 +66,7 @@
  var entity = new xeogl.Entity(myScene, {
        geometry: myGeometry,
        transform: translate
-  });
+ });
 
  // Get the World-space Boundary3D
  var worldBoundary = entity.worldBoundary;
@@ -86,7 +82,6 @@
 
  // get the World-space center of the Entity:
  var center = worldBoundary.center;
-
  ````
 
  #### View-space
@@ -94,7 +89,7 @@
  A Entity also provides its View-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}} that encloses
  the {{#crossLink "Geometry/positions:property"}}Geometry positions{{/crossLink}} after
  their transformation by the {{#crossLink "Camera/view:property"}}View{{/crossLink}} and
- {{#crossLink "Entity/transform:property"}}Modelling{{/crossLink}} transforms.</li>
+ {{#crossLink "Entity/transform:property"}}Modelling{{/crossLink}} transforms.
 
  ```` javascript
  // Get the View-space Boundary3D
@@ -111,7 +106,6 @@
 
  // get the View-space center of the Entity:
  var center = viewBoundary.center;
-
  ````
 
  #### View-space
@@ -119,7 +113,7 @@
  A Entity also provides its Canvas-space boundary as a {{#crossLink "Boundary2D"}}{{/crossLink}} that encloses
  the {{#crossLink "Geometry/positions:property"}}Geometry positions{{/crossLink}} after
  their transformation by the {{#crossLink "Entity/transform:property"}}Modelling{{/crossLink}},
- {{#crossLink "Camera/view:property"}}View{{/crossLink}} and {{#crossLink "Camera/project:property"}}Projection{{/crossLink}} transforms.</li>
+ {{#crossLink "Camera/view:property"}}View{{/crossLink}} and {{#crossLink "Camera/project:property"}}Projection{{/crossLink}} transforms.
 
  ```` javascript
  // Get the Canvas-space Boundary2D
@@ -131,7 +125,6 @@
 
  // get the Canvas-space center of the Entity:
  var center = canvasBoundary.center;
-
  ````
 
  @class Entity
@@ -146,10 +139,6 @@
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
  @param [cfg.clips] {String|Clips} ID or instance of a {{#crossLink "Clips"}}Clips{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/clips:property"}}clips{{/crossLink}}.
- @param [cfg.colorTarget] {String|ColorTarget} ID or instance of a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/colorTarget:property"}}colorTarget{{/crossLink}}.
- @param [cfg.depthTarget] {String|DepthTarget} ID or instance of a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
- parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/depthTarget:property"}}depthTarget{{/crossLink}}.
  @param [cfg.depthBuf] {String|DepthBuf} ID or instance of a {{#crossLink "DepthBuf"}}DepthBuf{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, depth {{#crossLink "Scene/depthBuf:property"}}depthBuf{{/crossLink}}.
  @param [cfg.visibility] {String|Visibility} ID or instance of a {{#crossLink "Visibility"}}Visibility{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the
@@ -170,10 +159,6 @@
  default instance, {{#crossLink "Scene/morphTargets:property"}}morphTargets{{/crossLink}}.
  @param [cfg.reflect] {String|Reflect} ID or instance of a {{#crossLink "CubeMap"}}CubeMap{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/reflect:property"}}reflection{{/crossLink}}.
- @param [cfg.shader] {String|Shader} ID or instance of a {{#crossLink "Shader"}}Shader{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
- {{#crossLink "Scene/shader:property"}}shader{{/crossLink}}.
- @param [cfg.shaderParams] {String|ShaderParams} ID or instance of a {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
- {{#crossLink "Scene/shaderParams:property"}}shaderParams{{/crossLink}}.
  @param [cfg.stage] {String|Stage} ID or instance of of a {{#crossLink "Stage"}}Stage{{/crossLink}} to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
  {{#crossLink "Scene/stage:property"}}stage{{/crossLink}}.
  @param [cfg.transform] {String|Transform} ID or instance of a modelling transform to attach to this Entity. Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this Entity. Defaults to the parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance,
@@ -340,6 +325,7 @@
              * Fires an {{#crossLink "Entity/colorTarget:event"}}{{/crossLink}} event on change.
              *
              * @property colorTarget
+             * @private
              * @type ColorTarget
              */
             colorTarget: {
@@ -409,6 +395,7 @@
              * Fires an {{#crossLink "Entity/depthTarget:event"}}{{/crossLink}} event on change.
              *
              * @property depthTarget
+             * @private
              * @type DepthTarget
              */
             depthTarget: {
@@ -743,6 +730,7 @@
              * Fires an {{#crossLink "Entity/morphTargets:event"}}{{/crossLink}} event on change.
              *
              * @property morphTargets
+             * @private
              * @type MorphTargets
              */
             morphTargets: {
@@ -812,6 +800,7 @@
              * Fires an {{#crossLink "Entity/shader:event"}}{{/crossLink}} event on change.
              *
              * @property shader
+             * @private
              * @type Shader
              */
             shader: {
@@ -846,6 +835,7 @@
              * Fires an {{#crossLink "Entity/shaderParams:event"}}{{/crossLink}} event on change.
              *
              * @property shaderParams
+             * @private
              * @type ShaderParams
              */
             shaderParams: {

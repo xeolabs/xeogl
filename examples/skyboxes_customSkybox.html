@@ -15,9 +15,9 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>Implementing a custom skybox using the <a
+    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>Implementing a custom skybox using the <a
         href="../docs/classes/Stationary.html"
-        target="_docs">Stationary</a> component
+        target="_parent">Stationary</a> component
 </div>
 
 <script>
@@ -151,7 +151,8 @@
             active: true
         }),
         modes: new xeogl.Modes({
-            pickable: false // Don't want to ba able to pick the moon
+            pickable: false, // Don't want to ba able to pick the moon
+            collidable: false // Moon will not contribute to the size of any enclosing boundaries
         })
     });
 

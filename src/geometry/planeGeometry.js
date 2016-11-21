@@ -1,13 +1,19 @@
 /**
- A **PlaneGeometry** extends {{#crossLink "Geometry"}}{{/crossLink}} to define a plane-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ A **PlaneGeometry** is a parameterized {{#crossLink "Geometry"}}{{/crossLink}} that defines a plane-shaped mesh for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
  <a href="../../examples/#geometry_PlaneGeometry"><img src="../../assets/images/screenshots/PlaneGeometry.png"></img></a>
 
+ ## Overview
+
+ * A PlaneGeometry lies in the X-Z plane.
+ * Dynamically modify it's shape at any time by updating its {{#crossLink "PlaneGeometry/center:property"}}{{/crossLink}}, {{#crossLink "PlaneGeometry/xSize:property"}}{{/crossLink}}, {{#crossLink "PlaneGeometry/zSize:property"}}{{/crossLink}}, {{#crossLink "PlaneGeometry/xSegments:property"}}{{/crossLink}} and
+ {{#crossLink "PlaneGeometry/zSegments:property"}}{{/crossLink}} properties.
+ * Dynamically switch its primitive type between ````"points"````, ````"lines"```` and ````"triangles"```` at any time by
+ updating its {{#crossLink "Geometry/primitive:property"}}{{/crossLink}} property.
+ 
  ## Examples
 
- <ul>
- <li>[Textured PlaneGeometry](../../examples/#geometry_PlaneGeometry)</li>
- </ul>
+ * [Textured PlaneGeometry](../../examples/#geometry_PlaneGeometry)
 
  ## Usage
 
@@ -19,6 +25,7 @@
 
      geometry: new xeogl.PlaneGeometry({
          primitive: "triangles",
+         center: [0,0,0],
          xSize: 2,
          zSize: 2,
          xSegments: 10,
@@ -44,7 +51,8 @@
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}},
  generated automatically when omitted.
  @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this PlaneGeometry.
- @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values are 'points', 'lines', 'line-loop', 'line-strip', 'triangles', 'triangle-strip' and 'triangle-fan'.
+ @param [cfg.primitive="triangles"] {String} The primitive type. Accepted values for a PlaneGeometry are 'points', 'lines' and 'triangles'.
+ @param [cfg.center] {Float32Array} 3D point indicating the center position of the PlaneGeometry.
  @param [cfg.xSize=1] {Number} Dimension on the X-axis.
  @param [cfg.zSize=1] {Number} Dimension on the Z-axis.
  @param [cfg.xSegments=1] {Number} Number of segments on the X-axis.
@@ -65,6 +73,8 @@
 
             this._super(cfg);
 
+            this.center = cfg.center;
+            
             this.xSize = cfg.xSize;
             this.zSize = cfg.zSize;
 
@@ -84,7 +94,9 @@
          */
         _update: function () {
 
-            // Geometry needs rebuild
+            var centerX = this._center[0];
+            var centerY = this._center[1];
+            var centerZ = this._center[2];
 
             var width = this._xSize;
             var height = this._zSize;
@@ -135,8 +147,9 @@
 
                     x = ix * segmentWidth - halfWidth;
 
-                    positions[offset] = x;
-                    positions[offset + 2] = -z;
+                    positions[offset] = x + centerX;
+                    positions[offset + 1] = centerY;
+                    positions[offset + 2] = -z + centerZ;
 
                     normals[offset + 2] = -1;
 
@@ -221,6 +234,36 @@
 
                 get: function () {
                     return this._lod;
+                }
+            },
+
+            /**
+             * 3D point indicating the center position of this PlaneGeometry.
+             *
+             * Fires an {{#crossLink "PlaneGeometry/center:event"}}{{/crossLink}} event on change.
+             *
+             * @property center
+             * @default [0,0,0]
+             * @type {Float32Array}
+             */
+            center: {
+
+                set: function (value) {
+
+                    (this._center = this._center || new xeogl.math.vec3()).set(value || [0, 0, 0]);
+
+                    this._scheduleUpdate();
+
+                    /**
+                     Fired whenever this PlaneGeometry's {{#crossLink "PlaneGeometry/center:property"}}{{/crossLink}} property changes.
+                     @event center
+                     @param value {Float32Array} The property's new value
+                     */
+                    this.fire("center", this._center);
+                },
+
+                get: function () {
+                    return this._center;
                 }
             },
 
@@ -395,6 +438,7 @@
 
         _getJSON: function () {
             return {
+                center: this._center.slice(),
                 xSize: this._xSize,
                 zSize: this._zSize,
                 xSegments: this._xSegments,

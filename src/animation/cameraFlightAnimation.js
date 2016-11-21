@@ -1,32 +1,59 @@
 /**
- A **CameraFlight** flies a {{#crossLink "Camera"}}{{/crossLink}} to a given target.
+ A **CameraFlightAnimation** jumps or flies a {{#crossLink "Camera"}}{{/crossLink}} to look at a given target.
 
- <ul>
- <li>A CameraFlight animates the {{#crossLink "Lookat"}}{{/crossLink}} attached to its {{#crossLink "Camera"}}{{/crossLink}}.</li>
- <li>A CameraFlight can be attached to a different {{#crossLink "Camera"}}{{/crossLink}} at any time.</li>
- <li>While a CameraFlight is busy flying to a target, it can be stopped, or redirected to fly to a different target.</li>
- </ul>
+ <a href="../../examples/#animation_CameraFlightAnimation_Entity"><img src="http://i.giphy.com/3o7TKP0jN800EQ99EQ.gif"></img></a>
 
- A target can be:
+ ## Overview
 
- <ul>
- <li>specific ````eye````, ````look```` and ````up```` positions,</li>
- <li>a World-space {{#crossLink "Boundary3D"}}{{/crossLink}},</li>
- <li>an instance or ID of any {{#crossLink "Component"}}{{/crossLink}} subtype that provides a World-space {{#crossLink "Boundary3D"}}{{/crossLink}} in a "worldBoundary" property, or</li>
- <li>an axis-aligned World-space bounding box.</li>
- </ul>
+ * Requires that the {{#crossLink "Camera"}}{{/crossLink}} have a {{#crossLink "Lookat"}}{{/crossLink}} for its {{#crossLink "Camera/view:property"}}view{{/crossLink}} transform.
+ * Can be attached to a different {{#crossLink "Camera"}}{{/crossLink}} at any time.
+ * Can be made to either fly or jump to its target.
+ * While busy flying to a target, it can be stopped, or redirected to fly to a different target.
+
+ A CameraFlightAnimation's target can be:
+
+ * specific ````eye````, ````look```` and ````up```` positions,
+ * a World-space {{#crossLink "Boundary3D"}}{{/crossLink}},
+ * an instance or ID of any {{#crossLink "Component"}}{{/crossLink}} subtype that provides a World-space {{#crossLink "Boundary3D"}}{{/crossLink}} in a "worldBoundary" property, or
+ * an axis-aligned World-space bounding box (AABB).
+
+ When a CameraFlightAnimation's target is a {{#crossLink "Boundary3D"}}{{/crossLink}} or AABB, you can configure its {{#crossLink "CameraFlightAnimation/fit:property"}}{{/crossLink}}
+ and {{#crossLink "CameraFlightAnimation/fitFOV:property"}}{{/crossLink}} properties to make it stop at the point where the target
+ occupies a certain amount of the field-of-view.
 
  ## Examples
 
- <ul>
- <li>[Flying to Entity](../../examples/#animation_CameraFlight_Entity)</li>
- <li>[Flying to Boundary3D](../../examples/#animation_CameraFlight_Boundary3D)</li>
- <li>[Flying to AABB](../../examples/#animation_CameraFlight_AABB)</li>
- </ul>
+ * [Flying to random Entities](../../examples/#animation_CameraFlightAnimation_Entity)
+ * [Flying to Boundary3D](../../examples/#animation_CameraFlightAnimation_Boundary3D)
+ * [Flying to AABB](../../examples/#animation_CameraFlightAnimation_AABB)
 
+ ## Flying to an Entity
+
+ Flying to an {{#crossLink "Entity"}}{{/crossLink}} (which provides a World-space
+ {{#crossLink "Boundary3D"}}{{/crossLink}} via its {{#crossLink "Entity/worldBoundary:property"}}{{/crossLink}} property):
+
+ ````Javascript
+ var camera = new xeogl.Camera();
+
+ // Create a CameraFlightAnimation that takes one second to fly
+ // the default Scene's default Camera to each specified target
+ var cameraFlight = new xeogl.CameraFlightAnimation({
+    fit: true, // Default
+    fitFOV: 45, // Default, degrees
+    duration: 1 // Default, seconds
+ }, function() {
+           // Arrived
+       });
+
+ // Create a Entity, which gets all the default components
+ var entity = new Entity();
+
+ // Fly to the Entity's worldBoundary
+ cameraFlight.flyTo(entity);
+ ````
  ## Flying to a position
 
- Flying the CameraFlight from the previous example to specified eye, look and up positions:
+ Flying the CameraFlightAnimation from the previous example to specified eye, look and up positions:
 
  ````Javascript
  cameraFlight.flyTo({
@@ -35,47 +62,22 @@
     up: [0,1,0],
     duration: 1 // Default, seconds
  }, function() {
-    // Arrived
- });
- ````
- ## Flying to an Entity
-
- Flying to an {{#crossLink "Entity"}}{{/crossLink}} (which provides a World-space
- {{#crossLink "Boundary3D"}}{{/crossLink}} via its {{#crossLink "Entity/worldBoundary:property"}}{{/crossLink}} property:
-
- ````Javascript
- var camera = new xeogl.Camera();
-
- // Create a CameraFlight that takes exactly twenty seconds to fly
- // the Camera to each specified target
- var cameraFlight = new xeogl.CameraFlight({
-    camera: camera,
-    fit: true, // Default
-    fitFOV: 45, // Default, degrees
-    duration: 1 // Default, seconds
- });
-
- // Create a Entity, which gets all the default components
- var entity = new Entity();
-
- // Fly to the Entity's worldBoundary
- cameraFlight.flyTo(entity);
+          // Arrived
+      });
  ````
 
  ## Flying to a Boundary3D
 
- Flying the CameraFlight from the previous two examples explicitly to the World-space
+ Flying the CameraFlightAnimation from the previous two examples explicitly to the World-space
  {{#crossLink "Boundary3D"}}{{/crossLink}} of the {{#crossLink "Entity"}}{{/crossLink}} property):
 
  ````Javascript
- var worldBoundary = entity.worldBoundary;
-
- cameraFlight.flyTo(worldBoundary);
+ cameraFlight.flyTo(entity.worldBoundary);
  ````
 
  ## Flying to an AABB
 
- Flying the CameraFlight from the previous two examples explicitly to the {{#crossLink "Boundary3D"}}Boundary3D's{{/crossLink}}
+ Flying the CameraFlightAnimation from the previous two examples explicitly to the {{#crossLink "Boundary3D"}}Boundary3D's{{/crossLink}}
  axis-aligned bounding box:
 
  ````Javascript
@@ -86,24 +88,23 @@
  cameraFlight.flyTo(aabb);
  ````
 
- @class CameraFlight
- @author xeolabs / http://xeolabs.org
+ @class CameraFlightAnimation
  @module xeogl
  @submodule animation
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}}.
  @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink "Scene"}}Scene{{/crossLink}}, generated automatically when omitted.
- @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CameraFlight.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this CameraFlightAnimation.
  @param [cfg.camera] {Number|String|Camera} ID or instance of a {{#crossLink "Camera"}}Camera{{/crossLink}} to control.
- Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this CameraFlight. Defaults to the
+ Must be within the same {{#crossLink "Scene"}}Scene{{/crossLink}} as this CameraFlightAnimation. Defaults to the
  parent {{#crossLink "Scene"}}Scene{{/crossLink}}'s default instance, {{#crossLink "Scene/camera:property"}}camera{{/crossLink}}.
- @param [cfg.fit=false] {Boolean} When true, will ensure that when this CameraFlight has flown or jumped to a boundary
- it will adjust the distance between the {{#crossLink "CameraFlight/camera:property"}}camera{{/crossLink}}'s {{#crossLink "Lookat/eye:property"}}eye{{/crossLink}}
+ @param [cfg.fit=true] {Boolean} When true, will ensure that when this CameraFlightAnimation has flown or jumped to a boundary
+ it will adjust the distance between the {{#crossLink "CameraFlightAnimation/camera:property"}}camera{{/crossLink}}'s {{#crossLink "Lookat/eye:property"}}eye{{/crossLink}}
  and {{#crossLink "Lookat/look:property"}}{{/crossLink}} position so as to ensure that the target boundary is filling the view volume.
  @param [cfg.fitFOV=45] {Number} How much field-of-view, in degrees, that a target boundary should
  fill the canvas when fitting the {{#crossLink "Camera"}}Camera{{/crossLink}} to the target boundary.
- @param [cfg.trail] {Boolean} When true, will cause this CameraFlight to point the {{#crossLink "Camera"}}{{/crossLink}} in the direction that it is travelling.
- @param [cfg.duration=1] {Number} Flight duration, in seconds, when calling {{#crossLink "CameraFlight/flyTo:method"}}{{/crossLink}}.
+ @param [cfg.trail] {Boolean} When true, will cause this CameraFlightAnimation to point the {{#crossLink "Camera"}}{{/crossLink}} in the direction that it is travelling.
+ @param [cfg.duration=1] {Number} Flight duration, in seconds, when calling {{#crossLink "CameraFlightAnimation/flyTo:method"}}{{/crossLink}}.
  @extends Component
  */
 (function () {
@@ -112,7 +113,7 @@
 
     var math = xeogl.math;
 
-    xeogl.CameraFlight = xeogl.Component.extend({
+    xeogl.CameraFlightAnimation = xeogl.Component.extend({
 
         /**
          JavaScript class name for this Component.
@@ -121,7 +122,7 @@
          @type String
          @final
          */
-        type: "xeogl.CameraFlight",
+        type: "xeogl.CameraFlightAnimation",
 
         _init: function (cfg) {
 
@@ -152,11 +153,35 @@
             this.trail = cfg.trail;
             this.camera = cfg.camera;
 
-            // Shows a wireframe box at the given boundary
-            this._boundaryHelper = this.create({
+            // Shows a wireframe box for target AABBs
+            this._aabbHelper = this.create({
                 type: "xeogl.Entity",
                 geometry: this.create({
-                    type: "xeogl.BoundaryGeometry",
+                    type: "xeogl.AABBGeometry",
+                    material: this.create({
+                        type: "xeogl.PhongMaterial",
+                        diffuse: [0, 0, 0],
+                        ambient: [0, 0, 0],
+                        specular: [0, 0, 0],
+                        emissive: [1.0, 1.0, 0.0],
+                        lineWidth: 3
+                    })
+                }),
+                visibility: this.create({
+                    type: "xeogl.Visibility",
+                    visible: false
+                }),
+                modes: this.create({
+                    type: "xeogl.Modes",
+                    collidable: false // Effectively has no boundary
+                })
+            });
+
+            // Shows a wireframe box for target AABBs
+            this._obbHelper = this.create({
+                type: "xeogl.Entity",
+                geometry: this.create({
+                    type: "xeogl.OBBGeometry",
                     material: this.create({
                         type: "xeogl.PhongMaterial",
                         diffuse: [0, 0, 0],
@@ -178,13 +203,13 @@
         },
 
         /**
-         * Begins flying this CameraFlight's {{#crossLink "Camera"}}{{/crossLink}} to the given target.
+         * Begins flying this CameraFlightAnimation's {{#crossLink "Camera"}}{{/crossLink}} to the given target.
          *
-         * <ul>
-         *     <li>When the target is a boundary, the {{#crossLink "Camera"}}{{/crossLink}} will fly towards the target
-         *     and stop when the target fills most of the canvas.</li>
-         *     <li>When the target is an explicit {{#crossLink "Camera"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````
-         *      vectors, then this CameraFlight will interpolate the {{#crossLink "Camera"}}{{/crossLink}} to that target and stop there.</li>
+         *
+         *  * When the target is a boundary, the {{#crossLink "Camera"}}{{/crossLink}} will fly towards the target
+         *    and stop when the target fills most of the canvas.
+         *  * When the target is an explicit {{#crossLink "Camera"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````
+         *    vectors, then this CameraFlightAnimation will interpolate the {{#crossLink "Camera"}}{{/crossLink}} to that target and stop there.
          * @method flyTo
          * @param [params=scene]  {*|Component} Either a parameters object or a {{#crossLink "Component"}}{{/crossLink}} subtype that has a {{#crossLink "WorldBoundary"}}{{/crossLink}}.
          * @param[params.arc=0]  {Number} Factor in range [0..1] indicating how much the
@@ -195,10 +220,10 @@
          * @param [params.eye] {Float32Array} Position to fly the eye position to.
          * @param [params.look] {Float32Array} Position to fly the look position to.
          * @param [params.up] {Float32Array} Position to fly the up vector to.
+         * @param [params.fit=true] {Boolean} Whether to fit the target to the view volume. Overrides {{#crossLink "CameraFlightAnimation/fit:property"}}{{/crossLink}}.
          * @param [params.fitFOV] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
-         * fill the canvas on arrival. Overrides {{#crossLink "CameraFlight/fitFOV:property"}}{{/crossLink}}.
-         * @param [params.fit] {Boolean} Whether to fit the target to the view volume. Overrides {{#crossLink "CameraFlight/fit:property"}}{{/crossLink}}.
-         * @param [params.duration] {Number} Flight duration in seconds.  Overrides {{#crossLink "CameraFlight/duration:property"}}{{/crossLink}}.
+         * fill the canvas on arrival. Overrides {{#crossLink "CameraFlightAnimation/fitFOV:property"}}{{/crossLink}}.
+         * @param [params.duration] {Number} Flight duration in seconds.  Overrides {{#crossLink "CameraFlightAnimation/duration:property"}}{{/crossLink}}.
          * @param [callback] {Function} Callback fired on arrival
          * @param [scope] {Object} Optional scope for callback
          */
@@ -247,6 +272,7 @@
                 this._up1[2] = view.up[2];
 
                 var aabb;
+                var sphere;
                 var eye;
                 var look;
                 var up;
@@ -264,11 +290,17 @@
 
                     // Argument is a Boundary3D
 
-                } else if (params.length === 6) {
+                } else if (params.length === 6) { // [xmin,ymin,zmin, xmax,ymax,zmax]
 
                     // Argument is an AABB
 
                     aabb = params;
+
+                //} else if (params.length === 4) { // [x,y,z,radius]
+                //
+                //    // Argument is an OBB
+                //
+                //    sphere = params;
 
                 } else if (params.eye || params.look || params.up) {
 
@@ -332,8 +364,8 @@
 
                     // Show boundary
 
-                    this._boundaryHelper.geometry.aabb = aabb;
-                    this._boundaryHelper.visibility.visible = true;
+                    this._aabbHelper.geometry.aabb = aabb;
+                    this._aabbHelper.visibility.visible = true;
 
                     var aabbCenter = math.getAABB3Center(aabb);
 
@@ -347,7 +379,7 @@
 
                     var vec = math.normalizeVec3(math.subVec3(this._eye1, this._look1, tempVec3));
                     var diag = (params.look && false) ? math.getAABB3DiagPoint(aabb, params.look) : math.getAABB3Diag(aabb);
-                    var sca = Math.abs((diag) / Math.tan((params.fitFOV || this._fitFOV) / 2));
+                    var sca = Math.abs((diag) / Math.tan((params.fitFOV || this._fitFOV) * xeogl.math.DEGTORAD));
 
                     this._eye2[0] = this._look2[0] + (vec[0] * sca);
                     this._eye2[1] = this._look2[1] + (vec[1] * sca);
@@ -392,13 +424,13 @@
         })(),
 
         /**
-         * Jumps this CameraFlight's {{#crossLink "Camera"}}{{/crossLink}} to the given target.
+         * Jumps this CameraFlightAnimation's {{#crossLink "Camera"}}{{/crossLink}} to the given target.
          *
-         * <ul>
-         *     <li>When the target is a boundary, this CameraFlight will position the {{#crossLink "Camera"}}{{/crossLink}}
-         *     at where the target fills most of the canvas.</li>
-         *     <li>When the target is an explicit {{#crossLink "Camera"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````
-         *      vectors, then this CameraFlight will jump the {{#crossLink "Camera"}}{{/crossLink}} to that target.</li>
+         *
+         *     * When the target is a boundary, this CameraFlightAnimation will position the {{#crossLink "Camera"}}{{/crossLink}}
+         *     at where the target fills most of the canvas.
+         *     * When the target is an explicit {{#crossLink "Camera"}}{{/crossLink}} position, given as ````eye````, ````look```` and ````up````
+         *      vectors, then this CameraFlightAnimation will jump the {{#crossLink "Camera"}}{{/crossLink}} to that target.
          * @method flyTo
          * @param params  {*|Component} Either a parameters object or a {{#crossLink "Component"}}{{/crossLink}} subtype that has a {{#crossLink "WorldBoundary"}}{{/crossLink}}.
          * @param[params.arc=0]  {Number} Factor in range [0..1] indicating how much the
@@ -410,8 +442,8 @@
          * @param [params.look] {Float32Array} Position to fly the look position to.
          * @param [params.up] {Float32Array} Position to fly the up vector to.
          * @param [params.fitFOV] {Number} How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
-         * fill the canvas on arrival. Overrides {{#crossLink "CameraFlight/fitFOV:property"}}{{/crossLink}}.
-         * @param [params.fit] {Boolean} Whether to fit the target to the view volume. Overrides {{#crossLink "CameraFlight/fit:property"}}{{/crossLink}}.
+         * fill the canvas on arrival. Overrides {{#crossLink "CameraFlightAnimation/fitFOV:property"}}{{/crossLink}}.
+         * @param [params.fit] {Boolean} Whether to fit the target to the view volume. Overrides {{#crossLink "CameraFlightAnimation/fit:property"}}{{/crossLink}}.
          */
         jumpTo: (function () {
 
@@ -456,11 +488,17 @@
 
                     // Argument is a Boundary3D
 
-                } else if (params.length === 6) {
+                } else if (params.length === 6) { // [xmin,ymin,zmin, xmax,ymax,zmax]
 
                     // Argument is an AABB
 
                     aabb = params;
+
+                } else if (params.length === 4) { // [x,y,z,radius]
+
+                    // Argument is an OBB
+
+                    sphere = params;
 
                 } else if (params.eye || params.look || params.up) {
 
@@ -538,8 +576,9 @@
 
                     var dist;
 
-                    if (params.fit || this._fit) {
-                        dist = Math.abs((diag) / Math.tan((params.fitFOV || this._fitFOV) / 2));
+                    var fit = (params.fit !== undefined) ? params.fit : this._fit;
+                    if (fit) {
+                        dist = Math.abs((diag) / Math.tan((params.fitFOV || this._fitFOV) * xeogl.math.DEGTORAD));
 
                     } else {
                         dist = math.lenVec3(math.subVec3(view.eye, view.look, tempVec3e));
@@ -651,7 +690,7 @@
                 return;
             }
 
-            this._boundaryHelper.visibility.visible = false;
+            this._aabbHelper.visibility.visible = false;
 
             this._flying = false;
 
@@ -684,7 +723,7 @@
                 return;
             }
 
-            this._boundaryHelper.visibility.visible = false;
+            this._aabbHelper.visibility.visible = false;
 
             this._flying = false;
 
@@ -701,13 +740,13 @@
         _props: {
 
             /**
-             * The {{#crossLink "Camera"}}{{/crossLink}} being controlled by this CameraFlight.
+             * The {{#crossLink "Camera"}}{{/crossLink}} being controlled by this CameraFlightAnimation.
              *
-             * Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this CameraFlight. Defaults to the parent
+             * Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this CameraFlightAnimation. Defaults to the parent
              * {{#crossLink "Scene"}}Scene's{{/crossLink}} default {{#crossLink "Scene/camera:property"}}camera{{/crossLink}} when set to
              * a null or undefined value.
              *
-             * Fires a {{#crossLink "CameraFlight/camera:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CameraFlightAnimation/camera:event"}}{{/crossLink}} event on change.
              *
              * @property camera
              * @type Camera
@@ -717,7 +756,7 @@
                 set: function (value) {
 
                     /**
-                     * Fired whenever this CameraFlight's {{#crossLink "CameraFlight/camera:property"}}{{/crossLink}}
+                     * Fired whenever this CameraFlightAnimation's {{#crossLink "CameraFlightAnimation/camera:property"}}{{/crossLink}}
                      * property changes.
                      *
                      * @event camera
@@ -739,11 +778,11 @@
             },
 
             /**
-             * Flight duration, in seconds, when calling {{#crossLink "CameraFlight/flyTo:method"}}{{/crossLink}}.
+             * Flight duration, in seconds, when calling {{#crossLink "CameraFlightAnimation/flyTo:method"}}{{/crossLink}}.
              *
              * Stops any flight currently in progress.
              *
-             * Fires a {{#crossLink "CameraFlight/duration:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CameraFlightAnimation/duration:event"}}{{/crossLink}} event on change.
              *
              * @property duration
              * @default 0.5
@@ -756,7 +795,7 @@
                     value = value || 0.5;
 
                     /**
-                     Fired whenever this CameraFlight's {{#crossLink "CameraFlight/duration:property"}}{{/crossLink}} property changes.
+                     Fired whenever this CameraFlightAnimation's {{#crossLink "CameraFlightAnimation/duration:property"}}{{/crossLink}} property changes.
 
                      @event duration
                      @param value {Number} The property's new value
@@ -772,28 +811,28 @@
             },
 
             /**
-             * When true, will ensure that this CameraFlight is flying to a boundary it will always adjust the distance between the
-             * {{#crossLink "CameraFlight/camera:property"}}camera{{/crossLink}}'s {{#crossLink "Lookat/eye:property"}}eye{{/crossLink}}
+             * When true, will ensure that this CameraFlightAnimation is flying to a boundary it will always adjust the distance between the
+             * {{#crossLink "CameraFlightAnimation/camera:property"}}camera{{/crossLink}}'s {{#crossLink "Lookat/eye:property"}}eye{{/crossLink}}
              * and {{#crossLink "Lookat/look:property"}}{{/crossLink}}
              * so as to ensure that the target boundary is always filling the view volume.
              *
              * When false, the eye will remain at its current distance from the look position.
              *
-             * Fires a {{#crossLink "CameraFlight/fit:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CameraFlightAnimation/fit:event"}}{{/crossLink}} event on change.
              *
              * @property fit
              * @type Boolean
-             * @default false
+             * @default true
              */
             fit: {
 
                 set: function (value) {
 
-                    this._fit = !!value;
+                    this._fit = value !== false;
 
                     /**
-                     * Fired whenever this CameraFlight's
-                     * {{#crossLink "CameraFlight/fit:property"}}{{/crossLink}} property changes.
+                     * Fired whenever this CameraFlightAnimation's
+                     * {{#crossLink "CameraFlightAnimation/fit:property"}}{{/crossLink}} property changes.
                      * @event fit
                      * @param value The property's new value
                      */
@@ -808,9 +847,9 @@
 
             /**
              * How much of field-of-view, in degrees, that a target {{#crossLink "Entity"}}{{/crossLink}} or its AABB should
-             * fill the canvas when calling {{#crossLink "CameraFlight/flyTo:method"}}{{/crossLink}} or {{#crossLink "CameraFlight/jumpTo:method"}}{{/crossLink}}.
+             * fill the canvas when calling {{#crossLink "CameraFlightAnimation/flyTo:method"}}{{/crossLink}} or {{#crossLink "CameraFlightAnimation/jumpTo:method"}}{{/crossLink}}.
              *
-             * Fires a {{#crossLink "CameraFlight/fitFOV:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CameraFlightAnimation/fitFOV:event"}}{{/crossLink}} event on change.
              *
              * @property fitFOV
              * @default 45
@@ -823,7 +862,7 @@
                     value = value || 45;
 
                     /**
-                     Fired whenever this CameraFlight's {{#crossLink "CameraFlight/fitFOV:property"}}{{/crossLink}} property changes.
+                     Fired whenever this CameraFlightAnimation's {{#crossLink "CameraFlightAnimation/fitFOV:property"}}{{/crossLink}} property changes.
 
                      @event fitFOV
                      @param value {Number} The property's new value
@@ -837,10 +876,10 @@
             },
 
             /**
-             * When true, will cause this CameraFlight to point the {{#crossLink "CameraFlight/camera:property"}}{{/crossLink}}
+             * When true, will cause this CameraFlightAnimation to point the {{#crossLink "CameraFlightAnimation/camera:property"}}{{/crossLink}}
              * in the direction that it is travelling.
              *
-             * Fires a {{#crossLink "CameraFlight/trail:event"}}{{/crossLink}} event on change.
+             * Fires a {{#crossLink "CameraFlightAnimation/trail:event"}}{{/crossLink}} event on change.
              *
              * @property trail
              * @type Boolean
@@ -853,7 +892,7 @@
                     this._trail = !!value;
 
                     /**
-                     * Fired whenever this CameraFlight's {{#crossLink "CameraFlight/trail:property"}}{{/crossLink}}
+                     * Fired whenever this CameraFlightAnimation's {{#crossLink "CameraFlightAnimation/trail:property"}}{{/crossLink}}
                      * property changes.
                      *
                      * @event trail

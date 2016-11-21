@@ -27,16 +27,16 @@
 
 <div id="infoLight"
      style="left: 0; text-align: left; background: black; opacity: 0.7; padding: 8px; color: white; font-size: 14pt;">
-    <a href="http://xeogl.org" target="_home">xeogl</a><br>
+    <a href="http://xeogl.org" target="_parent" >xeogl</a><br>
     <ul>
         <li><span>using <a
                 href="../docs/classes/GLTFModel.html"
-                target="_docs">GLTFModel</a> and <a
+                target="_parent">GLTFModel</a> and <a
                 href="../docs/classes/ZSpaceEffect.html"
-                target="_docs">ZSpaceEffect</a> components to view a glTF model in zSpace VR</span>
+                target="_parent">ZSpaceEffect</a> components to view a glTF model in zSpace VR</span>
         </li>
         <li><span>click a node in the explorer below to fly to its <a href="../docs/classes/Entity.html"
-                                                                      target="_docs">Entity</a></span></li>
+                                                                      target="_parent">Entity</a></span></li>
     </ul>
 
     <span id="log" style="color:red;font-size: 16px"></span>
@@ -89,7 +89,7 @@
         // as we select it in the explorer
         //---------------------------------------------------------------------------------------
 
-        var cameraFlight = new xeogl.CameraFlight();
+        var cameraFlight = new xeogl.CameraFlightAnimation();
 
         gearbox.on("loaded", function () {
 
@@ -208,7 +208,7 @@
         //---------------------------------------------------
 
         var zspaceEffect = new xeogl.ZSpaceEffect({
-            canvasOffset: [310, 0]
+            canvasOffset: [330, 0]
         });
 
         var zspaceStylusControl = new xeogl.ZSpaceStylusControl();

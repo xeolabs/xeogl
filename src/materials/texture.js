@@ -5,46 +5,37 @@
 
  ## Overview
 
- <ul>
- <li>Textures are grouped within {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}}s, which are attached to
- {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>To create a Texture from an image file, set the Texture's {{#crossLink "Texture/src:property"}}{{/crossLink}}
- property to the image file path.</li>
- <li>To create a Texture from an HTMLImageElement, set the Texture's {{#crossLink "Texture/image:property"}}{{/crossLink}}
- property to the HTMLImageElement.</li>
- <li>To render color images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
- property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>Similarly, to render depth images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
- property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>For special effects, we often use rendered Textures in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Stage"}}Stages{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Textures create within xeogl's shaders.</li>
- </ul>
+ * Textures are grouped within {{#crossLink "PhongMaterial"}}PhongMaterials{{/crossLink}}s, which are attached to
+ {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ To create a Texture from an image file, set the Texture's {{#crossLink "Texture/src:property"}}{{/crossLink}}
+ property to the image file path.
+ To create a Texture from an HTMLImageElement, set the Texture's {{#crossLink "Texture/image:property"}}{{/crossLink}}
+ property to the HTMLImageElement.
+ To render color images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
+ property to a {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ Similarly, to render depth images of {{#crossLink "Entity"}}Entities{{/crossLink}} to a Texture, set the Texture's {{#crossLink "Texture/target:property"}}{{/crossLink}}
+ property to a {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} that is attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ For special effects, we often use rendered Textures in combination with {{#crossLink "Shader"}}Shaders{{/crossLink}} and {{#crossLink "Stage"}}Stages{{/crossLink}}.
 
  <img src="../../../assets/images/Texture.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Diffuse Texture](../../examples/#materials_texture_diffuse)</li>
- <li>[Specular Texture](../../examples/#materials_texture_specular)</li>
- <li>[Opacity Texture](../../examples/#materials_texture_opacity)</li>
- <li>[Emissive Texture](../../examples/#materials_texture_emissive)</li>
- <li>[Reflectivity Texture](../../examples/#materials_texture_reflectivity)</li>
- <li>[Normal map](../../examples/#materials_texture_normalMap)</li>
- <li>[Diffuse Video Texture](../../examples/#materials_texture_video)</li>
- <li>[Diffuse Procedural Texture](../../examples/#materials_texture_procedural)</li>
- <li>[Texture Animation](../../examples/#materials_texture_animation)</li>
- </ul>
+ * [Diffuse Texture](../../examples/#materials_texture_diffuse)
+ * [Specular Texture](../../examples/#materials_texture_specular)
+ * [Opacity Texture](../../examples/#materials_texture_opacity)
+ * [Emissive Texture](../../examples/#materials_texture_emissive)
+ * [Normal map](../../examples/#materials_texture_normalMap)
+ * [Diffuse Video Texture](../../examples/#materials_texture_video)
+ * [Texture Animation](../../examples/#materials_texture_animation)
 
  ## Usage
 
  In this example we have an Entity with
 
- <ul>
- <li>a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "DirLight"}}{{/crossLink}},</li>
- <li>a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies diffuse and specular {{#crossLink "Texture"}}Textures{{/crossLink}}, and
- <li>a {{#crossLink "TorusGeometry"}}{{/crossLink}}.</li>
- </ul>
+ * a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "DirLight"}}{{/crossLink}},
+ * a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies diffuse and specular {{#crossLink "Texture"}}Textures{{/crossLink}}, and
+ * a {{#crossLink "TorusGeometry"}}{{/crossLink}}.
 
  Note that xeogl will ignore the {{#crossLink "PhongMaterial"}}PhongMaterial's{{/crossLink}} {{#crossLink "PhongMaterial/diffuse:property"}}{{/crossLink}}
  and {{#crossLink "PhongMaterial/specular:property"}}{{/crossLink}} properties, since we assigned {{#crossLink "Texture"}}Textures{{/crossLink}} to the {{#crossLink "PhongMaterial"}}PhongMaterial's{{/crossLink}} {{#crossLink "PhongMaterial/diffuseMap:property"}}{{/crossLink}} and
@@ -706,34 +697,34 @@
              *
              * Options are:
              *
-             * <ul>
-             *     <li>**"nearest"** - Uses the value of the texture element that is nearest
-             *     (in Manhattan distance) to the center of the pixel being textured.</li>
              *
-             *     <li>**"linear"** - Uses the weighted average of the four texture elements that are
-             *     closest to the center of the pixel being textured.</li>
+             *     * **"nearest"** - Uses the value of the texture element that is nearest
+             *     (in Manhattan distance) to the center of the pixel being textured.
              *
-             *     <li>**"nearestMipmapNearest"** - Chooses the mipmap that most closely matches the
+             *     * **"linear"** - Uses the weighted average of the four texture elements that are
+             *     closest to the center of the pixel being textured.
+             *
+             *     * **"nearestMipmapNearest"** - Chooses the mipmap that most closely matches the
              *     size of the pixel being textured and uses the "nearest" criterion (the texture
-             *     element nearest to the center of the pixel) to produce a texture value.</li>
+             *     element nearest to the center of the pixel) to produce a texture value.
              *
-             *     <li>**"linearMipmapNearest"** - Chooses the mipmap that most closely matches the size of
+             *     * **"linearMipmapNearest"** - Chooses the mipmap that most closely matches the size of
              *     the pixel being textured and uses the "linear" criterion (a weighted average of the
              *     four texture elements that are closest to the center of the pixel) to produce a
-             *     texture value.</li>
+             *     texture value.
              *
-             *     <li>**"nearestMipmapLinear"** - Chooses the two mipmaps that most closely
+             *     * **"nearestMipmapLinear"** - Chooses the two mipmaps that most closely
              *     match the size of the pixel being textured and uses the "nearest" criterion
              *     (the texture element nearest to the center of the pixel) to produce a texture
              *     value from each mipmap. The final texture value is a weighted average of those two
-             *     values.</li>
+             *     values.
              *
-             *     <li>**"linearMipmapLinear"** - **(default)** - Chooses the two mipmaps that most closely match the size
+             *     * **"linearMipmapLinear"** - **(default)** - Chooses the two mipmaps that most closely match the size
              *     of the pixel being textured and uses the "linear" criterion (a weighted average
              *     of the four texture elements that are closest to the center of the pixel) to
              *     produce a texture value from each mipmap. The final texture value is a weighted
-             *     average of those two values.</li>
-             * </ul>
+             *     average of those two values.
+             *
              *
              * Fires a {{#crossLink "Texture/minFilter:event"}}{{/crossLink}} event on change.
              *
@@ -783,12 +774,12 @@
              *
              * Options are:
              *
-             * <ul>
-             *     <li>**"nearest"** - Uses the value of the texture element that is nearest
-             *     (in Manhattan distance) to the center of the pixel being textured.</li>
-             *     <li>**"linear"** - **(default)** - Uses the weighted average of the four texture elements that are
-             *     closest to the center of the pixel being textured.</li>
-             * </ul>
+             *
+             *     * **"nearest"** - Uses the value of the texture element that is nearest
+             *     (in Manhattan distance) to the center of the pixel being textured.
+             *     * **"linear"** - **(default)** - Uses the weighted average of the four texture elements that are
+             *     closest to the center of the pixel being textured.
+             *
              *
              * Fires a {{#crossLink "Texture/magFilter:event"}}{{/crossLink}} event on change.
              *
@@ -833,14 +824,14 @@
              *
              * Options are:
              *
-             * <ul>
-             *     <li>**"clampToEdge"** -  causes *S* coordinates to be clamped to the size of the texture.</li>
-             *     <li>**"mirroredRepeat"** - causes the *S* coordinate to be set to the fractional part of the texture coordinate
+             *
+             *     * **"clampToEdge"** -  causes *S* coordinates to be clamped to the size of the texture.
+             *     * **"mirroredRepeat"** - causes the *S* coordinate to be set to the fractional part of the texture coordinate
              *     if the integer part of *S* is even; if the integer part of *S* is odd, then the *S* texture coordinate is
-             *     set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *S*.</li>
-             *     <li>**"repeat"** - **(default)** - causes the integer part of the *S* coordinate to be ignored; xeogl uses only the
-             *     fractional part, thereby creating a repeating pattern.</li>
-             * </ul>
+             *     set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *S*.
+             *     * **"repeat"** - **(default)** - causes the integer part of the *S* coordinate to be ignored; xeogl uses only the
+             *     fractional part, thereby creating a repeating pattern.
+             *
              *
              * Fires a {{#crossLink "Texture/wrapS:event"}}{{/crossLink}} event on change.
              *
@@ -885,14 +876,14 @@
              *
              * Options are:
              *
-             * <ul>
-             *     <li>**"clampToEdge"** -  Causes *T* coordinates to be clamped to the size of the texture.</li>
-             *     <li>**"mirroredRepeat"** - Causes the *T* coordinate to be set to the fractional part of the texture coordinate
+             *
+             *     * **"clampToEdge"** -  Causes *T* coordinates to be clamped to the size of the texture.
+             *     * **"mirroredRepeat"** - Causes the *T* coordinate to be set to the fractional part of the texture coordinate
              *     if the integer part of *T* is even; if the integer part of *T* is odd, then the *T* texture coordinate is
-             *     set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *T*.</li>
-             *     <li>**"repeat"** - **(default)** - Causes the integer part of the *T* coordinate to be ignored; xeogl uses only the
-             *     fractional part, thereby creating a repeating pattern.</li>
-             * </ul>
+             *     set to *1 - frac ⁡ S* , where *frac ⁡ S* represents the fractional part of *T*.
+             *     * **"repeat"** - **(default)** - Causes the integer part of the *T* coordinate to be ignored; xeogl uses only the
+             *     fractional part, thereby creating a repeating pattern.
+             *
              *
              * Fires a {{#crossLink "Texture/wrapT:event"}}{{/crossLink}} event on change.
              *

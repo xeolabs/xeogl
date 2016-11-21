@@ -4,41 +4,35 @@
 
  A CameraControl contains the following control sub-components, each of which handle an aspect of interaction:
 
- <ul>
- <li>{{#crossLink "KeyboardPanCamera"}}{{/crossLink}} pans the camera with the W,S,A,D,X and Z keys</li>
- <li>{{#crossLink "MousePanCamera"}}{{/crossLink}} pans horizontally and vertically by dragging the mouse with left and right buttons down</li>
- <li>{{#crossLink "KeyboardRotateCamera"}}{{/crossLink}} rotates the camera with the arrow keys</li>
- <li>{{#crossLink "MouseRotateCamera"}}{{/crossLink}} rotates the camera by dragging with the left mouse button down</li>
- <li>{{#crossLink "KeyboardZoomCamera"}}{{/crossLink}} zooms the *eye* position closer and further from the *look* position with the + and - keys</li>
- <li>{{#crossLink "MouseZoomCamera"}}{{/crossLink}} zooms the *eye* closer and further from *look* using the mousewheel</li>
- <li>{{#crossLink "KeyboardAxisCamera"}}{{/crossLink}} between preset left, right, anterior, posterior, superior and inferior views using keys 1-6</li>
- <li>{{#crossLink "MousePickEntity"}}{{/crossLink}} TODO</li>
- <li>{{#crossLink "CameraFlight"}}{{/crossLink}} TODO</li>
- </ul>
+ * {{#crossLink "KeyboardPanCamera"}}{{/crossLink}} pans the camera with the W,S,A,D,X and Z keys
+ * {{#crossLink "MousePanCamera"}}{{/crossLink}} pans horizontally and vertically by dragging the mouse with left and right buttons down
+ * {{#crossLink "KeyboardRotateCamera"}}{{/crossLink}} rotates the camera with the arrow keys
+ * {{#crossLink "MouseRotateCamera"}}{{/crossLink}} rotates the camera by dragging with the left mouse button down
+ * {{#crossLink "KeyboardZoomCamera"}}{{/crossLink}} zooms the *eye* position closer and further from the *look* position with the + and - keys
+ * {{#crossLink "MouseZoomCamera"}}{{/crossLink}} zooms the *eye* closer and further from *look* using the mousewheel
+ * {{#crossLink "KeyboardAxisCamera"}}{{/crossLink}} between preset left, right, anterior, posterior, superior and inferior views using keys 1-6
+ * {{#crossLink "MousePickEntity"}}{{/crossLink}} TODO
+ * {{#crossLink "cameraFlightAnimation"}}{{/crossLink}} TODO
 
  A CameraControl provides these control sub-components as read-only properties, which allows them to be individually configured (or deactivated) as required.
 
- <ul>
- <li>Activating or deactivating a CameraControl will activate or deactivate all its control sub-components.</li>
- <li>Attaching a different {{#crossLink "Camera"}}{{/crossLink}} to the CameraControl will also attach that
- {{#crossLink "Camera"}}{{/crossLink}} to all the control sub-components.</li>
- <li>The control sub-components are not supposed to be re-attached to a different {{#crossLink "Camera"}}{{/crossLink}} than the owner CameraControl.</li>
- <li>A CameraControl manages the life-cycles of its control sub-components, destroying them when the CameraControl is destroyed.</li>
- </ul>
+ * Activating or deactivating a CameraControl will activate or deactivate all its control sub-components.
+ * Attaching a different {{#crossLink "Camera"}}{{/crossLink}} to the CameraControl will also attach that
+ {{#crossLink "Camera"}}{{/crossLink}} to all the control sub-components.
+ * The control sub-components are not supposed to be re-attached to a different {{#crossLink "Camera"}}{{/crossLink}} than the owner CameraControl.
+ * A CameraControl manages the life-cycles of its control sub-components, destroying them when the CameraControl is destroyed.
 
  <img src="../../../assets/images/CameraControl.png"></img>
 
  ## Examples
 
- <ul>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- <li>[KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)</li>
- <li>[KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)</li>
- <li>[KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)</li>
- <li>[KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)</li>
- <li>[KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)</li>
- <li>[KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)</li>
- </ul>
+ * [CameraControl example](../../examples/#interaction_CameraControl)
+ * [KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)
+ * [KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)
+ * [KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)
+ * [KeyboardRotateCamera example](../../examples/#interaction_KeyboardRotateCamera)
+ * [KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)
+ * [KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)
 
  ## Usage
 
@@ -126,7 +120,7 @@
             this._boundaryHelper = this.create({
                 type: "xeogl.Entity",
                 geometry: this.create({
-                    type: "xeogl.BoundaryGeometry"
+                    type: "xeogl.AABBGeometry"
                 }),
                 material: this.create({
                     type: "xeogl.PhongMaterial",
@@ -244,13 +238,13 @@
                 });
 
             /**
-             * The {{#crossLink "CameraFlight"}}{{/crossLink}} within this CameraControl.
+             * The {{#crossLink "cameraFlightAnimation"}}{{/crossLink}} within this CameraControl.
              *
              * @property cameraFlight
              * @final
-             * @type CameraFlight
+             * @type cameraFlightAnimation
              */
-            this.cameraFlight = this.create(xeogl.CameraFlight, {
+            this.cameraFlight = this.create(xeogl.CameraFlightAnimation, {
                 camera: cfg.camera,
                 duration: 0.5
             });

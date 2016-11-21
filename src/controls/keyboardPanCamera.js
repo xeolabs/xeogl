@@ -1,25 +1,21 @@
 /**
  A **KeyboardPanCamera** pans a {{#crossLink "Camera"}}{{/crossLink}} using the W,S,A,D,X and Z keys.
 
- <ul>
- <li>A KeyboardPanCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
- <li>Panning up and down involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
+ * A KeyboardPanCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
+ * Panning up and down involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth
- along the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.</li>
- <li>Panning forwards and backwards involves translating
+ along the {{#crossLink "Lookat"}}Lookat's{{/crossLink}} {{#crossLink "Lookat/up:property"}}{{/crossLink}} vector.
+ * Panning forwards and backwards involves translating
  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth along the
- {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
- <li>Panning left and right involves translating the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and
+ {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.
+ * Panning left and right involves translating the {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and
  {{#crossLink "Lookat/look:property"}}{{/crossLink}} along the the vector perpendicular to the {{#crossLink "Lookat/up:property"}}{{/crossLink}}
- and {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vectors.</li>
- </ul>
+ and {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vectors.
 
  ## Examples
 
- <ul>
- <li>[KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)</li>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- </ul>
+ * [KeyboardPanCamera example](../../examples/#interaction_KeyboardPanCamera)
+ * [CameraControl example](../../examples/#interaction_CameraControl)
 
  ## Usage
 

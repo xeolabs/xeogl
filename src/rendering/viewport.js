@@ -1,16 +1,14 @@
 /**
  A **Viewport** defines a viewport within the canvas in which attached {{#crossLink "Entity"}}Entities{{/crossLink}} will render.
 
- <ul>
- <li>Make a Viewport automatically size to its {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}{{/crossLink}}
- by setting its {{#crossLink "Viewport/autoBoundary:property"}}{{/crossLink}} property ````true```` (default is ````false````).</li>
- </ul>
+ ## Overview
+
+ * Make a Viewport automatically size to its {{#crossLink "Scene"}}Scene's{{/crossLink}} {{#crossLink "Canvas"}}{{/crossLink}}
+ by setting its {{#crossLink "Viewport/autoBoundary:property"}}{{/crossLink}} property ````true```` (default is ````false````).
 
  ## Examples
 
- <ul>
- <li>[Multiple viewports](../../examples/#canvas_multipleViewports)</li>
- </ul>
+ * [Multiple viewports](../../examples/#canvas_multipleViewports)
 
  ## Usage
 

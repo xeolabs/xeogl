@@ -1,28 +1,24 @@
 /**
- An **Ortho** component defines an orthographic projection transform.
+ An **Ortho** is a {{#crossLink "Transform"}}{{/crossLink}} that defines an orthographic projection transform.
 
- <ul>
- <li>Ortho is a sub-class of {{#crossLink "Transform"}}{{/crossLink}}.</li>
- <li>{{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
- {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>An Ortho works like Blender's orthographic projection, where the positions of the left, right, top and bottom planes are
+ ## Overview
+
+ * {{#crossLink "Camera"}}Camera{{/crossLink}} components pair these with viewing transform components, such as
+ {{#crossLink "Lookat"}}Lookat{{/crossLink}}, to define viewpoints on attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * An Ortho works like Blender's orthographic projection, where the positions of the left, right, top and bottom planes are
  implicitly specified with a single {{#crossLink "Ortho/scale:property"}}{{/crossLink}} property, which causes the frustum to be symmetrical on X and Y axis, large enough to
- contain the number of units given by {{#crossLink "Ortho/scale:property"}}{{/crossLink}}.</li>
- <li>An Ortho's {{#crossLink "Ortho/near:property"}}{{/crossLink}} and {{#crossLink "Ortho/far:property"}}{{/crossLink}} properties
- specify the distances to the WebGL clipping planes.</li>
- <li>Use {{#crossLink "Frustum"}}{{/crossLink}} if you need to individually specify the position of each of the frustum
- planes, eg. for an asymmetrical view volume, such as those used for stereo viewing.</li>
- <li>Use {{#crossLink "Perspective"}}{{/crossLink}} if you need perspective projection.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Ortho components create within xeogl's shaders.</li>
- </ul>
+ contain the number of units given by {{#crossLink "Ortho/scale:property"}}{{/crossLink}}.
+ * An Ortho's {{#crossLink "Ortho/near:property"}}{{/crossLink}} and {{#crossLink "Ortho/far:property"}}{{/crossLink}} properties
+ specify the distances to the WebGL clipping planes.
+ * Use {{#crossLink "Frustum"}}{{/crossLink}} if you need to individually specify the position of each of the frustum
+ planes, eg. for an asymmetrical view volume, such as those used for stereo viewing.
+ * Use {{#crossLink "Perspective"}}{{/crossLink}} if you need perspective projection.
 
  <img src="../../../assets/images/Ortho.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Camera with orthographic projection](../../examples/#transforms_project_ortho)</li>
- </ul>
+ * [Camera with orthographic projection](../../examples/#transforms_project_ortho)
 
  ## Usage
 

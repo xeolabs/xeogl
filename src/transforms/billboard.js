@@ -1,68 +1,67 @@
 /**
- A **Billboard** causes associated {{#crossLink "Entity"}}Entities{{/crossLink}} to be always oriented towards the Camera.
+ A **Billboard** is a modelling {{#crossLink "Transform"}}{{/crossLink}} that causes associated {{#crossLink "Entity"}}Entities{{/crossLink}} to be always oriented towards the Camera.
 
- <ul>
- <li>**Spherical** billboards are free to rotate their {{#crossLink "Entity"}}Entities{{/crossLink}} in any direction and always face the {{#crossLink "Camera"}}{{/crossLink}} perfectly.</li>
- <li>**Cylindrical** billboards rotate their {{#crossLink "Entity"}}Entities{{/crossLink}} towards the {{#crossLink "Camera"}}{{/crossLink}}, but only around the Y-axis.</li>
- <li>A Billboard will cause {{#crossLink "Scale"}}{{/crossLink}} transformations to have no effect on its {{#crossLink "Entity"}}Entities{{/crossLink}}</li>
- </ul>
+ <a href="../../examples/#billboards_spherical"><img src="http://i.giphy.com/l3vR13LcnTuQGMInu.gif"></img></a>
+
+ ## Overview
+
+ * **Spherical** billboards are free to rotate their {{#crossLink "Entity"}}Entities{{/crossLink}} in any direction and always face the {{#crossLink "Camera"}}{{/crossLink}} perfectly.
+ * **Cylindrical** billboards rotate their {{#crossLink "Entity"}}Entities{{/crossLink}} towards the {{#crossLink "Camera"}}{{/crossLink}}, but only about the Y-axis.
+ * A Billboard will cause {{#crossLink "Scale"}}{{/crossLink}} transformations to have no effect on its {{#crossLink "Entity"}}Entities{{/crossLink}}
 
  <img src="../../../assets/images/Billboard.png"></img>
 
  ## Examples
 
- <ul>
- <li>[Spherical billboards](../../examples/#billboards_spherical)</li>
- <li>[Cylindrical billboards](../../examples/#billboards_cylindrical)</li>
- <li>[Clouds using billboards](../../examples/#billboards_spherical_clouds)</li>
- <li>[Billboards with video textures](../../examples/#billboards_spherical_video)</li>
- </ul>
+ * [Spherical billboards](../../examples/#billboards_spherical)
+ * [Cylindrical billboards](../../examples/#billboards_cylindrical)
+ * [Clouds using billboards](../../examples/#billboards_spherical_clouds)
+ * [Spherical billboards with video textures](../../examples/#billboards_spherical_video)
 
  ## Usage
 
- Let's create 1000 {{#crossLink "Entity"}}Entities{{/crossLink}} that always face towards the viewpoint as we orbit the {{#crossLink "Camera"}}{{/crossLink}} about the X and Y axis:
+ Let's create 1000 randomly-positioned {{#crossLink "Entity"}}Entities{{/crossLink}} that always face towards the
+ viewpoint as we orbit the {{#crossLink "Camera"}}{{/crossLink}} about the X and Y axis:
 
  ```` javascript
- // Create 1000 Entities in default Scene with shared Geometry,
- // PhongMaterial and Billboard
+ // Create 1000 Entities in default Scene with shared Geometry, PhongMaterial and Billboard
 
  var geometry = new xeogl.Geometry({
-        primitive: "triangles",
-        positions: [3, 3, 0, -3, 3, 0, -3, -3, 0, 3, -3, 0],
-        normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],
-        uv: [1, 1, 0, 1, 0, 0, 1, 0],
-        indices: [2, 1, 0, 3, 2, 0] // Ensure these will be front-faces
-    });
+     primitive: "triangles",
+     positions: [3, 3, 0, -3, 3, 0, -3, -3, 0, 3, -3, 0],
+     normals: [-1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0],
+     uv: [1, 1, 0, 1, 0, 0, 1, 0],
+     indices: [2, 1, 0, 3, 2, 0] // Ensure these will be front-faces
+ });
 
  var material = new xeogl.PhongMaterial({
-        emissiveMap: new xeogl.Texture({
-            src: "textures/diffuse/teapot.jpg"
-        })
-    });
+     emissiveMap: new xeogl.Texture({
+         src: "textures/diffuse/teapot.jpg"
+     })
+ });
 
  var billboard = new xeogl.Billboard({
-        spherical: true
-    });
+     spherical: true
+ });
 
  for (var i = 0; i < 1000; i++) {
-        new xeogl.Entity({
-            geometry: geometry,
-            material: material,
-            billboard: billboard,
-            transform: new xeogl.Translate({
-                xyz: [Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50]
-            })
-        });
-  }
+     new xeogl.Entity({
+         geometry: geometry,
+         material: material,
+         billboard: billboard,
+         transform: new xeogl.Translate({
+             xyz: [Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50]
+         })
+     });
+ }
 
- // Move eye back to see everything, then orbit Camera
+ // Move eye back to see everything, then orbit the Camera
 
  var scene = xeogl.scene;
 
  scene.camera.view.zoom(120);
 
- scene.on("tick",
-     function () {
+ scene.on("tick", function () {
 
           var view = scene.camera.view;
 

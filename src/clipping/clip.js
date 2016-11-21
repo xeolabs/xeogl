@@ -1,40 +1,38 @@
-
-
 /**
  A **Clip** is an arbitrarily-aligned World-space clipping plane used to create
  cross-section views of associated {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>These are grouped within {{#crossLink "Clips"}}Clips{{/crossLink}} components, which are attached to
+ ## Overview
+
+ * These are grouped within {{#crossLink "Clips"}}Clips{{/crossLink}} components, which are attached to
  {{#crossLink "Entity"}}Entities{{/crossLink}}. See the {{#crossLink "Clips"}}Clips{{/crossLink}} documentation
- for more info.</li>
- <li>A Clip is specified in World-space, as being perpendicular to a vector {{#crossLink "Clip/dir:property"}}{{/crossLink}}
- that emanates from the origin, offset at a distance {{#crossLink "Clip/dist:property"}}{{/crossLink}} along that vector. </li>
- <li>You can move a Clip back and forth along its vector by varying {{#crossLink "Clip/dist:property"}}{{/crossLink}}.</li>
- <li>Likewise, you can rotate a Clip about the origin by rotating the {{#crossLink "Clip/dir:property"}}{{/crossLink}} vector.</li>
- <li>A Clip is has a {{#crossLink "Clip/mode:property"}}{{/crossLink}},  which indicates whether it is disabled
+ for more info.
+ * A Clip is specified in World-space, as being perpendicular to a vector {{#crossLink "Clip/dir:property"}}{{/crossLink}}
+ that emanates from the origin, offset at a distance {{#crossLink "Clip/dist:property"}}{{/crossLink}} along that vector.
+ * You can move a Clip back and forth along its vector by varying {{#crossLink "Clip/dist:property"}}{{/crossLink}}.
+ * Likewise, you can rotate a Clip about the origin by rotating the {{#crossLink "Clip/dir:property"}}{{/crossLink}} vector.
+ * A Clip is has a {{#crossLink "Clip/mode:property"}}{{/crossLink}},  which indicates whether it is disabled
  ("disabled"), discarding fragments that fall on the origin-side of the plane ("inside"), or clipping fragments that
- fall on the other side of the plane from the origin ("outside").</li>
- <li>You can update the {{#crossLink "Clip/mode:property"}}{{/crossLink}} of a Clip to activate or deactivate it, or to
- switch which side it discards fragments from.</li>
- <li>Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}}
+ fall on the other side of the plane from the origin ("outside").
+ * You can update the {{#crossLink "Clip/mode:property"}}{{/crossLink}} of a Clip to activate or deactivate it, or to
+ switch which side it discards fragments from.
+ * Clipping may also be enabled or disabled for specific {{#crossLink "Entity"}}Entities{{/crossLink}}
  via the {{#crossLink "Modes/clipping:property"}}{{/crossLink}} flag on {{#crossLink "Modes"}}Modes{{/crossLink}} components
- attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>See <a href="Shader.html#inputs">Shader Inputs</a> for the variables that Clips create within xeogl's shaders.</li>
- </ul>
+ attached to those {{#crossLink "Entity"}}Entities{{/crossLink}}.
+
 
  <img src="../../../assets/images/Clip.png"></img>
 
  ## Usage
 
- <ul>
- <li>In this example we have an {{#crossLink "Entity"}}{{/crossLink}} that's clipped by a {{#crossLink "Clips"}}{{/crossLink}}
- that contains two {{#crossLink "Clip"}}{{/crossLink}} planes.</li>
- <li>The first {{#crossLink "Clip"}}{{/crossLink}} plane is on the
- positive diagonal, while the second is on the negative diagonal.</li>
- <li>The {{#crossLink "Entity"}}Entity's{{/crossLink}}
- {{#crossLink "Geometry"}}{{/crossLink}} is a box, and the planes will clip off two of the box's corners.</li>
- </ul>
+
+ * In this example we have an {{#crossLink "Entity"}}{{/crossLink}} that's clipped by a {{#crossLink "Clips"}}{{/crossLink}}
+ that contains two {{#crossLink "Clip"}}{{/crossLink}} planes.
+ * The first {{#crossLink "Clip"}}{{/crossLink}} plane is on the
+ positive diagonal, while the second is on the negative diagonal.
+ * The {{#crossLink "Entity"}}Entity's{{/crossLink}}
+ {{#crossLink "Geometry"}}{{/crossLink}} is a box, and the planes will clip off two of the box's corners.
+
 
  ````javascript
  // Create a set of Clip planes
@@ -62,7 +60,6 @@
      geometry: new xeogl.BoxGeometry(),
      clips: clips
  });
-
  ````
 
  ### Toggling clipping on and off
@@ -123,11 +120,11 @@
 
              Possible states are:
 
-             <ul>
-             <li>"disabled" - inactive</li>
-             <li>"inside" - clipping fragments that fall within the half-space on the origin-side of the Clip plane</li>
-             <li>"outside" - clipping fragments that fall on the other side of the Clip plane from the origin</li>
-             </ul>
+
+             * "disabled" - inactive
+             * "inside" - clipping fragments that fall within the half-space on the origin-side of the Clip plane
+             * "outside" - clipping fragments that fall on the other side of the Clip plane from the origin
+
 
              Fires a {{#crossLink "Clip/mode:event"}}{{/crossLink}} event on change.
 

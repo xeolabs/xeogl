@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="js/libs/dat.gui.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="css/dat-gui-swec.css">
+
+    <script src="../build/xeogl.min.js"></script>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br><a href="../docs/classes/OBBGeometry.html" target="_parent">OBBGeometry</a>
+</div>
+<div id="dat-gui-container">
+</div>
+
+<script>
+
+    var torus = new xeogl.TorusGeometry({
+        radius: 1.0,
+        tube: 0.3,
+        radialSegments: 32,
+        tubeSegments: 24,
+        arc: Math.PI * 2.0
+    });
+
+    var entity = new xeogl.Entity({
+        geometry: torus,
+        material: new xeogl.PhongMaterial({
+            ambient: [0.3, 0.3, 0.3],
+            shininess: 30,
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/uvGrid2.jpg"
+            }),
+            lineWidth:2,
+            pointSize: 3
+        })
+    });
+
+    var boundaryObject = new xeogl.Entity({
+        geometry: new xeogl.OBBGeometry({
+            boundary: entity.worldBoundary
+        }),
+        material: new xeogl.PhongMaterial({
+            diffuse: [0.5, 1.0, 0.5],
+            emissive: [0.5, 1.0, 0.5],
+            lineWidth:2
+        })
+    });
+
+    entity.scene.camera.view.eye = [0, 0, -4];
+
+    entity.scene.on("tick",
+            function () {
+
+                var view = entity.scene.camera.view;
+
+                view.rotateEyeY(0.6);
+                view.rotateEyeX(0.3);
+            });
+
+    // GUI
+
+    var Menu = function () {
+
+        this.message = "TorusGeometry";
+
+        this["primitive"] = torus.primitive;
+        this["radius"] = torus.radius;
+        this["tube"] = torus.tube;
+        this["radialSegments"] = torus.radialSegments;
+        this["tubeSegments"] = torus.tubeSegments;
+        this["arc"] = torus.arc;
+        this["lod"] = torus.lod;
+
+        var self = this;
+
+        // This is actually quite inefficient because it continually updates
+        // the scene graph, forcing frames to continually re-render.
+        // Your GPU's not going to like it, but it's just for a quick and dirty demo.
+
+        var update = function () {
+
+            torus.primitive = self["primitive"];
+            torus.radius = self["radius"];
+            torus.tube = self["tube"];
+            torus.tubeSegments = self["radialSegments"];
+            torus.radialSegments = self["tubeSegments"];
+            torus.arc = self["arc"];
+            torus.lod = self["lod"];
+
+            requestAnimationFrame(update);
+        };
+
+        update();
+    };
+
+    var gui = new dat.GUI({autoPlace: false});
+
+    document.getElementById('dat-gui-container').appendChild(gui.domElement);
+
+    var menu = new Menu();
+
+    var folder = gui.addFolder('TorusGeometry');
+    folder.add(menu, 'primitive', ["triangles", "lines", "points"]);
+    folder.add(menu, 'radius', 0.1, 5.0);
+    folder.add(menu, 'tube', 0.1, 1.0);
+    folder.add(menu, 'radialSegments', 4, 30.0);
+    folder.add(menu, 'tubeSegments', 4, 30.0);
+    folder.add(menu, 'arc', 0.1, Math.PI * 2.0);
+    folder.add(menu, 'lod', 0.1, 1.0);
+
+    folder.open();
+
+</script>
+</body>
+</html>

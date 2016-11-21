@@ -11,9 +11,9 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeogl.org" target="_home">xeogl</a><br><br>handling keyboard events via <a
+    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>handling keyboard events via <a
         href="../docs/classes/Input.html"
-        target="_docs">Input</a>
+        target="_parent">Input</a>
 </div>
 
 <script>
@@ -30,7 +30,7 @@
 
     var input = entity.scene.input;
 
-    var flight = new xeogl.CameraFlight({
+    var flight = new xeogl.CameraFlightAnimation({
         duration: 5.0
     });
 

@@ -3,6 +3,8 @@
  {{#crossLink "Lookat"}}viewing transform{{/crossLink}}, to a provide the appearance of a background
  for associated {{#crossLink "Entities"}}Entities{{/crossLink}}.
 
+ <a href="../../examples/#skyboxes_skybox"><img src="http://i.giphy.com/3o7TKIBOOCEC5gJ224.gif"></img></a>
+
  ## Examples
 
  <ul>
@@ -13,10 +15,9 @@
  ## Usage
 
  In the example below we're going to create twenty randomly-positioned and colored {{#crossLink "Entity"}}Entities{{/crossLink}}
- and wrap them in a Skybox. The Skybox will use the texture image shown on the left, and the result will appear as shown
- on the right.
+ and wrap them in a Skybox. The Skybox will use the texture image shown below, and the result will appear like the screen capture shown above.
 
- <img src="../../assets/images/skyboxMiramarClouds.jpg">&nbsp;&nbsp;<img src="../../assets/images/skyboxScreenshot.png">
+ <img src="../../assets/images/skyboxMiramarClouds.jpg">
 
  ````javascript
  // A bunch of random cube Entities

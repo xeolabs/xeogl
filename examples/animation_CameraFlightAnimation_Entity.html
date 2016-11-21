@@ -11,18 +11,18 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeogl.org">xeogl</a>
+    <a href="http://xeogl.org" target="_parent" >xeogl</a>
     <br><br>
-    using a <a href="../docs/classes/CameraFlight.html" target="_docs">CameraFlight</a> to fly a <a
-        href="../docs/classes/Camera.html" target="_docs">Camera</a> to randomly selected <a
-        href="../docs/classes/Entity.html" target="_docs">Entities</a>
+    using a <a href="../docs/classes/CameraFlightAnimation.html" target="_parent">CameraFlightAnimation</a> to fly a <a
+        href="../docs/classes/Camera.html" target="_parent">Camera</a> to randomly selected <a
+        href="../docs/classes/Entity.html" target="_parent">Entities</a>
 </div>
 
 <script>
 
     // Create some random entities
 
-    var numEntities = 1000;
+    var numEntities = 400;
 
     var entities = [];
     var entity;
@@ -82,17 +82,17 @@
         //    entity.worldBoundary.visible = true;
     }
 
-    // Create a CameraFlight animation
+    // Create a cameraFlightAnimation animation
 
-    var flight = new xeogl.CameraFlight({
-        duration: 1.5,
-        fitFOV: 45
+    var flight = new xeogl.CameraFlightAnimation({
+        duration: 2.5,
+        fitFOV: 30
     });
 
     // Target boundary indicator
 
     var boundaryIndicator = new xeogl.Entity({
-        geometry: new xeogl.BoundaryGeometry({
+        geometry: new xeogl.AABBGeometry({
             boundary: entities[0].worldBoundary
         }),
         material: new xeogl.PhongMaterial({
@@ -125,18 +125,18 @@
 
         boundaryIndicator.geometry.boundary = entity.worldBoundary;
 
-    }, 2000);
+    }, 4000);
 
     // Slowly the eye position about the look position.
 
-//    entity.scene.on("tick",
-//            function () {
-//
-//                var view = entity.camera.view;
-//
-//                view.rotateEyeY(0.3);
-//                view.rotateEyeX(0.2);
-//            });
+    entity.scene.on("tick",
+            function () {
+
+                var view = entity.camera.view;
+
+                view.rotateEyeY(0.1);
+                view.rotateEyeX(0.07);
+            });
 
     new xeogl.CameraControl();
 

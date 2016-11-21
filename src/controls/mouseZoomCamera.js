@@ -1,19 +1,15 @@
 /**
  A **MouseZoomCamera** zooms a {{#crossLink "Camera"}}{{/crossLink}} using the mouse wheel.
 
- <ul>
- <li>A MouseZoomCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
- <li>Zooming involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
+ * A MouseZoomCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
+ * Zooming involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth
- along the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
- </ul>
+ along the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.
 
  ## Examples
 
- <ul>
- <li>[MouseZoomCamera example](../../examples/#interaction_MouseZoomCamera)</li>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- </ul>
+ * [MouseZoomCamera example](../../examples/#interaction_MouseZoomCamera)
+ * [CameraControl example](../../examples/#interaction_CameraControl)
 
  ## Usage
 

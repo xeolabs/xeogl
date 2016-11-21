@@ -1,7 +1,7 @@
 /**
  A **Scene** models a 3D scene as a fully-editable and serializable <a href="http://gameprogrammingpatterns.com/component.html" target="_other">component-entity</a> graph.
 
- ## <a name="sceneStructure">Scene Structure</a>
+ ## Scene Structure
 
  A Scene contains a soup of instances of various {{#crossLink "Component"}}Component{{/crossLink}} subtypes, such as
  {{#crossLink "Entity"}}Entity{{/crossLink}}, {{#crossLink "Camera"}}Camera{{/crossLink}}, {{#crossLink "Material"}}Material{{/crossLink}},
@@ -113,7 +113,7 @@
  var material2 = new xeogl.PhongMaterial({
     diffuse: { r: 0.6, g: 0.6, b: 0.7 },
     specular: { 1.0, 1.0, 1.0 }
-});
+ });
 
  var geometry2 = new xeogl.Geometry({
      primitive: "triangles",
@@ -121,7 +121,7 @@
      normals: [...],
      uvs: [...],
      indices: [...]
-});
+ });
 
  var camera = new xeogl.Camera();
 
@@ -129,7 +129,7 @@
      material: material2,
      geometry: geometry2,
      camera: camera2
-});
+ });
  ````
 
  You can then obtain the default Scene from the {{#crossLink "xeogl"}}xeogl{{/crossLink}} entity's
@@ -175,13 +175,12 @@
  // Create another scene from that JSON, in a fresh canvas:
  var myOtherScene = new xeogl.Scene({
       json: json
-  });
+ });
 
  ***Note:*** this will save your {{#crossLink "Geometry"}}Geometry{{/crossLink}}s' array properties
  ({{#crossLink "Geometry/positions:property"}}positions{{/crossLink}}, {{#crossLink "Geometry/normals:property"}}normals{{/crossLink}},
  {{#crossLink "Geometry/indices:property"}}indices{{/crossLink}} etc) as JSON arrays, which may stress your browser
  if those arrays are huge.
-
 
  @class Scene
  @module xeogl
@@ -890,6 +889,7 @@
              * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}} by default.
              * @property colorTarget
+             * @private
              * @final
              * @type ColorTarget
              */
@@ -938,6 +938,7 @@
              * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}} by default.
              * @property depthTarget
+             * @private
              * @final
              * @type DepthTarget
              */
@@ -1151,6 +1152,7 @@
              * {{#crossLink "Entity"}}Entities{{/crossLink}} within this Scene are attached to this
              * {{#crossLink "MorphTargets"}}MorphTargets{{/crossLink}} by default.
              * @property morphTargets
+             * @private
              * @final
              * @type MorphTargets
              */
@@ -1198,6 +1200,7 @@
              * {{#crossLink "Shader"}}Shader{{/crossLink}} by default.
              * @property shader
              * @final
+             * @private
              * @type Shader
              */
             shader: {
@@ -1221,6 +1224,7 @@
              *
              * @property shaderParams
              * @final
+             * @private
              * @type ShaderParams
              */
             shaderParams: {

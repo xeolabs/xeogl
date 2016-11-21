@@ -1292,9 +1292,15 @@
          * @method translationMat4c
          * @static
          */
-        translationMat4c: function (x, y, z, dest) {
-            return math.translationMat4v([x, y, z], dest);
-        },
+        translationMat4c: (function () {
+            var tempVec3 = new Float32Array(3);
+            return function (x, y, z, dest) {
+                tempVec3[0] = x;
+                tempVec3[1] = y;
+                tempVec3[2] = z;
+                return math.translationMat4v(tempVec3, dest);
+            };
+        })(),
 
         /**
          * Returns 4x4 translation matrix.

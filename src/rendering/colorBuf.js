@@ -1,12 +1,11 @@
 /**
-
  A **ColorBuf** configures the WebGL color buffer for attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>A ColorBuf configures **the way** that pixels are written to the WebGL color buffer.</li>
- <li>ColorBuf is not to be confused with {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, which stores rendered pixel
- colors for consumption by {{#crossLink "Texture"}}Textures{{/crossLink}}, used when performing *render-to-texture*.</li>
- </ul>
+ ## Overview
+
+ * A ColorBuf configures the way that pixels are written to the WebGL color buffer.
+ * ColorBuf is not to be confused with {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, which stores rendered pixel
+ colors for consumption by {{#crossLink "Texture"}}Textures{{/crossLink}}, used when performing *render-to-texture*.
 
  <img src="../../../assets/images/ColorBuf.png"></img>
 

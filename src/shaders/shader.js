@@ -1,16 +1,16 @@
 /**
  A **Shader** specifies a custom GLSL shader to apply when rendering attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
 
- <ul>
- <li>Normally you would rely on xeogl to automatically generate shaders for you, however the Shader component allows you to author them manually.</li>
- <li>You can use xeogl's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other
- components on the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.</li>
- <li>Use Shaders in combination with {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} components when you need to share
+
+ * Normally you would rely on xeogl to automatically generate shaders for you, however the Shader component allows you to author them manually.
+ * You can use xeogl's reserved uniform and variable names in your Shaders to read all the WebGL state that's set by other
+ components on the attached {{#crossLink "Entity"}}Entities{{/crossLink}}.
+ * Use Shaders in combination with {{#crossLink "ShaderParams"}}ShaderParams{{/crossLink}} components when you need to share
  the same Shaders among multiple {{#crossLink "Entity"}}Entities{{/crossLink}} while setting the Shaders' uniforms
- differently for each {{#crossLink "Entity"}}Entity{{/crossLink}}.</li>
- <li>Use {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}}
- and {{#crossLink "Texture"}}Texture{{/crossLink}} components to connect the output of one Shader as input into another Shader.</li>
- </ul>
+ differently for each {{#crossLink "Entity"}}Entity{{/crossLink}}.
+ * Use {{#crossLink "ColorTarget"}}ColorTarget{{/crossLink}}, {{#crossLink "DepthTarget"}}DepthTarget{{/crossLink}}
+ and {{#crossLink "Texture"}}Texture{{/crossLink}} components to connect the output of one Shader as input into another Shader.
+
 
  <img src="../../../assets/images/Shader.png"></img>
 
@@ -162,9 +162,8 @@
  |---|---|---|
 
 
- @class Shader
+
  @module xeogl
- @submodule shaders
  @constructor
  @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this Shader in the default
  {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.

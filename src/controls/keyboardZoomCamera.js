@@ -1,19 +1,15 @@
 /**
  A **KeyboardZoomCamera** zooms a {{#crossLink "Camera"}}{{/crossLink}} using the + and - keys.
 
- <ul>
- <li>A KeyboardZoomCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
- <li>Zooming involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
+ * A KeyboardZoomCamera updates the {{#crossLink "Lookat"}}{{/crossLink}} attached to the target {{#crossLink "Camera"}}{{/crossLink}}.
+ * Zooming involves translating the positions of the {{#crossLink "Lookat"}}Lookat's{{/crossLink}}
  {{#crossLink "Lookat/eye:property"}}{{/crossLink}} and {{#crossLink "Lookat/look:property"}}{{/crossLink}} back and forth
- along the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.</li>
- </ul>
+ along the {{#crossLink "Lookat/eye:property"}}{{/crossLink}}-&gt;{{#crossLink "Lookat/look:property"}}{{/crossLink}} vector.
 
  ## Examples
 
- <ul>
- <li>[KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)</li>
- <li>[CameraControl example](../../examples/#interaction_CameraControl)</li>
- </ul>
+ * [KeyboardZoomCamera example](../../examples/#interaction_KeyboardZoomCamera)
+ * [CameraControl example](../../examples/#interaction_CameraControl)
 
  ## Usage
 
