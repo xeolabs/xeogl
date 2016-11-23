@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2016-11-21
+ * Built on 2016-11-23
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -2362,12 +2362,12 @@ var Canvas2Image = (function () {
          * @static
          */
         translationMat4c: (function () {
-            var tempVec3 = new Float32Array(3);
+            var xyz = new Float32Array(3);
             return function (x, y, z, dest) {
-                tempVec3[0] = x;
-                tempVec3[1] = y;
-                tempVec3[2] = z;
-                return math.translationMat4v(tempVec3, dest);
+                xyz[0] = x;
+                xyz[1] = y;
+                xyz[2] = z;
+                return math.translationMat4v(xyz, dest);
             };
         })(),
 
@@ -2380,7 +2380,71 @@ var Canvas2Image = (function () {
             return math.translationMat4c(s, s, s, dest);
         },
 
+        /**
+         * Efficiently post-concatenates a translation to the given matrix.
+         * @param v
+         * @param m
+         */
+        translateMat4v: function (xyz, m) {
+            return math.translateMat4c(xyz[0], xyz[1], xyz[2], m);
+        },
 
+        /**
+         * Efficiently post-concatenates a translation to the given matrix.
+         * @param x
+         * @param y
+         * @param z
+         * @param m
+         */
+        OLDtranslateMat4c: function (x, y, z, m) {
+
+            var m12 = m[12];
+            m[0] += m12 * x;
+            m[4] += m12 * y;
+            m[8] += m12 * z;
+
+            var m13 = m[13];
+            m[1] += m13 * x;
+            m[5] += m13 * y;
+            m[9] += m13 * z;
+
+            var m14 = m[14];
+            m[2] += m14 * x;
+            m[6] += m14 * y;
+            m[10] += m14 * z;
+
+            var m15 = m[15];
+            m[3] += m15 * x;
+            m[7] += m15 * y;
+            m[11] += m15 * z;
+
+            return m;
+        },
+
+        translateMat4c: function (x, y, z, m) {
+
+            var m3 = m[3];
+            m[0] += m3 * x;
+            m[1] += m3 * y;
+            m[2] += m3 * z;
+
+            var m7 = m[7];
+            m[4] += m7 * x;
+            m[5] += m7 * y;
+            m[6] += m7 * z;
+
+            var m11 = m[11];
+            m[8] += m11 * x;
+            m[9] += m11 * y;
+            m[10] += m11 * z;
+
+            var m15 = m[15];
+            m[12] += m15 * x;
+            m[13] += m15 * y;
+            m[14] += m15 * z;
+
+            return m;
+        },
         /**
          * Returns 4x4 rotation matrix.
          * @method rotationMat4v
@@ -2460,15 +2524,55 @@ var Canvas2Image = (function () {
          * @method scalingMat4c
          * @static
          */
-        scalingMat4c: function (x, y, z) {
-            return math.scalingMat4v([x, y, z]);
+        scalingMat4c: (function () {
+            var xyz = new Float32Array(3);
+            return function (x, y, z, dest) {
+                xyz[0] = x;
+                xyz[1] = y;
+                xyz[2] = z;
+                return math.scalingMat4v(xyz, dest);
+            };
+        })(),
+
+        /**
+         * Efficiently post-concatenates a scaling to the given matrix.
+         * @method scaleMat4c
+         * @param x
+         * @param y
+         * @param z
+         * @param m
+         */
+        scaleMat4c:  function (x, y, z, m) {
+            
+            m[0] *= x;
+            m[4] *= y;
+            m[8] *= z;
+            
+            m[1] *= x;
+            m[5] *= y;
+            m[9] *= z;
+            
+            m[2] *= x;
+            m[6] *= y;
+            m[10] *= z;
+            
+            m[3] *= x;
+            m[7] *= y;
+            m[11] *= z;
+            return m;
         },
 
-        scaleMat4v: function (v, m) {
+        /**
+         * Efficiently post-concatenates a scaling to the given matrix.
+         * @method scaleMat4c
+         * @param xyz
+         * @param m
+         */
+        scaleMat4v: function (xyz, m) {
 
-            var x = v[0];
-            var y = v[1];
-            var z = v[2];
+            var x = xyz[0];
+            var y = xyz[1];
+            var z = xyz[2];
 
             m[0] *= x;
             m[4] *= y;
@@ -20894,6 +20998,8 @@ var Canvas2Image = (function () {
             }
         },
 
+
+
         _compile: function () {
 
             if (this._updateScheduled || this._geometryUpdateScheduled) {
@@ -33319,6 +33425,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             return !this.destroyed && geometry && geometry.positions && geometry.indices;
 
         },
+
+
 
         _compile: function () {
 

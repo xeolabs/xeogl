@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>examples/js/generation/ModelBuilder.js - xeogl</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+
+                <h1 style="color:white;"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
+
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 1.0.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/AABBGeometry.html">AABBGeometry</a></li>
+                                <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
+                                <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundingSphereGeometry.html">BoundingSphereGeometry</a></li>
+                                <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
+                                <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
+                                <li><a href="../classes/Camera.html">Camera</a></li>
+                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraController.html">CameraController</a></li>
+                                <li><a href="../classes/CameraFlightAnimation.html">CameraFlightAnimation</a></li>
+                                <li><a href="../classes/CameraFollowAnimation.html">CameraFollowAnimation</a></li>
+                                <li><a href="../classes/CameraPath.html">CameraPath</a></li>
+                                <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
+                                <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
+                                <li><a href="../classes/Component.html">Component</a></li>
+                                <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+                                <li><a href="../classes/Cull.html">Cull</a></li>
+                                <li><a href="../classes/Curve.html">Curve</a></li>
+                                <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
+                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
+                                <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Entity.html">Entity</a></li>
+                                <li><a href="../classes/Fresnel.html">Fresnel</a></li>
+                                <li><a href="../classes/Frustum.html">Frustum</a></li>
+                                <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
+                                <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
+                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
+                                <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
+                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
+                                <li><a href="../classes/KeyboardRotateCamera.html">KeyboardRotateCamera</a></li>
+                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
+                                <li><a href="../classes/Layer.html">Layer</a></li>
+                                <li><a href="../classes/Lights.html">Lights</a></li>
+                                <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/Model.html">Model</a></li>
+                                <li><a href="../classes/Modes.html">Modes</a></li>
+                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
+                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
+                                <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
+                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
+                                <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
+                                <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
+                                <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
+                                <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Path.html">Path</a></li>
+                                <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
+                                <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
+                                <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
+                                <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/Skybox.html">Skybox</a></li>
+                                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
+                                <li><a href="../classes/Spinner.html">Spinner</a></li>
+                                <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/Stage.html">Stage</a></li>
+                                <li><a href="../classes/Stationary.html">Stationary</a></li>
+                                <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
+                                <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
+                                <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
+                                <li><a href="../classes/Viewport.html">Viewport</a></li>
+                                <li><a href="../classes/Visibility.html">Visibility</a></li>
+                                <li><a href="../classes/xeogl.html">xeogl</a></li>
+                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
+                                <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="..//modules/animation.html">animation</a></li>
+                                <li><a href="..//modules/boundaries.html">boundaries</a></li>
+                                <li><a href="..//modules/camera.html">camera</a></li>
+                                <li><a href="..//modules/canvas.html">canvas</a></li>
+                                <li><a href="..//modules/clipping.html">clipping</a></li>
+                                <li><a href="..//modules/configs.html">configs</a></li>
+                                <li><a href="..//modules/controls.html">controls</a></li>
+                                <li><a href="..//modules/culling.html">culling</a></li>
+                                <li><a href="..//modules/curves.html">curves</a></li>
+                                <li><a href="..//modules/effects.html">effects</a></li>
+                                <li><a href="..//modules/entities.html">entities</a></li>
+                                <li><a href="..//modules/generation.html">generation</a></li>
+                                <li><a href="..//modules/geometry.html">geometry</a></li>
+                                <li><a href="..//modules/input.html">input</a></li>
+                                <li><a href="..//modules/interaction.html">interaction</a></li>
+                                <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/materials.html">materials</a></li>
+                                <li><a href="..//modules/math.html">math</a></li>
+                                <li><a href="..//modules/models.html">models</a></li>
+                                <li><a href="..//modules/rendering.html">rendering</a></li>
+                                <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="..//modules/transforms.html">transforms</a></li>
+                                <li><a href="..//modules/xeogl.html">xeogl</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <!--<div id="api-options">-->
+                    <!--Show:-->
+                    <!--<label for="api-show-inherited">-->
+                        <!--<input type="checkbox" id="api-show-inherited" checked>-->
+                        <!--Inherited-->
+                    <!--</label>-->
+            
+                    <!--<label for="api-show-protected">-->
+                        <!--<input type="checkbox" id="api-show-protected">-->
+                        <!--Protected-->
+                    <!--</label>-->
+            
+                    <!--<label for="api-show-private">-->
+                        <!--<input type="checkbox" id="api-show-private">-->
+                        <!--Private-->
+                    <!--</label>-->
+                    <!--<label for="api-show-deprecated">-->
+                        <!--<input type="checkbox" id="api-show-deprecated">-->
+                        <!--Deprecated-->
+                    <!--</label>-->
+            
+                <!--</div>-->
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: examples/js/generation/ModelBuilder.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ A **ModelBuilder** is a {{#crossLink &quot;Model&quot;}}{{/crossLink}} that provides a &quot;stateful builder&quot; API through which you can
+ procedurally generate xeogl content.
+
+ &lt;a href=&quot;../../examples/#models_ModelBuilder_city&quot;&gt;&lt;img src=&quot;http://i.giphy.com/l0HlPJO1AN01Lz27e.gif&quot;&gt;&lt;/img&gt;&lt;/a&gt;
+
+ ## Overview
+
+ * A BuilderModel implements the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern).
+ * Create various assets within a BuilderModel, such as {{#crossLink &quot;Geometry&quot;}}Geometries{{/crossLink}}
+ and {{#crossLink &quot;Material&quot;}}Materials{{/crossLink}}, then create {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} that use those assets.
+ * The BuilderModel then owns those components and will destroy them when you
+ call its {{#crossLink &quot;ModelBuilder/clear:method&quot;}}clear(){{/crossLink}} or {{#crossLink &quot;Component/destroy:method&quot;}}destroy(){{/crossLink}} methods.
+ * A ModelBuilder can be transformed within World space by attaching it to a {{#crossLink &quot;Transform&quot;}}{{/crossLink}}.
+ * A ModelBuilder provides its World-space boundary as a {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}.
+
+ ## Examples
+
+ * [Generating a city with a ModelBuilder](../../examples/#models_ModelBuilder_city)&lt;/li&gt;
+
+ ## Usage
+
+ A ModelBuilder containing ten textured boxes with random sizes and positions:
+
+ &#x60;&#x60;&#x60;&#x60;javascript
+ var model = new xeogl.ModelBuilder();
+
+ // Add a BoxGeometry asset
+ ModelBuilder.asset(&quot;boxGeometry&quot;, {
+     type: &quot;xeogl.BoxGeometry&quot;
+ });
+
+ // Add a PhongMaterial asset
+ ModelBuilder.asset(&quot;gridMaterial&quot;, {
+     type: &quot;xeogl.PhongMaterial&quot;,
+     ambient: [0.9, 0.3, 0.9],
+     shininess: 30,
+     diffuseMap: {
+         src: &quot;textures/diffuse/gridMaterial.jpg&quot;
+     }
+ });
+
+ // Set the BoxGeometry asset as the current geometry
+ ModelBuilder.geometry(&quot;boxGeometry&quot;);
+
+ // Set the PhongMaterial asset as the current material
+ ModelBuilder.material(&quot;gridMaterial&quot;);
+
+ // Build ten entities with random sizes and positions,
+ // that each get the current geometry and material
+ for (var i = 0; i &lt; 10; i++) {
+
+     ModelBuilder.scale(Math.random() * 10 + 1, Math.random() * 10 + 1, Math.random() * 10 + 1);
+     ModelBuilder.pos(Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50);
+
+     ModelBuilder.entity();
+ }
+ &#x60;&#x60;&#x60;&#x60;
+
+
+ @constructor
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this ModelBuilder in the default
+ {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
+ @param [cfg] {*} Configs
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
+ generated automatically when omitted.
+ @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this ModelBuilder.
+ @param [cfg.transform] {Number|String|Transform} A Local-to-World-space (modelling) {{#crossLink &quot;Transform&quot;}}{{/crossLink}} to attach to this ModelBuilder.
+ Must be within the same {{#crossLink &quot;Scene&quot;}}{{/crossLink}} as this ModelBuilder. Internally, the given
+ {{#crossLink &quot;Transform&quot;}}{{/crossLink}} will be inserted above each top-most {{#crossLink &quot;Transform&quot;}}Transform{{/crossLink}}
+ that the ModelBuilder attaches to its {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}}.
+ @extends Model
+ */
+(function () {
+
+    &quot;use strict&quot;;
+
+    xeogl.ModelBuilder = xeogl.Component.extend({
+
+        type: &quot;xeogl.ModelBuilder&quot;,
+
+        _init: function (cfg) {
+
+            this._super(cfg);
+
+            this._positions = undefined;
+            this._normals = undefined;
+            this._uv = undefined;
+            this._colors = undefined;
+            this._indices = undefined;
+
+            this._matrix = undefined;
+
+            this._needNewMesh = true;
+            this._needNewEntity = true;
+            this._needNewModel = true;
+        },
+
+        _props: {
+
+            model: {
+
+                set: function (model) {
+                    this._model = model;
+                },
+
+                get: function () {
+                    return this._model;
+                }
+            },
+
+            geometry: {
+
+                set: function (geometry) {
+                    this._geometry = geometry;
+                },
+
+                get: function () {
+                    return this._geometry;
+                }
+            },
+
+            material: {
+
+                set: function (material) {
+                    this._material = material;
+                },
+
+                get: function () {
+                    return this._material;
+                }
+            },
+
+            matrix: {
+
+                set: function (matrix) {
+                    this._matrix = matrix;
+                    return this;
+                },
+
+                get: function () {
+                    return this._matrix;
+                }
+            }
+        },
+
+        buildMesh: (function () {
+
+            var math = xeogl.math;
+
+            var tempVec3a = math.vec3();
+            var tempVec3b = math.vec3();
+
+            return function () {
+
+                var i;
+                var len;
+                var indicesBump = (this._positions) ? (this._positions.length / 3) : 0;
+
+                if (this._geometry.positions) {
+
+                    if (!this._positions) {
+                        this._positions = [];
+                    }
+
+                    var positions = this._geometry.positions;
+
+                    if (!this._matrix) {
+
+                        for (i = 0, len = positions.length; i &lt; len; i++) {
+                            this._positions.push(positions[i]);
+                        }
+
+                    } else {
+
+                        for (i = 0, len = positions.length; i &lt; len; i += 3) {
+
+                            tempVec3a[0] = positions[i + 0];
+                            tempVec3a[1] = positions[i + 1];
+                            tempVec3a[2] = positions[i + 2];
+
+                            math.transformPoint3(this._matrix, tempVec3a, tempVec3b);
+
+                            this._positions.push(tempVec3b[0]);
+                            this._positions.push(tempVec3b[1]);
+                            this._positions.push(tempVec3b[2]);
+                        }
+                    }
+                }
+
+                if (this._geometry.normals) {
+                    if (!this._normals) {
+                        this._normals = [];
+                    }
+                    for (i = 0, len = this._geometry.normals.length; i &lt; len; i++) {
+                        this._normals.push(this._geometry.normals[i]);
+                    }
+                }
+
+                if (this._geometry.uv) {
+                    if (!this._uv) {
+                        this._uv = [];
+                    }
+                    for (i = 0, len = this._geometry.uv.length; i &lt; len; i++) {
+                        this._uv.push(this._geometry.uv[i]);
+                    }
+                }
+
+                if (this._geometry.colors) {
+                    if (!this._colors) {
+                        this._colors = [];
+                    }
+                    for (i = 0, len = this._geometry.colors.length; i &lt; len; i++) {
+                        this._colors.push(this._geometry.colors[i]);
+                    }
+                }
+
+                if (this._geometry.indices) {
+                    if (!this._indices) {
+                        this._indices = [];
+                    }
+                    for (i = 0, len = this._geometry.indices.length; i &lt; len; i++) {
+                        this._indices.push(this._geometry.indices[i] + indicesBump);
+                    }
+                }
+
+                return this;
+            };
+        })(),
+
+        buildEntity: function () {
+
+            this._model.create({
+                type: &quot;xeogl.Entity&quot;,
+                geometry: this._model.create({
+                    type: &quot;xeogl.Geometry&quot;,
+                    primitive: this.primitive || &quot;triangles&quot;,
+                    positions: this._positions,
+                    normals: this._normals,
+                    uv: this._uv,
+                    colors: this._colors,
+                    indices: this._indices
+                }),
+                material: this._material
+            });
+
+            this._positions = null;
+            this._normals = null;
+            this._uv = null;
+            this._colors = null;
+            this._indices = null;
+        }
+    });
+})();
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

@@ -33,6 +33,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Frustum",
         "GLTFModel",
         "Geometry",
+        "GeometryBuilder",
         "HeightmapGeometry",
         "Input",
         "KeyboardAxisCamera",
@@ -96,6 +97,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "curves",
         "effects",
         "entities",
+        "generation",
         "geometry",
         "input",
         "interaction",
@@ -163,6 +165,11 @@ YUI.add("yuidoc-meta", function(Y) {
             "displayName": "entities",
             "name": "entities",
             "description": "Entities."
+        },
+        {
+            "displayName": "generation",
+            "name": "generation",
+            "description": "Components for generating xeogl content."
         },
         {
             "displayName": "geometry",

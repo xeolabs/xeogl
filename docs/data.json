@@ -1153,6 +1153,31 @@
             "fors": {},
             "namespaces": {}
         },
+        "examples/js/generation/ModelBuilder.js": {
+            "name": "examples/js/generation/ModelBuilder.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "examples/js/generation/_module.js": {
+            "name": "examples/js/generation/_module.js",
+            "modules": {
+                "generation": 1
+            },
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "examples/js/generation/geometryBuilder.js": {
+            "name": "examples/js/generation/geometryBuilder.js",
+            "modules": {},
+            "classes": {
+                "GeometryBuilder": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "examples/js/skyboxes/_module.js": {
             "name": "examples/js/skyboxes/_module.js",
             "modules": {
@@ -1264,6 +1289,7 @@
                 "transforms": 1,
                 "effects": 1,
                 "curves": 1,
+                "generation": 1,
                 "skyboxes": 1
             },
             "classes": {
@@ -1342,6 +1368,7 @@
                 "Path": 1,
                 "QuadraticBezierCurve": 1,
                 "SplineCurve": 1,
+                "GeometryBuilder": 1,
                 "Skybox": 1,
                 "HeightmapGeometry": 1,
                 "Nintendo3DSGeometry": 1,
@@ -2031,6 +2058,21 @@
             "file": "examples/js/curves/splineCurve.js",
             "line": 1,
             "description": "Components for defining 3D curves."
+        },
+        "generation": {
+            "name": "generation",
+            "submodules": {},
+            "classes": {
+                "GeometryBuilder": 1
+            },
+            "fors": {},
+            "is_submodule": 1,
+            "namespaces": {},
+            "module": "xeogl",
+            "namespace": "",
+            "file": "examples/js/generation/geometryBuilder.js",
+            "line": 1,
+            "description": "Components for generating xeogl content."
         },
         "skyboxes": {
             "name": "skyboxes",
@@ -6987,6 +7029,22 @@
                 }
             ],
             "extends": "Curve"
+        },
+        "GeometryBuilder": {
+            "name": "GeometryBuilder",
+            "shortname": "GeometryBuilder",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "examples/js/generation/geometryBuilder.js",
+            "line": 1,
+            "description": "A **GeometryBuilder** is a builder which you can use to procedurally generate {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}.\n\n<a href=\"../../examples/#generation_GeometryBuilder_wavyBlocks\"><img src=\"http://i.giphy.com/26gJAMkOxAW5fWlb2.gif\"></img></a>\n\n## Overview\n\n* A GeometryBuilder implements the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern).\n* Works by accumulating additions to an internal buffer of geometry vertex and index arrays.\n* Call {{#crossLink \"GeometryBuilder/setShape:method\"}}setShape(){{/crossLink}} to set its current mesh, and\n{{#crossLink \"GeometryBuilder/setMatrix:method\"}}setMatrix(){{/crossLink}} to set its current modelling transform.\n* Then whenever you call {{#crossLink \"GeometryBuilder/addShape:method\"}}addShape(){{/crossLink}}, it appends the shape, transformed\nby the matrix, to its internal buffer.\n* Finally, call {{#crossLink \"GeometryBuilder/build:method\"}}build(){{/crossLink}} to dump the buffer into a target {{#crossLink \"Geometry\"}}{{/crossLink}}.\n* Call {{#crossLink \"GeometryBuilder/build:method\"}}build(){{/crossLink}} to build other {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}\nwith the buffer contents as needed.\n* Call {{#crossLink \"GeometryBuilder/reset:method\"}}reset(){{/crossLink}} to empty the buffer.\n\n## Examples\n\n* [Generating a 3D sine wave from boxes](../../examples/#generation_GeometryBuilder_wavyBlocks)</li>\n\n## Usage\n\nIn the example below we'll use a GeometryBuilder to create something like the screen capture shown above.\n\n````javascript\n// Intatiate a GeometryBuilder; note that it's a\n// plain JavaScript object, not a xeogl Component subtype\nvar geometryBuilder = new xeogl.GeometryBuilder();\n\n// Set the current shape we'll be adding to our GeometryBuilder; this can be a\n// Geometry, or just an object containing vertex and indices arrays.\ngeometryBuilder.setShape(new xeogl.BoxGeometry());\n\n// Now add that shape many times, each time setting a different modelling\n// matrix on the GeometryBuilder. As we do this, we are generating the geometry.\n\nvar matrix = xeogl.math.mat4();\nvar height = 3;\nvar height2 = height * 2;\nvar x;\nvar y;\nvar z;\nvar size = 200;\n\nfor (x = -size; x <= size; x += 2) {\n    for (z = -size; z <= size; z += 2) {\n\n       y = ((Math.sin(x * 0.05) * height + Math.sin(z * 0.05) * height)) + height2;\n       xeogl.math.identityMat4(matrix); // Fresh matrix\n       xeogl.math.scaleMat4c(.90, y, .90, matrix); // Post-concatenate scaling\n       xeogl.math.translateMat4c(x, y, z, matrix); // Post-concatenate translation\n\n       geometryBuilder.setMatrix(matrix);\n       geometryBuilder.addShape(); // Add shape to GeometryBuilder, transformed by the matrix\n    }\n}\n\n// Now build the actual Geometry component\nvar geometry = new xeogl.Geometry();\ngeometryBuilder.build(geometry);\n\n// Create an Entity with our Geometry attached\nvar entity = new xeogl.Entity({\n   geometry: geometry,\n   material: new xeogl.PhongMaterial({\n       diffuse: [0.6, 0.6, 0.7]\n   })\n});\n\n// Set the initial Camera position\nentity.scene.camera.view.eye = [-200, 50, -200];\n\n// Allow user intercation with the Camera\nnew xeogl.CameraControl();\n````",
+            "submodule": "generation",
+            "is_constructor": 1
         },
         "Skybox": {
             "name": "Skybox",
@@ -17648,7 +17706,53 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1315,
+            "line": 1314,
+            "description": "Efficiently post-concatenates a translation to the given matrix.",
+            "params": [
+                {
+                    "name": "v",
+                    "description": ""
+                },
+                {
+                    "name": "m",
+                    "description": ""
+                }
+            ],
+            "class": "xeogl.math.math",
+            "module": "xeogl",
+            "submodule": "math",
+            "namespace": "xeogl.math"
+        },
+        {
+            "file": "src/math/math.js",
+            "line": 1323,
+            "description": "Efficiently post-concatenates a translation to the given matrix.",
+            "params": [
+                {
+                    "name": "x",
+                    "description": ""
+                },
+                {
+                    "name": "y",
+                    "description": ""
+                },
+                {
+                    "name": "z",
+                    "description": ""
+                },
+                {
+                    "name": "m",
+                    "description": ""
+                }
+            ],
+            "class": "xeogl.math.math",
+            "module": "xeogl",
+            "submodule": "math",
+            "namespace": "xeogl.math"
+        },
+        {
+            "file": "src/math/math.js",
+            "line": 1379,
             "description": "Returns 4x4 rotation matrix.",
             "itemtype": "method",
             "name": "rotationMat4v",
@@ -17660,7 +17764,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1367,
+            "line": 1431,
             "description": "Returns 4x4 rotation matrix.",
             "itemtype": "method",
             "name": "rotationMat4c",
@@ -17672,7 +17776,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1376,
+            "line": 1440,
             "description": "Returns 4x4 scale matrix.",
             "itemtype": "method",
             "name": "scalingMat4v",
@@ -17684,7 +17788,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1389,
+            "line": 1453,
             "description": "Returns 4x4 scale matrix.",
             "itemtype": "method",
             "name": "scalingMat4c",
@@ -17696,7 +17800,57 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1420,
+            "line": 1468,
+            "description": "Efficiently post-concatenates a scaling to the given matrix.",
+            "itemtype": "method",
+            "name": "scaleMat4c",
+            "params": [
+                {
+                    "name": "x",
+                    "description": ""
+                },
+                {
+                    "name": "y",
+                    "description": ""
+                },
+                {
+                    "name": "z",
+                    "description": ""
+                },
+                {
+                    "name": "m",
+                    "description": ""
+                }
+            ],
+            "class": "xeogl.math.math",
+            "module": "xeogl",
+            "submodule": "math",
+            "namespace": "xeogl.math"
+        },
+        {
+            "file": "src/math/math.js",
+            "line": 1496,
+            "description": "Efficiently post-concatenates a scaling to the given matrix.",
+            "itemtype": "method",
+            "name": "scaleMat4c",
+            "params": [
+                {
+                    "name": "xyz",
+                    "description": ""
+                },
+                {
+                    "name": "m",
+                    "description": ""
+                }
+            ],
+            "class": "xeogl.math.math",
+            "module": "xeogl",
+            "submodule": "math",
+            "namespace": "xeogl.math"
+        },
+        {
+            "file": "src/math/math.js",
+            "line": 1524,
             "description": "Returns 4x4 scale matrix.",
             "itemtype": "method",
             "name": "scalingMat4s",
@@ -17708,7 +17862,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1429,
+            "line": 1533,
             "description": "Creates a matrix from a quaternion rotation and vector translation",
             "params": [
                 {
@@ -17738,7 +17892,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1479,
+            "line": 1583,
             "description": "Gets Euler angles from a 4x4 matrix.",
             "params": [
                 {
@@ -17769,7 +17923,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1576,
+            "line": 1680,
             "description": "Returns a 4x4 'lookat' viewing transform matrix.",
             "itemtype": "method",
             "name": "lookAtMat4v",
@@ -17802,7 +17956,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1671,
+            "line": 1775,
             "description": "Returns a 4x4 'lookat' viewing transform matrix.",
             "itemtype": "method",
             "name": "lookAtMat4c",
@@ -17814,7 +17968,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1680,
+            "line": 1784,
             "description": "Returns a 4x4 orthographic projection matrix.",
             "itemtype": "method",
             "name": "orthoMat4c",
@@ -17826,7 +17980,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1716,
+            "line": 1820,
             "description": "Returns a 4x4 perspective projection matrix.",
             "itemtype": "method",
             "name": "frustumMat4v",
@@ -17838,7 +17992,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1760,
+            "line": 1864,
             "description": "Returns a 4x4 perspective projection matrix.",
             "itemtype": "method",
             "name": "frustumMat4v",
@@ -17850,7 +18004,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1791,
+            "line": 1895,
             "description": "Returns a 4x4 perspective projection matrix.",
             "itemtype": "method",
             "name": "perspectiveMat4v",
@@ -17862,7 +18016,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1812,
+            "line": 1916,
             "description": "Transforms a three-element position by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformPoint3",
@@ -17874,7 +18028,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1828,
+            "line": 1932,
             "description": "Transforms a homogeneous coordinate by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformPoint3",
@@ -17886,7 +18040,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1846,
+            "line": 1950,
             "description": "Transforms an array of three-element positions by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformPoints3",
@@ -17898,7 +18052,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1887,
+            "line": 1991,
             "description": "Transforms an array of positions by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformPositions3",
@@ -17910,7 +18064,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1935,
+            "line": 2039,
             "description": "Transforms a three-element vector by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformVec3",
@@ -17922,7 +18076,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1949,
+            "line": 2053,
             "description": "Transforms a four-element vector by a 4x4 matrix.",
             "itemtype": "method",
             "name": "transformVec4",
@@ -17934,7 +18088,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1964,
+            "line": 2068,
             "description": "Rotate a 3D vector around the x-axis",
             "itemtype": "method",
             "name": "rotateVec3X",
@@ -17972,7 +18126,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 1997,
+            "line": 2101,
             "description": "Rotate a 3D vector around the y-axis",
             "itemtype": "method",
             "name": "rotateVec3Y",
@@ -18010,7 +18164,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2030,
+            "line": 2134,
             "description": "Rotate a 3D vector around the z-axis",
             "itemtype": "method",
             "name": "rotateVec3Z",
@@ -18048,7 +18202,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2063,
+            "line": 2167,
             "description": "Transforms a four-element vector by a 4x4 projection matrix.",
             "itemtype": "method",
             "name": "projectVec4",
@@ -18076,7 +18230,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2080,
+            "line": 2184,
             "description": "Linearly interpolates between two 3D vectors.",
             "itemtype": "method",
             "name": "lerpVec3",
@@ -18088,7 +18242,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2095,
+            "line": 2199,
             "description": "Flattens a two-dimensional array into a one-dimensional array.",
             "itemtype": "method",
             "name": "flatten",
@@ -18110,7 +18264,7 @@
         },
         {
             "file": "src/math/math.js",
-            "line": 2133,
+            "line": 2237,
             "description": "Initializes a quaternion from Euler angles.",
             "params": [
                 {
@@ -24119,6 +24273,135 @@
             "submodule": "curves"
         },
         {
+            "file": "examples/js/generation/ModelBuilder.js",
+            "line": 1,
+            "description": "A **ModelBuilder** is a {{#crossLink \"Model\"}}{{/crossLink}} that provides a \"stateful builder\" API through which you can\nprocedurally generate xeogl content.\n\n<a href=\"../../examples/#models_ModelBuilder_city\"><img src=\"http://i.giphy.com/l0HlPJO1AN01Lz27e.gif\"></img></a>\n\n## Overview\n\n* A BuilderModel implements the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern).\n* Create various assets within a BuilderModel, such as {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}\nand {{#crossLink \"Material\"}}Materials{{/crossLink}}, then create {{#crossLink \"Entity\"}}Entities{{/crossLink}} that use those assets.\n* The BuilderModel then owns those components and will destroy them when you\ncall its {{#crossLink \"ModelBuilder/clear:method\"}}clear(){{/crossLink}} or {{#crossLink \"Component/destroy:method\"}}destroy(){{/crossLink}} methods.\n* A ModelBuilder can be transformed within World space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* A ModelBuilder provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n## Examples\n\n* [Generating a city with a ModelBuilder](../../examples/#models_ModelBuilder_city)</li>\n\n## Usage\n\nA ModelBuilder containing ten textured boxes with random sizes and positions:\n\n````javascript\nvar model = new xeogl.ModelBuilder();\n\n// Add a BoxGeometry asset\nModelBuilder.asset(\"boxGeometry\", {\n    type: \"xeogl.BoxGeometry\"\n});\n\n// Add a PhongMaterial asset\nModelBuilder.asset(\"gridMaterial\", {\n    type: \"xeogl.PhongMaterial\",\n    ambient: [0.9, 0.3, 0.9],\n    shininess: 30,\n    diffuseMap: {\n        src: \"textures/diffuse/gridMaterial.jpg\"\n    }\n});\n\n// Set the BoxGeometry asset as the current geometry\nModelBuilder.geometry(\"boxGeometry\");\n\n// Set the PhongMaterial asset as the current material\nModelBuilder.material(\"gridMaterial\");\n\n// Build ten entities with random sizes and positions,\n// that each get the current geometry and material\nfor (var i = 0; i < 10; i++) {\n\n    ModelBuilder.scale(Math.random() * 10 + 1, Math.random() * 10 + 1, Math.random() * 10 + 1);\n    ModelBuilder.pos(Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50);\n\n    ModelBuilder.entity();\n}\n````",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this ModelBuilder in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this ModelBuilder.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "transform",
+                            "description": "A Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} to attach to this ModelBuilder.\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this ModelBuilder. Internally, the given\n{{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most {{#crossLink \"Transform\"}}Transform{{/crossLink}}\nthat the ModelBuilder attaches to its {{#crossLink \"Entity\"}}Entities{{/crossLink}}.",
+                            "type": "Number|String|Transform",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "extends": "Model",
+            "class": "GeometryBuilder",
+            "module": "xeogl"
+        },
+        {
+            "file": "examples/js/generation/geometryBuilder.js",
+            "line": 91,
+            "description": "Sets the shape that will be added to this GeometryBuilder on each subsequent call to {{#crossLink \"GeometryBuilder/addShape:method\"}}addShape(){{/crossLink}}.\n\nThe shape can be either a {{#crossLink \"Geometry\"}}{{/crossLink}} or a JavaScript object containing vertex and index arrays.",
+            "itemtype": "method",
+            "name": "setShape",
+            "params": [
+                {
+                    "name": "shape",
+                    "description": "The shape to add.",
+                    "type": "Geometry|*"
+                }
+            ],
+            "return": {
+                "description": "this"
+            },
+            "class": "GeometryBuilder",
+            "module": "xeogl",
+            "submodule": "generation"
+        },
+        {
+            "file": "examples/js/generation/geometryBuilder.js",
+            "line": 105,
+            "description": "Sets the modeling transform matrix to apply to each shape added with subsequent calls to {{#crossLink \"GeometryBuilder/addShape:method\"}}addShape(){{/crossLink}}.",
+            "itemtype": "method",
+            "name": "setMatrix",
+            "params": [
+                {
+                    "name": "matrix",
+                    "description": "a 16-element transform matrix.",
+                    "type": "Float32Array"
+                }
+            ],
+            "return": {
+                "description": "this"
+            },
+            "class": "GeometryBuilder",
+            "module": "xeogl",
+            "submodule": "generation"
+        },
+        {
+            "file": "examples/js/generation/geometryBuilder.js",
+            "line": 117,
+            "description": "Adds a shape to this GeometryBuilder. The shape geometry is the one last added\nby {{#crossLink \"GeometryBuilder/addShape:method\"}}addShape(){{/crossLink}}, and will be transformed by the\nmatrix that was set by the last call to {{#crossLink \"GeometryBuilder/build:method\"}}setMatrix(){{/crossLink}}.\n\nA subsequent call to {{#crossLink \"GeometryBuilder/build:method\"}}build(){{/crossLink}} will add all the\naccumulated transformed shapes to a target {{#crossLink \"Geometry\"}}{{/crossLink}}.",
+            "itemtype": "method",
+            "name": "addShape",
+            "return": {
+                "description": "this"
+            },
+            "class": "GeometryBuilder",
+            "module": "xeogl",
+            "submodule": "generation"
+        },
+        {
+            "file": "examples/js/generation/geometryBuilder.js",
+            "line": 210,
+            "description": "Adds the accumulated state from previous calls to {{#crossLink \"GeometryBuilder/setMatrix:method\"}}setMatrix(){{/crossLink}} and\n{{#crossLink \"GeometryBuilder/setShape:method\"}}setShape(){{/crossLink}} to a target {{#crossLink \"Geometry\"}}{{/crossLink}}.\n\nRetains all that state afterwards, so that you can continue to call this method to add the state to\nother {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}.",
+            "itemtype": "method",
+            "name": "build",
+            "params": [
+                {
+                    "name": "geometry",
+                    "description": "The target {{#crossLink \"Geometry\"}}{{/crossLink}}.",
+                    "type": "Geometry"
+                }
+            ],
+            "return": {
+                "description": "this"
+            },
+            "class": "GeometryBuilder",
+            "module": "xeogl",
+            "submodule": "generation"
+        },
+        {
+            "file": "examples/js/generation/geometryBuilder.js",
+            "line": 231,
+            "description": "Resets this GeometryBuilder, clearing all the state previously accumulated with {{#crossLink \"GeometryBuilder/setMatrix:method\"}}setMatrix(){{/crossLink}} and\n {{#crossLink \"GeometryBuilder/setShape:method\"}}setShape(){{/crossLink}}.",
+            "itemtype": "method",
+            "name": "reset",
+            "return": {
+                "description": "this"
+            },
+            "class": "GeometryBuilder",
+            "module": "xeogl",
+            "submodule": "generation"
+        },
+        {
             "file": "examples/js/skyboxes/skybox.js",
             "line": 194,
             "description": "Size of this Skybox, given as the distance from the center at [0,0,0] to each face.\n\nFires an {{#crossLink \"Skybox/size:event\"}}{{/crossLink}} event on change.",
@@ -24882,35 +25165,35 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1429"
+            "line": " src/math/math.js:1533"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1479"
+            "line": " src/math/math.js:1583"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1964"
+            "line": " src/math/math.js:2068"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:1997"
+            "line": " src/math/math.js:2101"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2030"
+            "line": " src/math/math.js:2134"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2063"
+            "line": " src/math/math.js:2167"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2095"
+            "line": " src/math/math.js:2199"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/math/math.js:2133"
+            "line": " src/math/math.js:2237"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -24995,6 +25278,26 @@
         {
             "message": "replacing incorrect tag: returns with return",
             "line": " examples/js/curves/splineCurve.js:206"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " examples/js/generation/geometryBuilder.js:91"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " examples/js/generation/geometryBuilder.js:105"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " examples/js/generation/geometryBuilder.js:117"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " examples/js/generation/geometryBuilder.js:210"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " examples/js/generation/geometryBuilder.js:231"
         },
         {
             "message": "Missing item type\nA chunk of WebGL state changes to render a xeogl.renderer.State.",
@@ -25565,16 +25868,24 @@
             "line": " src/math/math.js:726"
         },
         {
+            "message": "Missing item type\nEfficiently post-concatenates a translation to the given matrix.",
+            "line": " src/math/math.js:1314"
+        },
+        {
+            "message": "Missing item type\nEfficiently post-concatenates a translation to the given matrix.",
+            "line": " src/math/math.js:1323"
+        },
+        {
             "message": "Missing item type\nCreates a matrix from a quaternion rotation and vector translation",
-            "line": " src/math/math.js:1429"
+            "line": " src/math/math.js:1533"
         },
         {
             "message": "Missing item type\nGets Euler angles from a 4x4 matrix.",
-            "line": " src/math/math.js:1479"
+            "line": " src/math/math.js:1583"
         },
         {
             "message": "Missing item type\nInitializes a quaternion from Euler angles.",
-            "line": " src/math/math.js:2133"
+            "line": " src/math/math.js:2237"
         },
         {
             "message": "Missing item type\nBoundary math functions.",
@@ -25891,6 +26202,10 @@
         {
             "message": "Missing item type\nGets a point on this Path corresponding to the given progress position.",
             "line": " examples/js/curves/path.js:351"
+        },
+        {
+            "message": "Missing item type\nA **ModelBuilder** is a {{#crossLink \"Model\"}}{{/crossLink}} that provides a \"stateful builder\" API through which you can\nprocedurally generate xeogl content.\n\n<a href=\"../../examples/#models_ModelBuilder_city\"><img src=\"http://i.giphy.com/l0HlPJO1AN01Lz27e.gif\"></img></a>\n\n## Overview\n\n* A BuilderModel implements the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern).\n* Create various assets within a BuilderModel, such as {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}\nand {{#crossLink \"Material\"}}Materials{{/crossLink}}, then create {{#crossLink \"Entity\"}}Entities{{/crossLink}} that use those assets.\n* The BuilderModel then owns those components and will destroy them when you\ncall its {{#crossLink \"ModelBuilder/clear:method\"}}clear(){{/crossLink}} or {{#crossLink \"Component/destroy:method\"}}destroy(){{/crossLink}} methods.\n* A ModelBuilder can be transformed within World space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* A ModelBuilder provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n## Examples\n\n* [Generating a city with a ModelBuilder](../../examples/#models_ModelBuilder_city)</li>\n\n## Usage\n\nA ModelBuilder containing ten textured boxes with random sizes and positions:\n\n````javascript\nvar model = new xeogl.ModelBuilder();\n\n// Add a BoxGeometry asset\nModelBuilder.asset(\"boxGeometry\", {\n    type: \"xeogl.BoxGeometry\"\n});\n\n// Add a PhongMaterial asset\nModelBuilder.asset(\"gridMaterial\", {\n    type: \"xeogl.PhongMaterial\",\n    ambient: [0.9, 0.3, 0.9],\n    shininess: 30,\n    diffuseMap: {\n        src: \"textures/diffuse/gridMaterial.jpg\"\n    }\n});\n\n// Set the BoxGeometry asset as the current geometry\nModelBuilder.geometry(\"boxGeometry\");\n\n// Set the PhongMaterial asset as the current material\nModelBuilder.material(\"gridMaterial\");\n\n// Build ten entities with random sizes and positions,\n// that each get the current geometry and material\nfor (var i = 0; i < 10; i++) {\n\n    ModelBuilder.scale(Math.random() * 10 + 1, Math.random() * 10 + 1, Math.random() * 10 + 1);\n    ModelBuilder.pos(Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50);\n\n    ModelBuilder.entity();\n}\n````",
+            "line": " examples/js/generation/ModelBuilder.js:1"
         },
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",
