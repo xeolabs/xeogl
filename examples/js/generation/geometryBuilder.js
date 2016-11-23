@@ -5,22 +5,25 @@
 
  ## Overview
 
- * A GeometryBuilder implements the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern).
- * Works by accumulating additions to an internal buffer of geometry vertex and index arrays.
- * Call {{#crossLink "GeometryBuilder/setShape:method"}}setShape(){{/crossLink}} to set its current mesh, and
- {{#crossLink "GeometryBuilder/setMatrix:method"}}setMatrix(){{/crossLink}} to set its current modelling transform.
- * Then whenever you call {{#crossLink "GeometryBuilder/addShape:method"}}addShape(){{/crossLink}}, it appends the shape, transformed
- by the matrix, to its internal buffer.
- * Finally, call {{#crossLink "GeometryBuilder/build:method"}}build(){{/crossLink}} to dump the buffer into a target {{#crossLink "Geometry"}}{{/crossLink}}.
- * Call {{#crossLink "GeometryBuilder/build:method"}}build(){{/crossLink}} to build other {{#crossLink "Geometry"}}Geometries{{/crossLink}}
- with the buffer contents, as needed.
- * Call {{#crossLink "GeometryBuilder/reset:method"}}reset(){{/crossLink}} to empty the buffer.
+ * Implements the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern).
+ * Helps us improve WebGL performance by combining many shapes into the same {{#crossLink "Geometry"}}Geometries{{/crossLink}},
+ thus reducing the number of draw calls.
+ * Is a plain JavaScript class, ie. not a xeogl {{#crossLink "Component"}}{{/crossLink}} subclass.
 
  ## Examples
 
  * [Generating a 3D sine wave from boxes](../../examples/#generation_GeometryBuilder_wavyBlocks)</li>
 
  ## Usage
+
+ * Works by accumulating additions to an internal buffer of geometry vertex and index arrays.
+ * Call {{#crossLink "GeometryBuilder/setShape:method"}}setShape(){{/crossLink}} to set its current mesh, and
+ {{#crossLink "GeometryBuilder/setMatrix:method"}}setMatrix(){{/crossLink}} to set its current modelling transform.
+ * Then whenever you call {{#crossLink "GeometryBuilder/addShape:method"}}addShape(){{/crossLink}}, it appends the shape, transformed
+ by the matrix, to its internal buffer.
+ * Finally, call {{#crossLink "GeometryBuilder/build:method"}}build(){{/crossLink}} to dump its buffer into a target {{#crossLink "Geometry"}}{{/crossLink}}.
+ * Call {{#crossLink "GeometryBuilder/build:method"}}build(){{/crossLink}} to dump its buffer into other {{#crossLink "Geometry"}}Geometries{{/crossLink}} as needed.
+ * Call {{#crossLink "GeometryBuilder/reset:method"}}reset(){{/crossLink}} to empty its buffer.
 
  In the example below we'll use a GeometryBuilder to create something like the screen capture shown above.
 
@@ -29,12 +32,13 @@
  // plain JavaScript object, not a xeogl Component subtype
  var geometryBuilder = new xeogl.GeometryBuilder();
 
- // Set the current shape we'll be adding to our GeometryBuilder; this can be a
- // Geometry, or just an object containing vertex and indices arrays.
+ // Set the current shape we'll be adding to our GeometryBuilder;
+ // this can be a Geometry, or just an object containing vertex and indices arrays.
  geometryBuilder.setShape(new xeogl.BoxGeometry());
 
- // Now add that shape many times, each time setting a different modelling
- // matrix on the GeometryBuilder. As we do this, we are generating the geometry.
+ // Now add that shape many times, each time setting a different modelling matrix
+ // on the GeometryBuilder. As we do this, we are accumulating geometry in a buffer
+ // within the GeometryBuilder.
 
  var matrix = xeogl.math.mat4();
  var height = 3;
@@ -48,32 +52,31 @@
      for (z = -size; z <= size; z += 2) {
 
         y = ((Math.sin(x * 0.05) * height + Math.sin(z * 0.05) * height)) + height2;
-        xeogl.math.identityMat4(matrix); // Fresh matrix
+
+        xeogl.math.identityMat4(matrix);            // Fresh matrix
         xeogl.math.scaleMat4c(.90, y, .90, matrix); // Post-concatenate scaling
         xeogl.math.translateMat4c(x, y, z, matrix); // Post-concatenate translation
 
-        geometryBuilder.setMatrix(matrix);
-        geometryBuilder.addShape(); // Add shape to GeometryBuilder, transformed by the matrix
+        geometryBuilder.setMatrix(matrix);          // Set the current modeling transform matrix
+
+        geometryBuilder.addShape();                 // Add current shape to the buffer, transformed by the matrix
      }
  }
 
- // Now build the actual Geometry component
- var geometry = new xeogl.Geometry();
+ var geometry = new xeogl.Geometry();               // Dump the buffer into a Geometry component
+
  geometryBuilder.build(geometry);
 
- // Create an Entity with our Geometry attached
- var entity = new xeogl.Entity({
+ var entity = new xeogl.Entity({                    // Create an Entity with our Geometry attached
     geometry: geometry,
     material: new xeogl.PhongMaterial({
         diffuse: [0.6, 0.6, 0.7]
     })
  });
 
- // Set the initial Camera position
- entity.scene.camera.view.eye = [-200, 50, -200];
+ entity.scene.camera.view.eye = [-200, 50, -200];   // Set initial Camera position
 
- // Allow user intercation with the Camera
- new xeogl.CameraControl();
+ new xeogl.CameraControl();                         // Allow camera interaction
  ````
  @class GeometryBuilder
  @module xeogl

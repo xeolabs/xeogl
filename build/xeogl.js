@@ -20998,8 +20998,6 @@ var Canvas2Image = (function () {
             }
         },
 
-
-
         _compile: function () {
 
             if (this._updateScheduled || this._geometryUpdateScheduled) {
@@ -33425,8 +33423,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
             return !this.destroyed && geometry && geometry.positions && geometry.indices;
 
         },
-
-
 
         _compile: function () {
 
