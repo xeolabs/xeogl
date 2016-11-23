@@ -1,0 +1,248 @@
+/**
+ A **GeometryBuilder** is a builder which you can use to procedurally generate {{#crossLink "Geometry"}}Geometries{{/crossLink}}.
+
+ <a href="../../examples/#generation_GeometryBuilder_wavyBlocks"><img src="http://i.giphy.com/26gJAMkOxAW5fWlb2.gif"></img></a>
+
+ ## Overview
+
+ * A GeometryBuilder implements the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern).
+ * Works by accumulating additions to an internal buffer of geometry vertex and index arrays.
+ * Call {{#crossLink "GeometryBuilder/setShape:method"}}setShape(){{/crossLink}} to set its current mesh, and
+ {{#crossLink "GeometryBuilder/setMatrix:method"}}setMatrix(){{/crossLink}} to set its current modelling transform.
+ * Then whenever you call {{#crossLink "GeometryBuilder/addShape:method"}}addShape(){{/crossLink}}, it appends the shape, transformed
+ by the matrix, to its internal buffer.
+ * Finally, call {{#crossLink "GeometryBuilder/build:method"}}build(){{/crossLink}} to dump the buffer into a target {{#crossLink "Geometry"}}{{/crossLink}}.
+ * Call {{#crossLink "GeometryBuilder/build:method"}}build(){{/crossLink}} to build other {{#crossLink "Geometry"}}Geometries{{/crossLink}}
+ with the buffer contents, as needed.
+ * Call {{#crossLink "GeometryBuilder/reset:method"}}reset(){{/crossLink}} to empty the buffer.
+
+ ## Examples
+
+ * [Generating a 3D sine wave from boxes](../../examples/#generation_GeometryBuilder_wavyBlocks)</li>
+
+ ## Usage
+
+ In the example below we'll use a GeometryBuilder to create something like the screen capture shown above.
+
+ ````javascript
+ // Intatiate a GeometryBuilder; note that it's a
+ // plain JavaScript object, not a xeogl Component subtype
+ var geometryBuilder = new xeogl.GeometryBuilder();
+
+ // Set the current shape we'll be adding to our GeometryBuilder; this can be a
+ // Geometry, or just an object containing vertex and indices arrays.
+ geometryBuilder.setShape(new xeogl.BoxGeometry());
+
+ // Now add that shape many times, each time setting a different modelling
+ // matrix on the GeometryBuilder. As we do this, we are generating the geometry.
+
+ var matrix = xeogl.math.mat4();
+ var height = 3;
+ var height2 = height * 2;
+ var x;
+ var y;
+ var z;
+ var size = 200;
+
+ for (x = -size; x <= size; x += 2) {
+     for (z = -size; z <= size; z += 2) {
+
+        y = ((Math.sin(x * 0.05) * height + Math.sin(z * 0.05) * height)) + height2;
+        xeogl.math.identityMat4(matrix); // Fresh matrix
+        xeogl.math.scaleMat4c(.90, y, .90, matrix); // Post-concatenate scaling
+        xeogl.math.translateMat4c(x, y, z, matrix); // Post-concatenate translation
+
+        geometryBuilder.setMatrix(matrix);
+        geometryBuilder.addShape(); // Add shape to GeometryBuilder, transformed by the matrix
+     }
+ }
+
+ // Now build the actual Geometry component
+ var geometry = new xeogl.Geometry();
+ geometryBuilder.build(geometry);
+
+ // Create an Entity with our Geometry attached
+ var entity = new xeogl.Entity({
+    geometry: geometry,
+    material: new xeogl.PhongMaterial({
+        diffuse: [0.6, 0.6, 0.7]
+    })
+ });
+
+ // Set the initial Camera position
+ entity.scene.camera.view.eye = [-200, 50, -200];
+
+ // Allow user intercation with the Camera
+ new xeogl.CameraControl();
+ ````
+ @class GeometryBuilder
+ @module xeogl
+ @submodule generation
+ @constructor
+ */
+(function () {
+
+    "use strict";
+
+    xeogl.GeometryBuilder = function () {
+        this.reset();
+    };
+
+    /**
+     * Sets the shape that will be added to this GeometryBuilder on each subsequent call to {{#crossLink "GeometryBuilder/addShape:method"}}addShape(){{/crossLink}}.
+     *
+     * The shape can be either a {{#crossLink "Geometry"}}{{/crossLink}} or a JavaScript object containing vertex and index arrays.
+     *
+     * @method setShape
+     * @param {Geometry|*} shape The shape to add.
+     * @returns this
+     */
+    xeogl.GeometryBuilder.prototype.setShape = function (shape) {
+        this._shape = shape;
+        return this;
+    };
+
+    /**
+     * Sets the modeling transform matrix to apply to each shape added with subsequent calls to {{#crossLink "GeometryBuilder/addShape:method"}}addShape(){{/crossLink}}.
+     *
+     * @method setMatrix
+     * @param {Float32Array} matrix a 16-element transform matrix.
+     * @returns this
+     */
+    xeogl.GeometryBuilder.prototype.setMatrix = function (matrix) {
+        this._matrix.set(matrix);
+        return this;
+    };
+
+    /**
+     * Adds a shape to this GeometryBuilder. The shape geometry is the one last added
+     * by {{#crossLink "GeometryBuilder/addShape:method"}}addShape(){{/crossLink}}, and will be transformed by the
+     * matrix that was set by the last call to {{#crossLink "GeometryBuilder/build:method"}}setMatrix(){{/crossLink}}.
+     *
+     * A subsequent call to {{#crossLink "GeometryBuilder/build:method"}}build(){{/crossLink}} will add all the
+     * accumulated transformed shapes to a target {{#crossLink "Geometry"}}{{/crossLink}}.
+     *
+     * @method addShape
+     * @returns this
+     */
+    xeogl.GeometryBuilder.prototype.addShape = (function () {
+
+        var math = xeogl.math;
+
+        var tempVec3a = math.vec3();
+        var tempVec3b = math.vec3();
+
+        return function () {
+
+            var i;
+            var len;
+            var indicesBump = (this._positions) ? (this._positions.length / 3) : 0;
+
+            if (this._shape.positions) {
+
+                if (!this._positions) {
+                    this._positions = [];
+                }
+
+                var positions = this._shape.positions;
+
+                if (!this._matrix) {
+
+                    for (i = 0, len = positions.length; i < len; i++) {
+                        this._positions.push(positions[i]);
+                    }
+
+                } else {
+
+                    for (i = 0, len = positions.length; i < len; i += 3) {
+
+                        tempVec3a[0] = positions[i + 0];
+                        tempVec3a[1] = positions[i + 1];
+                        tempVec3a[2] = positions[i + 2];
+
+                        math.transformPoint3(this._matrix, tempVec3a, tempVec3b);
+
+                        this._positions.push(tempVec3b[0]);
+                        this._positions.push(tempVec3b[1]);
+                        this._positions.push(tempVec3b[2]);
+                    }
+                }
+            }
+
+            if (this._shape.normals) {
+                if (!this._normals) {
+                    this._normals = [];
+                }
+                for (i = 0, len = this._shape.normals.length; i < len; i++) {
+                    this._normals.push(this._shape.normals[i]);
+                }
+            }
+
+            if (this._shape.uv) {
+                if (!this._uv) {
+                    this._uv = [];
+                }
+                for (i = 0, len = this._shape.uv.length; i < len; i++) {
+                    this._uv.push(this._shape.uv[i]);
+                }
+            }
+
+            if (this._shape.colors) {
+                if (!this._colors) {
+                    this._colors = [];
+                }
+                for (i = 0, len = this._shape.colors.length; i < len; i++) {
+                    this._colors.push(this._shape.colors[i]);
+                }
+            }
+
+            if (this._shape.indices) {
+                if (!this._indices) {
+                    this._indices = [];
+                }
+                for (i = 0, len = this._shape.indices.length; i < len; i++) {
+                    this._indices.push(this._shape.indices[i] + indicesBump);
+                }
+            }
+        };
+    })();
+
+    /**
+     * Adds the accumulated state from previous calls to {{#crossLink "GeometryBuilder/setMatrix:method"}}setMatrix(){{/crossLink}} and
+     * {{#crossLink "GeometryBuilder/setShape:method"}}setShape(){{/crossLink}} to a target {{#crossLink "Geometry"}}{{/crossLink}}.
+     *
+     * Retains all that state afterwards, so that you can continue to call this method to add the state to
+     * other {{#crossLink "Geometry"}}Geometries{{/crossLink}}.
+     *
+     * @method build
+     * @param {Geometry} geometry The target {{#crossLink "Geometry"}}{{/crossLink}}.
+     * @returns this
+     */
+    xeogl.GeometryBuilder.prototype.build = function (geometry) {
+        geometry.primitive = this.primitive || "triangles";
+        geometry.positions = this._positions;
+        geometry.normals = this._normals;
+        geometry.uv = this._uv;
+        geometry.colors = this._colors;
+        geometry.indices = this._indices;
+        return this;
+    };
+
+    /**
+     *
+     * Resets this GeometryBuilder, clearing all the state previously accumulated with {{#crossLink "GeometryBuilder/setMatrix:method"}}setMatrix(){{/crossLink}} and
+     * {{#crossLink "GeometryBuilder/setShape:method"}}setShape(){{/crossLink}}.
+     * @method reset
+     * @returns this
+     */
+    xeogl.GeometryBuilder.prototype.reset = function () {
+        this._positions = null;
+        this._normals = null;
+        this._uv = null;
+        this._colors = null;
+        this._indices = null;
+        this._matrix = xeogl.math.identityMat4(xeogl.math.mat4());
+        return this;
+    };
+
+})();

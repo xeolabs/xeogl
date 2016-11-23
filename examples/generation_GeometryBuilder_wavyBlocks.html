@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+    <script src="../build/xeogl.js"></script>
+
+    <script src="js/geometry/k3d.js"></script>
+    <script src="js/geometry/objGeometry.js"></script>
+
+    <script src="js/generation/geometryBuilder.js"></script>
+
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeogl.org" target="_parent">xeogl</a><br><br>
+    <ul>
+        <li>Procedurally generating a <a href="../docs/classes/Geometry.html" target="_parent">Geometry</a> with a <a href="../docs/classes/GeometryBuilder.html" target="_parent">GeometryBuilder</a>.
+        </li>
+        <li>This is a single <a href="../docs/classes/Geometry.html" target="_parent">Geometry</a>, rendered with a single WebGL draw call.</li>
+    </ul>
+</div>
+
+<script>
+
+    //---------------------------------------------------------------------------------
+    // Create a GeometryBuilder
+    //---------------------------------------------------------------------------------
+
+    var geometryBuilder = new xeogl.GeometryBuilder();
+
+    //---------------------------------------------------------------------------------
+    // Set the current shape well be adding to our GeometryBuilder; this can be a
+    // Geometry, or just an object containing vertex and indices arrays.
+    //---------------------------------------------------------------------------------
+
+    geometryBuilder.setShape(new xeogl.BoxGeometry());
+
+    //-------------------------------------------------------------------------------
+    // Now add that shape many times, each time setting a different modelling
+    // matrix on the GeometryBuilder. As we do this, we are generating the geometry.
+    //-------------------------------------------------------------------------------
+
+    var matrix = xeogl.math.mat4();
+    var math = xeogl.math;
+
+    var height = 3;
+    var height2 = height * 2;
+    var x;
+    var y;
+    var z;
+
+    // Careful not to make the geometry too big if we're running WebGL1
+    // without gl.UNSIGNED_INT support for WebGLRenderingContext.drawElements()
+
+    var size = (xeogl.scene.canvas.webgl2 || xeogl.WEBGL_INFO.SUPPORTED_EXTENSIONS["OES_element_index_uint"]) ? 100 : 20;
+
+    for (x = -size; x <= size; x += 2) {
+        for (z = -size; z <= size; z += 2) {
+
+            y = ((Math.sin(x * 0.05) * height + Math.sin(z * 0.05) * height)) + height2;
+
+            math.identityMat4(matrix); // Fresh matrix
+            math.scaleMat4c(.90, y, .90, matrix); // Post-concatenate scaling
+            math.translateMat4c(x, y, z, matrix); // Post-concatenate translation
+
+            geometryBuilder.setMatrix(matrix);
+
+            geometryBuilder.addShape(); // Add shape to GeometryBuilder, transformed by the matrix
+        }
+    }
+
+    //-------------------------------------------------------------------------------
+    // Now build the actual Geometry component
+    //-------------------------------------------------------------------------------
+
+    var geometry = new xeogl.Geometry();
+
+    geometryBuilder.build(geometry);
+
+    //-------------------------------------------------------------------------------
+    // Create an Entity withe our Geometry attached
+    //-------------------------------------------------------------------------------
+
+    var entity = new xeogl.Entity({
+        geometry: geometry,
+
+        material: new xeogl.PhongMaterial({
+            diffuse: [0.6, 0.6, 0.7]
+        })
+    });
+
+    //-------------------------------------------------------------------------------
+    // Set the Camera position
+    //-------------------------------------------------------------------------------
+
+    var view = entity.scene.camera.view;
+
+    view.eye = [-200, 50, -200];
+
+    //-------------------------------------------------------------------------------
+    // Fit the entity to view
+    //-------------------------------------------------------------------------------
+
+    (new xeogl.CameraFlightAnimation).jumpTo({ aabb: entity.worldBoundary.aabb, fitFOV:50 });
+
+    //-------------------------------------------------------------------------------
+    // Start orbiting
+    //-------------------------------------------------------------------------------
+
+    entity.scene.on("tick", function () {
+        view.rotateEyeY(0.1);
+    });
+
+    //-------------------------------------------------------------------------------
+    // Allow user intercation with the Camera
+    //-------------------------------------------------------------------------------
+
+    new xeogl.CameraControl();
+
+</script>
+</body>
+</html>
