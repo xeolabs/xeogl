@@ -1,5 +1,5 @@
 /**
- A **GeometryBuilder** is a builder which you can use to procedurally generate {{#crossLink "Geometry"}}Geometries{{/crossLink}}.
+ A **GeometryBuilder** is a builder that you can use to procedurally generate {{#crossLink "Geometry"}}Geometries{{/crossLink}}.
 
  <a href="../../examples/#generation_GeometryBuilder_wavyBlocks"><img src="http://i.giphy.com/26gJAMkOxAW5fWlb2.gif"></img></a>
 
@@ -8,7 +8,7 @@
  * Implements the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern).
  * Helps us improve WebGL performance by combining many shapes into the same {{#crossLink "Geometry"}}Geometries{{/crossLink}},
  thus reducing the number of draw calls.
- * Is a plain JavaScript class, ie. not a xeogl {{#crossLink "Component"}}{{/crossLink}} subclass.
+ * A plain JavaScript class, ie. not a xeogl {{#crossLink "Component"}}{{/crossLink}} subclass.
 
  ## Examples
 
@@ -19,10 +19,11 @@
  * Works by accumulating additions to an internal buffer of geometry vertex and index arrays.
  * Call {{#crossLink "GeometryBuilder/setShape:method"}}setShape(){{/crossLink}} to set its current mesh, and
  {{#crossLink "GeometryBuilder/setMatrix:method"}}setMatrix(){{/crossLink}} to set its current modelling transform.
- * Then whenever you call {{#crossLink "GeometryBuilder/addShape:method"}}addShape(){{/crossLink}}, it appends the shape, transformed
+ * Then, whenever you call {{#crossLink "GeometryBuilder/addShape:method"}}addShape(){{/crossLink}}, it appends the shape, transformed
  by the matrix, to its internal buffer.
  * Finally, call {{#crossLink "GeometryBuilder/build:method"}}build(){{/crossLink}} to dump its buffer into a target {{#crossLink "Geometry"}}{{/crossLink}}.
- * Call {{#crossLink "GeometryBuilder/build:method"}}build(){{/crossLink}} to dump its buffer into other {{#crossLink "Geometry"}}Geometries{{/crossLink}} as needed.
+ * Retains its buffer so that you can call {{#crossLink "GeometryBuilder/build:method"}}build(){{/crossLink}} again, to dump its
+  buffer into other {{#crossLink "Geometry"}}Geometries{{/crossLink}} as needed.
  * Call {{#crossLink "GeometryBuilder/reset:method"}}reset(){{/crossLink}} to empty its buffer.
 
  In the example below we'll use a GeometryBuilder to create something like the screen capture shown above.

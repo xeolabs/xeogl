@@ -7042,7 +7042,7 @@
             "namespace": "",
             "file": "examples/js/generation/geometryBuilder.js",
             "line": 1,
-            "description": "A **GeometryBuilder** is a builder which you can use to procedurally generate {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}.\n\n<a href=\"../../examples/#generation_GeometryBuilder_wavyBlocks\"><img src=\"http://i.giphy.com/26gJAMkOxAW5fWlb2.gif\"></img></a>\n\n## Overview\n\n* Implements the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern).\n* Helps us improve WebGL performance by combining many shapes into the same {{#crossLink \"Geometry\"}}Geometries{{/crossLink}},\nthus reducing the number of draw calls.\n* Is a plain JavaScript class, ie. not a xeogl {{#crossLink \"Component\"}}{{/crossLink}} subclass.\n\n## Examples\n\n* [Generating a 3D sine wave from boxes](../../examples/#generation_GeometryBuilder_wavyBlocks)</li>\n\n## Usage\n\n* Works by accumulating additions to an internal buffer of geometry vertex and index arrays.\n* Call {{#crossLink \"GeometryBuilder/setShape:method\"}}setShape(){{/crossLink}} to set its current mesh, and\n{{#crossLink \"GeometryBuilder/setMatrix:method\"}}setMatrix(){{/crossLink}} to set its current modelling transform.\n* Then whenever you call {{#crossLink \"GeometryBuilder/addShape:method\"}}addShape(){{/crossLink}}, it appends the shape, transformed\nby the matrix, to its internal buffer.\n* Finally, call {{#crossLink \"GeometryBuilder/build:method\"}}build(){{/crossLink}} to dump its buffer into a target {{#crossLink \"Geometry\"}}{{/crossLink}}.\n* Call {{#crossLink \"GeometryBuilder/build:method\"}}build(){{/crossLink}} to dump its buffer into other {{#crossLink \"Geometry\"}}Geometries{{/crossLink}} as needed.\n* Call {{#crossLink \"GeometryBuilder/reset:method\"}}reset(){{/crossLink}} to empty its buffer.\n\nIn the example below we'll use a GeometryBuilder to create something like the screen capture shown above.\n\n````javascript\n// Intatiate a GeometryBuilder; note that it's a\n// plain JavaScript object, not a xeogl Component subtype\nvar geometryBuilder = new xeogl.GeometryBuilder();\n\n// Set the current shape we'll be adding to our GeometryBuilder;\n// this can be a Geometry, or just an object containing vertex and indices arrays.\ngeometryBuilder.setShape(new xeogl.BoxGeometry());\n\n// Now add that shape many times, each time setting a different modelling matrix\n// on the GeometryBuilder. As we do this, we are accumulating geometry in a buffer\n// within the GeometryBuilder.\n\nvar matrix = xeogl.math.mat4();\nvar height = 3;\nvar height2 = height * 2;\nvar x;\nvar y;\nvar z;\nvar size = 200;\n\nfor (x = -size; x <= size; x += 2) {\n    for (z = -size; z <= size; z += 2) {\n\n       y = ((Math.sin(x * 0.05) * height + Math.sin(z * 0.05) * height)) + height2;\n\n       xeogl.math.identityMat4(matrix);            // Fresh matrix\n       xeogl.math.scaleMat4c(.90, y, .90, matrix); // Post-concatenate scaling\n       xeogl.math.translateMat4c(x, y, z, matrix); // Post-concatenate translation\n\n       geometryBuilder.setMatrix(matrix);          // Set the current modeling transform matrix\n\n       geometryBuilder.addShape();                 // Add current shape to the buffer, transformed by the matrix\n    }\n}\n\nvar geometry = new xeogl.Geometry();               // Dump the buffer into a Geometry component\n\ngeometryBuilder.build(geometry);\n\nvar entity = new xeogl.Entity({                    // Create an Entity with our Geometry attached\n   geometry: geometry,\n   material: new xeogl.PhongMaterial({\n       diffuse: [0.6, 0.6, 0.7]\n   })\n});\n\nentity.scene.camera.view.eye = [-200, 50, -200];   // Set initial Camera position\n\nnew xeogl.CameraControl();                         // Allow camera interaction\n````",
+            "description": "A **GeometryBuilder** is a builder that you can use to procedurally generate {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}.\n\n<a href=\"../../examples/#generation_GeometryBuilder_wavyBlocks\"><img src=\"http://i.giphy.com/26gJAMkOxAW5fWlb2.gif\"></img></a>\n\n## Overview\n\n* Implements the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern).\n* Helps us improve WebGL performance by combining many shapes into the same {{#crossLink \"Geometry\"}}Geometries{{/crossLink}},\nthus reducing the number of draw calls.\n* A plain JavaScript class, ie. not a xeogl {{#crossLink \"Component\"}}{{/crossLink}} subclass.\n\n## Examples\n\n* [Generating a 3D sine wave from boxes](../../examples/#generation_GeometryBuilder_wavyBlocks)</li>\n\n## Usage\n\n* Works by accumulating additions to an internal buffer of geometry vertex and index arrays.\n* Call {{#crossLink \"GeometryBuilder/setShape:method\"}}setShape(){{/crossLink}} to set its current mesh, and\n{{#crossLink \"GeometryBuilder/setMatrix:method\"}}setMatrix(){{/crossLink}} to set its current modelling transform.\n* Then, whenever you call {{#crossLink \"GeometryBuilder/addShape:method\"}}addShape(){{/crossLink}}, it appends the shape, transformed\nby the matrix, to its internal buffer.\n* Finally, call {{#crossLink \"GeometryBuilder/build:method\"}}build(){{/crossLink}} to dump its buffer into a target {{#crossLink \"Geometry\"}}{{/crossLink}}.\n* Retains its buffer so that you can call {{#crossLink \"GeometryBuilder/build:method\"}}build(){{/crossLink}} again, to dump its\n buffer into other {{#crossLink \"Geometry\"}}Geometries{{/crossLink}} as needed.\n* Call {{#crossLink \"GeometryBuilder/reset:method\"}}reset(){{/crossLink}} to empty its buffer.\n\nIn the example below we'll use a GeometryBuilder to create something like the screen capture shown above.\n\n````javascript\n// Intatiate a GeometryBuilder; note that it's a\n// plain JavaScript object, not a xeogl Component subtype\nvar geometryBuilder = new xeogl.GeometryBuilder();\n\n// Set the current shape we'll be adding to our GeometryBuilder;\n// this can be a Geometry, or just an object containing vertex and indices arrays.\ngeometryBuilder.setShape(new xeogl.BoxGeometry());\n\n// Now add that shape many times, each time setting a different modelling matrix\n// on the GeometryBuilder. As we do this, we are accumulating geometry in a buffer\n// within the GeometryBuilder.\n\nvar matrix = xeogl.math.mat4();\nvar height = 3;\nvar height2 = height * 2;\nvar x;\nvar y;\nvar z;\nvar size = 200;\n\nfor (x = -size; x <= size; x += 2) {\n    for (z = -size; z <= size; z += 2) {\n\n       y = ((Math.sin(x * 0.05) * height + Math.sin(z * 0.05) * height)) + height2;\n\n       xeogl.math.identityMat4(matrix);            // Fresh matrix\n       xeogl.math.scaleMat4c(.90, y, .90, matrix); // Post-concatenate scaling\n       xeogl.math.translateMat4c(x, y, z, matrix); // Post-concatenate translation\n\n       geometryBuilder.setMatrix(matrix);          // Set the current modeling transform matrix\n\n       geometryBuilder.addShape();                 // Add current shape to the buffer, transformed by the matrix\n    }\n}\n\nvar geometry = new xeogl.Geometry();               // Dump the buffer into a Geometry component\n\ngeometryBuilder.build(geometry);\n\nvar entity = new xeogl.Entity({                    // Create an Entity with our Geometry attached\n   geometry: geometry,\n   material: new xeogl.PhongMaterial({\n       diffuse: [0.6, 0.6, 0.7]\n   })\n});\n\nentity.scene.camera.view.eye = [-200, 50, -200];   // Set initial Camera position\n\nnew xeogl.CameraControl();                         // Allow camera interaction\n````",
             "submodule": "generation",
             "is_constructor": 1
         },
@@ -24317,7 +24317,7 @@
         },
         {
             "file": "examples/js/generation/geometryBuilder.js",
-            "line": 94,
+            "line": 95,
             "description": "Sets the shape that will be added to this GeometryBuilder on each subsequent call to {{#crossLink \"GeometryBuilder/addShape:method\"}}addShape(){{/crossLink}}.\n\nThe shape can be either a {{#crossLink \"Geometry\"}}{{/crossLink}} or a JavaScript object containing vertex and index arrays.",
             "itemtype": "method",
             "name": "setShape",
@@ -24337,7 +24337,7 @@
         },
         {
             "file": "examples/js/generation/geometryBuilder.js",
-            "line": 108,
+            "line": 109,
             "description": "Sets the modeling transform matrix to apply to each shape added with subsequent calls to {{#crossLink \"GeometryBuilder/addShape:method\"}}addShape(){{/crossLink}}.",
             "itemtype": "method",
             "name": "setMatrix",
@@ -24357,7 +24357,7 @@
         },
         {
             "file": "examples/js/generation/geometryBuilder.js",
-            "line": 120,
+            "line": 121,
             "description": "Adds a shape to this GeometryBuilder. The shape geometry is the one last added\nby {{#crossLink \"GeometryBuilder/addShape:method\"}}addShape(){{/crossLink}}, and will be transformed by the\nmatrix that was set by the last call to {{#crossLink \"GeometryBuilder/build:method\"}}setMatrix(){{/crossLink}}.\n\nA subsequent call to {{#crossLink \"GeometryBuilder/build:method\"}}build(){{/crossLink}} will add all the\naccumulated transformed shapes to a target {{#crossLink \"Geometry\"}}{{/crossLink}}.",
             "itemtype": "method",
             "name": "addShape",
@@ -24370,7 +24370,7 @@
         },
         {
             "file": "examples/js/generation/geometryBuilder.js",
-            "line": 213,
+            "line": 214,
             "description": "Adds the accumulated state from previous calls to {{#crossLink \"GeometryBuilder/setMatrix:method\"}}setMatrix(){{/crossLink}} and\n{{#crossLink \"GeometryBuilder/setShape:method\"}}setShape(){{/crossLink}} to a target {{#crossLink \"Geometry\"}}{{/crossLink}}.\n\nRetains all that state afterwards, so that you can continue to call this method to add the state to\nother {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}.",
             "itemtype": "method",
             "name": "build",
@@ -24390,7 +24390,7 @@
         },
         {
             "file": "examples/js/generation/geometryBuilder.js",
-            "line": 234,
+            "line": 235,
             "description": "Resets this GeometryBuilder, clearing all the state previously accumulated with {{#crossLink \"GeometryBuilder/setMatrix:method\"}}setMatrix(){{/crossLink}} and\n {{#crossLink \"GeometryBuilder/setShape:method\"}}setShape(){{/crossLink}}.",
             "itemtype": "method",
             "name": "reset",
@@ -25281,23 +25281,23 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " examples/js/generation/geometryBuilder.js:94"
+            "line": " examples/js/generation/geometryBuilder.js:95"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " examples/js/generation/geometryBuilder.js:108"
+            "line": " examples/js/generation/geometryBuilder.js:109"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " examples/js/generation/geometryBuilder.js:120"
+            "line": " examples/js/generation/geometryBuilder.js:121"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " examples/js/generation/geometryBuilder.js:213"
+            "line": " examples/js/generation/geometryBuilder.js:214"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " examples/js/generation/geometryBuilder.js:234"
+            "line": " examples/js/generation/geometryBuilder.js:235"
         },
         {
             "message": "Missing item type\nA chunk of WebGL state changes to render a xeogl.renderer.State.",

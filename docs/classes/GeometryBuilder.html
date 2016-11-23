@@ -197,14 +197,14 @@
 
 
 <div class="box intro">
-    <p>A <strong>GeometryBuilder</strong> is a builder which you can use to procedurally generate <a href="../classes/Geometry.html" class="crosslink">Geometries</a>.</p>
+    <p>A <strong>GeometryBuilder</strong> is a builder that you can use to procedurally generate <a href="../classes/Geometry.html" class="crosslink">Geometries</a>.</p>
 <p><a href="../../examples/#generation_GeometryBuilder_wavyBlocks"><img src="http://i.giphy.com/26gJAMkOxAW5fWlb2.gif"></img></a></p>
 <h2 id="overview">Overview</h2>
 <ul>
 <li>Implements the <a href="https://en.wikipedia.org/wiki/Builder_pattern">Builder pattern</a>.</li>
 <li>Helps us improve WebGL performance by combining many shapes into the same <a href="../classes/Geometry.html" class="crosslink">Geometries</a>,
 thus reducing the number of draw calls.</li>
-<li>Is a plain JavaScript class, ie. not a xeogl <a href="../classes/Component.html" class="crosslink">Component</a> subclass.</li>
+<li>A plain JavaScript class, ie. not a xeogl <a href="../classes/Component.html" class="crosslink">Component</a> subclass.</li>
 </ul>
 <h2 id="examples">Examples</h2>
 <ul>
@@ -215,10 +215,11 @@ thus reducing the number of draw calls.</li>
 <li>Works by accumulating additions to an internal buffer of geometry vertex and index arrays.</li>
 <li>Call <a href="../classes/GeometryBuilder.html#method_setShape" class="crosslink">setShape()</a> to set its current mesh, and
 <a href="../classes/GeometryBuilder.html#method_setMatrix" class="crosslink">setMatrix()</a> to set its current modelling transform.</li>
-<li>Then whenever you call <a href="../classes/GeometryBuilder.html#method_addShape" class="crosslink">addShape()</a>, it appends the shape, transformed
+<li>Then, whenever you call <a href="../classes/GeometryBuilder.html#method_addShape" class="crosslink">addShape()</a>, it appends the shape, transformed
 by the matrix, to its internal buffer.</li>
 <li>Finally, call <a href="../classes/GeometryBuilder.html#method_build" class="crosslink">build()</a> to dump its buffer into a target <a href="../classes/Geometry.html" class="crosslink">Geometry</a>.</li>
-<li>Call <a href="../classes/GeometryBuilder.html#method_build" class="crosslink">build()</a> to dump its buffer into other <a href="../classes/Geometry.html" class="crosslink">Geometries</a> as needed.</li>
+<li>Retains its buffer so that you can call <a href="../classes/GeometryBuilder.html#method_build" class="crosslink">build()</a> again, to dump its
+buffer into other <a href="../classes/Geometry.html" class="crosslink">Geometries</a> as needed.</li>
 <li>Call <a href="../classes/GeometryBuilder.html#method_reset" class="crosslink">reset()</a> to empty its buffer.</li>
 </ul>
 <p>In the example below we&#39;ll use a GeometryBuilder to create something like the screen capture shown above.</p>
@@ -374,7 +375,7 @@ new xeogl.CameraControl();                         // Allow camera interaction
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_generation_geometryBuilder.js.html#l120"><code>examples&#x2F;js&#x2F;generation&#x2F;geometryBuilder.js:120</code></a>
+        <a href="../files/examples_js_generation_geometryBuilder.js.html#l121"><code>examples&#x2F;js&#x2F;generation&#x2F;geometryBuilder.js:121</code></a>
         </p>
 
 
@@ -427,7 +428,7 @@ accumulated transformed shapes to a target <a href="../classes/Geometry.html" cl
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_generation_geometryBuilder.js.html#l213"><code>examples&#x2F;js&#x2F;generation&#x2F;geometryBuilder.js:213</code></a>
+        <a href="../files/examples_js_generation_geometryBuilder.js.html#l214"><code>examples&#x2F;js&#x2F;generation&#x2F;geometryBuilder.js:214</code></a>
         </p>
 
 
@@ -490,7 +491,7 @@ other <a href="../classes/Geometry.html" class="crosslink">Geometries</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_generation_geometryBuilder.js.html#l234"><code>examples&#x2F;js&#x2F;generation&#x2F;geometryBuilder.js:234</code></a>
+        <a href="../files/examples_js_generation_geometryBuilder.js.html#l235"><code>examples&#x2F;js&#x2F;generation&#x2F;geometryBuilder.js:235</code></a>
         </p>
 
 
@@ -540,7 +541,7 @@ other <a href="../classes/Geometry.html" class="crosslink">Geometries</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_generation_geometryBuilder.js.html#l108"><code>examples&#x2F;js&#x2F;generation&#x2F;geometryBuilder.js:108</code></a>
+        <a href="../files/examples_js_generation_geometryBuilder.js.html#l109"><code>examples&#x2F;js&#x2F;generation&#x2F;geometryBuilder.js:109</code></a>
         </p>
 
 
@@ -606,7 +607,7 @@ other <a href="../classes/Geometry.html" class="crosslink">Geometries</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/examples_js_generation_geometryBuilder.js.html#l94"><code>examples&#x2F;js&#x2F;generation&#x2F;geometryBuilder.js:94</code></a>
+        <a href="../files/examples_js_generation_geometryBuilder.js.html#l95"><code>examples&#x2F;js&#x2F;generation&#x2F;geometryBuilder.js:95</code></a>
         </p>
 
 
