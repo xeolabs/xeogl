@@ -9334,7 +9334,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 347,
+            "line": 351,
             "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/boundary:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "boundary",
@@ -9350,14 +9350,14 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 368,
+            "line": 372,
             "class": "Canvas",
             "module": "xeogl",
             "submodule": "canvas"
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 380,
+            "line": 384,
             "description": "Creates a default canvas in the DOM.",
             "access": "private",
             "tagname": "",
@@ -9367,7 +9367,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 410,
+            "line": 414,
             "description": "Creates a image element behind the canvas, for purpose of showing a custom background.",
             "access": "private",
             "tagname": "",
@@ -9377,7 +9377,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 438,
+            "line": 442,
             "description": "Creates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
             "access": "private",
             "tagname": "",
@@ -9387,7 +9387,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 466,
+            "line": 470,
             "access": "private",
             "tagname": "",
             "class": "Canvas",
@@ -9396,7 +9396,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 486,
+            "line": 490,
             "access": "private",
             "tagname": "",
             "class": "Canvas",
@@ -9405,7 +9405,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 516,
+            "line": 520,
             "description": "Initialises the WebGL context",
             "access": "private",
             "tagname": "",
@@ -9415,7 +9415,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 549,
+            "line": 553,
             "description": "Fired whenever the canvas failed to get a WebGL context, which probably means that WebGL\nis either unsupported or has been disabled.",
             "itemtype": "event",
             "name": "webglContextFailed",
@@ -9425,7 +9425,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 558,
+            "line": 562,
             "description": "Returns a snapshot of this Canvas as a Base64-encoded image.\n\n#### Usage:\n````javascript\nimageElement.src = myScene.canvas.getSnapshot({\n    width: 500, // Defaults to size of canvas\n    height: 500,\n    format: \"png\" // Options are \"jpeg\" (default), \"png\" and \"bmp\"\n});\n````",
             "itemtype": "method",
             "name": "getSnapshot",
@@ -9468,7 +9468,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 616,
+            "line": 620,
             "description": "Reads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
             "params": [
                 {
@@ -9498,7 +9498,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 644,
+            "line": 648,
             "description": "A background color for the canvas. This is overridden by {{#crossLink \"Canvas/backgroundImage:property\"}}{{/crossLink}}.\n\nYou can set this to a new color at any time.\n\nFires a {{#crossLink \"Canvas/backgroundColor:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "backgroundColor",
@@ -9510,7 +9510,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 673,
+            "line": 677,
             "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/backgroundColor:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "backgroundColor",
@@ -9526,7 +9526,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 686,
+            "line": 690,
             "description": "URL of a background image for the canvas. This is overrided by {{#crossLink \"Canvas/backgroundColor/property\"}}{{/crossLink}}.\n\nYou can set this to a new file path at any time.\n\nFires a {{#crossLink \"Canvas/background:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "backgroundImage",
@@ -9537,7 +9537,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 721,
+            "line": 725,
             "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/backgroundImage:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "backgroundImage",
@@ -9553,7 +9553,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 734,
+            "line": 738,
             "description": "The busy {{#crossLink \"Spinner\"}}{{/crossLink}} for this Canvas.",
             "itemtype": "property",
             "name": "spinner",
@@ -25125,7 +25125,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/canvas/canvas.js:558"
+            "line": " src/canvas/canvas.js:562"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -25765,35 +25765,35 @@
         },
         {
             "message": "Missing item type",
-            "line": " src/canvas/canvas.js:368"
+            "line": " src/canvas/canvas.js:372"
         },
         {
             "message": "Missing item type\nCreates a default canvas in the DOM.",
-            "line": " src/canvas/canvas.js:380"
+            "line": " src/canvas/canvas.js:384"
         },
         {
             "message": "Missing item type\nCreates a image element behind the canvas, for purpose of showing a custom background.",
-            "line": " src/canvas/canvas.js:410"
+            "line": " src/canvas/canvas.js:414"
         },
         {
             "message": "Missing item type\nCreates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
-            "line": " src/canvas/canvas.js:438"
+            "line": " src/canvas/canvas.js:442"
         },
         {
             "message": "Missing item type",
-            "line": " src/canvas/canvas.js:466"
+            "line": " src/canvas/canvas.js:470"
         },
         {
             "message": "Missing item type",
-            "line": " src/canvas/canvas.js:486"
+            "line": " src/canvas/canvas.js:490"
         },
         {
             "message": "Missing item type\nInitialises the WebGL context",
-            "line": " src/canvas/canvas.js:516"
+            "line": " src/canvas/canvas.js:520"
         },
         {
             "message": "Missing item type\nReads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
-            "line": " src/canvas/canvas.js:616"
+            "line": " src/canvas/canvas.js:620"
         },
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",

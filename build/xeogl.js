@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2016-11-23
+ * Built on 2016-11-24
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -15249,22 +15249,26 @@ var Canvas2Image = (function () {
             var lastCanvasWidth = null;
             var lastCanvasHeight = null;
 
+            var lastCanvasOffsetLeft = null;
+            var lastCanvasOffsetTop = null;
+
             this._tick = this.scene.on("tick",
                 function () {
 
                     var canvas = self.canvas;
 
-                    var newPosition = (window.innerWidth !== lastWindowWidth || window.innerHeight !== lastWindowHeight);
-                    var newSize = (canvas.clientWidth !== lastCanvasWidth || canvas.clientHeight !== lastCanvasHeight);
+                    var newWindowSize = (window.innerWidth !== lastWindowWidth || window.innerHeight !== lastWindowHeight);
+                    var newCanvasSize = (canvas.clientWidth !== lastCanvasWidth || canvas.clientHeight !== lastCanvasHeight);
+                    var newCanvasPos = (canvas.offsetLeft !== lastCanvasOffsetLeft || canvas.offsetTop !== lastCanvasOffsetTop);
 
-                    if (newPosition || newSize) {
+                    if (newWindowSize || newCanvasSize || newCanvasPos) {
 
                         self._spinner._adjustPosition();
 
                         self._resizeBackground();
                         self._resizeOverlay();
 
-                        if (newSize) {
+                        if (newCanvasSize) {
 
                             var newWidth = canvas.clientWidth;
                             var newHeight = canvas.clientHeight;
