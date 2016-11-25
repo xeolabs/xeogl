@@ -1,7 +1,7 @@
 /**
  A **ZSpaceEffect** makes its {{#crossLink "Scene"}}{{/crossLink}} viewable with a zSpace viewer.
 
- <a href="../../examples/#effects_ZSpaceEffect"><img src="http://i.giphy.com/mRdkHVQ1NdUWc.gif"></img></a>
+ <a href="../../examples/#effects_zspace_gearbox"><img src="http://i.giphy.com/mRdkHVQ1NdUWc.gif"></img></a>
 
  ## Overview
 
