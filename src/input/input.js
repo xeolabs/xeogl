@@ -400,14 +400,14 @@
                     }
                 });
 
-            cfg.element.addEventListener("mousewheel",
+            cfg.element.addEventListener("wheel",
                 this._mouseWheelListener = function (e, d) {
 
                     if (!self.enabled) {
                         return;
                     }
 
-                    var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+                    var delta = Math.max(-1, Math.min(1, -e.deltaY * 40));
 
                     /**
                      * Fired whenever the mouse wheel is moved over the parent
