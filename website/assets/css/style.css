@@ -593,7 +593,7 @@ textarea {
     color: #fff;
     /*padding: 10px 20px;*/
     font-size: 18px;
-    font-weight: 300;
+    font-weight: 400;
 }
 
 .main-navigation .navbar-default .navbar-nav > li.active > a {
@@ -704,7 +704,14 @@ textarea {
 }
 
 .site-slogan {
-    font-size: 12px;
+    font-size: 15px;
+}
+
+.lead {
+    margin-bottom: 20px;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.4;
 }
 
 /* Testimonials
