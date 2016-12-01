@@ -1171,8 +1171,8 @@
             "fors": {},
             "namespaces": {}
         },
-        "examples/js/generation/modelBuilder.js": {
-            "name": "examples/js/generation/modelBuilder.js",
+        "examples/js/generation/modelBuilder_v2.js": {
+            "name": "examples/js/generation/modelBuilder_v2.js",
             "modules": {},
             "classes": {},
             "fors": {},
@@ -6142,12 +6142,12 @@
             "namespace": "",
             "file": "src/component.js",
             "line": 1,
-            "description": "**Component** is the base class for all xeogl components.\n## Contents\n* <a href=\"#ids\">Component IDs</a>\n * <a href=\"#componentProps\">Properties</a>\n * <a href=\"#metadata\">Metadata</a>\n * <a href=\"#logging\">Logging</a>\n * <a href=\"#destruction\">Destruction</a>\n## <a name=\"ids\">Component IDs</a>\nEvery Component has an ID that's unique within the parent {{#crossLink \"Scene\"}}{{/crossLink}}. xeogl generates\n the IDs automatically by default, however you can also specify them yourself. In the example below, we're creating a\n scene comprised of {{#crossLink \"Scene\"}}{{/crossLink}}, {{#crossLink \"Material\"}}{{/crossLink}}, {{#crossLink \"Geometry\"}}{{/crossLink}} and\n {{#crossLink \"Entity\"}}{{/crossLink}} components, while letting xeogl generate its own ID for\n the {{#crossLink \"Geometry\"}}{{/crossLink}}:\n````javascript\n // The Scene is a Component too\n var scene = new xeogl.Scene({\n    id: \"myScene\"\n });\nvar material = new xeogl.PhongMaterial(scene, {\n    id: \"myMaterial\"\n });\nvar geometry = new xeogl.Geometry(scene, {\n    id: \"myGeometry\"\n });\n// Let xeogl automatically generate the ID for our Entity\n var entity = new xeogl.Entity(scene, {\n    material: material,\n    geometry: geometry\n });\n ````\nWe can then find those components like this:\n````javascript\n // Find the Scene\n var theScene = xeogl.scenes[\"myScene\"];\n// Find the Material\n var theMaterial = theScene.components[\"myMaterial\"];\n ````\n## <a name=\"componentProps\">Properties</a>\nAlmost every property on a xeogl Component fires a change event when you update it. For example, we can subscribe\n to the {{#crossLink \"PhongMaterial/diffuse:event\"}}{{/crossLink}} event that a\n {{#crossLink \"Material\"}}{{/crossLink}} fires when its {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}}\n property is updated, like so:\n````javascript\n // Bind a change callback to a property\n var handle = material.on(\"diffuse\", function(diffuse) {\n    console.log(\"Material diffuse color has changed to: [\" + diffuse[0] + \", \" + diffuse[1] + \",\" + diffuse[2] + \"]\");\n});\n// Change the property value, which fires the callback\n material.diffuse = [ 0.0, 0.5, 0.5 ];\n// Unsubscribe from the property change event\n material.off(handle);\n ````\nWe can also subscribe to changes in the way components are attached to each other, since components are properties\n of other components. For example, we can subscribe to the '{{#crossLink \"Entity/material:event\"}}{{/crossLink}}' event that a\n {{#crossLink \"Entity\"}}Entity{{/crossLink}} fires when its {{#crossLink \"Entity/material:property\"}}{{/crossLink}}\n property is set to a different {{#crossLink \"Material\"}}Material{{/crossLink}}:\n```` javascript\n // Bind a change callback to the Entity's Material\n entity1.on(\"material\", function(material) {\n    console.log(\"Entity's Material has changed to: \" + material.id);\n });\n// Now replace that Material with another\n entity1.material = new xeogl.PhongMaterial({\n    id: \"myOtherMaterial\",\n    diffuse: [ 0.3, 0.3, 0.6 ]\n    //..\n });\n ````\n## <a name=\"metadata\">Metadata</a>\nYou can set optional **metadata** on your Components, which can be anything you like. These are intended\n to help manage your components within your application code or content pipeline. You could use metadata to attach\n authoring or version information, like this:\n````javascript\n // Scene with authoring metadata\n var scene = new xeogl.Scene({\n    id: \"myScene\",\n    meta: {\n        title: \"My awesome 3D scene\",\n        author: \"@xeolabs\",\n        date: \"February 13 2015\"\n    }\n });\n// Material with descriptive metadata\n var material = new xeogl.PhongMaterial(scene, {\n    id: \"myMaterial\",\n    diffuse: [1, 0, 0],\n    meta: {\n        description: \"Bright red color with no textures\",\n        version: \"0.1\",\n        foo: \"bar\"\n    }\n });\n ````\nAs with all properties, you can subscribe and change the metadata like this:\n````javascript\n // Subscribe to changes to the Material's metadata\n material.on(\"meta\", function(value) {\n    console.log(\"Metadata changed: \" + JSON.stringify(value));\n });\n// Change the Material's metadata, firing our change handler\n material.meta = {\n    description: \"Bright red color with no textures\",\n    version: \"0.2\",\n    foo: \"baz\"\n };\n ````\n## <a name=\"logging\">Logging</a>\nComponents have methods to log ID-prefixed messages to the JavaScript console:\n````javascript\n material.log(\"Everything is fine, situation normal.\");\n material.warn(\"Wait, whats that red light?\");\n material.error(\"Aw, snap!\");\n ````\nThe logged messages will look like this in the console:\n````text\n [LOG]   myMaterial: Everything is fine, situation normal.\n [WARN]  myMaterial: Wait, whats that red light..\n [ERROR] myMaterial: Aw, snap!\n ````\n## <a name=\"destruction\">Destruction</a>\nGet notification of destruction directly on the Components:\n````javascript\n material.on(\"destroyed\", function() {\n    this.log(\"Component was destroyed: \" + this.id);\n });\n ````\nOr get notification of destruction of any Component within its {{#crossLink \"Scene\"}}{{/crossLink}}, indiscriminately:\n````javascript\n scene.on(\"componentDestroyed\", function(component) {\n    this.log(\"Component was destroyed: \" + component.id);\n });\n ````\nThen destroy a component like this:\n````javascript\n material.destroy();\n ````\nOther Components that are linked to it will fall back on a default of some sort. For example, any\n {{#crossLink \"Entity\"}}Entities{{/crossLink}} that were linked to our {{#crossLink \"Material\"}}{{/crossLink}}\n will then automatically link to the {{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/material:property\"}}{{/crossLink}}.",
+            "description": "The **Component** class is the base class for all xeogl components.\n\n## Component IDs\n\nEvery Component has an ID that's unique within the parent {{#crossLink \"Scene\"}}{{/crossLink}}. xeogl generates\nthe IDs automatically by default, however you can also specify them yourself. In the example below, we're creating a\nscene comprised of {{#crossLink \"Scene\"}}{{/crossLink}}, {{#crossLink \"Material\"}}{{/crossLink}}, {{#crossLink \"Geometry\"}}{{/crossLink}} and\n{{#crossLink \"Entity\"}}{{/crossLink}} components, while letting xeogl generate its own ID for\nthe {{#crossLink \"Geometry\"}}{{/crossLink}}:\n\n````javascript\n// The Scene is a Component too\nvar scene = new xeogl.Scene({\n   id: \"myScene\"\n});\n\nvar material = new xeogl.PhongMaterial(scene, {\n   id: \"myMaterial\"\n});\n\nvar geometry = new xeogl.Geometry(scene, {\n   id: \"myGeometry\"\n});\n\n// Let xeogl automatically generate the ID for our Entity\nvar entity = new xeogl.Entity(scene, {\n   material: material,\n   geometry: geometry\n});\n````\n\nWe can then find those components like this:\n\n````javascript\n// Find the Scene\nvar theScene = xeogl.scenes[\"myScene\"];\n\n// Find the Material\nvar theMaterial = theScene.components[\"myMaterial\"];\n````\n\n## Properties\n\nAlmost every property on a xeogl Component fires a change event when you update it. For example, we can subscribe\nto the {{#crossLink \"PhongMaterial/diffuse:event\"}}{{/crossLink}} event that a\n{{#crossLink \"Material\"}}{{/crossLink}} fires when its {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}}\nproperty is updated, like so:\n\n````javascript\n// Bind a change callback to a property\nvar handle = material.on(\"diffuse\", function(diffuse) {\n   console.log(\"Material diffuse color has changed to: [\" + diffuse[0] + \", \" + diffuse[1] + \",\" + diffuse[2] + \"]\");\n});\n\n// Change the property value, which fires the callback\nmaterial.diffuse = [ 0.0, 0.5, 0.5 ];\n\n// Unsubscribe from the property change event\nmaterial.off(handle);\n````\n\nWe can also subscribe to changes in the way components are attached to each other, since components are properties\nof other components. For example, we can subscribe to the '{{#crossLink \"Entity/material:event\"}}{{/crossLink}}' event that a\n{{#crossLink \"Entity\"}}Entity{{/crossLink}} fires when its {{#crossLink \"Entity/material:property\"}}{{/crossLink}}\nproperty is set to a different {{#crossLink \"Material\"}}Material{{/crossLink}}:\n\n```` javascript\n// Bind a change callback to the Entity's Material\nentity1.on(\"material\", function(material) {\n   console.log(\"Entity's Material has changed to: \" + material.id);\n});\n\n// Now replace that Material with another\nentity1.material = new xeogl.PhongMaterial({\n   id: \"myOtherMaterial\",\n   diffuse: [ 0.3, 0.3, 0.6 ]\n   //..\n});\n````\n\n## Metadata\n\nYou can set optional **metadata** on your Components, which can be anything you like. These are intended\nto help manage your components within your application code or content pipeline. You could use metadata to attach\nauthoring or version information, like this:\n\n````javascript\n// Scene with authoring metadata\nvar scene = new xeogl.Scene({\n   id: \"myScene\",\n   meta: {\n       title: \"My awesome 3D scene\",\n       author: \"@xeolabs\",\n       date: \"February 13 2015\"\n   }\n});\n\n// Material with descriptive metadata\nvar material = new xeogl.PhongMaterial(scene, {\n   id: \"myMaterial\",\n   diffuse: [1, 0, 0],\n   meta: {\n       description: \"Bright red color with no textures\",\n       version: \"0.1\",\n       foo: \"bar\"\n   }\n});\n````\n\nAs with all properties, you can subscribe and change the metadata like this:\n\n````javascript\n// Subscribe to changes to the Material's metadata\nmaterial.on(\"meta\", function(value) {\n   console.log(\"Metadata changed: \" + JSON.stringify(value));\n});\n\n// Change the Material's metadata, firing our change handler\nmaterial.meta = {\n   description: \"Bright red color with no textures\",\n   version: \"0.2\",\n   foo: \"baz\"\n};\n````\n\n## Logging\n\nComponents have methods to log ID-prefixed messages to the JavaScript console:\n\n````javascript\nmaterial.log(\"Everything is fine, situation normal.\");\nmaterial.warn(\"Wait, whats that red light?\");\nmaterial.error(\"Aw, snap!\");\n````\n\nThe logged messages will look like this in the console:\n\n````text\n[LOG]   myMaterial: Everything is fine, situation normal.\n[WARN]  myMaterial: Wait, whats that red light..\n[ERROR] myMaterial: Aw, snap!\n````\n\n## Destruction\n\nGet notification of destruction directly on the Components:\n\n````javascript\nmaterial.on(\"destroyed\", function() {\n   this.log(\"Component was destroyed: \" + this.id);\n});\n````\n\nOr get notification of destruction of any Component within its {{#crossLink \"Scene\"}}{{/crossLink}}, indiscriminately:\n\n````javascript\nscene.on(\"componentDestroyed\", function(component) {\n   this.log(\"Component was destroyed: \" + component.id);\n});\n````\n\nThen destroy a component like this:\n\n````javascript\nmaterial.destroy();\n````\n\nOther Components that are linked to it will fall back on a default of some sort. For example, any\n{{#crossLink \"Entity\"}}Entities{{/crossLink}} that were linked to our {{#crossLink \"Material\"}}{{/crossLink}}\nwill then automatically link to the {{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/material:property\"}}{{/crossLink}}.",
             "is_constructor": 1,
             "params": [
                 {
                     "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Component\n within the default {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this Component\nwithin the default {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
                     "type": "Scene",
                     "optional": true
                 },
@@ -20487,7 +20487,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 207,
+            "line": 198,
             "description": "The parent {{#crossLink \"Scene\"}}{{/crossLink}} that contains this Component.",
             "itemtype": "property",
             "name": "scene",
@@ -20498,7 +20498,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 254,
+            "line": 245,
             "description": "Arbitrary, user-defined metadata on this component.",
             "itemtype": "property",
             "name": "metadata",
@@ -20508,7 +20508,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 262,
+            "line": 253,
             "description": "Indicates whether this is one of the {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s built-in Components.",
             "itemtype": "property",
             "name": "isDefault",
@@ -20518,7 +20518,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 270,
+            "line": 261,
             "description": "Unique ID for this Component within its parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "property",
             "name": "id",
@@ -20529,7 +20529,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 279,
+            "line": 270,
             "description": "True as soon as this Component has been destroyed",
             "itemtype": "property",
             "name": "destroyed",
@@ -20539,7 +20539,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 322,
+            "line": 313,
             "description": "JavaScript class name for this Component.\n\nThis is used when <a href=\"Scene.html#savingAndLoading\">loading Scenes from JSON</a>, and is included in the JSON\nrepresentation of this Component, so that this class may be instantiated when loading it from the JSON representation.\n\nFor example: \"xeogl.AmbientLight\", \"xeogl.ColorTarget\", \"xeogl.Lights\" etc.",
             "itemtype": "property",
             "name": "type",
@@ -20550,7 +20550,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 336,
+            "line": 327,
             "description": "An array of strings that indicates the chain of super-types within this component's inheritance hierarchy.\n\nFor example, if this component is a {{#crossLink \"Rotate\"}}{{/crossLink}}, which\nextends {{#crossLink \"Transform\"}}{{/crossLink}}, which in turn extends {{#crossLink \"Component\"}}{{/crossLink}},\nthen this property will have the value:\n\n````json\n[\"xeogl.Component\", \"xeogl.Transform\"]\n````\n\nNote that the chain is ordered downwards in the hierarchy, ie. from super-class down towards sub-class.",
             "itemtype": "property",
             "name": "superTypes",
@@ -20561,7 +20561,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 355,
+            "line": 346,
             "description": "Tests if this component is of the given type, or is a subclass of the given type.\n\nThe type may be given as either a string or a component constructor.\n\nThis method works by walking up the inheritance type chain, which this component provides in\nproperty {{#crossLink \"Component/superTypes:property\"}}{{/crossLink}}, returning true as soon as one of the type strings in\nthe chain matches the given type, of false if none match.\n\n#### Examples:\n\n````javascript\nvar myRotate = new xeogl.Rotate({ ... });\n\nmyRotate.isType(xeogl.Component); // Returns true for all xeogl components\nmyRotate.isType(\"xeogl.Component\"); // Returns true for all xeogl components\nmyRotate.isType(xeogl.Rotate); // Returns true\nmyRotate.isType(xeogl.Transform); // Returns true\nmyRotate.isType(\"xeogl.Transform\"); // Returns true\nmyRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (even indirectly) extend xeogl.Entity\n````",
             "itemtype": "method",
             "name": "isType",
@@ -20581,7 +20581,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 396,
+            "line": 387,
             "description": "Initializes this component",
             "params": [
                 {
@@ -20596,7 +20596,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 404,
+            "line": 395,
             "description": "Fires an event on this component.\n\nNotifies existing subscribers to the event, optionally retains the event to give to\nany subsequent notifications on the event as they are made.",
             "itemtype": "method",
             "name": "fire",
@@ -20624,7 +20624,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 453,
+            "line": 444,
             "description": "Subscribes to an event on this component.\n\nThe callback is be called with this component as scope.",
             "itemtype": "method",
             "name": "on",
@@ -20656,7 +20656,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 496,
+            "line": 487,
             "description": "Cancels an event subscription that was previously made with {{#crossLink \"Component/on:method\"}}{{/crossLink}} or\n{{#crossLink \"Component/once:method\"}}{{/crossLink}}.",
             "itemtype": "method",
             "name": "off",
@@ -20672,7 +20672,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 521,
+            "line": 512,
             "description": "Subscribes to the next occurrence of the given event, then un-subscribes as soon as the event is handled.\n\nThis is equivalent to calling {{#crossLink \"Component/on:method\"}}{{/crossLink}}, and then calling\n{{#crossLink \"Component/off:method\"}}{{/crossLink}} inside the callback function.",
             "itemtype": "method",
             "name": "once",
@@ -20700,7 +20700,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 542,
+            "line": 533,
             "description": "Logs a console debugging message for this component.\n\nThe console message will have this format: *````[LOG] [<component type> <component id>: <message>````*\n\nAlso fires the message as a {{#crossLink \"Scene/log:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "log",
@@ -20716,7 +20716,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 567,
+            "line": 558,
             "description": "Logs a warning for this component to the JavaScript console.\n\nThe console message will have this format: *````[WARN] [<component type> =<component id>: <message>````*\n\nAlso fires the message as a {{#crossLink \"Scene/warn:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "warn",
@@ -20732,7 +20732,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 587,
+            "line": 578,
             "description": "Logs an error for this component to the JavaScript console.\n\nThe console message will have this format: *````[ERROR] [<component type> =<component id>: <message>````*\n\nAlso fires the message as an {{#crossLink \"Scene/error:event\"}}{{/crossLink}} event on the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}.",
             "itemtype": "method",
             "name": "error",
@@ -20748,7 +20748,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 607,
+            "line": 598,
             "description": "Creates a clone of this component.\n\nThe clone will have the same properties as the original, except where\noverridden in the given optional configs.\n\nThe clone will share (by reference) the components of the original, unless overridden.\n\nFor example, if this component is an {{#crossLink \"Entity\"}}{{/crossLink}}, then the clone\nwill be attached to the **same** instances of {{#crossLink \"PhoneMaterial\"}}{{/crossLink}},\n{{#crossLink \"Camera\"}}{{/crossLink}} etc as this component, unless it supplies its own\ninstances for those via the configs.",
             "params": [
                 {
@@ -20767,7 +20767,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 639,
+            "line": 630,
             "description": "Adds a child component to this.\nWhen component not given, attaches the scene's default instance for the given name (if any).\nPublishes the new child component on this component, keyed to the given name.",
             "params": [
                 {
@@ -20868,7 +20868,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 904,
+            "line": 895,
             "description": "Convenience method for creating a Component within this Component's {{#crossLink \"Scene\"}}{{/crossLink}}.\n\nYou would typically use this method to conveniently instantiate components that you'd want to\nshare (ie. \"instance\") among your {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nThe method is given a component type, configuration and optional instance ID, like so:\n\n````javascript\nvar material = myComponent.create(xeogl.PhongMaterial, {\n     diffuse: [1,0,0],\n     specular: [1,1,0]\n}, \"myMaterial\");\n````\n\nThe first time you call this method for the given ````type```` and ````instanceId````, this method will create the\n{{#crossLink \"PhongMaterial\"}}{{/crossLink}}, passing the given  attributes to the component's constructor.\n\nIf you call this method again, specifying the same ````type```` and ````instanceId````, the method will return the same\ncomponent instance that it returned the first time, and will ignore the configuration:\n\n````javascript\nvar material2 = component.create(xeogl.PhongMaterial, { specular: [1,1,0] }, \"myMaterial\");\n````\n\nSo in this example, our {{#crossLink \"PhongMaterial\"}}{{/crossLink}} will continue to have the red specular\nand diffuse color that we specified the first time.\n\nEach time you call this method with the same ````type```` and ````instanceId````, the Scene will internally increment a\nreference count for the component instance. You can release the shared component instance with a call to\n{{#crossLink \"Scene/putSharedComponent:method\"}}{{/crossLink}}, and once you have released it as many\ntimes as you got it, the Scene will destroy the component.",
             "itemtype": "method",
             "name": "create",
@@ -20895,7 +20895,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 977,
+            "line": 968,
             "description": "Protected method, called by sub-classes to queue a call to _update().",
             "access": "protected",
             "tagname": "",
@@ -20913,7 +20913,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 993,
+            "line": 984,
             "access": "private",
             "tagname": "",
             "class": "Component",
@@ -20921,7 +20921,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1005,
+            "line": 996,
             "description": "Protected virtual template method, optionally implemented\nby sub-classes to perform a scheduled task.",
             "access": "protected",
             "tagname": "",
@@ -20930,7 +20930,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1013,
+            "line": 1004,
             "description": "Protected template method, implemented by sub-classes to compile\ntheir state into their Scene's xeogl.renderer.Renderer.",
             "access": "protected",
             "tagname": "",
@@ -20939,7 +20939,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1024,
+            "line": 1015,
             "description": "JSON object containing the state of this Component.",
             "itemtype": "property",
             "name": "json",
@@ -20950,7 +20950,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1052,
+            "line": 1043,
             "description": "String containing the serialized JSON state of this Component.",
             "itemtype": "property",
             "name": "string",
@@ -20961,7 +20961,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1067,
+            "line": 1058,
             "description": "Experimental: string containing a JavaScript expression that would instantiate this Component.",
             "itemtype": "property",
             "name": "string",
@@ -20972,7 +20972,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1085,
+            "line": 1076,
             "description": "Destroys this component.\n\nFires a {{#crossLink \"Component/destroyed:event\"}}{{/crossLink}} event on this Component.\n\nAutomatically disassociates this component from other components, causing them to fall back on any\ndefaults that this component overrode on them.\n\nTODO: describe effect with respect to #create",
             "itemtype": "method",
             "name": "destroy",
@@ -20981,7 +20981,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1155,
+            "line": 1146,
             "description": "Fired when this Component is destroyed.",
             "itemtype": "event",
             "name": "destroyed",
@@ -20990,7 +20990,7 @@
         },
         {
             "file": "src/component.js",
-            "line": 1163,
+            "line": 1154,
             "description": "Protected template method, implemented by sub-classes\nto clean up just before the component is destroyed.",
             "access": "protected",
             "tagname": "",
@@ -24395,7 +24395,7 @@
             "submodule": "generation"
         },
         {
-            "file": "examples/js/generation/modelBuilder.js",
+            "file": "examples/js/generation/modelBuilder_v2.js",
             "line": 1,
             "description": "A **ModelBuilder** is a {{#crossLink \"Model\"}}{{/crossLink}} that provides a \"stateful builder\" API through which you can\nprocedurally generate xeogl content.\n\n<a href=\"../../examples/#models_ModelBuilder_city\"><img src=\"http://i.giphy.com/l0HlPJO1AN01Lz27e.gif\"></img></a>\n\n## Overview\n\n* A BuilderModel implements the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern).\n* Create various assets within a BuilderModel, such as {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}\nand {{#crossLink \"Material\"}}Materials{{/crossLink}}, then create {{#crossLink \"Entity\"}}Entities{{/crossLink}} that use those assets.\n* The BuilderModel then owns those components and will destroy them when you\ncall its {{#crossLink \"ModelBuilder/clear:method\"}}clear(){{/crossLink}} or {{#crossLink \"Component/destroy:method\"}}destroy(){{/crossLink}} methods.\n* A ModelBuilder can be transformed within World space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* A ModelBuilder provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n## Examples\n\n* [Generating a city with a ModelBuilder](../../examples/#models_ModelBuilder_city)</li>\n\n## Usage\n\nA ModelBuilder containing ten textured boxes with random sizes and positions:\n\n````javascript\nvar model = new xeogl.ModelBuilder();\n\n// Add a BoxGeometry asset\nModelBuilder.asset(\"boxGeometry\", {\n    type: \"xeogl.BoxGeometry\"\n});\n\n// Add a PhongMaterial asset\nModelBuilder.asset(\"gridMaterial\", {\n    type: \"xeogl.PhongMaterial\",\n    ambient: [0.9, 0.3, 0.9],\n    shininess: 30,\n    diffuseMap: {\n        src: \"textures/diffuse/gridMaterial.jpg\"\n    }\n});\n\n// Set the BoxGeometry asset as the current geometry\nModelBuilder.geometry(\"boxGeometry\");\n\n// Set the PhongMaterial asset as the current material\nModelBuilder.material(\"gridMaterial\");\n\n// Build ten entities with random sizes and positions,\n// that each get the current geometry and material\nfor (var i = 0; i < 10; i++) {\n\n    ModelBuilder.scale(Math.random() * 10 + 1, Math.random() * 10 + 1, Math.random() * 10 + 1);\n    ModelBuilder.pos(Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50);\n\n    ModelBuilder.entity();\n}\n````",
             "is_constructor": 1,
@@ -25233,15 +25233,15 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/component.js:355"
+            "line": " src/component.js:346"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/component.js:607"
+            "line": " src/component.js:598"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/component.js:904"
+            "line": " src/component.js:895"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -26105,35 +26105,35 @@
         },
         {
             "message": "Missing item type\nInitializes this component",
-            "line": " src/component.js:396"
+            "line": " src/component.js:387"
         },
         {
             "message": "Missing item type\nCreates a clone of this component.\n\nThe clone will have the same properties as the original, except where\noverridden in the given optional configs.\n\nThe clone will share (by reference) the components of the original, unless overridden.\n\nFor example, if this component is an {{#crossLink \"Entity\"}}{{/crossLink}}, then the clone\nwill be attached to the **same** instances of {{#crossLink \"PhoneMaterial\"}}{{/crossLink}},\n{{#crossLink \"Camera\"}}{{/crossLink}} etc as this component, unless it supplies its own\ninstances for those via the configs.",
-            "line": " src/component.js:607"
+            "line": " src/component.js:598"
         },
         {
             "message": "Missing item type\nAdds a child component to this.\nWhen component not given, attaches the scene's default instance for the given name (if any).\nPublishes the new child component on this component, keyed to the given name.",
-            "line": " src/component.js:639"
+            "line": " src/component.js:630"
         },
         {
             "message": "Missing item type\nProtected method, called by sub-classes to queue a call to _update().",
-            "line": " src/component.js:977"
+            "line": " src/component.js:968"
         },
         {
             "message": "Missing item type",
-            "line": " src/component.js:993"
+            "line": " src/component.js:984"
         },
         {
             "message": "Missing item type\nProtected virtual template method, optionally implemented\nby sub-classes to perform a scheduled task.",
-            "line": " src/component.js:1005"
+            "line": " src/component.js:996"
         },
         {
             "message": "Missing item type\nProtected template method, implemented by sub-classes to compile\ntheir state into their Scene's xeogl.renderer.Renderer.",
-            "line": " src/component.js:1013"
+            "line": " src/component.js:1004"
         },
         {
             "message": "Missing item type\nProtected template method, implemented by sub-classes\nto clean up just before the component is destroyed.",
-            "line": " src/component.js:1163"
+            "line": " src/component.js:1154"
         },
         {
             "message": "Missing item type\nReleases a shared component instance that was got earlier\nwith {{#crossLink \"Scene/getSharedComponent:method\"}}{{/crossLink}}.",
@@ -26241,7 +26241,7 @@
         },
         {
             "message": "Missing item type\nA **ModelBuilder** is a {{#crossLink \"Model\"}}{{/crossLink}} that provides a \"stateful builder\" API through which you can\nprocedurally generate xeogl content.\n\n<a href=\"../../examples/#models_ModelBuilder_city\"><img src=\"http://i.giphy.com/l0HlPJO1AN01Lz27e.gif\"></img></a>\n\n## Overview\n\n* A BuilderModel implements the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern).\n* Create various assets within a BuilderModel, such as {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}\nand {{#crossLink \"Material\"}}Materials{{/crossLink}}, then create {{#crossLink \"Entity\"}}Entities{{/crossLink}} that use those assets.\n* The BuilderModel then owns those components and will destroy them when you\ncall its {{#crossLink \"ModelBuilder/clear:method\"}}clear(){{/crossLink}} or {{#crossLink \"Component/destroy:method\"}}destroy(){{/crossLink}} methods.\n* A ModelBuilder can be transformed within World space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* A ModelBuilder provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n## Examples\n\n* [Generating a city with a ModelBuilder](../../examples/#models_ModelBuilder_city)</li>\n\n## Usage\n\nA ModelBuilder containing ten textured boxes with random sizes and positions:\n\n````javascript\nvar model = new xeogl.ModelBuilder();\n\n// Add a BoxGeometry asset\nModelBuilder.asset(\"boxGeometry\", {\n    type: \"xeogl.BoxGeometry\"\n});\n\n// Add a PhongMaterial asset\nModelBuilder.asset(\"gridMaterial\", {\n    type: \"xeogl.PhongMaterial\",\n    ambient: [0.9, 0.3, 0.9],\n    shininess: 30,\n    diffuseMap: {\n        src: \"textures/diffuse/gridMaterial.jpg\"\n    }\n});\n\n// Set the BoxGeometry asset as the current geometry\nModelBuilder.geometry(\"boxGeometry\");\n\n// Set the PhongMaterial asset as the current material\nModelBuilder.material(\"gridMaterial\");\n\n// Build ten entities with random sizes and positions,\n// that each get the current geometry and material\nfor (var i = 0; i < 10; i++) {\n\n    ModelBuilder.scale(Math.random() * 10 + 1, Math.random() * 10 + 1, Math.random() * 10 + 1);\n    ModelBuilder.pos(Math.random() * 100 - 50, Math.random() * 100 - 50, Math.random() * 100 - 50);\n\n    ModelBuilder.entity();\n}\n````",
-            "line": " examples/js/generation/modelBuilder.js:1"
+            "line": " examples/js/generation/modelBuilder_v2.js:1"
         },
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",

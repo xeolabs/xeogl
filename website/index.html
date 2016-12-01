@@ -21,12 +21,6 @@
     <!-- Favicon -->
     <link rel="shortcut icon" href="assets/images/favicon.ico">
 
-    <!-- Web Fonts -->
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700,300&amp;subset=latin,latin-ext'
-          rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Raleway:700,400,300' rel='stylesheet' type='text/css'>
-
-    <!--<link href='https://fonts.googleapis.com/css?family=Roboto|Roboto+Condensed|Roboto+Mono|Roboto+Slab' rel='stylesheet' type='text/css'>-->
 
     <!-- Bootstrap core CSS -->
     <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -122,10 +116,10 @@
                                 <div class="collapse navbar-collapse scrollspy smooth-scroll" id="navbar-collapse-1">
                                     <ul class="nav navbar-nav navbar-right">
                                         <li class="active"><a href="#banner">Home</a></li>
-                                        <li><a href="#concept">Concept</a></li>
+                                        <li><a href="#introduction">Introduction</a></li>
                                         <li><a href="#features">Features</a></li>
                                         <li><a href="../examples" target="_parent">Examples</a></li>
-                                        <li><a href="../docs" target="_parent">Docs</a></li>
+                                        <li><a href="../docs" target="_parent">API Docs</a></li>
                                         <li><a href="https://github.com/xeolabs/xeogl" target="_parent">GitHub</a></li>
                                         <li>
                                             <a href="https://github.com/xeolabs/xeogl/archive/master.zip">Download</a>
@@ -160,7 +154,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-8 object-non-visible" data-animation-effect="fadeIn">
-                    <h1>An open source engine for Web-based 3D visualization</h1>
+                    <h1 class="title">An open source engine for Web-based 3D visualization</h1>
 
                     <p class="lead">Created by <a target="_parent"
                                                   href="http://twitter.com/xeographics">@xeographics</a></p>
@@ -180,7 +174,7 @@
                     <br><br>
 
                     <p class="lead"><a href="https://github.com/xeolabs/xeogl/archive/master.zip"
-                                       class="btn btn-default btn-lg">Download xeogl beta</a></p>
+                                       class="btn btn-default btn-lg">Download xeogl</a></p>
 
                     <p class="lead">or <a href="https://github.com/xeolabs/xeogl">clone the repository</a></p>
                     <br><br><br>
@@ -195,35 +189,36 @@
 
 <!-- section start -->
 <!-- ================ -->
-<div class="section concept clearfix object-non-visible" data-animation-effect="fadeIn">
+<div class="section introduction clearfix object-non-visible" data-animation-effect="fadeIn">
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <h1 id="concept" class="title"><span>xeogl</span> Concept</h1>
+                <h1 id="introduction" class="title"><span>xeogl</span> Introduction</h1>
 
-                <div class="space"></div>
+
                 <div class="row">
                     <div class="col-md-6">
 
-                        <h4>Functional overview</h4>
+                        <h2>Functional overview</h2>
 
                         <p>xeogl is a WebGL-based 3D engine geared towards visualization applications
                             in science, technology, engineering and mathematics (STEM).
                         </p>
+
                         <p>xeogl focuses on letting you:</p>
 
                         <ul>
-                            <li>import models from formats such as <a href="https://www.khronos.org/gltf">glTF</a>,</li>
-                            <li>view models with <a href="http://zspace.com">zSpace</a>, <a href="https://webvr.info/">WebVR</a>,
-                                Cardboard and other effects,
+                            <li>load models from formats such as <a href="https://www.khronos.org/gltf">glTF</a>,</li>
+                            <li>view models with WebVR (coming soon), Cardboard, <a href="http://zspace.com">zSpace</a>
+                                etc,
                             </li>
-                            <li>programmatically access and manipulate model components,</li>
-                            <li>apply affects for visual emphasis,</li>
+                            <li>script model components,</li>
+                            <li>apply visual emphasis affects,</li>
                             <li>navigate components with the camera,</li>
                             <li>interact with components using mouse, stylus etc.,</li>
-                            <li>query and track component positions and boundaries,</li>
-                            <li>profile engine performance to optimize content and</li>
-                            <li>define new engine component types.</li>
+                            <li>efficiently query component boundaries,</li>
+                            <li>profile performance and</li>
+                            <li>define new component types.</li>
                         </ul>
 
                         <p>xeogl is:</p>
@@ -231,35 +226,52 @@
                         <ul>
                             <li>open source (<a href="https://github.com/xeolabs/xeogl/blob/master/MIT-LICENSE">MIT</a>),
                             </li>
-                            <li>data driven, keeping things succinct and letting you focus on content,</li>
-                            <li>easy to learn, providing sensible defaults for everything, and
-                            </li>
-                            <li>thoroughly optimized, using game engine techniques like task queueing, caching,
-                                lazy-evaluation and
-                                GL
-                                state sorting.
-                            </li>
+                            <li>data driven,</li>
+                            <li>easy to learn, with defaults for everything, and</li>
+                            <li>optimized to render a lot of detail very quickly.</li>
                         </ul>
-                        <br>
-                        <h4>Creating a 3D scene</h4>
+                        <p></p>
 
-                        <p>To get a feel for the API, let's start with a very simple example in which we'll create the
-                            spinning torus shown in the screenshot below.</p>
+                        <h2>In production</h2>
+
+                        <p>xeogl is running in production as the 3D engine within <a
+                                href="http://xeolabs.com/articles/xeogl-in-bimsurfer">BIMSurfer</a>, the open source
+                            tool
+                            for Web-based visualization and evaluation of Building Information Models (BIM).<br><br>BIMSurfer
+                            is
+                            used within a variety of apps, so it's effectively battle-testing xeogl with large models
+                            on a variety of operating systems and hardware.</p>
+
+
+                        <iframe width="560" height="315" src="https://www.youtube.com/embed/tCHwEA2HqU8?rel=0"
+                                frameborder="0" allowfullscreen></iframe>
+
+                        <h2>Scene definition</h2>
+
+                        <p>Scene definition is extremely easy, with xeogl providing defaults for pretty much everything,
+                            making it really easy to learn. If you get stuck, it's got a really thorough set of <a
+                                    href="http://xeogl.org/docs">API docs</a> and <a
+                                    href="http://xeogl.org/examples">examples</a>, plus a
+                            <a href="https://github.com/xeolabs/xeogl/wiki" target="_wiki">wiki</a> with tutorials.</p>
                         <br>
 
-                        <p>First, include <a
-                                href="https://github.com/xeolabs/xeogl/tree/master/build/">xeogl.min.js</a>
+                        <p>To get started, first include <a
+                                href="https://github.com/xeolabs/xeogl/tree/master/build/">xeogl.js</a>
                             in your
                             HTML
                             page:</p>
                         <pre>&lt;script src="xeogl.min.js"&gt;&lt;/script&gt;</pre>
                         <br>
-                        <p>Using the JavaScript API, create your 3D scene as an entity-component graph, as shown
-                            in the diagram below. Note how a scene is
-                            basically a bunch of <a href="./docs/classes/Component.html"
+
+                        <p>Then using the JavaScript API, define your 3D scene as an entity-component graph, as shown
+                            below. Note how a scene is
+                            basically a bunch of <a href="http://xeogl.org/docs/classes/Component.html"
                                                     target="_parent">components</a> that are
                             tied
-                            together by <a href="./docs/classes/Entity.html" target="_parent">entities</a>.</p>
+                            together by <a href="http://xeogl.org/docs/classes/Entity.html"
+                                           target="_parent">entities</a>. In this example xeogl is quietly providing lots of
+                            default components for us, but we can override those with our own when we need more control.
+                        </p>
 
                         <pre class="prettyprint lang-javascript">// In this example we'll add components to the default scene,
 // which will automatically create a WebGL canvas for us
@@ -287,33 +299,17 @@ var entity = new xeogl.Entity({
                         <a href="http://xeogl.org/examples/#models_GLTFModel_gearbox"><img
                                 src="assets/images/conceptScene.png"></a>
 
-                        <br>
-                        <h4>Defaults</h4>
+                    </div>
+                    <div class="col-md-6">
+                        <h2>Editing scenes</h2>
 
-                        <p>xeogl provides defaults for pretty much everything, which means that we only need to
-                            create things wherever we need to override those defaults. In the previous example we even
-                            relied on
-                            xeogl to provide a default <a
-                                    href="./docs/classes/Scene.html" target="_parent">scene</a> and canvas for us. For our
-                            entity,
-                            we provided our own <a
-                                    href="./docs/classes/PhongMaterial.html" target="_parent">material</a> and <a
-                                    href="./docs/classes/Geometry.html" target="_parent">geometry</a> components, leaving
-                            the entity
-                            to
-                            fall back on the scene's default flyweight instances for all the other components it needs
-                            (<a href="./docs/classes/Camera.html" target="_parent">camera</a>, <a
-                                    href="./docs/classes/Lights.html" target="_parent">lights</a> etc).</p>
-                        <br>
-                        <h4>Editing scenes</h4>
-
-                        <p>You can edit <span class="emphasis">everything</span> in your scene dynamically, at runtime.
-                            Create and
-                            destroy components, link or unlink
-                            them to each other, update their properties, and so on. Let's add <a
-                                    href="./docs/classes/Rotate.html" target="_parent">rotation</a> and <a
-                                    href="./docs/classes/Scale.html" target="_parent">scale</a> transforms to our
-                            torus:</p>
+                        <p>You can live-edit everything in your scene dynamically. Create and destroy components, link
+                            or unlink
+                            them to each other, update their properties etc.<br><br>Let's add <a
+                                    href="http://xeogl.org/docs/classes/Rotate.html" target="_parent">rotation</a> and
+                            <a
+                                    href="http://xeogl.org/docs/classes/Scale.html" target="_parent">scale</a> to our
+                            torus, then bump up its thickness and radius:</p>
 
                         <pre class="prettyprint lang-javascript">// Rotate and scale our torus entity
 entity.transform = new xeogl.Rotate({
@@ -322,18 +318,16 @@ entity.transform = new xeogl.Rotate({
     parent: new xeogl.Scale({
         xyz: [2, 2, 2]
     })
-});</pre>
-                        <pre class="prettyprint lang-javascript">// Update geometry parameters to increase torus size
+});
+
+// Bump up its thickness and radius
 entity.geometry.radius *= 2.0;
 entity.geometry.tube *= 2.0; </pre>
-                        <br>
-                    </div>
-                    <div class="col-md-6">
 
-                        <h4>Animating scenes</h4>
+                        <h2>Animating scenes</h2>
 
                         <p>Animate scenes by updating component properties. Almost everything in xeogl
-                            fires change events that you can subscribe to, which is very handy for scripting and
+                            fires change events that you can subscribe to, which can be very nice for scripting and
                             extension.</p>
 
                         <pre class="prettyprint lang-javascript">// Listen for updates to the rotation angle
@@ -345,14 +339,12 @@ entity.transform.on("angle", function(value) {
 entity.transform.angle = 90.0;</pre>
                         <br>
 
-                        <p>Let's start the torus spinning:</p>
+                        <p>Let's start our torus spinning:</p>
                         <pre class="prettyprint lang-javascript">entity.scene.on("tick", function () {
     entity.transform.angle += 0.5;
 });</pre>
 
-                        <br>
-
-                        <h4>Importing models</h4>
+                        <h2>Importing models</h2>
 
                         <p>Got a model you want to quickly view in the browser? Use some of xeogl's higher-level
                             components,
@@ -373,9 +365,9 @@ var cameraControl = new xeogl.BIMCameraControl();</pre>
                         <a href="http://xeogl.org/examples/#models_GLTFModel_gearbox"><img
                                 src="assets/images/glTF_gearbox_medium.png"></a>
 
-                        <br>
-                        <h4>Viewing effects</h4>
-                        <p>Want to view your model in WebVR? Just drop in a component to activate the desired effect.
+                        <h2>Viewing effects</h2>
+
+                        <p>Want to view your model in stereo? Just drop in a component to activate the desired effect.
                             Let's
                             view our model with simple split-screen stereo:</p>
                         <pre class="prettyprint lang-javascript">var stereoEffect = new xeogl.StereoEffect({
@@ -387,7 +379,9 @@ var cameraControl = new xeogl.BIMCameraControl();</pre>
                                 src="assets/images/screenshots/StereoEffect.png"></a>
 
                         <br>
-                        <p>How about WebVR with quad-buffered stereo, 3D tracking eyewear and stylus interaction? Let's
+
+                        <p>How about fishtank VR with quad-buffered stereo, 3D tracking eyewear and stylus interaction?
+                            Let's
                             explore our model with a <a href="http://zspace.com">zSpace</a> viewer and reposition some
                             of its parts it with the stylus:</p>
                         <pre class="prettyprint lang-javascript">// Deactivate the previous effect
@@ -401,24 +395,18 @@ var zspaceStylusControl = new xeogl.ZSpaceStylusControl();</pre>
 
                         <a href="http://xeogl.org/examples/#effects_zspace_gearbox"><img
                                 src="assets/images/glTF_gearbox_zspace.png"></a>
-                        <br>
-                        <p>Check out our UX tester at work, dissecting the gearbox model with xeogl running on the
-                            zSpace 300. She's
-                            loving the uncanny realism and how she can drag all those parts around in the air with the
-                            stylus.</p>
 
-                        <br>
 
                         <!--<h4>Performance</h4>-->
                         <!--<p>As we create and update our scene, xeogl is busy internally, calculating matrices, generating-->
-                            <!--geometry, allocating buffers, compiling shaders,-->
-                            <!--and so on. At the same time, xeogl continues to render frames at an acceptable-->
-                            <!--rate in order to keep apps feeling responsive. To achieve this, xeogl amortizes the work-->
-                            <!--across multiple frames by organizing it into a stream of tasks, executing a few of the tasks-->
-                            <!--on-->
-                            <!--each frame.</p>-->
+                        <!--geometry, allocating buffers, compiling shaders,-->
+                        <!--and so on. At the same time, xeogl continues to render frames at an acceptable-->
+                        <!--rate in order to keep apps feeling responsive. To achieve this, xeogl amortizes the work-->
+                        <!--across multiple frames by organizing it into a stream of tasks, executing a few of the tasks-->
+                        <!--on-->
+                        <!--each frame.</p>-->
 
-                        <h4>Learn More</h4>
+                        <h2>Learn More</h2>
 
                         <ul>
                             <li><a

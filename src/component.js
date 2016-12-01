@@ -1,16 +1,7 @@
 /**
+ The **Component** class is the base class for all xeogl components.
 
- **Component** is the base class for all xeogl components.
-
- ## Contents
-
- * <a href="#ids">Component IDs</a>
- * <a href="#componentProps">Properties</a>
- * <a href="#metadata">Metadata</a>
- * <a href="#logging">Logging</a>
- * <a href="#destruction">Destruction</a>
-
- ## <a name="ids">Component IDs</a>
+ ## Component IDs
 
  Every Component has an ID that's unique within the parent {{#crossLink "Scene"}}{{/crossLink}}. xeogl generates
  the IDs automatically by default, however you can also specify them yourself. In the example below, we're creating a
@@ -49,7 +40,7 @@
  var theMaterial = theScene.components["myMaterial"];
  ````
 
- ## <a name="componentProps">Properties</a>
+ ## Properties
 
  Almost every property on a xeogl Component fires a change event when you update it. For example, we can subscribe
  to the {{#crossLink "PhongMaterial/diffuse:event"}}{{/crossLink}} event that a
@@ -88,7 +79,7 @@
  });
  ````
 
- ## <a name="metadata">Metadata</a>
+ ## Metadata
 
  You can set optional **metadata** on your Components, which can be anything you like. These are intended
  to help manage your components within your application code or content pipeline. You could use metadata to attach
@@ -133,7 +124,7 @@
  };
  ````
 
- ## <a name="logging">Logging</a>
+ ## Logging
 
  Components have methods to log ID-prefixed messages to the JavaScript console:
 
@@ -151,7 +142,7 @@
  [ERROR] myMaterial: Aw, snap!
  ````
 
- ## <a name="destruction">Destruction</a>
+ ## Destruction
 
  Get notification of destruction directly on the Components:
 

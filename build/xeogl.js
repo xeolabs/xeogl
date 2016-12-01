@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2016-11-30
+ * Built on 2016-12-01
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -10528,18 +10528,9 @@ var Canvas2Image = (function () {
 
 })();
 ;/**
+ The **Component** class is the base class for all xeogl components.
 
- **Component** is the base class for all xeogl components.
-
- ## Contents
-
- * <a href="#ids">Component IDs</a>
- * <a href="#componentProps">Properties</a>
- * <a href="#metadata">Metadata</a>
- * <a href="#logging">Logging</a>
- * <a href="#destruction">Destruction</a>
-
- ## <a name="ids">Component IDs</a>
+ ## Component IDs
 
  Every Component has an ID that's unique within the parent {{#crossLink "Scene"}}{{/crossLink}}. xeogl generates
  the IDs automatically by default, however you can also specify them yourself. In the example below, we're creating a
@@ -10578,7 +10569,7 @@ var Canvas2Image = (function () {
  var theMaterial = theScene.components["myMaterial"];
  ````
 
- ## <a name="componentProps">Properties</a>
+ ## Properties
 
  Almost every property on a xeogl Component fires a change event when you update it. For example, we can subscribe
  to the {{#crossLink "PhongMaterial/diffuse:event"}}{{/crossLink}} event that a
@@ -10617,7 +10608,7 @@ var Canvas2Image = (function () {
  });
  ````
 
- ## <a name="metadata">Metadata</a>
+ ## Metadata
 
  You can set optional **metadata** on your Components, which can be anything you like. These are intended
  to help manage your components within your application code or content pipeline. You could use metadata to attach
@@ -10662,7 +10653,7 @@ var Canvas2Image = (function () {
  };
  ````
 
- ## <a name="logging">Logging</a>
+ ## Logging
 
  Components have methods to log ID-prefixed messages to the JavaScript console:
 
@@ -10680,7 +10671,7 @@ var Canvas2Image = (function () {
  [ERROR] myMaterial: Aw, snap!
  ````
 
- ## <a name="destruction">Destruction</a>
+ ## Destruction
 
  Get notification of destruction directly on the Components:
 

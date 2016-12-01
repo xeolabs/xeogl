@@ -19,16 +19,19 @@ Here's a quick lookup table:
 */
 
 html {
-    background: #fff;
-    color: #333;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-size: 16px;
+    line-height: 1.50;
+    color: #333332;
+    background-color: #ffffff;
     overflow-y: scroll;
 }
 
 body {
     /*font: 13px/1.4 'Lucida Grande', 'Lucida Sans Unicode', 'DejaVu Sans', 'Bitstream Vera Sans', 'Helvetica', 'Arial', sans-serif;*/
     /*font: 13px/1.4 'Helvetica', 'Arial', sans-serif;*/
-    font-family: 'Raleway', sans-serif;
-    font-size: 15px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-size: 16px;
     line-height: 1.50;
     color: #333333;
     margin: 0;
@@ -45,7 +48,9 @@ a {
     display: none;
 }
 
-a:hover { text-decoration: underline; }
+a:hover {
+    text-decoration: underline;
+}
 
 /* "Jump to Table of Contents" link is shown to assistive tools, but hidden from
    sight until it's focused. */
@@ -56,50 +61,145 @@ a:hover { text-decoration: underline; }
     top: 0;
 }
 
-.jump:focus { left: 40%; }
+.jump:focus {
+    left: 40%;
+}
 
 /* -- Paragraphs ------------------------------------------------------------ */
-p { margin: 1.3em 0; }
-dd p, td p { margin-bottom: 0; }
-dd p:first-child, td p:first-child { margin-top: 0; }
+p {
+    margin: 1.3em 0;
+}
+
+dd p, td p {
+    margin-bottom: 0;
+}
+
+dd p:first-child, td p:first-child {
+    margin-top: 0;
+}
 
 /* -- Headings -------------------------------------------------------------- */
+
 h1, h2, h3, h4, h5, h6 {
-    color: #D98527;/*was #f80*/
-    font-family: 'Trebuchet MS', sans-serif;
-    font-weight: bold;
-    line-height: 1.1;
-    margin: 1.1em 0 0.5em;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
 h1 {
-    font-size: 184.6%;
-    color: #30418C;
-    margin: 0.75em 0 0.5em;
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+
+    padding-bottom: 0.3em;
+    font-size: 2em;
+    border-bottom: 1px solid #eee;
+}
+
+.title {
+    border-bottom: none;
+}
+
+.projectTitle {
+    color: white !important;
+    font-size: 36px !important;
+    font-weight: normal !important;
+    border: none !important;
+}
+
+ .projectTitle a {
+    text-decoration: none;
+    color: white !important;
+    font-size: 36px !important;
+    font-weight: normal !important;
+    border: none !important;
+}
+
+.projectTitle h1 {
+    text-decoration: none;
+    color: white !important;
+    font-size: 36px !important;
+    font-weight: normal !important;
+    border: none !important;
+    margin-bottom:0;
+}
+
+
+h2 {
+    /*margin-bottom: 26px;*/
+    /*margin-bottom: 1.625rem;*/
+    /*font-size: 28px;*/
+    /*font-size: 1.75rem;*/
+    /*line-height: .9286*/
+
+    padding-top: 0.5em;
+    padding-bottom: 0.3em;
+    font-size: 1.5em;
+    border-bottom: 1px solid #dcdcdc;
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+h3 {
+    margin-bottom: 1.625rem;
+    font-size: 1.5rem;
+    line-height: 1.0833
+}
+
+h4 {
+    margin-bottom: 1.625rem;
+    font-size: 1.125rem;
+    line-height: 1.4444
+}
+
+h5 {
+    margin-bottom: 1.625rem;
+    font-size: 1rem;
+    line-height: 1.625
+}
+
+h6 {
+    margin-bottom: 1.625rem;
+    font-size: .875rem;
+    line-height: 1.8571
+}
+
+h1 {
+    font-size: 38px;
+    font-weight: 700;
+    margin-bottom: 20px;
 }
 
 h2 {
-    font-size: 153.846%;
-    color: #E48A2B;
+    font-size: 28px;
+    margin-bottom: 15px;
 }
 
-h3 { font-size: 138.462%; }
+h3 {
+    font-size: 22px;
+}
 
 h4 {
-    border-bottom: 1px solid #DBDFEA;
-    color: #E48A2B;
-    font-size: 115.385%;
-    font-weight: normal;
-    padding-bottom: 2px;
+    font-size: 18px;
+    font-weight: 700;
 }
 
-h5, h6 { font-size: 107.692%; }
+h5 {
+    font-size: 16px;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+h6 {
+    font-weight: 700;
+}
 
 /* -- Code and examples ----------------------------------------------------- */
 code, kbd, pre, samp {
-    font-family: Menlo, Monaco, 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace;
-    font-size: 92.308%;
-    line-height: 1.35;
+    font-family: Menlo, 'Bitstream Vera Sans Mono', 'DejaVu Sans Mono', Monaco, Consolas, monospace;
+    font-size: 85%;
+    line-height: 1.5;
 }
 
 p code, p kbd, p samp, li code {
@@ -125,20 +225,22 @@ pre.code, pre.terminal, pre.cmd {
 }
 
 pre.code {
-    background: #FCFBFA;
-    border: 1px solid #EFEEED;
-    border-left-width: 5px;
+    font-size: 85%;
+    line-height: 1.5;
+    border: 1px solid #ccc;
+    padding: 10px;
 }
 
 pre.terminal, pre.cmd {
-    background: #F0EFFC;
-    border: 1px solid #D0CBFB;
-    border-left: 5px solid #D0CBFB;
+    background: #FCFBFA;
+    border: 1px solid #EFEEED;
 }
 
 /* Don't reduce the font size of <code>/<kbd>/<samp> elements inside <pre>
    blocks. */
-pre code, pre kbd, pre samp { font-size: 100%; }
+pre code, pre kbd, pre samp {
+    font-size: 100%;
+}
 
 /* Used to denote text that shouldn't be selectable, such as line numbers or
    shell prompts. Guess which browser this doesn't work in. */
@@ -151,12 +253,22 @@ pre code, pre kbd, pre samp { font-size: 100%; }
 }
 
 /* -- Lists ----------------------------------------------------------------- */
-dd { margin: 0.2em 0 0.7em 1em; }
-dl { margin: 1em 0; }
-dt { font-weight: bold; }
+dd {
+    margin: 0.2em 0 0.7em 1em;
+}
+
+dl {
+    margin: 1em 0;
+}
+
+dt {
+    font-weight: bold;
+}
 
 /* -- Tables ---------------------------------------------------------------- */
-caption, th { text-align: left; }
+caption, th {
+    text-align: left;
+}
 
 table {
     border-collapse: collapse;
@@ -169,22 +281,32 @@ td, th {
     vertical-align: top;
 }
 
-td { background: #E6E9F5; }
-td dl { margin: 0; }
-td dl dl { margin: 1em 0; }
-td pre:first-child { margin-top: 0; }
+td {
+    background: #E6E9F5;
+}
+
+td dl {
+    margin: 0;
+}
+
+td dl dl {
+    margin: 1em 0;
+}
+
+td pre:first-child {
+    margin-top: 0;
+}
 
 th {
-    background: #D2D7E6;/*#97A0BF*/
+    background: #D2D7E6; /*#97A0BF*/
     border-bottom: none;
     border-top: none;
-    color: #000;/*#FFF1D5*/
+    color: #000; /*#FFF1D5*/
     font-family: 'Trebuchet MS', sans-serif;
     font-weight: bold;
     line-height: 1.3;
     white-space: nowrap;
 }
-
 
 /* -- Layout and Content ---------------------------------------------------- */
 #doc {
@@ -192,11 +314,14 @@ th {
     min-width: 1024px;
 }
 
-.content { padding: 0 20px 0 25px; }
+.content {
+    padding: 0 20px 0 25px;
+}
 
 .sidebar {
     padding: 0 15px 0 10px;
 }
+
 #bd {
     padding: 7px 0 130px;
     position: relative;
@@ -208,9 +333,17 @@ th {
 /* The #toc id refers to the single global table of contents, while the .toc
    class refers to generic TOC lists that could be used throughout the page. */
 
-.toc code, .toc kbd, .toc samp { font-size: 100%; }
-.toc li { font-weight: bold; }
-.toc li li { font-weight: normal; }
+.toc code, .toc kbd, .toc samp {
+    font-size: 100%;
+}
+
+.toc li {
+    font-weight: bold;
+}
+
+.toc li li {
+    font-weight: normal;
+}
 
 /* -- Intro and Example Boxes ----------------------------------------------- */
 /*
@@ -252,8 +385,8 @@ th {
 
     background: #EFEFEF; /* old browsers */
     background: -moz-linear-gradient(top, #f5f5f5 0%, #efefef 50%, #e5e5e5 51%, #dfdfdf 100%); /* firefox */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f5f5f5), color-stop(50%,#efefef), color-stop(51%,#e5e5e5), color-stop(100%,#dfdfdf)); /* webkit */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f5f5f5', endColorstr='#dfdfdf',GradientType=0 ); /* ie */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f5f5f5), color-stop(50%, #efefef), color-stop(51%, #e5e5e5), color-stop(100%, #dfdfdf)); /* webkit */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f5f5', endColorstr='#dfdfdf', GradientType=0); /* ie */
 }
 
 .button:hover {
@@ -266,17 +399,18 @@ th {
 
     background: #6396D8; /* old browsers */
     background: -moz-linear-gradient(top, #6396D8 0%, #5A83BC 50%, #547AB7 51%, #466899 100%); /* firefox */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#6396D8), color-stop(50%,#5A83BC), color-stop(51%,#547AB7), color-stop(100%,#466899)); /* webkit */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#6396D8', endColorstr='#466899',GradientType=0 ); /* ie */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #6396D8), color-stop(50%, #5A83BC), color-stop(51%, #547AB7), color-stop(100%, #466899)); /* webkit */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#6396D8', endColorstr='#466899', GradientType=0); /* ie */
 }
 
-.newwindow { text-align: center; }
+.newwindow {
+    text-align: center;
+}
 
 .header .version em {
     display: block;
     text-align: right;
 }
-
 
 #classdocs .item {
     border-bottom: 1px solid #466899;
@@ -285,7 +419,7 @@ th {
 }
 
 #classdocs .item .params p,
-    #classdocs .item .returns p,{
+#classdocs .item .returns p, {
     display: inline;
 }
 
@@ -315,13 +449,13 @@ abbr {
     cursor: help;
 }
 
-.prettyprint li.L0, 
-.prettyprint li.L1, 
-.prettyprint li.L2, 
-.prettyprint li.L3, 
-.prettyprint li.L5, 
-.prettyprint li.L6, 
-.prettyprint li.L7, 
+.prettyprint li.L0,
+.prettyprint li.L1,
+.prettyprint li.L2,
+.prettyprint li.L3,
+.prettyprint li.L5,
+.prettyprint li.L6,
+.prettyprint li.L7,
 .prettyprint li.L8 {
     list-style: decimal;
 }
@@ -361,7 +495,6 @@ ul li p {
     vertical-align: middle;
 }
 
-
 /* -- API Docs CSS ---------------------------------------------------------- */
 
 /*
@@ -383,18 +516,23 @@ specific tabview, see the other sections below.
     _visibility: visible;
 }
 
-.apidocs .tabview.yui3-tabview-content { visibility: visible; }
-.apidocs .tabview .yui3-tabview-panel { background: #fff; }
+.apidocs .tabview.yui3-tabview-content {
+    visibility: visible;
+}
+
+.apidocs .tabview .yui3-tabview-panel {
+    background: #fff;
+}
 
 /* -- Generic Content Styles ------------------------------------------------ */
 
 /* Headings */
-h2, h3, h4, h5, h6 {
-    border: none;
-    color: #30418C;
-    font-weight: bold;
-    text-decoration: none;
-}
+/*h2, h3, h4, h5, h6 {*/
+/*border: none;*/
+/*color: #30418C;*/
+/*font-weight: bold;*/
+/*text-decoration: none;*/
+/*}*/
 
 .link-docs {
     float: right;
@@ -403,7 +541,9 @@ h2, h3, h4, h5, h6 {
     padding: 6px 30px 5px;
 }
 
-.apidocs { zoom: 1; }
+.apidocs {
+    zoom: 1;
+}
 
 /* Generic box styles. */
 .apidocs .box {
@@ -434,7 +574,9 @@ h2, h3, h4, h5, h6 {
     padding: 3px 6px;
 }
 
-.apidocs .meta p { margin: 0; }
+.apidocs .meta p {
+    margin: 0;
+}
 
 /* Deprecation warning. */
 .apidocs .box.deprecated,
@@ -443,8 +585,13 @@ h2, h3, h4, h5, h6 {
     border: 1px solid #fd7775;
 }
 
-.apidocs .box.deprecated p { margin: 0.5em 0; }
-.apidocs .flag.deprecated { color: #333; }
+.apidocs .box.deprecated p {
+    margin: 0.5em 0;
+}
+
+.apidocs .flag.deprecated {
+    color: #333;
+}
 
 /* Module/Class intro description. */
 .apidocs .intro {
@@ -464,7 +611,9 @@ h2, h3, h4, h5, h6 {
     display: none;
 }
 
-.apidocs .no-visible-items { color: #666; }
+.apidocs .no-visible-items {
+    color: #666;
+}
 
 /* Generic inline list. */
 .apidocs ul.inline {
@@ -474,14 +623,23 @@ h2, h3, h4, h5, h6 {
     padding: 0;
 }
 
-.apidocs ul.inline li { display: inline; }
+.apidocs ul.inline li {
+    display: inline;
+}
 
 /* Comma-separated list. */
-.apidocs ul.commas li:after { content: ','; }
-.apidocs ul.commas li:last-child:after { content: ''; }
+.apidocs ul.commas li:after {
+    content: ',';
+}
+
+.apidocs ul.commas li:last-child:after {
+    content: '';
+}
 
 /* Keyboard shortcuts. */
-kbd .cmd { font-family: Monaco, Helvetica; }
+kbd .cmd {
+    font-family: Monaco, Helvetica;
+}
 
 /* -- Generic Access Level styles ------------------------------------------- */
 .apidocs .item.protected,
@@ -507,7 +665,9 @@ kbd .cmd { font-family: Monaco, Helvetica; }
 }
 
 /* -- Generic Item Index styles --------------------------------------------- */
-.apidocs .index { margin: 1.5em 0 3em; }
+.apidocs .index {
+    margin: 1.5em 0 3em;
+}
 
 .apidocs .index h3 {
     border-bottom: 1px solid #efefef;
@@ -517,7 +677,9 @@ kbd .cmd { font-family: Monaco, Helvetica; }
     padding-bottom: 2px;
 }
 
-.apidocs .index .no-visible-items { margin-top: 2em; }
+.apidocs .index .no-visible-items {
+    margin-top: 2em;
+}
 
 .apidocs .index-list {
     border-color: #efefef;
@@ -550,7 +712,9 @@ kbd .cmd { font-family: Monaco, Helvetica; }
     column-count: 1;
 }
 
-.apidocs .index-item { white-space: nowrap; }
+.apidocs .index-item {
+    white-space: nowrap;
+}
 
 .apidocs .index-item .flag {
     background: none;
@@ -567,11 +731,25 @@ kbd .cmd { font-family: Monaco, Helvetica; }
     margin: 0 0.5em;
 }
 
-.apidocs .flag.chainable { background: #46ca3b; }
-.apidocs .flag.protected { background: #9b86fc; }
-.apidocs .flag.private { background: #fd6b1b; }
-.apidocs .flag.async { background: #356de4; }
-.apidocs .flag.required { background: #e60923; }
+.apidocs .flag.chainable {
+    background: #46ca3b;
+}
+
+.apidocs .flag.protected {
+    background: #9b86fc;
+}
+
+.apidocs .flag.private {
+    background: #fd6b1b;
+}
+
+.apidocs .flag.async {
+    background: #356de4;
+}
+
+.apidocs .flag.required {
+    background: #e60923;
+}
 
 .apidocs .item {
     border-bottom: 1px solid #efefef;
@@ -615,8 +793,13 @@ kbd .cmd { font-family: Monaco, Helvetica; }
     margin: 0 0 0 0;
 }
 
-.apidocs .item .type a { border-bottom: 1px dotted #afafaf; }
-.apidocs .item .type a:hover { border: none; }
+.apidocs .item .type a {
+    border-bottom: 1px dotted #afafaf;
+}
+
+.apidocs .item .type a:hover {
+    border: none;
+}
 
 /* -- Item Parameter List --------------------------------------------------- */
 .apidocs .params-list {
@@ -625,7 +808,9 @@ kbd .cmd { font-family: Monaco, Helvetica; }
     padding: 0;
 }
 
-.apidocs .param { margin-bottom: 1em; }
+.apidocs .param {
+    margin-bottom: 1em;
+}
 
 .apidocs .param .type,
 .apidocs .param .type a {
@@ -637,7 +822,9 @@ kbd .cmd { font-family: Monaco, Helvetica; }
     *margin-left: 0.5em;
 }
 
-.apidocs .param-name { font-weight: bold; }
+.apidocs .param-name {
+    font-weight: bold;
+}
 
 /* -- Item "Emits" block ---------------------------------------------------- */
 .apidocs .item .emits {
@@ -686,10 +873,14 @@ kbd .cmd { font-family: Monaco, Helvetica; }
     margin: 0.3em 0 1em;
 }
 
-.apidocs .module-submodule-description p:first-child { margin-top: 0; }
+.apidocs .module-submodule-description p:first-child {
+    margin-top: 0;
+}
 
 /* -- Sidebar TabView ------------------------------------------------------- */
-#api-tabview { margin-top: 0.6em; }
+#api-tabview {
+    margin-top: 0.6em;
+}
 
 #api-tabview-filter,
 #api-tabview-panel {
@@ -702,11 +893,18 @@ kbd .cmd { font-family: Monaco, Helvetica; }
     padding: 0.6em 10px 0 10px;
 }
 
-#api-tabview-panel { border-top: none; }
-#api-filter { width: 97%; }
+#api-tabview-panel {
+    border-top: none;
+}
+
+#api-filter {
+    width: 97%;
+}
 
 /* -- Content TabView ------------------------------------------------------- */
-#classdocs .yui3-tabview-panel { border: none; }
+#classdocs .yui3-tabview-panel {
+    border: none;
+}
 
 /* -- Source File Contents -------------------------------------------------- */
 .prettyprint li.L0,
@@ -758,7 +956,7 @@ kbd .cmd { font-family: Monaco, Helvetica; }
 .apis a:focus {
     background: #E8EDFC;
     background: -moz-linear-gradient(top, #e8edfc 0%, #becef7 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#E8EDFC), color-stop(100%,#BECEF7));
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #E8EDFC), color-stop(100%, #BECEF7));
     border-color: #AAC0FA;
     border-radius: 3px;
     color: #333;
@@ -771,8 +969,13 @@ kbd .cmd { font-family: Monaco, Helvetica; }
     text-shadow: 1px 1px 1px #fff;
 }
 
-.apis .message { color: #888; }
-.apis .result a { padding: 3px 5px 2px; }
+.apis .message {
+    color: #888;
+}
+
+.apis .result a {
+    padding: 3px 5px 2px;
+}
 
 .apis .result .type {
     right: 4px;
