@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2016-11-25
+ * Built on 2016-11-30
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -158,6 +158,9 @@
          */
         this.scenes = {};
 
+        // Used for throttling FPS for each Scene
+        this._scenesRenderInfo = {};
+
         /**
          * For each component type, a list of its supertypes, ordered upwards in the hierarchy.
          * @type {{}}
@@ -280,11 +283,31 @@
             }
 
             function render() {
+
                 var scenes = self.scenes;
+                var scenesRenderInfo = self._scenesRenderInfo;
+                var scene;
+                var renderInfo;
+                var ticksPerRender;
+
                 var forceRender = false;
                 for (id in scenes) {
                     if (scenes.hasOwnProperty(id)) {
-                        scenes[id].render(forceRender);
+
+                        scene = scenes[id];
+                        renderInfo = scenesRenderInfo[id];
+
+                        ticksPerRender = scene.ticksPerRender;
+
+                        if (renderInfo.ticksPerRender !== ticksPerRender) {
+                            renderInfo.ticksPerRender = ticksPerRender;
+                            renderInfo.renderCountdown = ticksPerRender;
+                        }
+
+                        if (--renderInfo.renderCountdown === 0) {
+                            scene.render(forceRender);
+                            renderInfo.renderCountdown = ticksPerRender;
+                        }
                     }
                 }
             }
@@ -353,6 +376,13 @@
 
             this.scenes[scene.id] = scene;
 
+            var ticksPerRender = scene.ticksPerRender;
+
+            this._scenesRenderInfo[scene.id] = {
+                ticksPerRender: ticksPerRender,
+                renderCountdown: ticksPerRender
+            };
+
             this.stats.components.scenes++;
 
             var self = this;
@@ -365,6 +395,7 @@
                     self._sceneIDMap.removeItem(scene.id);
 
                     delete self.scenes[scene.id];
+                    delete self._scenesRenderInfo[scene.id];
 
                     self.stats.components.scenes--;
                 });
@@ -11862,8 +11893,9 @@ var Canvas2Image = (function () {
  @param [cfg.webgl2=true] {Boolean} Set this false when we **don't** want to use WebGL 2 for our Scene; the Scene will fall
  back on WebGL 1 if not available. This property will be deprecated when WebGL 2 is supported everywhere.
  @param [cfg.components] {Array(Object)} JSON array containing parameters for {{#crossLink "Component"}}Component{{/crossLink}} subtypes to immediately create within the Scene.
- @param [cfg.passes=1] The number of times this Scene renders per frame.
- @param [cfg.clearEachPass=false] When doing multiple passes per frame, specifies whether to clear the
+ @param [cfg.ticksPerRender=1] {Number} The number of {{#crossLink "Scene/tick:property"}}{{/crossLink}} that happen between each render or this Scene.
+ @param [cfg.passes=1] {Number} The number of times this Scene renders per frame.
+ @param [cfg.clearEachPass=false] {Boolean} When doing multiple passes per frame, specifies whether to clear the
  canvas before each pass (true) or just before the first pass (false).
  @param [cfg.transparent=false] {Boolean} Whether or not the canvas is transparent.
  @param [cfg.backgroundColor] {Float32Array} RGBA color for canvas background, when canvas is not transparent. Overridden by backgroundImage.
@@ -12043,6 +12075,7 @@ var Canvas2Image = (function () {
 
             this._initDefaults();
 
+            this.ticksPerRender = cfg.ticksPerRender;
             this.passes = cfg.passes;
             this.clearEachPass = cfg.clearEachPass;
         },
@@ -12275,7 +12308,53 @@ var Canvas2Image = (function () {
         _props: {
 
             /**
+             * The number of {{#crossLink "Scene/tick:property"}}{{/crossLink}} that happen between each render or this Scene.
+             *
+             * Fires a {{#crossLink "Scene/ticksPerRender:event"}}{{/crossLink}} event on change.
+             *
+             * @property ticksPerRender
+             * @default 1
+             * @type Number
+             */
+            ticksPerRender: {
+
+                set: function (value) {
+
+                    if (value === undefined || value === null) {
+                        value = 1;
+
+                    } else if (!xeogl._isNumeric(value) || value <= 0) {
+
+                        this.error("Unsupported value for 'ticksPerRender': '" + value +
+                            "' - should be an integer greater than zero.");
+
+                        value = 1;
+                    }
+
+                    if (value === this._ticksPerRender) {
+                        return;
+                    }
+
+                    this._ticksPerRender = value;
+
+                    /**
+                     Fired whenever this Scene's {{#crossLink "Scene/ticksPerRender:property"}}{{/crossLink}} property changes.
+
+                     @event ticksPerRender
+                     @param value {Boolean} The property's new value
+                     */
+                    this.fire("ticksPerRender", this._ticksPerRender);
+                },
+
+                get: function () {
+                    return this._ticksPerRender;
+                }
+            },
+            
+            /**
              * The number of times this Scene renders per frame.
+             *
+             * Fires a {{#crossLink "Scene/passes:event"}}{{/crossLink}} event on change.
              *
              * @property passes
              * @default 1
@@ -12322,6 +12401,8 @@ var Canvas2Image = (function () {
              * When doing multiple passes per frame, specifies whether to clear the
              * canvas before each pass (true) or just before the first pass (false).
              *
+             * Fires a {{#crossLink "Scene/clearEachPass:event"}}{{/crossLink}} event on change.
+             *
              * @property clearEachPass
              * @default false
              * @type Boolean
@@ -12353,7 +12434,7 @@ var Canvas2Image = (function () {
                     return this._clearEachPass;
                 }
             },
-
+            
 
             /**
              * The default projection transform provided by this Scene, which is
@@ -25156,14 +25237,14 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                     }
                 });
 
-            cfg.element.addEventListener("mousewheel",
+            cfg.element.addEventListener("wheel",
                 this._mouseWheelListener = function (e, d) {
 
                     if (!self.enabled) {
                         return;
                     }
 
-                    var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+                    var delta = Math.max(-1, Math.min(1, -e.deltaY * 40));
 
                     /**
                      * Fired whenever the mouse wheel is moved over the parent

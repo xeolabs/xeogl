@@ -144,6 +144,9 @@
          */
         this.scenes = {};
 
+        // Used for throttling FPS for each Scene
+        this._scenesRenderInfo = {};
+
         /**
          * For each component type, a list of its supertypes, ordered upwards in the hierarchy.
          * @type {{}}
@@ -266,11 +269,31 @@
             }
 
             function render() {
+
                 var scenes = self.scenes;
+                var scenesRenderInfo = self._scenesRenderInfo;
+                var scene;
+                var renderInfo;
+                var ticksPerRender;
+
                 var forceRender = false;
                 for (id in scenes) {
                     if (scenes.hasOwnProperty(id)) {
-                        scenes[id].render(forceRender);
+
+                        scene = scenes[id];
+                        renderInfo = scenesRenderInfo[id];
+
+                        ticksPerRender = scene.ticksPerRender;
+
+                        if (renderInfo.ticksPerRender !== ticksPerRender) {
+                            renderInfo.ticksPerRender = ticksPerRender;
+                            renderInfo.renderCountdown = ticksPerRender;
+                        }
+
+                        if (--renderInfo.renderCountdown === 0) {
+                            scene.render(forceRender);
+                            renderInfo.renderCountdown = ticksPerRender;
+                        }
                     }
                 }
             }
@@ -339,6 +362,13 @@
 
             this.scenes[scene.id] = scene;
 
+            var ticksPerRender = scene.ticksPerRender;
+
+            this._scenesRenderInfo[scene.id] = {
+                ticksPerRender: ticksPerRender,
+                renderCountdown: ticksPerRender
+            };
+
             this.stats.components.scenes++;
 
             var self = this;
@@ -351,6 +381,7 @@
                     self._sceneIDMap.removeItem(scene.id);
 
                     delete self.scenes[scene.id];
+                    delete self._scenesRenderInfo[scene.id];
 
                     self.stats.components.scenes--;
                 });
