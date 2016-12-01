@@ -120,7 +120,7 @@ h1 {
     font-size: 36px !important;
     font-weight: normal !important;
     border: none !important;
-    margin-bottom:0;
+    margin-bottom:0 !important;
 }
 
 
