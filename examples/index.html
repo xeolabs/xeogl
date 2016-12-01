@@ -7,14 +7,19 @@
     <!--Examples viewer adapted from the one over at THREE.js -->
     <!-- threejs.com -->
 
+
+    <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'
+          rel='stylesheet' type='text/css'>
+
     <style>
 
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-            font-size: 16px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 15px;
             line-height: 1.50;
-            color: #333332
-        background-color: #ffffff;
+            color: #333332 background-color : #ffffff;
+
             font-weight: normal;
             font-style: normal;
             background-color: #e8e8e8;
@@ -490,7 +495,7 @@
     sourceButton.textContent = 'View source';
 
     sourceButton.addEventListener('click', function (event) {
-        window.open( 'https://github.com/xeolabs/xeogl/blob/master/examples/' + selected + '.html' );
+        window.open('https://github.com/xeolabs/xeogl/blob/master/examples/' + selected + '.html');
     }, false);
 
     sourceButton.style.display = 'none';
@@ -526,7 +531,6 @@
     }
 
     container.appendChild(document.createElement('hr'));
-    container.appendChild(document.createElement('br'));
 
     _index = 1;
 
@@ -604,7 +608,8 @@
     }, 200);
 
     function scrollIntoView(div) {
-        document.getElementById("panel").scrollTop = documentOffsetTop(div) - (window.innerHeight / 6 );;
+        document.getElementById("panel").scrollTop = documentOffsetTop(div) - (window.innerHeight / 6 );
+        ;
     }
 
     function documentOffsetTop(div) {

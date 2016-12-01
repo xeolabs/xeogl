@@ -1,25 +1,6 @@
-/*
-Font sizes for all selectors other than the body are given in percentages,
-with 100% equal to 13px. To calculate a font size percentage, multiply the
-desired size in pixels by 7.6923076923.
-
-Here's a quick lookup table:
-
-10px - 76.923%
-11px - 84.615%
-12px - 92.308%
-13px - 100%
-14px - 107.692%
-15px - 115.385%
-16px - 123.077%
-17px - 130.769%
-18px - 138.462%
-19px - 146.154%
-20px - 153.846%
-*/
 
 html {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: 'Roboto', sans-serif;
     font-size: 16px;
     line-height: 1.50;
     color: #333332;
@@ -28,12 +9,12 @@ html {
 }
 
 body {
-    /*font: 13px/1.4 'Lucida Grande', 'Lucida Sans Unicode', 'DejaVu Sans', 'Bitstream Vera Sans', 'Helvetica', 'Arial', sans-serif;*/
-    /*font: 13px/1.4 'Helvetica', 'Arial', sans-serif;*/
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: 'Roboto', sans-serif;
     font-size: 16px;
     line-height: 1.50;
-    color: #333333;
+    color: #333332;
+    background-color : #ffffff;
+
     margin: 0;
     padding: 0;
 }
@@ -81,7 +62,7 @@ dd p:first-child, td p:first-child {
 /* -- Headings -------------------------------------------------------------- */
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: 'Roboto', sans-serif;
 }
 
 h1 {
@@ -106,7 +87,7 @@ h1 {
     border: none !important;
 }
 
- .projectTitle a {
+.projectTitle a {
     text-decoration: none;
     color: white !important;
     font-size: 36px !important;
@@ -120,9 +101,8 @@ h1 {
     font-size: 36px !important;
     font-weight: normal !important;
     border: none !important;
-    margin-bottom:0 !important;
+    margin-bottom: 0 !important;
 }
-
 
 h2 {
     /*margin-bottom: 26px;*/
@@ -302,7 +282,8 @@ th {
     border-bottom: none;
     border-top: none;
     color: #000; /*#FFF1D5*/
-    font-family: 'Trebuchet MS', sans-serif;
+    /*font-family: 'Trebuchet MS', sans-serif;*/
+    font-family: 'Roboto', sans-serif;
     font-weight: bold;
     line-height: 1.3;
     white-space: nowrap;
@@ -536,7 +517,7 @@ specific tabview, see the other sections below.
 
 .link-docs {
     float: right;
-    font-size: 15px;
+    font-size: 16px;
     margin: 4px 4px 6px;
     padding: 6px 30px 5px;
 }

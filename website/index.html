@@ -23,10 +23,14 @@
 
 
     <!-- Bootstrap core CSS -->
-    <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!--<link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">-->
 
     <!-- Font Awesome CSS -->
     <!--<link href="assets/fonts/font-awesome/css/font-awesome.css" rel="stylesheet">-->
+
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+    <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'
+          rel='stylesheet' type='text/css'>
 
     <!-- Plugins -->
     <link href="assets/css/animations.css" rel="stylesheet">
@@ -201,7 +205,7 @@
 
                         <h2>Functional overview</h2>
 
-                        <p>xeogl is a WebGL-based 3D engine geared towards visualization applications
+                        <p>xeogl is a WebGL-based 3D engine that's geared towards visualization applications
                             in science, technology, engineering and mathematics (STEM).
                         </p>
 
@@ -269,7 +273,8 @@
                                                     target="_parent">components</a> that are
                             tied
                             together by <a href="http://xeogl.org/docs/classes/Entity.html"
-                                           target="_parent">entities</a>. In this example xeogl is quietly providing lots of
+                                           target="_parent">entities</a>. In this example xeogl is quietly providing
+                            lots of
                             default components for us, but we can override those with our own when we need more control.
                         </p>
 
@@ -381,9 +386,7 @@ var cameraControl = new xeogl.BIMCameraControl();</pre>
                         <br>
 
                         <p>How about fishtank VR with quad-buffered stereo, 3D tracking eyewear and stylus interaction?
-                            Let's
-                            explore our model with a <a href="http://zspace.com">zSpace</a> viewer and reposition some
-                            of its parts it with the stylus:</p>
+                            Let's drop in some components so that we can explore our model on a zSpace display:</p>
                         <pre class="prettyprint lang-javascript">// Deactivate the previous effect
 stereoEffect.destroy();
 
@@ -393,8 +396,10 @@ var zspaceEffect = new xeogl.ZSpaceEffect();
 // Activate the zSpace stylus
 var zspaceStylusControl = new xeogl.ZSpaceStylusControl();</pre>
 
-                        <a href="http://xeogl.org/examples/#effects_zspace_gearbox"><img
-                                src="assets/images/glTF_gearbox_zspace.png"></a>
+                        <!--<a href="http://xeogl.org/examples/#effects_zspace_gearbox"><img-->
+                        <!--src="assets/images/glTF_gearbox_zspace.png"></a>-->
+                        <iframe src="//giphy.com/embed/mRdkHVQ1NdUWc?playOnHover=true" width="550" height="300"
+                                frameborder="0" class="giphy-embed" allowfullscreen=""></iframe>
 
 
                         <!--<h4>Performance</h4>-->
