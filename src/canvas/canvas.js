@@ -510,8 +510,8 @@
         _getElementXY: function (e) {
             var x = 0, y = 0;
             while (e) {
-                x += e.offsetLeft;
-                y += e.offsetTop;
+                x += (e.offsetLeft-e.scrollLeft);
+                y += (e.offsetTop-e.scrollTop);
                 e = e.offsetParent;
             }
             return {x: x, y: y};
