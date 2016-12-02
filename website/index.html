@@ -360,9 +360,11 @@ var model = new xeogl.GLTFModel({
     src: "models/gltf/gearbox/gearbox_assy.gltf"
 });
 
-// Fit the whole model in view
-var cameraFlight = new xeogl.CameraFlight());
-cameraFlight.flyTo(model);
+// Fit the model in view as soon as it's loaded
+model.on("loaded", function() {
+    var cameraFlight = new xeogl.CameraFlight());
+    cameraFlight.flyTo(model);
+});
 
 // Use a BIM-style camera control to navigate
 // the model with the mouse and keyboard
