@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2016-12-01
+ * Built on 2016-12-02
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -15528,8 +15528,8 @@ var Canvas2Image = (function () {
         _getElementXY: function (e) {
             var x = 0, y = 0;
             while (e) {
-                x += e.offsetLeft;
-                y += e.offsetTop;
+                x += (e.offsetLeft-e.scrollLeft);
+                y += (e.offsetTop-e.scrollTop);
                 e = e.offsetParent;
             }
             return {x: x, y: y};
