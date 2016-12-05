@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="../build/xeogl.js"></script>
+    <script src="../build/xeogl.min.js"></script>
     <script src="js/curves/curve.js"></script>
     <script src="js/curves/splineCurve.js"></script>
     <script src="js/models/sceneJSModel.js"></script>
@@ -17,19 +17,12 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeogl.org">xeogl</a>
-    <br><br>
-    <ul>
-        <li>Importing a JSON <a href="models/scenejs/tronTank.json" target="_parent">scene definition</a> using a <a
-                href="../docs/classes/SceneJSModel.html" target="_parent">xeogl.SceneJSModel</a>
-        </li>
-        <li>Scene definition taken from the SceneJS <a href="http://scenejs.org/examples/index.html#showcase_tank"
-                                                       target="_parent">Tron tank example</a></li>
-        <li>JSON originally converted from COLLADA model by <a
-                href="https://3dwarehouse.sketchup.com/user.html?id=1058361951245355501624136"
-                target="_parent">Katase</a></li>
-    </ul>
+    <pre id="infoTxt"
+         style="left: 0; height:auto; text-align: left; background: black; opacity: 0.6; color: lightgreen; padding: 15px;font-size: 18pt;"></pre>
 </div>
+
+<audio autoplay="true" src="sounds/tng_commandcenter.mp3" type="audio/mpeg"></audio>
+
 
 <script>
 
@@ -39,10 +32,10 @@
 
     // Set initial camera position
     var view = scene.camera.view;
-    view.eye = [0, 0, -30];
+    view.eye = [0, 0, -70];
     view.look = [0, 0, 0];
     view.up = [0, 1, 0];
-    view.rotateEyeX(30);
+    view.rotateEyeX(90);
 
     //---------------------------------------------------------------------------------
     // Tank, animation path and camera follow behaviour
@@ -62,16 +55,28 @@
     });
 
     // Add a shadow under the tank
-    tank.add({  // FIXME: does not ingerit the model's transform - handle special case for entity to bind it to the model's root transform
+    tank.add({
         type: "xeogl.Entity",
+        meta: {
+            whatIsThis: "shadow"
+        },
         geometry: {
             type: "xeogl.PlaneGeometry",
-            xSize: 20,
-            zSize: 20
+            xSize: 16,
+            zSize: 22
         },
         material: {
-            type: "xeogl.PhongMaterial", // TODO: when this is undefined, error computiong hash for entity
-            diffuse: [0.0, 0.0, 0.0]
+            type: "xeogl.PhongMaterial",
+            diffuse: [0.0, 0.0, 0.0],
+            specular: [0, 0, 0],
+            opacity: 0.3
+        },
+        modes: {
+            transparent: true
+        },
+        transform: {
+            type: "xeogl.Translate",
+            xyz: [-1, 0.1, -4]
         }
     });
 
@@ -84,10 +89,23 @@
     // Animation path to drive the tank along
     var path = new xeogl.SplineCurve({
         points: [
-            [200, 0, 0],
-            [-50, 0, 150],
-            [200, 0, 150],
-            [100, 0, 0]
+            [0, 0, -1000],
+            [-300, 0, -1000],
+            [-270, 0, -500],
+            [-270, 0, 0],
+            [-370, 0, 100],
+            [-570, 0, 200],
+            [-570, 0, 300],
+            [-400, 0, 500],
+            [-300, 0, 700],
+            [-200, 0, 1000],
+            [-0, 0, 1100],
+            [200, 0, 1100],
+            [500, 0, 900],
+            [600, 0, 600],
+            [400, 0, 200],
+            [400, 0, -900],
+            [0, 0, -1000]
         ]
     });
 
@@ -102,7 +120,7 @@
             lineWidth: 6
         }),
         visibility: new xeogl.Visibility({
-            visible: true
+            visible: false
         })
     });
 
@@ -118,7 +136,7 @@
     new xeogl.CameraControl();
 
     //---------------------------------------------------------------------------------
-    // Landscape
+    // Procedurally-generated canyons
     //---------------------------------------------------------------------------------
 
     (function () {
@@ -126,28 +144,38 @@
         var geometryBuilder = new xeogl.GeometryBuilder();
 
         geometryBuilder.setShape(new xeogl.BoxGeometry({
-            xSize: 30,
-            ySize: 20,
-            zSize: 30
+            xSize: 100,
+            ySize: 100,
+            zSize: 200
         }));
 
-        var matrix = xeogl.math.mat4();
-        var math = xeogl.math;
-
-        var height = 3;
-        var height2 = height * 2;
-        var x;
-        var y = 0;
-        var z = 0;
-
-        for (x = -1000; x <= 1000; x += 200) {
-            for (z = -1000; z <= 1000; z += 200) {
-                math.identityMat4(matrix); // Fresh matrix
-                math.translateMat4c(x, y, z, matrix); // Post-concatenate translation
+        var box = (function () { // Little helper to create a box
+            var matrix = xeogl.math.mat4();
+            var math = xeogl.math;
+            return function (x, z, angle) { // Helper to create boxes
+                math.rotationMat4c(angle * math.DEGTORAD, 0, 1, 0, matrix);
+                math.translateMat4c(x, 100, z, matrix);
                 geometryBuilder.setMatrix(matrix);
-                geometryBuilder.addShape(); // Add shape to GeometryBuilder, transformed by the matrix
-            }
-        }
+                geometryBuilder.addShape();
+            };
+        })();
+
+        box(0, -501, 91);
+        box(-100, -10, 0);
+        box(-225, 205, -61);
+        box(-450, -405, -1);
+        box(-450, -205, 1);
+        box(-570, 15, -61);
+        box(-770, 245, 31);
+        box(-470, 745, 29);
+        box(-100, 650, 31);
+        box(0, 475, 121);
+        box(220, 200, -1);
+        box(220, -400, 1);
+        box(300, 410, 31);
+        box(650, 310, 29);
+        box(560, -10, 1);
+        box(560, -400, 0);
 
         var geometry = new xeogl.Geometry();
 
@@ -156,23 +184,32 @@
         new xeogl.Entity({
             geometry: geometry,
             material: new xeogl.PhongMaterial({
-                diffuse: [0.2, 0.2, 0.3]
+                diffuse: [0.1, 0.1, 0.2],
+                diffuseMap: new xeogl.Texture({
+                    src: "textures/diffuse/UVCheckerMap11-1024.png",
+                    wrapS: "repeat",
+                    wrapT: "repeat",
+                    scale: [1, 1]
+                })
             })
         });
 
-        // Ground plane
+        //---------------------------------------------------------------------------------
+        // Ground
+        //---------------------------------------------------------------------------------
+
         new xeogl.Entity({
             geometry: new xeogl.PlaneGeometry({
-                xSize: 2000,
-                zSize: 2000
+                xSize: 3000,
+                zSize: 3000
             }),
             material: new xeogl.PhongMaterial({
                 diffuse: [0.15, 0.15, 0.2],
-                XXdiffuseMap: new xeogl.Texture({
-                    src: "textures/diffuse/bathroomTiles.jpg",
+                diffuseMap: new xeogl.Texture({
+                    src: "textures/diffuse/UVCheckerMap11-1024.png",
                     wrapS: "repeat",
                     wrapT: "repeat",
-                    scale: [20, 20]
+                    scale: [30, 30]
                 })
             }),
             modes: new xeogl.Modes({
@@ -183,38 +220,140 @@
     })();
 
     //---------------------------------------------------------------------------------
+    // Skybox
+    //---------------------------------------------------------------------------------
+
+    new xeogl.Entity({
+        geometry: new xeogl.BoxGeometry({
+            xSize: 1200,
+            ySize: 600,
+            zSize: 1200
+        }),
+        material: new xeogl.PhongMaterial({
+            diffuse: [0.3, 0.3, 0.4],
+            specular: [0.3, 0.3, 0.4],
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/UVCheckerMap11-1024.png",
+                wrapS: "repeat",
+                wrapT: "repeat",
+                scale: [2, 2]
+            })
+        }),
+        modes: new xeogl.Modes({
+            backfaces: true, // Show backfaces
+            frontface: "ccw"
+        })
+    });
+
+    //---------------------------------------------------------------------------------
     // Game loop - initialize once tank model has loaded
     //---------------------------------------------------------------------------------
+
+    var console = new (function () {
+
+        var lines = [
+            "REQUEST XEOGL TRON TANK DEMO STATUS",
+            "!STATUS: RUNNING",
+            "CODE 6 PASSWORD TO MEMORY 0222",
+            "                           ",
+            "REQUEST ACCESS TO CLU PROGRAM",
+            "!ACCESS:GRANTED",
+            "CODE 6 PASSWORD TO MEMORY 0222",
+            "                           ",
+            "REQUEST STATUS REPORT ON MISSING DATA"
+        ];
+
+        var log = document.getElementById("infoTxt");
+
+        var lineNum = 0;
+        var line = lines[0];
+        var char = line[0];
+        var numLines = lines.length;
+        var colNum = 0;
+
+        var countDown = 10;
+
+        function resetCountDown() {
+            countDown = Math.round(Math.random() * 15);
+        }
+
+        var html = "";
+
+        this.update = function () {
+
+            if (--countDown > 0) {
+                return;
+            }
+
+            resetCountDown();
+
+            if (lineNum >= numLines) {
+                return;
+            }
+            var line = lines[lineNum];
+            if (colNum < line.length) {
+                char = line[colNum];
+                if (char === "!") {
+                    html += line.substring(1) + "<br>";
+                    lineNum++;
+                    colNum = 0;
+                    log.innerHTML = html;
+                    return;
+                } else {
+                    html += char;
+                }
+                log.innerHTML = html + "_";
+                colNum++;
+            } else {
+                html += "<br>";
+                log.innerHTML = html + "_";
+                colNum = 0;
+                lineNum++;
+            }
+
+        };
+    })();
+
 
     tank.on("loaded", function () {
 
         // Slowly rotate the tank and gun
         var gunDir = 0;
-        var gunDirInc = -0.2;
+        var gunDirInc = -0.3;
+        var zoom = 100;
 
         // Game loop
-
         tank.scene.on("tick", function () {
 
             gunDir += gunDirInc;
 
-            if (gunDir < -40 || gunDir > 40) {
+            if (gunDir < -60 || gunDir > 60) {
                 gunDirInc *= -1;
             }
 
-            // Access a couple of Rotate components in the Model;
-            // the first part of their IDs is the ID of the Model
-
-            // tank.components["tank.dir"].angle += 0.2;
+            // Access the gun rotation in the Model;
+            // the first part of the IDs is the ID of the Model
             tank.components["tank.gunDir"].angle = gunDir;
 
             // Update the path animation
-            path.t += 0.0003;
+            path.t = (path.t + 0.0002) % 1.0;
 
-            // Slowly orbit the tank
-            view.rotateEyeY(-0.1);
+            // Slowly orbit camera around the tank
+
+
+            zoom -= 0.1;
+            if (zoom > 60) {
+                view.rotateEyeY(-0.1);
+                view.rotateEyeX(-0.20);
+                view.zoom(-0.1);
+            } else {
+                view.rotateEyeY(0.3);
+            }
+
+            console.update();
         });
     });
+
 
 </script>
 </body>

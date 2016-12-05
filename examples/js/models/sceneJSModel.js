@@ -55,6 +55,8 @@
             /**
              Path to the SceneJS JSON scene description file.
 
+             Update this at any time to load a different file.
+
              Fires a {{#crossLink "SceneJSModel/src:event"}}{{/crossLink}} event on change.
 
              @property src
