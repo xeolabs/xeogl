@@ -6,22 +6,47 @@
      An **SceneJSModel** is a {{#crossLink "Model"}}{{/crossLink}} that's loaded from a
      JSON-based <a href="http://scenejs.org">SceneJS</a> scene definition.
 
-     <a href="../../examples/#geometry_OBJGeometry_raptor"><img src="../../assets/images/screenshots/SceneJSModel.png"></img></a>
+     <a href="../../examples/#models_SceneJSModel_tronTank"><img src="http://i.giphy.com/l3vR50pFTpEbJTztS.gif"></img></a>
 
      ## Overview
 
-     TODO
+     * A SceneJSModel is a container of {{#crossLink "Component"}}Components{{/crossLink}} that loads itself from SceneJS JSON.
+     * It begins loading as soon as you set its {{#crossLink "SceneJSModel/src:property"}}{{/crossLink}}
+     property to the location of a valid SceneJS JSON file.
+     * You can set {{#crossLink "SceneJSModel/src:property"}}{{/crossLink}} to a new file path at any time, which causes
+     the SceneJSModel to clear itself and load components from the new file.
+     * Can be transformed within World-space by attached it to a {{#crossLink "Transform"}}{{/crossLink}}.
+     * Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
+
+     <img src="../../../assets/images/SceneJSModel.png"></img>
 
      ## Examples
 
-     <ul>
-     <li>[Importing a Raptor from OBJ](../../examples/#importing_obj_raptor)</li>
-     </ul>
+     * [Importing the SceneJS Tron Tank model](../../examples/#models_SceneJSModel_tronTank)
 
      ## Usage
 
+     Importing a <a href="../../examples/models/scenejs/tronTank.json">SceneJS JSON model</a> into the default xeogl {{#crossLink "Scene"}}{{/crossLink}}:
+
      ````javascript
-     TODO
+     // Import SceneJS JSON model
+     var tank = new xeogl.SceneJSModel({
+        id: "tank",
+        src: "models/scenejs/tronTank.min.json",
+        transform: new xeogl.Rotate({ // Tank direction
+            xyz: [0, 1, 0],
+            angle: 0,
+            parent: new xeogl.Translate({ // Tank position
+                xyz: [0, 0, 0]
+            })
+        })
+     });
+
+     // Set camera position
+     var view = tank.scene.camera.view;
+     view.eye = [0, 0, -70];
+     view.look = [0, 0, 0];
+     view.up = [0, 1, 0];
      ````
 
      @class SceneJSModel

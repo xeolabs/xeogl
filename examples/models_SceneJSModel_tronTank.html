@@ -14,11 +14,18 @@
 
     <link href="css/styles.css" rel="stylesheet"/>
 
+    <style>
+        #infoLight a {
+            color: lightgreen;
+            font-size: 14pt;
+        }
+    </style>
+
 <body>
 
 <div id="infoLight">
     <pre id="infoTxt"
-         style="left: 0; height:auto; text-align: left; background: black; opacity: 0.6; color: lightgreen; padding: 15px;font-size: 18pt;"></pre>
+         style="  border-radius: 10px; left: 0; height:auto; text-align: left; background: black; opacity: 0.3; color: lightgreen; border: solid 1px lightgreen; padding: 15px;font-size: 14pt;"></pre>
 </div>
 
 <audio autoplay="true" src="sounds/tng_commandcenter.mp3" type="audio/mpeg"></audio>
@@ -252,15 +259,15 @@
     var console = new (function () {
 
         var lines = [
-            "REQUEST XEOGL TRON TANK DEMO STATUS",
+            ">REQUEST XEOGL TRON TANK DEMO STATUS",
             "!STATUS: RUNNING",
-            "CODE 6 PASSWORD TO MEMORY 0222",
-            "                           ",
-            "REQUEST ACCESS TO CLU PROGRAM",
-            "!ACCESS:GRANTED",
-            "CODE 6 PASSWORD TO MEMORY 0222",
-            "                           ",
-            "REQUEST STATUS REPORT ON MISSING DATA"
+                "",
+            ">REQUEST DEMO INFORMATION",
+            "!THIS DEMO USES A <a href='../docs/classes/SceneJSModel.html'>xeogl.SceneJSModel</a> COMPONENT TO IMPORT",
+            "!A TRON TANK MODEL FROM SCENEJS JSON FORMAT INTO XEOGL.",
+            "!ORIGINAL COLLADA MODEL BY <a href='https://3dwarehouse.sketchup.com/user.html?id=1058361951245355501624136'>KATASE</a>.",
+            "",
+            "!-END OF LINE-"
         ];
 
         var log = document.getElementById("infoTxt");
