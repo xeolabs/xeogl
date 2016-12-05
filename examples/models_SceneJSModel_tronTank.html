@@ -33,8 +33,7 @@
 
 <script>
 
-    // Everything in this demo is within xeogl's default scene,
-    // which has created the canvas for us
+    // Everything in this demo is within xeogl's default scene, which creates the canvas for us
     var scene = xeogl.scene;
 
     // Set initial camera position
@@ -62,6 +61,7 @@
     });
 
     // Add a shadow under the tank
+    // insert it into the SceneJSModel so it rotates with the tank
     tank.add({
         type: "xeogl.Entity",
         meta: {
@@ -117,6 +117,7 @@
     });
 
     // Helper to show the tank animation path
+    // leave it here and set visible whenever we need to edit the path in future
     new xeogl.Entity({
         geometry: new xeogl.Geometry({
             positions: xeogl.math.flatten(path.getPoints(100))
@@ -131,7 +132,8 @@
         })
     });
 
-    // Attach tank to the path; move tank along path, keep it pointing along path
+    // Attach tank to the path; move it along path and
+    // keep it pointing along the path
     path.on("t", function () {
         tank.transform.parent.xyz = this.point;
         tank.transform.angle = 360 - (Math.atan2(this.tangent[2], this.tangent[0]) / xeogl.math.DEGTORAD) + 270;
@@ -139,7 +141,7 @@
 
 
     // Allow user camera control;
-    // camera will always point at tank, but this let's us orbit and zoom
+    // camera will always point at tank, but this lets us orbit and zoom
     new xeogl.CameraControl();
 
     //---------------------------------------------------------------------------------
@@ -156,7 +158,8 @@
             zSize: 200
         }));
 
-        var box = (function () { // Little helper to create a box
+        // Little convenience helper to help us create boxes
+        var box = (function () {
             var matrix = xeogl.math.mat4();
             var math = xeogl.math;
             return function (x, z, angle) { // Helper to create boxes
@@ -202,7 +205,7 @@
         });
 
         //---------------------------------------------------------------------------------
-        // Ground
+        // Ground plane
         //---------------------------------------------------------------------------------
 
         new xeogl.Entity({
@@ -253,7 +256,7 @@
     });
 
     //---------------------------------------------------------------------------------
-    // Game loop - initialize once tank model has loaded
+    // Text console that prints out info on this demo
     //---------------------------------------------------------------------------------
 
     var console = new (function () {
@@ -277,14 +280,14 @@
         var char = line[0];
         var numLines = lines.length;
         var colNum = 0;
-
         var countDown = 10;
+        var html = "";
 
+        // Used to make text output sporadic,
+        // to simulate a person typing in the console
         function resetCountDown() {
             countDown = Math.round(Math.random() * 15);
         }
-
-        var html = "";
 
         this.update = function () {
 
@@ -321,6 +324,9 @@
         };
     })();
 
+    //---------------------------------------------------------------------------------
+    // Game loop - initialize once tank model has loaded
+    //---------------------------------------------------------------------------------
 
     tank.on("loaded", function () {
 
@@ -345,9 +351,7 @@
             // Update the path animation
             path.t = (path.t + 0.0002) % 1.0;
 
-            // Slowly orbit camera around the tank
-
-
+            // Slowly orbit and zoom camera
             zoom -= 0.1;
             if (zoom > 60) {
                 view.rotateEyeY(-0.1);
@@ -357,6 +361,7 @@
                 view.rotateEyeY(0.3);
             }
 
+            // Make our "console" div print some more text
             console.update();
         });
     });
