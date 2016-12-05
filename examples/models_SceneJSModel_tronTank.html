@@ -129,6 +129,10 @@
         }),
         visibility: new xeogl.Visibility({
             visible: false
+        }),
+        modes: new xeogl.Modes({
+            pickable: false, // Can't be picked
+            collidable: false // Does not contribute to overall scene boundary
         })
     });
 
@@ -201,6 +205,11 @@
                     wrapT: "repeat",
                     scale: [1, 1]
                 })
+            }),
+            modes: new xeogl.Modes({
+                backfaces: false, // Don't show backfaces, so that if camera gets buried in a box we can still see out
+                pickable: false, // Can't be picked
+                collidable: false // Does not contribute to overall scene boundary
             })
         });
 
@@ -223,7 +232,9 @@
                 })
             }),
             modes: new xeogl.Modes({
-                backfaces: true // Show backfaces
+                backfaces: true, // Show backfaces
+                pickable: false, // Can't be picked
+                collidable: false // Does not contribute to overall scene boundary
             })
         });
 
@@ -251,7 +262,9 @@
         }),
         modes: new xeogl.Modes({
             backfaces: true, // Show backfaces
-            frontface: "ccw"
+            frontface: "ccw", // Need lighting on interior surface
+            pickable: false, // Can't be picked
+            collidable: false // Does not contribute to overall scene boundary
         })
     });
 
@@ -264,7 +277,7 @@
         var lines = [
             ">REQUEST XEOGL TRON TANK DEMO STATUS",
             "!STATUS: RUNNING",
-                "",
+            "",
             ">REQUEST DEMO INFORMATION",
             "!THIS DEMO USES A <a href='../docs/classes/SceneJSModel.html' target='_parent'>xeogl.SceneJSModel</a> COMPONENT TO IMPORT",
             "!A TRON TANK MODEL FROM SCENEJS JSON FORMAT INTO XEOGL.",
