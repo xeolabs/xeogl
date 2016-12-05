@@ -3,8 +3,8 @@
     "use strict";
 
     /**
-     An **SceneJSModel** is a {{#crossLink "Model"}}{{/crossLink}} that's loaded from a
-     JSON-based <a href="http://scenejs.org">SceneJS</a> scene definition.
+     An **SceneJSModel** is a {{#crossLink "Model"}}{{/crossLink}} that's loaded from the
+     JSON-based <a href="http://scenejs.org">SceneJS</a> scene definition format.
 
      <a href="../../examples/#models_SceneJSModel_tronTank"><img src="http://i.giphy.com/l3vR50pFTpEbJTztS.gif"></img></a>
 
@@ -51,7 +51,7 @@
 
      @class SceneJSModel
      @module xeogl
-     @submodule geometry
+     @submodule model
      @constructor
      @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this SceneJSModel in the default
      {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.
