@@ -29169,7 +29169,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
      property to the location of a valid glTF file.
      * You can set {{#crossLink "GLTFModel/src:property"}}{{/crossLink}} to a new file path at any time, which causes
      the GLTFModel to clear itself and load components from the new file.
-     * Can be transformed within World-space by attached it to a {{#crossLink "Transform"}}{{/crossLink}}.
+     * Can be transformed within World-space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}}.
      * Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
 
      <img src="../../../assets/images/GLTFModel.png"></img>
