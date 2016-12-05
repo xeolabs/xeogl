@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeogl.org">xeogl</a> experiment
+    <br><br>
+    <ul>
+        <li>Parsing a JSON <a href="models/scenejs/tronTank.json" target="_parent">scene definition</a> into a <a href="../docs/classes/Model.html" target="_parent">xeogl.Model</a>
+        </li>
+        <li>Scene definition taken from the SceneJS <a href="http://scenejs.org/examples/index.html#showcase_tank"
+                                            target="_parent">Tron tank example</a></li>
+        <li>JSON originally converted from COLLADA model by <a
+                href="https://3dwarehouse.sketchup.com/user.html?id=1058361951245355501624136"
+                target="_parent">Katase</a></li>
+    </ul>
+</div>
+
+<script>
+
+    //---------------------------------------------------------------------------------------------------------------
+    // Experiment which imports SceneJS content into xeogl.
+    // In this experiment we're loading data that defines the Tron tank from
+    // http://scenejs.org/examples/index.html#showcase_tank into a xeogl.Model
+    //---------------------------------------------------------------------------------------------------------------
+
+    // Model we'll load into; ID is prefixed to various components
+    var model = new xeogl.Model({
+        id: "tank"
+    });
+
+    loadJSON("models/scenejs/tronTank.min.json", function (json) { // Load SceneJS JSON
+
+        parseSceneJS(json, model); // Parse the JSON into our Model
+
+        xeogl.scheduleTask(function () { // Entities created as deferred tasks, so wait our turn before  accessing them
+
+            // Orient the camera
+            var view = model.scene.camera.view;
+            view.rotateEyeX(30);
+            view.rotateEyeY(-100);
+
+            // Fly camera to look at Model's boundary
+            var cameraFlight = new xeogl.CameraFlightAnimation();
+            cameraFlight.flyTo({
+                aabb: model.worldBoundary.aabb,
+                fitFOV: 48
+            });
+
+            // Slowly rotate the tank and gun
+            var gunDir = 0;
+            var gunDirInc = 0.2;
+
+            model.scene.on("tick", function () {
+
+                gunDir += gunDirInc;
+
+                if (gunDir < -40 || gunDir > 40) {
+                    gunDirInc *= -1;
+                }
+
+                // Access a couple of Rotate components in the Model;
+                // the first part of their IDs is the ID of the Model
+
+                model.components["tank.dir"].angle += 0.2;
+                model.components["tank.gunDir"].angle = gunDir;
+            });
+        });
+    });
+
+    new xeogl.CameraControl();// Allow user camera control
+
+    //---------------------------------------------------------------------------------------------------------------
+    // Loads JSON
+    //---------------------------------------------------------------------------------------------------------------
+
+    function loadJSON(src, ok) {
+        var xobj = new XMLHttpRequest();
+        xobj.overrideMimeType("application/json");
+        xobj.open('GET', src, true);
+        xobj.onreadystatechange = function () {
+            if (xobj.readyState == 4 && xobj.status == "200") {
+                ok(JSON.parse(xobj.responseText));
+            }
+        };
+        xobj.send(null);
+    }
+
+    //---------------------------------------------------------------------------------------------------------------
+    // A simple recursive descent parser that loads SceneJS JSON into a xeogl.Model.
+    // This is just the bare essentials to prove the concept - just transforms, diffuse material and geometry.
+    //---------------------------------------------------------------------------------------------------------------
+
+    function parseSceneJS(node, model) {
+
+        parse(node, model, null, null);
+
+        function parse(node, model, transform, material) {
+
+            switch (node.type) {
+
+                case "material":
+
+                    var scenejsBaseColor = node.baseColor;
+                    var scenejsSpecular = node.specular;
+                    var scenejsEmit = node.emit;
+
+                    var diffuse = scenejsBaseColor ? [scenejsBaseColor.r, scenejsBaseColor.g, scenejsBaseColor.b] : null;
+                    var specular = (scenejsSpecular && diffuse) ? [scenejsSpecular * diffuse[0], scenejsSpecular * diffuse[1], scenejsSpecular * diffuse[2]] : null;
+                    var emissive = (scenejsEmit && diffuse) ? [scenejsEmit * diffuse[0], scenejsEmit * diffuse[1], scenejsEmit * diffuse[2]] : null;
+
+                    material = model.add({
+                        type: "xeogl.PhongMaterial",
+                        id: createID(model, node),
+                        diffuse: diffuse,
+                        specular: specular,
+                        emissive: emissive
+                    });
+
+                    break;
+
+                case "translate":
+
+                    transform = model.add({
+                        type: "xeogl.Translate",
+                        id: createID(model, node),
+                        xyz: [node.x, node.y, node.z],
+                        parent: transform
+                    });
+
+                    break;
+
+                case "scale":
+
+                    transform = model.add({
+                        type: "xeogl.Scale",
+                        id: createID(model, node),
+                        xyz: [node.x, node.y, node.z],
+                        parent: transform
+                    });
+
+                    break;
+
+                case "rotate":
+
+                    transform = model.add({
+                        type: "xeogl.Rotate",
+                        id: createID(model, node),
+                        xyz: [node.x, node.y, node.z],
+                        angle: node.angle,
+                        parent: transform
+                    });
+
+                    break;
+
+                case "geometry":
+
+                    var geometry = model.add({
+                        type: "xeogl.Geometry",
+                        id: createID(model, node),
+                        primitive: node.primitive,
+                        positions: node.positions,
+                        normals: node.normals,
+                        uv: node.uv,
+                        indices: node.indices
+                    });
+
+                    model.add({
+                        type: "xeogl.Entity",
+                        id: createID(model, node),
+                        geometry: geometry,
+                        transform: transform,
+                        material: material
+                    });
+
+                    break;
+            }
+
+            var nodes = node.nodes;
+
+            if (nodes) {
+                for (var i = 0, len = nodes.length; i < len; i++) {
+                    parse(nodes[i], model, transform, material);
+                }
+            }
+        }
+
+        function createID(model, node) {
+            return node.id ? model.id + "." + node.id : null;
+        }
+    }
+
+</script>
+
+</body>
+</html>

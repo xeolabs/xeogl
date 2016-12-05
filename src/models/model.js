@@ -106,9 +106,9 @@
         },
 
         /**
-         * Adds one or more {{#crossLink "Component"}}Components{{/crossLink}} to this Model.
+         * Adds a {{#crossLink "Component"}}Component{{/crossLink}} or subtype to this Model.
          *
-         * The {{#crossLink "Component"}}Component(s){{/crossLink}} may be specified by instance, ID or type.
+         * The {{#crossLink "Component"}}Component(s){{/crossLink}} may be specified by ID, instance, JSON definition or type.
          *
          * See class comment for usage examples.
          *
@@ -117,31 +117,20 @@
          * Fires an {{#crossLink "Model/added:event"}}{{/crossLink}} event.
          *
          * @method add
-         * @param {Array of Component} components Array of {{#crossLink "Component"}}Components{{/crossLink}} instances.
+         * @param {Number|String|*|Component} component ID, definition or instance of a {{#crossLink "Component"}}Component{{/crossLink}} type or subtype.
          */
-        add: function (components) {
-
-            components = xeogl._isArray(components) ? components : [components];
-
-            for (var i = 0, len = components.length; i < len; i++) {
-                this._add(components[i]);
-            }
-        },
-
-        _add: function (c) {
+        add: function (component) {
 
             var componentId;
-            var component;
-            var type;
             var types;
 
-            if (xeogl._isNumeric(c) || xeogl._isString(c)) {
+            if (xeogl._isNumeric(component) || xeogl._isString(component)) {
 
-                if (this.scene.types[c]) {
+                if (this.scene.types[component]) {
 
                     // Component type
 
-                    type = c;
+                    type = component;
 
                     types = this.scene.types[type];
 
@@ -162,32 +151,26 @@
 
                     // Component ID
 
-                    component = this.scene.components[c];
+                    component = this.scene.components[component];
 
                     if (!component) {
-                        this.warn("Component not found: " + xeogl._inQuotes(c));
+                        this.warn("Component not found: " + xeogl._inQuotes(component));
                         return;
                     }
                 }
 
-            } else if (xeogl._isObject(c)) {
+            } else if (xeogl._isObject(component)) {
 
                 // Component config given
 
-                var type = c.type || "xeogl.Component";
+                var type = component.type || "xeogl.Component";
 
                 if (!xeogl._isComponentType(type)) {
                     this.error("Not a xeogl component type: " + type);
                     return;
                 }
 
-                component = new window[type](this.scene, c);
-
-            } else if (c.type) {
-
-                // Component instance
-
-                component = c;
+                component = new window[type](this.scene, component);
 
             } else {
 
@@ -268,7 +251,7 @@
             }
 
             if (component.worldBoundary) {
-                this._onWorldBoundaryUpdated[c.id] = component.worldBoundary.on("updated", this._updated, this);
+                this._onWorldBoundaryUpdated[component.id] = component.worldBoundary.on("updated", this._updated, this);
                 if (!this._aabbDirty) {
                     this._setAABBDirty();
                 }
@@ -284,6 +267,8 @@
             if (!this._dirty) {
                 this._scheduleUpdate();
             }
+
+            return component;
         },
 
         _scheduleUpdate: function () {

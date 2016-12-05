@@ -108,7 +108,11 @@
                         return;
                     }
 
-                    //this._taskId = this.taskStarted("Loading .3DS");
+                    // Increment processes represented by loading spinner
+                    // Spinner appears as soon as count is non-zero
+
+                    var spinner = this.scene.canvas.spinner;
+                    spinner.processes++;
 
                     this._src = value;
 
@@ -141,17 +145,19 @@
                                 self.indices = mesh.indices;
                                 self.tangents = null;
 
+                                spinner.processes--;
+
                                 self.fire("loaded", true);
                             });
                         },
 
                         function (msg) {
 
+                            spinner.processes--;
+
                             self.error("Failed to load .3DS file: " + msg);
 
                             self.fire("failed", msg);
-
-                            //self._taskId = self.taskFailed(self._taskId);
                         });
 
                     /**

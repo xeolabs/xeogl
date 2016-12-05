@@ -12,7 +12,7 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>importing glTF using a <a
+    <a href="http://xeogl.org" target="_parent">xeogl</a><br><br>importing glTF using a <a
         href="../docs/classes/GLTFModel.html" target="_parent">GLTFModel</a> component
 </div>
 
@@ -35,14 +35,10 @@
     new xeogl.CameraControl();
 
     // Slowly orbit camera about model
-    gearbox.scene.on("tick",
-            function () {
-                view.rotateEyeY(0.1);
-                view.rotateEyeX(0.02);
-            });
-
-    gearbox.scene.canvas.backgroundColor = [1,1,0,0];
-    gearbox.scene.canvas.transparent = true;
+    gearbox.scene.on("tick", function () {
+        view.rotateEyeY(0.1);
+        view.rotateEyeX(0.02);
+    });
 
 </script>
 </body>

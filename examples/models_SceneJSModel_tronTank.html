@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <script src="js/curves/curve.js"></script>
+    <script src="js/curves/splineCurve.js"></script>
+    <script src="js/models/sceneJSModel.js"></script>
+    <script src="js/animation/cameraFollowAnimation.js"></script>
+    <script src="js/generation/geometryBuilder.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeogl.org">xeogl</a>
+    <br><br>
+    <ul>
+        <li>Importing a JSON <a href="models/scenejs/tronTank.json" target="_parent">scene definition</a> using a <a
+                href="../docs/classes/SceneJSModel.html" target="_parent">xeogl.SceneJSModel</a>
+        </li>
+        <li>Scene definition taken from the SceneJS <a href="http://scenejs.org/examples/index.html#showcase_tank"
+                                                       target="_parent">Tron tank example</a></li>
+        <li>JSON originally converted from COLLADA model by <a
+                href="https://3dwarehouse.sketchup.com/user.html?id=1058361951245355501624136"
+                target="_parent">Katase</a></li>
+    </ul>
+</div>
+
+<script>
+
+    // Everything in this demo is within xeogl's default scene,
+    // which has created the canvas for us
+    var scene = xeogl.scene;
+
+    // Set initial camera position
+    var view = scene.camera.view;
+    view.eye = [0, 0, -30];
+    view.look = [0, 0, 0];
+    view.up = [0, 1, 0];
+    view.rotateEyeX(30);
+
+    //---------------------------------------------------------------------------------
+    // Tank, animation path and camera follow behaviour
+    //---------------------------------------------------------------------------------
+
+    // Tank model
+    var tank = new xeogl.SceneJSModel({
+        id: "tank",
+        src: "models/scenejs/tronTank.min.json",
+        transform: new xeogl.Rotate({ // Tank direction
+            xyz: [0, 1, 0],
+            angle: 0,
+            parent: new xeogl.Translate({ // Tank position
+                xyz: [0, 0, 0]
+            })
+        })
+    });
+
+    // Add a shadow under the tank
+    tank.add({  // FIXME: does not ingerit the model's transform - handle special case for entity to bind it to the model's root transform
+        type: "xeogl.Entity",
+        geometry: {
+            type: "xeogl.PlaneGeometry",
+            xSize: 20,
+            zSize: 20
+        },
+        material: {
+            type: "xeogl.PhongMaterial", // TODO: when this is undefined, error computiong hash for entity
+            diffuse: [0.0, 0.0, 0.0]
+        }
+    });
+
+    // Follow the tank with the camera; don't keep tank fitted to view
+    new xeogl.CameraFollowAnimation({
+        worldBoundary: tank.worldBoundary,
+        fit: false
+    });
+
+    // Animation path to drive the tank along
+    var path = new xeogl.SplineCurve({
+        points: [
+            [200, 0, 0],
+            [-50, 0, 150],
+            [200, 0, 150],
+            [100, 0, 0]
+        ]
+    });
+
+    // Helper to show the tank animation path
+    new xeogl.Entity({
+        geometry: new xeogl.Geometry({
+            positions: xeogl.math.flatten(path.getPoints(100))
+        }),
+        material: new xeogl.PhongMaterial({
+            diffuse: [0.3, 1, 0.3],
+            emissive: [0.4, 1, 0.4],
+            lineWidth: 6
+        }),
+        visibility: new xeogl.Visibility({
+            visible: true
+        })
+    });
+
+    // Attach tank to the path; move tank along path, keep it pointing along path
+    path.on("t", function () {
+        tank.transform.parent.xyz = this.point;
+        tank.transform.angle = 360 - (Math.atan2(this.tangent[2], this.tangent[0]) / xeogl.math.DEGTORAD) + 270;
+    });
+
+
+    // Allow user camera control;
+    // camera will always point at tank, but this let's us orbit and zoom
+    new xeogl.CameraControl();
+
+    //---------------------------------------------------------------------------------
+    // Landscape
+    //---------------------------------------------------------------------------------
+
+    (function () {
+
+        var geometryBuilder = new xeogl.GeometryBuilder();
+
+        geometryBuilder.setShape(new xeogl.BoxGeometry({
+            xSize: 30,
+            ySize: 20,
+            zSize: 30
+        }));
+
+        var matrix = xeogl.math.mat4();
+        var math = xeogl.math;
+
+        var height = 3;
+        var height2 = height * 2;
+        var x;
+        var y = 0;
+        var z = 0;
+
+        for (x = -1000; x <= 1000; x += 200) {
+            for (z = -1000; z <= 1000; z += 200) {
+                math.identityMat4(matrix); // Fresh matrix
+                math.translateMat4c(x, y, z, matrix); // Post-concatenate translation
+                geometryBuilder.setMatrix(matrix);
+                geometryBuilder.addShape(); // Add shape to GeometryBuilder, transformed by the matrix
+            }
+        }
+
+        var geometry = new xeogl.Geometry();
+
+        geometryBuilder.build(geometry);
+
+        new xeogl.Entity({
+            geometry: geometry,
+            material: new xeogl.PhongMaterial({
+                diffuse: [0.2, 0.2, 0.3]
+            })
+        });
+
+        // Ground plane
+        new xeogl.Entity({
+            geometry: new xeogl.PlaneGeometry({
+                xSize: 2000,
+                zSize: 2000
+            }),
+            material: new xeogl.PhongMaterial({
+                diffuse: [0.15, 0.15, 0.2],
+                XXdiffuseMap: new xeogl.Texture({
+                    src: "textures/diffuse/bathroomTiles.jpg",
+                    wrapS: "repeat",
+                    wrapT: "repeat",
+                    scale: [20, 20]
+                })
+            }),
+            modes: new xeogl.Modes({
+                backfaces: true // Show backfaces
+            })
+        });
+
+    })();
+
+    //---------------------------------------------------------------------------------
+    // Game loop - initialize once tank model has loaded
+    //---------------------------------------------------------------------------------
+
+    tank.on("loaded", function () {
+
+        // Slowly rotate the tank and gun
+        var gunDir = 0;
+        var gunDirInc = -0.2;
+
+        // Game loop
+
+        tank.scene.on("tick", function () {
+
+            gunDir += gunDirInc;
+
+            if (gunDir < -40 || gunDir > 40) {
+                gunDirInc *= -1;
+            }
+
+            // Access a couple of Rotate components in the Model;
+            // the first part of their IDs is the ID of the Model
+
+            // tank.components["tank.dir"].angle += 0.2;
+            tank.components["tank.gunDir"].angle = gunDir;
+
+            // Update the path animation
+            path.t += 0.0003;
+
+            // Slowly orbit the tank
+            view.rotateEyeY(-0.1);
+        });
+    });
+
+</script>
+</body>
+</html>

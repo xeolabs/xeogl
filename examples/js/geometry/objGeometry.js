@@ -3,7 +3,7 @@
     "use strict";
 
     /**
-     An **ObjGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that's loaded from a
+     An **OBJGeometry** is a {{#crossLink "Geometry"}}{{/crossLink}} that's loaded from a
      <a href="https://en.wikipedia.org/wiki/Wavefront_.obj_file">Wavefront .OBJ</a> file.
 
      <a href="../../examples/#geometry_OBJGeometry_raptor"><img src="../../assets/images/screenshots/OBJGeometry.png"></img></a>
@@ -106,7 +106,11 @@
                         return;
                     }
 
-                    //this._taskId = this.taskStarted("Loading .OBJ");
+                    // Increment processes represented by loading spinner
+                    // Spinner appears as soon as count is non-zero
+
+                    var spinner = this.scene.canvas.spinner;
+                    spinner.processes++;
 
                     this._src = value;
 
@@ -156,17 +160,19 @@
 
                                 self.indices = indices;
 
+                                spinner.processes--;
+
                                 self.fire("loaded", true);
                             });
                         },
 
                         function (msg) {
 
+                            spinner.processes--;
+
                             self.error("Failed to load .OBJ file: " + msg);
 
                             self.fire("failed", msg);
-
-                            //self._taskId = self.taskFailed(self._taskId);
                         });
 
                     /**
