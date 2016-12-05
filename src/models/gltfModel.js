@@ -64,16 +64,6 @@
 
             this._src = null;
 
-            if (!cfg.src) {
-                this.error("Config missing: 'src'");
-                return;
-            }
-
-            if (!xeogl._isString(cfg.src)) {
-                this.error("Value for config 'src' should be a string");
-                return;
-            }
-
             this.src = cfg.src;
         },
 
@@ -131,7 +121,7 @@
                     // Increment processes represented by loading spinner
                     // Spinner appears as soon as count is non-zero
 
-                    var spinner = self.scene.canvas.spinner;
+                    var spinner = this.scene.canvas.spinner;
                     spinner.processes++;
 
                     glTFLoader.load(userInfo, options, function () {
@@ -140,12 +130,9 @@
                         // Spinner disappears if the count is now zero
                         spinner.processes--;
 
-                        /**
-                         Fired whenever this GLTFModel has finished loading components from the glTF file
-                         specified by {{#crossLink "GLTFModel/src:property"}}{{/crossLink}}.
-                         @event loaded
-                         */
-                        self.fire("loaded");
+                        xeogl.scheduleTask(function () {
+                            self.fire("loaded", true);
+                        });
                     });
 
                     /**
@@ -164,7 +151,7 @@
 
         _getJSON: function () {
 
-            var json =  {};
+            var json = {};
 
             if (this.src) {
                 json.src = this._src;
