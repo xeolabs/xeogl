@@ -105,6 +105,7 @@
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/Spinner.html">Spinner</a></li>
@@ -501,7 +502,7 @@
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>components</code>
+                        <code>component</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
@@ -525,8 +526,8 @@
     </div>
 
     <div class="description">
-        <p>Adds one or more <a href="../classes/Component.html" class="crosslink">Components</a> to this Model.</p>
-<p>The <a href="../classes/Component.html" class="crosslink">Component(s)</a> may be specified by instance, ID or type.</p>
+        <p>Adds a <a href="../classes/Component.html" class="crosslink">Component</a> or subtype to this Model.</p>
+<p>The <a href="../classes/Component.html" class="crosslink">Component(s)</a> may be specified by ID, instance, JSON definition or type.</p>
 <p>See class comment for usage examples.</p>
 <p>The <a href="../classes/Component.html" class="crosslink">Components</a> must be in the same <a href="../classes/Scene.html" class="crosslink">Scene</a> as this Model.</p>
 <p>Fires an <a href="../classes/Model.html#event_added" class="crosslink">added</a> event.</p>
@@ -538,12 +539,12 @@
 
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">components</code>
-                        <span class="type">Array of Component</span>
+                        <code class="param-name">component</code>
+                        <span class="type">Number | String |  | <a href="../classes/Component.html" class="crosslink">Component</a></span>
 
 
                     <div class="param-description">
-                        <p>Array of <a href="../classes/Component.html" class="crosslink">Components</a> instances.</p>
+                        <p>ID, definition or instance of a <a href="../classes/Component.html" class="crosslink">Component</a> type or subtype.</p>
 
                     </div>
 
@@ -709,7 +710,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_models_model.js.html#l309"><code>src&#x2F;models&#x2F;model.js:309</code></a>
+        <a href="../files/src_models_model.js.html#l294"><code>src&#x2F;models&#x2F;model.js:294</code></a>
         </p>
 
 
@@ -975,7 +976,7 @@ myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_models_model.js.html#l383"><code>src&#x2F;models&#x2F;model.js:383</code></a>
+        <a href="../files/src_models_model.js.html#l368"><code>src&#x2F;models&#x2F;model.js:368</code></a>
         </p>
 
 
@@ -1333,7 +1334,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_models_model.js.html#l321"><code>src&#x2F;models&#x2F;model.js:321</code></a>
+        <a href="../files/src_models_model.js.html#l306"><code>src&#x2F;models&#x2F;model.js:306</code></a>
         </p>
 
 
@@ -1688,7 +1689,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l402"><code>src&#x2F;models&#x2F;model.js:402</code></a>
+                            <a href="../files/src_models_model.js.html#l387"><code>src&#x2F;models&#x2F;model.js:387</code></a>
                             </p>
                     
                     
@@ -1784,7 +1785,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l443"><code>src&#x2F;models&#x2F;model.js:443</code></a>
+                            <a href="../files/src_models_model.js.html#l428"><code>src&#x2F;models&#x2F;model.js:428</code></a>
                             </p>
                     
                     
@@ -1818,7 +1819,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l277"><code>src&#x2F;models&#x2F;model.js:277</code></a>
+                            <a href="../files/src_models_model.js.html#l260"><code>src&#x2F;models&#x2F;model.js:260</code></a>
                             </p>
                     
                     
@@ -1885,7 +1886,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l371"><code>src&#x2F;models&#x2F;model.js:371</code></a>
+                            <a href="../files/src_models_model.js.html#l356"><code>src&#x2F;models&#x2F;model.js:356</code></a>
                             </p>
                     
                     
@@ -1927,7 +1928,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l420"><code>src&#x2F;models&#x2F;model.js:420</code></a>
+                            <a href="../files/src_models_model.js.html#l405"><code>src&#x2F;models&#x2F;model.js:405</code></a>
                             </p>
                     
                     

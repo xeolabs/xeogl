@@ -105,6 +105,7 @@
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/Spinner.html">Spinner</a></li>
@@ -297,7 +298,11 @@
                         return;
                     }
 
-                    //this._taskId = this.taskStarted(&quot;Loading .3DS&quot;);
+                    // Increment processes represented by loading spinner
+                    // Spinner appears as soon as count is non-zero
+
+                    var spinner = this.scene.canvas.spinner;
+                    spinner.processes++;
 
                     this._src = value;
 
@@ -330,17 +335,19 @@
                                 self.indices = mesh.indices;
                                 self.tangents = null;
 
+                                spinner.processes--;
+
                                 self.fire(&quot;loaded&quot;, true);
                             });
                         },
 
                         function (msg) {
 
+                            spinner.processes--;
+
                             self.error(&quot;Failed to load .3DS file: &quot; + msg);
 
                             self.fire(&quot;failed&quot;, msg);
-
-                            //self._taskId = self.taskFailed(self._taskId);
                         });
 
                     /**

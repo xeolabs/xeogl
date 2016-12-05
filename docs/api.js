@@ -65,6 +65,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Rotate",
         "Scale",
         "Scene",
+        "SceneJSModel",
         "Skybox",
         "SphereGeometry",
         "Spinner",

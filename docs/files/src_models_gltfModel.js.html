@@ -105,6 +105,7 @@
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/Spinner.html">Spinner</a></li>
@@ -253,16 +254,6 @@
 
             this._src = null;
 
-            if (!cfg.src) {
-                this.error(&quot;Config missing: &#x27;src&#x27;&quot;);
-                return;
-            }
-
-            if (!xeogl._isString(cfg.src)) {
-                this.error(&quot;Value for config &#x27;src&#x27; should be a string&quot;);
-                return;
-            }
-
             this.src = cfg.src;
         },
 
@@ -320,7 +311,7 @@
                     // Increment processes represented by loading spinner
                     // Spinner appears as soon as count is non-zero
 
-                    var spinner = self.scene.canvas.spinner;
+                    var spinner = this.scene.canvas.spinner;
                     spinner.processes++;
 
                     glTFLoader.load(userInfo, options, function () {
@@ -329,12 +320,9 @@
                         // Spinner disappears if the count is now zero
                         spinner.processes--;
 
-                        /**
-                         Fired whenever this GLTFModel has finished loading components from the glTF file
-                         specified by {{#crossLink &quot;GLTFModel/src:property&quot;}}{{/crossLink}}.
-                         @event loaded
-                         */
-                        self.fire(&quot;loaded&quot;);
+                        xeogl.scheduleTask(function () {
+                            self.fire(&quot;loaded&quot;, true);
+                        });
                     });
 
                     /**
@@ -353,7 +341,7 @@
 
         _getJSON: function () {
 
-            var json =  {};
+            var json = {};
 
             if (this.src) {
                 json.src = this._src;

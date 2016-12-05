@@ -1263,6 +1263,15 @@
             },
             "fors": {},
             "namespaces": {}
+        },
+        "examples/js/models/sceneJSModel.js": {
+            "name": "examples/js/models/sceneJSModel.js",
+            "modules": {},
+            "classes": {
+                "SceneJSModel": 1
+            },
+            "fors": {},
+            "namespaces": {}
         }
     },
     "modules": {
@@ -1375,7 +1384,8 @@
                 "OBJGeometry": 1,
                 "TeapotGeometry": 1,
                 "VectorTextGeometry": 1,
-                "BuildableModel": 1
+                "BuildableModel": 1,
+                "SceneJSModel": 1
             },
             "fors": {},
             "namespaces": {
@@ -1383,8 +1393,8 @@
                 "xeogl": 1
             },
             "tag": "main",
-            "file": "examples/js/models/buildableModel.js",
-            "line": 1,
+            "file": "examples/js/models/sceneJSModel.js",
+            "line": 5,
             "description": "The xeogl namespace.",
             "is_constructor": 1,
             "params": [
@@ -1625,15 +1635,16 @@
                 "Nintendo3DSGeometry": 1,
                 "OBJGeometry": 1,
                 "TeapotGeometry": 1,
-                "VectorTextGeometry": 1
+                "VectorTextGeometry": 1,
+                "SceneJSModel": 1
             },
             "fors": {},
             "is_submodule": 1,
             "namespaces": {},
             "module": "xeogl",
             "namespace": "",
-            "file": "examples/js/geometry/vectorTextGeometry.js",
-            "line": 1,
+            "file": "examples/js/models/sceneJSModel.js",
+            "line": 5,
             "description": "Components for defining geometry.",
             "is_constructor": 1,
             "params": [
@@ -7304,7 +7315,7 @@
             "namespace": "",
             "file": "examples/js/geometry/objGeometry.js",
             "line": 5,
-            "description": "An **ObjGeometry** is a {{#crossLink \"Geometry\"}}{{/crossLink}} that's loaded from a\n<a href=\"https://en.wikipedia.org/wiki/Wavefront_.obj_file\">Wavefront .OBJ</a> file.\n\n<a href=\"../../examples/#geometry_OBJGeometry_raptor\"><img src=\"../../assets/images/screenshots/OBJGeometry.png\"></img></a>\n\n## Overview\n\n* An OBJGeometry mesh is defined by the Wavefront .OBJ file referenced by the OBJGeometry's {{#crossLink \"OBJGeometry/src:property\"}}{{/crossLink}} property.\n* An OBJGeometry only parses the geometry data from the .OBJ file and ignores any associated .MTL file.\n* Set the {{#crossLink \"OBJGeometry/src:property\"}}{{/crossLink}} property to a different file at any time, to regenerate the OBJGeometry's mesh from the new file.\n* Internally uses the <a href=\"http://k3d.ivank.net/\">k3d.js</a> library for parsing .OBJ files.\n\n## Examples\n\n<ul>\n<li>[Importing a Raptor from OBJ](../../examples/#importing_obj_raptor)</li>\n</ul>\n\n## Usage\n\n````javascript\nvar entity = new xeogl.Entity({\n\n   geometry: new xeogl.OBJGeometry({\n       src: \"models/obj/raptor.obj\"\n   }),\n\n   material: new xeogl.PhongMaterial({\n       diffuseMap: new xeogl.Texture({\n           src: \"models/obj/raptor.jpg\"\n       })\n   }),\n\n   transform: new xeogl.Rotate({\n       xyz: [1, 0, 0],\n       angle: 0,\n\n       parent: new xeogl.Translate({\n           xyz: [10, 3, 10]\n       })\n   })\n});\n\n// When the OBJGeometry has loaded,\n// fly the camera to fit the entity in view\n\nvar cameraFlight = new xeogl.CameraFlightAnimation();\n\nentity.geometry.on(\"loaded\", function () {\n\n        cameraFlight.flyTo({\n            aabb: entity.worldBoundary.aabb\n        });\n    });\n````",
+            "description": "An **OBJGeometry** is a {{#crossLink \"Geometry\"}}{{/crossLink}} that's loaded from a\n<a href=\"https://en.wikipedia.org/wiki/Wavefront_.obj_file\">Wavefront .OBJ</a> file.\n\n<a href=\"../../examples/#geometry_OBJGeometry_raptor\"><img src=\"../../assets/images/screenshots/OBJGeometry.png\"></img></a>\n\n## Overview\n\n* An OBJGeometry mesh is defined by the Wavefront .OBJ file referenced by the OBJGeometry's {{#crossLink \"OBJGeometry/src:property\"}}{{/crossLink}} property.\n* An OBJGeometry only parses the geometry data from the .OBJ file and ignores any associated .MTL file.\n* Set the {{#crossLink \"OBJGeometry/src:property\"}}{{/crossLink}} property to a different file at any time, to regenerate the OBJGeometry's mesh from the new file.\n* Internally uses the <a href=\"http://k3d.ivank.net/\">k3d.js</a> library for parsing .OBJ files.\n\n## Examples\n\n<ul>\n<li>[Importing a Raptor from OBJ](../../examples/#importing_obj_raptor)</li>\n</ul>\n\n## Usage\n\n````javascript\nvar entity = new xeogl.Entity({\n\n   geometry: new xeogl.OBJGeometry({\n       src: \"models/obj/raptor.obj\"\n   }),\n\n   material: new xeogl.PhongMaterial({\n       diffuseMap: new xeogl.Texture({\n           src: \"models/obj/raptor.jpg\"\n       })\n   }),\n\n   transform: new xeogl.Rotate({\n       xyz: [1, 0, 0],\n       angle: 0,\n\n       parent: new xeogl.Translate({\n           xyz: [10, 3, 10]\n       })\n   })\n});\n\n// When the OBJGeometry has loaded,\n// fly the camera to fit the entity in view\n\nvar cameraFlight = new xeogl.CameraFlightAnimation();\n\nentity.geometry.on(\"loaded\", function () {\n\n        cameraFlight.flyTo({\n            aabb: entity.worldBoundary.aabb\n        });\n    });\n````",
             "submodule": "geometry",
             "is_constructor": 1,
             "params": [
@@ -7508,6 +7519,57 @@
                 }
             ],
             "extends": "Model"
+        },
+        "SceneJSModel": {
+            "name": "SceneJSModel",
+            "shortname": "SceneJSModel",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "examples/js/models/sceneJSModel.js",
+            "line": 5,
+            "description": "An **SceneJSModel** is a {{#crossLink \"Model\"}}{{/crossLink}} that's loaded from a\nJSON-based <a href=\"http://scenejs.org\">SceneJS</a> scene definition.\n\n<a href=\"../../examples/#geometry_OBJGeometry_raptor\"><img src=\"../../assets/images/screenshots/SceneJSModel.png\"></img></a>\n\n## Overview\n\nTODO\n\n## Examples\n\n<ul>\n<li>[Importing a Raptor from OBJ](../../examples/#importing_obj_raptor)</li>\n</ul>\n\n## Usage\n\n````javascript\nTODO\n````",
+            "submodule": "geometry",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this SceneJSModel in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this SceneJSModel.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "src",
+                            "description": "Path to the JSON file.",
+                            "type": "String",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "extends": "Geometry"
         }
     },
     "classitems": [
@@ -18672,7 +18734,7 @@
         },
         {
             "file": "src/models/gltfModel.js",
-            "line": 82,
+            "line": 72,
             "description": "Path to a glTF file.\n\nYou can set this to a new file path at any time, which will cause the GLTFModel to load components from\nthe new file (after first destroying any components loaded from a previous file path).\n\nFires a {{#crossLink \"GLTFModel/src:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "src",
@@ -18683,7 +18745,7 @@
         },
         {
             "file": "src/models/gltfModel.js",
-            "line": 108,
+            "line": 98,
             "description": "Fired whenever this GLTFModel has finished loading components from the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "loaded",
@@ -18693,17 +18755,7 @@
         },
         {
             "file": "src/models/gltfModel.js",
-            "line": 143,
-            "description": "Fired whenever this GLTFModel has finished loading components from the glTF file\nspecified by {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}.",
-            "itemtype": "event",
-            "name": "loaded",
-            "class": "GLTFModel",
-            "module": "xeogl",
-            "submodule": "models"
-        },
-        {
-            "file": "src/models/gltfModel.js",
-            "line": 151,
+            "line": 138,
             "description": "Fired whenever this GLTFModel's {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -18765,14 +18817,14 @@
         {
             "file": "src/models/model.js",
             "line": 108,
-            "description": "Adds one or more {{#crossLink \"Component\"}}Components{{/crossLink}} to this Model.\n\nThe {{#crossLink \"Component\"}}Component(s){{/crossLink}} may be specified by instance, ID or type.\n\nSee class comment for usage examples.\n\nThe {{#crossLink \"Component\"}}Components{{/crossLink}} must be in the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Model.\n\nFires an {{#crossLink \"Model/added:event\"}}{{/crossLink}} event.",
+            "description": "Adds a {{#crossLink \"Component\"}}Component{{/crossLink}} or subtype to this Model.\n\nThe {{#crossLink \"Component\"}}Component(s){{/crossLink}} may be specified by ID, instance, JSON definition or type.\n\nSee class comment for usage examples.\n\nThe {{#crossLink \"Component\"}}Components{{/crossLink}} must be in the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Model.\n\nFires an {{#crossLink \"Model/added:event\"}}{{/crossLink}} event.",
             "itemtype": "method",
             "name": "add",
             "params": [
                 {
-                    "name": "components",
-                    "description": "Array of {{#crossLink \"Component\"}}Components{{/crossLink}} instances.",
-                    "type": "Array of Component"
+                    "name": "component",
+                    "description": "ID, definition or instance of a {{#crossLink \"Component\"}}Component{{/crossLink}} type or subtype.",
+                    "type": "Number|String|*|Component"
                 }
             ],
             "class": "Model",
@@ -18781,7 +18833,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 277,
+            "line": 260,
             "description": "Fired whenever an individual {{#crossLink \"Component\"}}{{/crossLink}} is added to this {{#crossLink \"Model\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "added",
@@ -18798,7 +18850,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 309,
+            "line": 294,
             "description": "Destroys all {{#crossLink \"Component\"}}Components{{/crossLink}} in this Model.",
             "itemtype": "method",
             "name": "destroyAll",
@@ -18808,7 +18860,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 321,
+            "line": 306,
             "description": "Removes all {{#crossLink \"Component\"}}Components{{/crossLink}} from this Model.",
             "itemtype": "method",
             "name": "removeAll",
@@ -18818,7 +18870,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 371,
+            "line": 356,
             "description": "Fired whenever an individual {{#crossLink \"Component\"}}{{/crossLink}} is removed from this {{#crossLink \"Model\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "removed",
@@ -18835,7 +18887,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 383,
+            "line": 368,
             "description": "Iterates with a callback over the {{#crossLink \"Component\"}}Components{{/crossLink}} in this Model.",
             "itemtype": "method",
             "name": "iterate",
@@ -18859,7 +18911,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 402,
+            "line": 387,
             "description": "The Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} attached to this Model.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Model.\n\nInternally, the given {{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most\n{{#crossLink \"Transform\"}}Transform{{/crossLink}} that the Model attaches to\nits {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires an {{#crossLink \"Model/transform:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "transform",
@@ -18870,7 +18922,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 420,
+            "line": 405,
             "description": "Fired whenever this Model's {{#crossLink \"Model/transform:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "transform",
@@ -18886,7 +18938,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 443,
+            "line": 428,
             "description": "World-space 3D boundary enclosing all the components in this Model.\n\nIf you call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on this boundary, then\nthis property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime you reference it.",
             "itemtype": "property",
             "name": "worldBoundary",
@@ -24784,7 +24836,7 @@
         },
         {
             "file": "examples/js/geometry/nintendo3DSGeometry.js",
-            "line": 157,
+            "line": 163,
             "description": "Fired whenever this Nintendo3DSGeometry's  {{#crossLink \"Nintendo3DSGeometry/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -24811,7 +24863,7 @@
         },
         {
             "file": "examples/js/geometry/objGeometry.js",
-            "line": 172,
+            "line": 178,
             "description": "Fired whenever this OBJGeometry's  {{#crossLink \"OBJGeometry/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -25152,6 +25204,43 @@
             "class": "BuildableModel",
             "module": "xeogl",
             "submodule": "models"
+        },
+        {
+            "file": "examples/js/models/sceneJSModel.js",
+            "line": 55,
+            "description": "Path to the SceneJS JSON scene description file.\n\nFires a {{#crossLink \"SceneJSModel/src:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "src",
+            "type": "String",
+            "class": "SceneJSModel",
+            "module": "xeogl",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/models/sceneJSModel.js",
+            "line": 78,
+            "description": "Fired whenever this SceneJSModel has finished loading the SceneJS JSON file\nspecified by {{#crossLink \"SceneJSModel/src:property\"}}{{/crossLink}}.",
+            "itemtype": "event",
+            "name": "loaded",
+            "class": "SceneJSModel",
+            "module": "xeogl",
+            "submodule": "geometry"
+        },
+        {
+            "file": "examples/js/models/sceneJSModel.js",
+            "line": 122,
+            "description": "Fired whenever this SceneJSModel's  {{#crossLink \"SceneJSModel/src:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "src",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "SceneJSModel",
+            "module": "xeogl",
+            "submodule": "geometry"
         }
     ],
     "warnings": [

@@ -105,6 +105,7 @@
                                 <li><a href="../classes/Rotate.html">Rotate</a></li>
                                 <li><a href="../classes/Scale.html">Scale</a></li>
                                 <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
                                 <li><a href="../classes/Skybox.html">Skybox</a></li>
                                 <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
                                 <li><a href="../classes/Spinner.html">Spinner</a></li>
@@ -192,7 +193,7 @@
     &quot;use strict&quot;;
 
     /**
-     An **ObjGeometry** is a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that&#x27;s loaded from a
+     An **OBJGeometry** is a {{#crossLink &quot;Geometry&quot;}}{{/crossLink}} that&#x27;s loaded from a
      &lt;a href=&quot;https://en.wikipedia.org/wiki/Wavefront_.obj_file&quot;&gt;Wavefront .OBJ&lt;/a&gt; file.
 
      &lt;a href=&quot;../../examples/#geometry_OBJGeometry_raptor&quot;&gt;&lt;img src=&quot;../../assets/images/screenshots/OBJGeometry.png&quot;&gt;&lt;/img&gt;&lt;/a&gt;
@@ -295,7 +296,11 @@
                         return;
                     }
 
-                    //this._taskId = this.taskStarted(&quot;Loading .OBJ&quot;);
+                    // Increment processes represented by loading spinner
+                    // Spinner appears as soon as count is non-zero
+
+                    var spinner = this.scene.canvas.spinner;
+                    spinner.processes++;
 
                     this._src = value;
 
@@ -345,17 +350,19 @@
 
                                 self.indices = indices;
 
+                                spinner.processes--;
+
                                 self.fire(&quot;loaded&quot;, true);
                             });
                         },
 
                         function (msg) {
 
+                            spinner.processes--;
+
                             self.error(&quot;Failed to load .OBJ file: &quot; + msg);
 
                             self.fire(&quot;failed&quot;, msg);
-
-                            //self._taskId = self.taskFailed(self._taskId);
                         });
 
                     /**
