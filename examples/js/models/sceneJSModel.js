@@ -42,6 +42,10 @@
         })
      });
 
+     // Our tank's gun has a xeogl.Rotate within the SceneJSModel; access it by ID
+     // to set its angle. Note how the first part of the ID is the SceneJSModel's ID.
+     tank.components["tank.gunDir"].angle = gunDir;
+
      // Set camera position
      var view = tank.scene.camera.view;
      view.eye = [0, 0, -70];
