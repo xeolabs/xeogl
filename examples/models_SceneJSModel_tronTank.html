@@ -16,16 +16,17 @@
 
     <style>
         #infoLight a {
-            color: lightgreen;
-            font-size: 14pt;
+            color: #72deee;
+            font-size: 13pt;
         }
+
     </style>
 
 <body>
 
 <div id="infoLight">
     <pre id="infoTxt"
-         style="  border-radius: 10px; left: 0; height:auto; text-align: left; background: black; opacity: 0.4; color: lightgreen; border: solid 1px lightgreen; padding: 15px;font-size: 14pt;"></pre>
+         style="border-radius: 10px; left: 0; height:auto; text-align: left; background: black; opacity: 0.5; color: #72deee; border: solid 2px #5bee5d; padding: 15px;font-size: 13pt;"></pre>
 </div>
 
 <audio autoplay="true" src="sounds/tng_commandcenter.mp3" type="audio/mpeg"></audio>
@@ -275,15 +276,23 @@
     var terminal = new (function () {
 
         var lines = [
-            ">REQUEST XEOGL TRON TANK DEMO STATUS",
-            "!STATUS: RUNNING",
-            "",
-            ">REQUEST DEMO INFORMATION",
-            "!THIS DEMO USES A <a href='../docs/classes/SceneJSModel.html' target='_parent'>xeogl.SceneJSModel</a> COMPONENT TO IMPORT",
-            "!A TRON TANK MODEL FROM SCENEJS JSON FORMAT INTO XEOGL.",
-            "!ORIGINAL COLLADA MODEL BY <a href='https://3dwarehouse.sketchup.com/user.html?id=1058361951245355501624136'>KATASE</a>.",
-            "",
-            "!-END OF LINE-"
+            "!flynn:~$ ",
+            "request xeogl tron tan status",
+            "!<br>",
+            "!Status: RUNNING",
+            "!<br><br>",
+            "!flynn:~$ ",
+            "request demo information<br>",
+            "!This demo uses a <a href='../docs/classes/SceneJSModel.html' target='_other'>xeogl.SceneJSModel</a> component to import",
+            "!<br>",
+            "!a Tron Tank model from <a href='http://scenejs.org' target='_other'>SceneJS</a> <a href='models/scenejs/tronTank.json' target='_other'>JSON format</a> into <a href='http://xeogl.org' target='_other'>xeogl</a>.",
+            "!<br>",
+            "!<br>",
+            "!Tank model by <a href='https://3dwarehouse.sketchup.com/user.html?id=1058361951245355501624136' target='_other'>Katase</a> - demo by <a href='https://twitter.com/xeographics' target='_other'>@xeographics</a>.",
+
+            "!<br><br>",
+            "!END OF LINE<br>",
+            "!<a href='javascript:terminal.close();' class='blinking'>[close]</a><br>"
         ];
 
         var log = document.getElementById("infoTxt");
@@ -317,7 +326,7 @@
             if (colNum < line.length) {
                 char = line[colNum];
                 if (char === "!") {
-                    html += line.substring(1) + "<br>";
+                    html += line.substring(1);
                     lineNum++;
                     colNum = 0;
                     log.innerHTML = html;
@@ -328,12 +337,15 @@
                 log.innerHTML = html + "_";
                 colNum++;
             } else {
-                html += "<br>";
+                //html += "<br>";
                 log.innerHTML = html + "_";
                 colNum = 0;
                 lineNum++;
             }
+        };
 
+        this.close = function () {
+            log.style.display = "none";
         };
     })();
 
