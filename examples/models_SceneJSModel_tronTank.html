@@ -269,10 +269,10 @@
     });
 
     //---------------------------------------------------------------------------------
-    // Text console that prints out info on this demo
+    // Text terminal that prints out info on this demo
     //---------------------------------------------------------------------------------
 
-    var console = new (function () {
+    var terminal = new (function () {
 
         var lines = [
             ">REQUEST XEOGL TRON TANK DEMO STATUS",
@@ -297,7 +297,7 @@
         var html = "";
 
         // Used to make text output sporadic,
-        // to simulate a person typing in the console
+        // to simulate a person typing in the terminal
         function resetCountDown() {
             countDown = Math.round(Math.random() * 15);
         }
@@ -374,8 +374,8 @@
                 view.rotateEyeY(0.3);
             }
 
-            // Make our "console" div print some more text
-            console.update();
+            // Make our "terminal" div print some more text
+            terminal.update();
         });
     });
 
