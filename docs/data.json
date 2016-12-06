@@ -1299,8 +1299,7 @@
                 "effects": 1,
                 "curves": 1,
                 "generation": 1,
-                "skyboxes": 1,
-                "model": 1
+                "skyboxes": 1
             },
             "classes": {
                 "CameraFlightAnimation": 1,
@@ -1893,15 +1892,16 @@
             "classes": {
                 "GLTFModel": 1,
                 "Model": 1,
-                "BuildableModel": 1
+                "BuildableModel": 1,
+                "SceneJSModel": 1
             },
             "fors": {},
             "is_submodule": 1,
             "namespaces": {},
             "module": "xeogl",
             "namespace": "",
-            "file": "examples/js/models/buildableModel.js",
-            "line": 1,
+            "file": "examples/js/models/sceneJSModel.js",
+            "line": 5,
             "description": "Models are units of xeogl content."
         },
         "rendering": {
@@ -2099,21 +2099,6 @@
             "file": "examples/js/skyboxes/skybox.js",
             "line": 1,
             "description": "Skybox components."
-        },
-        "model": {
-            "name": "model",
-            "submodules": {},
-            "classes": {
-                "SceneJSModel": 1
-            },
-            "fors": {},
-            "is_submodule": 1,
-            "namespaces": {},
-            "module": "xeogl",
-            "namespace": "",
-            "description": "An **SceneJSModel** is a {{#crossLink \"Model\"}}{{/crossLink}} that's loaded from the\nJSON-based <a href=\"http://scenejs.org\">SceneJS</a> scene definition format.\n\n<a href=\"../../examples/#models_SceneJSModel_tronTank\"><img src=\"http://i.giphy.com/l3vR50pFTpEbJTztS.gif\"></img></a>\n\n## Overview\n\n* A SceneJSModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from SceneJS JSON.\n* It begins loading as soon as you set its {{#crossLink \"SceneJSModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid SceneJS JSON file.\n* You can set {{#crossLink \"SceneJSModel/src:property\"}}{{/crossLink}} to a new file path at any time, which causes\nthe SceneJSModel to clear itself and load components from the new file.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n<img src=\"../../../assets/images/SceneJSModel.png\"></img>\n\n## Examples\n\n* [Importing the SceneJS Tron Tank model](../../examples/#models_SceneJSModel_tronTank)\n\n## Usage\n\nImporting a <a href=\"../../examples/models/scenejs/tronTank.json\">SceneJS JSON model</a> into the default xeogl {{#crossLink \"Scene\"}}{{/crossLink}}:\n\n````javascript\n// Import SceneJS JSON model\nvar tank = new xeogl.SceneJSModel({\n   id: \"tank\",\n   src: \"models/scenejs/tronTank.min.json\",\n   transform: new xeogl.Rotate({ // Tank direction\n       xyz: [0, 1, 0],\n       angle: 0,\n       parent: new xeogl.Translate({ // Tank position\n           xyz: [0, 0, 0]\n       })\n   })\n});\n\n// Set camera position\nvar view = tank.scene.camera.view;\nview.eye = [0, 0, -70];\nview.look = [0, 0, 0];\nview.up = [0, 1, 0];\n````",
-            "file": "examples/js/models/sceneJSModel.js",
-            "line": 5
         }
     },
     "classes": {
@@ -7547,8 +7532,8 @@
             "namespace": "",
             "file": "examples/js/models/sceneJSModel.js",
             "line": 5,
-            "description": "An **SceneJSModel** is a {{#crossLink \"Model\"}}{{/crossLink}} that's loaded from the\nJSON-based <a href=\"http://scenejs.org\">SceneJS</a> scene definition format.\n\n<a href=\"../../examples/#models_SceneJSModel_tronTank\"><img src=\"http://i.giphy.com/l3vR50pFTpEbJTztS.gif\"></img></a>\n\n## Overview\n\n* A SceneJSModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from SceneJS JSON.\n* It begins loading as soon as you set its {{#crossLink \"SceneJSModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid SceneJS JSON file.\n* You can set {{#crossLink \"SceneJSModel/src:property\"}}{{/crossLink}} to a new file path at any time, which causes\nthe SceneJSModel to clear itself and load components from the new file.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n<img src=\"../../../assets/images/SceneJSModel.png\"></img>\n\n## Examples\n\n* [Importing the SceneJS Tron Tank model](../../examples/#models_SceneJSModel_tronTank)\n\n## Usage\n\nImporting a <a href=\"../../examples/models/scenejs/tronTank.json\">SceneJS JSON model</a> into the default xeogl {{#crossLink \"Scene\"}}{{/crossLink}}:\n\n````javascript\n// Import SceneJS JSON model\nvar tank = new xeogl.SceneJSModel({\n   id: \"tank\",\n   src: \"models/scenejs/tronTank.min.json\",\n   transform: new xeogl.Rotate({ // Tank direction\n       xyz: [0, 1, 0],\n       angle: 0,\n       parent: new xeogl.Translate({ // Tank position\n           xyz: [0, 0, 0]\n       })\n   })\n});\n\n// Set camera position\nvar view = tank.scene.camera.view;\nview.eye = [0, 0, -70];\nview.look = [0, 0, 0];\nview.up = [0, 1, 0];\n````",
-            "submodule": "model",
+            "description": "An **SceneJSModel** is a {{#crossLink \"Model\"}}{{/crossLink}} that's loaded from the\nJSON-based <a href=\"http://scenejs.org\">SceneJS</a> scene definition format.\n\n<a href=\"../../examples/#models_SceneJSModel_tronTank\"><img src=\"http://i.giphy.com/l3vR50pFTpEbJTztS.gif\"></img></a>\n\n## Overview\n\n* A SceneJSModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from SceneJS JSON.\n* It begins loading as soon as you set its {{#crossLink \"SceneJSModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid SceneJS JSON file.\n* You can set {{#crossLink \"SceneJSModel/src:property\"}}{{/crossLink}} to a new file path at any time, which causes\nthe SceneJSModel to clear itself and load components from the new file.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n<img src=\"../../../assets/images/SceneJSModel.png\"></img>\n\n## Examples\n\n* [Importing the SceneJS Tron Tank model](../../examples/#models_SceneJSModel_tronTank)\n\n## Usage\n\nImporting a <a href=\"../../examples/models/scenejs/tronTank.json\">SceneJS JSON model</a> into the default xeogl {{#crossLink \"Scene\"}}{{/crossLink}}:\n\n````javascript\n// Import SceneJS JSON model\nvar tank = new xeogl.SceneJSModel({\n   id: \"tank\",\n   src: \"models/scenejs/tronTank.min.json\",\n   transform: new xeogl.Rotate({ // Tank direction\n       xyz: [0, 1, 0],\n       angle: 0,\n       parent: new xeogl.Translate({ // Tank position\n           xyz: [0, 0, 0]\n       })\n   })\n});\n\n// Our tank's gun has a xeogl.Rotate within the SceneJSModel; access it by ID\n// to set its angle. Note how the first part of the ID is the SceneJSModel's ID.\ntank.components[\"tank.gunDir\"].angle = gunDir;\n\n// Set camera position\nvar view = tank.scene.camera.view;\nview.eye = [0, 0, -70];\nview.look = [0, 0, 0];\nview.up = [0, 1, 0];\n````",
+            "submodule": "models",
             "is_constructor": 1,
             "params": [
                 {
@@ -25222,28 +25207,28 @@
         },
         {
             "file": "examples/js/models/sceneJSModel.js",
-            "line": 80,
+            "line": 84,
             "description": "Path to the SceneJS JSON scene description file.\n\nUpdate this at any time to load a different file.\n\nFires a {{#crossLink \"SceneJSModel/src:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "src",
             "type": "String",
             "class": "SceneJSModel",
             "module": "xeogl",
-            "submodule": "model"
+            "submodule": "models"
         },
         {
             "file": "examples/js/models/sceneJSModel.js",
-            "line": 105,
+            "line": 109,
             "description": "Fired whenever this SceneJSModel has finished loading the SceneJS JSON file\nspecified by {{#crossLink \"SceneJSModel/src:property\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "loaded",
             "class": "SceneJSModel",
             "module": "xeogl",
-            "submodule": "model"
+            "submodule": "models"
         },
         {
             "file": "examples/js/models/sceneJSModel.js",
-            "line": 149,
+            "line": 153,
             "description": "Fired whenever this SceneJSModel's  {{#crossLink \"SceneJSModel/src:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "src",
@@ -25255,7 +25240,7 @@
             ],
             "class": "SceneJSModel",
             "module": "xeogl",
-            "submodule": "model"
+            "submodule": "models"
         }
     ],
     "warnings": [

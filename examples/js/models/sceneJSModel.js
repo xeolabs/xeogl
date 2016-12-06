@@ -55,7 +55,7 @@
 
      @class SceneJSModel
      @module xeogl
-     @submodule model
+     @submodule models
      @constructor
      @param [scene] {Scene} Parent {{#crossLink "Scene"}}Scene{{/crossLink}} - creates this SceneJSModel in the default
      {{#crossLink "Scene"}}Scene{{/crossLink}} when omitted.

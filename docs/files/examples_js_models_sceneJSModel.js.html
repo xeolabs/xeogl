@@ -146,7 +146,6 @@
                                 <li><a href="..//modules/lighting.html">lighting</a></li>
                                 <li><a href="..//modules/materials.html">materials</a></li>
                                 <li><a href="..//modules/math.html">math</a></li>
-                                <li><a href="..//modules/model.html">model</a></li>
                                 <li><a href="..//modules/models.html">models</a></li>
                                 <li><a href="..//modules/rendering.html">rendering</a></li>
                                 <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
@@ -233,6 +232,10 @@
         })
      });
 
+     // Our tank&#x27;s gun has a xeogl.Rotate within the SceneJSModel; access it by ID
+     // to set its angle. Note how the first part of the ID is the SceneJSModel&#x27;s ID.
+     tank.components[&quot;tank.gunDir&quot;].angle = gunDir;
+
      // Set camera position
      var view = tank.scene.camera.view;
      view.eye = [0, 0, -70];
@@ -242,7 +245,7 @@
 
      @class SceneJSModel
      @module xeogl
-     @submodule model
+     @submodule models
      @constructor
      @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} - creates this SceneJSModel in the default
      {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted.
