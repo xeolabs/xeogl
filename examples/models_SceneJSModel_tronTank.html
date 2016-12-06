@@ -49,7 +49,7 @@
     //---------------------------------------------------------------------------------
 
     // Tank model
-    var tank = new xeogl.SceneJSModel({
+    var tankModel = new xeogl.SceneJSModel({
         id: "tank",
         src: "models/scenejs/tronTank.min.json",
         transform: new xeogl.Rotate({ // Tank direction
@@ -63,7 +63,7 @@
 
     // Add a shadow under the tank
     // insert it into the SceneJSModel so it rotates with the tank
-    tank.add({
+    tankModel.add({
         type: "xeogl.Entity",
         geometry: {
             type: "xeogl.PlaneGeometry",
@@ -87,7 +87,7 @@
 
     // Follow the tank with the camera; don't keep tank fitted to view
     new xeogl.CameraFollowAnimation({
-        worldBoundary: tank.worldBoundary,
+        worldBoundary: tankModel.worldBoundary,
         fit: false
     });
 
@@ -138,8 +138,8 @@
     // Attach tank to the path; move it along path and
     // keep it pointing along the path
     path.on("t", function () {
-        tank.transform.parent.xyz = this.point;
-        tank.transform.angle = 360 - (Math.atan2(this.tangent[2], this.tangent[0]) / xeogl.math.DEGTORAD) + 270;
+        tankModel.transform.parent.xyz = this.point;
+        tankModel.transform.angle = 360 - (Math.atan2(this.tangent[2], this.tangent[0]) / xeogl.math.DEGTORAD) + 270;
     });
 
 
@@ -357,7 +357,7 @@
     // Game loop - initialize once tank model has loaded
     //---------------------------------------------------------------------------------
 
-    tank.on("loaded", function () {
+    tankModel.on("loaded", function () {
 
         // Slowly rotate the tank and gun
         var gunDir = 0;
@@ -365,7 +365,7 @@
         var zoom = 100;
 
         // Game loop
-        tank.scene.on("tick", function () {
+        tankModel.scene.on("tick", function () {
 
             gunDir += gunDirInc;
 
@@ -375,7 +375,7 @@
 
             // Access the gun rotation in the Model;
             // the first part of the IDs is the ID of the Model
-            tank.components["tank.gunDir"].angle = gunDir;
+            tankModel.components["tank.gunDir"].angle = gunDir;
 
             // Update the path animation
             path.t = (path.t + 0.0002) % 1.0;

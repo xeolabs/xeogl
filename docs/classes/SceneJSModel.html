@@ -202,48 +202,163 @@
 
 
 <div class="box intro">
-    <p>An <strong>SceneJSModel</strong> is a <a href="../classes/Model.html" class="crosslink">Model</a> that&#39;s loaded from the
-JSON-based <a href="http://scenejs.org">SceneJS</a> scene definition format.</p>
+    <p>A <strong>SceneJSModel</strong> is a <a href="../classes/Model.html" class="crosslink">Model</a> that
+imports content from the JSON-based <a href="http://scenejs.org">SceneJS</a> scene definition format.</p>
 <p><a href="../../examples/#models_SceneJSModel_tronTank"><img src="http://i.giphy.com/l3vR50pFTpEbJTztS.gif"></img></a></p>
 <h2 id="overview">Overview</h2>
 <ul>
-<li>A SceneJSModel is a container of <a href="../classes/Component.html" class="crosslink">Components</a> that loads itself from SceneJS JSON.</li>
-<li>It begins loading as soon as you set its <a href="../classes/SceneJSModel.html#property_src" class="crosslink">src</a>
-property to the location of a valid SceneJS JSON file.</li>
-<li>You can set <a href="../classes/SceneJSModel.html#property_src" class="crosslink">src</a> to a new file path at any time, which causes
-the SceneJSModel to clear itself and load components from the new file.</li>
+<li>A SceneJSModel is a container of <a href="../classes/Component.html" class="crosslink">Components</a> that loads itself from a
+SceneJS scene definition, given as either a JSON file or a JavaScript object (POJO).</li>
+<li>It begins loading as soon as you either set its <a href="../classes/SceneJSModel.html#property_src" class="crosslink">src</a>
+property to the location of a valid SceneJS JSON file, or set its <a href="../classes/SceneJSModel.html#property_data" class="crosslink">data</a> property to a
+valid POJO.</li>
+<li>You can set these properties to new values at any time, which causes
+the SceneJSModel to clear itself and load fresh components.</li>
 <li>Can be transformed within World-space by attaching it to a <a href="../classes/Transform.html" class="crosslink">Transform</a>.</li>
 <li>Provides its World-space boundary as a <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>.</li>
 </ul>
 <p><img src="../../../assets/images/SceneJSModel.png"></img></p>
+<h2 id="scenejs-support">SceneJS Support</h2>
+<p>SceneJSModel was developed to import the <a href="../../examples/#models_SceneJSModel_tronTank">Tron Tank model</a>. As such,
+it only imports a limited subset of the SceneJS scene definition API. <b>Use with caution</b> and be prepared to
+fix and contribute missing functionality!</p>
+<p>SceneJS nodes supported so far:</p>
+<ul>
+<li><code>"node"</code></li>
+<li><code>"rotate"</code></li>
+<li><code>"translate"</code></li>
+<li><code>"scale"</code></li>
+<li><code>"material"</code></li>
+<li><code>"texture"</code></li>
+<li><code>"fresnel"</code></li>
+<li><code>"flags"</code></li>
+<li><code>"geometry"</code></li>
+<li><code>"layer"</code></li>
+<li><code>"stage"</code></li>
+</ul>
+<p>Unsupported API features include:</p>
+<ul>
+<li>Lights</li>
+<li>Cameras</li>
+<li>Shared node cores</li>
+<li>SceneJS plugins</li>
+</ul>
 <h2 id="examples">Examples</h2>
 <ul>
-<li><a href="../../examples/#models_SceneJSModel_tronTank">Importing the SceneJS Tron Tank model</a></li>
+<li><a href="../../examples/#models_SceneJSModel_pojo_textures">Importing POJO defining geometry with diffuse, specular and normal maps</a></li>
+<li><a href="../../examples/#models_SceneJSModel_pojo_transparency">Importing POJO defining transparent geometry</a></li>
+<li><a href="../../examples/#models_SceneJSModel_json_textures">Importing JSON file defining geometry with diffuse, specular and normal maps</a></li>
+<li><a href="../../examples/#models_SceneJSModel_tronTank">Importing JSON file defining the SceneJS Tron Tank</a></li>
 </ul>
 <h2 id="usage">Usage</h2>
-<p>Importing a <a href="../../examples/models/scenejs/tronTank.json">SceneJS JSON model</a> into the default xeogl <a href="../classes/Scene.html" class="crosslink">Scene</a>:</p>
+<h4 id="loading-a-pojo-scene-definition">Loading a POJO scene definition</h4>
+<p>The simplest way to import SceneJS content is by setting a POJO on the SceneJSModel&#39;s <a href="../classes/SceneJSModel.html#property_data" class="crosslink">data</a>
+property:</p>
+<pre class="code prettyprint"><code class="lang-javascript">var pojoModel = new xeogl.SceneJSModel({
+   id: "myModel",
+
+   // Our POJO scene definition
+   data: {
+       type: "node",
+       nodes: [
+           {
+               type: "rotate",
+               id: "myRotate",
+               nodes: [
+                   {
+                       type: "geometry",
+                       id: "boxEntity",
+                       primitive: "triangles",
+                       positions: [
+                           2, 2, 2, -2, 2, 2, -2, -2, 2, 2, -2, 2, 2, 2, 2, 2, -2,
+                           2, 2, -2, -2, 2, 2, -2, 2, 2, 2, 2, 2, -2, -2, 2, -2,
+                           -2, 2, 2, -2, 2, 2, -2, 2, -2, -2, -2, -2, -2, -2, 2,
+                           -2, -2, -2, 2, -2, -2, 2, -2, 2, -2, -2, 2, 2, -2, -2,
+                           -2, -2, -2, -2, 2, -2, 2, 2, -2
+                       ],
+                       normals: [
+                           0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1,
+                           0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, -1, 0,
+                           0, -1, 0, 0, -1, 0, 0, -1, 0, 0, 0, -1, 0, 0, -1, 0, 0,
+                          -1, 0, 0, -1, 0, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1
+                       ],
+                       uv: [
+                           5, 5, 0, 5, 0, 0, 5, 0, 0, 5, 0, 0, 5, 0, 5, 5,
+                           5, 0, 5, 5, 0, 5, 0, 0, 5, 5, 0, 5, 0, 0, 5, 0,
+                           0, 0, 5, 0, 5, 5, 0, 5, 0, 0, 5, 0, 5, 5, 0, 5
+                       ],
+                       indices: [
+                           0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11,
+                           12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21,
+                           22, 20, 22, 23
+                       ]
+                   }
+               ]
+           }
+       ]
+   }
+});
+
+// Set camera position
+var view = pojoModel.scene.camera.view;
+view.eye = [0, 0, -25];
+view.look = [0, 0, 0];
+view.up = [0, 1, 0];
+</code></pre>
+<h4 id="finding-components">Finding components</h4>
+<p>Our SceneJSModel has now created various xeogl components within itself, which we can find by their IDs. In this
+particular example, our POJO has a SceneJS <code>"rotate"</code> node with ID <code>"myRotate"</code>. Our SceneJSModel parsed that into a
+<a href="../classes/Rotate.html" class="crosslink">Rotate</a> component with ID <code>"myModel.myRotate"</code>.</p>
+<p>To see what components our SceneJSModel created, we can drop this expression into the browser&#39;s JavaScript
+debug console (we&#39;re using Chrome here):</p>
+<pre class="code prettyprint"><code>pojoModel.types;
+</code></pre><p>The result is the value of the SceneJSModel&#39;s <a href="../classes/Model.html#property_types" class="crosslink">types</a> map, which
+contains its xeogl components, mapped to their types:</p>
+<p><img src="../../../assets/images/screenshots/SceneJSModel_console_tankModel.types.png"></img></p>
+<p>Here we&#39;ve expanded the <a href="../classes/Rotate.html" class="crosslink">Rotate</a> components, and we can see
+our <a href="../classes/Rotate.html" class="crosslink">Rotate</a>.</p>
+<p>Let&#39;s get that <a href="../classes/Rotate.html" class="crosslink">Rotate</a> from our SceneJSModel&#39;s
+<a href="../classes/Model.html#property_components" class="crosslink">components</a> map and set it spinning:</p>
+<pre class="code prettyprint"><code class="lang-JavaScript">var rotate = pojoModel.components["myModel.myRotate"];
+
+pojoModel.scene.on("tick", function() {
+       rotate.angle += 0.2;
+   });
+</code></pre>
+<h4 id="loading-a-json-scene-definition">Loading a JSON scene definition</h4>
+<p>As shown in the example below, we can also import a SceneJS scene definition from a JSON file (eg. <a href="../../examples/models/scenejs/tronTank.json">tronTank.json</a>).
+Note that we need to wait for the SceneJSModel&#39;s <a href="../classes/SceneJSModel.html#event_loaded" class="crosslink">loaded</a> event before we
+can access its components. In this example we&#39;re also showing how a SceneJSModel can be attached to a modeling <a href="../classes/Transform.html" class="crosslink">Transform</a>
+hierarchy to transform it within World space.</p>
 <pre class="code prettyprint"><code class="lang-javascript">// Import SceneJS JSON model
-var tank = new xeogl.SceneJSModel({
-   id: "tank",
-   src: "models/scenejs/tronTank.min.json",
-   transform: new xeogl.Rotate({ // Tank direction
+var tankModel = new xeogl.SceneJSModel({
+   id: "tankModel",
+
+   // Path to our JSON scene definition file
+   src: "models/scenejs/tronTank.json",
+
+   // We can also bolt on a hierarchy of modeling transforms,
+   // to transform the entire SceneJSModel in World space
+   transform: new xeogl.Rotate({
        xyz: [0, 1, 0],
        angle: 0,
-       parent: new xeogl.Translate({ // Tank position
+       parent: new xeogl.Translate({
            xyz: [0, 0, 0]
        })
    })
 });
 
-// Our tank&#39;s gun has a xeogl.Rotate within the SceneJSModel; access it by ID
-// to set its angle. Note how the first part of the ID is the SceneJSModel&#39;s ID.
-tank.components["tank.gunDir"].angle = gunDir;
+// Once our SceneJSModel has loaded, we can access its components
+tankModel.on("loaded", function() {
 
-// Set camera position
-var view = tank.scene.camera.view;
-view.eye = [0, 0, -70];
-view.look = [0, 0, 0];
-view.up = [0, 1, 0];
+       tankModel.components["tankModel.gunDir"].angle = gunDir;
+
+       // Set camera position
+       var view = tankModel.scene.camera.view;
+       view.eye = [0, 0, -70];
+       view.look = [0, 0, 0];
+       view.up = [0, 1, 0];
+   });
 </code></pre>
 
 </div>
@@ -344,7 +459,18 @@ view.up = [0, 1, 0];
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Path to the JSON file.</p>
+                                            <p>Path to a SceneJS JSON scene description file.</p>
+        
+                                        </div>
+        
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[data]</code>
+                                            <span class="type">String</span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+        
+                                        <div class="param-description">
+                                            <p>Path to a SceneJS JSON scene description file.</p>
         
                                         </div>
         
@@ -431,6 +557,10 @@ view.up = [0, 1, 0];
                                 <a href="#property_colors">colors</a>
 
                             </li>
+                            <li class="index-item property">
+                                <a href="#property_data">data</a>
+
+                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_destroyed">destroyed</a>
 
@@ -513,6 +643,10 @@ view.up = [0, 1, 0];
                             </li>
                             <li class="index-item event inherited">
                                 <a href="#event_colors">colors</a>
+
+                            </li>
+                            <li class="index-item event">
+                                <a href="#event_data">data</a>
 
                             </li>
                             <li class="index-item event inherited">
@@ -1339,6 +1473,33 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="property_data" class="property item">
+                        <h3 class="name"><code>data</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_models_sceneJSModel.js.html#l305"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:305</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>A SceneJS POJO scene definition.</p>
+                    <p>Update this at any time to clear and re-import content.</p>
+                    <p>Fires a <a href="../classes/SceneJSModel.html#event_data" class="crosslink">data</a> event on change.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
                     <div id="property_destroyed" class="property item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type">Boolean</span>
@@ -1648,7 +1809,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_sceneJSModel.js.html#l84"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:84</code></a>
+                            <a href="../files/examples_js_models_sceneJSModel.js.html#l221"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:221</code></a>
                             </p>
                     
                     
@@ -1656,7 +1817,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Path to the SceneJS JSON scene description file.</p>
-                    <p>Update this at any time to load a different file.</p>
+                    <p>Update this at any time to clear and re-import content.</p>
                     <p>Fires a <a href="../classes/SceneJSModel.html#event_src" class="crosslink">src</a> event on change.</p>
                     
                         </div>
@@ -1899,6 +2060,48 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
+                    <div id="event_data" class="events item">
+                        <h3 class="name"><code>data</code></h3>
+                        <span class="type"></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/examples_js_models_sceneJSModel.js.html#l337"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:337</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Fired whenever this SceneJSModel&#39;s  <a href="../classes/SceneJSModel.html#property_data" class="crosslink">data</a> property changes.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Event Payload:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">value</code>
+                                            <span class="type">Object</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The property&#39;s new value</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="event_destroyed" class="events item inherited">
                         <h3 class="name"><code>destroyed</code></h3>
                         <span class="type"></span>
@@ -1977,7 +2180,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_sceneJSModel.js.html#l109"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:109</code></a>
+                            <a href="../files/examples_js_models_sceneJSModel.js.html#l246"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:246</code></a>
                             </p>
                     
                     
@@ -2132,7 +2335,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_models_sceneJSModel.js.html#l153"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:153</code></a>
+                            <a href="../files/examples_js_models_sceneJSModel.js.html#l292"><code>examples&#x2F;js&#x2F;models&#x2F;sceneJSModel.js:292</code></a>
                             </p>
                     
                     

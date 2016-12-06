@@ -193,54 +193,188 @@
     &quot;use strict&quot;;
 
     /**
-     An **SceneJSModel** is a {{#crossLink &quot;Model&quot;}}{{/crossLink}} that&#x27;s loaded from the
-     JSON-based &lt;a href=&quot;http://scenejs.org&quot;&gt;SceneJS&lt;/a&gt; scene definition format.
+     A **SceneJSModel** is a {{#crossLink &quot;Model&quot;}}{{/crossLink}} that
+     imports content from the JSON-based &lt;a href=&quot;http://scenejs.org&quot;&gt;SceneJS&lt;/a&gt; scene definition format.
 
      &lt;a href=&quot;../../examples/#models_SceneJSModel_tronTank&quot;&gt;&lt;img src=&quot;http://i.giphy.com/l3vR50pFTpEbJTztS.gif&quot;&gt;&lt;/img&gt;&lt;/a&gt;
 
      ## Overview
 
-     * A SceneJSModel is a container of {{#crossLink &quot;Component&quot;}}Components{{/crossLink}} that loads itself from SceneJS JSON.
-     * It begins loading as soon as you set its {{#crossLink &quot;SceneJSModel/src:property&quot;}}{{/crossLink}}
-     property to the location of a valid SceneJS JSON file.
-     * You can set {{#crossLink &quot;SceneJSModel/src:property&quot;}}{{/crossLink}} to a new file path at any time, which causes
-     the SceneJSModel to clear itself and load components from the new file.
+     * A SceneJSModel is a container of {{#crossLink &quot;Component&quot;}}Components{{/crossLink}} that loads itself from a
+     SceneJS scene definition, given as either a JSON file or a JavaScript object (POJO).
+     * It begins loading as soon as you either set its {{#crossLink &quot;SceneJSModel/src:property&quot;}}{{/crossLink}}
+     property to the location of a valid SceneJS JSON file, or set its {{#crossLink &quot;SceneJSModel/data:property&quot;}}{{/crossLink}} property to a
+     valid POJO.
+     * You can set these properties to new values at any time, which causes
+     the SceneJSModel to clear itself and load fresh components.
      * Can be transformed within World-space by attaching it to a {{#crossLink &quot;Transform&quot;}}{{/crossLink}}.
      * Provides its World-space boundary as a {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}.
 
      &lt;img src=&quot;../../../assets/images/SceneJSModel.png&quot;&gt;&lt;/img&gt;
 
+     ## SceneJS Support
+
+     SceneJSModel was developed to import the [Tron Tank model](../../examples/#models_SceneJSModel_tronTank). As such,
+     it only imports a limited subset of the SceneJS scene definition API. &lt;b&gt;Use with caution&lt;/b&gt; and be prepared to
+     fix and contribute missing functionality!
+
+     SceneJS nodes supported so far:
+
+     * &#x60;&#x60;&#x60;&#x60;&quot;node&quot;&#x60;&#x60;&#x60;&#x60;
+     * &#x60;&#x60;&#x60;&#x60;&quot;rotate&quot;&#x60;&#x60;&#x60;&#x60;
+     * &#x60;&#x60;&#x60;&#x60;&quot;translate&quot;&#x60;&#x60;&#x60;&#x60;
+     * &#x60;&#x60;&#x60;&#x60;&quot;scale&quot;&#x60;&#x60;&#x60;&#x60;
+     * &#x60;&#x60;&#x60;&#x60;&quot;material&quot;&#x60;&#x60;&#x60;&#x60;
+     * &#x60;&#x60;&#x60;&#x60;&quot;texture&quot;&#x60;&#x60;&#x60;&#x60;
+     * &#x60;&#x60;&#x60;&#x60;&quot;fresnel&quot;&#x60;&#x60;&#x60;&#x60;
+     * &#x60;&#x60;&#x60;&#x60;&quot;flags&quot;&#x60;&#x60;&#x60;&#x60;
+     * &#x60;&#x60;&#x60;&#x60;&quot;geometry&quot;&#x60;&#x60;&#x60;&#x60;
+     * &#x60;&#x60;&#x60;&#x60;&quot;layer&quot;&#x60;&#x60;&#x60;&#x60;
+     * &#x60;&#x60;&#x60;&#x60;&quot;stage&quot;&#x60;&#x60;&#x60;&#x60;
+
+     Unsupported API features include:
+
+     * Lights
+     * Cameras
+     * Shared node cores
+     * SceneJS plugins
+
      ## Examples
 
-     * [Importing the SceneJS Tron Tank model](../../examples/#models_SceneJSModel_tronTank)
+     * [Importing POJO defining geometry with diffuse, specular and normal maps](../../examples/#models_SceneJSModel_pojo_textures)
+     * [Importing POJO defining transparent geometry](../../examples/#models_SceneJSModel_pojo_transparency)
+     * [Importing JSON file defining geometry with diffuse, specular and normal maps](../../examples/#models_SceneJSModel_json_textures)
+     * [Importing JSON file defining the SceneJS Tron Tank](../../examples/#models_SceneJSModel_tronTank)
 
      ## Usage
 
-     Importing a &lt;a href=&quot;../../examples/models/scenejs/tronTank.json&quot;&gt;SceneJS JSON model&lt;/a&gt; into the default xeogl {{#crossLink &quot;Scene&quot;}}{{/crossLink}}:
+     #### Loading a POJO scene definition
+
+     The simplest way to import SceneJS content is by setting a POJO on the SceneJSModel&#x27;s {{#crossLink &quot;SceneJSModel/data:property&quot;}}data{{/crossLink}}
+     property:
+
+     &#x60;&#x60;&#x60;&#x60;javascript
+     var pojoModel = new xeogl.SceneJSModel({
+        id: &quot;myModel&quot;,
+
+        // Our POJO scene definition
+        data: {
+            type: &quot;node&quot;,
+            nodes: [
+                {
+                    type: &quot;rotate&quot;,
+                    id: &quot;myRotate&quot;,
+                    nodes: [
+                        {
+                            type: &quot;geometry&quot;,
+                            id: &quot;boxEntity&quot;,
+                            primitive: &quot;triangles&quot;,
+                            positions: [
+                                2, 2, 2, -2, 2, 2, -2, -2, 2, 2, -2, 2, 2, 2, 2, 2, -2,
+                                2, 2, -2, -2, 2, 2, -2, 2, 2, 2, 2, 2, -2, -2, 2, -2,
+                                -2, 2, 2, -2, 2, 2, -2, 2, -2, -2, -2, -2, -2, -2, 2,
+                                -2, -2, -2, 2, -2, -2, 2, -2, 2, -2, -2, 2, 2, -2, -2,
+                                -2, -2, -2, -2, 2, -2, 2, 2, -2
+                            ],
+                            normals: [
+                                0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1,
+                                0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, -1, 0,
+                                0, -1, 0, 0, -1, 0, 0, -1, 0, 0, 0, -1, 0, 0, -1, 0, 0,
+                               -1, 0, 0, -1, 0, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1
+                            ],
+                            uv: [
+                                5, 5, 0, 5, 0, 0, 5, 0, 0, 5, 0, 0, 5, 0, 5, 5,
+                                5, 0, 5, 5, 0, 5, 0, 0, 5, 5, 0, 5, 0, 0, 5, 0,
+                                0, 0, 5, 0, 5, 5, 0, 5, 0, 0, 5, 0, 5, 5, 0, 5
+                            ],
+                            indices: [
+                                0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11,
+                                12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21,
+                                22, 20, 22, 23
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+     });
+
+     // Set camera position
+     var view = pojoModel.scene.camera.view;
+     view.eye = [0, 0, -25];
+     view.look = [0, 0, 0];
+     view.up = [0, 1, 0];
+     &#x60;&#x60;&#x60;&#x60;
+
+     #### Finding components
+
+     Our SceneJSModel has now created various xeogl components within itself, which we can find by their IDs. In this
+     particular example, our POJO has a SceneJS &#x60;&#x60;&#x60;&#x60;&quot;rotate&quot;&#x60;&#x60;&#x60;&#x60; node with ID &#x60;&#x60;&#x60;&#x60;&quot;myRotate&quot;&#x60;&#x60;&#x60;&#x60;. Our SceneJSModel parsed that into a
+     {{#crossLink &quot;Rotate&quot;}}{{/crossLink}} component with ID &#x60;&#x60;&#x60;&#x60;&quot;myModel.myRotate&quot;&#x60;&#x60;&#x60;&#x60;.
+
+     To see what components our SceneJSModel created, we can drop this expression into the browser&#x27;s JavaScript
+     debug console (we&#x27;re using Chrome here):
+
+     &#x60;&#x60;&#x60;&#x60;
+     pojoModel.types;
+     &#x60;&#x60;&#x60;&#x60;
+
+     The result is the value of the SceneJSModel&#x27;s {{#crossLink &quot;Model/types:property&quot;}}types{{/crossLink}} map, which
+     contains its xeogl components, mapped to their types:
+
+     &lt;img src=&quot;../../../assets/images/screenshots/SceneJSModel_console_tankModel.types.png&quot;&gt;&lt;/img&gt;
+
+     Here we&#x27;ve expanded the {{#crossLink &quot;Rotate&quot;}}{{/crossLink}} components, and we can see
+     our {{#crossLink &quot;Rotate&quot;}}{{/crossLink}}.
+
+     Let&#x27;s get that {{#crossLink &quot;Rotate&quot;}}{{/crossLink}} from our SceneJSModel&#x27;s
+     {{#crossLink &quot;Model/components:property&quot;}}{{/crossLink}} map and set it spinning:
+
+     &#x60;&#x60;&#x60;&#x60; JavaScript
+     var rotate = pojoModel.components[&quot;myModel.myRotate&quot;];
+
+     pojoModel.scene.on(&quot;tick&quot;, function() {
+            rotate.angle += 0.2;
+        });
+     &#x60;&#x60;&#x60;&#x60;
+
+     #### Loading a JSON scene definition
+
+     As shown in the example below, we can also import a SceneJS scene definition from a JSON file (eg. &lt;a href=&quot;../../examples/models/scenejs/tronTank.json&quot;&gt;tronTank.json&lt;/a&gt;).
+     Note that we need to wait for the SceneJSModel&#x27;s {{#crossLink &quot;SceneJSModel/loaded:event&quot;}}{{/crossLink}} event before we
+     can access its components. In this example we&#x27;re also showing how a SceneJSModel can be attached to a modeling {{#crossLink &quot;Transform&quot;}}{{/crossLink}}
+     hierarchy to transform it within World space.
 
      &#x60;&#x60;&#x60;&#x60;javascript
      // Import SceneJS JSON model
-     var tank = new xeogl.SceneJSModel({
-        id: &quot;tank&quot;,
-        src: &quot;models/scenejs/tronTank.min.json&quot;,
-        transform: new xeogl.Rotate({ // Tank direction
+     var tankModel = new xeogl.SceneJSModel({
+        id: &quot;tankModel&quot;,
+
+        // Path to our JSON scene definition file
+        src: &quot;models/scenejs/tronTank.json&quot;,
+
+        // We can also bolt on a hierarchy of modeling transforms,
+        // to transform the entire SceneJSModel in World space
+        transform: new xeogl.Rotate({
             xyz: [0, 1, 0],
             angle: 0,
-            parent: new xeogl.Translate({ // Tank position
+            parent: new xeogl.Translate({
                 xyz: [0, 0, 0]
             })
         })
      });
 
-     // Our tank&#x27;s gun has a xeogl.Rotate within the SceneJSModel; access it by ID
-     // to set its angle. Note how the first part of the ID is the SceneJSModel&#x27;s ID.
-     tank.components[&quot;tank.gunDir&quot;].angle = gunDir;
+     // Once our SceneJSModel has loaded, we can access its components
+     tankModel.on(&quot;loaded&quot;, function() {
 
-     // Set camera position
-     var view = tank.scene.camera.view;
-     view.eye = [0, 0, -70];
-     view.look = [0, 0, 0];
-     view.up = [0, 1, 0];
+            tankModel.components[&quot;tankModel.gunDir&quot;].angle = gunDir;
+
+            // Set camera position
+            var view = tankModel.scene.camera.view;
+            view.eye = [0, 0, -70];
+            view.look = [0, 0, 0];
+            view.up = [0, 1, 0];
+        });
      &#x60;&#x60;&#x60;&#x60;
 
      @class SceneJSModel
@@ -253,7 +387,8 @@
      @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}},
      generated automatically when omitted.
      @param [cfg.meta] {String:Object} Optional map of user-defined metadata to attach to this SceneJSModel.
-     @param [cfg.src] {String} Path to the JSON file.
+     @param [cfg.src] {String} Path to a SceneJS JSON scene description file.
+     @param [cfg.data] {String} Path to a SceneJS JSON scene description file.
      @extends Geometry
      */
     xeogl.SceneJSModel = xeogl.Model.extend({
@@ -267,6 +402,8 @@
             this._src = null;
 
             this.src = cfg.src;
+
+            this.data = cfg.data;
         },
 
         _props: {
@@ -274,7 +411,7 @@
             /**
              Path to the SceneJS JSON scene description file.
 
-             Update this at any time to load a different file.
+             Update this at any time to clear and re-import content.
 
              Fires a {{#crossLink &quot;SceneJSModel/src:event&quot;}}{{/crossLink}} event on change.
 
@@ -307,6 +444,8 @@
                     }
 
                     this.destroyAll();
+
+                    this._data = null;
 
                     this._src = value;
 
@@ -351,6 +490,51 @@
                 get: function () {
                     return this._src;
                 }
+            },
+
+            /**
+             A SceneJS POJO scene definition.
+
+             Update this at any time to clear and re-import content.
+
+             Fires a {{#crossLink &quot;SceneJSModel/data:event&quot;}}{{/crossLink}} event on change.
+
+             @property data
+             @type {*}
+             */
+            data: {
+
+                set: function (value) {
+
+                    if (!value) {
+                        return;
+                    }
+
+                    this.destroyAll();
+
+                    this._src = null;
+
+                    this._data = value;
+
+                    this._parse(this._data, null, null, null);
+
+                    var self = this;
+
+                    xeogl.scheduleTask(function () {
+                        self.fire(&quot;loaded&quot;, true);
+                    });
+
+                    /**
+                     Fired whenever this SceneJSModel&#x27;s  {{#crossLink &quot;SceneJSModel/data:property&quot;}}{{/crossLink}} property changes.
+                     @event data
+                     @param value The property&#x27;s new value
+                     */
+                    this.fire(&quot;data&quot;, this._data);
+                },
+
+                get: function () {
+                    return this._data;
+                }
             }
         },
 
@@ -359,7 +543,22 @@
         // This is just the bare essentials to prove the concept - just transforms, diffuse material and geometry.
         //---------------------------------------------------------------------------------------------------------------
 
-        _parse: function (node, transform, material, modes) {
+        _parse: function (node,
+                          transform,
+                          material,
+                          diffuseMap,
+                          specularMap,
+                          emissiveMap,
+                          normalMap,
+                          opacityMap,
+                          diffuseFresnel,
+                          specularFresnel,
+                          emissiveFresnel,
+                          normalFresnel,
+                          opacityFresnel,
+                          layer,
+                          stage,
+                          modes) {
 
             switch (node.type) {
 
@@ -418,16 +617,117 @@
 
                     break;
 
+                case &quot;texture&quot;:
+
+                    var texture = this.add({
+                        type: &quot;xeogl.Texture&quot;,
+                        id: this._createID(node),
+                        src: node.src,
+                        wrapS: node.wrapS,
+                        wrapT: node.wrapT,
+                        scale: node.scale ? [node.scale.x || 1, node.scale.y || 1] : undefined,
+                        translate: node.translate ? [node.translate.x || 0, node.translate.y || 1] : undefined,
+                        rotate: node.rotate,
+                        minFilter: node.minFilter,
+                        maxFilter: node.maxFilter
+                    });
+
+                    switch (node.applyTo) {
+
+                        case &quot;baseColor&quot;:
+                        case &quot;color&quot;:
+                            diffuseMap = texture;
+                            break;
+
+                        case &quot;specular&quot;:
+                            specularMap = texture;
+                            break;
+
+                        case &quot;emit&quot;:
+                            emissiveMap = texture;
+                            break;
+
+                        case &quot;alpha&quot;:
+                            opacityMap = texture;
+                            break;
+
+                        case &quot;normals&quot;:
+                            normalMap = texture;
+                            break;
+
+                        case &quot;shine&quot;:
+                            this.warn(&quot;Unsupported SceneJS feature - texture applyTo:&#x27;shine&#x27;&quot;);
+                            break;
+                    }
+
+                    break;
+
+                case &quot;fresnel&quot;:
+
+                    var fresnel = this.add({
+                        type: &quot;xeogl.Fresnel&quot;,
+                        id: this._createID(node)
+
+                        // TODO
+
+                    });
+
+                    switch (node.applyTo) {
+
+                        case &quot;baseColor&quot;:
+                        case &quot;color&quot;:
+                            diffuseFresnel = fresnel;
+                            break;
+
+                        case &quot;specular&quot;:
+                            specularFresnel = fresnel;
+                            break;
+
+                        case &quot;emit&quot;:
+                            emissiveFresnel = fresnel;
+                            break;
+
+                        case &quot;alpha&quot;:
+                            opacityFresnel = fresnel;
+                            break;
+                    }
+
+                    break;
+
                 case &quot;flags&quot;:
 
                     modes = this.add({
                         type: &quot;xeogl.Modes&quot;,
                         id: this._createID(node),
-                        transparent: flags.transparent
+                        transparent: node.transparent,
+                        backfaces: node.backfaces,
+                        pickable: node.picking,
+                        clippable: node.clipping,
+                        frontface: node.frontface
                     });
 
                     break;
 
+                case &quot;layer&quot;:
+
+                    layer = this.add({
+                        type: &quot;xeogl.Layer&quot;,
+                        id: this._createID(node),
+                        priority: node.priority
+                    });
+
+                    break;
+
+                case &quot;stage&quot;:
+
+                    layer = this.add({
+                        type: &quot;xeogl.Stage&quot;,
+                        id: this._createID(node),
+                        priority: node.priority,
+                        pickable: node.pickable
+                    });
+
+                    break;
 
                 case &quot;geometry&quot;:
 
@@ -441,9 +741,23 @@
                         indices: node.indices
                     });
 
+                    if (material) {
+
+                        material.diffuseMap = diffuseMap;
+                        material.specularMap = specularMap;
+                        material.emissiveMap = emissiveMap;
+                        material.opacityMap = opacityMap;
+                        material.normalMap = normalMap;
+
+                        material.diffuseFresnel = diffuseFresnel;
+                        material.specularFresnel = specularFresnel;
+                        material.emissiveFresnel = emissiveFresnel;
+                        material.opacityFresnel = opacityFresnel;
+                    }
+
                     this.add({
                         type: &quot;xeogl.Entity&quot;,
-                        id: this._createID(node),
+                        id: this._createID(node, &quot;entity&quot;),
                         geometry: geometry,
                         transform: transform,
                         material: material,
@@ -457,19 +771,39 @@
 
             if (nodes) {
                 for (var i = 0, len = nodes.length; i &lt; len; i++) {
-                    this._parse(nodes[i], transform, material, modes);
+                    this._parse(
+                        nodes[i],
+                        transform,
+                        material,
+                        diffuseMap,
+                        specularMap,
+                        emissiveMap,
+                        normalMap,
+                        opacityMap,
+                        diffuseFresnel,
+                        specularFresnel,
+                        emissiveFresnel,
+                        normalFresnel,
+                        opacityFresnel,
+                        layer,
+                        stage,
+                        modes);
                 }
             }
         },
 
-        _createID: function (node) {
-            return (node.id !== null &amp;&amp; node.id !== undefined) ? (&quot;&quot; + this.id + &quot;.&quot; + node.id) : null;
+        _createID: function (node, type) {
+            return (node.id !== null &amp;&amp; node.id !== undefined) ? (&quot;&quot; + this.id + &quot;.&quot; + (type ? type + &quot;.&quot; : &quot;&quot;) + node.id) : null;
         },
 
         _getJSON: function () {
-            return {
-                src: this._src
-            };
+            var json = {};
+            if (this._src) {
+                json.src = src;
+            } else if (this._data) {
+                json.data = data;
+            }
+            return json;
         }
     });
 

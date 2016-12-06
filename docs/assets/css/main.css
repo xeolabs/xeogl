@@ -476,6 +476,10 @@ ul li p {
     vertical-align: middle;
 }
 
+img {
+    border: 1px solid #ccc;
+}
+
 /* -- API Docs CSS ---------------------------------------------------------- */
 
 /*
