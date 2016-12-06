@@ -65,9 +65,6 @@
     // insert it into the SceneJSModel so it rotates with the tank
     tank.add({
         type: "xeogl.Entity",
-        meta: {
-            whatIsThis: "shadow"
-        },
         geometry: {
             type: "xeogl.PlaneGeometry",
             xSize: 16,
@@ -120,21 +117,22 @@
     // Helper to show the tank animation path
     // leave it here and set visible whenever we need to edit the path in future
     new xeogl.Entity({
-        geometry: new xeogl.Geometry({
+        geometry: {
             positions: xeogl.math.flatten(path.getPoints(100))
-        }),
-        material: new xeogl.PhongMaterial({
+        },
+        material: {
+            type: "xeogl.PhongMaterial",
             diffuse: [0.3, 1, 0.3],
             emissive: [0.4, 1, 0.4],
             lineWidth: 6
-        }),
-        visibility: new xeogl.Visibility({
+        },
+        visibility: {
             visible: false
-        }),
-        modes: new xeogl.Modes({
+        },
+        modes: {
             pickable: false, // Can't be picked
             collidable: false // Does not contribute to overall scene boundary
-        })
+        }
     });
 
     // Attach tank to the path; move it along path and
@@ -198,20 +196,21 @@
 
         new xeogl.Entity({
             geometry: geometry,
-            material: new xeogl.PhongMaterial({
+            material: {
+                type: "xeogl.PhongMaterial",
                 diffuse: [0.1, 0.1, 0.2],
-                diffuseMap: new xeogl.Texture({
+                diffuseMap: {
                     src: "textures/diffuse/UVCheckerMap11-1024.png",
                     wrapS: "repeat",
                     wrapT: "repeat",
                     scale: [1, 1]
-                })
-            }),
-            modes: new xeogl.Modes({
+                }
+            },
+            modes: {
                 backfaces: false, // Don't show backfaces, so that if camera gets buried in a box we can still see out
                 pickable: false, // Can't be picked
                 collidable: false // Does not contribute to overall scene boundary
-            })
+            }
         });
 
         //---------------------------------------------------------------------------------
@@ -219,24 +218,26 @@
         //---------------------------------------------------------------------------------
 
         new xeogl.Entity({
-            geometry: new xeogl.PlaneGeometry({
+            geometry: {
+                type: "xeogl.PlaneGeometry",
                 xSize: 3000,
                 zSize: 3000
-            }),
-            material: new xeogl.PhongMaterial({
+            },
+            material: {
+                type: "xeogl.PhongMaterial",
                 diffuse: [0.15, 0.15, 0.2],
-                diffuseMap: new xeogl.Texture({
+                diffuseMap: {
                     src: "textures/diffuse/UVCheckerMap11-1024.png",
                     wrapS: "repeat",
                     wrapT: "repeat",
                     scale: [30, 30]
-                })
-            }),
-            modes: new xeogl.Modes({
+                }
+            },
+            modes: {
                 backfaces: true, // Show backfaces
                 pickable: false, // Can't be picked
                 collidable: false // Does not contribute to overall scene boundary
-            })
+            }
         });
 
     })();
@@ -246,27 +247,29 @@
     //---------------------------------------------------------------------------------
 
     new xeogl.Entity({
-        geometry: new xeogl.BoxGeometry({
+        geometry: {
+            type: "xeogl.BoxGeometry",
             xSize: 1200,
             ySize: 600,
             zSize: 1200
-        }),
-        material: new xeogl.PhongMaterial({
+        },
+        material: {
+            type: "xeogl.PhongMaterial",
             diffuse: [0.3, 0.3, 0.4],
             specular: [0.3, 0.3, 0.4],
-            diffuseMap: new xeogl.Texture({
+            diffuseMap: {
                 src: "textures/diffuse/UVCheckerMap11-1024.png",
                 wrapS: "repeat",
                 wrapT: "repeat",
                 scale: [2, 2]
-            })
-        }),
-        modes: new xeogl.Modes({
+            }
+        },
+        modes: {
             backfaces: true, // Show backfaces
             frontface: "ccw", // Need lighting on interior surface
             pickable: false, // Can't be picked
             collidable: false // Does not contribute to overall scene boundary
-        })
+        }
     });
 
     //---------------------------------------------------------------------------------
@@ -277,12 +280,13 @@
 
         var lines = [
             "!flynn:~$ ",
-            "request xeogl tron tank status",
+            "REQUEST XEOGL TRON TANK STATUS",
             "!<br>",
             "!Status: RUNNING",
             "!<br><br>",
             "!flynn:~$ ",
-            "request demo information",
+            "REQUEST DEMO INFORMATION",
+            "!<br>",
             "!<br>",
             "!This demo uses a <a href='../docs/classes/SceneJSModel.html' target='_other'>xeogl.SceneJSModel</a> component to import",
             "!<br>",
@@ -291,7 +295,7 @@
             "!Tank model by <a href='https://3dwarehouse.sketchup.com/user.html?id=1058361951245355501624136' target='_other'>Katase</a> - demo by <a href='https://twitter.com/xeographics' target='_other'>@xeographics</a>.",
 
             "!<br><br>",
-            "!END OF LINE<br>",
+            "!END OF LINE<br><br>",
             "!<a href='javascript:terminal.close();' class='blinking'>[close]</a><br>"
         ];
 
