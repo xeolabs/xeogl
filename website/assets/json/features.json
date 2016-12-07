@@ -1,55 +1,52 @@
 {
   "Main features": [
-    "Data-driven, entity-component scene graph",
-    "Runtime editable scenes",
-    "Fully observable scene state",
-    "[[Cloneable scene components|components_cloning]]",
+    "Data-driven, entity-component scene graph|http://xeogl.org#introduction",
+    "[[Live-editable scenes|profiling_sceneRebuild]]",
+    "[[Extensible component types|extending_customComponent_basic]]",
     "[[Multiple scenes in a page|scene_multipleScenes]]",
     "[[Performance monitoring|profiling_statistics]]",
-    "Fast and flexible [[picking|interaction_picking_triangles_normalAndUV]]"
+    "[[GPU-accelerated ray-picking|interaction_picking_raycasting_pickSurface]]"
   ],
   "Optimizations": [
     "See the <a href='https://github.com/xeolabs/xeogl/wiki/Implementation-Notes' target='_wiki'>wiki</a> for implementation notes on optimizations in xeogl."
   ],
   "Cameras": [
-    "[[Orthographic|camera_ortho]], [[perspective|camera_perspective]] and [[frustum|camera_frustum]] projection",
-    "Camera [[controls|interaction_CameraControl]]"
+    "[[Orthographic|camera_ortho]], [[perspective|camera_perspective]], [[frustum|camera_frustum]]",
+    "[[Camera controls|interaction_CameraControl]]",
+    "[[Camera flight animation|animation_CameraFlightAnimation_Entity]]",
+    "[[Camera follow animation|animation_CameraFollowAnimation]]",
+    "[[Camera path animation|animation_CameraPathAnimation_frameMenu]]"
   ],
-  "Geometry": [
-    "[[Dynamic meshes|geometry_modifying]]",
-    "[[Height maps|geometry_HeightmapGeometry]]",
-    "[[Vector text|geometry_VectorTextGeometry]]",
-    "Parametric shapes ([[lathe|geometry_LatheGeometry]], [[heightmap|geometry_HeightmapGeometry]], [[plane|geometry_PlaneGeometry]],  [[box|geometry_BoxGeometry]], [[cylinder|geometry_CylinderGeometry]],  [[sphere|geometry_SphereGeometry]] etc.)",
-    "[[Vertex colors|geometry_vertexColors]]",
-    "Primitives ([[lines|geometry_lines]], [[points|geometry_points]] and [[triangles|geometry_triangles]])"
+  "Modeling": [
+    "[[Procedural model generation|models_BuildableModel_city]]",
+    "[[Procedural geometry generation|generation_GeometryBuilder_wavyBlocks]]",
+    "[[Dynamically editable geometry|geometry_modifying]]",
+    "[[Constructive Solid Geometry (CSG)|geometry_csg_example1]]",
+    "[[Parameterized geometry primitives|geometry_TorusGeometry]]",
+    "[[Modeling transform hierarchies|transforms_model_transformHierarchy]]"
   ],
   "Textures": [
-    "Texture maps ([[diffuse|materials_texture_diffuse]], [[specular|materials_texture_specular]], [[opacity|materials_texture_opacity]], [[emissive|materials_texture_emissive]], [[bump|materials_texture_normalMap]] and [[ambient|materials_texture_ambient]])",
+    "[[Diffuse|materials_texture_diffuse]], [[specular|materials_texture_specular]], [[opacity|materials_texture_opacity]], [[emissive|materials_texture_emissive]], [[bump|materials_texture_normalMap]], [[ambient|materials_texture_ambient]]",
     "[[Video textures|materials_texture_video]]",
-    "[[Animated textures|materials_texture_animation]]",
-    "[[Render target textures|materials_texture_rtt]]",
-    "[[Procedural textures|materials_texture_procedural]]"
+    "[[Animated textures|materials_texture_animation]]"
   ],
-  "Shaders / Rendering": [
+  "Rendering": [
     "Lights ([[ambient|lights_ambient]], [[directional|lights_directional_view]] and [[point|lights_point_view]]), unlimited number in View or World-space",
     "Fresnel term for [[diffuse|materials_fresnel_diffuse]], [[opacity|materials_fresnel_opacity]], [[emissive|materials_fresnel_emissive]], [[specular|materials_fresnel_specular]] and [[reflectivity|materials_fresnel_reflection]]",
-    "Custom shaders"
-  ],
-  "Animation and Transformation": [
-    "[[Dynamic transform hierarchies|transforms_hierarchy]]",
-    "[[Camera fly-to|animation_CameraFlight_Entity]]"
-  ],
-  "Importers and Tools": [
-    "Importers for [[glTF|importing_gltf_gearbox]], [[OBJ|importing_obj_raptor]] and [[3DS|importing_3ds_lexus]]",
-    "3D debugging [[helper|interaction_picking_triangles]]"
-  ],
-  "FX": [
     "[[Transparency|materials_techniques_transparencySort]] with depth-sort",
     "Billboarding ([[spherical|billboards_spherical]] and [[cylindrical|billboards_cylindrical]])",
     "[[Skyboxes|skyboxes_skybox]]",
     "Rendering layers"
   ],
-  "WebVR": [
-    "[[zSpace support|webvr_zspace_gearbox_explorer]]"
+  "Importers": [
+    "[[glTF|models_GLTFModel_gearbox]], [[SceneJS|models_SceneJSModel_tronTank]], [[.OBJ|geometry_OBJGeometry_raptor]], [[.3DS|geometry_Nintendo3DSGeometry_lexus]]"
+  ],
+  "Effects": [
+    "[[zSpace VR|effects_zspace_gearbox]]",
+    "[[Stereo|effects_StereoEffect]]"
+  ],
+  "Resources": [
+    "[[API docs|xeogl.org/docs]]",
+    "[[Live examples|xeogl.org/examples]]"
   ]
 }
