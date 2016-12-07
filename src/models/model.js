@@ -15,6 +15,66 @@
 
      <img src="../../../assets/images/Model.png"></img>
 
+     ## Usage
+
+     #### Adding components
+
+     When adding components to a Model, it's usually easiest to add their configuration objects
+     and let the Model internally create component instances from those. Then the Model owns those
+     components, and will destroy them when you destroy the Model or call its
+     {{#crossLink "Model/destroyAll: method"}}{{/crossLink}}.
+
+     ````javascript
+     var model1 = new xeogl.Model();
+
+     var geometry = model1.add({
+            type: "xeogl.TorusGeometry"
+        });
+
+     var material = model1.add({
+            type: "xeogl.PhongMaterial"
+            diffuse: [0.4, 0.4, 9.0]
+        });
+
+     model1.add({
+            type: "xeogl.Entity",
+            geometry: geometry,
+            material: material
+        });
+     ````
+
+     Of course, we can also add component instances, but bear in mind that they will get destroyed if you destroy the Model
+     or call its {{#crossLink "Model/destroyAll: method"}}{{/crossLink}} method:
+
+     ````javascript
+     var model2 = new xeogl.Model();
+
+     var material2 = new xeogl.PhongMaterial({
+            diffuse: [0.4, 1.0, 9.0]
+        });
+
+     var geometry2 = model.add({
+            type: "xeogl.SphereGeometry"
+        });
+
+     var entity2 = new xeogl.Entity({
+            geometry: geometry2,
+            material: material2
+        });
+
+     model.add(material2);
+     model.add(geometry2);
+     model.add(entity2);
+     ````
+
+     #### Transforming
+
+     One of the benefits of keeping components in Models is that we can transform them as a group.
+
+     ````javascript
+
+     ````
+
      @class Model
      @module xeogl
      @submodule models
@@ -172,9 +232,6 @@
 
                 component = new window[type](this.scene, component);
 
-            } else {
-
-                return;
             }
 
             if (component.scene !== this.scene) {
