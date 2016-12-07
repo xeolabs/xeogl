@@ -344,17 +344,21 @@
 
      Let&#x27;s get the {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} from our first Model, subscribe to changes on its extents,
      then animate one of the Model&#x27;s transforms, which will cause the {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} to fire an
-     {{#crossLink &quot;Boundary3D/updated:event&quot;}}{{/crossLink}} each time its extents change:
+     {{#crossLink &quot;Boundary3D/updated:event&quot;}}{{/crossLink}} event each time its extents change:
 
      &#x60;&#x60;&#x60;&#x60; Javascript
      var worldBoundary = model.worldBoundary;
 
      worldBoundary.on(&quot;updated&quot;, function() {
-        obb = worldBoundary.obb;
-        aabb = worldBoundary.aabb;
-        center = worldBoundary.center;
-        sphere = worldBoundary.sphere();
-        //...
+
+            // See docs on xeogl.Boundary3D for
+            // the format of these properties
+
+            obb = worldBoundary.obb;
+            aabb = worldBoundary.aabb;
+            center = worldBoundary.center;
+            sphere = worldBoundary.sphere();
+            //...
     });
 
      model.scene.on(&quot;tick&quot;, function() {
@@ -363,10 +367,11 @@
      &#x60;&#x60;&#x60;&#x60;
 
      Since xeogl is all about lazy-execution to avoid needless work, the {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} will
-     only actually recompute its extents when we read its {{#crossLink &quot;Boundary3D/obb:property&quot;}}{{/crossLink}},
+     only actually recompute its extents the first time we read its {{#crossLink &quot;Boundary3D/obb:property&quot;}}{{/crossLink}},
      {{#crossLink &quot;Boundary3D/aabb:property&quot;}}{{/crossLink}}, {{#crossLink &quot;Boundary3D/center:property&quot;}}{{/crossLink}},
       {{#crossLink &quot;Boundary3D/center:property&quot;}}{{/crossLink}} or
-     {{#crossLink &quot;Boundary3D/sphere:property&quot;}}{{/crossLink}} properties.
+     {{#crossLink &quot;Boundary3D/sphere:property&quot;}}{{/crossLink}} properties after it fired its
+     last {{#crossLink &quot;Boundary3D/updated:event&quot;}}{{/crossLink}} event.
 
      Also, the Model lazy-instantiates its {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} the first time we reference
      the Model&#x27;s {{#crossLink &quot;Model/worldBoundary:property&quot;}}{{/crossLink}} property. Since the {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}

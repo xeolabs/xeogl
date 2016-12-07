@@ -154,17 +154,21 @@
 
      Let's get the {{#crossLink "Boundary3D"}}{{/crossLink}} from our first Model, subscribe to changes on its extents,
      then animate one of the Model's transforms, which will cause the {{#crossLink "Boundary3D"}}{{/crossLink}} to fire an
-     {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}} each time its extents change:
+     {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}} event each time its extents change:
 
      ```` Javascript
      var worldBoundary = model.worldBoundary;
 
      worldBoundary.on("updated", function() {
-        obb = worldBoundary.obb;
-        aabb = worldBoundary.aabb;
-        center = worldBoundary.center;
-        sphere = worldBoundary.sphere();
-        //...
+
+            // See docs on xeogl.Boundary3D for
+            // the format of these properties
+
+            obb = worldBoundary.obb;
+            aabb = worldBoundary.aabb;
+            center = worldBoundary.center;
+            sphere = worldBoundary.sphere();
+            //...
     });
 
      model.scene.on("tick", function() {
@@ -173,10 +177,11 @@
      ````
 
      Since xeogl is all about lazy-execution to avoid needless work, the {{#crossLink "Boundary3D"}}{{/crossLink}} will
-     only actually recompute its extents when we read its {{#crossLink "Boundary3D/obb:property"}}{{/crossLink}},
+     only actually recompute its extents the first time we read its {{#crossLink "Boundary3D/obb:property"}}{{/crossLink}},
      {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}}, {{#crossLink "Boundary3D/center:property"}}{{/crossLink}},
       {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} or
-     {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} properties.
+     {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} properties after it fired its
+     last {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}} event.
 
      Also, the Model lazy-instantiates its {{#crossLink "Boundary3D"}}{{/crossLink}} the first time we reference
      the Model's {{#crossLink "Model/worldBoundary:property"}}{{/crossLink}} property. Since the {{#crossLink "Boundary3D"}}{{/crossLink}}
