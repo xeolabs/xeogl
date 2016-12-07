@@ -193,16 +193,20 @@
     &quot;use strict&quot;;
 
     /**
-     A **Model** is a unit of content within a xeogl {{#crossLink &quot;Scene&quot;}}{{/crossLink}}.
+     A **Model** is a group of {{#crossLink &quot;Component&quot;}}Components{{/crossLink}} within a xeogl {{#crossLink &quot;Scene&quot;}}{{/crossLink}}.
 
      ## Overview
 
-     * A Model is a container of {{#crossLink &quot;Component&quot;}}Components{{/crossLink}}.
-     * Can be transformed within World-space by attaching it to a {{#crossLink &quot;Transform&quot;}}{{/crossLink}} hierarchy.
-     * Provides its World-space boundary as a {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}.
-     * Subclassed by {{#crossLink &quot;GLTFModel&quot;}}{{/crossLink}}, which loads glTF files.
-     * Subclassed by {{#crossLink &quot;SceneJSModel&quot;}}{{/crossLink}}, which imports SceneJS scene definitions.
-     * Subclassed by {{#crossLink &quot;BuildableModel&quot;}}{{/crossLink}}, which provides a fluent API for building itself.
+     * A Model manages the lifecycle of its components, automatically deleting them when the Model is deleted.
+     * Can be attached to a hierarchy of {{#crossLink &quot;Transform&quot;}}Transforms{{/crossLink}}, to transform its components as a group, within World-space.
+     * Provides the collective World-space boundary of its components as a {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}, which
+     updates its extents automatically as components are added and removed, or Transforms are updated.
+
+     A Model is subclassed by (at least):
+
+     * {{#crossLink &quot;GLTFModel&quot;}}{{/crossLink}}, which loads its components from glTF files.
+     * {{#crossLink &quot;SceneJSModel&quot;}}{{/crossLink}}, which loads its components from SceneJS scene definitions.
+     * {{#crossLink &quot;BuildableModel&quot;}}{{/crossLink}}, which provides a fluent API for building its components.
 
      &lt;img src=&quot;../../../assets/images/Model.png&quot;&gt;&lt;/img&gt;
 

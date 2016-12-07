@@ -202,15 +202,19 @@
 
 
 <div class="box intro">
-    <p>A <strong>Model</strong> is a unit of content within a xeogl <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
+    <p>A <strong>Model</strong> is a group of <a href="../classes/Component.html" class="crosslink">Components</a> within a xeogl <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
 <h2 id="overview">Overview</h2>
 <ul>
-<li>A Model is a container of <a href="../classes/Component.html" class="crosslink">Components</a>.</li>
-<li>Can be transformed within World-space by attaching it to a <a href="../classes/Transform.html" class="crosslink">Transform</a> hierarchy.</li>
-<li>Provides its World-space boundary as a <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>.</li>
-<li>Subclassed by <a href="../classes/GLTFModel.html" class="crosslink">GLTFModel</a>, which loads glTF files.</li>
-<li>Subclassed by <a href="../classes/SceneJSModel.html" class="crosslink">SceneJSModel</a>, which imports SceneJS scene definitions.</li>
-<li>Subclassed by <a href="../classes/BuildableModel.html" class="crosslink">BuildableModel</a>, which provides a fluent API for building itself.</li>
+<li>A Model manages the lifecycle of its components, automatically deleting them when the Model is deleted.</li>
+<li>Can be attached to a hierarchy of <a href="../classes/Transform.html" class="crosslink">Transforms</a>, to transform its components as a group, within World-space.</li>
+<li>Provides the collective World-space boundary of its components as a <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>, which
+updates its extents automatically as components are added and removed, or Transforms are updated.</li>
+</ul>
+<p>A Model is subclassed by (at least):</p>
+<ul>
+<li><a href="../classes/GLTFModel.html" class="crosslink">GLTFModel</a>, which loads its components from glTF files.</li>
+<li><a href="../classes/SceneJSModel.html" class="crosslink">SceneJSModel</a>, which loads its components from SceneJS scene definitions.</li>
+<li><a href="../classes/BuildableModel.html" class="crosslink">BuildableModel</a>, which provides a fluent API for building its components.</li>
 </ul>
 <p><img src="../../../assets/images/Model.png"></img></p>
 <h2 id="usage">Usage</h2>
@@ -623,7 +627,7 @@ we should destroy the <a href="../classes/Boundary3D.html" class="crosslink">Bou
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_models_model.js.html#l241"><code>src&#x2F;models&#x2F;model.js:241</code></a>
+        <a href="../files/src_models_model.js.html#l245"><code>src&#x2F;models&#x2F;model.js:245</code></a>
         </p>
 
 
@@ -815,7 +819,7 @@ defaults that this component overrode on them.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_models_model.js.html#l424"><code>src&#x2F;models&#x2F;model.js:424</code></a>
+        <a href="../files/src_models_model.js.html#l428"><code>src&#x2F;models&#x2F;model.js:428</code></a>
         </p>
 
 
@@ -1081,7 +1085,7 @@ myRotate.isType(xeogl.Entity); // Returns false, because xeogl.Rotate does not (
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_models_model.js.html#l498"><code>src&#x2F;models&#x2F;model.js:498</code></a>
+        <a href="../files/src_models_model.js.html#l502"><code>src&#x2F;models&#x2F;model.js:502</code></a>
         </p>
 
 
@@ -1439,7 +1443,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_models_model.js.html#l436"><code>src&#x2F;models&#x2F;model.js:436</code></a>
+        <a href="../files/src_models_model.js.html#l440"><code>src&#x2F;models&#x2F;model.js:440</code></a>
         </p>
 
 
@@ -1529,7 +1533,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l180"><code>src&#x2F;models&#x2F;model.js:180</code></a>
+                            <a href="../files/src_models_model.js.html#l184"><code>src&#x2F;models&#x2F;model.js:184</code></a>
                             </p>
                     
                     
@@ -1682,7 +1686,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l190"><code>src&#x2F;models&#x2F;model.js:190</code></a>
+                            <a href="../files/src_models_model.js.html#l194"><code>src&#x2F;models&#x2F;model.js:194</code></a>
                             </p>
                     
                     
@@ -1794,7 +1798,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l517"><code>src&#x2F;models&#x2F;model.js:517</code></a>
+                            <a href="../files/src_models_model.js.html#l521"><code>src&#x2F;models&#x2F;model.js:521</code></a>
                             </p>
                     
                     
@@ -1828,7 +1832,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Component
                                 </a>
                                 but overwritten in
-                            <a href="../files/src_models_model.js.html#l169"><code>src&#x2F;models&#x2F;model.js:169</code></a>
+                            <a href="../files/src_models_model.js.html#l173"><code>src&#x2F;models&#x2F;model.js:173</code></a>
                             </p>
                     
                     
@@ -1853,7 +1857,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l198"><code>src&#x2F;models&#x2F;model.js:198</code></a>
+                            <a href="../files/src_models_model.js.html#l202"><code>src&#x2F;models&#x2F;model.js:202</code></a>
                             </p>
                     
                     
@@ -1890,7 +1894,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l558"><code>src&#x2F;models&#x2F;model.js:558</code></a>
+                            <a href="../files/src_models_model.js.html#l562"><code>src&#x2F;models&#x2F;model.js:562</code></a>
                             </p>
                     
                     
@@ -1924,7 +1928,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l390"><code>src&#x2F;models&#x2F;model.js:390</code></a>
+                            <a href="../files/src_models_model.js.html#l394"><code>src&#x2F;models&#x2F;model.js:394</code></a>
                             </p>
                     
                     
@@ -1991,7 +1995,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l486"><code>src&#x2F;models&#x2F;model.js:486</code></a>
+                            <a href="../files/src_models_model.js.html#l490"><code>src&#x2F;models&#x2F;model.js:490</code></a>
                             </p>
                     
                     
@@ -2033,7 +2037,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_models_model.js.html#l535"><code>src&#x2F;models&#x2F;model.js:535</code></a>
+                            <a href="../files/src_models_model.js.html#l539"><code>src&#x2F;models&#x2F;model.js:539</code></a>
                             </p>
                     
                     

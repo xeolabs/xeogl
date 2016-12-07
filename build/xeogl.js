@@ -27304,16 +27304,20 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
     "use strict";
 
     /**
-     A **Model** is a unit of content within a xeogl {{#crossLink "Scene"}}{{/crossLink}}.
+     A **Model** is a group of {{#crossLink "Component"}}Components{{/crossLink}} within a xeogl {{#crossLink "Scene"}}{{/crossLink}}.
 
      ## Overview
 
-     * A Model is a container of {{#crossLink "Component"}}Components{{/crossLink}}.
-     * Can be transformed within World-space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}} hierarchy.
-     * Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
-     * Subclassed by {{#crossLink "GLTFModel"}}{{/crossLink}}, which loads glTF files.
-     * Subclassed by {{#crossLink "SceneJSModel"}}{{/crossLink}}, which imports SceneJS scene definitions.
-     * Subclassed by {{#crossLink "BuildableModel"}}{{/crossLink}}, which provides a fluent API for building itself.
+     * A Model manages the lifecycle of its components, automatically deleting them when the Model is deleted.
+     * Can be attached to a hierarchy of {{#crossLink "Transform"}}Transforms{{/crossLink}}, to transform its components as a group, within World-space.
+     * Provides the collective World-space boundary of its components as a {{#crossLink "Boundary3D"}}{{/crossLink}}, which
+     updates its extents automatically as components are added and removed, or Transforms are updated.
+
+     A Model is subclassed by (at least):
+
+     * {{#crossLink "GLTFModel"}}{{/crossLink}}, which loads its components from glTF files.
+     * {{#crossLink "SceneJSModel"}}{{/crossLink}}, which loads its components from SceneJS scene definitions.
+     * {{#crossLink "BuildableModel"}}{{/crossLink}}, which provides a fluent API for building its components.
 
      <img src="../../../assets/images/Model.png"></img>
 
