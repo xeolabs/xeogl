@@ -4938,7 +4938,7 @@
             "namespace": "",
             "file": "src/models/gltfModel.js",
             "line": 5,
-            "description": "A **GLTFModel** is a {{#crossLink \"Model\"}}{{/crossLink}} that loads itself from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file.\n\n<a href=\"../../examples/#models_GLTFModel_gearbox\"><img src=\"../../../assets/images/gltf/glTF_gearbox_squashed.png\"></img></a>\n\n## Overview\n\n* A GLTFModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from glTF.\n* It begins loading as soon as you set its {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid glTF file.\n* You can set {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} to a new file path at any time, which causes\nthe GLTFModel to clear itself and load components from the new file.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n<img src=\"../../../assets/images/GLTFModel.png\"></img>\n\n## Tutorials\n\n* [Importing glTF](https://github.com/xeolabs/xeogl/wiki/Models-glTF)\n\n## Examples\n\n* [Gearbox](../../examples/#models_GLTFModel_gearbox)\n* [Buggy](../../examples/#models_GLTFModel_buggy)\n* [Reciprocating Saw](../../examples/#models_GLTFModel_ReciprocatingSaw)\n* [Textured Duck](../../examples/#models_GLTFModel_duck)\n* [GLTFModel with entity explorer UI](../../examples/#demos_ui_explorer)\n* [Fly camera to GLTFModel entities](../../examples/#boundaries_flyToBoundary)\n* [Ensuring individual materials on GLTFModel entities](../../examples/#models__uniqueMaterials)\n* [Baking transform hierarchies](../../examples/#models_bakeTransforms)\n* [Attaching transforms to GLTFModel, via constructor](../../examples/#models_configureTransform)\n* [Attaching transforms to GLTFModel, via property](../../examples/#models_attachTransform)",
+            "description": "A **GLTFModel** is a {{#crossLink \"Model\"}}{{/crossLink}} that loads itself from a <a href=\"https://github.com/KhronosGroup/glTF\" target = \"_other\">glTF</a> file.\n\n<a href=\"../../examples/#models_GLTFModel_gearbox\"><img src=\"../../../assets/images/gltf/glTF_gearbox_squashed.png\"></img></a>\n\n## Overview\n\n* A GLTFModel is a container of {{#crossLink \"Component\"}}Components{{/crossLink}} that loads itself from glTF.\n* It begins loading as soon as you set its {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}}\nproperty to the location of a valid glTF file.\n* You can set {{#crossLink \"GLTFModel/src:property\"}}{{/crossLink}} to a new file path at any time, which causes\nthe GLTFModel to clear itself and load components from the new file.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n\n<img src=\"../../../assets/images/GLTFModel.png\"></img>\n\n## Tutorials\n\n* [Importing glTF](https://github.com/xeolabs/xeogl/wiki/Importing-glTF)\n\n## Examples\n\n* [Gearbox](../../examples/#models_GLTFModel_gearbox)\n* [Buggy](../../examples/#models_GLTFModel_buggy)\n* [Reciprocating Saw](../../examples/#models_GLTFModel_ReciprocatingSaw)\n* [Textured Duck](../../examples/#models_GLTFModel_duck)\n* [GLTFModel with entity explorer UI](../../examples/#demos_ui_explorer)\n* [Fly camera to GLTFModel entities](../../examples/#boundaries_flyToBoundary)\n* [Ensuring individual materials on GLTFModel entities](../../examples/#models__uniqueMaterials)\n* [Baking transform hierarchies](../../examples/#models_bakeTransforms)\n* [Attaching transforms to GLTFModel, via constructor](../../examples/#models_configureTransform)\n* [Attaching transforms to GLTFModel, via property](../../examples/#models_attachTransform)",
             "submodule": "models",
             "is_constructor": 1,
             "params": [
@@ -4995,7 +4995,7 @@
             "namespace": "",
             "file": "src/models/model.js",
             "line": 5,
-            "description": "A **Model** is a unit of content within a xeogl {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n## Overview\n\n* A Model is a container of {{#crossLink \"Component\"}}Components{{/crossLink}}.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}}.\n* Provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n* Subclassed by {{#crossLink \"GLTFModel\"}}{{/crossLink}}, which loads glTF files.\n* Subclassed by {{#crossLink \"BuildableModel\"}}{{/crossLink}}, which provides a fluent API for building itself.\n\n<img src=\"../../../assets/images/Model.png\"></img>",
+            "description": "A **Model** is a unit of content within a xeogl {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n## Overview\n\n* A Model is a container of {{#crossLink \"Component\"}}Components{{/crossLink}}.\n* Can be transformed within World-space by attaching it to a {{#crossLink \"Transform\"}}{{/crossLink}} hierarchy.\n* Provides its World-space boundary as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}.\n* Subclassed by {{#crossLink \"GLTFModel\"}}{{/crossLink}}, which loads glTF files.\n* Subclassed by {{#crossLink \"SceneJSModel\"}}{{/crossLink}}, which imports SceneJS scene definitions.\n* Subclassed by {{#crossLink \"BuildableModel\"}}{{/crossLink}}, which provides a fluent API for building itself.\n\n<img src=\"../../../assets/images/Model.png\"></img>\n\n## Usage\n\n### Adding and removing components to a Model\n\nWhen adding components to a Model, it's usually easiest to just add their configuration objects and let the Model\ninternally instantiate them, as shown below.\n\nNote that a Model manages the lifecycles of all the components contained within it, destroying them when we destroy\nthe Model or call its {{#crossLink \"Model/destroyAll:method\"}}{{/crossLink}} method.\n\n````javascript\nvar model = new xeogl.Model();\n\nvar geometry = model.add({\n       type: \"xeogl.TorusGeometry\"\n   });\n\nvar material = model.add({\n       type: \"xeogl.PhongMaterial\"\n       diffuse: [0.4, 0.4, 9.0]\n   });\n\nmodel.add({\n       type: \"xeogl.Entity\",\n       geometry: geometry,\n       material: material\n   });\n````\n\nAs shown below, we can also add our own component instances, supplying either the objects or their IDs.\n\nNote that the components must be in the same {{#crossLink \"Scene\"}}{{/crossLink}} as the model.\n\n````javascript\n// Add our component object\nmodel.add(new xeogl.Entity({\n       geometry: geometry,\n       material: material\n   }));\n\n// Instantiate our component and add it by ID:\nvar material2 = new xeogl.PhongMaterial({\n       id: \"myMaterial\",\n       diffuse: [0.4, 1.0, 9.0]\n   });\n\nmodel.add(\"myMaterial\");\n````\n\n### Transforming a Model\n\nAs well as allowing us organize the lifecycle of groups of components, a Model also lets us transform them as a group.\n\nWe can attach a modeling {{#crossLink \"Transform\"}}{{/crossLink}} to our Model, as a either a\nconfiguration object or a component instance:\n\n```` Javascript\n// Attach transforms as a configuration object:\nmodel.transform = {\n   type: \"xeogl.Translate\",\n   xyz: [-35, 0, 0],\n   parent: {\n       type: \"xeogl.Rotate\",\n       xyz: [0, 1, 0],\n       angle: 45\n   }\n};\n\n// Attach our own transform instances:\nmodel.transform = new xeogl.Translate({\n   xyz: [-35, 0, 0],\n   parent: new xeogl.Rotate({\n       xyz: [0, 1, 0],\n       angle: 45\n   })\n});\n````\n\nWe can also provide the transforms to the Model constructor, as either configuration objects or instances.\n\nHere we'll provide them as configuration objects:\n\n```` Javascript\n// Model internally instantiates our transform components:\nvar model2 = new xeogl.Model({\n   transform: {\n       type: \"xeogl.Translate\",\n       xyz: [-35, 0, 0],\n       parent: {\n           type: \"xeogl.Rotate\",\n           xyz: [0, 1, 0],\n           angle: 45\n       }\n   }\n});\n\n````\n\nNote that, as with the components we added before, the Model will manage the lifecycles of our transform components,\ndestroying them when we destroy the Model or call its {{#crossLink \"Model/destroyAll:method\"}}{{/crossLink}} method.\n\n### Getting the World-space boundary of a Model\n\nA Model's {{#crossLink \"Model/worldBoundary:property\"}}{{/crossLink}} property is a {{#crossLink \"Boundary3D\"}}{{/crossLink}}\nthat provides the collective World-space boundary of all its components. The {{#crossLink \"Boundary3D\"}}{{/crossLink}} will\nautomatically adjust its extents whenever components are added to its Model, or whenever the Model's transforms are updated.\n\nLet's get the {{#crossLink \"Boundary3D\"}}{{/crossLink}} from our first Model, subscribe to changes to its extents,\nand animate one of the Model's transforms:\n\n```` Javascript\nvar worldBoundary = model.worldBoundary;\n\nworldBoundary.on(\"updated\", function() {\n   obb = worldBoundary.obb;\n   aabb = worldBoundary.aabb;\n   center = worldBoundary.center;\n   sphere = worldBoundary.sphere();\n   //...\n    });\n\nmodel.scene.on(\"tick\", function() {\n       model.transform.parent.angle += 0.2;\n   });\n````\n\nThe Model actually lazy-instantiates the {{#crossLink \"Boundary3D\"}}{{/crossLink}} the first time we reference\nthe Model's {{#crossLink \"Model/worldBoundary:property\"}}{{/crossLink}} property. Since the {{#crossLink \"Boundary3D\"}}{{/crossLink}}\nis going to continually recompute its extents whever we add or remove components, or animate transforms, for efficiency\nwe should destroy the {{#crossLink \"Boundary3D\"}}{{/crossLink}} as soon as we no longer need it.",
             "submodule": "models",
             "is_constructor": 1,
             "params": [
@@ -18777,7 +18777,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 36,
+            "line": 169,
             "description": "JavaScript class name for this Component.",
             "itemtype": "property",
             "name": "type",
@@ -18789,7 +18789,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 47,
+            "line": 180,
             "description": "The {{#crossLink \"Components\"}}{{/crossLink}} within this Model, mapped to their IDs.\n\nFires an {{#crossLink \"Model/updated:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "components",
@@ -18800,7 +18800,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 57,
+            "line": 190,
             "description": "The number of {{#crossLink \"Components\"}}{{/crossLink}} within this Model.",
             "itemtype": "property",
             "name": "numComponents",
@@ -18811,7 +18811,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 65,
+            "line": 198,
             "description": "A map of maps; for each {{#crossLink \"Component\"}}{{/crossLink}} type in this Model,\na map to IDs to {{#crossLink \"Component\"}}{{/crossLink}} instances, eg.\n\n````\n\"xeogl.Geometry\": {\n  \"alpha\": <xeogl.Geometry>,\n  \"beta\": <xeogl.Geometry>\n},\n\"xeogl.Rotate\": {\n  \"charlie\": <xeogl.Rotate>,\n  \"delta\": <xeogl.Rotate>,\n  \"echo\": <xeogl.Rotate>,\n},\n//...\n````",
             "itemtype": "property",
             "name": "types",
@@ -18822,7 +18822,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 108,
+            "line": 241,
             "description": "Adds a {{#crossLink \"Component\"}}Component{{/crossLink}} or subtype to this Model.\n\nThe {{#crossLink \"Component\"}}Component(s){{/crossLink}} may be specified by ID, instance, JSON definition or type.\n\nSee class comment for usage examples.\n\nThe {{#crossLink \"Component\"}}Components{{/crossLink}} must be in the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Model.\n\nFires an {{#crossLink \"Model/added:event\"}}{{/crossLink}} event.",
             "itemtype": "method",
             "name": "add",
@@ -18839,7 +18839,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 260,
+            "line": 390,
             "description": "Fired whenever an individual {{#crossLink \"Component\"}}{{/crossLink}} is added to this {{#crossLink \"Model\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "added",
@@ -18856,7 +18856,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 294,
+            "line": 424,
             "description": "Destroys all {{#crossLink \"Component\"}}Components{{/crossLink}} in this Model.",
             "itemtype": "method",
             "name": "destroyAll",
@@ -18866,7 +18866,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 306,
+            "line": 436,
             "description": "Removes all {{#crossLink \"Component\"}}Components{{/crossLink}} from this Model.",
             "itemtype": "method",
             "name": "removeAll",
@@ -18876,7 +18876,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 356,
+            "line": 486,
             "description": "Fired whenever an individual {{#crossLink \"Component\"}}{{/crossLink}} is removed from this {{#crossLink \"Model\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "removed",
@@ -18893,7 +18893,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 368,
+            "line": 498,
             "description": "Iterates with a callback over the {{#crossLink \"Component\"}}Components{{/crossLink}} in this Model.",
             "itemtype": "method",
             "name": "iterate",
@@ -18917,7 +18917,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 387,
+            "line": 517,
             "description": "The Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} attached to this Model.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Model.\n\nInternally, the given {{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most\n{{#crossLink \"Transform\"}}Transform{{/crossLink}} that the Model attaches to\nits {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires an {{#crossLink \"Model/transform:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "transform",
@@ -18928,7 +18928,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 405,
+            "line": 535,
             "description": "Fired whenever this Model's {{#crossLink \"Model/transform:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "transform",
@@ -18944,7 +18944,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 428,
+            "line": 558,
             "description": "World-space 3D boundary enclosing all the components in this Model.\n\nIf you call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on this boundary, then\nthis property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime you reference it.",
             "itemtype": "property",
             "name": "worldBoundary",

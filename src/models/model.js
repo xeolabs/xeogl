@@ -8,72 +8,145 @@
      ## Overview
 
      * A Model is a container of {{#crossLink "Component"}}Components{{/crossLink}}.
-     * Can be transformed within World-space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}}.
+     * Can be transformed within World-space by attaching it to a {{#crossLink "Transform"}}{{/crossLink}} hierarchy.
      * Provides its World-space boundary as a {{#crossLink "Boundary3D"}}{{/crossLink}}.
      * Subclassed by {{#crossLink "GLTFModel"}}{{/crossLink}}, which loads glTF files.
+     * Subclassed by {{#crossLink "SceneJSModel"}}{{/crossLink}}, which imports SceneJS scene definitions.
      * Subclassed by {{#crossLink "BuildableModel"}}{{/crossLink}}, which provides a fluent API for building itself.
 
      <img src="../../../assets/images/Model.png"></img>
 
      ## Usage
 
-     #### Adding components
+     ### Adding and removing components to a Model
 
-     When adding components to a Model, it's usually easiest to add their configuration objects
-     and let the Model internally create component instances from those. Then the Model owns those
-     components, and will destroy them when you destroy the Model or call its
-     {{#crossLink "Model/destroyAll: method"}}{{/crossLink}}.
+     When adding components to a Model, it's usually easiest to just add their configuration objects and let the Model
+     internally instantiate them, as shown below.
+
+     Note that a Model manages the lifecycles of all the components contained within it, destroying them when we destroy
+     the Model or call its {{#crossLink "Model/destroyAll:method"}}{{/crossLink}} method.
 
      ````javascript
-     var model1 = new xeogl.Model();
+     var model = new xeogl.Model();
 
-     var geometry = model1.add({
+     var geometry = model.add({
             type: "xeogl.TorusGeometry"
         });
 
-     var material = model1.add({
+     var material = model.add({
             type: "xeogl.PhongMaterial"
             diffuse: [0.4, 0.4, 9.0]
         });
 
-     model1.add({
+     model.add({
             type: "xeogl.Entity",
             geometry: geometry,
             material: material
         });
      ````
 
-     Of course, we can also add component instances, but bear in mind that they will get destroyed if you destroy the Model
-     or call its {{#crossLink "Model/destroyAll: method"}}{{/crossLink}} method:
+     As shown below, we can also add our own component instances, supplying either the objects or their IDs.
+
+     Note that the components must be in the same {{#crossLink "Scene"}}{{/crossLink}} as the model.
 
      ````javascript
-     var model2 = new xeogl.Model();
+     // Add our component object
+     model.add(new xeogl.Entity({
+            geometry: geometry,
+            material: material
+        }));
 
+     // Instantiate our component and add it by ID:
      var material2 = new xeogl.PhongMaterial({
+            id: "myMaterial",
             diffuse: [0.4, 1.0, 9.0]
         });
 
-     var geometry2 = model.add({
-            type: "xeogl.SphereGeometry"
-        });
-
-     var entity2 = new xeogl.Entity({
-            geometry: geometry2,
-            material: material2
-        });
-
-     model.add(material2);
-     model.add(geometry2);
-     model.add(entity2);
+     model.add("myMaterial");
      ````
 
-     #### Transforming
+     ### Transforming a Model
 
-     One of the benefits of keeping components in Models is that we can transform them as a group.
+     As well as allowing us organize the lifecycle of groups of components, a Model also lets us transform them as a group.
 
-     ````javascript
+     We can attach a modeling {{#crossLink "Transform"}}{{/crossLink}} to our Model, as a either a
+     configuration object or a component instance:
+
+     ```` Javascript
+     // Attach transforms as a configuration object:
+     model.transform = {
+        type: "xeogl.Translate",
+        xyz: [-35, 0, 0],
+        parent: {
+            type: "xeogl.Rotate",
+            xyz: [0, 1, 0],
+            angle: 45
+        }
+     };
+
+     // Attach our own transform instances:
+     model.transform = new xeogl.Translate({
+        xyz: [-35, 0, 0],
+        parent: new xeogl.Rotate({
+            xyz: [0, 1, 0],
+            angle: 45
+        })
+     });
+     ````
+
+     We can also provide the transforms to the Model constructor, as either configuration objects or instances.
+
+     Here we'll provide them as configuration objects:
+
+     ```` Javascript
+     // Model internally instantiates our transform components:
+     var model2 = new xeogl.Model({
+        transform: {
+            type: "xeogl.Translate",
+            xyz: [-35, 0, 0],
+            parent: {
+                type: "xeogl.Rotate",
+                xyz: [0, 1, 0],
+                angle: 45
+            }
+        }
+     });
 
      ````
+
+     Note that, as with the components we added before, the Model will manage the lifecycles of our transform components,
+     destroying them when we destroy the Model or call its {{#crossLink "Model/destroyAll:method"}}{{/crossLink}} method.
+
+     ### Getting the World-space boundary of a Model
+
+     A Model's {{#crossLink "Model/worldBoundary:property"}}{{/crossLink}} property is a {{#crossLink "Boundary3D"}}{{/crossLink}}
+     that provides the collective World-space boundary of all its components. The {{#crossLink "Boundary3D"}}{{/crossLink}} will
+     automatically adjust its extents whenever components are added to its Model, or whenever the Model's transforms are updated.
+
+     Let's get the {{#crossLink "Boundary3D"}}{{/crossLink}} from our first Model, subscribe to changes to its extents,
+     and animate one of the Model's transforms:
+
+     ```` Javascript
+     var worldBoundary = model.worldBoundary;
+
+     worldBoundary.on("updated", function() {
+        obb = worldBoundary.obb;
+        aabb = worldBoundary.aabb;
+        center = worldBoundary.center;
+        sphere = worldBoundary.sphere();
+        //...
+    });
+
+     model.scene.on("tick", function() {
+            model.transform.parent.angle += 0.2;
+        });
+     ````
+
+     The Model actually lazy-instantiates the {{#crossLink "Boundary3D"}}{{/crossLink}} the first time we reference
+     the Model's {{#crossLink "Model/worldBoundary:property"}}{{/crossLink}} property. Since the {{#crossLink "Boundary3D"}}{{/crossLink}}
+     is going to continually recompute its extents whever we add or remove components, or animate transforms, for efficiency
+     we should destroy the {{#crossLink "Boundary3D"}}{{/crossLink}} as soon as we no longer need it.
+
 
      @class Model
      @module xeogl

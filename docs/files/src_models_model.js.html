@@ -198,12 +198,145 @@
      ## Overview
 
      * A Model is a container of {{#crossLink &quot;Component&quot;}}Components{{/crossLink}}.
-     * Can be transformed within World-space by attaching it to a {{#crossLink &quot;Transform&quot;}}{{/crossLink}}.
+     * Can be transformed within World-space by attaching it to a {{#crossLink &quot;Transform&quot;}}{{/crossLink}} hierarchy.
      * Provides its World-space boundary as a {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}.
      * Subclassed by {{#crossLink &quot;GLTFModel&quot;}}{{/crossLink}}, which loads glTF files.
+     * Subclassed by {{#crossLink &quot;SceneJSModel&quot;}}{{/crossLink}}, which imports SceneJS scene definitions.
      * Subclassed by {{#crossLink &quot;BuildableModel&quot;}}{{/crossLink}}, which provides a fluent API for building itself.
 
      &lt;img src=&quot;../../../assets/images/Model.png&quot;&gt;&lt;/img&gt;
+
+     ## Usage
+
+     ### Adding and removing components to a Model
+
+     When adding components to a Model, it&#x27;s usually easiest to just add their configuration objects and let the Model
+     internally instantiate them, as shown below.
+
+     Note that a Model manages the lifecycles of all the components contained within it, destroying them when we destroy
+     the Model or call its {{#crossLink &quot;Model/destroyAll:method&quot;}}{{/crossLink}} method.
+
+     &#x60;&#x60;&#x60;&#x60;javascript
+     var model = new xeogl.Model();
+
+     var geometry = model.add({
+            type: &quot;xeogl.TorusGeometry&quot;
+        });
+
+     var material = model.add({
+            type: &quot;xeogl.PhongMaterial&quot;
+            diffuse: [0.4, 0.4, 9.0]
+        });
+
+     model.add({
+            type: &quot;xeogl.Entity&quot;,
+            geometry: geometry,
+            material: material
+        });
+     &#x60;&#x60;&#x60;&#x60;
+
+     As shown below, we can also add our own component instances, supplying either the objects or their IDs.
+
+     Note that the components must be in the same {{#crossLink &quot;Scene&quot;}}{{/crossLink}} as the model.
+
+     &#x60;&#x60;&#x60;&#x60;javascript
+     // Add our component object
+     model.add(new xeogl.Entity({
+            geometry: geometry,
+            material: material
+        }));
+
+     // Instantiate our component and add it by ID:
+     var material2 = new xeogl.PhongMaterial({
+            id: &quot;myMaterial&quot;,
+            diffuse: [0.4, 1.0, 9.0]
+        });
+
+     model.add(&quot;myMaterial&quot;);
+     &#x60;&#x60;&#x60;&#x60;
+
+     ### Transforming a Model
+
+     As well as allowing us organize the lifecycle of groups of components, a Model also lets us transform them as a group.
+
+     We can attach a modeling {{#crossLink &quot;Transform&quot;}}{{/crossLink}} to our Model, as a either a
+     configuration object or a component instance:
+
+     &#x60;&#x60;&#x60;&#x60; Javascript
+     // Attach transforms as a configuration object:
+     model.transform = {
+        type: &quot;xeogl.Translate&quot;,
+        xyz: [-35, 0, 0],
+        parent: {
+            type: &quot;xeogl.Rotate&quot;,
+            xyz: [0, 1, 0],
+            angle: 45
+        }
+     };
+
+     // Attach our own transform instances:
+     model.transform = new xeogl.Translate({
+        xyz: [-35, 0, 0],
+        parent: new xeogl.Rotate({
+            xyz: [0, 1, 0],
+            angle: 45
+        })
+     });
+     &#x60;&#x60;&#x60;&#x60;
+
+     We can also provide the transforms to the Model constructor, as either configuration objects or instances.
+
+     Here we&#x27;ll provide them as configuration objects:
+
+     &#x60;&#x60;&#x60;&#x60; Javascript
+     // Model internally instantiates our transform components:
+     var model2 = new xeogl.Model({
+        transform: {
+            type: &quot;xeogl.Translate&quot;,
+            xyz: [-35, 0, 0],
+            parent: {
+                type: &quot;xeogl.Rotate&quot;,
+                xyz: [0, 1, 0],
+                angle: 45
+            }
+        }
+     });
+
+     &#x60;&#x60;&#x60;&#x60;
+
+     Note that, as with the components we added before, the Model will manage the lifecycles of our transform components,
+     destroying them when we destroy the Model or call its {{#crossLink &quot;Model/destroyAll:method&quot;}}{{/crossLink}} method.
+
+     ### Getting the World-space boundary of a Model
+
+     A Model&#x27;s {{#crossLink &quot;Model/worldBoundary:property&quot;}}{{/crossLink}} property is a {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}
+     that provides the collective World-space boundary of all its components. The {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} will
+     automatically adjust its extents whenever components are added to its Model, or whenever the Model&#x27;s transforms are updated.
+
+     Let&#x27;s get the {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} from our first Model, subscribe to changes to its extents,
+     and animate one of the Model&#x27;s transforms:
+
+     &#x60;&#x60;&#x60;&#x60; Javascript
+     var worldBoundary = model.worldBoundary;
+
+     worldBoundary.on(&quot;updated&quot;, function() {
+        obb = worldBoundary.obb;
+        aabb = worldBoundary.aabb;
+        center = worldBoundary.center;
+        sphere = worldBoundary.sphere();
+        //...
+    });
+
+     model.scene.on(&quot;tick&quot;, function() {
+            model.transform.parent.angle += 0.2;
+        });
+     &#x60;&#x60;&#x60;&#x60;
+
+     The Model actually lazy-instantiates the {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} the first time we reference
+     the Model&#x27;s {{#crossLink &quot;Model/worldBoundary:property&quot;}}{{/crossLink}} property. Since the {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}
+     is going to continually recompute its extents whever we add or remove components, or animate transforms, for efficiency
+     we should destroy the {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} as soon as we no longer need it.
+
 
      @class Model
      @module xeogl
@@ -362,9 +495,6 @@
 
                 component = new window[type](this.scene, component);
 
-            } else {
-
-                return;
             }
 
             if (component.scene !== this.scene) {
