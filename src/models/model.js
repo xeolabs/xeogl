@@ -69,6 +69,30 @@
      model.add("myMaterial");
      ````
 
+     Since xeogl aims to be as declarative as possible, we can also add components immediately,
+     via the Model's constructor:
+
+     ````javascript
+     // We can add components immediately, via the Model's
+     var model2 = new xeogl.Model({
+            components: [
+                {
+                    type: "xeogl.TorusGeometry"
+                    id: "myTorusGeometry"
+                },
+                {
+                    type: "xeogl.PhongMaterial"
+                    id: "myTorusGeometry",
+                    diffuse: [0.4, 0.4, 9.0]
+                },
+                {
+                    type: "xeogl.Entity",
+                    geometry: geometry,
+                    material: "myPhongMaterial"
+                }
+            ]
+        });
+
      ### Transforming a Model
 
      As well as allowing us organize the lifecycle of groups of components, a Model also lets us transform them as a group.
@@ -104,7 +128,7 @@
 
      ```` Javascript
      // Model internally instantiates our transform components:
-     var model2 = new xeogl.Model({
+     var model3 = new xeogl.Model({
         transform: {
             type: "xeogl.Translate",
             xyz: [-35, 0, 0],
@@ -127,8 +151,9 @@
      that provides the collective World-space boundary of all its components. The {{#crossLink "Boundary3D"}}{{/crossLink}} will
      automatically adjust its extents whenever we add or remove components to its Model, or whenever we update the Model's transforms.
 
-     Let's get the {{#crossLink "Boundary3D"}}{{/crossLink}} from our first Model, subscribe to changes to its extents,
-     and animate one of the Model's transforms:
+     Let's get the {{#crossLink "Boundary3D"}}{{/crossLink}} from our first Model, subscribe to changes on its extents,
+     then animate one of the Model's transforms, which will cause the {{#crossLink "Boundary3D"}}{{/crossLink}} to fire an
+     {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}} each time its extents change:
 
      ```` Javascript
      var worldBoundary = model.worldBoundary;
@@ -146,11 +171,20 @@
         });
      ````
 
-     The Model actually lazy-instantiates the {{#crossLink "Boundary3D"}}{{/crossLink}} the first time we reference
-     the Model's {{#crossLink "Model/worldBoundary:property"}}{{/crossLink}} property. Since the {{#crossLink "Boundary3D"}}{{/crossLink}}
-     is going to continually recompute its extents whever we add or remove components, or animate transforms, for efficiency
-     we should destroy the {{#crossLink "Boundary3D"}}{{/crossLink}} as soon as we no longer need it.
+     Since xeogl is all about lazy-execution to avoid needless work, the {{#crossLink "Boundary3D"}}{{/crossLink}} will
+     only actually recompute its extents when we read its {{#crossLink "Boundary3D/obb:property"}}{{/crossLink}},
+     {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}}, {{#crossLink "Boundary3D/center:property"}}{{/crossLink}},
+      {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} or
+     {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} properties.
 
+     Also, the Model lazy-instantiates its {{#crossLink "Boundary3D"}}{{/crossLink}} the first time we reference
+     the Model's {{#crossLink "Model/worldBoundary:property"}}{{/crossLink}} property. Since the {{#crossLink "Boundary3D"}}{{/crossLink}}
+     is going to hang around in memory and fire {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}} events each time we add or
+     remove components, or animate transforms, for efficiency we should destroy the {{#crossLink "Boundary3D"}}{{/crossLink}}
+     as soon as we no longer need it.
+
+     Finally, when we destroy a Model, it will also destroy its {{#crossLink "Boundary3D"}}{{/crossLink}}, if it
+     currently has one.
 
      @class Model
      @module xeogl
@@ -166,6 +200,7 @@
      Must be within the same {{#crossLink "Scene"}}{{/crossLink}} as this Model. Internally, the given
      {{#crossLink "Transform"}}{{/crossLink}} will be inserted above each top-most {{#crossLink "Transform"}}Transform{{/crossLink}}
      that the Model attaches to its {{#crossLink "Entity"}}Entities{{/crossLink}}.
+     @param [cfg.components] {Array} Array of {{#crossLink "Components"}}{{/crossLink}} to add initially, given as IDs, configuration objects or instances.
      @extends Component
      */
     xeogl.Model = xeogl.Component.extend({
@@ -238,7 +273,10 @@
             this.transform = cfg.transform;
 
             if (cfg.components) {
-                this.add(cfg.components);
+                var components = cfg.components;
+                for (var i = 0, len = components.length; i , len; i++) {
+                    this.add(components[i]);
+                }
             }
         },
 
