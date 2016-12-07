@@ -36880,7 +36880,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  ## Examples
 
- * Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)
+ * [Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)
 
  ## Usage
 
@@ -37067,7 +37067,9 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  <img src="../../../assets/images/Quaternion.png"></img>
 
- * Viewing transform hierarchy](../../examples/#transforms_view_hierarchy)
+ ## Examples
+
+ * [Viewing transform hierarchy](../../examples/#transforms_view_hierarchy)
 
  ## Usage
 
@@ -37245,8 +37247,8 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  ## Examples
 
- * Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)
- * Projection transform hierarchy](../../examples/#transforms_project_hierarchy)
+ * [Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)
+ * [Projection transform hierarchy](../../examples/#transforms_project_hierarchy)
 
  ## Usage
 
@@ -37400,7 +37402,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
  ## Examples
 
- * Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)
+ * [Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)
 
  ## Usage
 

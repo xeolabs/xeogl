@@ -10,7 +10,9 @@
 
  <img src="../../../assets/images/Quaternion.png"></img>
 
- * Viewing transform hierarchy](../../examples/#transforms_view_hierarchy)
+ ## Examples
+
+ * [Viewing transform hierarchy](../../examples/#transforms_view_hierarchy)
 
  ## Usage
 

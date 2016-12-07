@@ -12,8 +12,8 @@
 
  ## Examples
 
- * Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)
- * Projection transform hierarchy](../../examples/#transforms_project_hierarchy)
+ * [Modeling transform hierarchy](../../examples/#transforms_model_hierarchy)
+ * [Projection transform hierarchy](../../examples/#transforms_project_hierarchy)
 
  ## Usage
 
