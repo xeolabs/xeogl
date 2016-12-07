@@ -375,18 +375,20 @@
                 case "material":
 
                     var scenejsBaseColor = node.baseColor;
+                    var scenejsSpecularColor = node.specularColor;
                     var scenejsSpecular = node.specular;
                     var scenejsEmit = node.emit;
-
                     var diffuse = scenejsBaseColor ? [scenejsBaseColor.r, scenejsBaseColor.g, scenejsBaseColor.b] : null;
-                    var specular = (scenejsSpecular && diffuse) ? [scenejsSpecular * diffuse[0], scenejsSpecular * diffuse[1], scenejsSpecular * diffuse[2]] : null;
+                    var specular = (scenejsSpecular && scenejsSpecularColor) ? [scenejsSpecular * scenejsSpecularColor.r, scenejsSpecular * scenejsSpecularColor.g, scenejsSpecular * scenejsSpecularColor.b] : null;
                     var emissive = (scenejsEmit && diffuse) ? [scenejsEmit * diffuse[0], scenejsEmit * diffuse[1], scenejsEmit * diffuse[2]] : null;
 
                     material = this.add({
                         type: "xeogl.PhongMaterial",
                         id: this._createID(node),
+                        ambient: [1,1,1],
                         diffuse: diffuse,
                         specular: specular,
+                       // shininess: node.shine,
                         emissive: emissive,
                         opacity: node.alpha
                     });

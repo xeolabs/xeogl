@@ -37,6 +37,25 @@
     // Everything in this demo is within xeogl's default scene, which creates the canvas for us
     var scene = xeogl.scene;
 
+    scene.lights.lights = [
+        new xeogl.AmbientLight({
+            color: [.6,.6,.7],
+            intensity: 1.0
+        }),
+        new xeogl.DirLight({
+            dir: [-0.5, -0.6, -0.6],
+            color: [0.8, 0.8, 0.7],
+            intensity: 1.0,
+            space: "view"
+        }),
+        new xeogl.DirLight({
+            dir: [0.5, -0.6, -0.6],
+            color: [0.8, 0.8, 0.8],
+            intensity: 1.0,
+            space: "view"
+        })
+    ];
+
     // Set initial camera position
     var view = scene.camera.view;
     view.eye = [0, 0, -70];
@@ -199,6 +218,8 @@
             material: {
                 type: "xeogl.PhongMaterial",
                 diffuse: [0.1, 0.1, 0.2],
+                specular: [0.3, 0.3, 0.3],
+                shininess: 70,
                 diffuseMap: {
                     src: "textures/diffuse/UVCheckerMap11-1024.png",
                     wrapS: "repeat",
@@ -226,6 +247,8 @@
             material: {
                 type: "xeogl.PhongMaterial",
                 diffuse: [0.15, 0.15, 0.2],
+                specular: [0.3, 0.3, 0.3],
+                shininess: 70,
                 diffuseMap: {
                     src: "textures/diffuse/UVCheckerMap11-1024.png",
                     wrapS: "repeat",
