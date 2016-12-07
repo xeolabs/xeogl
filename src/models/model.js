@@ -82,12 +82,12 @@
                 },
                 {
                     type: "xeogl.PhongMaterial"
-                    id: "myTorusGeometry",
+                    id: "myPhongMaterial",
                     diffuse: [0.4, 0.4, 9.0]
                 },
                 {
                     type: "xeogl.Entity",
-                    geometry: geometry,
+                    geometry: "myTorusGeometry",
                     material: "myPhongMaterial"
                 }
             ]
