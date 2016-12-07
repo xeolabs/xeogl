@@ -27426,7 +27426,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
 
      A Model's {{#crossLink "Model/worldBoundary:property"}}{{/crossLink}} property is a {{#crossLink "Boundary3D"}}{{/crossLink}}
      that provides the collective World-space boundary of all its components. The {{#crossLink "Boundary3D"}}{{/crossLink}} will
-     automatically adjust its extents whenever components are added to its Model, or whenever the Model's transforms are updated.
+     automatically adjust its extents whenever we add or remove components to its Model, or whenever we update the Model's transforms.
 
      Let's get the {{#crossLink "Boundary3D"}}{{/crossLink}} from our first Model, subscribe to changes to its extents,
      and animate one of the Model's transforms:

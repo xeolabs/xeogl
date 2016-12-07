@@ -300,7 +300,7 @@ destroying them when we destroy the Model or call its <a href="../classes/Model.
 <h3 id="getting-the-world-space-boundary-of-a-model">Getting the World-space boundary of a Model</h3>
 <p>A Model&#39;s <a href="../classes/Model.html#property_worldBoundary" class="crosslink">worldBoundary</a> property is a <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a>
 that provides the collective World-space boundary of all its components. The <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> will
-automatically adjust its extents whenever components are added to its Model, or whenever the Model&#39;s transforms are updated.</p>
+automatically adjust its extents whenever we add or remove components to its Model, or whenever we update the Model&#39;s transforms.</p>
 <p>Let&#39;s get the <a href="../classes/Boundary3D.html" class="crosslink">Boundary3D</a> from our first Model, subscribe to changes to its extents,
 and animate one of the Model&#39;s transforms:</p>
 <pre class="code prettyprint"><code class="lang-Javascript">var worldBoundary = model.worldBoundary;

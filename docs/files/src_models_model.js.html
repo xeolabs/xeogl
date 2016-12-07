@@ -315,7 +315,7 @@
 
      A Model&#x27;s {{#crossLink &quot;Model/worldBoundary:property&quot;}}{{/crossLink}} property is a {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}}
      that provides the collective World-space boundary of all its components. The {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} will
-     automatically adjust its extents whenever components are added to its Model, or whenever the Model&#x27;s transforms are updated.
+     automatically adjust its extents whenever we add or remove components to its Model, or whenever we update the Model&#x27;s transforms.
 
      Let&#x27;s get the {{#crossLink &quot;Boundary3D&quot;}}{{/crossLink}} from our first Model, subscribe to changes to its extents,
      and animate one of the Model&#x27;s transforms:
