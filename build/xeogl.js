@@ -4,7 +4,7 @@
  * A WebGL-based 3D visualization engine from xeoLabs
  * http://xeogl.org/
  *
- * Built on 2016-12-08
+ * Built on 2016-12-13
  *
  * MIT License
  * Copyright 2016, Lindsay Kay
@@ -15036,8 +15036,10 @@ var Canvas2Image = (function () {
 
  <img src="../../../assets/images/Canvas.png"></img>
 
- Note that a Canvas also has a {{#crossLink "Spinner"}}{{/crossLink}}, which shows a
- busy spinner when a {{#crossLink "Model"}}{{/crossLink}} is loading, or when directed by application logic.
+ A Canvas also has
+
+ * a {{#crossLink "Spinner"}}{{/crossLink}}, which shows a busy spinner when a {{#crossLink "Model"}}{{/crossLink}}
+ is loading, or when directed by application logic, and
 
  ## Examples
 
@@ -15376,9 +15378,16 @@ var Canvas2Image = (function () {
 
                             lastCanvasWidth = newWidth;
                             lastCanvasHeight = newHeight;
+                        }
 
+                        if (newWindowSize) {
                             lastWindowWidth = window.innerWidth;
                             lastWindowHeight = window.innerHeight;
+                        }
+
+                        if (newCanvasPos) {
+                            lastCanvasOffsetLeft = canvas.offsetLeft;
+                            lastCanvasOffsetTop = canvas.offsetTop;
                         }
                     }
                 });
@@ -15387,9 +15396,6 @@ var Canvas2Image = (function () {
                 e.preventDefault();
             };
 
-            /**
-             *
-             */
             this._spinner = new xeogl.Spinner(this.scene, {
                 canvas: this.canvas
             });
@@ -15528,8 +15534,8 @@ var Canvas2Image = (function () {
         _getElementXY: function (e) {
             var x = 0, y = 0;
             while (e) {
-                x += (e.offsetLeft-e.scrollLeft);
-                y += (e.offsetTop-e.scrollTop);
+                x += (e.offsetLeft - e.scrollLeft);
+                y += (e.offsetTop - e.scrollTop);
                 e = e.offsetParent;
             }
             return {x: x, y: y};
@@ -15764,6 +15770,42 @@ var Canvas2Image = (function () {
 
                 get: function () {
                     return this._spinner;
+                }
+            },
+
+            fullscreen: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (value === Document.fullScreen) {
+                        return;
+                    }
+
+                    if (value) {
+                        if (this.canvas.requestFullScreen) {
+                            this.canvas.requestFullScreen();
+                        } else if (this.canvas.webkitRequestFullScreen) {
+                            this.canvas.webkitRequestFullScreen();
+                        } else if (this.canvas.mozRequestFullScreen) {
+                            this.canvas.mozRequestFullScreen();
+                        }
+                    } else {
+                        if(document.exitFullscreen) {
+                            document.exitFullscreen();
+                        } else if(document.mozCancelFullScreen) {
+                            document.mozCancelFullScreen();
+                        } else if(document.webkitExitFullscreen) {
+                            document.webkitExitFullscreen();
+                        }
+                    }
+
+                    this.fire("fullscreen", Document.fullScreen);
+                },
+
+                get: function () {
+                    return Document.fullScreen;
                 }
             }
         },
@@ -25084,7 +25126,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                 });
 
 
-            document.addEventListener("mousedown",
+            cfg.element.addEventListener("mousedown",
                 this._mouseDownListener = function (e) {
 
                     if (!self.enabled) {
@@ -25206,7 +25248,7 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
                     }
                 });
 
-            document.addEventListener("mousemove",
+            cfg.element.addEventListener("mousemove",
                 this._mouseMoveListener = function (e) {
 
                     if (!self.enabled) {
@@ -27374,7 +27416,6 @@ xeogl.PathGeometry = xeogl.Geometry.extend({
      via the Model's constructor:
 
      ````javascript
-     // We can add components immediately, via the Model's
      var model2 = new xeogl.Model({
             components: [
                 {
@@ -29532,7 +29573,6 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
 
 })();
 ;/**
-
  A **PhongMaterial** is a {{#crossLink "Material"}}{{/crossLink}} that defines the surface appearance of
  attached {{#crossLink "Entity"}}Entities{{/crossLink}} using
  the <a href="http://en.wikipedia.org/wiki/Phong_reflection_model">Phong</a> lighting model.
@@ -29563,6 +29603,7 @@ xeogl.GLTFLoaderUtils = Object.create(Object, {
  ## Usage
 
  In this example we have an Entity with
+
 
  * a {{#crossLink "Lights"}}{{/crossLink}} containing an {{#crossLink "AmbientLight"}}{{/crossLink}} and a {{#crossLink "DirLight"}}{{/crossLink}},
  * a {{#crossLink "PhongMaterial"}}{{/crossLink}} which applies a {{#crossLink "Texture"}}{{/crossLink}} as a diffuse map and a specular {{#crossLink "Fresnel"}}{{/crossLink}}, and
