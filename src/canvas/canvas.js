@@ -18,8 +18,10 @@
 
  <img src="../../../assets/images/Canvas.png"></img>
 
- Note that a Canvas also has a {{#crossLink "Spinner"}}{{/crossLink}}, which shows a
- busy spinner when a {{#crossLink "Model"}}{{/crossLink}} is loading, or when directed by application logic.
+ A Canvas also has
+
+ * a {{#crossLink "Spinner"}}{{/crossLink}}, which shows a busy spinner when a {{#crossLink "Model"}}{{/crossLink}}
+ is loading, or when directed by application logic, and
 
  ## Examples
 
@@ -358,9 +360,16 @@
 
                             lastCanvasWidth = newWidth;
                             lastCanvasHeight = newHeight;
+                        }
 
+                        if (newWindowSize) {
                             lastWindowWidth = window.innerWidth;
                             lastWindowHeight = window.innerHeight;
+                        }
+
+                        if (newCanvasPos) {
+                            lastCanvasOffsetLeft = canvas.offsetLeft;
+                            lastCanvasOffsetTop = canvas.offsetTop;
                         }
                     }
                 });
@@ -369,9 +378,6 @@
                 e.preventDefault();
             };
 
-            /**
-             *
-             */
             this._spinner = new xeogl.Spinner(this.scene, {
                 canvas: this.canvas
             });
@@ -510,8 +516,8 @@
         _getElementXY: function (e) {
             var x = 0, y = 0;
             while (e) {
-                x += (e.offsetLeft-e.scrollLeft);
-                y += (e.offsetTop-e.scrollTop);
+                x += (e.offsetLeft - e.scrollLeft);
+                y += (e.offsetTop - e.scrollTop);
                 e = e.offsetParent;
             }
             return {x: x, y: y};
@@ -746,6 +752,42 @@
 
                 get: function () {
                     return this._spinner;
+                }
+            },
+
+            fullscreen: {
+
+                set: function (value) {
+
+                    value = !!value;
+
+                    if (value === Document.fullScreen) {
+                        return;
+                    }
+
+                    if (value) {
+                        if (this.canvas.requestFullScreen) {
+                            this.canvas.requestFullScreen();
+                        } else if (this.canvas.webkitRequestFullScreen) {
+                            this.canvas.webkitRequestFullScreen();
+                        } else if (this.canvas.mozRequestFullScreen) {
+                            this.canvas.mozRequestFullScreen();
+                        }
+                    } else {
+                        if(document.exitFullscreen) {
+                            document.exitFullscreen();
+                        } else if(document.mozCancelFullScreen) {
+                            document.mozCancelFullScreen();
+                        } else if(document.webkitExitFullscreen) {
+                            document.webkitExitFullscreen();
+                        }
+                    }
+
+                    this.fire("fullscreen", Document.fullScreen);
+                },
+
+                get: function () {
+                    return Document.fullScreen;
                 }
             }
         },
