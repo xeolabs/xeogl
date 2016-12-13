@@ -73,7 +73,6 @@
      via the Model's constructor:
 
      ````javascript
-     // We can add components immediately, via the Model's
      var model2 = new xeogl.Model({
             components: [
                 {
