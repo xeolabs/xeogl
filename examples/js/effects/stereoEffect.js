@@ -92,7 +92,7 @@
 
     "use strict";
 
-    xeogl.StereoEffect = xeogl.Entity.extend({
+    xeogl.StereoEffect = xeogl.Component.extend({
 
         type: "xeogl.StereoEffect",
 

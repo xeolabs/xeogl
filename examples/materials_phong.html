@@ -18,24 +18,26 @@
 
 <script>
 
-    var material = new xeogl.PhongMaterial({
-        ambient: [0.7, 0.7, 0.7],
-        diffuse: [1.0, 0.5, 0.5],
-        specular: [1, 1, 1],
-        emissive: [0,0,0],
-        shininess: 30,
-        reflectivity: 1,
-        opacity: 1,
-        lineWidth: 1.0,
-        pointSize: 1.0
-    });
-
     var entity = new xeogl.Entity({
-        material: material
+
+        geometry: new xeogl.TorusGeometry({
+            primitive: "triangles" // "triangles" | "points" | "lines"
+        }),
+
+        material: new xeogl.PhongMaterial({
+            ambient: [0.7, 0.7, 0.7],
+            diffuse: [1.0, 0.5, 0.5],
+            specular: [1, 1, 1],
+            emissive: [0,0,0],
+            shininess: 30,
+            reflectivity: 1,
+            opacity: 1,
+            lineWidth: 1.0,
+            pointSize: 1.0
+        })
     });
 
-    entity.scene.on("tick",
-            function () {
+    entity.scene.on("tick", function () {
                 entity.scene.view.rotateEyeY(0.6);
                 entity.scene.view.rotateEyeX(0.3);
             });
