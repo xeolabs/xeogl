@@ -57,6 +57,7 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
@@ -96,6 +97,8 @@
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
+                                <li><a href="../classes/PBRMetalRoughnessMaterial.html">PBRMetalRoughnessMaterial</a></li>
+                                <li><a href="../classes/PBRSpecularGlossinessMaterial.html">PBRSpecularGlossinessMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
@@ -121,6 +124,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
+                                <li><a href="../classes/VoxelGeometryBuilder.html">VoxelGeometryBuilder</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
                                 <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
                                 <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
@@ -219,8 +223,11 @@ lost, and a <a href="../classes/Canvas.html#event_webglContextRestored" class="c
 the <a href="../classes/Canvas.html#event_webglContextRestored" class="crosslink">webglContextRestored</a> event.</li>
 </ul>
 <p><img src="../../../assets/images/Canvas.png"></img></p>
-<p>Note that a Canvas also has a <a href="../classes/Spinner.html" class="crosslink">Spinner</a>, which shows a
-busy spinner when a <a href="../classes/Model.html" class="crosslink">Model</a> is loading, or when directed by application logic.</p>
+<p>A Canvas also has</p>
+<ul>
+<li>a <a href="../classes/Spinner.html" class="crosslink">Spinner</a>, which shows a busy spinner when a <a href="../classes/Model.html" class="crosslink">Model</a>
+is loading, or when directed by application logic, and</li>
+</ul>
 <h2 id="examples">Examples</h2>
 <ul>
 <li><a href="../../examples/#scene_multipleScenes">Multiple canvases/scenes in a page</a></li>
@@ -775,7 +782,7 @@ any subsequent notifications on the event as they are made.</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/src_canvas_canvas.js.html#l562"><code>src&#x2F;canvas&#x2F;canvas.js:562</code></a>
+        <a href="../files/src_canvas_canvas.js.html#l568"><code>src&#x2F;canvas&#x2F;canvas.js:568</code></a>
         </p>
 
 
@@ -1312,7 +1319,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l648"><code>src&#x2F;canvas&#x2F;canvas.js:648</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l654"><code>src&#x2F;canvas&#x2F;canvas.js:654</code></a>
                             </p>
                     
                     
@@ -1340,7 +1347,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l690"><code>src&#x2F;canvas&#x2F;canvas.js:690</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l696"><code>src&#x2F;canvas&#x2F;canvas.js:696</code></a>
                             </p>
                     
                     
@@ -1368,7 +1375,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l235"><code>src&#x2F;canvas&#x2F;canvas.js:235</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l237"><code>src&#x2F;canvas&#x2F;canvas.js:237</code></a>
                             </p>
                     
                     
@@ -1402,7 +1409,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l124"><code>src&#x2F;canvas&#x2F;canvas.js:124</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l126"><code>src&#x2F;canvas&#x2F;canvas.js:126</code></a>
                             </p>
                     
                     
@@ -1430,7 +1437,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l135"><code>src&#x2F;canvas&#x2F;canvas.js:135</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l137"><code>src&#x2F;canvas&#x2F;canvas.js:137</code></a>
                             </p>
                     
                     
@@ -1488,7 +1495,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l153"><code>src&#x2F;canvas&#x2F;canvas.js:153</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l155"><code>src&#x2F;canvas&#x2F;canvas.js:155</code></a>
                             </p>
                     
                     
@@ -1642,7 +1649,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l738"><code>src&#x2F;canvas&#x2F;canvas.js:738</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l744"><code>src&#x2F;canvas&#x2F;canvas.js:744</code></a>
                             </p>
                     
                     
@@ -1729,7 +1736,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l171"><code>src&#x2F;canvas&#x2F;canvas.js:171</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l173"><code>src&#x2F;canvas&#x2F;canvas.js:173</code></a>
                             </p>
                     
                     
@@ -1785,7 +1792,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l162"><code>src&#x2F;canvas&#x2F;canvas.js:162</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l164"><code>src&#x2F;canvas&#x2F;canvas.js:164</code></a>
                             </p>
                     
                     
@@ -1816,7 +1823,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l677"><code>src&#x2F;canvas&#x2F;canvas.js:677</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l683"><code>src&#x2F;canvas&#x2F;canvas.js:683</code></a>
                             </p>
                     
                     
@@ -1858,7 +1865,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l725"><code>src&#x2F;canvas&#x2F;canvas.js:725</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l731"><code>src&#x2F;canvas&#x2F;canvas.js:731</code></a>
                             </p>
                     
                     
@@ -1900,7 +1907,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l351"><code>src&#x2F;canvas&#x2F;canvas.js:351</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l353"><code>src&#x2F;canvas&#x2F;canvas.js:353</code></a>
                             </p>
                     
                     
@@ -1967,7 +1974,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l553"><code>src&#x2F;canvas&#x2F;canvas.js:553</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l559"><code>src&#x2F;canvas&#x2F;canvas.js:559</code></a>
                             </p>
                     
                     
@@ -1993,7 +2000,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l275"><code>src&#x2F;canvas&#x2F;canvas.js:275</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l277"><code>src&#x2F;canvas&#x2F;canvas.js:277</code></a>
                             </p>
                     
                     
@@ -2018,7 +2025,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/src_canvas_canvas.js.html#l288"><code>src&#x2F;canvas&#x2F;canvas.js:288</code></a>
+                            <a href="../files/src_canvas_canvas.js.html#l290"><code>src&#x2F;canvas&#x2F;canvas.js:290</code></a>
                             </p>
                     
                     

@@ -57,6 +57,7 @@
                                 <li><a href="../classes/CameraPath.html">CameraPath</a></li>
                                 <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
                                 <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
                                 <li><a href="../classes/Clip.html">Clip</a></li>
                                 <li><a href="../classes/Clips.html">Clips</a></li>
                                 <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
@@ -96,6 +97,8 @@
                                 <li><a href="../classes/Ortho.html">Ortho</a></li>
                                 <li><a href="../classes/Path.html">Path</a></li>
                                 <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
+                                <li><a href="../classes/PBRMetalRoughnessMaterial.html">PBRMetalRoughnessMaterial</a></li>
+                                <li><a href="../classes/PBRSpecularGlossinessMaterial.html">PBRSpecularGlossinessMaterial</a></li>
                                 <li><a href="../classes/Perspective.html">Perspective</a></li>
                                 <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
                                 <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
@@ -121,6 +124,7 @@
                                 <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
                                 <li><a href="../classes/Viewport.html">Viewport</a></li>
                                 <li><a href="../classes/Visibility.html">Visibility</a></li>
+                                <li><a href="../classes/VoxelGeometryBuilder.html">VoxelGeometryBuilder</a></li>
                                 <li><a href="../classes/xeogl.html">xeogl</a></li>
                                 <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
                                 <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
@@ -206,7 +210,7 @@
 <p><a href="../../examples/#effects_StereoEffect"><img src="../../assets/images/screenshots/StereoEffect.png"></img></a></p>
 <h2 id="overview">Overview</h2>
 <ul>
-<li>Use a StereoEffect as a base class for split-view VR effects.</li>
+<li>Based on technique described in <a href="http://paulbourke.net/stereographics/stereorender/">this article by Paul Bourke</a>.</li>
 </ul>
 <p><img src="../../../assets/images/StereoEffect.png"></img></p>
 <h2 id="examples">Examples</h2>
@@ -222,9 +226,7 @@ var entity = new xeogl.Entity({
 });
 
 var stereoEffect = new xeogl.StereoEffect({
-    eyeSep: 0.2, // Default
-    focalLength: 20, // Default
-    aperture: 45, // Default
+    fov: 45, // Default
     active: true // Default
 });
 </code></pre>
@@ -235,11 +237,7 @@ var stereoEffect = new xeogl.StereoEffect({
         look: [0, 0, 0],
         up: [0, 1, 0]
     }),
-    project: new xeogl.Perspective({
-        fovy: 60,
-        near: 0.1,
-        far: 1000
-    })
+    project: new xeogl.Frustum()
 });
 
 var viewport = new xeogl.Viewport();
@@ -253,9 +251,7 @@ var entity = new xeogl.Entity({
 var stereoEffect = new xeogl.StereoEffect({
     camera: camera,
     viewport: viewport,
-    eyeSep: 0.2, // Default
-    focalLength: 20, // Default
-    aperture: 45, // Default
+    fov: 45, // Default
     active: true // Default
 });
 </code></pre>
@@ -379,34 +375,12 @@ var stereoEffect = new xeogl.StereoEffect({
         
                                     </li>
                                     <li class="param">
-                                            <code class="param-name optional">[eyeSep=0.2]</code>
+                                            <code class="param-name optional">[fov=45]</code>
                                             <span class="type"></span>
                                             <span class="flag optional" title="This parameter is optional.">optional</span>
         
                                         <div class="param-description">
-                                            <p>Number Interpupillary distance (the distance between the center of the pupils of the two eyes).</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[focalLength=20]</code>
-                                            <span class="type"></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Focal length.</p>
-        
-                                        </div>
-        
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[aperture=45]</code>
-                                            <span class="type"></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-        
-                                        <div class="param-description">
-                                            <p>Aperture angle in degrees.</p>
+                                            <p>Field-of-view angle in degrees.</p>
         
                                         </div>
         
@@ -504,10 +478,6 @@ var stereoEffect = new xeogl.StereoEffect({
                                 <a href="#property_active">active</a>
 
                             </li>
-                            <li class="index-item property">
-                                <a href="#property_aperture">aperture</a>
-
-                            </li>
                             <li class="index-item property inherited">
                                 <a href="#property_billboard">billboard</a>
 
@@ -553,11 +523,7 @@ var stereoEffect = new xeogl.StereoEffect({
 
                             </li>
                             <li class="index-item property">
-                                <a href="#property_eyeSep">eyeSep</a>
-
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_focalLength">focalLength</a>
+                                <a href="#property_fov">fov</a>
 
                             </li>
                             <li class="index-item property inherited">
@@ -688,10 +654,6 @@ var stereoEffect = new xeogl.StereoEffect({
                                 <a href="#event_active">active</a>
 
                             </li>
-                            <li class="index-item event">
-                                <a href="#event_aperture">aperture</a>
-
-                            </li>
                             <li class="index-item event inherited">
                                 <a href="#event_billboard">billboard</a>
 
@@ -733,11 +695,7 @@ var stereoEffect = new xeogl.StereoEffect({
 
                             </li>
                             <li class="index-item event">
-                                <a href="#event_eyeSep">eyeSep</a>
-
-                            </li>
-                            <li class="index-item event">
-                                <a href="#event_focalLength">focalLength</a>
+                                <a href="#event_fov">fov</a>
 
                             </li>
                             <li class="index-item event inherited">
@@ -1569,7 +1527,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_stereoEffect.js.html#l296"><code>examples&#x2F;js&#x2F;effects&#x2F;stereoEffect.js:296</code></a>
+                            <a href="../files/examples_js_effects_stereoEffect.js.html#l211"><code>examples&#x2F;js&#x2F;effects&#x2F;stereoEffect.js:211</code></a>
                             </p>
                     
                     
@@ -1582,33 +1540,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         </div>
                     
                             <p><strong>Default:</strong> true</p>
-                    
-                    
-                    </div>
-                    <div id="property_aperture" class="property item">
-                        <h3 class="name"><code>aperture</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_effects_stereoEffect.js.html#l262"><code>examples&#x2F;js&#x2F;effects&#x2F;stereoEffect.js:262</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Aperture angle in degrees.</p>
-                    <p>Fires an <a href="../classes/StereoEffect.html#event_aperture" class="crosslink">aperture</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 45</p>
                     
                     
                     </div>
@@ -1657,7 +1588,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Entity
                                 </a>
                                 but overwritten in
-                            <a href="../files/examples_js_effects_stereoEffect.js.html#l111"><code>examples&#x2F;js&#x2F;effects&#x2F;stereoEffect.js:111</code></a>
+                            <a href="../files/examples_js_effects_stereoEffect.js.html#l98"><code>examples&#x2F;js&#x2F;effects&#x2F;stereoEffect.js:98</code></a>
                             </p>
                     
                     
@@ -1948,8 +1879,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="property_eyeSep" class="property item">
-                        <h3 class="name"><code>eyeSep</code></h3>
+                    <div id="property_fov" class="property item">
+                        <h3 class="name"><code>fov</code></h3>
                         <span class="type">Number</span>
                     
                     
@@ -1959,46 +1890,19 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_stereoEffect.js.html#l194"><code>examples&#x2F;js&#x2F;effects&#x2F;stereoEffect.js:194</code></a>
+                            <a href="../files/examples_js_effects_stereoEffect.js.html#l177"><code>examples&#x2F;js&#x2F;effects&#x2F;stereoEffect.js:177</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Interpupillary distance (the distance between the center of the pupils of the two eyes).</p>
-                    <p>Fires an <a href="../classes/StereoEffect.html#event_eyeSep" class="crosslink">eyeSep</a> event on change.</p>
+                            <p>Field-of-view angle in degrees.</p>
+                    <p>Fires an <a href="../classes/StereoEffect.html#event_fov" class="crosslink">fov</a> event on change.</p>
                     
                         </div>
                     
-                            <p><strong>Default:</strong> 0.2</p>
-                    
-                    
-                    </div>
-                    <div id="property_focalLength" class="property item">
-                        <h3 class="name"><code>focalLength</code></h3>
-                        <span class="type">Number</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_effects_stereoEffect.js.html#l228"><code>examples&#x2F;js&#x2F;effects&#x2F;stereoEffect.js:228</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Focal length.</p>
-                    <p>Fires an <a href="../classes/StereoEffect.html#event_focalLength" class="crosslink">focalLength</a> event on change.</p>
-                    
-                        </div>
-                    
-                            <p><strong>Default:</strong> 20</p>
+                            <p><strong>Default:</strong> 45</p>
                     
                     
                     </div>
@@ -2756,7 +2660,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_stereoEffect.js.html#l158"><code>examples&#x2F;js&#x2F;effects&#x2F;stereoEffect.js:158</code></a>
+                            <a href="../files/examples_js_effects_stereoEffect.js.html#l143"><code>examples&#x2F;js&#x2F;effects&#x2F;stereoEffect.js:143</code></a>
                             </p>
                     
                     
@@ -2905,7 +2809,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_stereoEffect.js.html#l319"><code>examples&#x2F;js&#x2F;effects&#x2F;stereoEffect.js:319</code></a>
+                            <a href="../files/examples_js_effects_stereoEffect.js.html#l234"><code>examples&#x2F;js&#x2F;effects&#x2F;stereoEffect.js:234</code></a>
                             </p>
                     
                     
@@ -2913,48 +2817,6 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                         <div class="description">
                             <p>Fired whenever this StereoEffect&#39;s <a href="../classes/StereoEffect.html#property_active" class="crosslink">active</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_aperture" class="events item">
-                        <h3 class="name"><code>aperture</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_effects_stereoEffect.js.html#l283"><code>examples&#x2F;js&#x2F;effects&#x2F;stereoEffect.js:283</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this StereoEffect&#39;s <a href="../classes/StereoEffect.html#property_aperture" class="crosslink">aperture</a> property changes.</p>
                     
                         </div>
                     
@@ -3035,7 +2897,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                                     Entity
                                 </a>
                                 but overwritten in
-                            <a href="../files/examples_js_effects_stereoEffect.js.html#l129"><code>examples&#x2F;js&#x2F;effects&#x2F;stereoEffect.js:129</code></a>
+                            <a href="../files/examples_js_effects_stereoEffect.js.html#l116"><code>examples&#x2F;js&#x2F;effects&#x2F;stereoEffect.js:116</code></a>
                             </p>
                     
                     
@@ -3386,8 +3248,8 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                     
                     
                     </div>
-                    <div id="event_eyeSep" class="events item">
-                        <h3 class="name"><code>eyeSep</code></h3>
+                    <div id="event_fov" class="events item">
+                        <h3 class="name"><code>fov</code></h3>
                         <span class="type"></span>
                     
                     
@@ -3397,56 +3259,14 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_stereoEffect.js.html#l215"><code>examples&#x2F;js&#x2F;effects&#x2F;stereoEffect.js:215</code></a>
+                            <a href="../files/examples_js_effects_stereoEffect.js.html#l198"><code>examples&#x2F;js&#x2F;effects&#x2F;stereoEffect.js:198</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>Fired whenever this StereoEffect&#39;s <a href="../classes/StereoEffect.html#property_eyeSep" class="crosslink">eyeSep</a> property changes.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Event Payload:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">value</code>
-                                            <span class="type">Object</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The property&#39;s new value</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-                    <div id="event_focalLength" class="events item">
-                        <h3 class="name"><code>focalLength</code></h3>
-                        <span class="type"></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/examples_js_effects_stereoEffect.js.html#l249"><code>examples&#x2F;js&#x2F;effects&#x2F;stereoEffect.js:249</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Fired whenever this StereoEffect&#39;s <a href="../classes/StereoEffect.html#property_focalLength" class="crosslink">focalLength</a> property changes.</p>
+                            <p>Fired whenever this StereoEffect&#39;s <a href="../classes/StereoEffect.html#property_fov" class="crosslink">fov</a> property changes.</p>
                     
                         </div>
                     
@@ -4013,7 +3833,7 @@ parent <a href="../classes/Scene.html" class="crosslink">Scene</a>.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/examples_js_effects_stereoEffect.js.html#l172"><code>examples&#x2F;js&#x2F;effects&#x2F;stereoEffect.js:172</code></a>
+                            <a href="../files/examples_js_effects_stereoEffect.js.html#l157"><code>examples&#x2F;js&#x2F;effects&#x2F;stereoEffect.js:157</code></a>
                             </p>
                     
                     

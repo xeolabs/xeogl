@@ -650,6 +650,24 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/materials/pbrMetalRoughnessMaterial.js": {
+            "name": "src/materials/pbrMetalRoughnessMaterial.js",
+            "modules": {},
+            "classes": {
+                "PBRMetalRoughnessMaterial": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/materials/pbrSpecularGlossinessMaterial.js": {
+            "name": "src/materials/pbrSpecularGlossinessMaterial.js",
+            "modules": {},
+            "classes": {
+                "PBRSpecularGlossinessMaterial": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "src/materials/phongMaterial.js": {
             "name": "src/materials/phongMaterial.js",
             "modules": {},
@@ -1067,6 +1085,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "examples/js/effects/cardboardEffect.js": {
+            "name": "examples/js/effects/cardboardEffect.js",
+            "modules": {},
+            "classes": {
+                "CardboardEffect": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "examples/js/effects/highlightEntityEffect.js": {
             "name": "examples/js/effects/highlightEntityEffect.js",
             "modules": {},
@@ -1175,6 +1202,15 @@
             "name": "examples/js/generation/modelBuilder_v2.js",
             "modules": {},
             "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "examples/js/generation/voxelGeometryBuilder.js": {
+            "name": "examples/js/generation/voxelGeometryBuilder.js",
+            "modules": {},
+            "classes": {
+                "VoxelGeometryBuilder": 1
+            },
             "fors": {},
             "namespaces": {}
         },
@@ -1341,6 +1377,8 @@
                 "PointLight": 1,
                 "Fresnel": 1,
                 "Material": 1,
+                "PBRMetalRoughnessMaterial": 1,
+                "PBRSpecularGlossinessMaterial": 1,
                 "PhongMaterial": 1,
                 "Texture": 1,
                 "xeogl.math.math": 1,
@@ -1370,6 +1408,7 @@
                 "CameraPath": 1,
                 "CameraPathAnimation": 1,
                 "ZSpaceStylusControl": 1,
+                "CardboardEffect": 1,
                 "StereoEffect": 1,
                 "ZSpaceEffect": 1,
                 "CubicBezierCurve": 1,
@@ -1378,6 +1417,7 @@
                 "QuadraticBezierCurve": 1,
                 "SplineCurve": 1,
                 "GeometryBuilder": 1,
+                "VoxelGeometryBuilder": 1,
                 "Skybox": 1,
                 "HeightmapGeometry": 1,
                 "Nintendo3DSGeometry": 1,
@@ -1756,6 +1796,8 @@
             "classes": {
                 "Fresnel": 1,
                 "Material": 1,
+                "PBRMetalRoughnessMaterial": 1,
+                "PBRSpecularGlossinessMaterial": 1,
                 "PhongMaterial": 1,
                 "Texture": 1
             },
@@ -1997,6 +2039,7 @@
             "name": "effects",
             "submodules": {},
             "classes": {
+                "CardboardEffect": 1,
                 "StereoEffect": 1,
                 "ZSpaceEffect": 1
             },
@@ -2074,14 +2117,15 @@
             "name": "generation",
             "submodules": {},
             "classes": {
-                "GeometryBuilder": 1
+                "GeometryBuilder": 1,
+                "VoxelGeometryBuilder": 1
             },
             "fors": {},
             "is_submodule": 1,
             "namespaces": {},
             "module": "xeogl",
             "namespace": "",
-            "file": "examples/js/generation/geometryBuilder.js",
+            "file": "examples/js/generation/voxelGeometryBuilder.js",
             "line": 1,
             "description": "Components for generating xeogl content."
         },
@@ -2409,7 +2453,7 @@
             "namespace": "",
             "file": "src/canvas/canvas.js",
             "line": 1,
-            "description": "A **Canvas** manages a {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s HTML canvas and its WebGL context.\n\n## Overview\n\n* Each {{#crossLink \"Scene\"}}Scene{{/crossLink}} provides a Canvas as a read-only property on itself.\n* When a {{#crossLink \"Scene\"}}Scene{{/crossLink}} is configured with the ID of\nan existing <a href=\"http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element\">HTMLCanvasElement</a>, then\nthe Canvas will bind to that, otherwise the Canvas will automatically create its own.\n* A Canvas will fire a {{#crossLink \"Canvas/boundary:event\"}}{{/crossLink}} event whenever\nthe <a href=\"http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element\">HTMLCanvasElement</a> resizes.\n* A Canvas is responsible for obtaining a WebGL context from\nthe <a href=\"http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element\">HTMLCanvasElement</a>.\n* A Canvas also fires a {{#crossLink \"Canvas/webglContextLost:event\"}}{{/crossLink}} event when the WebGL context is\nlost, and a {{#crossLink \"Canvas/webglContextRestored:event\"}}{{/crossLink}} when it is restored again.\n* The various components within the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} will transparently recover on\nthe {{#crossLink \"Canvas/webglContextRestored:event\"}}{{/crossLink}} event.\n\n<img src=\"../../../assets/images/Canvas.png\"></img>\n\nNote that a Canvas also has a {{#crossLink \"Spinner\"}}{{/crossLink}}, which shows a\nbusy spinner when a {{#crossLink \"Model\"}}{{/crossLink}} is loading, or when directed by application logic.\n\n## Examples\n\n* [Multiple canvases/scenes in a page](../../examples/#scene_multipleScenes)\n* [Taking canvas snapshots](../../examples/#canvas_snapshot)\n* [Transparent canvas with background image](../../examples/#canvas_transparent)\n* [Canvas with multiple viewports](../../examples/#canvas_multipleViewports)\n\n## Usage\n\nIn the example below, we're creating a {{#crossLink \"Scene\"}}Scene{{/crossLink}} without specifying an HTML canvas element\nfor it. This causes the {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s Canvas component to create its own default element\nwithin the page. Then we subscribe to various events fired by that Canvas component.\n\n```` javascript\nvar scene = new xeogl.Scene();\n\n// Get the Canvas off the Scene\n// Since we did not configure the Scene with the ID of a DOM canvas element,\n// the Canvas will create its own canvas element in the DOM\nvar canvas = scene.canvas;\n\n// Get the WebGL context off the Canvas\nvar gl = canvas.gl;\n\n// Subscribe to Canvas size updates\ncanvas.on(\"size\", function(e) {\n       var width = e.width;\n       var height = e.height;\n       var aspect = e.aspect;\n       //...\n    });\n\n// Subscribe to WebGL context loss events on the Canvas\ncanvas.on(\"webglContextLost\", function() {\n       //...\n    });\n\n// Subscribe to WebGL context restored events on the Canvas\ncanvas.on(\"webglContextRestored\", function(gl) {\n       var newContext = gl;\n       //...\n    });\n````\n\nWhen we want to bind the Canvas to an existing HTML canvas element, configure the\n{{#crossLink \"Scene\"}}{{/crossLink}} with the ID of the element, like this:\n\n```` javascript\n// Create a Scene, this time configuring it with the\n// ID of an existing DOM canvas element\nvar scene = new xeogl.Scene({\n         canvasId: \"myCanvas\"\n    });\n\n// ..and the rest of this example can be the same as the previous example.\n\n````\n\nThe {{#crossLink \"Scene\"}}{{/crossLink}} will attempt to get use WebGL 2, or fall back on WebGL 1\nif that's absent. If you just want WebGL 1, disable WebGL 2 like so:\n\n```` javascript\nvar scene = new xeogl.Scene({\n         canvasId: \"myCanvas\",\n         webgl2 : true\n    });\n\n// ..and the rest of this example can be the same as the previous examples.\n\n````",
+            "description": "A **Canvas** manages a {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s HTML canvas and its WebGL context.\n\n## Overview\n\n* Each {{#crossLink \"Scene\"}}Scene{{/crossLink}} provides a Canvas as a read-only property on itself.\n* When a {{#crossLink \"Scene\"}}Scene{{/crossLink}} is configured with the ID of\nan existing <a href=\"http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element\">HTMLCanvasElement</a>, then\nthe Canvas will bind to that, otherwise the Canvas will automatically create its own.\n* A Canvas will fire a {{#crossLink \"Canvas/boundary:event\"}}{{/crossLink}} event whenever\nthe <a href=\"http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element\">HTMLCanvasElement</a> resizes.\n* A Canvas is responsible for obtaining a WebGL context from\nthe <a href=\"http://www.w3.org/TR/html5/scripting-1.html#the-canvas-element\">HTMLCanvasElement</a>.\n* A Canvas also fires a {{#crossLink \"Canvas/webglContextLost:event\"}}{{/crossLink}} event when the WebGL context is\nlost, and a {{#crossLink \"Canvas/webglContextRestored:event\"}}{{/crossLink}} when it is restored again.\n* The various components within the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} will transparently recover on\nthe {{#crossLink \"Canvas/webglContextRestored:event\"}}{{/crossLink}} event.\n\n<img src=\"../../../assets/images/Canvas.png\"></img>\n\nA Canvas also has\n\n* a {{#crossLink \"Spinner\"}}{{/crossLink}}, which shows a busy spinner when a {{#crossLink \"Model\"}}{{/crossLink}}\nis loading, or when directed by application logic, and\n\n## Examples\n\n* [Multiple canvases/scenes in a page](../../examples/#scene_multipleScenes)\n* [Taking canvas snapshots](../../examples/#canvas_snapshot)\n* [Transparent canvas with background image](../../examples/#canvas_transparent)\n* [Canvas with multiple viewports](../../examples/#canvas_multipleViewports)\n\n## Usage\n\nIn the example below, we're creating a {{#crossLink \"Scene\"}}Scene{{/crossLink}} without specifying an HTML canvas element\nfor it. This causes the {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s Canvas component to create its own default element\nwithin the page. Then we subscribe to various events fired by that Canvas component.\n\n```` javascript\nvar scene = new xeogl.Scene();\n\n// Get the Canvas off the Scene\n// Since we did not configure the Scene with the ID of a DOM canvas element,\n// the Canvas will create its own canvas element in the DOM\nvar canvas = scene.canvas;\n\n// Get the WebGL context off the Canvas\nvar gl = canvas.gl;\n\n// Subscribe to Canvas size updates\ncanvas.on(\"size\", function(e) {\n       var width = e.width;\n       var height = e.height;\n       var aspect = e.aspect;\n       //...\n    });\n\n// Subscribe to WebGL context loss events on the Canvas\ncanvas.on(\"webglContextLost\", function() {\n       //...\n    });\n\n// Subscribe to WebGL context restored events on the Canvas\ncanvas.on(\"webglContextRestored\", function(gl) {\n       var newContext = gl;\n       //...\n    });\n````\n\nWhen we want to bind the Canvas to an existing HTML canvas element, configure the\n{{#crossLink \"Scene\"}}{{/crossLink}} with the ID of the element, like this:\n\n```` javascript\n// Create a Scene, this time configuring it with the\n// ID of an existing DOM canvas element\nvar scene = new xeogl.Scene({\n         canvasId: \"myCanvas\"\n    });\n\n// ..and the rest of this example can be the same as the previous example.\n\n````\n\nThe {{#crossLink \"Scene\"}}{{/crossLink}} will attempt to get use WebGL 2, or fall back on WebGL 1\nif that's absent. If you just want WebGL 1, disable WebGL 2 like so:\n\n```` javascript\nvar scene = new xeogl.Scene({\n         canvasId: \"myCanvas\",\n         webgl2 : true\n    });\n\n// ..and the rest of this example can be the same as the previous examples.\n\n````",
             "submodule": "canvas",
             "static": 1,
             "params": [
@@ -4603,6 +4647,168 @@
             "is_constructor": 1,
             "extends": "Component"
         },
+        "PBRMetalRoughnessMaterial": {
+            "name": "PBRMetalRoughnessMaterial",
+            "shortname": "PBRMetalRoughnessMaterial",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "src/materials/pbrMetalRoughnessMaterial.js",
+            "line": 1,
+            "description": "A **PBRMetalRoughnessMaterial** is a {{#crossLink \"Material\"}}{{/crossLink}} that defines the surface appearance of\n attached {{#crossLink \"Entity\"}}Entities{{/crossLink}} using the specular-glossy physically-based rendering model.\n## Overview\nhttps://github.com/tsturm/glTF/tree/master/extensions/Vendor/FRAUNHOFER_materials_pbr\n \n TODO\n<img src=\"../../../assets/images/PBRMetalRoughnessMaterial.png\"></img>\n## Usage\n```` javascript\n````",
+            "submodule": "materials",
+            "is_constructor": 1,
+            "extends": "Material",
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this PBRMetalRoughnessMaterial within the\n default {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "The PBRMetalRoughnessMaterial configuration",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Metadata to attach to this material.",
+                            "type": "String:Object",
+                            "optional": true,
+                            "optdefault": "null"
+                        },
+                        {
+                            "name": "diffuse",
+                            "description": "The RGB components of the reflected diffuse color of the material. For raw metals the diffuse color is black (0.0). The fourth component (A) is the glossiness of the material.",
+                            "type": "Array of Number",
+                            "optional": true,
+                            "optdefault": "[[1.0, 1.0, 1.0, 1.0]"
+                        },
+                        {
+                            "name": "specular",
+                            "description": "The specular RGB color of the material.",
+                            "type": "Array of Number",
+                            "optional": true,
+                            "optdefault": "[[1.0, 1.0, 1.0]"
+                        },
+                        {
+                            "name": "glossiness",
+                            "description": "The glossiness of the material surface (0 is glossiness, 1 is full glossiness).",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1"
+                        },
+                        {
+                            "name": "diffuseMap",
+                            "description": "A diffuse map {{#crossLink \"Texture\"}}Texture{{/crossLink}}, which will override the effect of the diffuse property. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this PBRMetalRoughnessMaterial.",
+                            "type": "Texture",
+                            "optional": true,
+                            "optdefault": "null"
+                        },
+                        {
+                            "name": "specularGlossinessMap",
+                            "description": "An emissive map {{#crossLink \"Texture\"}}Texture{{/crossLink}}, which will override the effect of the emissive property. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this PBRMetalRoughnessMaterial.",
+                            "type": "Texture",
+                            "optional": true,
+                            "optdefault": "null"
+                        }
+                    ]
+                }
+            ]
+        },
+        "PBRSpecularGlossinessMaterial": {
+            "name": "PBRSpecularGlossinessMaterial",
+            "shortname": "PBRSpecularGlossinessMaterial",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "src/materials/pbrSpecularGlossinessMaterial.js",
+            "line": 1,
+            "description": "A **PBRSpecularGlossinessMaterial** is a {{#crossLink \"Material\"}}{{/crossLink}} that defines the surface appearance of\n attached {{#crossLink \"Entity\"}}Entities{{/crossLink}} using the specular-glossy physically-based rendering model.\n## Overview\nTODO\n<img src=\"../../../assets/images/PBRSpecularGlossinessMaterial.png\"></img>\n## Usage\n```` javascript\n````",
+            "submodule": "materials",
+            "is_constructor": 1,
+            "extends": "Material",
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this PBRSpecularGlossinessMaterial within the\n default {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "The PBRSpecularGlossinessMaterial configuration",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, generated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Metadata to attach to this material.",
+                            "type": "String:Object",
+                            "optional": true,
+                            "optdefault": "null"
+                        },
+                        {
+                            "name": "diffuse",
+                            "description": "The RGB components of the reflected diffuse color of the material. For raw metals the diffuse color is black (0.0). The fourth component (A) is the glossiness of the material.",
+                            "type": "Array of Number",
+                            "optional": true,
+                            "optdefault": "[[1.0, 1.0, 1.0, 1.0]"
+                        },
+                        {
+                            "name": "specular",
+                            "description": "The specular RGB color of the material.",
+                            "type": "Array of Number",
+                            "optional": true,
+                            "optdefault": "[[1.0, 1.0, 1.0]"
+                        },
+                        {
+                            "name": "glossiness",
+                            "description": "The glossiness of the material surface (0 is glossiness, 1 is full glossiness).",
+                            "type": "Number",
+                            "optional": true,
+                            "optdefault": "1"
+                        },
+                        {
+                            "name": "diffuseMap",
+                            "description": "A diffuse map {{#crossLink \"Texture\"}}Texture{{/crossLink}}, which will override the effect of the diffuse property. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this PBRSpecularGlossinessMaterial.",
+                            "type": "Texture",
+                            "optional": true,
+                            "optdefault": "null"
+                        },
+                        {
+                            "name": "specularGlossinessMap",
+                            "description": "An emissive map {{#crossLink \"Texture\"}}Texture{{/crossLink}}, which will override the effect of the emissive property. Must be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this PBRSpecularGlossinessMaterial.",
+                            "type": "Texture",
+                            "optional": true,
+                            "optdefault": "null"
+                        }
+                    ]
+                }
+            ]
+        },
         "PhongMaterial": {
             "name": "PhongMaterial",
             "shortname": "PhongMaterial",
@@ -4615,14 +4821,14 @@
             "namespace": "",
             "file": "src/materials/phongMaterial.js",
             "line": 1,
-            "description": "A **PhongMaterial** is a {{#crossLink \"Material\"}}{{/crossLink}} that defines the surface appearance of\n attached {{#crossLink \"Entity\"}}Entities{{/crossLink}} using\n the <a href=\"http://en.wikipedia.org/wiki/Phong_reflection_model\">Phong</a> lighting model.\n## Overview\n* PhongMaterial properties, along with {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}},\n {{#crossLink \"PhongMaterial/opacity:property\"}}{{/crossLink}} and {{#crossLink \"PhongMaterial/reflectivity:property\"}}{{/crossLink}},\n specify attributes that are to be **applied uniformly** across the surface of attached {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}.\n * Most of those attributes can be textured, **effectively replacing the values set for those properties**, by\n assigning {{#crossLink \"Texture\"}}Textures{{/crossLink}} to the PhongMaterial's\n {{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}}, {{#crossLink \"PhongMaterial/specularMap:property\"}}{{/crossLink}},\n {{#crossLink \"PhongMaterial/emissiveMap:property\"}}{{/crossLink}}, {{#crossLink \"PhongMaterial/opacityMap:property\"}}{{/crossLink}}\n and  {{#crossLink \"PhongMaterial/reflectivityMap:property\"}}{{/crossLink}} properties.\n * For example, the value of {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} will be ignored if your\n PhongMaterial also has a {{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}} set to a {{#crossLink \"Texture\"}}Texture{{/crossLink}}.\n The {{#crossLink \"Texture\"}}Texture's{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the\n {{#crossLink \"Geometry\"}}{{/crossLink}} surface, ie. they are not multiplied by\n the {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} for each pixel, as is done in many shading systems.\n * When the {{#crossLink \"Entity\"}}{{/crossLink}}'s {{#crossLink \"Geometry\"}}{{/crossLink}} has a\n {{#crossLink \"Geometry/primitive:property\"}}{{/crossLink}} set to \"lines\" or \"points\" then only the {{#crossLink \"PhongMaterial\"}}{{/crossLink}}'s\n {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}}, {{#crossLink \"PhongMaterial/emissiveMap:property\"}}{{/crossLink}},\n {{#crossLink \"PhongMaterial/opacity:property\"}}{{/crossLink}} and {{#crossLink \"PhongMaterial/opacityMap:property\"}}{{/crossLink}}\n will actually be applied, since those primitive types cannot be shaded.\n<img src=\"../../../assets/images/PhongMaterial.png\"></img>\n## Usage\nIn this example we have an Entity with\n* a {{#crossLink \"Lights\"}}{{/crossLink}} containing an {{#crossLink \"AmbientLight\"}}{{/crossLink}} and a {{#crossLink \"DirLight\"}}{{/crossLink}},\n * a {{#crossLink \"PhongMaterial\"}}{{/crossLink}} which applies a {{#crossLink \"Texture\"}}{{/crossLink}} as a diffuse map and a specular {{#crossLink \"Fresnel\"}}{{/crossLink}}, and\n * a {{#crossLink \"TorusGeometry\"}}{{/crossLink}}.\nNote that xeogl will ignore the PhongMaterial's {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}}\n property, since we assigned the {{#crossLink \"Texture\"}}{{/crossLink}} to the PhongMaterial's\n {{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}} property. The {{#crossLink \"Texture\"}}Texture's{{/crossLink}} pixel\n colors directly provide the diffuse color of each fragment across the {{#crossLink \"Geometry\"}}{{/crossLink}} surface.\n```` javascript\n var entity = new xeogl.Entity({\n   lights: new xeogl.Lights({\n        lights: [\n            new xeogl.AmbientLight({\n                color: [0.7, 0.7, 0.7]\n            }),\n            new xeogl.DirLight({\n                dir: [-1, -1, -1],\n                color: [0.5, 0.7, 0.5],\n                intensity: [1.0, 1.0, 1.0],\n                space: \"view\"\n            })\n        ]\n    }),\n   material: new xeogl.PhongMaterial({\n        ambient: [0.3, 0.3, 0.3],\n        diffuse: [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below\n        diffuseMap: new xeogl.Texture({\n            src: \"diffuseMap.jpg\"\n        }),\n        specular: [1, 1, 1],\n        specularFresnel: new xeogl.Fresnel({\n            leftColor: [1.0, 1.0, 1.0],\n            rightColor: [0.0, 0.0, 0.0],\n            power: 4\n        }),\n        shininess: 80, // Default\n        opacity: 1.0 // Default\n    }),\n   geometry: new xeogl.TorusGeometry()\n});\n ````",
+            "description": "A **PhongMaterial** is a {{#crossLink \"Material\"}}{{/crossLink}} that defines the surface appearance of\nattached {{#crossLink \"Entity\"}}Entities{{/crossLink}} using\nthe <a href=\"http://en.wikipedia.org/wiki/Phong_reflection_model\">Phong</a> lighting model.\n\n## Overview\n\n* PhongMaterial properties, along with {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}},\n{{#crossLink \"PhongMaterial/opacity:property\"}}{{/crossLink}} and {{#crossLink \"PhongMaterial/reflectivity:property\"}}{{/crossLink}},\nspecify attributes that are to be **applied uniformly** across the surface of attached {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}.\n* Most of those attributes can be textured, **effectively replacing the values set for those properties**, by\nassigning {{#crossLink \"Texture\"}}Textures{{/crossLink}} to the PhongMaterial's\n{{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}}, {{#crossLink \"PhongMaterial/specularMap:property\"}}{{/crossLink}},\n{{#crossLink \"PhongMaterial/emissiveMap:property\"}}{{/crossLink}}, {{#crossLink \"PhongMaterial/opacityMap:property\"}}{{/crossLink}}\nand  {{#crossLink \"PhongMaterial/reflectivityMap:property\"}}{{/crossLink}} properties.\n* For example, the value of {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} will be ignored if your\nPhongMaterial also has a {{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}} set to a {{#crossLink \"Texture\"}}Texture{{/crossLink}}.\nThe {{#crossLink \"Texture\"}}Texture's{{/crossLink}} pixel colors directly provide the diffuse color of each fragment across the\n{{#crossLink \"Geometry\"}}{{/crossLink}} surface, ie. they are not multiplied by\nthe {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} for each pixel, as is done in many shading systems.\n* When the {{#crossLink \"Entity\"}}{{/crossLink}}'s {{#crossLink \"Geometry\"}}{{/crossLink}} has a\n{{#crossLink \"Geometry/primitive:property\"}}{{/crossLink}} set to \"lines\" or \"points\" then only the {{#crossLink \"PhongMaterial\"}}{{/crossLink}}'s\n{{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}}, {{#crossLink \"PhongMaterial/emissiveMap:property\"}}{{/crossLink}},\n{{#crossLink \"PhongMaterial/opacity:property\"}}{{/crossLink}} and {{#crossLink \"PhongMaterial/opacityMap:property\"}}{{/crossLink}}\nwill actually be applied, since those primitive types cannot be shaded.\n\n<img src=\"../../../assets/images/PhongMaterial.png\"></img>\n\n## Usage\n\nIn this example we have an Entity with\n\n* a {{#crossLink \"Lights\"}}{{/crossLink}} containing an {{#crossLink \"AmbientLight\"}}{{/crossLink}} and a {{#crossLink \"DirLight\"}}{{/crossLink}},\n* a {{#crossLink \"PhongMaterial\"}}{{/crossLink}} which applies a {{#crossLink \"Texture\"}}{{/crossLink}} as a diffuse map and a specular {{#crossLink \"Fresnel\"}}{{/crossLink}}, and\n* a {{#crossLink \"TorusGeometry\"}}{{/crossLink}}.\n\nNote that xeogl will ignore the PhongMaterial's {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}}\nproperty, since we assigned the {{#crossLink \"Texture\"}}{{/crossLink}} to the PhongMaterial's\n{{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}} property. The {{#crossLink \"Texture\"}}Texture's{{/crossLink}} pixel\ncolors directly provide the diffuse color of each fragment across the {{#crossLink \"Geometry\"}}{{/crossLink}} surface.\n\n```` javascript\nvar entity = new xeogl.Entity({\n\n   lights: new xeogl.Lights({\n       lights: [\n           new xeogl.AmbientLight({\n               color: [0.7, 0.7, 0.7]\n           }),\n           new xeogl.DirLight({\n               dir: [-1, -1, -1],\n               color: [0.5, 0.7, 0.5],\n               intensity: [1.0, 1.0, 1.0],\n               space: \"view\"\n           })\n       ]\n   }),\n\n   material: new xeogl.PhongMaterial({\n       ambient: [0.3, 0.3, 0.3],\n       diffuse: [0.5, 0.5, 0.0],   // Ignored, since we have assigned a Texture to diffuseMap, below\n       diffuseMap: new xeogl.Texture({\n           src: \"diffuseMap.jpg\"\n       }),\n       specular: [1, 1, 1],\n       specularFresnel: new xeogl.Fresnel({\n           leftColor: [1.0, 1.0, 1.0],\n           rightColor: [0.0, 0.0, 0.0],\n           power: 4\n       }),\n       shininess: 80, // Default\n       opacity: 1.0 // Default\n   }),\n\n   geometry: new xeogl.TorusGeometry()\n});\n````",
             "submodule": "materials",
             "is_constructor": 1,
             "extends": "Material",
             "params": [
                 {
                     "name": "scene",
-                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this PhongMaterial within the\n default {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}}, creates this PhongMaterial within the\ndefault {{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted",
                     "type": "Scene",
                     "optional": true
                 },
@@ -4675,7 +4881,7 @@
                         },
                         {
                             "name": "opacity",
-                            "description": "Scalar in range 0-1 that controls opacity, where 0 is completely transparent and 1 is completely opaque.\n Only applies while {{#crossLink \"Modes\"}}Modes{{/crossLink}} {{#crossLink \"Modes/transparent:property\"}}transparent{{/crossLink}} equals ````true````.",
+                            "description": "Scalar in range 0-1 that controls opacity, where 0 is completely transparent and 1 is completely opaque.\nOnly applies while {{#crossLink \"Modes\"}}Modes{{/crossLink}} {{#crossLink \"Modes/transparent:property\"}}transparent{{/crossLink}} equals ````true````.",
                             "type": "Number",
                             "optional": true,
                             "optdefault": "1"
@@ -4995,7 +5201,7 @@
             "namespace": "",
             "file": "src/models/model.js",
             "line": 5,
-            "description": "A **Model** is a group of {{#crossLink \"Component\"}}Components{{/crossLink}} within a xeogl {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n## Overview\n\n* A Model manages the lifecycle of its components, automatically deleting them when the Model is deleted.\n* Can be attached to a hierarchy of {{#crossLink \"Transform\"}}Transforms{{/crossLink}}, to transform its components as a group, within World-space.\n* Provides the collective World-space boundary of its components as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}, which\nupdates its extents automatically as components are added and removed, or Transforms are updated.\n\nA Model is subclassed by (at least):\n\n* {{#crossLink \"GLTFModel\"}}{{/crossLink}}, which loads its components from glTF files.\n* {{#crossLink \"SceneJSModel\"}}{{/crossLink}}, which loads its components from SceneJS scene definitions.\n* {{#crossLink \"BuildableModel\"}}{{/crossLink}}, which provides a fluent API for building its components.\n\n<img src=\"../../../assets/images/Model.png\"></img>\n\n## Usage\n\n### Adding and removing components to a Model\n\nWhen adding components to a Model, it's usually easiest to just add their configuration objects and let the Model\ninternally instantiate them, as shown below.\n\nNote that a Model manages the lifecycles of all the components contained within it, destroying them when we destroy\nthe Model or call its {{#crossLink \"Model/destroyAll:method\"}}{{/crossLink}} method.\n\n````javascript\nvar model = new xeogl.Model();\n\nvar geometry = model.add({\n       type: \"xeogl.TorusGeometry\"\n   });\n\nvar material = model.add({\n       type: \"xeogl.PhongMaterial\"\n       diffuse: [0.4, 0.4, 9.0]\n   });\n\nmodel.add({\n       type: \"xeogl.Entity\",\n       geometry: geometry,\n       material: material\n   });\n````\n\nAs shown below, we can also add our own component instances, supplying either the objects or their IDs.\n\nNote that the components must be in the same {{#crossLink \"Scene\"}}{{/crossLink}} as the model.\n\n````javascript\n// Add our component object\nmodel.add(new xeogl.Entity({\n       geometry: geometry,\n       material: material\n   }));\n\n// Instantiate our component and add it by ID:\nvar material2 = new xeogl.PhongMaterial({\n       id: \"myMaterial\",\n       diffuse: [0.4, 1.0, 9.0]\n   });\n\nmodel.add(\"myMaterial\");\n````\n\nSince xeogl aims to be as declarative as possible, we can also add components immediately,\nvia the Model's constructor:\n\n````javascript\n// We can add components immediately, via the Model's\nvar model2 = new xeogl.Model({\n       components: [\n           {\n               type: \"xeogl.TorusGeometry\"\n               id: \"myTorusGeometry\"\n           },\n           {\n               type: \"xeogl.PhongMaterial\"\n               id: \"myPhongMaterial\",\n               diffuse: [0.4, 0.4, 9.0]\n           },\n           {\n               type: \"xeogl.Entity\",\n               geometry: \"myTorusGeometry\",\n               material: \"myPhongMaterial\"\n           }\n       ]\n   });\n    ````\n\n### Transforming a Model\n\nAs well as allowing us organize the lifecycle of groups of components, a Model also lets us transform them as a group.\n\nWe can attach a modeling {{#crossLink \"Transform\"}}{{/crossLink}} to our Model, as a either a\nconfiguration object or a component instance:\n\n```` Javascript\n// Attach transforms as a configuration object:\nmodel.transform = {\n   type: \"xeogl.Translate\",\n   xyz: [-35, 0, 0],\n   parent: {\n       type: \"xeogl.Rotate\",\n       xyz: [0, 1, 0],\n       angle: 45\n   }\n};\n\n// Attach our own transform instances:\nmodel.transform = new xeogl.Translate({\n   xyz: [-35, 0, 0],\n   parent: new xeogl.Rotate({\n       xyz: [0, 1, 0],\n       angle: 45\n   })\n});\n````\n\nWe can also provide the transforms to the Model constructor, as either configuration objects or instances.\n\nHere we'll provide them as configuration objects:\n\n```` Javascript\n// Model internally instantiates our transform components:\nvar model3 = new xeogl.Model({\n   transform: {\n       type: \"xeogl.Translate\",\n       xyz: [-35, 0, 0],\n       parent: {\n           type: \"xeogl.Rotate\",\n           xyz: [0, 1, 0],\n           angle: 45\n       }\n   }\n});\n\n````\n\nNote that, as with the components we added before, the Model will manage the lifecycles of our transform components,\ndestroying them when we destroy the Model or call its {{#crossLink \"Model/destroyAll:method\"}}{{/crossLink}} method.\n\n### Getting the World-space boundary of a Model\n\nA Model's {{#crossLink \"Model/worldBoundary:property\"}}{{/crossLink}} property is a {{#crossLink \"Boundary3D\"}}{{/crossLink}}\nthat provides the collective World-space boundary of all its components. The {{#crossLink \"Boundary3D\"}}{{/crossLink}} will\nautomatically adjust its extents whenever we add or remove components to its Model, or whenever we update the Model's transforms.\n\nLet's get the {{#crossLink \"Boundary3D\"}}{{/crossLink}} from our first Model, subscribe to changes on its extents,\nthen animate one of the Model's transforms, which will cause the {{#crossLink \"Boundary3D\"}}{{/crossLink}} to fire an\n{{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}} event each time its extents change:\n\n```` Javascript\nvar worldBoundary = model.worldBoundary;\n\nworldBoundary.on(\"updated\", function() {\n\n       // See docs on xeogl.Boundary3D for\n       // the format of these properties\n\n       obb = worldBoundary.obb;\n       aabb = worldBoundary.aabb;\n       center = worldBoundary.center;\n       sphere = worldBoundary.sphere();\n       //...\n    });\n\nmodel.scene.on(\"tick\", function() {\n       model.transform.parent.angle += 0.2;\n   });\n````\n\nSince xeogl is all about lazy-execution to avoid needless work, the {{#crossLink \"Boundary3D\"}}{{/crossLink}} will\nonly actually recompute its extents the first time we read its {{#crossLink \"Boundary3D/obb:property\"}}{{/crossLink}},\n{{#crossLink \"Boundary3D/aabb:property\"}}{{/crossLink}}, {{#crossLink \"Boundary3D/center:property\"}}{{/crossLink}},\n {{#crossLink \"Boundary3D/center:property\"}}{{/crossLink}} or\n{{#crossLink \"Boundary3D/sphere:property\"}}{{/crossLink}} properties after it fired its\nlast {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}} event.\n\nAlso, the Model lazy-instantiates its {{#crossLink \"Boundary3D\"}}{{/crossLink}} the first time we reference\nthe Model's {{#crossLink \"Model/worldBoundary:property\"}}{{/crossLink}} property. Since the {{#crossLink \"Boundary3D\"}}{{/crossLink}}\nis going to hang around in memory and fire {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}} events each time we add or\nremove components, or animate transforms, for efficiency we should destroy the {{#crossLink \"Boundary3D\"}}{{/crossLink}}\nas soon as we no longer need it.\n\nFinally, when we destroy a Model, it will also destroy its {{#crossLink \"Boundary3D\"}}{{/crossLink}}, if it\ncurrently has one.",
+            "description": "A **Model** is a group of {{#crossLink \"Component\"}}Components{{/crossLink}} within a xeogl {{#crossLink \"Scene\"}}{{/crossLink}}.\n\n## Overview\n\n* A Model manages the lifecycle of its components, automatically deleting them when the Model is deleted.\n* Can be attached to a hierarchy of {{#crossLink \"Transform\"}}Transforms{{/crossLink}}, to transform its components as a group, within World-space.\n* Provides the collective World-space boundary of its components as a {{#crossLink \"Boundary3D\"}}{{/crossLink}}, which\nupdates its extents automatically as components are added and removed, or Transforms are updated.\n\nA Model is subclassed by (at least):\n\n* {{#crossLink \"GLTFModel\"}}{{/crossLink}}, which loads its components from glTF files.\n* {{#crossLink \"SceneJSModel\"}}{{/crossLink}}, which loads its components from SceneJS scene definitions.\n* {{#crossLink \"BuildableModel\"}}{{/crossLink}}, which provides a fluent API for building its components.\n\n<img src=\"../../../assets/images/Model.png\"></img>\n\n## Usage\n\n### Adding and removing components to a Model\n\nWhen adding components to a Model, it's usually easiest to just add their configuration objects and let the Model\ninternally instantiate them, as shown below.\n\nNote that a Model manages the lifecycles of all the components contained within it, destroying them when we destroy\nthe Model or call its {{#crossLink \"Model/destroyAll:method\"}}{{/crossLink}} method.\n\n````javascript\nvar model = new xeogl.Model();\n\nvar geometry = model.add({\n       type: \"xeogl.TorusGeometry\"\n   });\n\nvar material = model.add({\n       type: \"xeogl.PhongMaterial\"\n       diffuse: [0.4, 0.4, 9.0]\n   });\n\nmodel.add({\n       type: \"xeogl.Entity\",\n       geometry: geometry,\n       material: material\n   });\n````\n\nAs shown below, we can also add our own component instances, supplying either the objects or their IDs.\n\nNote that the components must be in the same {{#crossLink \"Scene\"}}{{/crossLink}} as the model.\n\n````javascript\n// Add our component object\nmodel.add(new xeogl.Entity({\n       geometry: geometry,\n       material: material\n   }));\n\n// Instantiate our component and add it by ID:\nvar material2 = new xeogl.PhongMaterial({\n       id: \"myMaterial\",\n       diffuse: [0.4, 1.0, 9.0]\n   });\n\nmodel.add(\"myMaterial\");\n````\n\nSince xeogl aims to be as declarative as possible, we can also add components immediately,\nvia the Model's constructor:\n\n````javascript\nvar model2 = new xeogl.Model({\n       components: [\n           {\n               type: \"xeogl.TorusGeometry\"\n               id: \"myTorusGeometry\"\n           },\n           {\n               type: \"xeogl.PhongMaterial\"\n               id: \"myPhongMaterial\",\n               diffuse: [0.4, 0.4, 9.0]\n           },\n           {\n               type: \"xeogl.Entity\",\n               geometry: \"myTorusGeometry\",\n               material: \"myPhongMaterial\"\n           }\n       ]\n   });\n    ````\n\n### Transforming a Model\n\nAs well as allowing us organize the lifecycle of groups of components, a Model also lets us transform them as a group.\n\nWe can attach a modeling {{#crossLink \"Transform\"}}{{/crossLink}} to our Model, as a either a\nconfiguration object or a component instance:\n\n```` Javascript\n// Attach transforms as a configuration object:\nmodel.transform = {\n   type: \"xeogl.Translate\",\n   xyz: [-35, 0, 0],\n   parent: {\n       type: \"xeogl.Rotate\",\n       xyz: [0, 1, 0],\n       angle: 45\n   }\n};\n\n// Attach our own transform instances:\nmodel.transform = new xeogl.Translate({\n   xyz: [-35, 0, 0],\n   parent: new xeogl.Rotate({\n       xyz: [0, 1, 0],\n       angle: 45\n   })\n});\n````\n\nWe can also provide the transforms to the Model constructor, as either configuration objects or instances.\n\nHere we'll provide them as configuration objects:\n\n```` Javascript\n// Model internally instantiates our transform components:\nvar model3 = new xeogl.Model({\n   transform: {\n       type: \"xeogl.Translate\",\n       xyz: [-35, 0, 0],\n       parent: {\n           type: \"xeogl.Rotate\",\n           xyz: [0, 1, 0],\n           angle: 45\n       }\n   }\n});\n\n````\n\nNote that, as with the components we added before, the Model will manage the lifecycles of our transform components,\ndestroying them when we destroy the Model or call its {{#crossLink \"Model/destroyAll:method\"}}{{/crossLink}} method.\n\n### Getting the World-space boundary of a Model\n\nA Model's {{#crossLink \"Model/worldBoundary:property\"}}{{/crossLink}} property is a {{#crossLink \"Boundary3D\"}}{{/crossLink}}\nthat provides the collective World-space boundary of all its components. The {{#crossLink \"Boundary3D\"}}{{/crossLink}} will\nautomatically adjust its extents whenever we add or remove components to its Model, or whenever we update the Model's transforms.\n\nLet's get the {{#crossLink \"Boundary3D\"}}{{/crossLink}} from our first Model, subscribe to changes on its extents,\nthen animate one of the Model's transforms, which will cause the {{#crossLink \"Boundary3D\"}}{{/crossLink}} to fire an\n{{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}} event each time its extents change:\n\n```` Javascript\nvar worldBoundary = model.worldBoundary;\n\nworldBoundary.on(\"updated\", function() {\n\n       // See docs on xeogl.Boundary3D for\n       // the format of these properties\n\n       obb = worldBoundary.obb;\n       aabb = worldBoundary.aabb;\n       center = worldBoundary.center;\n       sphere = worldBoundary.sphere();\n       //...\n    });\n\nmodel.scene.on(\"tick\", function() {\n       model.transform.parent.angle += 0.2;\n   });\n````\n\nSince xeogl is all about lazy-execution to avoid needless work, the {{#crossLink \"Boundary3D\"}}{{/crossLink}} will\nonly actually recompute its extents the first time we read its {{#crossLink \"Boundary3D/obb:property\"}}{{/crossLink}},\n{{#crossLink \"Boundary3D/aabb:property\"}}{{/crossLink}}, {{#crossLink \"Boundary3D/center:property\"}}{{/crossLink}},\n {{#crossLink \"Boundary3D/center:property\"}}{{/crossLink}} or\n{{#crossLink \"Boundary3D/sphere:property\"}}{{/crossLink}} properties after it fired its\nlast {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}} event.\n\nAlso, the Model lazy-instantiates its {{#crossLink \"Boundary3D\"}}{{/crossLink}} the first time we reference\nthe Model's {{#crossLink \"Model/worldBoundary:property\"}}{{/crossLink}} property. Since the {{#crossLink \"Boundary3D\"}}{{/crossLink}}\nis going to hang around in memory and fire {{#crossLink \"Boundary3D/updated:event\"}}{{/crossLink}} events each time we add or\nremove components, or animate transforms, for efficiency we should destroy the {{#crossLink \"Boundary3D\"}}{{/crossLink}}\nas soon as we no longer need it.\n\nFinally, when we destroy a Model, it will also destroy its {{#crossLink \"Boundary3D\"}}{{/crossLink}}, if it\ncurrently has one.",
             "submodule": "models",
             "is_constructor": 1,
             "params": [
@@ -6571,6 +6777,76 @@
             ],
             "extends": "Component"
         },
+        "CardboardEffect": {
+            "name": "CardboardEffect",
+            "shortname": "CardboardEffect",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "examples/js/effects/cardboardEffect.js",
+            "line": 1,
+            "description": "A **CardboardEffect** sets up a stereo view for its {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\n<a href=\"../../examples/#effects_CardboardEffect\"><img src=\"../../assets/images/screenshots/CardboardEffect.png\"></img></a>\n\n## Overview\n\n* Work-in-progress\n* Based on technique described in [this article by Paul Bourke](http://paulbourke.net/stereographics/stereorender/).\n\n<img src=\"../../../assets/images/CardboardEffect.png\"></img>\n\n## Examples\n\n* [Stereo view using a CardboardEffect](../../examples/#effects_CardboardEffect)\n\n## Usage\n\nStereo view of an {{#crossLink \"Entity\"}}{{/crossLink}} using the {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Camera\"}}{{/crossLink}} and {{#crossLink \"Viewport\"}}{{/crossLink}}:\n\n````javascript\n// Both the Entity and the CardboardEffect use their Scene's default Camera and Viewport\n\nvar entity = new xeogl.Entity({\n    geometry: new xeogl.TorusGeometry()\n});\n\nvar CardboardEffect = new xeogl.CardboardEffect({\n    fov: 45, // Default\n    active: true // Default\n});\n````\n\nStereo view of an {{#crossLink \"Entity\"}}{{/crossLink}} using a custom {{#crossLink \"Camera\"}}{{/crossLink}} and {{#crossLink \"Viewport\"}}{{/crossLink}}:\n\n````javascript\nvar camera = new xeogl.Camera({\n    view: new xeogl.Lookat({\n        eye: [0, 0, 10],\n        look: [0, 0, 0],\n        up: [0, 1, 0]\n    }),\n    project: new xeogl.Frustum()\n});\n\nvar viewport = new xeogl.Viewport();\n\nvar entity = new xeogl.Entity({\n    camera: camera,\n    viewport: viewport,\n    geometry: new xeogl.TorusGeometry()\n});\n\nvar CardboardEffect = new xeogl.CardboardEffect({\n    camera: camera,\n    viewport: viewport,\n    fov: 45, // Default\n    active: true // Default\n});\n````",
+            "submodule": "effects",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "scene",
+                    "description": "Parent {{#crossLink \"Scene\"}}Scene{{/crossLink}} - creates this CardboardEffect in the default\n{{#crossLink \"Scene\"}}Scene{{/crossLink}} when omitted.",
+                    "type": "Scene",
+                    "optional": true
+                },
+                {
+                    "name": "cfg",
+                    "description": "Configs",
+                    "type": "*",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "id",
+                            "description": "Optional ID, unique among all components in the parent {{#crossLink \"Scene\"}}Scene{{/crossLink}},\ngenerated automatically when omitted.",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "meta",
+                            "description": "Optional map of user-defined metadata to attach to this CardboardEffect.",
+                            "type": "String:Object",
+                            "optional": true
+                        },
+                        {
+                            "name": "camera",
+                            "description": "ID or instance of a {{#crossLink \"Camera\"}}Camera{{/crossLink}} for this CardboardEffect.\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this CardboardEffect. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}}.",
+                            "type": "String|Camera",
+                            "optional": true
+                        },
+                        {
+                            "name": "viewport",
+                            "description": "ID or instance of a {{#crossLink \"Viewport\"}}Viewport{{/crossLink}} for this CardboardEffect.\nMust be within the same {{#crossLink \"Scene\"}}Scene{{/crossLink}} as this CardboardEffect. Defaults to the\nparent {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default instance, {{#crossLink \"Scene/viewport:property\"}}viewport{{/crossLink}}.",
+                            "type": "String|Viewport",
+                            "optional": true
+                        },
+                        {
+                            "name": "fov",
+                            "description": "fov angle in degrees.",
+                            "optional": true,
+                            "optdefault": "45"
+                        },
+                        {
+                            "name": "active",
+                            "description": "Whether or not this CardboardEffect is active.",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": "true"
+                        }
+                    ]
+                }
+            ],
+            "extends": "Entity"
+        },
         "StereoEffect": {
             "name": "StereoEffect",
             "shortname": "StereoEffect",
@@ -6583,7 +6859,7 @@
             "namespace": "",
             "file": "examples/js/effects/stereoEffect.js",
             "line": 1,
-            "description": "A **StereoEffect** sets up a stereo view for its {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\n<a href=\"../../examples/#effects_StereoEffect\"><img src=\"../../assets/images/screenshots/StereoEffect.png\"></img></a>\n\n## Overview\n\n* Use a StereoEffect as a base class for split-view VR effects.\n\n<img src=\"../../../assets/images/StereoEffect.png\"></img>\n\n## Examples\n\n* [Stereo view using a StereoEffect](../../examples/#effects_StereoEffect)\n\n## Usage\n\nStereo view of an {{#crossLink \"Entity\"}}{{/crossLink}} using the {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Camera\"}}{{/crossLink}} and {{#crossLink \"Viewport\"}}{{/crossLink}}:\n\n````javascript\n// Both the Entity and the StereoEffect use their Scene's default Camera and Viewport\n\nvar entity = new xeogl.Entity({\n    geometry: new xeogl.TorusGeometry()\n});\n\nvar stereoEffect = new xeogl.StereoEffect({\n    eyeSep: 0.2, // Default\n    focalLength: 20, // Default\n    aperture: 45, // Default\n    active: true // Default\n});\n````\n\nStereo view of an {{#crossLink \"Entity\"}}{{/crossLink}} using a custom {{#crossLink \"Camera\"}}{{/crossLink}} and {{#crossLink \"Viewport\"}}{{/crossLink}}:\n\n````javascript\nvar camera = new xeogl.Camera({\n    view: new xeogl.Lookat({\n        eye: [0, 0, 10],\n        look: [0, 0, 0],\n        up: [0, 1, 0]\n    }),\n    project: new xeogl.Perspective({\n        fovy: 60,\n        near: 0.1,\n        far: 1000\n    })\n});\n\nvar viewport = new xeogl.Viewport();\n\nvar entity = new xeogl.Entity({\n    camera: camera,\n    viewport: viewport,\n    geometry: new xeogl.TorusGeometry()\n});\n\nvar stereoEffect = new xeogl.StereoEffect({\n    camera: camera,\n    viewport: viewport,\n    eyeSep: 0.2, // Default\n    focalLength: 20, // Default\n    aperture: 45, // Default\n    active: true // Default\n});\n````",
+            "description": "A **StereoEffect** sets up a stereo view for its {{#crossLink \"Scene\"}}Scene{{/crossLink}}.\n\n<a href=\"../../examples/#effects_StereoEffect\"><img src=\"../../assets/images/screenshots/StereoEffect.png\"></img></a>\n\n## Overview\n\n* Based on technique described in [this article by Paul Bourke](http://paulbourke.net/stereographics/stereorender/).\n\n<img src=\"../../../assets/images/StereoEffect.png\"></img>\n\n## Examples\n\n* [Stereo view using a StereoEffect](../../examples/#effects_StereoEffect)\n\n## Usage\n\nStereo view of an {{#crossLink \"Entity\"}}{{/crossLink}} using the {{#crossLink \"Scene\"}}Scene{{/crossLink}}'s default {{#crossLink \"Camera\"}}{{/crossLink}} and {{#crossLink \"Viewport\"}}{{/crossLink}}:\n\n````javascript\n// Both the Entity and the StereoEffect use their Scene's default Camera and Viewport\n\nvar entity = new xeogl.Entity({\n    geometry: new xeogl.TorusGeometry()\n});\n\nvar stereoEffect = new xeogl.StereoEffect({\n    fov: 45, // Default\n    active: true // Default\n});\n````\n\nStereo view of an {{#crossLink \"Entity\"}}{{/crossLink}} using a custom {{#crossLink \"Camera\"}}{{/crossLink}} and {{#crossLink \"Viewport\"}}{{/crossLink}}:\n\n````javascript\nvar camera = new xeogl.Camera({\n    view: new xeogl.Lookat({\n        eye: [0, 0, 10],\n        look: [0, 0, 0],\n        up: [0, 1, 0]\n    }),\n    project: new xeogl.Frustum()\n});\n\nvar viewport = new xeogl.Viewport();\n\nvar entity = new xeogl.Entity({\n    camera: camera,\n    viewport: viewport,\n    geometry: new xeogl.TorusGeometry()\n});\n\nvar stereoEffect = new xeogl.StereoEffect({\n    camera: camera,\n    viewport: viewport,\n    fov: 45, // Default\n    active: true // Default\n});\n````",
             "submodule": "effects",
             "is_constructor": 1,
             "params": [
@@ -6624,20 +6900,8 @@
                             "optional": true
                         },
                         {
-                            "name": "eyeSep",
-                            "description": "Number Interpupillary distance (the distance between the center of the pupils of the two eyes).",
-                            "optional": true,
-                            "optdefault": "0.2"
-                        },
-                        {
-                            "name": "focalLength",
-                            "description": "Focal length.",
-                            "optional": true,
-                            "optdefault": "20"
-                        },
-                        {
-                            "name": "aperture",
-                            "description": "Aperture angle in degrees.",
+                            "name": "fov",
+                            "description": "Field-of-view angle in degrees.",
                             "optional": true,
                             "optdefault": "45"
                         },
@@ -7068,7 +7332,23 @@
             "namespace": "",
             "file": "examples/js/generation/geometryBuilder.js",
             "line": 1,
-            "description": "A **GeometryBuilder** is a builder that you can use to procedurally generate {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}.\n\n<a href=\"../../examples/#generation_GeometryBuilder_wavyBlocks\"><img src=\"http://i.giphy.com/26gJAMkOxAW5fWlb2.gif\"></img></a>\n\n## Overview\n\n* Implements the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern).\n* Helps us improve WebGL performance by combining many shapes into the same {{#crossLink \"Geometry\"}}Geometries{{/crossLink}},\nthus reducing the number of draw calls.\n* A plain JavaScript class, ie. not a xeogl {{#crossLink \"Component\"}}{{/crossLink}} subclass.\n\n## Examples\n\n* [Generating a 3D sine wave from boxes](../../examples/#generation_GeometryBuilder_wavyBlocks)</li>\n\n## Usage\n\n* Works by accumulating additions to an internal buffer of geometry vertex and index arrays.\n* Call {{#crossLink \"GeometryBuilder/setShape:method\"}}setShape(){{/crossLink}} to set its current mesh, and\n{{#crossLink \"GeometryBuilder/setMatrix:method\"}}setMatrix(){{/crossLink}} to set its current modelling transform.\n* Then, whenever you call {{#crossLink \"GeometryBuilder/addShape:method\"}}addShape(){{/crossLink}}, it appends the shape, transformed\nby the matrix, to its internal buffer.\n* Finally, call {{#crossLink \"GeometryBuilder/build:method\"}}build(){{/crossLink}} to dump its buffer into a target {{#crossLink \"Geometry\"}}{{/crossLink}}.\n* Retains its buffer so that you can call {{#crossLink \"GeometryBuilder/build:method\"}}build(){{/crossLink}} again, to dump its\n buffer into other {{#crossLink \"Geometry\"}}Geometries{{/crossLink}} as needed.\n* Call {{#crossLink \"GeometryBuilder/reset:method\"}}reset(){{/crossLink}} to empty its buffer.\n\nIn the example below we'll use a GeometryBuilder to create something like the screen capture shown above.\n\n````javascript\n// Intatiate a GeometryBuilder; note that it's a\n// plain JavaScript object, not a xeogl Component subtype\nvar geometryBuilder = new xeogl.GeometryBuilder();\n\n// Set the current shape we'll be adding to our GeometryBuilder;\n// this can be a Geometry, or just an object containing vertex and indices arrays.\ngeometryBuilder.setShape(new xeogl.BoxGeometry());\n\n// Now add that shape many times, each time setting a different modelling matrix\n// on the GeometryBuilder. As we do this, we are accumulating geometry in a buffer\n// within the GeometryBuilder.\n\nvar matrix = xeogl.math.mat4();\nvar height = 3;\nvar height2 = height * 2;\nvar x;\nvar y;\nvar z;\nvar size = 200;\n\nfor (x = -size; x <= size; x += 2) {\n    for (z = -size; z <= size; z += 2) {\n\n       y = ((Math.sin(x * 0.05) * height + Math.sin(z * 0.05) * height)) + height2;\n\n       xeogl.math.identityMat4(matrix);            // Fresh matrix\n       xeogl.math.scaleMat4c(.90, y, .90, matrix); // Post-concatenate scaling\n       xeogl.math.translateMat4c(x, y, z, matrix); // Post-concatenate translation\n\n       geometryBuilder.setMatrix(matrix);          // Set the current modeling transform matrix\n\n       geometryBuilder.addShape();                 // Add current shape to the buffer, transformed by the matrix\n    }\n}\n\nvar geometry = new xeogl.Geometry();               // Dump the buffer into a Geometry component\n\ngeometryBuilder.build(geometry);\n\nvar entity = new xeogl.Entity({                    // Create an Entity with our Geometry attached\n   geometry: geometry,\n   material: new xeogl.PhongMaterial({\n       diffuse: [0.6, 0.6, 0.7]\n   })\n});\n\nentity.scene.camera.view.eye = [-200, 50, -200];   // Set initial Camera position\n\nnew xeogl.CameraControl();                         // Allow camera interaction\n````",
+            "description": "A **GeometryBuilder** is a builder that you can use to procedurally generate {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}.\n\n<a href=\"../../examples/#generation_GeometryBuilder_wavyBlocks\"><img src=\"http://i.giphy.com/26gJAMkOxAW5fWlb2.gif\"></img></a>\n\n## Overview\n\n* Implements the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern).\n* Helps us improve WebGL performance by combining many shapes into the same {{#crossLink \"Geometry\"}}Geometries{{/crossLink}},\nthus reducing the number of draw calls.\n* A plain JavaScript class, ie. not a xeogl {{#crossLink \"Component\"}}{{/crossLink}} subclass.\n\n## Examples\n\n* [Generating a 3D sine wave from boxes](../../examples/#generation_GeometryBuilder_wavyBlocks)</li>\n\n## Usage\n\n* Works by accumulating additions to an internal buffer of geometry vertex and index arrays.\n* Call {{#crossLink \"GeometryBuilder/setShape:method\"}}setShape(){{/crossLink}} to set its current mesh, and\n{{#crossLink \"GeometryBuilder/setMatrix:method\"}}setMatrix(){{/crossLink}} to set its current modelling transform.\n* Then, whenever you call {{#crossLink \"GeometryBuilder/addShape:method\"}}addShape(){{/crossLink}}, it appends the shape, transformed\nby the matrix, to its internal buffer.\n* Finally, call {{#crossLink \"GeometryBuilder/build:method\"}}build(){{/crossLink}} to dump its buffer into a target {{#crossLink \"Geometry\"}}{{/crossLink}}.\n* Retains its buffer so that you can call {{#crossLink \"GeometryBuilder/build:method\"}}build(){{/crossLink}} again, to dump its\nbuffer into other {{#crossLink \"Geometry\"}}Geometries{{/crossLink}} as needed.\n* Call {{#crossLink \"GeometryBuilder/reset:method\"}}reset(){{/crossLink}} to empty its buffer.\n\nIn the example below we'll use a GeometryBuilder to create something like the screen capture shown above.\n\n````javascript\n// Intatiate a GeometryBuilder; note that it's a\n// plain JavaScript object, not a xeogl Component subtype\nvar geometryBuilder = new xeogl.GeometryBuilder();\n\n// Set the current shape we'll be adding to our GeometryBuilder;\n// this can be a Geometry, or just an object containing vertex and indices arrays.\ngeometryBuilder.setShape(new xeogl.BoxGeometry());\n\n// Now add that shape many times, each time setting a different modelling matrix\n// on the GeometryBuilder. As we do this, we are accumulating geometry in a buffer\n// within the GeometryBuilder.\n\nvar matrix = xeogl.math.mat4();\nvar height = 3;\nvar height2 = height * 2;\nvar x;\nvar y;\nvar z;\nvar size = 200;\n\nfor (x = -size; x <= size; x += 2) {\n    for (z = -size; z <= size; z += 2) {\n\n       y = ((Math.sin(x * 0.05) * height + Math.sin(z * 0.05) * height)) + height2;\n\n       xeogl.math.identityMat4(matrix);            // Fresh matrix\n       xeogl.math.scaleMat4c(.90, y, .90, matrix); // Post-concatenate scaling\n       xeogl.math.translateMat4c(x, y, z, matrix); // Post-concatenate translation\n\n       geometryBuilder.setMatrix(matrix);          // Set the current modeling transform matrix\n\n       geometryBuilder.addShape();                 // Add current shape to the buffer, transformed by the matrix\n    }\n}\n\nvar geometry = new xeogl.Geometry();               // Dump the buffer into a Geometry component\n\ngeometryBuilder.build(geometry);\n\nvar entity = new xeogl.Entity({                    // Create an Entity with our Geometry attached\n   geometry: geometry,\n   material: new xeogl.PhongMaterial({\n       diffuse: [0.6, 0.6, 0.7]\n   })\n});\n\nentity.scene.camera.view.eye = [-200, 50, -200];   // Set initial Camera position\n\nnew xeogl.CameraControl();                         // Allow camera interaction\n````",
+            "submodule": "generation",
+            "is_constructor": 1
+        },
+        "VoxelGeometryBuilder": {
+            "name": "VoxelGeometryBuilder",
+            "shortname": "VoxelGeometryBuilder",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "xeogl",
+            "namespace": "",
+            "file": "examples/js/generation/voxelGeometryBuilder.js",
+            "line": 1,
+            "description": "A **VoxelGeometryBuilder** is a builder that you can use to procedurally generate {{#crossLink \"Geometry\"}}Geometries{{/crossLink}} that are 3D arrays of voxels.\n\n<a href=\"../../examples/#generation_VoxelGeometryBuilder_wavyBlocks\"><img src=\"http://i.giphy.com/26gJAMkOxAW5fWlb2.gif\"></img></a>\n\n## Overview\n\n* Implements the [Builder pattern](https://en.wikipedia.org/wiki/Builder_pattern).\n* Helps us improve WebGL performance by combining many voxel shapes into the same {{#crossLink \"Geometry\"}}Geometries{{/crossLink}},\nthus reducing the number of draw calls.\n* A plain JavaScript class, IE. not a xeogl {{#crossLink \"Component\"}}{{/crossLink}} subclass.\n\n## Dependencies\n\n* {{#crossLink \"GeometryBuilder\"}}{{/crossLink}}\n\n## Examples\n\n* [Generating a 3D sine wave from boxes](../../examples/#generation_VoxelGeometryBuilder_wavyBlocks)</li>\n\n## Usage\n\n* Works by accumulating additions to an internal buffer of geometry vertex and index arrays.\n* Call {{#crossLink \"VoxelGeometryBuilder/setShape:method\"}}setShape(){{/crossLink}} to set the mesh that it uses to represent each voxel.\n* Then, whenever you call {{#crossLink \"VoxelGeometryBuilder/writeVoxel:method\"}}writeVoxel(){{/crossLink}}, it accumulates the shape,\n* at that voxel position, within its internal buffer.\n* Finally, call {{#crossLink \"VoxelGeometryBuilder/build:method\"}}build(){{/crossLink}} to dump its buffer into a target {{#crossLink \"Geometry\"}}{{/crossLink}}.\n* Retains its buffer so that you can call {{#crossLink \"VoxelGeometryBuilder/build:method\"}}build(){{/crossLink}} again, to dump its\nbuffer into other {{#crossLink \"Geometry\"}}Geometries{{/crossLink}} as needed.\n* Call {{#crossLink \"VoxelGeometryBuilder/clearVoxel:method\"}}voxel(){{/crossLink}} to clear individual voxels.\n* Call {{#crossLink \"VoxelGeometryBuilder/reset:method\"}}reset(){{/crossLink}} to empty its buffer.\n\nIn the example below we'll use a VoxelGeometryBuilder to create something like the screen capture shown above.\n\n````javascript\n// Intatiate a VoxelGeometryBuilder; note that it's a\n// plain JavaScript object, not a xeogl Component subtype\nvar voxelGeometryBuilder = new xeogl.VoxelGeometryBuilder({\n\n       // Extents of voxel grid\n       xSize: 1000,\n       ySize: 1000,\n       zSize: 1000,\n\n       rez: 100\n   });\n\n// Now write some voxels\n// within the VoxelGeometryBuilder.\nfor (var i = 0; i < 500; i++) {\n       for (var j = 0; j < 500; j++) {\n           voxelGeometryBuilder.writeVoxel([i, (Math.cos(i * 0.01) * 250 + Math.cos(j * 0.01) * 250) + 500, j]);\n       }\n   }\n\n// Set the shape we'll use for each voxel;\n// this can be a Geometry, or just an object containing vertex and indices arrays.\nvoxelGeometryBuilder.setShape(new xeogl.BoxGeometry());\n\n\n// Dump the buffer into a Geometry component\nvar geometry = new xeogl.Geometry();\nVoxelGeometryBuilder.build(geometry);\n\n// Create an Entity with our Geometry attached\nvar entity = new xeogl.Entity({\n   geometry: geometry,\n   material: new xeogl.PhongMaterial({\n       diffuse: [0.6, 0.6, 0.7]\n   })\n});\n\n// Set initial camera position\nvar view = entity.camera.view;\nview.eye = [0, 0, -1600];\nview.look = [0, 0, 0];\nview.up = [0, 1, 0];\n\n// Allow camera interaction\nnew xeogl.CameraControl();\n````",
             "submodule": "generation",
             "is_constructor": 1
         },
@@ -9309,7 +9589,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 124,
+            "line": 126,
             "description": "The HTML canvas. When the {{#crossLink \"Viewer\"}}{{/crossLink}} was configured with the ID of an existing canvas within the DOM,\nthen this property will be that element, otherwise it will be a full-page canvas that this Canvas has\ncreated by default, with a z-index of -10000.",
             "itemtype": "property",
             "name": "canvas",
@@ -9321,7 +9601,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 135,
+            "line": 137,
             "description": "A transparent HTML DIV overlaid over the {{#crossLink \"Canvas/canvas:property\"}}{{/crossLink}}, with a z-index\nof 100000.\n\nThe parent {{#crossLink \"Scene\"}}{{/crossLink}}'s {{#crossLink \"Input\"}}{{/crossLink}} will relay mouse\nevents from this DIV, instead of from the {{#crossLink \"Canvas/canvas:property\"}}{{/crossLink}}.\n\nWhen you need to have various HTML elements floating around over\nthe {{#crossLink \"Canvas/canvas:property\"}}{{/crossLink}}, then if you give those a z-index that lies between\nthat of the {{#crossLink \"Canvas/canvas:property\"}}{{/crossLink}} and this DIV, your elements will not\ninterfere with those events.",
             "itemtype": "property",
             "name": "canvas",
@@ -9333,7 +9613,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 153,
+            "line": 155,
             "description": "The WebGL rendering context.",
             "itemtype": "property",
             "name": "gl",
@@ -9345,7 +9625,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 162,
+            "line": 164,
             "description": "True when WebGL 2 support is enabled.",
             "itemtype": "property",
             "name": "webgl2",
@@ -9357,7 +9637,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 171,
+            "line": 173,
             "description": "Indicates whether this Canvas is transparent.",
             "itemtype": "property",
             "name": "transparent",
@@ -9370,7 +9650,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 181,
+            "line": 183,
             "description": "Attributes for the WebGL context",
             "type": "{{}|*}",
             "class": "Canvas",
@@ -9379,7 +9659,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 235,
+            "line": 237,
             "description": "Boundary of the Canvas in absolute browser window coordinates.\n\n### Usage:\n\n````javascript\nvar boundary = myScene.canvas.boundary;\n\nvar xmin = boundary[0];\nvar ymin = boundary[1];\nvar width = boundary[2];\nvar height = boundary[3];\n````",
             "itemtype": "property",
             "name": "boundary",
@@ -9391,7 +9671,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 275,
+            "line": 277,
             "description": "Fired whenever the WebGL context has been lost",
             "itemtype": "event",
             "name": "webglContextLost",
@@ -9401,7 +9681,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 288,
+            "line": 290,
             "description": "Fired whenever the WebGL context has been restored again after having previously being lost",
             "itemtype": "event",
             "name": "webglContextRestored",
@@ -9417,7 +9697,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 351,
+            "line": 353,
             "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/boundary:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "boundary",
@@ -9433,14 +9713,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 372,
-            "class": "Canvas",
-            "module": "xeogl",
-            "submodule": "canvas"
-        },
-        {
-            "file": "src/canvas/canvas.js",
-            "line": 384,
+            "line": 390,
             "description": "Creates a default canvas in the DOM.",
             "access": "private",
             "tagname": "",
@@ -9450,7 +9723,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 414,
+            "line": 420,
             "description": "Creates a image element behind the canvas, for purpose of showing a custom background.",
             "access": "private",
             "tagname": "",
@@ -9460,7 +9733,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 442,
+            "line": 448,
             "description": "Creates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
             "access": "private",
             "tagname": "",
@@ -9470,7 +9743,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 470,
+            "line": 476,
             "access": "private",
             "tagname": "",
             "class": "Canvas",
@@ -9479,7 +9752,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 490,
+            "line": 496,
             "access": "private",
             "tagname": "",
             "class": "Canvas",
@@ -9488,7 +9761,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 520,
+            "line": 526,
             "description": "Initialises the WebGL context",
             "access": "private",
             "tagname": "",
@@ -9498,7 +9771,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 553,
+            "line": 559,
             "description": "Fired whenever the canvas failed to get a WebGL context, which probably means that WebGL\nis either unsupported or has been disabled.",
             "itemtype": "event",
             "name": "webglContextFailed",
@@ -9508,7 +9781,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 562,
+            "line": 568,
             "description": "Returns a snapshot of this Canvas as a Base64-encoded image.\n\n#### Usage:\n````javascript\nimageElement.src = myScene.canvas.getSnapshot({\n    width: 500, // Defaults to size of canvas\n    height: 500,\n    format: \"png\" // Options are \"jpeg\" (default), \"png\" and \"bmp\"\n});\n````",
             "itemtype": "method",
             "name": "getSnapshot",
@@ -9551,7 +9824,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 620,
+            "line": 626,
             "description": "Reads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
             "params": [
                 {
@@ -9581,7 +9854,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 648,
+            "line": 654,
             "description": "A background color for the canvas. This is overridden by {{#crossLink \"Canvas/backgroundImage:property\"}}{{/crossLink}}.\n\nYou can set this to a new color at any time.\n\nFires a {{#crossLink \"Canvas/backgroundColor:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "backgroundColor",
@@ -9593,7 +9866,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 677,
+            "line": 683,
             "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/backgroundColor:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "backgroundColor",
@@ -9609,7 +9882,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 690,
+            "line": 696,
             "description": "URL of a background image for the canvas. This is overrided by {{#crossLink \"Canvas/backgroundColor/property\"}}{{/crossLink}}.\n\nYou can set this to a new file path at any time.\n\nFires a {{#crossLink \"Canvas/background:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "backgroundImage",
@@ -9620,7 +9893,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 725,
+            "line": 731,
             "description": "Fired whenever this Canvas's {{#crossLink \"Canvas/backgroundImage:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "backgroundImage",
@@ -9636,7 +9909,7 @@
         },
         {
             "file": "src/canvas/canvas.js",
-            "line": 738,
+            "line": 744,
             "description": "The busy {{#crossLink \"Spinner\"}}{{/crossLink}} for this Canvas.",
             "itemtype": "property",
             "name": "spinner",
@@ -15195,8 +15468,294 @@
             "submodule": "materials"
         },
         {
-            "file": "src/materials/phongMaterial.js",
+            "file": "src/materials/pbrMetalRoughnessMaterial.js",
+            "line": 83,
+            "description": "The RGB components of the reflected diffuse color of the material. For raw metals the diffuse color is black (0.0). The fourth component (A) is the glossiness of the material.\n\nFires a {{#crossLink \"PBRMetalRoughnessMaterial/diffuse:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "diffuse",
+            "default": "[1.0, 1.0, 1.0, 1.0]",
+            "type": "Float32Array",
+            "class": "PBRMetalRoughnessMaterial",
+            "module": "xeogl",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/pbrMetalRoughnessMaterial.js",
+            "line": 100,
+            "description": "Fired whenever this PBRMetalRoughnessMaterial's {{#crossLink \"PBRMetalRoughnessMaterial/diffuse:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "diffuse",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Float32Array"
+                }
+            ],
+            "class": "PBRMetalRoughnessMaterial",
+            "module": "xeogl",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/pbrMetalRoughnessMaterial.js",
+            "line": 114,
+            "description": "The specular RGB color of the material.\n\nFires a {{#crossLink \"PBRMetalRoughnessMaterial/specular:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "specular",
+            "default": "[1.0, 1.0, 1.0]",
+            "type": "Float32Array",
+            "class": "PBRMetalRoughnessMaterial",
+            "module": "xeogl",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/pbrMetalRoughnessMaterial.js",
+            "line": 131,
+            "description": "Fired whenever this PBRMetalRoughnessMaterial's {{#crossLink \"PBRMetalRoughnessMaterial/specular:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "specular",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Float32Array"
+                }
+            ],
+            "class": "PBRMetalRoughnessMaterial",
+            "module": "xeogl",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/pbrMetalRoughnessMaterial.js",
+            "line": 145,
+            "description": "The glossiness of the material surface (0 is glossiness, 1 is full glossiness).\n\nFires an {{#crossLink \"PBRMetalRoughnessMaterial/glossiness:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "glossiness",
+            "default": "1.0",
+            "type": "Number",
+            "class": "PBRMetalRoughnessMaterial",
+            "module": "xeogl",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/pbrMetalRoughnessMaterial.js",
+            "line": 168,
+            "description": "Fired whenever this PBRMetalRoughnessMaterial's {{#crossLink \"PBRMetalRoughnessMaterial/glossiness:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "glossiness",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Number"
+                }
+            ],
+            "class": "PBRMetalRoughnessMaterial",
+            "module": "xeogl",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/pbrMetalRoughnessMaterial.js",
+            "line": 182,
+            "description": "A diffuse {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PBRMetalRoughnessMaterial.\n\nThis property overrides {{#crossLink \"PBRMetalRoughnessMaterial/diffuseMap:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"PBRMetalRoughnessMaterial/diffuseMap:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "diffuseMap",
+            "default": "null",
+            "type": "{Texture}",
+            "class": "PBRMetalRoughnessMaterial",
+            "module": "xeogl",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/pbrMetalRoughnessMaterial.js",
+            "line": 197,
+            "description": "Fired whenever this PBRMetalRoughnessMaterial's {{#crossLink \"PBRMetalRoughnessMaterial/diffuseMap:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "diffuseMap",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "Number The property's new value"
+                }
+            ],
+            "class": "PBRMetalRoughnessMaterial",
+            "module": "xeogl",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/pbrMetalRoughnessMaterial.js",
+            "line": 211,
+            "description": "An emissive {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PBRMetalRoughnessMaterial.\n\nThis property overrides {{#crossLink \"PBRMetalRoughnessMaterial/emissive:property\"}}{{/crossLink}} when not null or undefined.\n\nFires an {{#crossLink \"PBRMetalRoughnessMaterial/specularGlossinessMap:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "specularGlossinessMap",
+            "default": "null",
+            "type": "{Texture}",
+            "class": "PBRMetalRoughnessMaterial",
+            "module": "xeogl",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/pbrMetalRoughnessMaterial.js",
+            "line": 226,
+            "description": "Fired whenever this PBRMetalRoughnessMaterial's {{#crossLink \"PBRMetalRoughnessMaterial/specularGlossinessMap:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "specularGlossinessMap",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "Number The property's new value"
+                }
+            ],
+            "class": "PBRMetalRoughnessMaterial",
+            "module": "xeogl",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/pbrSpecularGlossinessMaterial.js",
+            "line": 81,
+            "description": "The RGB components of the reflected diffuse color of the material. For raw metals the diffuse color is black (0.0). The fourth component (A) is the glossiness of the material.\n\nFires a {{#crossLink \"PBRSpecularGlossinessMaterial/diffuse:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "diffuse",
+            "default": "[1.0, 1.0, 1.0, 1.0]",
+            "type": "Float32Array",
+            "class": "PBRSpecularGlossinessMaterial",
+            "module": "xeogl",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/pbrSpecularGlossinessMaterial.js",
+            "line": 98,
+            "description": "Fired whenever this PBRSpecularGlossinessMaterial's {{#crossLink \"PBRSpecularGlossinessMaterial/diffuse:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "diffuse",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Float32Array"
+                }
+            ],
+            "class": "PBRSpecularGlossinessMaterial",
+            "module": "xeogl",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/pbrSpecularGlossinessMaterial.js",
+            "line": 112,
+            "description": "The specular RGB color of the material.\n\nFires a {{#crossLink \"PBRSpecularGlossinessMaterial/specular:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "specular",
+            "default": "[1.0, 1.0, 1.0]",
+            "type": "Float32Array",
+            "class": "PBRSpecularGlossinessMaterial",
+            "module": "xeogl",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/pbrSpecularGlossinessMaterial.js",
+            "line": 129,
+            "description": "Fired whenever this PBRSpecularGlossinessMaterial's {{#crossLink \"PBRSpecularGlossinessMaterial/specular:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "specular",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Float32Array"
+                }
+            ],
+            "class": "PBRSpecularGlossinessMaterial",
+            "module": "xeogl",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/pbrSpecularGlossinessMaterial.js",
+            "line": 143,
+            "description": "The glossiness of the material surface (0 is glossiness, 1 is full glossiness).\n\nFires an {{#crossLink \"PBRSpecularGlossinessMaterial/glossiness:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "glossiness",
+            "default": "1.0",
+            "type": "Number",
+            "class": "PBRSpecularGlossinessMaterial",
+            "module": "xeogl",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/pbrSpecularGlossinessMaterial.js",
+            "line": 166,
+            "description": "Fired whenever this PBRSpecularGlossinessMaterial's {{#crossLink \"PBRSpecularGlossinessMaterial/glossiness:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "glossiness",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value",
+                    "type": "Number"
+                }
+            ],
+            "class": "PBRSpecularGlossinessMaterial",
+            "module": "xeogl",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/pbrSpecularGlossinessMaterial.js",
+            "line": 180,
+            "description": "A diffuse {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PBRSpecularGlossinessMaterial.\n\nThis property overrides {{#crossLink \"PBRSpecularGlossinessMaterial/diffuseMap:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"PBRSpecularGlossinessMaterial/diffuseMap:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "diffuseMap",
+            "default": "null",
+            "type": "{Texture}",
+            "class": "PBRSpecularGlossinessMaterial",
+            "module": "xeogl",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/pbrSpecularGlossinessMaterial.js",
             "line": 195,
+            "description": "Fired whenever this PBRSpecularGlossinessMaterial's {{#crossLink \"PBRSpecularGlossinessMaterial/diffuseMap:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "diffuseMap",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "Number The property's new value"
+                }
+            ],
+            "class": "PBRSpecularGlossinessMaterial",
+            "module": "xeogl",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/pbrSpecularGlossinessMaterial.js",
+            "line": 209,
+            "description": "An emissive {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PBRSpecularGlossinessMaterial.\n\nThis property overrides {{#crossLink \"PBRSpecularGlossinessMaterial/emissive:property\"}}{{/crossLink}} when not null or undefined.\n\nFires an {{#crossLink \"PBRSpecularGlossinessMaterial/specularGlossinessMap:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "specularGlossinessMap",
+            "default": "null",
+            "type": "{Texture}",
+            "class": "PBRSpecularGlossinessMaterial",
+            "module": "xeogl",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/pbrSpecularGlossinessMaterial.js",
+            "line": 224,
+            "description": "Fired whenever this PBRSpecularGlossinessMaterial's {{#crossLink \"PBRSpecularGlossinessMaterial/specularGlossinessMap:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "specularGlossinessMap",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "Number The property's new value"
+                }
+            ],
+            "class": "PBRSpecularGlossinessMaterial",
+            "module": "xeogl",
+            "submodule": "materials"
+        },
+        {
+            "file": "src/materials/phongMaterial.js",
+            "line": 194,
             "description": "The PhongMaterial's ambient color.\n\nFires a {{#crossLink \"PhongMaterial/ambient:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "ambient",
@@ -15208,7 +15767,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 212,
+            "line": 211,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/ambient:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "ambient",
@@ -15225,7 +15784,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 226,
+            "line": 225,
             "description": "The PhongMaterial's diffuse color.\n\nThis property may be overridden by {{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PhongMaterial/diffuse:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "diffuse",
@@ -15237,7 +15796,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 245,
+            "line": 244,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "diffuse",
@@ -15254,7 +15813,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 259,
+            "line": 258,
             "description": "The material's specular color.\n\nThis property may be overridden by {{#crossLink \"PhongMaterial/specularMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PhongMaterial/specular:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "specular",
@@ -15266,7 +15825,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 278,
+            "line": 277,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/specular:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "specular",
@@ -15283,7 +15842,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 292,
+            "line": 291,
             "description": "The PhongMaterial's emissive color.\n\nThis property may be overridden by {{#crossLink \"PhongMaterial/emissiveMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PhongMaterial/emissive:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "emissive",
@@ -15295,7 +15854,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 311,
+            "line": 310,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "emissive",
@@ -15312,7 +15871,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 325,
+            "line": 324,
             "description": "Factor in the range [0..1] indicating how transparent the PhongMaterial is.\n\nA value of 0.0 indicates fully transparent, 1.0 is fully opaque.\n\nAttached {{#crossLink \"Entity\"}}Entities{{/crossLink}} will appear transparent only if they are also attached\nto {{#crossLink \"Modes\"}}Modes{{/crossLink}} that have {{#crossLink \"Modes/transparent:property\"}}transparent{{/crossLink}}\nset to **true**.\n\nThis property may be overridden by {{#crossLink \"PhongMaterial/opacityMap:property\"}}{{/crossLink}}.\n\nFires an {{#crossLink \"PhongMaterial/opacity:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "opacity",
@@ -15324,7 +15883,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 356,
+            "line": 355,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/opacity:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "opacity",
@@ -15341,7 +15900,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 370,
+            "line": 369,
             "description": "A factor in range [0..128] that determines the size and sharpness of the specular highlights create by this PhongMaterial.\n\nLarger values produce smaller, sharper highlights. A value of 0.0 gives very large highlights that are almost never\ndesirable. Try values close to 10 for a larger, fuzzier highlight and values of 100 or more for a small, sharp\nhighlight.\n\nFires a {{#crossLink \"PhongMaterial/shininess:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "shininess",
@@ -15353,7 +15912,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 391,
+            "line": 390,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/shininess:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "shininess",
@@ -15369,7 +15928,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 405,
+            "line": 404,
             "description": "The PhongMaterial's line width.\n\nFires a {{#crossLink \"PhongMaterial/lineWidth:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "lineWidth",
@@ -15381,7 +15940,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 422,
+            "line": 421,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/lineWidth:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "lineWidth",
@@ -15398,7 +15957,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 436,
+            "line": 435,
             "description": "The PhongMaterial's point size.\n\nFires a {{#crossLink \"PhongMaterial/pointSize:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "pointSize",
@@ -15410,7 +15969,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 453,
+            "line": 452,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/pointSize:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "pointSize",
@@ -15427,7 +15986,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 467,
+            "line": 466,
             "description": "Scalar in range 0-1 that controls how much {{#crossLink \"CubeMap\"}}CubeMap{{/crossLink}} is reflected by this PhongMaterial.\n\nThe surface will be non-reflective when this is 0, and completely mirror-like when it is 1.0.\n\nThis property may be overridden by {{#crossLink \"PhongMaterial/reflectivityMap:property\"}}{{/crossLink}}.\n\nFires a {{#crossLink \"PhongMaterial/reflectivity:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "reflectivity",
@@ -15439,7 +15998,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 488,
+            "line": 487,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/reflectivity:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "reflectivity",
@@ -15455,7 +16014,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 502,
+            "line": 501,
             "description": "A normal {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/normalMap:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"PhongMaterial/normalMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "normalMap",
@@ -15467,7 +16026,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 517,
+            "line": 516,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/normalMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "normalMap",
@@ -15483,7 +16042,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 531,
+            "line": 530,
             "description": "An ambient {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/ambientMap:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"PhongMaterial/ambientMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "ambientMap",
@@ -15495,7 +16054,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 546,
+            "line": 545,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/ambientMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "ambientMap",
@@ -15511,7 +16070,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 560,
+            "line": 559,
             "description": "A diffuse {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"PhongMaterial/diffuseMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "diffuseMap",
@@ -15523,7 +16082,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 575,
+            "line": 574,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/diffuseMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "diffuseMap",
@@ -15539,7 +16098,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 589,
+            "line": 588,
             "description": "A specular {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/specular:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"PhongMaterial/specularMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "specularMap",
@@ -15551,7 +16110,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 604,
+            "line": 603,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/specularMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "specularMap",
@@ -15567,7 +16126,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 618,
+            "line": 617,
             "description": "An emissive {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}} when not null or undefined.\n\nFires an {{#crossLink \"PhongMaterial/emissiveMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "emissiveMap",
@@ -15579,7 +16138,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 633,
+            "line": 632,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/emissiveMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "emissiveMap",
@@ -15595,7 +16154,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 647,
+            "line": 646,
             "description": "An opacity {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/opacity:property\"}}{{/crossLink}} when not null or undefined.\n\nFires an {{#crossLink \"PhongMaterial/opacityMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "opacityMap",
@@ -15607,7 +16166,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 662,
+            "line": 661,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/opacityMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "opacityMap",
@@ -15623,7 +16182,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 676,
+            "line": 675,
             "description": "A reflectivity {{#crossLink \"Texture\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/reflectivity:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"PhongMaterial/reflectivityMap:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "reflectivityMap",
@@ -15635,7 +16194,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 691,
+            "line": 690,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/reflectivityMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "reflectivityMap",
@@ -15651,7 +16210,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 705,
+            "line": 704,
             "description": "A reflection {{#crossLink \"CubeMap\"}}{{/crossLink}} attached to this PhongMaterial.\n\nFires a {{#crossLink \"PhongMaterial/reflection:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "reflection",
@@ -15663,7 +16222,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 718,
+            "line": 717,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/reflectivityMap:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "reflection",
@@ -15680,7 +16239,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 732,
+            "line": 731,
             "description": "A diffuse {{#crossLink \"Fresnel\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/diffuseFresnel:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"PhongMaterial/diffuseFresnel:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "diffuseFresnel",
@@ -15692,7 +16251,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 747,
+            "line": 746,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/diffuse:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "diffuseFresnel",
@@ -15708,7 +16267,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 761,
+            "line": 760,
             "description": "A specular {{#crossLink \"Fresnel\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/specular:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"PhongMaterial/specularFresnel:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "specularFresnel",
@@ -15720,7 +16279,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 776,
+            "line": 775,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/specularFresnel:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "specularFresnel",
@@ -15736,7 +16295,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 790,
+            "line": 789,
             "description": "An emissive {{#crossLink \"Fresnel\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/emissive:property\"}}{{/crossLink}} when not null or undefined.\n\nFires an {{#crossLink \"PhongMaterial/emissiveFresnel:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "emissiveFresnel",
@@ -15748,7 +16307,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 805,
+            "line": 804,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/emissiveFresnel:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "emissiveFresnel",
@@ -15764,7 +16323,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 819,
+            "line": 818,
             "description": "An opacity {{#crossLink \"Fresnel\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/opacity:property\"}}{{/crossLink}} when not null or undefined.\n\nFires an {{#crossLink \"PhongMaterial/opacityFresnel:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "opacityFresnel",
@@ -15776,7 +16335,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 834,
+            "line": 833,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/opacityFresnel:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "opacityFresnel",
@@ -15792,7 +16351,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 848,
+            "line": 847,
             "description": "A reflectivity {{#crossLink \"Fresnel\"}}{{/crossLink}} attached to this PhongMaterial.\n\nThis property overrides {{#crossLink \"PhongMaterial/reflectivity:property\"}}{{/crossLink}} when not null or undefined.\n\nFires a {{#crossLink \"PhongMaterial/reflectivityFresnel:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "reflectivityFresnel",
@@ -15804,7 +16363,7 @@
         },
         {
             "file": "src/materials/phongMaterial.js",
-            "line": 863,
+            "line": 862,
             "description": "Fired whenever this PhongMaterial's {{#crossLink \"PhongMaterial/reflectivityFresnel:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "reflectivityFresnel",
@@ -18783,7 +19342,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 214,
+            "line": 213,
             "description": "JavaScript class name for this Component.",
             "itemtype": "property",
             "name": "type",
@@ -18795,7 +19354,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 225,
+            "line": 224,
             "description": "The {{#crossLink \"Components\"}}{{/crossLink}} within this Model, mapped to their IDs.\n\nFires an {{#crossLink \"Model/updated:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "components",
@@ -18806,7 +19365,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 235,
+            "line": 234,
             "description": "The number of {{#crossLink \"Components\"}}{{/crossLink}} within this Model.",
             "itemtype": "property",
             "name": "numComponents",
@@ -18817,7 +19376,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 243,
+            "line": 242,
             "description": "A map of maps; for each {{#crossLink \"Component\"}}{{/crossLink}} type in this Model,\na map to IDs to {{#crossLink \"Component\"}}{{/crossLink}} instances, eg.\n\n````\n\"xeogl.Geometry\": {\n  \"alpha\": <xeogl.Geometry>,\n  \"beta\": <xeogl.Geometry>\n},\n\"xeogl.Rotate\": {\n  \"charlie\": <xeogl.Rotate>,\n  \"delta\": <xeogl.Rotate>,\n  \"echo\": <xeogl.Rotate>,\n},\n//...\n````",
             "itemtype": "property",
             "name": "types",
@@ -18828,7 +19387,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 289,
+            "line": 288,
             "description": "Adds a {{#crossLink \"Component\"}}Component{{/crossLink}} or subtype to this Model.\n\nThe {{#crossLink \"Component\"}}Component(s){{/crossLink}} may be specified by ID, instance, JSON definition or type.\n\nSee class comment for usage examples.\n\nThe {{#crossLink \"Component\"}}Components{{/crossLink}} must be in the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Model.\n\nFires an {{#crossLink \"Model/added:event\"}}{{/crossLink}} event.",
             "itemtype": "method",
             "name": "add",
@@ -18845,7 +19404,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 438,
+            "line": 437,
             "description": "Fired whenever an individual {{#crossLink \"Component\"}}{{/crossLink}} is added to this {{#crossLink \"Model\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "added",
@@ -18862,7 +19421,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 472,
+            "line": 471,
             "description": "Destroys all {{#crossLink \"Component\"}}Components{{/crossLink}} in this Model.",
             "itemtype": "method",
             "name": "destroyAll",
@@ -18872,7 +19431,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 484,
+            "line": 483,
             "description": "Removes all {{#crossLink \"Component\"}}Components{{/crossLink}} from this Model.",
             "itemtype": "method",
             "name": "removeAll",
@@ -18882,7 +19441,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 534,
+            "line": 533,
             "description": "Fired whenever an individual {{#crossLink \"Component\"}}{{/crossLink}} is removed from this {{#crossLink \"Model\"}}{{/crossLink}}.",
             "itemtype": "event",
             "name": "removed",
@@ -18899,7 +19458,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 546,
+            "line": 545,
             "description": "Iterates with a callback over the {{#crossLink \"Component\"}}Components{{/crossLink}} in this Model.",
             "itemtype": "method",
             "name": "iterate",
@@ -18923,7 +19482,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 565,
+            "line": 564,
             "description": "The Local-to-World-space (modelling) {{#crossLink \"Transform\"}}{{/crossLink}} attached to this Model.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this Model.\n\nInternally, the given {{#crossLink \"Transform\"}}{{/crossLink}} will be inserted above each top-most\n{{#crossLink \"Transform\"}}Transform{{/crossLink}} that the Model attaches to\nits {{#crossLink \"Entity\"}}Entities{{/crossLink}}.\n\nFires an {{#crossLink \"Model/transform:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "transform",
@@ -18934,7 +19493,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 583,
+            "line": 582,
             "description": "Fired whenever this Model's {{#crossLink \"Model/transform:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "transform",
@@ -18950,7 +19509,7 @@
         },
         {
             "file": "src/models/model.js",
-            "line": 606,
+            "line": 605,
             "description": "World-space 3D boundary enclosing all the components in this Model.\n\nIf you call {{#crossLink \"Component/destroy:method\"}}{{/crossLink}} on this boundary, then\nthis property will be assigned to a fresh {{#crossLink \"Boundary3D\"}}{{/crossLink}} instance next\ntime you reference it.",
             "itemtype": "property",
             "name": "worldBoundary",
@@ -22737,6 +23296,116 @@
             "submodule": "controls"
         },
         {
+            "file": "examples/js/effects/cardboardEffect.js",
+            "line": 99,
+            "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} attached to this CardboardEffect.\n\nThis CardboardEffect will attach a {{#crossLink \"Frustum\"}}{{/crossLink}} to its\n{{#crossLink \"Camera\"}}{{/crossLink}} if the {{#crossLink \"Camera\"}}Camera{{/crossLink}} does not have\none already, replacing the projection transform component that was already attached.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this CardboardEffect. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.",
+            "itemtype": "property",
+            "name": "camera",
+            "type": "Camera",
+            "class": "CardboardEffect",
+            "module": "xeogl",
+            "submodule": "effects"
+        },
+        {
+            "file": "examples/js/effects/cardboardEffect.js",
+            "line": 117,
+            "description": "Fired whenever this CardboardEffect's {{#crossLink \"CardboardEffect/camera:property\"}}{{/crossLink}}\nproperty changes.",
+            "itemtype": "event",
+            "name": "camera",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "CardboardEffect",
+            "module": "xeogl",
+            "submodule": "effects"
+        },
+        {
+            "file": "examples/js/effects/cardboardEffect.js",
+            "line": 146,
+            "description": "The {{#crossLink \"Viewport\"}}{{/crossLink}} attached to this CardboardEffect.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this CardboardEffect. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/viewport:property\"}}Viewport{{/crossLink}} when set to\na null or undefined value.",
+            "itemtype": "property",
+            "name": "Viewport",
+            "type": "Viewport",
+            "class": "CardboardEffect",
+            "module": "xeogl",
+            "submodule": "effects"
+        },
+        {
+            "file": "examples/js/effects/cardboardEffect.js",
+            "line": 160,
+            "description": "Fired whenever this CardboardEffect's {{#crossLink \"CardboardEffect/Viewport:property\"}}{{/crossLink}}\nproperty changes.",
+            "itemtype": "event",
+            "name": "Viewport",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "CardboardEffect",
+            "module": "xeogl",
+            "submodule": "effects"
+        },
+        {
+            "file": "examples/js/effects/cardboardEffect.js",
+            "line": 182,
+            "description": "fov angle in degrees.\n\nFires an {{#crossLink \"CardboardEffect/fov:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "fov",
+            "type": "Number",
+            "default": "45",
+            "class": "CardboardEffect",
+            "module": "xeogl",
+            "submodule": "effects"
+        },
+        {
+            "file": "examples/js/effects/cardboardEffect.js",
+            "line": 203,
+            "description": "Fired whenever this CardboardEffect's {{#crossLink \"CardboardEffect/fov:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "fov",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "CardboardEffect",
+            "module": "xeogl",
+            "submodule": "effects"
+        },
+        {
+            "file": "examples/js/effects/cardboardEffect.js",
+            "line": 216,
+            "description": "Flag which indicates whether this CardboardEffect is active or not.\n\nFires an {{#crossLink \"CardboardEffect/active:event\"}}{{/crossLink}} event on change.",
+            "itemtype": "property",
+            "name": "active",
+            "type": "Boolean",
+            "default": "true",
+            "class": "CardboardEffect",
+            "module": "xeogl",
+            "submodule": "effects"
+        },
+        {
+            "file": "examples/js/effects/cardboardEffect.js",
+            "line": 239,
+            "description": "Fired whenever this CardboardEffect's {{#crossLink \"CardboardEffect/active:property\"}}{{/crossLink}} property changes.",
+            "itemtype": "event",
+            "name": "active",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "The property's new value"
+                }
+            ],
+            "class": "CardboardEffect",
+            "module": "xeogl",
+            "submodule": "effects"
+        },
+        {
             "file": "examples/js/effects/highlightEntityEffect.js",
             "line": 104,
             "description": "ID or instance of the {{#crossLink \"Entity\"}}{{/crossLink}} to highlight with this HighlightEntityEffect.\n\nFires a {{#crossLink \"HighlightEntityEffect/entity:event\"}}{{/crossLink}} event on change.",
@@ -22794,7 +23463,7 @@
         },
         {
             "file": "examples/js/effects/stereoEffect.js",
-            "line": 111,
+            "line": 98,
             "description": "The {{#crossLink \"Camera\"}}{{/crossLink}} attached to this StereoEffect.\n\nThis StereoEffect will attach a {{#crossLink \"Frustum\"}}{{/crossLink}} to its\n{{#crossLink \"Camera\"}}{{/crossLink}} if the {{#crossLink \"Camera\"}}Camera{{/crossLink}} does not have\none already, replacing the projection transform component that was already attached.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this StereoEffect. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/camera:property\"}}camera{{/crossLink}} when set to\na null or undefined value.",
             "itemtype": "property",
             "name": "camera",
@@ -22805,7 +23474,7 @@
         },
         {
             "file": "examples/js/effects/stereoEffect.js",
-            "line": 129,
+            "line": 116,
             "description": "Fired whenever this StereoEffect's {{#crossLink \"StereoEffect/camera:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "camera",
@@ -22821,7 +23490,7 @@
         },
         {
             "file": "examples/js/effects/stereoEffect.js",
-            "line": 158,
+            "line": 143,
             "description": "The {{#crossLink \"Viewport\"}}{{/crossLink}} attached to this StereoEffect.\n\nMust be within the same {{#crossLink \"Scene\"}}{{/crossLink}} as this StereoEffect. Defaults to the parent\n{{#crossLink \"Scene\"}}Scene's{{/crossLink}} default {{#crossLink \"Scene/viewport:property\"}}Viewport{{/crossLink}} when set to\na null or undefined value.",
             "itemtype": "property",
             "name": "Viewport",
@@ -22832,7 +23501,7 @@
         },
         {
             "file": "examples/js/effects/stereoEffect.js",
-            "line": 172,
+            "line": 157,
             "description": "Fired whenever this StereoEffect's {{#crossLink \"StereoEffect/Viewport:property\"}}{{/crossLink}}\nproperty changes.",
             "itemtype": "event",
             "name": "Viewport",
@@ -22848,66 +23517,10 @@
         },
         {
             "file": "examples/js/effects/stereoEffect.js",
-            "line": 194,
-            "description": "Interpupillary distance (the distance between the center of the pupils of the two eyes).\n\nFires an {{#crossLink \"StereoEffect/eyeSep:event\"}}{{/crossLink}} event on change.",
+            "line": 177,
+            "description": "Field-of-view angle in degrees.\n\nFires an {{#crossLink \"StereoEffect/fov:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
-            "name": "eyeSep",
-            "type": "Number",
-            "default": "0.2",
-            "class": "StereoEffect",
-            "module": "xeogl",
-            "submodule": "effects"
-        },
-        {
-            "file": "examples/js/effects/stereoEffect.js",
-            "line": 215,
-            "description": "Fired whenever this StereoEffect's {{#crossLink \"StereoEffect/eyeSep:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "eyeSep",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "StereoEffect",
-            "module": "xeogl",
-            "submodule": "effects"
-        },
-        {
-            "file": "examples/js/effects/stereoEffect.js",
-            "line": 228,
-            "description": "Focal length.\n\nFires an {{#crossLink \"StereoEffect/focalLength:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "focalLength",
-            "type": "Number",
-            "default": "20",
-            "class": "StereoEffect",
-            "module": "xeogl",
-            "submodule": "effects"
-        },
-        {
-            "file": "examples/js/effects/stereoEffect.js",
-            "line": 249,
-            "description": "Fired whenever this StereoEffect's {{#crossLink \"StereoEffect/focalLength:property\"}}{{/crossLink}} property changes.",
-            "itemtype": "event",
-            "name": "focalLength",
-            "params": [
-                {
-                    "name": "value",
-                    "description": "The property's new value"
-                }
-            ],
-            "class": "StereoEffect",
-            "module": "xeogl",
-            "submodule": "effects"
-        },
-        {
-            "file": "examples/js/effects/stereoEffect.js",
-            "line": 262,
-            "description": "Aperture angle in degrees.\n\nFires an {{#crossLink \"StereoEffect/aperture:event\"}}{{/crossLink}} event on change.",
-            "itemtype": "property",
-            "name": "aperture",
+            "name": "fov",
             "type": "Number",
             "default": "45",
             "class": "StereoEffect",
@@ -22916,10 +23529,10 @@
         },
         {
             "file": "examples/js/effects/stereoEffect.js",
-            "line": 283,
-            "description": "Fired whenever this StereoEffect's {{#crossLink \"StereoEffect/aperture:property\"}}{{/crossLink}} property changes.",
+            "line": 198,
+            "description": "Fired whenever this StereoEffect's {{#crossLink \"StereoEffect/fov:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
-            "name": "aperture",
+            "name": "fov",
             "params": [
                 {
                     "name": "value",
@@ -22932,7 +23545,7 @@
         },
         {
             "file": "examples/js/effects/stereoEffect.js",
-            "line": 296,
+            "line": 211,
             "description": "Flag which indicates whether this StereoEffect is active or not.\n\nFires an {{#crossLink \"StereoEffect/active:event\"}}{{/crossLink}} event on change.",
             "itemtype": "property",
             "name": "active",
@@ -22944,7 +23557,7 @@
         },
         {
             "file": "examples/js/effects/stereoEffect.js",
-            "line": 319,
+            "line": 234,
             "description": "Fired whenever this StereoEffect's {{#crossLink \"StereoEffect/active:property\"}}{{/crossLink}} property changes.",
             "itemtype": "event",
             "name": "active",
@@ -24498,8 +25111,95 @@
                 }
             ],
             "extends": "Model",
-            "class": "Skybox",
+            "class": "VoxelGeometryBuilder",
             "module": "xeogl"
+        },
+        {
+            "file": "examples/js/generation/voxelGeometryBuilder.js",
+            "line": 107,
+            "description": "Sets the shape that the {{#crossLink \"VoxelGeometryBuilder/build:method\"}}method(){{/crossLink}} will add\nto target {{#crossLink \"Geometry\"}}Geometries{{/crossLink}} for each voxel.\n\nThe shape can be either a {{#crossLink \"Geometry\"}}{{/crossLink}} or a JavaScript object containing vertex\nand index arrays.",
+            "itemtype": "method",
+            "name": "setShape",
+            "params": [
+                {
+                    "name": "shape",
+                    "description": "The shape to add.",
+                    "type": "Geometry|*"
+                }
+            ],
+            "return": {
+                "description": "this"
+            },
+            "class": "VoxelGeometryBuilder",
+            "module": "xeogl",
+            "submodule": "generation"
+        },
+        {
+            "file": "examples/js/generation/voxelGeometryBuilder.js",
+            "line": 123,
+            "description": "Writes a voxel.\n\nIgnored if the voxel is already written, or if the given position\nfalls outside this VoxelGeometryBuilder's voxel space extents.\n\nIt's OK to just blindly write voxels that have already been written, there is little performance penalty.",
+            "itemtype": "method",
+            "name": "writeVoxel",
+            "params": [
+                {
+                    "name": "pos",
+                    "description": "3D Voxel position.",
+                    "type": "Float32Array"
+                }
+            ],
+            "class": "VoxelGeometryBuilder",
+            "module": "xeogl",
+            "submodule": "generation"
+        },
+        {
+            "file": "examples/js/generation/voxelGeometryBuilder.js",
+            "line": 139,
+            "description": "Clears a voxel.\n\nIgnored if the voxel is already clear, or if the given position\nfalls outside this VoxelGeometryBuilder's voxel space extents.\n\nIt's OK to just blindly clear voxels that are already clear, there is little performance penalty.",
+            "itemtype": "method",
+            "name": "clearVoxel",
+            "params": [
+                {
+                    "name": "pos",
+                    "description": "3D Voxel position.",
+                    "type": "Float32Array"
+                }
+            ],
+            "class": "VoxelGeometryBuilder",
+            "module": "xeogl",
+            "submodule": "generation"
+        },
+        {
+            "file": "examples/js/generation/voxelGeometryBuilder.js",
+            "line": 180,
+            "description": "Loads all the voxels accumulated from previous calls to {{#crossLink \"VoxelGeometryBuilder/writeVoxel:method\"}}writeVoxel(){{/crossLink}} into\na target {{#crossLink \"Geometry\"}}{{/crossLink}}.\n\nRetains all that state afterwards, so that you can continue to call this method to add the state to\nother {{#crossLink \"Geometry\"}}Geometries{{/crossLink}}.",
+            "itemtype": "method",
+            "name": "build",
+            "params": [
+                {
+                    "name": "geometry",
+                    "description": "The target {{#crossLink \"Geometry\"}}{{/crossLink}}.",
+                    "type": "Geometry"
+                }
+            ],
+            "return": {
+                "description": "this"
+            },
+            "class": "VoxelGeometryBuilder",
+            "module": "xeogl",
+            "submodule": "generation"
+        },
+        {
+            "file": "examples/js/generation/voxelGeometryBuilder.js",
+            "line": 224,
+            "description": "Resets this VoxelGeometryBuilder, clearing all the state previously accumulated with\n {{#crossLink \"VoxelGeometryBuilder/setVoxel:method\"}}setVoxel(){{/crossLink}} and\n {{#crossLink \"VoxelGeometryBuilder/setShape:method\"}}setShape(){{/crossLink}}.",
+            "itemtype": "method",
+            "name": "reset",
+            "return": {
+                "description": "this"
+            },
+            "class": "VoxelGeometryBuilder",
+            "module": "xeogl",
+            "submodule": "generation"
         },
         {
             "file": "examples/js/skyboxes/skybox.js",
@@ -25289,7 +25989,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/canvas/canvas.js:562"
+            "line": " src/canvas/canvas.js:568"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -25462,6 +26162,18 @@
         {
             "message": "replacing incorrect tag: returns with return",
             "line": " examples/js/generation/geometryBuilder.js:235"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " examples/js/generation/voxelGeometryBuilder.js:107"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " examples/js/generation/voxelGeometryBuilder.js:180"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " examples/js/generation/voxelGeometryBuilder.js:224"
         },
         {
             "message": "Missing item type\nA chunk of WebGL state changes to render a xeogl.renderer.State.",
@@ -25925,39 +26637,35 @@
         },
         {
             "message": "Missing item type\nAttributes for the WebGL context",
-            "line": " src/canvas/canvas.js:181"
-        },
-        {
-            "message": "Missing item type",
-            "line": " src/canvas/canvas.js:372"
+            "line": " src/canvas/canvas.js:183"
         },
         {
             "message": "Missing item type\nCreates a default canvas in the DOM.",
-            "line": " src/canvas/canvas.js:384"
+            "line": " src/canvas/canvas.js:390"
         },
         {
             "message": "Missing item type\nCreates a image element behind the canvas, for purpose of showing a custom background.",
-            "line": " src/canvas/canvas.js:414"
+            "line": " src/canvas/canvas.js:420"
         },
         {
             "message": "Missing item type\nCreates an invisible DIV over the canvas, for purpose of catching\ninput events without interfering with app-lever UI bits floating underneath.",
-            "line": " src/canvas/canvas.js:442"
+            "line": " src/canvas/canvas.js:448"
         },
         {
             "message": "Missing item type",
-            "line": " src/canvas/canvas.js:470"
+            "line": " src/canvas/canvas.js:476"
         },
         {
             "message": "Missing item type",
-            "line": " src/canvas/canvas.js:490"
+            "line": " src/canvas/canvas.js:496"
         },
         {
             "message": "Missing item type\nInitialises the WebGL context",
-            "line": " src/canvas/canvas.js:520"
+            "line": " src/canvas/canvas.js:526"
         },
         {
             "message": "Missing item type\nReads colors of pixels from the last rendered frame.\n\n<p>Call this method like this:</p>\n\n````JavaScript\n\n// Ignore transparent pixels (default is false)\nvar opaqueOnly = true;\n\nvar colors = new Float32Array(8);\n\nmyCanvas.readPixels([ 100, 22, 12, 33 ], colors, 2, opaqueOnly);\n````\n\nThen the r,g,b components of the colors will be set to the colors at those pixels.",
-            "line": " src/canvas/canvas.js:620"
+            "line": " src/canvas/canvas.js:626"
         },
         {
             "message": "Missing item type\nImplement protected virtual template method {{#crossLink \"Geometry/method:_update\"}}{{/crossLink}},\nto generate geometry data arrays.",

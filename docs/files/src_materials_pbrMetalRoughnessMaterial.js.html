@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src/materials/pbrMetalRoughnessMaterial.js - xeogl</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link href='https://fonts.googleapis.com/css?family=Exo+2:400,800,900,700,600,500|Roboto:100,300,400,500,700,900'  rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+
+                <h1 class="projectTitle"><a href="../../">xeogl</a> / <a href="../../docs">API Docs</a></h1>
+
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 1.0.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/AABBGeometry.html">AABBGeometry</a></li>
+                                <li><a href="../classes/AmbientLight.html">AmbientLight</a></li>
+                                <li><a href="../classes/Billboard.html">Billboard</a></li>
+                                <li><a href="../classes/Boundary2D.html">Boundary2D</a></li>
+                                <li><a href="../classes/Boundary3D.html">Boundary3D</a></li>
+                                <li><a href="../classes/BoundingSphereGeometry.html">BoundingSphereGeometry</a></li>
+                                <li><a href="../classes/BoxGeometry.html">BoxGeometry</a></li>
+                                <li><a href="../classes/BuildableModel.html">BuildableModel</a></li>
+                                <li><a href="../classes/Camera.html">Camera</a></li>
+                                <li><a href="../classes/CameraControl.html">CameraControl</a></li>
+                                <li><a href="../classes/CameraController.html">CameraController</a></li>
+                                <li><a href="../classes/CameraFlightAnimation.html">CameraFlightAnimation</a></li>
+                                <li><a href="../classes/CameraFollowAnimation.html">CameraFollowAnimation</a></li>
+                                <li><a href="../classes/CameraPath.html">CameraPath</a></li>
+                                <li><a href="../classes/CameraPathAnimation.html">CameraPathAnimation</a></li>
+                                <li><a href="../classes/Canvas.html">Canvas</a></li>
+                                <li><a href="../classes/CardboardEffect.html">CardboardEffect</a></li>
+                                <li><a href="../classes/Clip.html">Clip</a></li>
+                                <li><a href="../classes/Clips.html">Clips</a></li>
+                                <li><a href="../classes/ColorBuf.html">ColorBuf</a></li>
+                                <li><a href="../classes/Component.html">Component</a></li>
+                                <li><a href="../classes/Configs.html">Configs</a></li>
+                                <li><a href="../classes/CubicBezierCurve.html">CubicBezierCurve</a></li>
+                                <li><a href="../classes/Cull.html">Cull</a></li>
+                                <li><a href="../classes/Curve.html">Curve</a></li>
+                                <li><a href="../classes/CylinderGeometry.html">CylinderGeometry</a></li>
+                                <li><a href="../classes/DepthBuf.html">DepthBuf</a></li>
+                                <li><a href="../classes/DirLight.html">DirLight</a></li>
+                                <li><a href="../classes/Entity.html">Entity</a></li>
+                                <li><a href="../classes/Fresnel.html">Fresnel</a></li>
+                                <li><a href="../classes/Frustum.html">Frustum</a></li>
+                                <li><a href="../classes/Geometry.html">Geometry</a></li>
+                                <li><a href="../classes/GeometryBuilder.html">GeometryBuilder</a></li>
+                                <li><a href="../classes/GLTFModel.html">GLTFModel</a></li>
+                                <li><a href="../classes/HeightmapGeometry.html">HeightmapGeometry</a></li>
+                                <li><a href="../classes/Input.html">Input</a></li>
+                                <li><a href="../classes/KeyboardAxisCamera.html">KeyboardAxisCamera</a></li>
+                                <li><a href="../classes/KeyboardPanCamera.html">KeyboardPanCamera</a></li>
+                                <li><a href="../classes/KeyboardRotateCamera.html">KeyboardRotateCamera</a></li>
+                                <li><a href="../classes/KeyboardZoomCamera.html">KeyboardZoomCamera</a></li>
+                                <li><a href="../classes/Layer.html">Layer</a></li>
+                                <li><a href="../classes/Lights.html">Lights</a></li>
+                                <li><a href="../classes/Lookat.html">Lookat</a></li>
+                                <li><a href="../classes/Material.html">Material</a></li>
+                                <li><a href="../classes/Model.html">Model</a></li>
+                                <li><a href="../classes/Modes.html">Modes</a></li>
+                                <li><a href="../classes/MousePanCamera.html">MousePanCamera</a></li>
+                                <li><a href="../classes/MousePickEntity.html">MousePickEntity</a></li>
+                                <li><a href="../classes/MouseRotateCamera.html">MouseRotateCamera</a></li>
+                                <li><a href="../classes/MouseZoomCamera.html">MouseZoomCamera</a></li>
+                                <li><a href="../classes/Nintendo3DSGeometry.html">Nintendo3DSGeometry</a></li>
+                                <li><a href="../classes/OBBGeometry.html">OBBGeometry</a></li>
+                                <li><a href="../classes/OBJGeometry.html">OBJGeometry</a></li>
+                                <li><a href="../classes/Ortho.html">Ortho</a></li>
+                                <li><a href="../classes/Path.html">Path</a></li>
+                                <li><a href="../classes/PathGeometry.html">PathGeometry</a></li>
+                                <li><a href="../classes/PBRMetalRoughnessMaterial.html">PBRMetalRoughnessMaterial</a></li>
+                                <li><a href="../classes/PBRSpecularGlossinessMaterial.html">PBRSpecularGlossinessMaterial</a></li>
+                                <li><a href="../classes/Perspective.html">Perspective</a></li>
+                                <li><a href="../classes/PhongMaterial.html">PhongMaterial</a></li>
+                                <li><a href="../classes/PlaneGeometry.html">PlaneGeometry</a></li>
+                                <li><a href="../classes/PointLight.html">PointLight</a></li>
+                                <li><a href="../classes/QuadraticBezierCurve.html">QuadraticBezierCurve</a></li>
+                                <li><a href="../classes/Quaternion.html">Quaternion</a></li>
+                                <li><a href="../classes/Rotate.html">Rotate</a></li>
+                                <li><a href="../classes/Scale.html">Scale</a></li>
+                                <li><a href="../classes/Scene.html">Scene</a></li>
+                                <li><a href="../classes/SceneJSModel.html">SceneJSModel</a></li>
+                                <li><a href="../classes/Skybox.html">Skybox</a></li>
+                                <li><a href="../classes/SphereGeometry.html">SphereGeometry</a></li>
+                                <li><a href="../classes/Spinner.html">Spinner</a></li>
+                                <li><a href="../classes/SplineCurve.html">SplineCurve</a></li>
+                                <li><a href="../classes/Stage.html">Stage</a></li>
+                                <li><a href="../classes/Stationary.html">Stationary</a></li>
+                                <li><a href="../classes/StereoEffect.html">StereoEffect</a></li>
+                                <li><a href="../classes/TeapotGeometry.html">TeapotGeometry</a></li>
+                                <li><a href="../classes/Texture.html">Texture</a></li>
+                                <li><a href="../classes/TorusGeometry.html">TorusGeometry</a></li>
+                                <li><a href="../classes/Transform.html">Transform</a></li>
+                                <li><a href="../classes/Translate.html">Translate</a></li>
+                                <li><a href="../classes/VectorTextGeometry.html">VectorTextGeometry</a></li>
+                                <li><a href="../classes/Viewport.html">Viewport</a></li>
+                                <li><a href="../classes/Visibility.html">Visibility</a></li>
+                                <li><a href="../classes/VoxelGeometryBuilder.html">VoxelGeometryBuilder</a></li>
+                                <li><a href="../classes/xeogl.html">xeogl</a></li>
+                                <li><a href="../classes/xeogl.math.math.html">xeogl.math.math</a></li>
+                                <li><a href="../classes/ZSpaceEffect.html">ZSpaceEffect</a></li>
+                                <li><a href="../classes/ZSpaceStylusControl.html">ZSpaceStylusControl</a></li>
+                            </ul>
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="..//modules/animation.html">animation</a></li>
+                                <li><a href="..//modules/boundaries.html">boundaries</a></li>
+                                <li><a href="..//modules/camera.html">camera</a></li>
+                                <li><a href="..//modules/canvas.html">canvas</a></li>
+                                <li><a href="..//modules/clipping.html">clipping</a></li>
+                                <li><a href="..//modules/configs.html">configs</a></li>
+                                <li><a href="..//modules/controls.html">controls</a></li>
+                                <li><a href="..//modules/culling.html">culling</a></li>
+                                <li><a href="..//modules/curves.html">curves</a></li>
+                                <li><a href="..//modules/effects.html">effects</a></li>
+                                <li><a href="..//modules/entities.html">entities</a></li>
+                                <li><a href="..//modules/generation.html">generation</a></li>
+                                <li><a href="..//modules/geometry.html">geometry</a></li>
+                                <li><a href="..//modules/input.html">input</a></li>
+                                <li><a href="..//modules/interaction.html">interaction</a></li>
+                                <li><a href="..//modules/lighting.html">lighting</a></li>
+                                <li><a href="..//modules/materials.html">materials</a></li>
+                                <li><a href="..//modules/math.html">math</a></li>
+                                <li><a href="..//modules/models.html">models</a></li>
+                                <li><a href="..//modules/rendering.html">rendering</a></li>
+                                <li><a href="..//modules/skyboxes.html">skyboxes</a></li>
+                                <li><a href="..//modules/transforms.html">transforms</a></li>
+                                <li><a href="..//modules/xeogl.html">xeogl</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <!--<div id="api-options">-->
+                    <!--Show:-->
+                    <!--<label for="api-show-inherited">-->
+                        <!--<input type="checkbox" id="api-show-inherited" checked>-->
+                        <!--Inherited-->
+                    <!--</label>-->
+            
+                    <!--<label for="api-show-protected">-->
+                        <!--<input type="checkbox" id="api-show-protected">-->
+                        <!--Protected-->
+                    <!--</label>-->
+            
+                    <!--<label for="api-show-private">-->
+                        <!--<input type="checkbox" id="api-show-private">-->
+                        <!--Private-->
+                    <!--</label>-->
+                    <!--<label for="api-show-deprecated">-->
+                        <!--<input type="checkbox" id="api-show-deprecated">-->
+                        <!--Deprecated-->
+                    <!--</label>-->
+            
+                <!--</div>-->
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: src/materials/pbrMetalRoughnessMaterial.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+
+ A **PBRMetalRoughnessMaterial** is a {{#crossLink &quot;Material&quot;}}{{/crossLink}} that defines the surface appearance of
+ attached {{#crossLink &quot;Entity&quot;}}Entities{{/crossLink}} using the specular-glossy physically-based rendering model.
+
+ ## Overview
+
+ https://github.com/tsturm/glTF/tree/master/extensions/Vendor/FRAUNHOFER_materials_pbr
+ 
+ TODO
+
+ &lt;img src=&quot;../../../assets/images/PBRMetalRoughnessMaterial.png&quot;&gt;&lt;/img&gt;
+
+ ## Usage
+
+ &#x60;&#x60;&#x60;&#x60; javascript
+
+ &#x60;&#x60;&#x60;&#x60;
+
+ @class PBRMetalRoughnessMaterial
+ @module xeogl
+ @submodule materials
+ @constructor
+ @extends Material
+ @param [scene] {Scene} Parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, creates this PBRMetalRoughnessMaterial within the
+ default {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} when omitted
+ @param [cfg] {*} The PBRMetalRoughnessMaterial configuration
+ @param [cfg.id] {String} Optional ID, unique among all components in the parent {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}}, generated automatically when omitted.
+ @param [cfg.meta=null] {String:Object} Metadata to attach to this material.
+
+ @param [cfg.diffuse=[[1.0, 1.0, 1.0, 1.0]] {Array of Number} The RGB components of the reflected diffuse color of the material. For raw metals the diffuse color is black (0.0). The fourth component (A) is the glossiness of the material.
+
+ @param [cfg.specular=[[1.0, 1.0, 1.0]] {Array of Number} The specular RGB color of the material.
+
+ @param [cfg.glossiness=1] {Number} The glossiness of the material surface (0 is glossiness, 1 is full glossiness).
+
+ @param [cfg.diffuseMap=null] {Texture} A diffuse map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}, which will override the effect of the diffuse property. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this PBRMetalRoughnessMaterial.
+
+ @param [cfg.specularGlossinessMap=null] {Texture} An emissive map {{#crossLink &quot;Texture&quot;}}Texture{{/crossLink}}, which will override the effect of the emissive property. Must be within the same {{#crossLink &quot;Scene&quot;}}Scene{{/crossLink}} as this PBRMetalRoughnessMaterial.
+
+ */
+(function () {
+
+    &quot;use strict&quot;;
+
+    xeogl.PBRMetalRoughnessMaterial = xeogl.Material.extend({
+
+        type: &quot;xeogl.PBRMetalRoughnessMaterial&quot;,
+
+        _init: function (cfg) {
+
+            this._state = new xeogl.renderer.PBRMetalRoughnessMaterial({
+                type: &quot;PBRMetalRoughnessMaterial&quot;,
+                diffuse: xeogl.math.vec3([1.0, 1.0, 1.0, 1.0]),
+                specular: xeogl.math.vec3([1.0, 1.0, 1.0]),
+                glossiness: 1.0,
+                diffuseMap: null,
+                specularGlossinessMap: null,
+                hash: null
+            });
+
+            this._hashDirty = true;
+
+            this.on(&quot;dirty&quot;, function () {
+
+                // This PBRMetalRoughnessMaterial is flagged dirty when a
+                // child component fires &quot;dirty&quot;, which always
+                // means that a shader recompile will be needed.
+
+                this._hashDirty = true;
+            }, this);
+
+            this.diffuse = cfg.diffuse;
+            this.specular = cfg.specular;
+            this.glossiness = cfg.glossiness;
+            this.diffuseMap = cfg.diffuseMap;
+            this.specularGlossinessMap = cfg.specularGlossinessMap;
+        },
+
+        _props: {
+            
+
+            /**
+             The RGB components of the reflected diffuse color of the material. For raw metals the diffuse color is black (0.0). The fourth component (A) is the glossiness of the material.
+
+             Fires a {{#crossLink &quot;PBRMetalRoughnessMaterial/diffuse:event&quot;}}{{/crossLink}} event on change.
+
+             @property diffuse
+             @default [1.0, 1.0, 1.0, 1.0]
+             @type Float32Array
+             */
+            diffuse: {
+
+                set: function (value) {
+
+                    this._state.diffuse.set(value || [1.0, 1.0, 1.0, 1.0]);
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this PBRMetalRoughnessMaterial&#x27;s {{#crossLink &quot;PBRMetalRoughnessMaterial/diffuse:property&quot;}}{{/crossLink}} property changes.
+                     *
+                     * @event diffuse
+                     * @param value {Float32Array} The property&#x27;s new value
+                     */
+                    this.fire(&quot;diffuse&quot;, this._state.diffuse);
+                },
+
+                get: function () {
+                    return this._state.diffuse;
+                }
+            },
+
+            /**
+             The specular RGB color of the material.
+
+             Fires a {{#crossLink &quot;PBRMetalRoughnessMaterial/specular:event&quot;}}{{/crossLink}} event on change.
+
+             @property specular
+             @default [1.0, 1.0, 1.0]
+             @type Float32Array
+             */
+            specular: {
+
+                set: function (value) {
+
+                    this._state.specular.set(value || [1.0, 1.0, 1.0]);
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     Fired whenever this PBRMetalRoughnessMaterial&#x27;s {{#crossLink &quot;PBRMetalRoughnessMaterial/specular:property&quot;}}{{/crossLink}} property changes.
+
+                     @event specular
+                     @param value {Float32Array} The property&#x27;s new value
+                     */
+                    this.fire(&quot;specular&quot;, this._state.specular);
+                },
+
+                get: function () {
+                    return this._state.specular;
+                }
+            },
+            
+            /**
+             The glossiness of the material surface (0 is glossiness, 1 is full glossiness).
+
+             Fires an {{#crossLink &quot;PBRMetalRoughnessMaterial/glossiness:event&quot;}}{{/crossLink}} event on change.
+
+             @property glossiness
+             @default 1.0
+             @type Number
+             */
+            glossiness: {
+
+                set: function (value) {
+
+                    value = (value !== undefined &amp;&amp; value !== null) ? value : 1.0;
+
+                    if (this._state.glossiness === value) {
+                        return;
+                    }
+
+                    this._state.glossiness = value;
+
+                    this._renderer.imageDirty = true;
+
+                    /**
+                     * Fired whenever this PBRMetalRoughnessMaterial&#x27;s {{#crossLink &quot;PBRMetalRoughnessMaterial/glossiness:property&quot;}}{{/crossLink}} property changes.
+                     *
+                     * @event glossiness
+                     * @param value {Number} The property&#x27;s new value
+                     */
+                    this.fire(&quot;glossiness&quot;, this._state.glossiness);
+                },
+
+                get: function () {
+                    return this._state.glossiness;
+                }
+            },
+            
+            /**
+             A diffuse {{#crossLink &quot;Texture&quot;}}{{/crossLink}} attached to this PBRMetalRoughnessMaterial.
+
+             This property overrides {{#crossLink &quot;PBRMetalRoughnessMaterial/diffuseMap:property&quot;}}{{/crossLink}} when not null or undefined.
+
+             Fires a {{#crossLink &quot;PBRMetalRoughnessMaterial/diffuseMap:event&quot;}}{{/crossLink}} event on change.
+
+             @property diffuseMap
+             @default null
+             @type {Texture}
+             */
+            diffuseMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this PBRMetalRoughnessMaterial&#x27;s {{#crossLink &quot;PBRMetalRoughnessMaterial/diffuseMap:property&quot;}}{{/crossLink}} property changes.
+
+                     @event diffuseMap
+                     @param value Number The property&#x27;s new value
+                     */
+                    this._attachComponent(&quot;xeogl.Texture&quot;, &quot;diffuseMap&quot;, texture);
+                },
+
+                get: function () {
+                    return this._attached.diffuseMap;
+                }
+            },
+            
+            /**
+             An emissive {{#crossLink &quot;Texture&quot;}}{{/crossLink}} attached to this PBRMetalRoughnessMaterial.
+
+             This property overrides {{#crossLink &quot;PBRMetalRoughnessMaterial/emissive:property&quot;}}{{/crossLink}} when not null or undefined.
+
+             Fires an {{#crossLink &quot;PBRMetalRoughnessMaterial/specularGlossinessMap:event&quot;}}{{/crossLink}} event on change.
+
+             @property specularGlossinessMap
+             @default null
+             @type {Texture}
+             */
+            specularGlossinessMap: {
+
+                set: function (texture) {
+
+                    /**
+                     Fired whenever this PBRMetalRoughnessMaterial&#x27;s {{#crossLink &quot;PBRMetalRoughnessMaterial/specularGlossinessMap:property&quot;}}{{/crossLink}} property changes.
+
+                     @event specularGlossinessMap
+                     @param value Number The property&#x27;s new value
+                     */
+                    this._attachComponent(&quot;xeogl.Texture&quot;, &quot;specularGlossinessMap&quot;, texture);
+                },
+
+                get: function () {
+                    return this._attached.specularGlossinessMap;
+                }
+            }
+        },
+
+        _attachComponent: function (expectedType, name, component) {
+            component = this._attach({
+                name: name,
+                type: expectedType,
+                component: component,
+                sceneDefault: false,
+                on: {
+                    destroyed: {
+                        callback: function () {
+                            this._state[name] = null;
+                            this._hashDirty = true;
+                        },
+                        scope: this
+                    }
+                }
+            });
+            this._state[name] = component ? component._state : null; // FIXME: Accessing _state breaks encapsulation
+            this._hashDirty = true;
+        },
+
+        _compile: function () {
+
+            if (this._hashDirty) {
+                this._makeHash();
+                this._hashDirty = false;
+            }
+
+            this._renderer.material = this._state;
+        },
+
+        _makeHash: function () {
+
+            var state = this._state;
+
+            var hash = [&quot;/p&quot;]; // &#x27;P&#x27; for Phong
+            
+            if (state.diffuseMap) {
+                hash.push(&quot;/d&quot;);
+                if (state.diffuseMap.matrix) {
+                    hash.push(&quot;/mat&quot;);
+                }
+            }
+            
+            if (state.specularGlossinessMap) {
+                hash.push(&quot;/e&quot;);
+                if (state.specularGlossinessMap.matrix) {
+                    hash.push(&quot;/mat&quot;);
+                }
+            }
+            
+            hash.push(&quot;;&quot;);
+
+            state.hash = hash.join(&quot;&quot;);
+        },
+
+        _getJSON: function () {
+
+            var json = {
+
+                // Colors
+                
+                diffuse: this._state.diffuse,
+                specular: this._state.specular
+            };
+
+            if (this._state.glossiness !== 1.0) {
+                json.glossiness = this._state.glossiness;
+            }
+            
+            // Textures
+
+            var components = this._attached;
+            
+            if (components.diffuseMap) {
+                json.diffuseMap = components.diffuseMap.id;
+            }
+
+            if (components.specularGlossinessMap) {
+                json.specularGlossinessMap = components.specularGlossinessMap.id;
+            }
+            
+            return json;
+        },
+
+        _destroy: function () {
+            this._state.destroy();
+        }
+    });
+
+})();
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>
