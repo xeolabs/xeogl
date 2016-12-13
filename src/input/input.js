@@ -256,7 +256,7 @@
                 });
 
 
-            document.addEventListener("mousedown",
+            cfg.element.addEventListener("mousedown",
                 this._mouseDownListener = function (e) {
 
                     if (!self.enabled) {
@@ -378,7 +378,7 @@
                     }
                 });
 
-            document.addEventListener("mousemove",
+            cfg.element.addEventListener("mousemove",
                 this._mouseMoveListener = function (e) {
 
                     if (!self.enabled) {
