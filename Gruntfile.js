@@ -61,6 +61,7 @@ module.exports = function (grunt) {
                         'examples/js/generation',
                         'examples/js/skyboxes',
                         'examples/js/geometry',
+                        'examples/js/marking',
                         'examples/js/models'
                     ],
 

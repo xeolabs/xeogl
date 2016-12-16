@@ -918,6 +918,26 @@
 
             } else {
 
+                if (states.geometry.primitiveName === "points") {
+                    add("vec2 cxy = 2.0 * gl_PointCoord - 1.0;");
+                    add("float r = dot(cxy, cxy);");
+
+                    add("#ifdef OES_standard_derivatives");
+                    add("   #extension OES_standard_derivatives : enable");
+                    add("#endif");
+
+                    add("#ifdef OES_standard_derivatives");
+                    add("float delta = fwidth(r);");
+                    add("opacity = 1.0 - smoothstep(1.0 - delta, 1.0 + delta, r);");
+                    add("#endif");
+
+                    add("#ifndef OES_standard_derivatives");
+                    add("if (r > 1.0) {");
+                    add("   discard;");
+                    add("}");
+                    add("#endif");
+                }
+
                 // No normals
                 add();
                 comment("   Non-Lambertian BRDF");
