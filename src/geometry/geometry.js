@@ -1103,6 +1103,34 @@
             }
         },
 
+        /**
+         * Fast method to insert elements into this Geometry's {{#crossLink "Geometry/positions:property"}}{{/crossLink}}.
+         *
+         * @param offset
+         * @param positions
+         */
+        insertPositions: function (positions, offset) {
+
+            this._updateGeometry();
+
+            if (!this._state.positions) {
+                this.error("insertPositions - can't insert, has no positions");
+                return;
+            }
+
+            if (offset < 0 || (offset + positions.length) > this._positionsData.length) {
+                this.error("insertPositions - out of range");
+                return;
+            }
+
+            this._positionsData.set(positions, offset);
+            this._state.positions.setData(positions, offset);
+
+            this._renderer.imageDirty = true;
+
+            this._setBoundaryDirty();
+        },
+
         _setBoundaryDirty: function () {
 
             if (this._boundaryDirty) {
