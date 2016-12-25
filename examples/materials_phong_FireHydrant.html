@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+
+    <script src="js/geometry/k3d.js"></script>
+    <script src="js/geometry/objGeometry.js"></script>
+
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeogl.org" target="_parent">xeogl</a><br><br>diffuse <a href="../docs/classes/Texture.html"
+                                                                            target="_parent">Texture</a>
+</div>
+
+<script>
+
+    var hydrant = new xeogl.Entity({
+
+        geometry: new xeogl.OBJGeometry({
+            src: "models/obj/FireHydrantMesh.obj"
+        }),
+
+        material: new xeogl.PhongMaterial({
+            diffuseMap: new xeogl.Texture({
+                src: "textures/diffuse/fire_hydrant_Base_Color.png"
+            }),
+            XnormalMap: new xeogl.Texture({
+                src: "textures/normal/fire_hydrant_Normal_OpanGL.png"
+            }),
+            specularMap: new xeogl.Texture({
+                src: "textures/specular/fire_hydrant_specular.png"
+            }),
+            ambientMap: new xeogl.Texture({
+                src: "textures/ao/fire_hydrant_Mixed_AO.png"
+            })
+        }),
+
+        transform: new xeogl.Scale({
+            xyz: [50, 50, 50]
+        })
+    });
+
+    hydrant.camera.view.rotateEyeX(25); // Orbit camera a bit
+
+    hydrant.geometry.on("loaded", function () { // Fit to view as soon as OBJ is loaded
+
+        (new xeogl.CameraFlightAnimation()).jumpTo({
+            worldBoundary: hydrant.worldBoundary,
+            fit: true,
+            fitFOV: 45
+        });
+
+        hydrant.scene.on("tick", function () { // Start orbiting the camera
+            hydrant.scene.camera.view.rotateEyeY(-0.1);
+        });
+    });
+
+    new xeogl.CameraControl(); // Allow user camera control
+
+</script>
+</body>
+</html>
