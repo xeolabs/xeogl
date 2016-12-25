@@ -223,12 +223,13 @@
                 geometry: {
                     primitive: "points",
                     positions: positions,
-                    indices: indices
+                    indices: indices,
+                    usage: "dynamic"
                 },
                 material: cfg.material,
                 modes: cfg.modes,
                 visibility: entity.visibility,  // Visibility and transform in synch with target entity
-                XXXtransform: entity.transform
+                XXXXtransform: entity.transform
             });
 
             this._numPoints = 0;
@@ -240,10 +241,10 @@
                 if (hit.worldPos && hit.normal) {
                     var worldPos = hit.worldPos;
                     var normal = hit.normal;
-                    tempVec3[0] = worldPos[0] + normal[0] * 0.05;
-                    tempVec3[1] = worldPos[1] + normal[1] * 0.05;
-                    tempVec3[2] = worldPos[2] + normal[2] * 0.05;
-                    this._helper.geometry.insertPositions(tempVec3, this._numPoints * 3);
+                    tempVec3[0] = worldPos[0] + normal[0] * 0.01;
+                    tempVec3[1] = worldPos[1] + normal[1] * 0.01;
+                    tempVec3[2] = worldPos[2] + normal[2] * 0.01;
+                    this._helper.geometry.setPositions(tempVec3, this._numPoints * 3);
                     this._numPoints++;
                 }
             };
