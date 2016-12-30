@@ -46,6 +46,7 @@
     "src/_renderer/chunks/modelTransformChunk.js",
     "src/_renderer/chunks/modesChunk.js",
     "src/_renderer/chunks/phongMaterialChunk.js",
+    "src/_renderer/chunks/pbrSpecularGlossinessMaterialChunk.js",
     "src/_renderer/chunks/programChunk.js",
     "src/_renderer/chunks/projTransformChunk.js",
     "src/_renderer/chunks/renderTargetChunk.js",
@@ -121,6 +122,8 @@
     "src/materials/_module.js",
     "src/materials/material.js",
     "src/materials/phongMaterial.js",
+    "src/materials/pbrSpecularGlossinessMaterial.js",
+    "src/materials/pbrMetalRoughnessMaterial.js",
     "src/materials/texture.js",
     "src/materials/fresnel.js",
 
