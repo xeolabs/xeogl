@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>xeogl Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/xeogl.js"></script>
+    <link href="css/styles.css" rel="stylesheet"/>
+
+<body>
+
+<div id="infoLight">
+    <a href="http://xeogl.org" target="_parent">xeogl</a><br><br>diffuse <a href="../docs/classes/Texture.html"
+                                                                            target="_parent">Texture</a>
+</div>
+
+<script>
+
+    var geometry = new xeogl.SphereGeometry({
+        radius: 1.5,
+        heightSegments: 60,
+        widthSegments: 60
+    });
+
+    var lenSide = 10;
+    var halfSide = lenSide / 2;
+    var inc = 4;
+    var min = -halfSide * inc;
+    var max = halfSide * inc;
+    var steps = (max - min) / inc;
+    var specular = 0;
+    var specularInc = 1.0 / steps;
+    var glossiness = 0;
+    var glossinessInc = 1.0 / steps;
+
+    for (var x = min; x <= max; x += inc) {
+
+        glossiness = 0;
+        specular += specularInc;
+
+        for (var z = min; z <= max; z += inc) {
+
+            new xeogl.Entity({
+
+                geometry: geometry,
+
+                material: new xeogl.PBRSpecularGlossinessMaterial({
+                    diffuseFactor: [0.5, 0.5, 0.5],
+                    specularFactor: [specular, specular, specular],
+                    glossinessFactor: glossiness
+                }),
+
+                transform: new xeogl.Translate({
+                    xyz: [x, 0, z]
+                })
+
+            });
+
+            glossiness += glossinessInc;
+        }
+    }
+
+    new xeogl.CameraControl();
+
+    var view = xeogl.scene.camera.view;
+    view.rotateEyeX(20);
+    view.rotateEyeY(20);
+    view.zoom(-60);
+
+</script>
+</body>
+</html>

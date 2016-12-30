@@ -225,10 +225,7 @@
             "transforms_project_perspective",
             "transforms_project_frustum",
             "transforms_project_ortho",
-            "transforms_project_transformHierarchy",
-
-            "#animation",
-            "animation_CameraPathAnimation"
+            "transforms_project_transformHierarchy"
         ],
 
         "Canvas": [
@@ -397,28 +394,33 @@
             "lights_point_world"
         ],
 
+        "Marking": [
+            "#drawing markings on things",
+            "marking_PointMarkings"
+        ],
+
         "Materials": [
-            "materials_phong",
 
-            "#texture",
-            "materials_texture_diffuse",
-            "materials_texture_specular",
-            "materials_texture_emissive",
-            "materials_texture_opacity",
-            "materials_texture_reflectivity",
-            "materials_texture_normalMap",
-            "materials_texture_video",
-            "materials_texture_procedural",
-            "materials_texture_animation",
+            "#Phong shading",
 
-            "#fresnel",
-            "materials_fresnel_diffuse",
-            "materials_fresnel_specular",
-            "materials_fresnel_opacity",
-            "materials_fresnel_emissive",
+            "materials_phong_Chest",
+            "materials_phong_FireHydrant",
+            "materials_phong_texture_diffuse",
+            "materials_phong_texture_specular",
+            "materials_phong_texture_emissive",
+            "materials_phong_texture_opacity",
+            "materials_phong_texture_normalMap",
+            "materials_phong_texture_video",
+            "materials_phong_texture_animation",
+            "materials_phong_fresnel_diffuse",
+            "materials_phong_fresnel_specular",
+            "materials_phong_fresnel_opacity",
+            "materials_phong_fresnel_emissive",
 
-            "#Z-sorting transparent entities",
-            "materials_techniques_transparencySort"
+            "#Physically-based rendering",
+            "materials_pbr_specularGlossiness_Chest",
+            "materials_pbr_specularGlossiness_FireHydrant",
+            "materials_pbr_specularGlossiness"
         ],
 
         "Models": [

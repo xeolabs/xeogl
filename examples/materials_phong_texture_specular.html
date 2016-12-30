@@ -11,13 +11,32 @@
 <body>
 
 <div id="infoLight">
-    <a href="http://xeogl.org" target="_parent" >xeogl</a><br><br>diffuse <a href="../docs/classes/Texture.html"
-                                                                              target="_parent">Texture</a>
-    <br><br>
-    <img src="textures/diffuse/uvGrid2.jpg" width="300px" height="300px">
+    <a href="http://xeogl.org" target="_parent">xeogl</a><br><br>specular <a href="../docs/classes/Texture.html"
+                                                                             target="_parent">Texture</a>
 </div>
 
 <script>
+
+    // Override default lights
+    // to emphasise specular reflection
+
+    var lights = new xeogl.Lights({
+        lights: [
+
+            new xeogl.AmbientLight({
+                color: [0.8, 0.8, 1.0],
+                intensity: 0.3
+            }),
+
+            new xeogl.DirLight({
+                dir: [0.5, 0.5, 0.5],
+                color: [1.0, 1.0, 0.9],
+                intensity: 0.9,
+                space: "view"
+            })
+
+        ]
+    });
 
     var geometry = new xeogl.TorusGeometry({
         radius: 1.0,
@@ -27,30 +46,29 @@
         arc: Math.PI * 2.0
     });
 
-    // Diffuse map with all defaults
-
-    var diffuseMap = new xeogl.Texture({
-        src: "textures/diffuse/uvGrid2.jpg",
+    var texture = new xeogl.Texture({
+        src: "textures/diffuse/crossGridColorMap.jpg",
         minFilter: "linearMipmapLinear",
         magFiler: "linear",
         wrapS: "repeat",
         wrapT: "repeat",
         translate: [0, 0],
         scale: [1, 1],
-        rotate: 0,
-        flipY: false // Default
+        rotate: 0
     });
 
     var material = new xeogl.PhongMaterial({
-        ambient: [0.3, 0.3, 0.3],
-        diffuse: [0.3, 0.5, 0.5],
+        ambient: [0.2, 0.2, 0.3],
         shininess: 30,
-        diffuseMap: diffuseMap
+        specularMap: texture,
+        diffuse: [0.1, 0.1, 0.4]
     });
 
     var entity = new xeogl.Entity({
         geometry: geometry,
-        material: material
+        material: material,
+        lights: lights
+
     });
 
     entity.camera.view.zoom(-5);

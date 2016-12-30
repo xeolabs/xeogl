@@ -411,13 +411,12 @@
             var alignQuaternion = math.identityQuaternion();
             var orientMatrix = math.mat4();
 
-            this._onOrientationChanged = input.on("orientationChanged", function (e) {
+            this._onOrientationChanged = input.on("orientationchanged", function (e) {
                 orientation = e.orientation;
                 orientationAngle = e.orientationAngle;
             });
 
-            this._onDeviceOrientation = input.on("deviceOrientation", function (e) {
-
+            this._onDeviceOrientation = input.on("deviceorientation", function (e) {
                 var camera = self._attached.camera;
                 if (!camera) {
                     return;
