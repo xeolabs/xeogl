@@ -31,13 +31,28 @@
                 this.itemByteSize = 1;
                 break;
 
+            case Int8Array:
+                this.itemType = gl.BYTE;
+                this.itemByteSize = 1;
+                break;
+
             case  Uint16Array:
                 this.itemType = gl.UNSIGNED_SHORT;
                 this.itemByteSize = 2;
                 break;
 
+            case  Int16Array:
+                this.itemType = gl.SHORT;
+                this.itemByteSize = 2;
+                break;
+
             case Uint32Array:
                 this.itemType = gl.UNSIGNED_INT;
+                this.itemByteSize = 4;
+                break;
+
+            case Int32Array:
+                this.itemType = gl.INT;
                 this.itemByteSize = 4;
                 break;
 
