@@ -648,6 +648,20 @@
          */
         _inQuotes: function (id) {
             return this._isNumeric(id) ? ("" + id) : ("'" + id + "'");
+        },
+
+        /**
+         * Returns the concatenation of two typed arrays.
+         * @param a
+         * @param b
+         * @returns {*|a}
+         * @private
+         */
+        _concat: function (a, b) {
+            var c = new a.constructor(a.length + b.length);
+            c.set(a);
+            c.set(b, a.length);
+            return c;
         }
     };
 

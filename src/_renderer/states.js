@@ -192,6 +192,21 @@
 
     /**
 
+     PBR specular-glossiness material state.
+
+     renderer.PBRSpecularGlossinessMaterial
+     @module xeogl
+
+     @constructor
+     @param cfg {*} Configs
+     @extends renderer.State
+     */
+    xeogl.renderer.PBRSpecularGlossinessMaterial = xeogl.renderer.State.extend({
+        _ids: new xeogl.utils.Map({})
+    });
+
+    /**
+
      Environmental reflection state.
 
      renderer.Reflect
