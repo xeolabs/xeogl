@@ -91,7 +91,7 @@
                 }
             ]
         });
-    ````
+     ````
 
      ### Transforming a Model
 
@@ -178,7 +178,7 @@
      Since xeogl is all about lazy-execution to avoid needless work, the {{#crossLink "Boundary3D"}}{{/crossLink}} will
      only actually recompute its extents the first time we read its {{#crossLink "Boundary3D/obb:property"}}{{/crossLink}},
      {{#crossLink "Boundary3D/aabb:property"}}{{/crossLink}}, {{#crossLink "Boundary3D/center:property"}}{{/crossLink}},
-      {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} or
+     {{#crossLink "Boundary3D/center:property"}}{{/crossLink}} or
      {{#crossLink "Boundary3D/sphere:property"}}{{/crossLink}} properties after it fired its
      last {{#crossLink "Boundary3D/updated:event"}}{{/crossLink}} event.
 
@@ -441,6 +441,8 @@
              */
             this.fire("added", component);
 
+         //   this.log("Mode.added:" + component.id);
+
             if (!this._dirty) {
                 this._scheduleUpdate();
             }
@@ -475,11 +477,35 @@
          */
         destroyAll: function () {
 
-            this.iterate(function (component) {
-                component.destroy();
-            });
-        },
+            // For efficiency, destroy Entities first to avoid
+            // xeogl's automatic default component substitutions
 
+            var type;
+            var list = [];
+            var components;
+            var component;
+            var id;
+
+            for (type in this.types) {
+                if (this.types.hasOwnProperty(type)) {
+                    components = this.types[type];
+                    for (id in components) {
+                        if (components.hasOwnProperty(id)) {
+                            component = components[id];
+                            if (component.isType("xeogl.Entity")) {
+                                list.push(component);
+                            } else {
+                                list.unshift(component);
+                            }
+                        }
+                    }
+                }
+            }
+
+            while (list.length > 0) {
+                list.pop().destroy();
+            }
+        },
         /**
          * Removes all {{#crossLink "Component"}}Components{{/crossLink}} from this Model.
          *
