@@ -60,10 +60,16 @@
 
             if (!gl.isContextLost()) { // Handled explicitly elsewhere, so won't re-handle here
 
+                var lines = this.source.split("\n");
+                var numberedLines = [];
+                for (var i = 0; i < lines.length; i++) {
+                    numberedLines.push((i + 1) + ": " + lines[i] + "\n");
+                }
+
                 this.errorLog = [];
                 this.errorLog.push("");
                 this.errorLog.push(gl.getShaderInfoLog(this.handle));
-                this.errorLog = this.errorLog.concat(this.source);
+                this.errorLog = this.errorLog.concat(numberedLines.join(""));
             }
         }
     };
